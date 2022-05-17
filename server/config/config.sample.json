@@ -1,0 +1,55 @@
+{
+    "server": "http://127.0.0.1:8000/server/api.php",
+
+    "db": {
+        "dsn": "sqlite:/home/mmikel/projects/rbt/server/db/internal.db",
+    },
+
+    "db": {
+        "dsn": "pgsql:host=127.0.0.1;port=5432;dbname=rbt",
+        "username": "rbt",
+        "password": "rbt",
+        "options": null
+    },
+
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "password": "[optional, can be removed or auth here]",
+        "cache_ttl": 3600
+    },
+
+    "backends": {
+        "authentication": {
+            "backend": "internal"
+        },
+
+        "authorization": {
+            "backend": "allow"
+        },
+
+        "accounting": {
+            "backend": "syslog"
+        },
+
+        "users": {
+            "backend": "internal"
+        }
+    },
+
+    "real_ip_header": [
+        "HTTP_X_FORWARDED_FOR",
+        "REMOTE_ADDR"
+    ],
+
+    "max_allowed_tokens": 15,
+    "token_idle_ttl": 3600,
+
+    "email": {
+        "server": "127.0.0.1",
+        "port": 587,
+        "username": "mmikel@localhost",
+        "password": "qwerty",
+        "from": "RBT"
+    }
+}

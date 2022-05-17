@@ -1,0 +1,62 @@
+#toast-container > div {
+    opacity: 1;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+    filter: alpha(opacity=100);
+}
+
+.direct-chat-text-secondary:after {
+    content: none!important;
+    display: none;
+}
+
+.direct-chat-text-secondary:before {
+    content: none!important;
+    display: none;
+}
+
+@font-face{
+    font-family: "Peignot";
+    src: url(ttf/peignot.ttf);
+}
+
+.centre-of-all {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    padding: 15px;
+    transform: translate(-50%, -50%);
+}
+
+.hoverable:hover {
+    text-decoration: underline;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.tdform {
+    vertical-align: middle!important;
+    white-space: nowrap!important;
+}
+
+.tdform-right {
+    vertical-align: middle!important;
+    white-space: nowrap!important;
+    width: 100% !important;
+}
+
+.tform-borderless > tbody > tr:first-child > td {
+    border-bottom: none!important;
+}
+
+.tform-borderless > tbody > tr:last-child > td {
+    border-top: none!important;
+}
+
+.tform-borderless > tbody > tr:not(:first-child):not(:last-child) > td {
+    border-top: none!important;
+    border-bottom: none!important;
+}
+
+

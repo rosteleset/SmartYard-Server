@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>::</title>
+
+    <link id="favicon" rel="shortcut icon" href="img/tech.png"/>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="lib/AdminLTE/plugins/fontawesome-free/css/all.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="lib/AdminLTE/plugins/toastr/toastr.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="lib/AdminLTE/dist/css/adminlte.min.css">
+    <!-- jQuery -->
+    <script src="lib/AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <!-- cookie for jQuery -->
+    <script src="js/cookie.js"></script>
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="lib/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- app css -->
+    <link rel="stylesheet" href="css/index.css">
+
+    <!-- wait for fully load -->
+    <script type="application/javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            $.get("config/config.json", c => {
+                window.config = c;
+                let lang = $.cookie("_lang");
+                if (!lang) {
+                    lang = window.config.defaultLanguage;
+                }
+                if (!lang) {
+                    lang = "ru";
+                }
+                $.get("i18n/" + lang + ".json", l => {
+                    window.lang = l;
+                    initAll();
+                }).fail(function() {
+                    window.lang = {};
+                    initAll();
+                });
+            }).fail(() => {
+                alert("woops can't get config");
+            });
+        });
+    </script>
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+    <div id="loading" class="centre-of-all" data-keyboard="false" data-backdrop="static" style="z-index: 1000;">
+        <svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-wedges" style="background: white; border-radius: 100px;"><g transform="translate(50,50)"><g ng-attr-transform="scale({{config.scale}})" transform="scale(0.7)"><g transform="translate(-50,-50)"><g transform="rotate(104.073 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="0.75s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c1}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" fill-opacity="0.8" fill="#337ab7"></path></g><g transform="rotate(348.054 50.0001 50.0001)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c2}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(90 50 50)" fill-opacity="0.8" fill="#5bc0de"></path></g><g transform="rotate(232.036 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1.5s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c3}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(180 50 50)" fill-opacity="0.8" fill="#5cb85c"></path></g><g transform="rotate(116.018 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="3s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c4}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(270 50 50)" fill-opacity="0.8" fill="#f0ad4e"></path></g></g></g></g></svg>
+    </div>
+
+    <div id="timeout" class="centre-of-all" data-keyboard="false" data-backdrop="static" style="z-index: 1000; display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="margin: auto; background: none; display: block;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><defs><clipPath id="ldio-5up9ejzpks-cp" x="0" y="0" width="100" height="100"><rect x="0" y="0" width="0" height="100"><animate class="timeout-animate" attributeName="width" repeatCount="1" dur="30s" values="0;100;100" keyTimes="0;0.5;1"></animate><animate class="timeout-animate" attributeName="x" repeatCount="1" dur="30s" values="0;0;100" keyTimes="0;0.5;1"></animate></rect></clipPath></defs><path fill="#ffffff" stroke="#e15b64" stroke-width="2.7928" d="M82 63H18c-7.2 0-13-5.8-13-13v0c0-7.2 5.8-13 13-13h64c7.2 0 13 5.8 13 13v0C95 57.2 89.2 63 82 63z"></path><path fill="#f8b26a" clip-path="url(#ldio-5up9ejzpks-cp)" d="M81.3 58.7H18.7c-4.8 0-8.7-3.9-8.7-8.7v0c0-4.8 3.9-8.7 8.7-8.7h62.7c4.8 0 8.7 3.9 8.7 8.7v0C90 54.8 86.1 58.7 81.3 58.7z"></path></svg>
+    </div>
+
+    <div id="page404" class="centre-of-all" data-keyboard="false" data-backdrop="static" style="z-index: 1000; display: none;">
+    </div>
+
+    <div id="app" class="wrapper" style="display: none;">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav" id="topMenuLeft">
+                <li class="nav-item">
+                    <a class="nav-link burger" data-widget="pushmenu" href="#" role="button">
+                        <i class="fas fa-lg fa-bars"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Search form -->
+            <div class="form-inline ml-2" id="searchForm">
+                <div class="input-group input-group-sm">
+                    <input id="searchInput" class="form-control form-control-navbar" type="search" aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-navbar" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="navbar-nav ml-2" id="topMenuLeftDynamic"></ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto" id="topMenuRight">
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-dark" data-toggle="dropdown" href="#">
+                        <i class="fas fa-lg fa-fw fa-user-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-width: none;">
+                        <a href="#settings" class="dropdown-item">
+                            <div class="media">
+                                <img src="avatars/noavatar.png" alt="User Avatar" class="img-size-50 mr-3 img-circle user-avatar">
+                                <div class="media-body">
+                                    <h3 class="dropdown-item-title">
+                                        <div id="userCard" class="mr-3"></div>
+                                    </h3>
+                                </div>
+                                <span class="float-right text-sm"><i class="fas fa-cog"></i></span>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item dropdown-footer" onclick="logout()"><span id="logout">...</span>
+                            <span class="float-right text-sm text-danger"><i class="fas fa-sign-out-alt"></i></span>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand">
+            <!-- Brand Logo -->
+            <span href="#" class="brand-link">
+                <a href="https://rosteleset.ru/"><img src="img/tech.png" alt="RBT Logo" class="brand-image"></a>
+                <span class="brand-text font-weight-bold brand-title" id="brandTitle"></span>
+            </span>
+
+            <div class="sidebar">
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="true" id="leftside-menu">
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col col-left" id="mainForm">
+                            <!--
+                                Main content here
+                            -->
+                        </div>
+                        <div class="col col-right" style="display: none;">
+                            <!--
+                                Alt. content here
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- inputText -->
+    <div class="modal" id="inputText" role="dialog" aria-labelledby="inputTextLabel" aria-hidden="true" style="padding-top: 4rem!important;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="inputTextLabel" style="font-weight: bold;">...</h6>
+                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="far faw fa-times-circle"></i></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="inputTextBody" class="form-control input-text-element" style="width: 100%; height: 100px; resize: none; display: none;">
+                    </textarea>
+                    <input id="inputTextLine" class="form-control input-text-element" style="width: 100%; display: none;" onkeypress="if (event.keyCode == 13) $('#inputTextButton').click();">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="inputTextButton">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- confirmModal -->
+    <div class="modal" id="confirmModal" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true" style="padding-top: 4rem!important;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="confirmModalLabel" style="font-weight: bold;">...</h6>
+                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="far faw fa-times-circle"></i></button>
+                </div>
+                <div class="modal-body" id="confirmModalBody" style="word-break: break-all; white-space: normal;">...</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirmModalButton">...</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- alertModal -->
+    <div class="modal" id="alertModal" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" style="padding-top: 4rem!important;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="alertModalLabel" style="font-weight: bold;">...</h6>
+                </div>
+                <div class="modal-body" id="alertModalBody" style="word-break: break-word;">...</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="alertModalButton">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal -->
+    <div class="modal p-0" id="modal" role="dialog"style="padding-top: 4rem!important;">
+        <div class="modal-dialog p-0" role="document">
+            <div class="modal-content p-0" id="modalBody">
+            </div>
+        </div>
+    </div>
+
+    <!-- loginForm -->
+    <div class="centre-of-all" id="loginForm" style="display: none;">
+        <div class="login-box">
+            <div class="login-logo font-weight-bold" id="loginBoxLogo"></div>
+            <div class="card">
+                <div class="card-body login-card-body">
+                    <p class="login-box-msg" id="loginBoxTitle"></p>
+                    <div class="input-group mb-3">
+                        <input id="loginBoxLogin" type="text" class="form-control" placeholder="">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input id="loginBoxPassword" type="password" class="form-control" placeholder="">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input id="loginBoxServer" type="text" class="form-control" placeholder="">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-server"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <select id="loginBoxLang" class="form-control" onchange="changeLanguage()">
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="icheck-primary">
+                                <input type="checkbox" id="loginBoxRemember">
+                                <label for="loginBoxRemember" id="loginBoxRememberLabel"></label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-primary btn-block" onclick="login()" id="loginBoxLoginButton"></button>
+                        </div>
+                    </div>
+                    <p id="loginBoxForgot" class="mb-1" style="display: none;">
+                        <a href="javascript:void(0)" onclick="showForgotPasswordForm()" id="loginBoxForgotPassword"></a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- forgotForm -->
+    <div class="centre-of-all" id="forgotForm" style="display: none;">
+        <div class="login-box">
+            <div class="login-logo font-weight-bold" id="forgotBoxLogo"></div>
+            <div class="card">
+                <div class="card-body login-card-body">
+                    <p class="login-box-msg" id="forgotBoxTitle"></p>
+                    <div class="input-group mb-3">
+                        <input id="forgotBoxEmail" type="email" class="form-control">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input id="forgotBoxServer" type="text" class="form-control" placeholder="">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-server"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary btn-block" onclick="forgot()" id="forgotBoxButton"></button>
+                        </div>
+                    </div>
+                    <p class="mt-3 mb-1">
+                        <a href="javascript:void(0)" onclick="showLoginForm()" id="forgotBoxLogin"></a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REQUIRED SCRIPTS -->
+
+    <!-- misc. utils -->
+    <script src="js/utils.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="lib/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Switch -->
+    <script src="lib/AdminLTE/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="lib/AdminLTE/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+    <script src="lib/AdminLTE/plugins/toastr/toastr.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="lib/AdminLTE/dist/js/adminlte.min.js"></script>
+    <!-- Bootstrap Switch -->
+    <script src="lib/AdminLTE/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <!-- jquery_table_filter.js -->
+    <script src="js/jquery_table_filter.js"></script>
+    <!-- phpjs.js -->
+    <script src="js/phpjs.js"></script>
+    <!-- FavIco badge and animation support -->
+    <script src="js/favico.min.js"></script>
+    <!-- browser detection -->
+    <script src="js/browser.min.js"></script>
+    <!-- API -->
+    <script src="js/api.js"></script>
+    <!-- Table creation -->
+    <script src="js/table.js"></script>
+    <!-- Form creation -->
+    <script src="js/form.js"></script>
+    <!-- APP -->
+    <script src="js/app.js"></script>
+
+</body>
+</html>

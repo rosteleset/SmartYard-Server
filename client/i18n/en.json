@@ -1,0 +1,23 @@
+{
+    "windowTitle": "RBT",
+    "error": "Error",
+    "warning": "Warning",
+    "confirm": "Confirmation",
+    "message": "Message",
+    "loginFormTitle": "Authorization",
+    "login": "Login",
+    "password": "Password",
+    "server": "Server",
+    "rememberMe": "Remember me",
+    "passowrdForgot": "I forgot my password\n",
+    "loginAction": "Login",
+    "ok": "OK",
+    "forgotFormTitle": "Restore password",
+    "email": "E-Mail",
+    "forgotAction": "Restore",
+    "forgotLogin": "Login",
+    "errors": {
+        "404caption": "Oops! Page not found.",
+        "404message": "Required page is not found.<br />Try <a href=\"#\">start page</a>."
+    }
+}

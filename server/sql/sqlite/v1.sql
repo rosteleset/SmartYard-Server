@@ -1,0 +1,16 @@
+CREATE TABLE vars (var_id integer not null primary key autoincrement, var_name text not null, var_value text);
+CREATE INDEX vars_id on vars(var_id);
+CREATE INDEX vars_var_name on vars(var_name);
+INSERT INTO vars (var_name, var_value) values ('dbVersion', '0');
+CREATE TABLE users (uid integer not null primary key autoincrement, login text not null, password text not null, enabled integer, real_name text, e_mail text, phone text);
+CREATE UNIQUE INDEX users_login on users(login);
+CREATE INDEX users_RealName on users(real_name);
+CREATE UNIQUE INDEX users_e_mail on users(e_mail);
+CREATE INDEX users_Phone on users(phone);
+CREATE TABLE groups (gid integer not null primary key autoincrement, group_name text not null, group_acronym text);
+CREATE UNIQUE INDEX groups_group_name on groups(group_name);
+CREATE TABLE users_groups (uid integer, gid integer);
+CREATE INDEX users_groups_uid on users_groups(uid);
+CREATE INDEX users_groups_gid on users_groups(gid);
+CREATE TABLE api_methods(api_method_id text not null primary key, api text not null, method text not null, request_method text not null);
+CREATE UNIQUE INDEX api_methods_uniq on api_methods(api, method, request_method);

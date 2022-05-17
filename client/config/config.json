@@ -1,0 +1,16 @@
+{
+    "defaultServer": "http://localhost:8000/server/api.php",
+    "defaultLanguage": "ru",
+    "languages": {
+        "ru": "Русский",
+        "en": "English"
+    },
+    "modules": [
+        "settings",
+        "address",
+        "users",
+        "groups"
+    ],
+    "defaultRoute": "address",
+    "ajaxCache": true
+}
