@@ -12,8 +12,10 @@ function cardForm(params) {
     if (params.title) {
         h += `<div class="card-header">`;
         h += `<h3 class="card-title">`;
-        h += `<span class="text-success pointer" id="formApplyButton"><i class="fas fa-fw fa-check-circle mr-2" title="${i18n("apply")}"></i></span>`;
-        h += " " + params.title;
+        if (params.topApply) {
+            h += `<button class="btn btn-success mr-2 btn-xs" id="modalFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+        }
+        h += params.title;
         h += `</h3>`;
         h += `</div>`;
     }
@@ -23,74 +25,16 @@ function cardForm(params) {
     } else {
         h += `<table class="table table-hover">`;
     }
-    if (params.tableHeader) {
-        h += `<thead>`;
-        h += `<tr>`;
-        h += `<th colspan="2">${params.tableHeader}</th>`;
-        h += `</tr>`;
-        h += `</thead>`;
-    }
     h += `<tbody>`;
 
     for (let i in params.fields) {
         switch (params.fields[i].type) {
-            case "email":
-                h += `<tr>`;
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
-                h += `<td class="tdform-right">`;
-                h += `<input id="modalForm-${params.fields[i].id}" type="email" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
-                if (params.fields[i].readonly) {
-                    h += ` readonly="readonly"`;
-                    h += ` disabled="disabled"`;
-                }
-                h += `>`;
-                h += `</td>`;
-                h += `</tr>`;
-                break;
-            case "tel":
-                h += `<tr>`;
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
-                h += `<td class="tdform-right">`;
-                h += `<input id="modalForm-${params.fields[i].id}" type="tel" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
-                if (params.fields[i].readonly) {
-                    h += ` readonly="readonly"`;
-                    h += ` disabled="disabled"`;
-                }
-                h += `>`;
-                h += `</td>`;
-                h += `</tr>`;
-                break;
-            case "date":
-                h += `<tr>`;
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
-                h += `<td class="tdform-right">`;
-                h += `<input id="modalForm-${params.fields[i].id}" type="date" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
-                if (params.fields[i].readonly) {
-                    h += ` readonly="readonly"`;
-                    h += ` disabled="disabled"`;
-                }
-                h += `>`;
-                h += `</td>`;
-                h += `</tr>`;
-                break;
-            case "time":
-                h += `<tr>`;
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
-                h += `<td class="tdform-right">`;
-                h += `<input id="modalForm-${params.fields[i].id}" type="time" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
-                if (params.fields[i].readonly) {
-                    h += ` readonly="readonly"`;
-                    h += ` disabled="disabled"`;
-                }
-                h += `>`;
-                h += `</td>`;
-                h += `</tr>`;
-                break;
             case "select":
                 h += `<tr>`;
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
-                h += `<select id="modalForm-${params.fields[i].id}" class="form-control form-control-sm"`;
+                h += `<div class="input-group">`;
+                h += `<select id="modalForm-${params.fields[i].id}" class="form-control form-control-sm modalFormField"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -104,19 +48,35 @@ function cardForm(params) {
                     }
                 }
                 h += `</select>`;
+                h += `<div class="input-group-append">`;
+                h += `<span class="input-group-text pointer cardFormSelectWithRotate"><i class="fas fa-fw fa-angle-double-right"></i></span>`;
+                h += `</div>`;
+                h += `</div>`;
                 h += `</td>`;
                 h += `</tr>`;
                 break;
+            case "email":
+            case "tel":
+            case "date":
+            case "time":
             default:
+                let type = params.fields[i].type?params.fields[i].type:"text";
                 h += `<tr>`;
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
-                h += `<input id="modalForm-${params.fields[i].id}" type="text" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<div class="input-group">`;
+                h += `<input id="modalForm-${params.fields[i].id}" type="${type}" class="form-control form-control-sm modalFormField" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
                 }
                 h += `>`;
+                if (params.fields[i].button) {
+                    h += `<div class="input-group-append">`;
+                    h += `<span id="modalForm-${params.fields[i].id}-button" class="input-group-text pointer"><i class="${params.fields[i].button.class}"></i></span>`;
+                    h += `</div>`;
+                }
+                h += `</div>`;
                 h += `</td>`;
                 h += `</tr>`;
                 break;
@@ -125,40 +85,98 @@ function cardForm(params) {
 
     h += `</tbody>`;
 
-    h += `<tfoot>`;
-    h += `<tr>`;
-    h += `<td colspan="2">`;
-    h += `<button type="submit" id="modalFormOk" class="btn btn-primary">${i18n("save")}</button>`;
-    h += `<button type="cancel" id="modalFormCancel" class="btn btn-default float-right">${i18n("cancel")}</button>`;
-    h += `</td>`;
-    h += `</tr>`;
-    h += `</tfoot>`;
+    if (params.footer) {
+        h += `<tfoot>`;
+        h += `<tr>`;
+        h += `<td colspan="2">`;
+        h += `<button type="submit" id="modalFormOk" class="btn btn-primary">${i18n("apply")}</button>`;
+        if (typeof params.cancel === "function") {
+            h += `<button type="cancel" id="modalFormCancel" class="btn btn-default float-right">${i18n("cancel")}</button>`;
+        }
+        h += `</td>`;
+        h += `</tr>`;
+        h += `</tfoot>`;
+    }
 
     h += `</table>`;
     h += `</div>`;
     h += `</div>`;
 
     function ok() {
-        if (typeof params.callback === "function") {
-            let result = {};
-            for (let i in params.fields) {
-                result[params.fields[i].id] = $(`#modalForm-${params.fields[i].id}`).val();
+        $(".modalFormField").removeClass("is-invalid");
+        let invalid = [];
+        for (let i in params.fields) {
+            if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
+                if (!params.fields[i].validate($(`#modalForm-${params.fields[i].id}`).val())) {
+                    invalid.push(`#modalForm-${params.fields[i].id}`);
+                }
             }
-            $('#modal').modal('hide');
-            params.callback(result);
+        }
+        if (invalid.length === 0) {
+            if (typeof params.callback === "function") {
+                let result = {};
+                for (let i in params.fields) {
+                    result[params.fields[i].id] = $(`#modalForm-${params.fields[i].id}`).val();
+                }
+                if (!params.target) {
+                    $('#modal').modal('hide');
+                }
+                params.callback(result);
+            }
+        } else {
+            for (let i in invalid) {
+                $(invalid[i]).addClass("is-invalid");
+            }
         }
     }
 
     function cancel() {
-        $('#modal').modal('hide');
+        if (!params.target) {
+            $('#modal').modal('hide');
+        }
+        if (typeof params.cancel === "function") {
+            params.cancel();
+        }
     }
+
+    let target;
 
     if (params.target) {
-        $(params.target).html(h);
+        target = $(params.target).html(h);
     } else {
-        modal(h);
+        target = modal(h);
     }
 
+    $("#modalFormApply").off("click").on("click", ok);
     $("#modalFormOk").off("click").on("click", ok);
     $("#modalFormCancel").off("click").on("click", cancel);
+
+    $(".cardFormSelectWithRotate").off("click").on("click", function () {
+        let select = $(this).parent().parent().children().first();
+        let val = select.val();
+        let first = select.children().first();
+        let found = false;
+        let next = false;
+        select.children().each(function () {
+            if (found) {
+                next = $(this);
+                return false;
+            }
+            if ($(this).attr("value") == val) {
+                found = true;
+            }
+        });
+        if (!next) {
+            next = first;
+        }
+        select.val(next.attr("value"));
+    });
+
+    for (let i in params.fields) {
+        if (params.fields[i].button && typeof params.fields[i].button.click === "function") {
+            $(`#modalForm-${params.fields[i].id}-button`).off("click").on("click", params.fields[i].button.click);
+        }
+    }
+
+    return target;
 }

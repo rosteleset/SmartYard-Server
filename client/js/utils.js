@@ -174,6 +174,8 @@ function modal(body) {
     $("#modalBody").html(body);
     autoZ($('#modal').modal('show'));
     xblur();
+
+    return $('#modal');
 }
 
 function xblur() {
@@ -270,4 +272,15 @@ function i18n(msg, ...args) {
     } catch (_) {
         return msg;
     }
+}
+
+function leftSide(button, title, target) {
+    $("#leftside-menu").append(`
+        <li class="nav-item" title="${title}">
+            <a href="${target}" class="nav-link">
+                <i class="${button} nav-icon"></i>
+                <p>${title}</p>
+            </a>
+        </li>
+    `);
 }

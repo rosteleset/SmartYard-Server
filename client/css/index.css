@@ -59,4 +59,16 @@
     border-bottom: none!important;
 }
 
+.dropdown-toggle-no-icon::after {
+    display: none;
+}
 
+.hoverable:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
