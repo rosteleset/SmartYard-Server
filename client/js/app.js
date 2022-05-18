@@ -154,7 +154,7 @@ function showForgotPasswordForm() {
 
     loadingDone(true);
 
-    $("#forgotBoxEmail").focus();
+    $("#forgotBoxEMail").focus();
 }
 
 function login() {
@@ -224,7 +224,7 @@ function logout() {
 }
 
 function forgot() {
-    let email = $.trim($("#forgotBoxEmail").val());
+    let email = $.trim($("#forgotBoxEMail").val());
 
     let server = $("#forgotBoxServer").val();
 
@@ -331,7 +331,7 @@ function initAll() {
 
     $("#forgotBoxLogo").html("<img src='img/rosteleset.png'/>");
     $("#forgotBoxTitle").text(i18n("forgotFormTitle"));
-    $("#forgotBoxEmail").attr("placeholder", i18n("email"));
+    $("#forgotBoxEMail").attr("placeholder", i18n("eMail"));
     $("#forgotBoxButton").text(i18n("forgotAction"));
     $("#forgotBoxLogin").text(i18n("forgotLogin"));
     $("#forgotBoxServer").attr("placeholder", i18n("server"));

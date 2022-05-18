@@ -177,7 +177,6 @@ function modal(body) {
 }
 
 function xblur() {
-    console.log("xblur");
     setTimeout(() => {
         $('a input button').blur();
     }, 100);

@@ -73,12 +73,73 @@
                 target: "#mainForm",
             });
 
-            modal(cardForm({
+            cardForm({
 //                title: "Заголовок карточки",
                 tableHeader: "Заголовок формы (таблицы)",
 //                target: "#mainForm",
                 borderless: true,
-            }));
+                modal: true,
+                fields: [
+                    {
+                        id: "uid",
+                        type: "text",
+                        readonly: true,
+                        value: "0",
+                        title: i18n("users.uid"),
+                    },
+                    {
+                        id: "login",
+                        type: "text",
+                        readonly: true,
+                        value: "admin",
+                        title: i18n("users.login"),
+                    },
+                    {
+                        id: "realName",
+                        type: "text",
+                        readonly: false,
+                        value: "",
+                        title: i18n("users.realName"),
+                        placeholder: i18n("users.realName"),
+                    },
+                    {
+                        id: "eMail",
+                        type: "email",
+                        readonly: false,
+                        value: "",
+                        title: i18n("users.eMail"),
+                        placeholder: i18n("users.eMail"),
+                    },
+                    {
+                        id: "phone",
+                        type: "tel",
+                        readonly: false,
+                        value: "",
+                        title: i18n("users.phone"),
+                        placeholder: i18n("users.phone"),
+                    },
+                    {
+                        id: "delete",
+                        type: "select",
+                        readonly: false,
+                        value: "",
+                        title: i18n("users.delete"),
+                        options: [
+                            {
+                                value: "",
+                                text: "",
+                            },
+                            {
+                                value: "yes",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                ],
+                callback: result => {
+                    console.log(result);
+                },
+            });
 
             $("#userAddButton").off("click").on("click", () => {
                 alert("add user");

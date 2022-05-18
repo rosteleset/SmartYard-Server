@@ -3,7 +3,11 @@ function cardForm(params) {
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
-        h = `<div class="card mt-0 mb-0">`;
+        if (params.width) {
+            h = `<div class="card mt-0 mb-0">`;
+        } else {
+            h = `<div class="card mt-0 mb-0">`;
+        }
     }
     if (params.title) {
         h += `<div class="card-header">`;
@@ -28,45 +32,104 @@ function cardForm(params) {
     }
     h += `<tbody>`;
 
-    h += `<tr>`;
-    h += `<td class="tdform">Полное имя пользователя</td>`;
-    h += `<td class="tdform-right">`;
-    h += `<input type="text" class="form-control form-control-sm">`;
-    h += `</td>`;
-    h += `</tr>`;
-
-    h += `<tr>`;
-    h += `<td class="tdform">Полное имя пользователя</td>`;
-    h += `<td class="tdform-right">`;
-    h += `<input type="date" class="form-control form-control-sm">`;
-    h += `</td>`;
-    h += `</tr>`;
-
-    h += `<tr>`;
-    h += `<td class="tdform">Полное имя пользователя</td>`;
-    h += `<td class="tdform-right">`;
-    h += `<input type="time" class="form-control form-control-sm">`;
-    h += `</td>`;
-    h += `</tr>`;
-
-    h += `<tr>`;
-    h += `<td class="tdform">Подключена</td>`;
-    h += `<td class="tdform-right">`;
-    h += `<select class="form-control form-control-sm">`;
-    h += `<option>1</option>`;
-    h += `<option>2</option>`;
-    h += `<option>3</option>`;
-    h += `<option>4</option>`;
-    h += `</td>`;
-    h += `</tr>`;
+    for (let i in params.fields) {
+        switch (params.fields[i].type) {
+            case "email":
+                h += `<tr>`;
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-right">`;
+                h += `<input id="modalForm-${params.fields[i].id}" type="email" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `>`;
+                h += `</td>`;
+                h += `</tr>`;
+                break;
+            case "tel":
+                h += `<tr>`;
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-right">`;
+                h += `<input id="modalForm-${params.fields[i].id}" type="tel" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `>`;
+                h += `</td>`;
+                h += `</tr>`;
+                break;
+            case "date":
+                h += `<tr>`;
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-right">`;
+                h += `<input id="modalForm-${params.fields[i].id}" type="date" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `>`;
+                h += `</td>`;
+                h += `</tr>`;
+                break;
+            case "time":
+                h += `<tr>`;
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-right">`;
+                h += `<input id="modalForm-${params.fields[i].id}" type="time" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `>`;
+                h += `</td>`;
+                h += `</tr>`;
+                break;
+            case "select":
+                h += `<tr>`;
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-right">`;
+                h += `<select id="modalForm-${params.fields[i].id}" class="form-control form-control-sm"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `>`;
+                for (let j in params.fields[i].options) {
+                    if (params.fields[i].options[j].value == params.fields[i].value) {
+                        h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
+                    } else {
+                        h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
+                    }
+                }
+                h += `</select>`;
+                h += `</td>`;
+                h += `</tr>`;
+                break;
+            default:
+                h += `<tr>`;
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-right">`;
+                h += `<input id="modalForm-${params.fields[i].id}" type="text" class="form-control form-control-sm" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `>`;
+                h += `</td>`;
+                h += `</tr>`;
+                break;
+        }
+    }
 
     h += `</tbody>`;
 
     h += `<tfoot>`;
     h += `<tr>`;
     h += `<td colspan="2">`;
-    h += `<button type="submit" class="btn btn-primary">${i18n("save")}</button>`;
-    h += `<button type="cancel" class="btn btn-default float-right">${i18n("cancel")}</button>`;
+    h += `<button type="submit" id="modalFormOk" class="btn btn-primary">${i18n("save")}</button>`;
+    h += `<button type="cancel" id="modalFormCancel" class="btn btn-default float-right">${i18n("cancel")}</button>`;
     h += `</td>`;
     h += `</tr>`;
     h += `</tfoot>`;
@@ -75,9 +138,27 @@ function cardForm(params) {
     h += `</div>`;
     h += `</div>`;
 
+    function ok() {
+        if (typeof params.callback === "function") {
+            let result = {};
+            for (let i in params.fields) {
+                result[params.fields[i].id] = $(`#modalForm-${params.fields[i].id}`).val();
+            }
+            $('#modal').modal('hide');
+            params.callback(result);
+        }
+    }
+
+    function cancel() {
+        $('#modal').modal('hide');
+    }
+
     if (params.target) {
         $(params.target).html(h);
     } else {
         modal(h);
     }
+
+    $("#modalFormOk").off("click").on("click", ok);
+    $("#modalFormCancel").off("click").on("click", cancel);
 }
