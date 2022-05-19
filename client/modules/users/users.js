@@ -7,7 +7,7 @@
     editUser: function (uid) {
         cardForm({
             title: "Заголовок карточки",
-//            topaApply: true,
+            topApply: true,
 //            target: "#altForm",
             footer: true,
             borderless: true,
@@ -81,7 +81,7 @@
                 console.log(result);
                 $("#altForm").hide();
             },
-            cancell: () => {
+            cancel: () => {
                 $("#altForm").hide();
             }
         }).show();
