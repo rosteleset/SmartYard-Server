@@ -1,6 +1,6 @@
 ({
     init: function () {
-        leftSide("fas fa-fw fa-user", i18n("users.users"), "#users")
+        leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
         moduleLoaded("users", this);
     },
 
@@ -95,6 +95,10 @@
 
     },
 
+    contextItemClick: function (uid, action) {
+        console.log(uid, action);
+    },
+
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("users.users");
 
@@ -164,16 +168,13 @@
                                 {
                                     icon: "fas fa-tv",
                                     title: "Action 1",
-                                    click: uid => {
-                                        console.log(1, uid);
-                                    },
+                                    click: this.contextItemClick,
                                 },
                                 {
                                     icon: "fas fa-coffee",
+                                    action: "coffee",
                                     title: "Action 2",
-                                    click: uid => {
-                                        console.log(2, uid);
-                                    },
+                                    click: this.contextItemClick,
                                 },
                                 {
                                     title: "-",
@@ -182,18 +183,14 @@
                                     icon: "fas fa-home",
                                     title: "Action 4",
                                     text: "text-primary",
-                                    click: uid => {
-                                        console.log(3, uid);
-                                    },
+                                    click: this.contextItemClick,
                                 },
                                 {
                                     icon: "fas fa-trash-alt",
                                     title: "Action disabled",
                                     text: "text-danger",
                                     disabled: true,
-                                    click: uid => {
-                                        console.log(3, uid);
-                                    },
+                                    click: this.contextItemClick,
                                 },
                             ],
                             uid: response.users[0].uid,

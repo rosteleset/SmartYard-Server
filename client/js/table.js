@@ -2,6 +2,7 @@ function cardTable(params) {
     let h = `<div class="card mt-2">`;
     let filterInput = '';
     let addButton = '';
+
     if (params.addButton || params.title || params.filter) {
         h += `<div class="card-header">`;
         if (params.addButton || params.title) {
@@ -126,7 +127,7 @@ function cardTable(params) {
                         } else {
                             h += ` menuItem-${tableClass}`;
                         }
-                        h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}">`;
+                        h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown[j].action}">`;
                         if (rows[i].dropDown[j].icon) {
                             h += `<i class="${rows[i].dropDown[j].icon} fa-fw mr-2"></i>`;
                         } else {
@@ -235,7 +236,7 @@ function cardTable(params) {
         }
 
         $(".menuItem-" + tableClass).off("click").on("click", function () {
-            rows[parseInt($(this).attr("rowId"))].dropDown[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"));
+            rows[parseInt($(this).attr("rowId"))].dropDown[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"), $(this).attr("action"));
         });
 
         $("." + clickableClass).off("click").on("click", function () {
