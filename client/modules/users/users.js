@@ -108,7 +108,7 @@
                 },
                 title: i18n("users.users"),
                 filter: true,
-                itemsPerPage: 10,
+                itemsPerPage: 25,
                 pagesCount: 10,
                 columns: [
                     {
@@ -131,7 +131,7 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < response.users.length * 10000; i++) {
+                    for (let i = 0; i < response.users.length * 101; i++) {
                         rows.push({
                             cols: [
                                 {

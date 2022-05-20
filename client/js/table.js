@@ -173,11 +173,15 @@ function cardTable(params) {
         let postLast = Math.max(pages, page + delta) - pages;
 
         if (last + preFirst - first + postLast >= pagesCount) {
-            last--;
+            if (first > 1) {
+                first++;
+            } else {
+                last--;
+            }
         }
 
         h += `<li class="page-item pointer ${tableClass}-navButton" page="1"><span class="page-link" aria-label="Prev"><span aria-hidden="true">&laquo;</span><span class="sr-only">Prev</span></span></li>`;
-        for (let i = first - postLast; i <= last + preFirst; i++) {
+        for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
             if (currentPage == i) {
                 h += `<li class="page-item pointer font-weight-bold ${tableClass}-navButton" page="${i}"><span class="page-link">${i}</span></li>`;
             } else {
@@ -200,14 +204,14 @@ function cardTable(params) {
         h += `<td colspan="${colCount}">`;
 
         h += `<nav>`;
-        h += `<ul class="pagination mb-0" id="${tableClass}-pager">`;
+        h += `<ul class="pagination mb-0 ml-0" id="${tableClass}-pager">`;
 
         h += pager(currentPage);
 
         h += `</ul>`;
         h += `</nav>`;
-        h += `<td>`;
-        h += `<tr>`;
+        h += `</td>`;
+        h += `</tr>`;
         h += `</tfoot>`;
     }
 
