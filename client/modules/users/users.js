@@ -108,6 +108,8 @@
                 },
                 title: i18n("users.users"),
                 filter: true,
+                itemsPerPage: 10,
+                pagesCount: 10,
                 columns: [
                     {
                         title: i18n("users.uid"),
@@ -129,37 +131,45 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < response.users.length; i++) {
+                    for (let i = 0; i < response.users.length * 10000; i++) {
                         rows.push({
                             cols: [
                                 {
-                                    data: response.users[i].uid,
+//                                    data: response.users[i].uid,
+                                    data: i,
                                     click: this.editUser,
                                 },
                                 {
-                                    data: response.users[i].login,
+//                                    data: response.users[i].login,
+                                    data: "login #" + i,
                                     click: this.editUser,
-                                },
-                                {
-                                    data: response.users[i].realName?response.users[i].realName:i18n("no"),
-                                },
-                                {
-                                    data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
                                     nowrap: true,
                                 },
                                 {
-                                    data: response.users[i].phone?response.users[i].phone:i18n("no"),
+                                    data: "нет",
+//                                    data: response.users[i].realName?response.users[i].realName:i18n("no"),
+                                },
+                                {
+                                    data: "нет",
+//                                    data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
+                                    nowrap: true,
+                                },
+                                {
+                                    data: "нет",
+//                                    data: response.users[i].phone?response.users[i].phone:i18n("no"),
                                     nowrap: true,
                                 },
                             ],
                             dropDown: [
                                 {
+                                    icon: "fas fa-tv",
                                     title: "Action 1",
                                     click: uid => {
                                         console.log(1, uid);
                                     },
                                 },
                                 {
+                                    icon: "fas fa-coffee",
                                     title: "Action 2",
                                     click: uid => {
                                         console.log(2, uid);
@@ -169,7 +179,18 @@
                                     title: "-",
                                 },
                                 {
+                                    icon: "fas fa-home",
                                     title: "Action 4",
+                                    text: "text-primary",
+                                    click: uid => {
+                                        console.log(3, uid);
+                                    },
+                                },
+                                {
+                                    icon: "fas fa-trash-alt",
+                                    title: "Action disabled",
+                                    text: "text-danger",
+                                    disabled: true,
                                     click: uid => {
                                         console.log(3, uid);
                                     },

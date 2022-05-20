@@ -28,6 +28,11 @@ function cardTable(params) {
         }
         h += `</div>`;
     }
+
+    let pageLength = params.itemsPerPage?params.itemsPerPage:25;
+    let pagesCount = params.pagesCount?params.pagesCount:10;
+    let currentPage = 1;
+
     h += `<div class="card-body table-responsive p-0">`;
     if (params.filter) {
         h += `<table class="table table-hover ${filterInput}-search-table">`;
@@ -35,6 +40,30 @@ function cardTable(params) {
         h += `<table class="table table-hover">`;
     }
     h += `<thead>`;
+
+    let rows = [];
+
+    if (typeof params.rows === "function") {
+        rows = params.rows();
+    }
+
+    let hasDropDowns = false;
+    let hasDropDownIcons = false;
+
+    for (let i in rows) {
+        if (rows[i].dropDown) {
+            hasDropDowns = true;
+        }
+        for (let j in rows[i].dropDown) {
+            if (rows[i].dropDown[j].icon) {
+                hasDropDownIcons = true;
+            }
+        }
+        if (hasDropDowns && hasDropDownIcons) {
+            break;
+        }
+    }
+
     h += `<tr>`;
     for (let i in params.columns) {
         if (params.columns[i].fullWidth) {
@@ -43,67 +72,156 @@ function cardTable(params) {
             h += `<th nowrap>${params.columns[i].title}</th>`;
         }
     }
+    if (hasDropDowns) {
+        h += `<th>&nbsp;</th>`;
+    }
     h += `</tr>`;
     h += `</thead>`;
-    h += `<tbody>`;
 
-    let rows = [];
-
-    if (typeof params.rows === "function") {
-        rows = params.rows();
-    }
-
-    let clickableClass = md5(guid());
     let tableClass = md5(guid());
+    let clickableClass = md5(guid());
 
-    for (let i = 0; i < rows.length; i++) {
-        h += `<tr`;
-        if (rows[i].class) {
-            h += ` class="${rows[i].class}"`;
-        }
-        if (typeof rows[i].uid !== "undefined") {
-            h += ` uid="${rows[i].uid}"`;
-        }
-        h += `>`;
-        for (let j in rows[i].cols) {
-            h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
-            if (rows[i].cols[j].nowrap) {
-                h += ` nowrap`;
+    h += `<tbody id="${tableClass}">`;
+
+    function tbody(from, length) {
+        let h = '';
+
+        for (let i = from; i < Math.min(rows.length, from + length); i++) {
+            h += `<tr`;
+            if (rows[i].class) {
+                h += ` class="${rows[i].class}"`;
             }
-            if (typeof rows[i].cols[j].click === "function") {
-                h += ` class="hoverable ${clickableClass}"`;
+            if (typeof rows[i].uid !== "undefined") {
+                h += ` uid="${rows[i].uid}"`;
             }
             h += `>`;
-            h += rows[i].cols[j].data;
-            h += "</td>";
-        }
-        if (rows[i].dropDown) {
-            let ddId = md5(guid());
-            h += `<td>`;
-            h += `<div class="dropdown">`;
-            h += `<button class="btn btn-outline-secondary dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
-            h += `<i class="fas fa-fw fa-ellipsis-v"></i>`;
-            h += `</button>`;
-            h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
-            for (let j in rows[i].dropDown) {
-                if (typeof rows[i].dropDown[j].click === "function") {
-                    h += `<li class="pointer dropdown-item menuItem-${tableClass}" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}">${rows[i].dropDown[j].title}</li>`;
-                } else
-                if (rows[i].dropDown[j].title === "-") {
-                    h += `<li class="dropdown-divider"></li>`;
+            for (let j in rows[i].cols) {
+                h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
+                if (rows[i].cols[j].nowrap) {
+                    h += ` nowrap`;
+                }
+                if (typeof rows[i].cols[j].click === "function") {
+                    h += ` class="hoverable ${clickableClass}"`;
+                }
+                h += `>`;
+                h += rows[i].cols[j].data;
+                h += "</td>";
+            }
+            if (rows[i].dropDown) {
+                let ddId = md5(guid());
+                h += `<td>`;
+                h += `<div class="dropdown">`;
+                h += `<button class="btn btn-outline-secondary dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
+                h += `<i class="fas fa-fw fa-ellipsis-v"></i>`;
+                h += `</button>`;
+                h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
+                for (let j in rows[i].dropDown) {
+                    if (typeof rows[i].dropDown[j].click === "function") {
+                        h += `<li class="pointer dropdown-item`;
+                        if (rows[i].dropDown[j].text) {
+                            h += " " + rows[i].dropDown[j].text;
+                        }
+                        if (rows[i].dropDown[j].disabled) {
+                            h += ` disabled`;
+                        } else {
+                            h += ` menuItem-${tableClass}`;
+                        }
+                        h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}">`;
+                        if (rows[i].dropDown[j].icon) {
+                            h += `<i class="${rows[i].dropDown[j].icon} fa-fw mr-2"></i>`;
+                        } else {
+                            if (hasDropDownIcons) {
+                                h += `<i class="fa fa-fw mr-2"></i>`;
+                            }
+                        }
+                        h += `${rows[i].dropDown[j].title}</li>`;
+                    } else
+                    if (rows[i].dropDown[j].title === "-") {
+                        h += `<li class="dropdown-divider"></li>`;
+                    }
+                }
+                h += `</ul>`;
+                h += `</div>`;
+                h += `</td>`;
+            } else {
+                if (hasDropDowns) {
+                    h += `<td>&nbsp;</td>`;
                 }
             }
-            h += `</ul>`;
-            h += `</div>`;
-            h += `</td>`;
+            h += `</tr>`;
         }
-        h += `</tr>`;
+
+        return h;
     }
 
+    h += tbody(0, pageLength);
+
     h += `</tbody>`;
+
+    function pager(page) {
+        page = parseInt(page);
+
+        currentPage = page;
+
+        let h = '';
+
+        let pages = Math.ceil(rows.length / pageLength);
+        let delta = Math.floor(pagesCount / 2);
+        let first = Math.max(page - delta, 1);
+        let preFirst = Math.max(0, 1 - page + delta);
+        let last = Math.min(page + delta, pages);
+        let postLast = Math.max(pages, page + delta) - pages;
+
+        if (last + preFirst - first + postLast >= pagesCount) {
+            last--;
+        }
+
+        h += `<li class="page-item pointer ${tableClass}-navButton" page="1"><span class="page-link" aria-label="Prev"><span aria-hidden="true">&laquo;</span><span class="sr-only">Prev</span></span></li>`;
+        for (let i = first - postLast; i <= last + preFirst; i++) {
+            if (currentPage == i) {
+                h += `<li class="page-item pointer font-weight-bold ${tableClass}-navButton" page="${i}"><span class="page-link">${i}</span></li>`;
+            } else {
+                h += `<li class="page-item pointer ${tableClass}-navButton" page="${i}"><span class="page-link">${i}</span></li>`;
+            }
+        }
+        h += `<li class="page-item pointer ${tableClass}-navButton" page="${pages}"><span class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></></li>`;
+
+        return h;
+    }
+
+    if (Math.ceil(rows.length / pageLength) > 1) {
+        h += `<tfoot>`;
+        h += `<tr>`;
+
+        let colCount = params.columns.length;
+        if (hasDropDowns) {
+            colCount++;
+        }
+        h += `<td colspan="${colCount}">`;
+
+        h += `<nav>`;
+        h += `<ul class="pagination mb-0" id="${tableClass}-pager">`;
+
+        h += pager(currentPage);
+
+        h += `</ul>`;
+        h += `</nav>`;
+        h += `<td>`;
+        h += `<tr>`;
+        h += `</tfoot>`;
+    }
+
     h += `</table>`;
     h += `</div>`;
     h += `</div>`;
+
+    function doPager() {
+        let page = $(this).attr("page");
+        $("#" + tableClass + "-pager").html(pager(page));
+        $(`.${tableClass}-navButton`).off("click").on("click", doPager);
+
+        $("#" + tableClass).html(tbody((currentPage - 1) * pageLength, pageLength));
+    }
 
     if (params.target) {
         $(params.target).html(h);
@@ -130,7 +248,9 @@ function cardTable(params) {
                 $.uiTableFilter($("." + filterInput + "-search-table"), f);
             });
         }
+
+        $(`.${tableClass}-navButton`).off("click").on("click", doPager);
     } else {
-        return h;
+        return [ h, addButton, filterInput, tableClass, clickableClass, ];
     }
 }
