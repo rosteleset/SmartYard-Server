@@ -72,3 +72,7 @@ select {
     -webkit-appearance: none;
     -moz-appearance: none;
 }
+
+.opacity-disabled {
+    opacity: 0.4;
+}

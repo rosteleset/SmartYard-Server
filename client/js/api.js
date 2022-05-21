@@ -1,8 +1,11 @@
-function GET(api, method, id) {
+function GET(api, method, id, fresh) {
     return $.ajax({
         url: $.cookie("_server") + "/" + api + "/" + method + (id?("/" + id):""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
+            if (fresh) {
+                xhr.setRequestHeader("X-Api-Refresh", "1");
+            }
         },
         type: "GET",
         contentType: "json",
@@ -42,4 +45,12 @@ function DELETE(api, method, id) {
         type: "DELETE",
         contentType: "json",
     });
+}
+
+function FAIL(response) {
+    if (response && response.responseJSON && response.responseJSON.error) {
+        error(i18n("errors." + response.responseJSON.error), "[" + i18n("users.users") + "]: " + i18n("error"), 30);
+    } else {
+        error(i18n("errors.unknown"), "[" + i18n("users.users") + "]: " + i18n("error"), 30);
+    }
 }

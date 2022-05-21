@@ -13,10 +13,11 @@ function cardForm(params) {
         h += `<div class="card-header">`;
         h += `<h3 class="card-title">`;
         if (params.topApply) {
-            h += `<button class="btn btn-success mr-2 btn-xs" id="modalFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+            h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="modalFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
         }
         h += params.title;
         h += `</h3>`;
+        h += `<button type="button" class="btn btn-danger btn-xs float-right modalFormCancel" data-dismiss="modal"><i class="far fa-fw fa-times-circle"></i></button>`;
         h += `</div>`;
     }
     h += `<div class="card-body table-responsive p-0">`;
@@ -59,13 +60,14 @@ function cardForm(params) {
             case "tel":
             case "date":
             case "time":
+            case "password":
             default:
                 let type = params.fields[i].type?params.fields[i].type:"text";
                 h += `<tr>`;
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
-                h += `<input id="modalForm-${params.fields[i].id}" type="${type}" class="form-control form-control-sm modalFormField" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<input id="modalForm-${params.fields[i].id}" type="${type}" class="form-control form-control-sm modalFormField" autocomplete="off" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -89,9 +91,9 @@ function cardForm(params) {
         h += `<tfoot>`;
         h += `<tr>`;
         h += `<td colspan="2">`;
-        h += `<button type="submit" id="modalFormOk" class="btn btn-primary">${i18n("apply")}</button>`;
+        h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n("apply")}</button>`;
         if (typeof params.cancel === "function") {
-            h += `<button type="cancel" id="modalFormCancel" class="btn btn-default float-right">${i18n("cancel")}</button>`;
+            h += `<button type="cancel" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
         }
         h += `</td>`;
         h += `</tr>`;
@@ -147,9 +149,8 @@ function cardForm(params) {
         target = modal(h);
     }
 
-    $("#modalFormApply").off("click").on("click", ok);
-    $("#modalFormOk").off("click").on("click", ok);
-    $("#modalFormCancel").off("click").on("click", cancel);
+    $(".modalFormOk").off("click").on("click", ok);
+    $(".modalFormCancel").off("click").on("click", cancel);
 
     $(".cardFormSelectWithRotate").off("click").on("click", function () {
         let select = $(this).parent().parent().children().first();

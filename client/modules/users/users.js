@@ -1,46 +1,76 @@
 ({
+    startPage: 1,
+
     init: function () {
         leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
         moduleLoaded("users", this);
     },
 
-    editUser: function (uid) {
+    doAddUser: function (login, realName, eMail, phone) {
+        loadingStart();
+        POST("accounts", "user", false, {
+            login: login,
+            realName: realName,
+            eMail: eMail,
+            phone: phone,
+        }).
+        fail(FAIL).
+        always(window.modules["users"].render);
+    },
+
+    doModifyUser: function (uid, realName, eMail, phone) {
+        loadingStart();
+        PUT("accounts", "user", uid, {
+            realName: realName,
+            eMail: eMail,
+            phone: phone,
+        }).
+        fail(FAIL).
+        always(window.modules["users"].render);
+    },
+
+    doDeleteUser: function (uid) {
+        mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
+            DELETE("accounts", "user", uid).
+            fail(FAIL).
+            always(window.modules["users"].render);
+        });
+    },
+
+    doSetPassword: function (uid, password) {
+
+    },
+
+    addUser: function () {
         cardForm({
-            title: "Заголовок карточки",
-            topApply: true,
-//            target: "#altForm",
+            title: i18n("users.add"),
             footer: true,
             borderless: true,
+            topApply: true,
             fields: [
-                {
-                    id: "uid",
-                    type: "text",
-                    readonly: true,
-                    value: uid,
-                    title: i18n("users.uid"),
-                },
                 {
                     id: "login",
                     type: "text",
-                    readonly: true,
-                    value: "admin",
                     title: i18n("users.login"),
+                    placeholder: i18n("users.login"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
                 },
                 {
                     id: "realName",
                     type: "text",
-                    readonly: false,
-                    value: "",
                     title: i18n("users.realName"),
                     placeholder: i18n("users.realName"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
                 },
                 {
                     id: "eMail",
                     type: "email",
-                    readonly: false,
-                    value: "",
-                    title: i18n("users.eMail"),
-                    placeholder: i18n("users.eMail"),
+                    title: i18n("eMail"),
+                    placeholder: i18n("eMail"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
@@ -48,47 +78,106 @@
                 {
                     id: "phone",
                     type: "tel",
-                    readonly: false,
-                    value: "",
                     title: i18n("users.phone"),
                     placeholder: i18n("users.phone"),
-                    button: {
-                        class: "fas fa-fw fa-square",
-                        click: function () {
-                            alert("hello!");
-                        }
+                    validate: (v) => {
+                        return $.trim(v) !== "";
                     }
                 },
-                {
-                    id: "delete",
-                    type: "select",
-                    readonly: false,
-                    value: "",
-                    title: i18n("users.delete"),
-                    options: [
-                        {
-                            value: "",
-                            text: "",
-                        },
-                        {
-                            value: "yes",
-                            text: i18n("yes"),
-                        },
-                    ]
-                },
             ],
-            callback: result => {
-                console.log(result);
-                $("#altForm").hide();
+            callback: function (result) {
+                window.modules["users"].doAddUser(result.login, result.realName, result.eMail, result.phone);
             },
-            cancel: () => {
-                $("#altForm").hide();
-            }
         }).show();
     },
 
-    addUser: function () {
-
+    modifyUser: function (uid) {
+        loadingStart();
+        GET("accounts", "user", uid, true).done(response => {
+            cardForm({
+                title: i18n("users.edit"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                fields: [
+                    {
+                        id: "uid",
+                        type: "text",
+                        readonly: true,
+                        value: response.user.uid.toString(),
+                        title: i18n("users.uid"),
+                    },
+                    {
+                        id: "login",
+                        type: "text",
+                        readonly: true,
+                        value: response.user.login,
+                        title: i18n("users.login"),
+                    },
+                    {
+                        id: "realName",
+                        type: "text",
+                        readonly: false,
+                        value: response.user.realName,
+                        title: i18n("users.realName"),
+                        placeholder: i18n("users.realName"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "eMail",
+                        type: "email",
+                        readonly: false,
+                        value: response.user.eMail,
+                        title: i18n("eMail"),
+                        placeholder: i18n("eMail"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "phone",
+                        type: "tel",
+                        readonly: false,
+                        value: response.user.phone,
+                        title: i18n("users.phone"),
+                        placeholder: i18n("users.phone"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "delete",
+                        type: "select",
+                        readonly: false,
+                        value: "",
+                        title: i18n("users.delete"),
+                        options: [
+                            {
+                                value: "",
+                                text: "",
+                            },
+                            {
+                                value: "yes",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        window.modules["users"].doDeleteUser(result.uid);
+                    } else {
+                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone);
+                    }
+                },
+            }).show();
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
     },
 
     setPassword: function (uid) {
@@ -99,21 +188,18 @@
         console.log(uid, action);
     },
 
-    route: function (params) {
-        document.title = i18n("windowTitle") + " :: " + i18n("users.users");
+    render: function () {
+        loadingStart();
 
-        GET("accounts", "users").done(response => {
+        GET("accounts", "users", false, true).done(response => {
             cardTable({
                 addButton: {
                     title: i18n("users.addUser"),
-                    click: () => {
-                        console.log(1);
-                    }
+                    click: window.modules["users"].addUser,
                 },
                 title: i18n("users.users"),
                 filter: true,
-                itemsPerPage: 25,
-                pagesCount: 10,
+                startPage: window.modules["users"].startPage,
                 columns: [
                     {
                         title: i18n("users.uid"),
@@ -126,7 +212,7 @@
                         fullWidth: true,
                     },
                     {
-                        title: i18n("users.eMail"),
+                        title: i18n("eMail"),
                     },
                     {
                         title: i18n("users.phone"),
@@ -135,32 +221,28 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < response.users.length * 101; i++) {
+                    for (let i = 0; i < response.users.length; i++) {
                         rows.push({
+                            uid: response.users[i].uid.toString(),
                             cols: [
                                 {
-//                                    data: response.users[i].uid,
-                                    data: i,
-                                    click: this.editUser,
+                                    data: response.users[i].uid,
+                                    click: window.modules["users"].modifyUser,
                                 },
                                 {
-//                                    data: response.users[i].login,
-                                    data: "login #" + i,
-                                    click: this.editUser,
+                                    data: response.users[i].login,
+                                    click: window.modules["users"].modifyUser,
                                     nowrap: true,
                                 },
                                 {
-                                    data: "нет",
-//                                    data: response.users[i].realName?response.users[i].realName:i18n("no"),
+                                    data: response.users[i].realName?response.users[i].realName:i18n("no"),
                                 },
                                 {
-                                    data: "нет",
-//                                    data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
+                                    data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
                                     nowrap: true,
                                 },
                                 {
-                                    data: "нет",
-//                                    data: response.users[i].phone?response.users[i].phone:i18n("no"),
+                                    data: response.users[i].phone?response.users[i].phone:i18n("no"),
                                     nowrap: true,
                                 },
                             ],
@@ -168,47 +250,51 @@
                                 {
                                     icon: "fas fa-tv",
                                     title: "Action 1",
-                                    click: this.contextItemClick,
+                                    click: window.modules["users"].contextItemClick,
                                 },
                                 {
                                     icon: "fas fa-coffee",
                                     action: "coffee",
                                     title: "Action 2",
-                                    click: this.contextItemClick,
+                                    click: window.modules["users"].contextItemClick,
                                 },
                                 {
                                     title: "-",
                                 },
                                 {
-                                    icon: "fas fa-home",
                                     title: "Action 4",
                                     text: "text-primary",
-                                    click: this.contextItemClick,
+                                    click: window.modules["users"].contextItemClick,
+                                },
+                                {
+                                    title: "-",
                                 },
                                 {
                                     icon: "fas fa-trash-alt",
-                                    title: "Action disabled",
+                                    title: i18n("users.delete"),
                                     text: "text-danger",
-                                    disabled: true,
-                                    click: this.contextItemClick,
+                                    disabled: response.users[i].uid.toString() === "0",
+                                    click: window.modules["users"].doDeleteUser,
                                 },
                             ],
-                            uid: response.users[0].uid,
                         });
                     }
 
                     return rows;
                 },
                 target: "#mainForm",
+                pageChange: page => {
+                    window.modules["users"].startPage = page;
+                },
             });
-        }).fail(response => {
-            if (response && response.responseJSON && response.responseJSON.error) {
-                error(i18n("errors." + response.responseJSON.error), "[" + i18n("users.users") + "]: " + i18n("error"), 30);
-            } else {
-                error(i18n("errors.unknown"), "[" + i18n("users.users") + "]: " + i18n("error"), 30);
-            }
-        }).always(() => {
+        }).fail(FAIL).always(() => {
             loadingDone();
         });
+    },
+
+    route: function (params) {
+        document.title = i18n("windowTitle") + " :: " + i18n("users.users");
+
+        window.modules["users"].render();
     }
 }).init();

@@ -62,6 +62,7 @@
         if (@$config["redis"]["password"]) {
             $redis->auth($config["redis"]["password"]);
         }
+        $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
         die("can't connect to redis server\n");
     }

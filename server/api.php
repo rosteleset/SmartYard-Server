@@ -40,6 +40,7 @@
     try {
         $config = @json_decode(file_get_contents("config/config.json"), true);
     } catch (Exception $e) {
+        error_log(print_r($e, true));
         response(555, [
             "error" => "config",
         ]);
@@ -79,7 +80,9 @@
         if (@$config["redis"]["password"]) {
             $redis->auth($config["redis"]["password"]);
         }
+        $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
+        error_log(print_r($e, true));
         response(555, [
             "error" => "redis",
         ]);
@@ -88,6 +91,7 @@
     try {
         $db = new PDO(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
+        error_log(print_r($e, true));
         response(555, [
             "error" => "PDO",
         ]);
@@ -132,7 +136,9 @@
                 $refresh = $value;
             } else
             // prevents timestamps
-            if ($key != "_") {
+            if ($key === "_") {
+                $refresh = true;
+            } else {
                 $params[$key] = $value;
             }
         }
@@ -147,7 +153,9 @@
                 $refresh = $value;
             } else
             // prevents timestamps
-            if ($key != "_") {
+            if ($key === "_") {
+                $refresh = true;
+            } else {
                 $params[$key] = $value;
             }
         }
@@ -164,7 +172,9 @@
                 $refresh = $value;
             } else
             // prevents timestamps
-            if ($key != "_") {
+            if ($key === "_") {
+                $refresh = true;
+            } else {
                 $params[$key] = $value;
             }
         }
@@ -235,6 +245,7 @@
             try {
                 $cache = json_decode($redis->get("cache_" . $params["_md5"]), true);
             } catch (Exception $e) {
+                error_log(print_r($e, true));
                 $cache = false;
             }
             if ($params["_request_method"] == "GET" && $cache && !$refresh) {
@@ -268,7 +279,8 @@
                             ]);
                         }
                     } catch (Exception $e) {
-                        response(5, [
+                        error_log(print_r($e, true));
+                        response(555, [
                             "error" => "internal",
                         ]);
                     }

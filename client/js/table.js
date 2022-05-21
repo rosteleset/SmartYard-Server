@@ -33,6 +33,7 @@ function cardTable(params) {
     let pageLength = params.itemsPerPage?params.itemsPerPage:25;
     let pagesCount = params.pagesCount?params.pagesCount:10;
     let currentPage = 1;
+    let startPage = params.startPage?params.startPage:1;
 
     h += `<div class="card-body table-responsive p-0">`;
     if (params.filter) {
@@ -123,7 +124,7 @@ function cardTable(params) {
                             h += " " + rows[i].dropDown[j].text;
                         }
                         if (rows[i].dropDown[j].disabled) {
-                            h += ` disabled`;
+                            h += ` disabled opacity-disabled`;
                         } else {
                             h += ` menuItem-${tableClass}`;
                         }
@@ -155,7 +156,7 @@ function cardTable(params) {
         return h;
     }
 
-    h += tbody(0, pageLength);
+    h += tbody((startPage - 1) * pageLength, pageLength)
 
     h += `</tbody>`;
 
@@ -226,6 +227,10 @@ function cardTable(params) {
         $(`.${tableClass}-navButton`).off("click").on("click", doPager);
 
         $("#" + tableClass).html(tbody((currentPage - 1) * pageLength, pageLength));
+
+        if (typeof params.pageChange === "function") {
+            params.pageChange(page);
+        }
     }
 
     if (params.target) {

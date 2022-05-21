@@ -72,6 +72,24 @@
                 ];
             }
 
+            public static function ANSWER($ok, $error) {
+                $errors = [
+                    404 => "notFound",
+                ];
+
+                if ($ok) {
+                    return [
+                        "200" => $ok,
+                    ];
+                } else {
+                    return [
+                        $error => [
+                            "error" => $errors[$error]?:"notAcceptable",
+                        ],
+                    ];
+                }
+            }
+
             /**
              * internal function for indexing methods
              *

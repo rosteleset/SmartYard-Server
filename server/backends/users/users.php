@@ -46,7 +46,6 @@
              * add user
              *
              * @param string $login
-             * @param string $password
              * @param string $realName
              * @param string $eMail
              * @param string $phone
@@ -54,7 +53,7 @@
              * @return integer
              */
 
-            abstract public function addUser($login, $password, $realName = '', $eMail = '', $phone = '');
+            abstract public function addUser($login, $realName = '', $eMail = '', $phone = '');
 
             /**
              * set password
@@ -75,7 +74,7 @@
              * @return boolean
              */
 
-            abstract public function removeUser($uid);
+            abstract public function deleteUser($uid);
 
             /**
              * modify user data

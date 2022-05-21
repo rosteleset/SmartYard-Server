@@ -50,6 +50,7 @@
              */
 
             public function getUser($uid) {
+
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -91,7 +92,6 @@
              * add user
              *
              * @param string $login
-             * @param string $password
              * @param string $realName
              * @param string $eMail
              * @param string $phone
@@ -99,14 +99,13 @@
              * @return integer|false
              */
 
-            public function addUser($login, $password, $realName = '', $eMail = '', $phone = '') {
+            public function addUser($login, $realName = '', $eMail = '', $phone = '') {
                 $login = trim($login);
 
                 try {
-                    $sth = $this->db->prepare("insert into users (login, password, real_name, e_mail, phone, enabled) values (:login, :password, :real_name, :phone, 1)");
+                    $sth = $this->db->prepare("insert into users (login, real_name, e_mail, phone, enabled) values (:login, :real_name, :e_mail, :phone, 1)");
                     if (!$sth->execute([
                         ":login" => $login,
-                        ":password" => password_hash($password, PASSWORD_DEFAULT),
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
@@ -161,7 +160,7 @@
              * @return boolean
              */
 
-            public function removeUser($uid) {
+            public function deleteUser($uid) {
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -196,7 +195,7 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update users set login = :login, password = :password, real_name = :real_name, e_mail = :e_mail, phone = :phone where uid = :uid");
+                    $sth = $this->db->prepare("update users set real_name = :real_name, e_mail = :e_mail, phone = :phone where uid = :uid");
                     return $sth->execute([
                         ":uid" => $uid,
                         ":real_name" => trim($realName),
@@ -204,6 +203,7 @@
                         ":phone" => trim($phone),
                     ]);
                 } catch (Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
 
