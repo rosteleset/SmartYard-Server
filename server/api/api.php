@@ -72,7 +72,14 @@
                 ];
             }
 
-            public static function ANSWER($result, $errorCode, $section = false) {
+            /**
+             * @param $result
+             * @param $errorCode
+             * @param $section
+             * @return array[]|false[]|\string[][]
+             */
+
+            public static function ANSWER($result, $errorCode = false, $section = false) {
                 $errors = [
                     404 => "notFound",
                 ];
@@ -86,7 +93,7 @@
                         ];
                     } else {
                         return [
-                            "204" => false
+                            "204" => false,
                         ];
                     }
                 } else {
