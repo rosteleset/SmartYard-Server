@@ -72,19 +72,27 @@
                 ];
             }
 
-            public static function ANSWER($ok, $error) {
+            public static function ANSWER($result, $errorCode, $section = false) {
                 $errors = [
                     404 => "notFound",
                 ];
 
-                if ($ok) {
-                    return [
-                        "200" => $ok,
-                    ];
+                if ($result) {
+                    if ($section) {
+                        return [
+                            "200" => [
+                                $section => $result,
+                            ],
+                        ];
+                    } else {
+                        return [
+                            "204" => false
+                        ];
+                    }
                 } else {
                     return [
-                        $error => [
-                            "error" => $errors[$error]?:"notAcceptable",
+                        $errorCode => [
+                            "error" => $errors[$errorCode]?:"notAcceptable",
                         ],
                     ];
                 }

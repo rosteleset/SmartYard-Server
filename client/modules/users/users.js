@@ -92,6 +92,7 @@
     },
 
     modifyUser: function (uid) {
+        console.log(uid);
         loadingStart();
         GET("accounts", "user", uid, true).done(response => {
             cardForm({
