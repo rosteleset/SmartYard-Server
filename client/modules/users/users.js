@@ -320,7 +320,7 @@
                                 },
                             ],
                             dropDown: {
-                                icon: (response.users[i].enabled != 1)?"fas fa-ban":"",
+                                icon: (response.users[i].enabled != 1)?"fas fa-ban text-danger":"",
                                 items: [
                                     {
                                         icon: "fas fa-tv",
