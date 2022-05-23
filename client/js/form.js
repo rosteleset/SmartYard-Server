@@ -17,7 +17,7 @@ function cardForm(params) {
         }
         h += params.title;
         h += `</h3>`;
-        h += `<button type="button" class="btn btn-danger btn-xs float-right modalFormCancel" data-dismiss="modal"><i class="far fa-fw fa-times-circle"></i></button>`;
+        h += `<button type="button" class="btn btn-danger btn-xs float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
         h += `</div>`;
     }
     h += `<div class="card-body table-responsive p-0">`;

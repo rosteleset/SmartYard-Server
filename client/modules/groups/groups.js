@@ -8,8 +8,48 @@
         moduleLoaded("groups", this);
     },
 
+    /*
+        action functions
+     */
+
+    doAddGroup: function (login, realName, eMail, phone) {
+
+    },
+
+    /*
+        UI functions
+     */
+
     addGroup: function () {
-        console.log("add");
+        cardForm({
+            title: i18n("groups.add"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "acronym",
+                    type: "text",
+                    title: i18n("groups.acronym"),
+                    placeholder: i18n("groups.acronym"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "name",
+                    type: "text",
+                    title: i18n("groups.name"),
+                    placeholder: i18n("groups.name"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                window.modules["groups"].doAddGroup(result.accronym, result.name);
+            },
+        }).show();
     },
 
     /*
