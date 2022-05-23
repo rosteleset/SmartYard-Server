@@ -12,8 +12,18 @@
         action functions
      */
 
-    doAddGroup: function (login, realName, eMail, phone) {
-
+    doAddGroup: function (acronym, name) {
+        loadingStart();
+        POST("accounts", "group", false, {
+            acronym: acronym,
+            name: name,
+        }).
+        fail(FAIL).
+        done((response) => {
+            console.log(response);
+            message(i18n("groups.groupWasAdded"));
+        }).
+        always(window.modules["groups"].render);
     },
 
     /*
@@ -47,13 +57,17 @@
                 },
             ],
             callback: function (result) {
-                window.modules["groups"].doAddGroup(result.accronym, result.name);
+                window.modules["groups"].doAddGroup(result.acronym, result.name);
             },
         }).show();
     },
 
+    modifyGroup: function (gid) {
+        console.log(gid);
+    },
+
     /*
-        main form (users) render function
+        main form (groups) render function
      */
 
     render: function () {

@@ -105,13 +105,38 @@
             /**
              * create group
              *
-             * @param string $groupName
+             * @param string $acronym
+             * @param string $name
              *
              * @return integer|false
              */
 
-            public function addGroup($groupName) {
-                // TODO: Implement addGroup() method.
+            public function addGroup($acronym, $name) {
+                $acronym = trim($acronym);
+
+                try {
+                    $sth = $this->db->prepare("insert into groups (acronym, name) values (:acronym, :name)");
+                    if (!$sth->execute([
+                        ":acronym" => $acronym,
+                        ":name" => trim($name),
+                    ])) {
+                        return false;
+                    }
+
+                    $sth = $this->db->prepare("select gid from groups where acronym = :acronym");
+                    if ($sth->execute([ ":acronym" => $acronym, ])) {
+                        $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                        if (count($res) == 1) {
+                            return $res[0]["gid"];
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } catch (Exception $e) {
+                    return false;
+                }
             }
 
             /**

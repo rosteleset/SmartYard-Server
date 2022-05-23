@@ -118,13 +118,14 @@
                     }
 
                     $sth = $this->db->prepare("select uid from users where login = :login");
-                    $uid = $sth->execute([
-                        ":login" => $login,
-                    ]);
-
-                    if ($uid > 0) { // 0 reserved for admin
-                        eMail($this->config, trim($eMail), "new user", "your new password is $password");
-                        return $uid;
+                    if ($sth->execute([ ":login" => $login, ])) {
+                        $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                        if (count($res) == 1) {
+                            eMail($this->config, trim($eMail), "new user", "your new password is $password");
+                            return $res[0]["uid"];
+                        } else {
+                            return false;
+                        }
                     } else {
                         return false;
                     }

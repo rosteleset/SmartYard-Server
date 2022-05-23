@@ -52,7 +52,8 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {string} groupName
+     * @apiParam {string} acronym
+     * @apiParam {string} name
      *
      * @apiSuccess {Number} gid group id
      *
@@ -152,7 +153,9 @@
             }
 
             public static function POST($params) {
+                $gid = loadBackend("groups")->addGroup($params["acronym"], $params["name"]);
 
+                return api::ANSWER($gid, ($gid !== false)?"gid":406);
             }
 
             public static function PUT($params) {

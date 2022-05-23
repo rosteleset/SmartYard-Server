@@ -68,12 +68,13 @@
             /**
              * create group
              *
-             * @param string $groupName
+             * @param string $acronym
+             * @param string $name
              *
              * @return integer
              */
 
-            abstract public function addGroup($groupName);
+            abstract public function addGroup($acronym, $name);
 
             /**
              * delete group

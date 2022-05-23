@@ -172,9 +172,9 @@
             }
 
             public static function POST($params) {
-                $success = $params["_backends"]["users"]->addUser($params["login"], $params["realName"], $params["eMail"], $params["phone"]);
+                $uid = $params["_backends"]["users"]->addUser($params["login"], $params["realName"], $params["eMail"], $params["phone"]);
 
-                return api::ANSWER($success, ($success !== false)?false:406);
+                return api::ANSWER($uid, ($uid !== false)?"uid":406);
             }
 
             public static function PUT($params) {

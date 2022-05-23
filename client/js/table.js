@@ -55,10 +55,10 @@ function cardTable(params) {
     for (let i in rows) {
         if (rows[i].dropDown && rows[i].dropDown.items) {
             hasDropDowns = true;
-        }
-        for (let j in rows[i].dropDown.items) {
-            if (rows[i].dropDown.items[j].icon) {
-                hasDropDownIcons = true;
+            for (let j in rows[i].dropDown.items) {
+                if (rows[i].dropDown.items[j].icon) {
+                    hasDropDownIcons = true;
+                }
             }
         }
         if (hasDropDowns && hasDropDownIcons) {
