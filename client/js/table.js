@@ -53,11 +53,11 @@ function cardTable(params) {
     let hasDropDownIcons = false;
 
     for (let i in rows) {
-        if (rows[i].dropDown) {
+        if (rows[i].dropDown && rows[i].dropDown.items) {
             hasDropDowns = true;
         }
-        for (let j in rows[i].dropDown) {
-            if (rows[i].dropDown[j].icon) {
+        for (let j in rows[i].dropDown.items) {
+            if (rows[i].dropDown.items[j].icon) {
                 hasDropDownIcons = true;
             }
         }
@@ -113,32 +113,36 @@ function cardTable(params) {
                 let ddId = md5(guid());
                 h += `<td>`;
                 h += `<div class="dropdown">`;
-                h += `<button class="btn btn-outline-secondary dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
-                h += `<i class="fas fa-fw fa-ellipsis-v"></i>`;
+                h += `<button class="btn dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
+                if (rows[i].dropDown.icon) {
+                    h += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
+                } else {
+                    h += `<i class="fa-fw fas fa-bars"></i>`;
+                }
                 h += `</button>`;
                 h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
-                for (let j in rows[i].dropDown) {
-                    if (typeof rows[i].dropDown[j].click === "function") {
+                for (let j in rows[i].dropDown.items) {
+                    if (typeof rows[i].dropDown.items[j].click === "function") {
                         h += `<li class="pointer dropdown-item`;
-                        if (rows[i].dropDown[j].text) {
-                            h += " " + rows[i].dropDown[j].text;
+                        if (rows[i].dropDown.items[j].text) {
+                            h += " " + rows[i].dropDown.items[j].text;
                         }
-                        if (rows[i].dropDown[j].disabled) {
+                        if (rows[i].dropDown.items[j].disabled) {
                             h += ` disabled opacity-disabled`;
                         } else {
                             h += ` menuItem-${tableClass}`;
                         }
-                        h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown[j].action}">`;
-                        if (rows[i].dropDown[j].icon) {
-                            h += `<i class="${rows[i].dropDown[j].icon} fa-fw mr-2"></i>`;
+                        h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action}">`;
+                        if (rows[i].dropDown.items[j].icon) {
+                            h += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
                         } else {
                             if (hasDropDownIcons) {
                                 h += `<i class="fa fa-fw mr-2"></i>`;
                             }
                         }
-                        h += `${rows[i].dropDown[j].title}</li>`;
+                        h += `${rows[i].dropDown.items[j].title}</li>`;
                     } else
-                    if (rows[i].dropDown[j].title === "-") {
+                    if (rows[i].dropDown.items[j].title === "-") {
                         h += `<li class="dropdown-divider"></li>`;
                     }
                 }
@@ -241,7 +245,7 @@ function cardTable(params) {
         }
 
         $(".menuItem-" + tableClass).off("click").on("click", function () {
-            rows[parseInt($(this).attr("rowId"))].dropDown[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"), $(this).attr("action"));
+            rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"), $(this).attr("action"));
         });
 
         $("." + clickableClass).off("click").on("click", function () {

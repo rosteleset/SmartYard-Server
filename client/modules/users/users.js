@@ -112,8 +112,8 @@
                 {
                     id: "phone",
                     type: "tel",
-                    title: i18n("users.phone"),
-                    placeholder: i18n("users.phone"),
+                    title: i18n("phone"),
+                    placeholder: i18n("phone"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
@@ -319,46 +319,49 @@
                                     nowrap: true,
                                 },
                             ],
-                            dropDown: [
-                                {
-                                    icon: "fas fa-tv",
-                                    title: "Action 1",
-                                    click: $.noop,
-                                },
-                                {
-                                    icon: "fas fa-coffee",
-                                    action: "coffee",
-                                    title: "Action 2",
-                                    click: $.noop,
-                                },
-                                {
-                                    title: "-",
-                                },
-                                {
-                                    icon: "fas fa-key",
-                                    title: i18n("users.setPassword"),
-                                    text: "text-primary",
-                                    disabled: response.users[i].uid.toString() === "0",
-                                    click: window.modules["users"].setPassword,
-                                },
-                                {
-                                    title: "-",
-                                },
-                                {
-                                    icon: "fas fa-ban",
-                                    title: (response.users[i].enabled == 1)?i18n("users.disable"):i18n("users.enable"),
-                                    action: (response.users[i].enabled == 1)?"disable":"enable",
-                                    disabled: response.users[i].uid.toString() === window.myself.uid.toString(),
-                                    click: window.modules["users"].enableUser,
-                                },
-                                {
-                                    icon: "fas fa-trash-alt",
-                                    title: i18n("users.delete"),
-                                    text: "text-danger",
-                                    disabled: response.users[i].uid.toString() === "0" || response.users[i].uid.toString() === window.myself.uid.toString(),
-                                    click: window.modules["users"].deleteUser,
-                                },
-                            ],
+                            dropDown: {
+                                icon: (response.users[i].enabled != 1)?"fas fa-ban":"",
+                                items: [
+                                    {
+                                        icon: "fas fa-tv",
+                                        title: "Action 1",
+                                        click: $.noop,
+                                    },
+                                    {
+                                        icon: "fas fa-coffee",
+                                        action: "coffee",
+                                        title: "Action 2",
+                                        click: $.noop,
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-key",
+                                        title: i18n("users.setPassword"),
+                                        text: "text-primary",
+                                        disabled: response.users[i].uid.toString() === "0",
+                                        click: window.modules["users"].setPassword,
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-ban",
+                                        title: (response.users[i].enabled == 1)?i18n("users.disable"):i18n("users.enable"),
+                                        action: (response.users[i].enabled == 1)?"disable":"enable",
+                                        disabled: response.users[i].uid.toString() === window.myself.uid.toString(),
+                                        click: window.modules["users"].enableUser,
+                                    },
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("users.delete"),
+                                        text: "text-danger",
+                                        disabled: response.users[i].uid.toString() === "0" || response.users[i].uid.toString() === window.myself.uid.toString(),
+                                        click: window.modules["users"].deleteUser,
+                                    },
+                                ],
+                            }
                         });
                     }
 
