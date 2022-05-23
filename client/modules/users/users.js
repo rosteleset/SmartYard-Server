@@ -175,8 +175,8 @@
                         type: "tel",
                         readonly: false,
                         value: response.user.phone,
-                        title: i18n("users.phone"),
-                        placeholder: i18n("users.phone"),
+                        title: i18n("phone"),
+                        placeholder: i18n("phone"),
                         validate: (v) => {
                             return $.trim(v) !== "";
                         }
@@ -287,7 +287,7 @@
                         title: i18n("eMail"),
                     },
                     {
-                        title: i18n("users.phone"),
+                        title: i18n("phone"),
                     },
                 ],
                 rows: () => {
