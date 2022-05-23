@@ -42,7 +42,9 @@
         class groups extends api {
 
             public static function GET($params) {
+                $groups = loadBackend("groups")->getGroups(false);
 
+                return api::ANSWER($groups, ($groups !== false)?"groups":"404");
             }
 
             public static function index() {

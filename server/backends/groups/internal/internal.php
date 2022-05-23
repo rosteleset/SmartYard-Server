@@ -20,16 +20,12 @@
 
             public function getGroups($uid = false) {
                 if ($uid === false) {
-                    $groups = $this->db->query("select * from groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym from groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $groups = $this->db->query("select * from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
-                }
-
-                foreach ($groups as &$group) {
-                    $group["groupName"] = $group["group_name"];
+                    $groups = $this->db->query("select gid, name, acronym from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 return $groups;

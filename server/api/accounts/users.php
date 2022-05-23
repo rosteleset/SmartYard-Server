@@ -53,7 +53,7 @@
             public static function GET($params) {
                 $users = $params["_backends"]["users"]->getUsers();
 
-                return api::ANSWER($users, $users?"users":"404");
+                return api::ANSWER($users, ($users !== false)?"users":"404");
             }
 
             public static function index() {

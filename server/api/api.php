@@ -75,8 +75,8 @@
                     406 => "notAcceptable",
                 ];
 
-                if ($result) {
-                    if ($answer) {
+                if ($result !== false) {
+                    if ($answer !== false) {
                         return [
                             "200" => [
                                 $answer => $result,
