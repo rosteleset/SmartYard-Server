@@ -45,8 +45,9 @@
         class setPassword extends api {
 
             public static function POST($params) {
-                error_log(@$params["_id"] . " <+++> " . $params["password"]);
-                return self::ANSWER($params["_backends"]["users"]->setPassword(@$params["_id"], $params["password"]));
+                $success = $params["_backends"]["users"]->setPassword(@$params["_id"], $params["password"]);
+
+                return self::ANSWER($success, $success?false:406);
             }
 
             public static function index() {

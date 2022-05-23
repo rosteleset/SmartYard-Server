@@ -168,25 +168,25 @@
             public static function GET($params) {
                 $user = $params["_backends"]["users"]->getUser($params["_id"]);
 
-                return api::ANSWER($user, 406, "user");
+                return api::ANSWER($user, $user?"user":406);
             }
 
             public static function POST($params) {
                 $success = $params["_backends"]["users"]->addUser($params["login"], $params["realName"], $params["eMail"], $params["phone"]);
 
-                return api::ANSWER($success, 406);
+                return api::ANSWER($success, $success?false:406);
             }
 
             public static function PUT($params) {
                 $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"]);
 
-                return api::ANSWER($success, 406);
+                return api::ANSWER($success, $success?false:406);
             }
 
             public static function DELETE($params) {
                 $success = $params["_backends"]["users"]->deleteUser($params["_id"]);
 
-                return api::ANSWER($success, 406);
+                return api::ANSWER($success, $success?false:406);
             }
 
             public static function index() {

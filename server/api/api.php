@@ -20,11 +20,7 @@
              */
 
             public static function GET($params) {
-                return [
-                    "400" => [
-                        "error" => "badRequest",
-                    ]
-                ];
+                return self::ANSWER(false, 400);
             }
 
             /**
@@ -35,11 +31,7 @@
              */
 
             public static function POST($params) {
-                return [
-                    "400" => [
-                        "error" => "badRequest",
-                    ]
-                ];
+                return self::ANSWER(false, 400);
             }
 
             /**
@@ -50,11 +42,7 @@
              */
 
             public static function PUT($params) {
-                return [
-                    "400" => [
-                        "error" => "badRequest",
-                    ]
-                ];
+                return self::ANSWER(false, 400);
             }
 
             /**
@@ -65,31 +53,33 @@
              */
 
             public static function DELETE($params) {
-                return [
-                    "400" => [
-                        "error" => "badRequest",
-                    ]
-                ];
+                return self::ANSWER(false, 400);
             }
 
             /**
-             * @param $result
-             * @param $errorCode
-             * @param $section
+             * sends templated answer or error
+             *
+             * $result - sends error or success
+             * if false sends error with error code $answer
+             * if true sends json with parent $answer
+             *
+             * @param boolean|array $result
+             * @param boolean|array|string $answer
              * @return array[]|false[]|\string[][]
              */
 
-            public static function ANSWER($result, $errorCode = false, $section = false) {
+            public static function ANSWER($result = true, $answer = false) {
                 $errors = [
+                    400 => "badRequest",
                     404 => "notFound",
                     406 => "notAcceptable",
                 ];
 
                 if ($result) {
-                    if ($section) {
+                    if ($answer) {
                         return [
                             "200" => [
-                                $section => $result,
+                                $answer => $result,
                             ],
                         ];
                     } else {
@@ -98,7 +88,7 @@
                         ];
                     }
                 } else {
-                    $errorCode = $errorCode?:406;
+                    $errorCode = $answer?:406;
                     return [
                         $errorCode => [
                             "error" => @$errors[$errorCode]?:"unknown",

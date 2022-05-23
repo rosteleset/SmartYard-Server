@@ -190,9 +190,7 @@
             }).show();
         }).
         fail(FAIL).
-        always(() => {
-            loadingDone();
-        });
+        always(loadingDone);
     },
 
     deleteUser: function (uid) {
@@ -341,9 +339,9 @@
                     window.modules["users"].startPage = page;
                 },
             });
-        }).fail(FAIL).always(() => {
-            loadingDone();
-        });
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     route: function (params) {
