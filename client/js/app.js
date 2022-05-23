@@ -358,6 +358,7 @@ function initAll() {
                 GET("authorization", "available").done((a, b) => {
                     if (a.available && b === "success") {
                         GET("accounts", "whoAmI").done(_me => {
+                            console.log(_me);
                             if (_me && _me.user) {
                                 let userCard = _me.user.login;
                                 if (_me.user.realName) {
@@ -368,7 +369,7 @@ function initAll() {
                                 }
                                 $("#userCard").html(userCard);
                             }
-                        });
+                        }).fail(FAIL);
                         window.available = a.available;
                         console.log(a.available);
                         if (window.config && window.config.modules) {

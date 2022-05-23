@@ -25,7 +25,7 @@
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $groups = $this->db->query("select * from groups where uid = $uid order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select * from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 foreach ($groups as &$group) {

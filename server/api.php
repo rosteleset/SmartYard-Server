@@ -18,6 +18,7 @@
     require_once "utils/email.php";
     require_once "utils/forgot.php";
     require_once "utils/apache_request_headers.php";
+    require_once "utils/generate_password.php";
 
     require_once "backends/backend.php";
 
