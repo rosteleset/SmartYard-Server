@@ -66,7 +66,7 @@
                             "realName" => $user[0]["real_name"],
                             "eMail" => $user[0]["e_mail"],
                             "phone" => $user[0]["phone"],
-                            "enabled" => $user["enabled"],
+                            "enabled" => $user[0]["enabled"],
                         ];
 
                         $groups = loadBackend("groups");

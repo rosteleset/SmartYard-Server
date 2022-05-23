@@ -19,6 +19,9 @@
             phone: phone,
         }).
         fail(FAIL).
+        done(() => {
+            message(i18n("users.userWasAdded"));
+        }).
         always(window.modules["users"].render);
     },
 
@@ -30,6 +33,9 @@
             phone: phone,
         }).
         fail(FAIL).
+        done(() => {
+            message(i18n("users.userWasChanged"));
+        }).
         always(window.modules["users"].render);
     },
 
@@ -37,6 +43,9 @@
         loadingStart();
         DELETE("accounts", "user", uid).
         fail(FAIL).
+        done(() => {
+            message(i18n("users.userWasDeleted"));
+        }).
         always(window.modules["users"].render);
     },
 
@@ -47,9 +56,19 @@
         }).
         fail(FAIL).
         done(() => {
-            message(i18n("users.passwordWasChanged"));
+            message(i18n("users.userWasChanged"));
         }).
         always(loadingDone);
+    },
+
+    doEnableUser: function (uid, enabled) {
+        loadingStart();
+        POST("accounts", enabled?"enableUser":"disableUser", uid).
+        fail(FAIL).
+        done(() => {
+            message(i18n("users.userWasChanged"));
+        }).
+        always(window.modules["users"].render);
     },
 
     /*
@@ -196,7 +215,7 @@
 
     deleteUser: function (uid) {
         mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            indow.modules["users"].doDeleteUser(uid);
+            window.modules["users"].doDeleteUser(uid);
         });
     },
 
@@ -232,7 +251,9 @@
     },
 
     enableUser: function (uid, action) {
-        console.log(uid, action);
+        mConfirm(i18n((action == "enable")?"users.confirmEnable":"users.confirmDisable", uid), i18n("confirm"), i18n((action == "enable")?"users.enable":"users.disable"), () => {
+            window.modules["users"].doEnableUser(uid, action === "enable");
+        });
     },
 
     /*
