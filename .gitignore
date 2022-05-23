@@ -14,7 +14,7 @@ __pycache__
 .phpdoc
 client/lib/AdminLTE
 server/lib/PHPMailer
-server/db
+server/db/internal.db
 server/config/config.json
 snapshot.tar.gz
 ./api
