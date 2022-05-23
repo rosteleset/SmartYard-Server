@@ -19,8 +19,7 @@
             name: name,
         }).
         fail(FAIL).
-        done((response) => {
-            console.log(response);
+        done(() => {
             message(i18n("groups.groupWasAdded"));
         }).
         always(window.modules["groups"].render);
@@ -63,7 +62,7 @@
     },
 
     modifyGroup: function (gid) {
-        console.log(gid);
+        //
     },
 
     /*
