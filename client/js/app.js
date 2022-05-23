@@ -357,9 +357,15 @@ function initAll() {
             if (b === "nocontent") {
                 GET("authorization", "available").done((a, b) => {
                     if (a.available && b === "success") {
+                        window.myself = {
+                            uid: -1,
+                        };
                         GET("accounts", "whoAmI").done(_me => {
-                            console.log(_me);
                             if (_me && _me.user) {
+                                window.myself.uid = _me.user.uid;
+                                window.myself.realName = _me.user.realName;
+                                window.myself.eMail = _me.user.eMail;
+                                window.myself.phone = _me.user.phone;
                                 let userCard = _me.user.login;
                                 if (_me.user.realName) {
                                     userCard += "<br />" + _me.user.realName;
@@ -369,40 +375,40 @@ function initAll() {
                                 }
                                 $("#userCard").html(userCard);
                             }
-                        }).fail(FAIL);
-                        window.available = a.available;
-                        console.log(a.available);
-                        if (window.config && window.config.modules) {
-                            for (let i in window.config.modules) {
-                                moduleLoadQueue.push(window.config.modules[i]);
-                            }
-                            loadModule();
-                        } else {
-                            $("#app").show();
-                            if (window.config.defaultRoute) {
-                                window.onhashchange = hashChange;
-                                window.location = "#" + window.config.defaultRoute;
+                            window.available = a.available;
+                            if (window.config && window.config.modules) {
+                                for (let i in window.config.modules) {
+                                    moduleLoadQueue.push(window.config.modules[i]);
+                                }
+                                loadModule();
                             } else {
-                                hashChange();
-                                window.onhashchange = hashChange;
+                                $("#app").show();
+                                if (window.config.defaultRoute) {
+                                    window.onhashchange = hashChange;
+                                    window.location = "#" + window.config.defaultRoute;
+                                } else {
+                                    hashChange();
+                                    window.onhashchange = hashChange;
+                                }
                             }
-                        }
+                        }).fail(response => {
+                            FAIL(response);
+                            showLoginForm();
+                        });
+                    } else {
+                        FAIL();
+                        showLoginForm();
                     }
                 }).fail(response => {
-                    if (response && response.responseJSON && response.responseJSON.error) {
-                        error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
-                    } else {
-                        error(i18n("errors.unknown"), i18n("error"), 30);
-                    }
+                    FAIL(response);
                     showLoginForm();
                 });
+            } else {
+                FAIL();
+                showLoginForm();
             }
         }).fail(response => {
-            if (response && response.responseJSON && response.responseJSON.error) {
-                error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
-            } else {
-                error(i18n("errors.unknown"), i18n("error"), 30);
-            }
+            FAIL(response);
             showLoginForm();
         });
     } else {

@@ -165,9 +165,10 @@
                     {
                         id: "delete",
                         type: "select",
-                        readonly: false,
                         value: "",
                         title: i18n("users.delete"),
+                        readonly: uid.toString() === "0" || uid.toString() === window.myself.uid.toString(),
+                        hidden: uid.toString() === "0" || uid.toString() === window.myself.uid.toString(),
                         options: [
                             {
                                 value: "",
@@ -230,7 +231,7 @@
         }).show();
     },
 
-    contextItemClick: function (uid, action) {
+    enableUser: function (uid, action) {
         console.log(uid, action);
     },
 
@@ -274,6 +275,7 @@
                     for (let i = 0; i < response.users.length; i++) {
                         rows.push({
                             uid: response.users[i].uid.toString(),
+                            class: (response.users[i].enabled == 1)?"bg-white":"bg-light",
                             cols: [
                                 {
                                     data: response.users[i].uid,
@@ -300,13 +302,13 @@
                                 {
                                     icon: "fas fa-tv",
                                     title: "Action 1",
-                                    click: window.modules["users"].contextItemClick,
+                                    click: $.noop,
                                 },
                                 {
                                     icon: "fas fa-coffee",
                                     action: "coffee",
                                     title: "Action 2",
-                                    click: window.modules["users"].contextItemClick,
+                                    click: $.noop,
                                 },
                                 {
                                     title: "-",
@@ -322,10 +324,17 @@
                                     title: "-",
                                 },
                                 {
+                                    icon: "fas fa-ban",
+                                    title: (response.users[i].enabled == 1)?i18n("users.disable"):i18n("users.enable"),
+                                    action: (response.users[i].enabled == 1)?"disable":"enable",
+                                    disabled: response.users[i].uid.toString() === window.myself.uid.toString(),
+                                    click: window.modules["users"].enableUser,
+                                },
+                                {
                                     icon: "fas fa-trash-alt",
                                     title: i18n("users.delete"),
                                     text: "text-danger",
-                                    disabled: response.users[i].uid.toString() === "0",
+                                    disabled: response.users[i].uid.toString() === "0" || response.users[i].uid.toString() === window.myself.uid.toString(),
                                     click: window.modules["users"].deleteUser,
                                 },
                             ],

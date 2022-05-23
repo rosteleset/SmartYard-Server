@@ -56,19 +56,7 @@
             public static function GET($params) {
                 $user = $params["_backends"]["users"]->getUser($params["_uid"]);
 
-                if ($user) {
-                    return [
-                        "200" => [
-                            "user" => $user,
-                        ],
-                    ];
-                } else {
-                    return [
-                        "404" => [
-                            "error" => "notFound",
-                        ]
-                    ];
-                }
+                return api::ANSWER($user, $user?"user":404);
             }
 
             public static function index() {

@@ -22,7 +22,7 @@
 
             public function getUsers() {
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone from users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -32,6 +32,7 @@
                             "realName" => $user["real_name"],
                             "eMail" => $user["e_mail"],
                             "phone" => $user["phone"],
+                            "enabled" => $user["enabled"],
                         ];
                     }
 
@@ -56,7 +57,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone from users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($user)) {
                         $_user = [
@@ -65,6 +66,7 @@
                             "realName" => $user[0]["real_name"],
                             "eMail" => $user[0]["e_mail"],
                             "phone" => $user[0]["phone"],
+                            "enabled" => $user["enabled"],
                         ];
 
                         $groups = loadBackend("groups");

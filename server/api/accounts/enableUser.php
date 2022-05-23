@@ -42,7 +42,9 @@
         class enableUser extends api {
 
             public static function POST($params) {
+                $success = $params["_backends"]["users"]->enableUser($params["_id"]);
 
+                return api::ANSWER($success, $success?false:406);
             }
 
             public static function index() {

@@ -31,7 +31,11 @@ function cardForm(params) {
     for (let i in params.fields) {
         switch (params.fields[i].type) {
             case "select":
-                h += `<tr>`;
+                if (params.fields[i].hidden) {
+                    h += `<tr style="display: none;">`;
+                } else {
+                    h += `<tr>`;
+                }
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
@@ -50,7 +54,11 @@ function cardForm(params) {
                 }
                 h += `</select>`;
                 h += `<div class="input-group-append">`;
-                h += `<span class="input-group-text pointer cardFormSelectWithRotate"><i class="fas fa-fw fa-angle-double-right"></i></span>`;
+                if (params.fields[i].readonly) {
+                    h += `<span class="input-group-text disabled" disabled="disabled"><i class="fas fa-fw fa-angle-double-right"></i></span>`;
+                } else {
+                    h += `<span class="input-group-text pointer cardFormSelectWithRotate"><i class="fas fa-fw fa-angle-double-right"></i></span>`;
+                }
                 h += `</div>`;
                 h += `</div>`;
                 h += `</td>`;

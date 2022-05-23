@@ -64,8 +64,8 @@
              * if true sends json with parent $answer
              *
              * @param boolean|array $result
-             * @param boolean|array|string $answer
-             * @return array[]|false[]|\string[][]
+             * @param boolean|array|string|integer $answer
+             * @return array
              */
 
             public static function ANSWER($result = true, $answer = false) {
