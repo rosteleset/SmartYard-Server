@@ -107,7 +107,7 @@
                     $sth = $this->db->prepare("insert into users (login, password, real_name, e_mail, phone, enabled) values (:login, :password, :real_name, :e_mail, :phone, 1)");
                     if (!$sth->execute([
                         ":login" => $login,
-                        ":password" => $password,
+                        ":password" => password_hash($password, PASSWORD_DEFAULT),
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
@@ -141,7 +141,11 @@
              */
 
             public function setPassword($uid, $password) {
-                if (!checkInt($uid)) {
+                if (!checkInt($uid) || !trim($password)) {
+                    return false;
+                }
+
+                if ($uid === 0) {
                     return false;
                 }
 

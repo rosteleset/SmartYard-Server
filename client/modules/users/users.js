@@ -6,6 +6,10 @@
         moduleLoaded("users", this);
     },
 
+    /*
+        action functions
+     */
+
     doAddUser: function (login, realName, eMail, phone) {
         loadingStart();
         POST("accounts", "user", false, {
@@ -30,16 +34,27 @@
     },
 
     doDeleteUser: function (uid) {
-        mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            DELETE("accounts", "user", uid).
-            fail(FAIL).
-            always(window.modules["users"].render);
-        });
+        loadingStart();
+        DELETE("accounts", "user", uid).
+        fail(FAIL).
+        always(window.modules["users"].render);
     },
 
     doSetPassword: function (uid, password) {
-
+        loadingStart();
+        POST("accounts", "setPassword", uid, {
+            password: password,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("users.passwordWasChanged"));
+        }).
+        always(loadingDone);
     },
+
+    /*
+        UI functions
+     */
 
     addUser: function () {
         cardForm({
@@ -167,7 +182,7 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        window.modules["users"].doDeleteUser(result.uid);
+                        window.modules["users"].deleteUser(result.uid);
                     } else {
                         window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone);
                     }
@@ -180,13 +195,50 @@
         });
     },
 
-    setPassword: function (uid) {
+    deleteUser: function (uid) {
+        mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
+            indow.modules["users"].doDeleteUser(uid);
+        });
+    },
 
+    setPassword: function (uid) {
+        cardForm({
+            title: i18n("users.setPassword"),
+            footer: true,
+            borderless: true,
+            topApply: false,
+            fields: [
+                {
+                    id: "uid",
+                    type: "text",
+                    title: i18n("users.uid"),
+                    placeholder: i18n("users.uid"),
+                    value: uid.toString(),
+                    readonly: true,
+                },
+                {
+                    id: "password",
+                    type: "password",
+                    title: i18n("users.password"),
+                    placeholder: i18n("users.password"),
+                    validate: (v) => {
+                        return $.trim(v).length >= 8;
+                    }
+                },
+            ],
+            callback: function (result) {
+                window.modules["users"].doSetPassword(result.uid, result.password);
+            },
+        }).show();
     },
 
     contextItemClick: function (uid, action) {
         console.log(uid, action);
     },
+
+    /*
+        main form (users) render function
+     */
 
     render: function () {
         loadingStart();
@@ -262,9 +314,11 @@
                                     title: "-",
                                 },
                                 {
-                                    title: "Action 4",
+                                    icon: "fas fa-key",
+                                    title: i18n("users.setPassword"),
                                     text: "text-primary",
-                                    click: window.modules["users"].contextItemClick,
+                                    disabled: response.users[i].uid.toString() === "0",
+                                    click: window.modules["users"].setPassword,
                                 },
                                 {
                                     title: "-",
@@ -274,7 +328,7 @@
                                     title: i18n("users.delete"),
                                     text: "text-danger",
                                     disabled: response.users[i].uid.toString() === "0",
-                                    click: window.modules["users"].doDeleteUser,
+                                    click: window.modules["users"].deleteUser,
                                 },
                             ],
                         });

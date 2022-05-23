@@ -207,7 +207,7 @@ function loadingStart() {
 
 function loadingDone(stay_hidden) {
     $('#loading').modal('hide');
-    if (stay_hidden) {
+    if (stay_hidden === true) {
         $('#app').addClass("invisible");
     } else {
         $('#app').removeClass("invisible");

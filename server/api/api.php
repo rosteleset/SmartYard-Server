@@ -82,6 +82,7 @@
             public static function ANSWER($result, $errorCode = false, $section = false) {
                 $errors = [
                     404 => "notFound",
+                    406 => "notAcceptable",
                 ];
 
                 if ($result) {
@@ -97,9 +98,10 @@
                         ];
                     }
                 } else {
+                    $errorCode = $errorCode?:406;
                     return [
                         $errorCode => [
-                            "error" => $errors[$errorCode]?:"notAcceptable",
+                            "error" => @$errors[$errorCode]?:"unknown",
                         ],
                     ];
                 }
