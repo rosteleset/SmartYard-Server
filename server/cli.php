@@ -14,6 +14,10 @@
 
     require_once "api/api.php";
 
+    if (!function_exists("curl_init")) {
+        die("curl extension is not installed\n");
+    }
+
     $required_backends = [
         "authentication",
         "authorization",
