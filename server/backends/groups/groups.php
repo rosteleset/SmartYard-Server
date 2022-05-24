@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * backends users namespace
+     * backends groups namespace
      */
 
     namespace backends\groups {
@@ -9,7 +9,7 @@
         use backends\backend;
 
         /**
-         * base users class
+         * base groups class
          */
 
         abstract class groups extends backend {

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * backends users namespace
+     * backends groups namespace
      */
 
     namespace backends\groups {
@@ -9,7 +9,7 @@
         use PHPMailer\PHPMailer\Exception;
 
         /**
-         * internal users class
+         * internal groups class
          */
 
         class internal extends groups {
