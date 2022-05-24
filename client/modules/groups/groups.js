@@ -156,7 +156,7 @@
         });
     },
 
-    modifyGroupMembers: function (gid) {
+    modifyGroupUsers: function (gid) {
         loadingStart();
         GET("accounts", "users", false, true).done(users => {
             GET("accounts", "groupUsers", gid, true).done(uids => {
@@ -232,7 +232,7 @@
                         fullWidth: true,
                     },
                     {
-                        title: i18n("groups.membersCount"),
+                        title: i18n("groups.usersCount"),
                         fullWidth: true,
                     },
                 ],
@@ -257,8 +257,8 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: response.groups[i].members,
-                                    click: window.modules["groups"].modifyGroupMembers,
+                                    data: response.groups[i].users,
+                                    click: window.modules["groups"].modifyGroupUsers,
                                 },
                             ],
                         });

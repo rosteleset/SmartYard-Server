@@ -22,12 +22,12 @@
 
             public function getGroups($uid = false) {
                 if ($uid === false) {
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) members from groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) users from groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) members from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) users from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 return $groups;
