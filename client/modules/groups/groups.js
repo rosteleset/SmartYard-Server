@@ -172,7 +172,7 @@
                 h += `<div class="card-body pb-0" style="max-height: 400px; overflow: auto;">`;
                 h += `<div class="form-group">`;
                 for (let i in users.users) {
-                    h += `<div class="form-check"><input class="form-check-input gidToUid" uid="${users.users[i].uid}" type="checkbox"><label class="form-check-label">${users.users[i].login + (users.users[i].realName?(" [" + users.users[i].realName + "]"):"")}</label></div>`;
+                    h += `<div class="form-check"><input class="form-check-input gidToUid" uid="${users.users[i].uid}" type="checkbox" ${(uids.uids.indexOf(users.users[i].uid) >= 0)?"checked":""}><label class="form-check-label">${users.users[i].login + (users.users[i].realName?(" [" + users.users[i].realName + "]"):"")}</label></div>`;
                 }
                 h += `</div>`;
                 h += `</div>`;
