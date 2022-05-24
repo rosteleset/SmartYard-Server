@@ -34,6 +34,9 @@
         }).
         fail(FAIL).
         done(() => {
+            if (uid == window.window.myself.uid) {
+                whoAmI(true);
+            }
             message(i18n("users.userWasChanged"));
         }).
         always(window.modules["users"].render);

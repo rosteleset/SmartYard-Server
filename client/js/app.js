@@ -273,6 +273,28 @@ function moduleLoaded(module, object) {
     }
 }
 
+function whoAmI(force) {
+    return GET("accounts", "whoAmI", false, force).done(_me => {
+        if (_me && _me.user) {
+            window.myself.uid = _me.user.uid;
+            window.myself.realName = _me.user.realName;
+            window.myself.eMail = _me.user.eMail;
+            window.myself.phone = _me.user.phone;
+            if (_me.user.avatar) {
+                $(".user-avatar").attr("src", "data:image/png;base64," + _me.user.avatar);
+            }
+            let userCard = _me.user.login;
+            if (_me.user.realName) {
+                userCard += "<br />" + _me.user.realName;
+            }
+            if (_me.user.eMail) {
+                userCard += "<br />" + _me.user.eMail;
+            }
+            $("#userCard").html(userCard);
+        }
+    })
+}
+
 function initAll() {
     if (!$.cookie("_cookie")) {
         warning(i18n("cookieWarning"), false, 3600);
@@ -360,21 +382,7 @@ function initAll() {
                         window.myself = {
                             uid: -1,
                         };
-                        GET("accounts", "whoAmI").done(_me => {
-                            if (_me && _me.user) {
-                                window.myself.uid = _me.user.uid;
-                                window.myself.realName = _me.user.realName;
-                                window.myself.eMail = _me.user.eMail;
-                                window.myself.phone = _me.user.phone;
-                                let userCard = _me.user.login;
-                                if (_me.user.realName) {
-                                    userCard += "<br />" + _me.user.realName;
-                                }
-                                if (_me.user.eMail) {
-                                    userCard += "<br />" + _me.user.eMail;
-                                }
-                                $("#userCard").html(userCard);
-                            }
+                        whoAmI().done(() => {
                             window.available = a.available;
                             if (window.config && window.config.modules) {
                                 for (let i in window.config.modules) {

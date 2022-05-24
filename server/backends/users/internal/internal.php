@@ -57,7 +57,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled, avatar from users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($user)) {
                         $_user = [
@@ -67,6 +67,7 @@
                             "eMail" => $user[0]["e_mail"],
                             "phone" => $user[0]["phone"],
                             "enabled" => $user[0]["enabled"],
+                            "avatar" => $user[0]["avatar"],
                         ];
 
                         $groups = loadBackend("groups");
