@@ -323,20 +323,6 @@
                                 icon: (response.users[i].enabled != 1)?"fas fa-ban text-danger":"",
                                 items: [
                                     {
-                                        icon: "fas fa-tv",
-                                        title: "Action 1",
-                                        click: $.noop,
-                                    },
-                                    {
-                                        icon: "fas fa-coffee",
-                                        action: "coffee",
-                                        title: "Action 2",
-                                        click: $.noop,
-                                    },
-                                    {
-                                        title: "-",
-                                    },
-                                    {
                                         icon: "fas fa-key",
                                         title: i18n("users.setPassword"),
                                         text: "text-primary",
