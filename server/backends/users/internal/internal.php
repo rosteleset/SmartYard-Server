@@ -72,13 +72,7 @@
                         $groups = loadBackend("groups");
 
                         if ($groups !== false) {
-                            $_groups = $groups->getGroups($uid);
-                            $_user["groups"] = [];
-                            foreach ($_groups as $group) {
-                                $_user["groups"][$group["gid"]] = [
-                                    "groupName" => $group["groupName"],
-                                ];
-                            }
+                            $_user["groups"] = $groups->getGroups($uid);
                         }
 
                         return $_user;
