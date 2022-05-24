@@ -9,7 +9,8 @@
         "settings",
         "address",
         "users",
-        "groups"
+        "groups",
+        "permissions"
     ],
     "defaultRoute": "address",
     "ajaxCache": true
