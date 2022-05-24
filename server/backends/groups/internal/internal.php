@@ -6,6 +6,8 @@
 
     namespace backends\groups {
 
+        use PHPMailer\PHPMailer\Exception;
+
         /**
          * internal users class
          */
@@ -20,12 +22,12 @@
 
             public function getGroups($uid = false) {
                 if ($uid === false) {
-                    $groups = $this->db->query("select gid, name, acronym from groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) members from groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $groups = $this->db->query("select gid, name, acronym from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) members from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 return $groups;
@@ -43,63 +45,41 @@
                 if (!checkInt($gid)) {
                     return false;
                 }
+
+                $groups = $this->db->query("select gid, name, acronym from groups where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
+
+                if (count($groups)) {
+                    return $groups[0];
+                } else {
+                    return false;
+                }
             }
 
             /**
              * @param integer $gid gid
-             * @param string $groupName group name
+             * @param string $acronym
+             * @param string $name group name
              *
              * @return boolean
              */
 
-            public function modifyGroup($gid, $groupName) {
+            public function modifyGroup($gid, $acronym, $name) {
                 if (!checkInt($gid)) {
                     return false;
                 }
 
-                // TODO: Implement modifyGroup() method.
-            }
-
-            /**
-             * add user to group
-             *
-             * @param integer $gid
-             * @param integer $uid
-             *
-             * @return boolean
-             */
-
-            public function addToGroup($gid, $uid) {
-                if (!checkInt($gid)) {
+                try {
+                    $sth = $this->db->prepare("update groups set acronym = :acronym, name = :name where gid = $gid");
+                    return $sth->execute([
+                        ":acronym" => trim($acronym),
+                        ":name" => trim($name),
+                    ]);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
 
-                if (!checkInt($uid)) {
-                    return false;
-                }
-
-                // TODO: Implement addToGroup() method.
-            }
-
-            /**
-             * remove user from group
-             *
-             * @param integer $gid
-             * @param integer $uid
-             *
-             * @return boolean
-             */
-
-            public function removeFromGroup($gid, $uid) {
-                if (!checkInt($gid)) {
-                    return false;
-                }
-
-                if (!checkInt($uid)) {
-                    return false;
-                }
-
-                // TODO: Implement removeFromGroup() method.
+                return true;
             }
 
             /**
@@ -147,12 +127,19 @@
              * @return boolean
              */
             
-            public function removeGroup($gid) {
+            public function deleteGroup($gid) {
                 if (!checkInt($gid)) {
                     return false;
                 }
 
-                // TODO: Implement removeGroup() method.
+                try {
+                    $this->db->exec("delete from groups where gid = $gid");
+                    $this->db->exec("delete from users_groups where gid = $gid");
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+                return true;
             }
 
             /**
@@ -166,7 +153,71 @@
                     return false;
                 }
 
-                // TODO: Implement getUsers() method.
+                $uids = $this->db->query("select uid from users_groups where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
+
+                $users = [];
+                foreach ($uids as $uid) {
+                    $users[] = $uid["uid"];
+                }
+
+                return $users;
+            }
+
+            /**
+             * modify users in group
+             *
+             * @return boolean
+             */
+
+            public function setUsers($gid, $uids) {
+                if (!checkInt($gid)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from users_groups where gid = $gid");
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into users_groups (uid, gid) values (:uid, :gid)");
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                foreach ($uids as $uid) {
+                    if (!checkInt($uid)) {
+                        return false;
+                    }
+
+                    if (!$sth->execute([
+                        ":uid" => $uid,
+                        ":gid" => $gid,
+                    ])) {
+                        return false;
+                    }
+
+                }
+
+                return true;
+            }
+
+            public function deleteUser($uid) {
+                if (!checkInt($gid)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from users_groups where uid = $uid");
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
             }
 
             public function capabilities() {

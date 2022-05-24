@@ -149,7 +149,9 @@
         class group extends api {
 
             public static function GET($params) {
+                $group = loadBackend("groups")->getGroup($params["_id"]);
 
+                return api::ANSWER($group, ($group !== false)?"group":406);
             }
 
             public static function POST($params) {
@@ -159,11 +161,15 @@
             }
 
             public static function PUT($params) {
+                $success = loadBackend("groups")->modifyGroup($params["_id"], $params["acronym"], $params["name"]);
 
+                return api::ANSWER($success, ($success !== false)?false:406);
             }
 
             public static function DELETE($params) {
+                $success = loadBackend("groups")->deleteGroup($params["_id"]);
 
+                return api::ANSWER($success, ($success !== false)?false:406);
             }
 
             public static function index() {
@@ -172,7 +178,7 @@
                 if ($groups && $groups->capabilities()["mode"] === "rw") {
                     return [ "GET", "POST", "PUT", "DELETE" ];
                 }
-                if ($groups && $groups->capabilities()["mode"] === "ro") {
+                if ($groups) {
                     return [ "GET" ];
                 } else {
                     return [ ];

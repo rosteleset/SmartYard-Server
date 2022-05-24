@@ -6,5 +6,6 @@
     "groups": "Группы",
     "groupWasChanged": "Изменения сохранены успешно",
     "groupWasAdded": "Группа добавлена",
-    "groupWasDeleted": "Группа удалена"
+    "groupWasDeleted": "Группа удалена",
+    "membersCount": "Пользователей"
 }

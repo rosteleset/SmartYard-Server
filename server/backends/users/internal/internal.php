@@ -178,7 +178,10 @@
                 if ($uid > 0) { // admin cannot be deleted
                     try {
                         $this->db->exec("delete from users where uid = $uid");
-                        $this->db->exec("delete from users_groups where uid = $uid");
+                        $groups = loadBackend("groups");
+                        if ($groups) {
+                            $groups->deleteUser($uid);
+                        }
                     } catch (Exception $e) {
                         return false;
                     }
@@ -205,9 +208,8 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update users set real_name = :real_name, e_mail = :e_mail, phone = :phone where uid = :uid");
+                    $sth = $this->db->prepare("update users set real_name = :real_name, e_mail = :e_mail, phone = :phone where uid = $uid");
                     return $sth->execute([
-                        ":uid" => $uid,
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),

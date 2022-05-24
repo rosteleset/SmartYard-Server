@@ -13,5 +13,6 @@ CREATE UNIQUE INDEX groups_name on groups(name);
 CREATE TABLE users_groups (uid integer, gid integer);
 CREATE INDEX users_groups_uid on users_groups(uid);
 CREATE INDEX users_groups_gid on users_groups(gid);
+CREATE UNIQUE INDEX users_groups_uid_gid on users_groups(uid, gid);
 CREATE TABLE api_methods(api_method_id character varying not null primary key, api character varying not null, method character varying not null, request_method character varying not null);
 CREATE UNIQUE INDEX api_methods_uniq on api_methods(api, method, request_method);

@@ -50,7 +50,7 @@
             public static function index() {
                 $groups = loadBackend("groups");
 
-                if ($groups && ($groups->capabilities()["mode"] === "rw" || $groups->capabilities()["mode"] === "ro")) {
+                if ($groups) {
                     return [ "GET" ];
                 } else {
                     return [ ];

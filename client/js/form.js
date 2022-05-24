@@ -3,11 +3,7 @@ function cardForm(params) {
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
-        if (params.width) {
-            h = `<div class="card mt-0 mb-0">`;
-        } else {
-            h = `<div class="card mt-0 mb-0">`;
-        }
+        h = `<div class="card mt-0 mb-0">`;
     }
     if (params.title) {
         h += `<div class="card-header">`;

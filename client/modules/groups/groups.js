@@ -25,6 +25,29 @@
         always(window.modules["groups"].render);
     },
 
+    doModifyGroup: function (gid, acronym, name) {
+        loadingStart();
+        PUT("accounts", "group", gid, {
+            acronym: acronym,
+            name: name,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("groups.groupWasChanged"));
+        }).
+        always(window.modules["groups"].render);
+    },
+
+    doDeleteGroup: function (gid) {
+        loadingStart();
+        DELETE("accounts", "group", gid).
+        fail(FAIL).
+        done(() => {
+            message(i18n("groups.groupWasDeleted"));
+        }).
+        always(window.modules["groups"].render);
+    },
+
     /*
         UI functions
      */
@@ -62,7 +85,123 @@
     },
 
     modifyGroup: function (gid) {
-        //
+        loadingStart();
+        GET("accounts", "group", gid, true).done(response => {
+            cardForm({
+                title: i18n("groups.edit"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                fields: [
+                    {
+                        id: "gid",
+                        type: "text",
+                        readonly: true,
+                        value: response.group.gid.toString(),
+                        title: i18n("groups.gid"),
+                    },
+                    {
+                        id: "acronym",
+                        type: "text",
+                        value: response.group.acronym,
+                        placeholder: i18n("groups.acronym"),
+                        title: i18n("groups.acronym"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "name",
+                        type: "text",
+                        value: response.group.name,
+                        title: i18n("groups.name"),
+                        placeholder: i18n("groups.name"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "delete",
+                        type: "select",
+                        value: "",
+                        title: i18n("groups.delete"),
+                        options: [
+                            {
+                                value: "",
+                                text: "",
+                            },
+                            {
+                                value: "yes",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        window.modules["groups"].deleteGroup(result.gid);
+                    } else {
+                        window.modules["groups"].doModifyGroup(result.gid, result.acronym, result.name);
+                    }
+                },
+            }).show();
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    deleteGroup: function (gid) {
+        mConfirm(i18n("groups.confirmDelete", gid.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
+            window.modules["groups"].doDeleteGroup(gid);
+        });
+    },
+
+    modifyGroupMembers: function (gid) {
+        loadingStart();
+        GET("accounts", "users", false, true).done(users => {
+            GET("accounts", "groupUsers", gid, true).done(uids => {
+                let h = '';
+                h = `<div class="card mt-0 mb-0">`;
+                h += `<div class="card-header">`;
+                h += `<h3 class="card-title">`;
+                h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="modalFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+                h += i18n("groups.users") + " " + i18n("groups.gid") + gid;
+                h += `</h3>`;
+                h += `<button type="button" class="btn btn-danger btn-xs float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+                h += `</div>`;
+                h += `<div class="card-body pb-0" style="max-height: 400px; overflow: auto;">`;
+                h += `<div class="form-group">`;
+                for (let i in users.users) {
+                    h += `<div class="form-check"><input class="form-check-input gidToUid" uid="${users.users[i].uid}" type="checkbox"><label class="form-check-label">${users.users[i].login + (users.users[i].realName?(" [" + users.users[i].realName + "]"):"")}</label></div>`;
+                }
+                h += `</div>`;
+                h += `</div>`;
+                h += `</div>`;
+                modal(h);
+
+                $("#modalFormApply").off("click").on("click", () => {
+                    loadingStart();
+                    $('#modal').modal('hide');
+                    uids = [];
+                    $(".gidToUid").each(function () {
+                        if ($(this).prop("checked")) {
+                            uids.push($(this).attr("uid"));
+                        }
+                    });
+                    POST("accounts", "groupUsers", gid, {
+                        uids: uids,
+                    }).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("groups.groupWasChanged"));
+                    }).
+                    always(window.modules["groups"].render);
+                });
+            }).
+            fail(FAIL);
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     /*
@@ -92,6 +231,10 @@
                         title: i18n("groups.name"),
                         fullWidth: true,
                     },
+                    {
+                        title: i18n("groups.membersCount"),
+                        fullWidth: true,
+                    },
                 ],
                 rows: () => {
                     let rows = [];
@@ -112,6 +255,10 @@
                                 {
                                     data: response.groups[i].name,
                                     nowrap: true,
+                                },
+                                {
+                                    data: response.groups[i].members,
+                                    click: window.modules["groups"].modifyGroupMembers,
                                 },
                             ],
                         });

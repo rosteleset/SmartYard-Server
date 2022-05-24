@@ -36,12 +36,13 @@
 
             /**
              * @param integer $gid gid
-             * @param string $groupName group name
+             * @param string $acronym group name
+             * @param string $name group name
              *
              * @return boolean
              */
 
-            abstract public function modifyGroup($gid, $groupName);
+            abstract public function modifyGroup($gid, $acronym, $name);
 
             /**
              * add user to group
@@ -50,28 +51,6 @@
              * @param integer $uid
              *
              * @return boolean
-             */
-
-            abstract public function addToGroup($gid, $uid);
-
-            /**
-             * remove user from group
-             *
-             * @param integer $gid
-             * @param integer $uid
-             *
-             * @return boolean
-             */
-
-            abstract public function removeFromGroup($gid, $uid);
-
-            /**
-             * create group
-             *
-             * @param string $acronym
-             * @param string $name
-             *
-             * @return integer
              */
 
             abstract public function addGroup($acronym, $name);
@@ -84,14 +63,31 @@
              * @return boolean
              */
 
-            abstract public function removeGroup($gid);
+            abstract public function deleteGroup($gid);
 
             /**
-             * list of all users in group
+             * list of all uids in group
              *
              * @return array
              */
 
             abstract public function getUsers($gid);
+
+            /**
+             * modify users in group
+             *
+             * @return array
+             */
+
+            abstract public function setUsers($gid, $uids);
+
+            /**
+             * delete user from all groups
+             *
+             * @param $uid
+             * @return boolean
+             */
+
+            abstract public function deleteUser($uid);
         }
     }
