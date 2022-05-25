@@ -42,5 +42,43 @@
                 }
                 return $allowed;
             }
+
+            /**
+             * @return array
+             */
+            public function methods()
+            {
+                // TODO: Implement methods() method.
+            }
+
+            /**
+             * @return array
+             */
+            public function getRights()
+            {
+                // TODO: Implement getRights() method.
+            }
+
+            /**
+             * [
+             *   "uids" => [
+             *     #uid => [
+             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
+             *     ],
+             *   ],
+             *   "gids" => [
+             *     #gid => [
+             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
+             *     ],
+             *   ],
+             * ]
+             *
+             * @return boolean
+             *
+             */
+            public function setRight($right)
+            {
+                // TODO: Implement setRight() method.
+            }
         }
     }
