@@ -30,55 +30,27 @@
              * @return array
              */
 
-            public function allowed_methods($uid) {
-                $allowed = [];
-                try {
-                    $all = $this->db->query("select api, method, request_method from api_methods", \PDO::FETCH_ASSOC)->fetchAll();
-                    foreach ($all as $a) {
-                        $allowed[$a['api']][$a['method']][] = $a['request_method'];
-                    }
-                } catch (Exception $e) {
-                    //
-                }
-                return $allowed;
+            public function allowedMethods($uid) {
+                return $this->methods();
             }
 
             /**
-             * @return array
+             * stub
              */
-            public function methods()
-            {
-                // TODO: Implement methods() method.
+
+            public function getRights() {
+                return false;
             }
 
             /**
-             * @return array
+             * stub
              */
-            public function getRights()
-            {
-                // TODO: Implement getRights() method.
+            public function setRight($right) {
+                return false;
             }
 
-            /**
-             * [
-             *   "uids" => [
-             *     #uid => [
-             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
-             *     ],
-             *   ],
-             *   "gids" => [
-             *     #gid => [
-             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
-             *     ],
-             *   ],
-             * ]
-             *
-             * @return boolean
-             *
-             */
-            public function setRight($right)
-            {
-                // TODO: Implement setRight() method.
+            public function capabilities() {
+                return false;
             }
         }
     }

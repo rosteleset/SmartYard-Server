@@ -31,7 +31,7 @@
      */
 
     /**
-     * @api {post} /accounts/groupUsers/:gid set group users
+     * @api {put} /accounts/groupUsers/:gid set group users
      *
      * @apiVersion 1.0.0
      *
@@ -47,7 +47,7 @@
      *  HTTP/1.1 204 OK
      *
      * @apiExample {curl} Example usage:
-     *  curl -X POST http://127.0.0.1:8000/server/api.php/accounts/setGroupUsers/
+     *  curl -X PUT http://127.0.0.1:8000/server/api.php/accounts/setGroupUsers/
      *      -H 'Content-Type: application/json' \
      *      -d '[1, 2, 3]'
      */
@@ -72,7 +72,7 @@
                 return api::ANSWER($uids, ($uids !== false)?"uids":"404");
             }
 
-            public static function POST($params) {
+            public static function PUT($params) {
                 $success = loadBackend("groups")->setUsers($params["_id"], $params["uids"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"404");
@@ -83,7 +83,7 @@
 
                 if ($groups) {
                     if ($groups->capabilities()["mode"] === "rw") {
-                        return [ "GET", "POST" ];
+                        return [ "GET", "PUT" ];
                     } else {
                         return [ "GET" ];
                     }

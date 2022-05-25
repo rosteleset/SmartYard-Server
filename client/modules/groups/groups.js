@@ -188,7 +188,7 @@
                             uids.push($(this).attr("uid"));
                         }
                     });
-                    POST("accounts", "groupUsers", gid, {
+                    PUT("accounts", "groupUsers", gid, {
                         uids: uids,
                     }).
                     fail(FAIL).

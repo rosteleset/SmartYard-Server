@@ -14,6 +14,34 @@
 
         abstract class authorization extends backend {
 
+            // always available for all
+
+            protected $availableForAll = [
+                "accounts" => [
+                    "whoAmI" => [ "GET" ],
+                ],
+                "authorization" => [
+                    "available" => [ "GET" ],
+                    "methods" => [ "GET" ],
+                ],
+                "authentication" => [
+                    "login" => [ "POST" ],
+                    "logout" => [ "POST" ],
+                    "ping" => [ "POST" ],
+                ],
+                "server" => [
+                    "version" => [ "GET" ],
+                ],
+            ];
+
+            // always available for self (_id == uid)
+
+            protected $availableForSelf = [
+                "accounts" => [
+                    "password" => [ "POST" ],
+                ],
+            ];
+
             /**
              * abstract definition
              *
@@ -27,7 +55,18 @@
              * @return array
              */
 
-            abstract public function methods();
+            public function methods() {
+                $m = [];
+                try {
+                    $all = $this->db->query("select api, method, request_method from api_methods", \PDO::FETCH_ASSOC)->fetchAll();
+                    foreach ($all as $a) {
+                        $m[$a['api']][$a['method']][] = $a['request_method'];
+                    }
+                } catch (Exception $e) {
+                    //
+                }
+                return $m;
+            }
 
             /**
              * @return array
@@ -62,6 +101,6 @@
              * @return mixed
              */
 
-            abstract public function allowed_methods($uid);
+            abstract public function allowedMethods($uid);
         }
     }
