@@ -2,10 +2,10 @@
     "server": "http://127.0.0.1:8000/server/api.php",
 
     "db": {
-        "dsn": "sqlite:/home/mmikel/projects/rbt/server/db/internal.db",
+        "dsn": "sqlite:/home/mmikel/projects/rbt/server/db/internal.db"
     },
 
-    "db": {
+    "db (unused) rename to db and delete previous db to use postgres": {
         "dsn": "pgsql:host=127.0.0.1;port=5432;dbname=rbt",
         "username": "rbt",
         "password": "rbt",

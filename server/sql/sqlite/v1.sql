@@ -16,3 +16,7 @@ CREATE INDEX users_groups_gid on users_groups(gid);
 CREATE UNIQUE INDEX users_groups_uid_gid on users_groups(uid, gid);
 CREATE TABLE api_methods(api_method_id text not null primary key, api text not null, method text not null, request_method text not null);
 CREATE UNIQUE INDEX api_methods_uniq on api_methods(api, method, request_method);
+CREATE TABLE users_rights(uid integer not null, api_method_id text not null, mode integer);
+CREATE UNIQUE INDEX users_rights_uniq on users_rights(uid, api_method_id, mode);
+CREATE TABLE groups_rights(gid integer not null, api_method_id text not null, mode integer);
+CREATE UNIQUE INDEX groups_rights_uniq on groups_rights(gid, api_method_id, mode);
