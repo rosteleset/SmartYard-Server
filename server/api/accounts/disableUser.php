@@ -44,7 +44,7 @@
             public static function POST($params) {
                 $success = $params["_backends"]["users"]->enableUser($params["_id"], false);
 
-                return api::ANSWER($success, ($success !== false)?false:406);
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {

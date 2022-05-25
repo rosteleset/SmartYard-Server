@@ -20,7 +20,7 @@
              */
 
             public static function GET($params) {
-                return self::ANSWER(false, 400);
+                return self::ANSWER(false, "badRequest");
             }
 
             /**
@@ -31,7 +31,7 @@
              */
 
             public static function POST($params) {
-                return self::ANSWER(false, 400);
+                return self::ANSWER(false, "badRequest");
             }
 
             /**
@@ -42,7 +42,7 @@
              */
 
             public static function PUT($params) {
-                return self::ANSWER(false, 400);
+                return self::ANSWER(false, "badRequest");
             }
 
             /**
@@ -53,7 +53,7 @@
              */
 
             public static function DELETE($params) {
-                return self::ANSWER(false, 400);
+                return self::ANSWER(false, "badRequest");
             }
 
             /**
@@ -103,22 +103,26 @@
             /**
              * more specific (error only) return function
              *
-             * @param integer $code
+             * @param string $error
              * @return array
              */
 
-            public static function ERROR($code) {
+            public static function ERROR($error) {
+                if (!$error) {
+                    $error = "unknown";
+                }
+
                 $errors = [
-                    400 => "badRequest",
-                    404 => "notFound",
-                    406 => "notAcceptable",
+                    "badRequest" => 400,
+                    "notFound" => 404,
+                    "notAcceptable" => 406,
                 ];
 
-                $code = $code?:406;
+                $code = @$errors[$error]?:400;
 
                 return [
                     $code => [
-                        "error" => @$errors[$code]?:"unknown",
+                        $code => $error,
                     ],
                 ];
             }

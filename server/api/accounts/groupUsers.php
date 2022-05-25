@@ -69,13 +69,13 @@
             public static function GET($params) {
                 $uids = loadBackend("groups")->getUsers($params["_id"]);
 
-                return api::ANSWER($uids, ($uids !== false)?"uids":"404");
+                return api::ANSWER($uids, ($uids !== false)?"uids":"notFound");
             }
 
             public static function PUT($params) {
                 $success = loadBackend("groups")->setUsers($params["_id"], $params["uids"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"404");
+                return api::ANSWER($success, ($success !== false)?false:"notFound");
             }
 
             public static function index() {

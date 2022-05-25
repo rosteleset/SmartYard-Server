@@ -151,25 +151,25 @@
             public static function GET($params) {
                 $group = loadBackend("groups")->getGroup($params["_id"]);
 
-                return api::ANSWER($group, ($group !== false)?"group":406);
+                return api::ANSWER($group, ($group !== false)?"group":"notAcceptable");
             }
 
             public static function POST($params) {
                 $gid = loadBackend("groups")->addGroup($params["acronym"], $params["name"]);
 
-                return api::ANSWER($gid, ($gid !== false)?"gid":406);
+                return api::ANSWER($gid, ($gid !== false)?"gid":"notAcceptable");
             }
 
             public static function PUT($params) {
                 $success = loadBackend("groups")->modifyGroup($params["_id"], $params["acronym"], $params["name"]);
 
-                return api::ANSWER($success, ($success !== false)?false:406);
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
                 $success = loadBackend("groups")->deleteGroup($params["_id"]);
 
-                return api::ANSWER($success, ($success !== false)?false:406);
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {

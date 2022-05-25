@@ -47,7 +47,7 @@
             public static function POST($params) {
                 $success = $params["_backends"]["users"]->setPassword(@$params["_id"], $params["password"]);
 
-                return self::ANSWER($success, ($success !== false)?false:406);
+                return self::ANSWER($success, ($success !== false)?false:"notFound");
             }
 
             public static function index() {

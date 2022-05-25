@@ -44,7 +44,7 @@
             public static function GET($params) {
                 $groups = loadBackend("groups")->getGroups(false);
 
-                return api::ANSWER($groups, ($groups !== false)?"groups":"404");
+                return api::ANSWER($groups, ($groups !== false)?"groups":"notFound");
             }
 
             public static function index() {
