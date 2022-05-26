@@ -102,7 +102,6 @@
                         }
                         $(`#${prefix}method`).html("").select2({
                             data: m,
-                            theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                         $(`#${prefix}action`).html("");
@@ -138,12 +137,10 @@
                         }
                         $(`#${prefix}actionAllow`).html("").select2({
                             data: a,
-                            theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                         $(`#${prefix}actionDeny`).html("").select2({
                             data: d,
-                            theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                     }
@@ -154,6 +151,7 @@
                     title: i18n("permissions.allowYes"),
                     minimumResultsForSearch: Infinity,
                     multiple: true,
+                    color: "success",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();
@@ -166,6 +164,7 @@
                     title: i18n("permissions.allowNo"),
                     minimumResultsForSearch: Infinity,
                     multiple: true,
+                    color: "danger",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();
@@ -182,10 +181,12 @@
     addUserRights: function () {
         let u = [];
         for (let i in window.modules["permissions"].users) {
-            u.push({
-                value: window.modules["permissions"].users[i].uid,
-                text: window.modules["permissions"].users[i].login,
-            });
+            if (window.modules["permissions"].users[i].uid > 0) {
+                u.push({
+                    value: window.modules["permissions"].users[i].uid,
+                    text: window.modules["permissions"].users[i].login,
+                });
+            }
         }
         let a = [];
         a.push({
@@ -233,7 +234,6 @@
                         }
                         $(`#${prefix}method`).html("").select2({
                             data: m,
-                            theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                         $(`#${prefix}action`).html("");
@@ -269,12 +269,10 @@
                         }
                         $(`#${prefix}actionAllow`).html("").select2({
                             data: a,
-                            theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                         $(`#${prefix}actionDeny`).html("").select2({
                             data: d,
-                            theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                     }
@@ -285,6 +283,7 @@
                     title: i18n("permissions.allowYes"),
                     minimumResultsForSearch: Infinity,
                     multiple: true,
+                    color: "success",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();
@@ -297,6 +296,7 @@
                     title: i18n("permissions.allowNo"),
                     minimumResultsForSearch: Infinity,
                     multiple: true,
+                    color: "danger",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();
@@ -346,6 +346,7 @@
                     multiple: true,
                     value: allow,
                     options: options,
+                    color: "success",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();
@@ -360,6 +361,7 @@
                     multiple: true,
                     value: deny,
                     options: options,
+                    color: "danger",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();
@@ -409,6 +411,7 @@
                     multiple: true,
                     value: allow,
                     options: options,
+                    color: "success",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();
@@ -423,6 +426,7 @@
                     multiple: true,
                     value: deny,
                     options: options,
+                    color: "danger",
                     select: (el, id, prefix) => {
                         let aa = $(`#${prefix}actionAllow`).val();
                         let ad = $(`#${prefix}actionDeny`).val();

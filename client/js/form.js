@@ -70,14 +70,11 @@ function cardForm(params) {
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 if (params.fields[i].color) {
-                    h += `<div class="select2-${params.fields[i].color}" data-select2-id="${_prefix}${params.fields[i].id}">`;
+                    h += `<div class="select2-${params.fields[i].color}">`;
                 } else {
-                    h += `<div data-select2-id="${_prefix}${params.fields[i].id}">`;
+                    h += `<div class="select2-secondary">`;
                 }
                 h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField select2`;
-                if (params.fields[i].color) {
-                    h += ` select2-${params.fields[i].color}`;
-                }
                 h += `"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
@@ -85,9 +82,6 @@ function cardForm(params) {
                 }
                 if (params.fields[i].multiple) {
                     h += ` multiple="multiple"`;
-                }
-                if (params.fields[i].color) {
-                    h += ` data-dropdown-css-class="select2-${params.fields[i].color}"`;
                 }
                 h += `>`;
                 for (let j in params.fields[i].options) {
@@ -143,6 +137,7 @@ function cardForm(params) {
     }
 
     h += `</table>`;
+
     h += `</div>`;
     h += `</div>`;
 
@@ -221,7 +216,6 @@ function cardForm(params) {
         }
         if (params.fields[i].type === "select2") {
             $(`#${_prefix}${params.fields[i].id}`).select2({
-                theme: "bootstrap4",
                 language: window.lang["_code"],
                 minimumResultsForSearch: params.fields[i].minimumResultsForSearch?params.fields[i].minimumResultsForSearch:0,
             });
