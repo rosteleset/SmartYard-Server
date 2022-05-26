@@ -55,7 +55,7 @@
 
     doSetPassword: function (uid, password) {
         loadingStart();
-        POST("accounts", "setPassword", uid, {
+        POST("accounts", "password", uid, {
             password: password,
         }).
         fail(FAIL).

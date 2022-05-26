@@ -52,7 +52,7 @@
                 $authorization = loadBackend("authorization");
 
                 if ($authorization->capabilities()["mode"] === "rw") {
-                    return [ "GET", "POST", "DELETE" ];
+                    return [ "GET", "POST", ];
                 } else {
                     return [ ];
                 }

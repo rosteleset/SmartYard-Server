@@ -1,11 +1,11 @@
 <?php
 
     /**
-     * @api {post} /accounts/setPassword/:uid set user password
+     * @api {post} /accounts/password/:uid set user password
      *
      * @apiVersion 1.0.0
      *
-     * @apiName setPassword
+     * @apiName password
      * @apiGroup users
      *
      * @apiHeader {String} authorization authentication token
@@ -25,7 +25,7 @@
      *  HTTP/1.1 204 OK
      *
      * @apiExample {curl} Example usage:
-     *  curl http://127.0.0.1:8000/server/api.php/accounts/setPassword/1
+     *  curl http://127.0.0.1:8000/server/api.php/accounts/password/1
      *      -H 'Content-Type: application/json' \
      *      -d '{"password":"my_new_password"}'
      */
@@ -42,7 +42,7 @@
          * users method
          */
 
-        class setPassword extends api {
+        class password extends api {
 
             public static function POST($params) {
                 $success = $params["_backends"]["users"]->setPassword(@$params["_id"], $params["password"]);
