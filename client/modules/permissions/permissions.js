@@ -95,12 +95,7 @@
                         }
                     ],
                     select: (el, id, prefix) => {
-                        let a = [
-                            {
-                                id: "",
-                                text: "-",
-                            }
-                        ];
+                        let a = [];
                         let api = $(`#${prefix}api`).val();
                         let method = el.val();
                         if (api && method) {
@@ -108,6 +103,7 @@
                                 a.push({
                                     id: window.modules["permissions"].methods[api][method][i],
                                     text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
+                                    selected: true,
                                 })
                             }
                         }
@@ -123,12 +119,7 @@
                     type: "select2",
                     title: i18n("permissions.action"),
                     minimumResultsForSearch: Infinity,
-                    options: [
-                        {
-                            value: "",
-                            text: "-",
-                        }
-                    ],
+                    multiple: true,
                 },
                 {
                     id: "allow",

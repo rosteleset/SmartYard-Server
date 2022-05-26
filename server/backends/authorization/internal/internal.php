@@ -61,7 +61,7 @@
              *
              * @param boolean $user user or group
              * @param integer $id uid or gid
-             * @param string $aid aid
+             * @param string|string[] $aid aid
              * @param boolean|null $allow api
              *
              * @return boolean

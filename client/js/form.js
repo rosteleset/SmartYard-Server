@@ -74,6 +74,9 @@ function cardForm(params) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
                 }
+                if (params.fields[i].multiple) {
+                    h += ` multiple="multiple"`;
+                }
                 h += `>`;
                 for (let j in params.fields[i].options) {
                     if (params.fields[i].options[j].value == params.fields[i].value) {
