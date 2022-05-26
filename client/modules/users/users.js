@@ -25,12 +25,13 @@
         always(window.modules["users"].render);
     },
 
-    doModifyUser: function (uid, realName, eMail, phone) {
+    doModifyUser: function (uid, realName, eMail, phone, enabled) {
         loadingStart();
         PUT("accounts", "user", uid, {
             realName: realName,
             eMail: eMail,
             phone: phone,
+            enabled: enabled,
         }).
         fail(FAIL).
         done(() => {
@@ -185,6 +186,24 @@
                         }
                     },
                     {
+                        id: "disabled",
+                        type: "select",
+                        value: response.user.enabled?"no":"yes",
+                        title: i18n("users.disabled"),
+                        readonly: uid.toString() === window.myself.uid.toString(),
+                        hidden: uid.toString() === window.myself.uid.toString(),
+                        options: [
+                            {
+                                value: "yes",
+                                text: i18n("yes"),
+                            },
+                            {
+                                value: "no",
+                                text: i18n("no"),
+                            },
+                        ]
+                    },
+                    {
                         id: "delete",
                         type: "select",
                         value: "",
@@ -207,7 +226,7 @@
                     if (result.delete === "yes") {
                         window.modules["users"].deleteUser(result.uid);
                     } else {
-                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone);
+                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no");
                     }
                 },
             }).show();
@@ -340,13 +359,6 @@
                                     },
                                     {
                                         title: "-",
-                                    },
-                                    {
-                                        icon: "fas fa-ban",
-                                        title: (response.users[i].enabled == 1)?i18n("users.disable"):i18n("users.enable"),
-                                        action: (response.users[i].enabled == 1)?"disable":"enable",
-                                        disabled: response.users[i].uid.toString() === window.myself.uid.toString(),
-                                        click: window.modules["users"].enableUser,
                                     },
                                     {
                                         icon: "fas fa-trash-alt",

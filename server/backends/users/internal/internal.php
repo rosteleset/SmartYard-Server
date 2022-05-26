@@ -193,51 +193,26 @@
              * @param string $realName
              * @param string $eMail
              * @param string $phone
+             * @param boolean $enabled
              *
              * @return boolean
              */
 
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '') {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true) {
                 if (!checkInt($uid)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update users set real_name = :real_name, e_mail = :e_mail, phone = :phone where uid = $uid");
+                    $sth = $this->db->prepare("update users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled where uid = $uid");
                     return $sth->execute([
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
+                        ":enabled" => $enabled?"1":"0",
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    return false;
-                }
-
-                return true;
-            }
-
-            /**
-             * enable or disable user
-             *
-             * @param integer $uid
-             * @param boolean $enable
-             *
-             * @return boolean
-             */
-
-            public function enableUser($uid, $enable = true) {
-                if (!checkInt($uid)) {
-                    return false;
-                }
-
-                try {
-                    if ($enable) {
-                        $this->db->exec("update users set enabled = 1 where uid = $uid");
-                    } else {
-                        $this->db->exec("update users set enabled = 0 where uid = $uid");
-                    }
-                } catch (\Exception $e) {
                     return false;
                 }
 

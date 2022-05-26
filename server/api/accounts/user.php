@@ -178,7 +178,7 @@
             }
 
             public static function PUT($params) {
-                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"]);
+                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["enabled"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

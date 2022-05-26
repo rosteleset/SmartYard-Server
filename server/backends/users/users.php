@@ -83,21 +83,11 @@
              * @param string $realName
              * @param string $eMail
              * @param string $phone
+             * @param boolean $enabled
              *
              * @return boolean
              */
 
-            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '');
-
-            /**
-             * enable or disable user
-             *
-             * @param integer $uid
-             * @param boolean $enable
-             *
-             * @return boolean
-             */
-
-            abstract public function enableUser($uid, $enable = true);
+            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true);
         }
     }

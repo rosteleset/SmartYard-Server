@@ -90,6 +90,12 @@
         exit(0);
     }
 
+    if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
+        require_once "utils/cleanup.php";
+        cleanup();
+        exit(0);
+    }
+
     if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["--reindex"])) {
         require_once "utils/reindex.php";
         reindex();
@@ -150,6 +156,7 @@
         [--admin-password=<password>]
         [--reindex]
         [--clear-cache]
+        [--cleanup]
         [--check-mail=<your email address>]
         [--run-demo-server]
     \n";

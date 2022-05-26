@@ -69,7 +69,16 @@ function cardForm(params) {
                 }
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
-                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField select2"`;
+                if (params.fields[i].color) {
+                    h += `<div class="select2-${params.fields[i].color}" data-select2-id="${_prefix}${params.fields[i].id}">`;
+                } else {
+                    h += `<div data-select2-id="${_prefix}${params.fields[i].id}">`;
+                }
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField select2`;
+                if (params.fields[i].color) {
+                    h += ` select2-${params.fields[i].color}`;
+                }
+                h += `"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -77,15 +86,15 @@ function cardForm(params) {
                 if (params.fields[i].multiple) {
                     h += ` multiple="multiple"`;
                 }
+                if (params.fields[i].color) {
+                    h += ` data-dropdown-css-class="select2-${params.fields[i].color}"`;
+                }
                 h += `>`;
                 for (let j in params.fields[i].options) {
-                    if (params.fields[i].options[j].value == params.fields[i].value) {
-                        h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
-                    } else {
-                        h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
-                    }
+                    h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
                 }
                 h += `</select>`;
+                h += `</div>`;
                 h += `</td>`;
                 h += `</tr>`;
                 break;
@@ -220,6 +229,9 @@ function cardForm(params) {
                 $(`#${_prefix}${params.fields[i].id}`).off("select2:select").on("select2:select", function () {
                     params.fields[i].select($(this), params.fields[i].id, _prefix);
                 });
+            }
+            if (params.fields[i].value) {
+                $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value).trigger("change");
             }
         }
     }
