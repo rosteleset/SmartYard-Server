@@ -82,13 +82,15 @@
              *
              * @param boolean $user user or group
              * @param integer $id uid or gid
-             * @param string|string[] $aid aid
-             * @param boolean|null $allow api
+             * @param string $api
+             * @param string $method
+             * @param string[] $allow
+             * @param string[] $deny
              *
              * @return boolean
              */
 
-            abstract public function setRights($user, $id, $aid, $allow);
+            abstract public function setRights($user, $id, $api, $method, $allow, $deny);
 
             /**
              * list of available methods for user

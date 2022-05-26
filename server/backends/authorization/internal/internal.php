@@ -61,62 +61,73 @@
              *
              * @param boolean $user user or group
              * @param integer $id uid or gid
-             * @param string|string[] $aid aid
-             * @param boolean|null $allow api
+             * @param string $api
+             * @param string $method
+             * @param string[] $allow
+             * @param string[] $deny
              *
              * @return boolean
              */
 
-            public function setRights($user, $id, $aid, $allow) {
+
+            public function setRights($user, $id, $api, $method, $allow, $deny) {
                 if (!checkInt($id)) {
                     return false;
                 }
 
-                if (!is_array($aid)) {
-                    $aid = [ $aid ];
+                if (!is_array($allow)) {
+                    $allow = [ $allow ];
+                }
+
+                if (!is_array($deny)) {
+                    $deny = [ $deny ];
                 }
 
                 $tn = $user?"users_rights":"groups_rights";
                 $ci = $user?"uid":"gid";
 
-                if ($allow === true || $allow === false) {
+                try {
+                    $sth = $this->db->prepare("delete from $tn where aid in (select aid from api_methods where api = :api and method = :method)");
+                    $sth->execute([
+                        ":api" => $api,
+                        ":method" => $method,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e));
+                    return false;
+                }
+
+                try {
+                    $sthI = $this->db->prepare("insert into $tn ($ci, aid, allow) values (:id, :aid, :allow)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e));
+                    return false;
+                }
+
+                foreach ($allow as $aid) {
                     try {
-                        $sthI = $this->db->prepare("insert into $tn ($ci, aid) values (:id, :aid)");
+                        $sthI->execute([
+                            ":id" => $id,
+                            ":aid" => $aid,
+                            ":allow" => 1,
+                        ]);
                     } catch (\Exception $e) {
                         error_log(print_r($e));
                         return false;
                     }
+                }
 
+                foreach ($deny as $aid) {
                     try {
-                        $sthU = $this->db->prepare("update $tn set allow = :allow where $ci = :id and aid = :aid");
+                        $sthI->execute([
+                            ":id" => $id,
+                            ":aid" => $aid,
+                            ":allow" => 0,
+                        ]);
                     } catch (\Exception $e) {
                         error_log(print_r($e));
                         return false;
                     }
-
-                    $allow = $allow?"1":"0";
-                    foreach ($aid as $a) {
-                        try {
-                            $sthI->execute([
-                                ":id" => $id,
-                                ":aid" => $a,
-                            ]);
-                        } catch (\Exception $e) {
-                            // unique violate?
-                        }
-                        try {
-                            $sthU->execute([
-                                ":id" => $id,
-                                ":aid" => $a,
-                                ":allow" => $allow,
-                            ]);
-                        } catch (\Exception $e) {
-                            error_log(print_r($e));
-                            return false;
-                        }
-                    }
-                } else {
-
                 }
 
                 return true;

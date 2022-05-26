@@ -42,7 +42,11 @@
                 return false;
             }
 
-            public function capabilities() {
+            /**
+             * stub
+             */
+
+            public function setRights($user, $id, $api, $method, $allow, $deny) {
                 return false;
             }
 
@@ -50,7 +54,7 @@
              * stub
              */
 
-            public function setRights($user, $id, $aid, $allow) {
+            public function capabilities() {
                 return false;
             }
         }

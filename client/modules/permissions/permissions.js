@@ -16,25 +16,29 @@
         action functions
      */
 
-    doAddGroupRights: function (gid, action, allow) {
+    doAddGroupRights: function (gid, api, method, allow, deny) {
         loadingStart();
         POST("authorization", "rights", false, {
             user: false,
             gid: gid,
-            action: action,
+            api: api,
+            method: method,
             allow: allow,
+            deny: deny,
         }).
         fail(FAIL).
         always(window.modules["permissions"].render);
     },
 
-    doAddUserRights: function (uid, action, allow) {
+    doAddUserRights: function (uid, api, method, allow, deny) {
         loadingStart();
         POST("authorization", "rights", false, {
             user: true,
             uid: uid,
-            action: action,
+            api: api,
+            method: method,
             allow: allow,
+            deny: deny,
         }).
         fail(FAIL).
         always(window.modules["permissions"].render);
@@ -116,6 +120,7 @@
                     ],
                     select: (el, id, prefix) => {
                         let a = [];
+                        let d = [];
                         let api = $(`#${prefix}api`).val();
                         let method = el.val();
                         if (api && method) {
@@ -124,41 +129,52 @@
                                     id: window.modules["permissions"].methods[api][method][i],
                                     text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
                                     selected: true,
-                                })
+                                });
+                                d.push({
+                                    id: window.modules["permissions"].methods[api][method][i],
+                                    text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
+                                });
                             }
                         }
-                        $(`#${prefix}action`).html("").select2({
+                        $(`#${prefix}actionAllow`).html("").select2({
                             data: a,
+                            theme: "bootstrap4",
+                            language: window.lang["_code"],
+                        });
+                        $(`#${prefix}actionDeny`).html("").select2({
+                            data: d,
                             theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                     }
                 },
                 {
-                    id: "action",
+                    id: "actionAllow",
                     type: "select2",
-                    title: i18n("permissions.action"),
+                    title: i18n("permissions.allowYes"),
                     minimumResultsForSearch: Infinity,
                     multiple: true,
+                    select: (el, id, prefix) => {
+                        let aa = $(`#${prefix}actionAllow`).val();
+                        let ad = $(`#${prefix}actionDeny`).val();
+                        $(`#${prefix}actionDeny`).val(ad.filter(n => !aa.includes(n))).trigger("change");
+                    },
                 },
                 {
-                    id: "allow",
-                    type: "select",
-                    title: i18n("permissions.allow"),
-                    options: [
-                        {
-                            value: "yes",
-                            text: i18n("permissions.allowYes"),
-                        },
-                        {
-                            value: "no",
-                            text: i18n("permissions.allowNo"),
-                        }
-                    ]
+                    id: "actionDeny",
+                    type: "select2",
+                    title: i18n("permissions.allowNo"),
+                    minimumResultsForSearch: Infinity,
+                    multiple: true,
+                    select: (el, id, prefix) => {
+                        let aa = $(`#${prefix}actionAllow`).val();
+                        let ad = $(`#${prefix}actionDeny`).val();
+                        $(`#${prefix}actionAllow`).val(aa.filter(n => !ad.includes(n))).trigger("change");
+                    },
                 },
             ],
             callback: function (result) {
-                window.modules["permissions"].doAddGroupRights(result.gid, result.action, result.allow === "yes");
+                window.modules["permissions"].doAddGroupRights(result.gid, result.api, result.method, result.actionAllow, result.actionDeny);
             },
         }).show();
     },
@@ -235,6 +251,7 @@
                     ],
                     select: (el, id, prefix) => {
                         let a = [];
+                        let d = [];
                         let api = $(`#${prefix}api`).val();
                         let method = el.val();
                         if (api && method) {
@@ -243,41 +260,52 @@
                                     id: window.modules["permissions"].methods[api][method][i],
                                     text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
                                     selected: true,
-                                })
+                                });
+                                d.push({
+                                    id: window.modules["permissions"].methods[api][method][i],
+                                    text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
+                                });
                             }
                         }
-                        $(`#${prefix}action`).html("").select2({
+                        $(`#${prefix}actionAllow`).html("").select2({
                             data: a,
+                            theme: "bootstrap4",
+                            language: window.lang["_code"],
+                        });
+                        $(`#${prefix}actionDeny`).html("").select2({
+                            data: d,
                             theme: "bootstrap4",
                             language: window.lang["_code"],
                         });
                     }
                 },
                 {
-                    id: "action",
+                    id: "actionAllow",
                     type: "select2",
-                    title: i18n("permissions.action"),
+                    title: i18n("permissions.allowYes"),
                     minimumResultsForSearch: Infinity,
                     multiple: true,
+                    select: (el, id, prefix) => {
+                        let aa = $(`#${prefix}actionAllow`).val();
+                        let ad = $(`#${prefix}actionDeny`).val();
+                        $(`#${prefix}actionDeny`).val(ad.filter(n => !aa.includes(n))).trigger("change");
+                    },
                 },
                 {
-                    id: "allow",
-                    type: "select",
-                    title: i18n("permissions.allow"),
-                    options: [
-                        {
-                            value: "yes",
-                            text: i18n("permissions.allowYes"),
-                        },
-                        {
-                            value: "no",
-                            text: i18n("permissions.allowNo"),
-                        }
-                    ]
+                    id: "actionDeny",
+                    type: "select2",
+                    title: i18n("permissions.allowNo"),
+                    minimumResultsForSearch: Infinity,
+                    multiple: true,
+                    select: (el, id, prefix) => {
+                        let aa = $(`#${prefix}actionAllow`).val();
+                        let ad = $(`#${prefix}actionDeny`).val();
+                        $(`#${prefix}actionAllow`).val(aa.filter(n => !ad.includes(n))).trigger("change");
+                    },
                 },
             ],
             callback: function (result) {
-                window.modules["permissions"].doAddUserRights(result.uid, result.action, result.allow === "yes");
+                window.modules["permissions"].doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
             },
         }).show();
     },
@@ -351,38 +379,101 @@
                                 fullWidth: true,
                             },
                             {
-                                title: i18n("permissions.action"),
-                                nowrap: true,
-                            },
-                            {
-                                title: i18n("permissions.allow"),
+                                title: i18n("permissions.mode"),
                                 nowrap: true,
                             },
                         ],
                         rows: () => {
                             let rows = [];
 
+                            let x = {};
                             for (let i in window.modules["permissions"].rights.groups) {
-                                rows.push({
-                                    uid: window.modules["permissions"].rights.groups[i].gid.toString() + '-' + window.modules["permissions"].rights.groups[i].aid,
-                                    cols: [
-                                        {
-                                            data: g[window.modules["permissions"].rights.groups[i].gid].acronym,
-                                        },
-                                        {
-                                            data: m[window.modules["permissions"].rights.groups[i].aid].api_text,
-                                        },
-                                        {
-                                            data: m[window.modules["permissions"].rights.groups[i].aid].method_text,
-                                        },
-                                        {
-                                            data: m[window.modules["permissions"].rights.groups[i].aid].action_text,
-                                        },
-                                        {
-                                            data: window.modules["permissions"].rights.groups[i].allow?i18n("permissions.allowYes"):i18n("permissions.allowNo"),
-                                        },
-                                    ],
-                                });
+                                let t = window.modules["permissions"].rights.groups[i];
+                                if (!x[t.gid]) {
+                                    x[t.gid] = {};
+                                }
+                                if (!x[t.gid][m[t.aid].api]) {
+                                    x[t.gid][m[t.aid].api] = {
+                                        _aid: t.aid,
+                                    };
+                                }
+                                if (!x[t.gid][m[t.aid].api][m[t.aid].method]) {
+                                    x[t.gid][m[t.aid].api][m[t.aid].method] = {
+                                        _aid: t.aid,
+                                    };
+                                }
+                                x[t.gid][m[t.aid].api][m[t.aid].method][m[t.aid].action] = {
+                                    _aid: t.aid,
+                                    allow: t.allow,
+                                }
+                            }
+
+                            for (let i in x) {
+                                if (i == "_aid") continue;
+                                for (let j in x[i]) {
+                                    if (j == "_aid") continue;
+                                    for (let k in x[i][j]) {
+                                        if (k == "_aid") continue;
+                                        let d = "";
+                                        if (x[i][j][k]["POST"]) {
+                                            if (x[i][j][k]["POST"].allow) {
+                                                d += "<span class='text-success'>C</span>";
+                                            } else {
+                                                d += "<span class='text-danger'>C</span>";
+                                            }
+                                        } else {
+                                            d += "<span>-</span>";
+                                        }
+                                        if (x[i][j][k]["GET"]) {
+                                            if (x[i][j][k]["GET"].allow) {
+                                                d += "<span class='text-success'>R</span>";
+                                            } else {
+                                                d += "<span class='text-danger'>R</span>";
+                                            }
+                                        } else {
+                                            d += "<span>-</span>";
+                                        }
+                                        if (x[i][j][k]["PUT"]) {
+                                            if (x[i][j][k]["PUT"].allow) {
+                                                d += "<span class='text-success'>U</span>";
+                                            } else {
+                                                d += "<span class='text-danger'>U</span>";
+                                            }
+                                        } else {
+                                            d += "<span>-</span>";
+                                        }
+                                        if (x[i][j][k]["DELETE"]) {
+                                            if (x[i][j][k]["DELETE"].allow) {
+                                                d += "<span class='text-success'>D</span>";
+                                            } else {
+                                                d += "<span class='text-danger'>D</span>";
+                                            }
+                                        } else {
+                                            d += "<span>-</span>";
+                                        }
+                                        rows.push({
+                                            uid: i.toString() + '-' + j + '-' + k,
+                                            cols: [
+                                                {
+                                                    data: g[i].acronym,
+                                                },
+                                                {
+                                                    data: m[x[i][j]._aid].api_text,
+                                                },
+                                                {
+                                                    data: m[x[i][j][k]._aid].method_text,
+                                                },
+                                                {
+                                                    data: "<span class='text-monospace text-bold'>" + d + "</span>",
+                                                    click: uid => {
+                                                        console.log(uid);
+                                                    }
+                                                },
+                                            ],
+                                        });
+                                    }
+
+                                }
                             }
 
                             return rows;
@@ -398,6 +489,27 @@
                             u[_u.users[i].uid] = _u.users[i];
                         }
 
+                        let x = {};
+                        for (let i in window.modules["permissions"].rights.users) {
+                            let t = window.modules["permissions"].rights.users[i];
+                            if (!x[t.uid]) {
+                                x[t.uid] = {};
+                            }
+                            if (!x[t.uid][m[t.aid].api]) {
+                                x[t.uid][m[t.aid].api] = {
+                                    _aid: t.aid,
+                                };
+                            }
+                            if (!x[t.uid][m[t.aid].api][m[t.aid].method]) {
+                                x[t.uid][m[t.aid].api][m[t.aid].method] = {
+                                    _aid: t.aid,
+                                };
+                            }
+                            x[t.uid][m[t.aid].api][m[t.aid].method][m[t.aid].action] = {
+                                _aid: t.aid,
+                                allow: t.allow,
+                            }
+                        }
 
                         cardTable({
                             target: "#altForm",
@@ -428,38 +540,79 @@
                                     fullWidth: true,
                                 },
                                 {
-                                    title: i18n("permissions.action"),
-                                    nowrap: true,
-                                },
-                                {
-                                    title: i18n("permissions.allow"),
+                                    title: i18n("permissions.mode"),
                                     nowrap: true,
                                 },
                             ],
                             rows: () => {
                                 let rows = [];
 
-                                for (let i in window.modules["permissions"].rights.users) {
-                                    rows.push({
-                                        uid: window.modules["permissions"].rights.users[i].uid.toString() + '-' + window.modules["permissions"].rights.users[i].aid,
-                                        cols: [
-                                            {
-                                                data: u[window.modules["permissions"].rights.users[i].uid].login,
-                                            },
-                                            {
-                                                data: m[window.modules["permissions"].rights.users[i].aid].api_text,
-                                            },
-                                            {
-                                                data: m[window.modules["permissions"].rights.users[i].aid].method_text,
-                                            },
-                                            {
-                                                data: m[window.modules["permissions"].rights.users[i].aid].action_text,
-                                            },
-                                            {
-                                                data: window.modules["permissions"].rights.users[i].allow?i18n("permissions.allowYes"):i18n("permissions.allowNo"),
-                                            },
-                                        ],
-                                    });
+                                for (let i in x) {
+                                    if (i == "_aid") continue;
+                                    for (let j in x[i]) {
+                                        if (j == "_aid") continue;
+                                        for (let k in x[i][j]) {
+                                            if (k == "_aid") continue;
+                                            let d = "";
+                                            if (x[i][j][k]["POST"]) {
+                                                if (x[i][j][k]["POST"].allow) {
+                                                    d += "<span class='text-success'>C</span>";
+                                                } else {
+                                                    d += "<span class='text-danger'>C</span>";
+                                                }
+                                            } else {
+                                                d += "<span>-</span>";
+                                            }
+                                            if (x[i][j][k]["GET"]) {
+                                                if (x[i][j][k]["GET"].allow) {
+                                                    d += "<span class='text-success'>R</span>";
+                                                } else {
+                                                    d += "<span class='text-danger'>R</span>";
+                                                }
+                                            } else {
+                                                d += "<span>-</span>";
+                                            }
+                                            if (x[i][j][k]["PUT"]) {
+                                                if (x[i][j][k]["PUT"].allow) {
+                                                    d += "<span class='text-success'>U</span>";
+                                                } else {
+                                                    d += "<span class='text-danger'>U</span>";
+                                                }
+                                            } else {
+                                                d += "<span>-</span>";
+                                            }
+                                            if (x[i][j][k]["DELETE"]) {
+                                                if (x[i][j][k]["DELETE"].allow) {
+                                                    d += "<span class='text-success'>D</span>";
+                                                } else {
+                                                    d += "<span class='text-danger'>D</span>";
+                                                }
+                                            } else {
+                                                d += "<span>-</span>";
+                                            }
+                                            rows.push({
+                                                uid: i.toString() + '-' + j + '-' + k,
+                                                cols: [
+                                                    {
+                                                        data: u[i].login,
+                                                    },
+                                                    {
+                                                        data: m[x[i][j]._aid].api_text,
+                                                    },
+                                                    {
+                                                        data: m[x[i][j][k]._aid].method_text,
+                                                    },
+                                                    {
+                                                        data: "<span class='text-monospace text-bold'>" + d + "</span>",
+                                                        click: uid => {
+                                                            console.log(uid);
+                                                        }
+                                                    },
+                                                ],
+                                            });
+                                        }
+
+                                    }
                                 }
 
                                 return rows;

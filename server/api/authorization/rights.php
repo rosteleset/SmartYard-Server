@@ -43,7 +43,7 @@
             }
 
             public static function POST($params) {
-                $success = $params["_backends"]["authorization"]->setRights($params["user"], $params["user"]?$params["uid"]:$params["gid"], $params["action"], $params["allow"]);
+                $success = $params["_backends"]["authorization"]->setRights($params["user"], $params["user"]?$params["uid"]:$params["gid"], $params["api"], $params["method"], $params["allow"], $params["deny"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"unknown");
             }
