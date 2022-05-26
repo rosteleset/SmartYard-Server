@@ -42,7 +42,7 @@
                 return api::ANSWER($rights, ($rights !== false)?"rights":"notFound");
             }
 
-            public static function PUT($params) {
+            public static function POST($params) {
                 $success = $params["_backends"]["authorization"]->setRights($params["user"], $params["user"]?$params["uid"]:$params["gid"], $params["action"], $params["allow"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"unknown");
@@ -51,8 +51,8 @@
             public static function index() {
                 $authorization = loadBackend("authorization");
 
-                if ($authorization->capabilities() == "rw") {
-                    return [ "GET", "PUT", "POST", "DELETE" ];
+                if ($authorization->capabilities()["mode"] === "rw") {
+                    return [ "GET", "POST", "DELETE" ];
                 } else {
                     return [ ];
                 }

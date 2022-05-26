@@ -18,7 +18,7 @@
 
     doAddGroupRights: function (gid, action, allow) {
         loadingStart();
-        PUT("authorization", "rights", false, {
+        POST("authorization", "rights", false, {
             user: false,
             gid: gid,
             action: action,
@@ -30,7 +30,7 @@
 
     doAddUserRights: function (uid, action, allow) {
         loadingStart();
-        PUT("authorization", "rights", false, {
+        POST("authorization", "rights", false, {
             user: true,
             uid: uid,
             action: action,
