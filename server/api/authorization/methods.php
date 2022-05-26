@@ -26,7 +26,7 @@
         class methods extends api {
 
             public static function GET($params) {
-                $methods = $params["_backends"]["authorization"]->methods();
+                $methods = $params["_backends"]["authorization"]->methods($params["all"]);
 
                 return api::ANSWER($methods, ($methods !== false)?"methods":"notFound");
             }

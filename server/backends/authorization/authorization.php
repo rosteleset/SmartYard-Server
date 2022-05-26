@@ -34,11 +34,11 @@
                 ],
             ];
 
-            // always available for self (_id == uid)
+            // by default available for self (_id == uid)
 
             protected $availableForSelf = [
                 "accounts" => [
-                    "password" => [ "POST" ],
+                    "user" => [ "GET", "PUT" ],
                 ],
             ];
 
@@ -55,12 +55,14 @@
              * @return array
              */
 
-            public function methods() {
+            public function methods($_all = true) {
                 $m = [];
                 try {
                     $all = $this->db->query("select aid, api, method, request_method from api_methods", \PDO::FETCH_ASSOC)->fetchAll();
                     foreach ($all as $a) {
-                        $m[$a['api']][$a['method']][$a['request_method']] =  $a['aid'];
+                        if ($_all || (@$this->availableForAll[$a['api']][$a['method']] && in_array($a['request_method'], $this->availableForAll[$a['api']][$a['method']])) === false) {
+                            $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                        }
                     }
                 } catch (Exception $e) {
                     error_log(print_r($e, true));

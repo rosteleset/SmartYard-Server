@@ -154,7 +154,9 @@
 
             console.log(r);
 
-            GET("authorization", "methods").done(m => {
+            QUERY("authorization", "methods", {
+                all: 0,
+            }).done(m => {
                 window.modules["permissions"].methods = m.methods;
 
                 console.log(m);

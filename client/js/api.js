@@ -1,3 +1,17 @@
+function QUERY(api, method, query, fresh) {
+    return $.ajax({
+        url: $.cookie("_server") + "/" + api + "/" + method + (query?("?" + $.param(query)):""),
+        beforeSend: xhr => {
+            xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
+            if (fresh) {
+                xhr.setRequestHeader("X-Api-Refresh", "1");
+            }
+        },
+        type: "GET",
+        contentType: "json",
+    });
+}
+
 function GET(api, method, id, fresh) {
     return $.ajax({
         url: $.cookie("_server") + "/" + api + "/" + method + (id?("/" + id):""),
