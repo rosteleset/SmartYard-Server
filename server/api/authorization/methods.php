@@ -17,14 +17,18 @@
 
     namespace api\authorization {
 
+        use api\api;
+
         /**
          * available method
          */
 
-        class methods extends \api\api {
+        class methods extends api {
 
             public static function GET($params) {
-                //
+                $methods = $params["_backends"]["authorization"]->methods();
+
+                return api::ANSWER($methods, ($methods !== false)?"methods":"notFound");
             }
 
             public static function index() {

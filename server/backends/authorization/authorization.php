@@ -58,12 +58,13 @@
             public function methods() {
                 $m = [];
                 try {
-                    $all = $this->db->query("select api, method, request_method from api_methods", \PDO::FETCH_ASSOC)->fetchAll();
+                    $all = $this->db->query("select aid, api, method, request_method from api_methods", \PDO::FETCH_ASSOC)->fetchAll();
                     foreach ($all as $a) {
-                        $m[$a['api']][$a['method']][] = $a['request_method'];
+                        $m[$a['api']][$a['method']][$a['request_method']] =  $a['aid'];
                     }
                 } catch (Exception $e) {
-                    //
+                    error_log(print_r($e, true));
+                    return false;
                 }
                 return $m;
             }
@@ -75,24 +76,17 @@
             abstract public function getRights();
 
             /**
-             * [
-             *   "uids" => [
-             *     #uid => [
-             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
-             *     ],
-             *   ],
-             *   "gids" => [
-             *     #gid => [
-             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
-             *     ],
-             *   ],
-             * ]
+             * add, modify or delete user or group access to api method
+             *
+             * @param boolean $user user or group
+             * @param integer $id uid or gid
+             * @param string $aid aid
+             * @param boolean|null $allow api
              *
              * @return boolean
-             *
              */
 
-            abstract public function setRight($right);
+            abstract public function setRight($user, $id, $aid, $allow);
 
             /**
              * list of available methods for user

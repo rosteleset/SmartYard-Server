@@ -1,5 +1,6 @@
 function cardForm(params) {
-    let h = '';
+    let _prefix = "modalForm-" + md5(guid()) + "-";
+    let h = "";
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
@@ -35,7 +36,7 @@ function cardForm(params) {
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
-                h += `<select id="modalForm-${params.fields[i].id}" class="form-control form-control-sm modalFormField"`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -60,6 +61,31 @@ function cardForm(params) {
                 h += `</td>`;
                 h += `</tr>`;
                 break;
+            case "select2":
+                if (params.fields[i].hidden) {
+                    h += `<tr style="display: none;">`;
+                } else {
+                    h += `<tr>`;
+                }
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-right">`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField select2"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `>`;
+                for (let j in params.fields[i].options) {
+                    if (params.fields[i].options[j].value == params.fields[i].value) {
+                        h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
+                    } else {
+                        h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
+                    }
+                }
+                h += `</select>`;
+                h += `</td>`;
+                h += `</tr>`;
+                break;
             case "email":
             case "tel":
             case "date":
@@ -71,7 +97,7 @@ function cardForm(params) {
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
-                h += `<input id="modalForm-${params.fields[i].id}" type="${type}" class="form-control form-control-sm modalFormField" autocomplete="off" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<input id="${_prefix}${params.fields[i].id}" type="${type}" class="form-control modalFormField" autocomplete="off" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -79,7 +105,7 @@ function cardForm(params) {
                 h += `>`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group-append">`;
-                    h += `<span id="modalForm-${params.fields[i].id}-button" class="input-group-text pointer"><i class="${params.fields[i].button.class}"></i></span>`;
+                    h += `<span id="${_prefix}${params.fields[i].id}-button" class="input-group-text pointer"><i class="${params.fields[i].button.class}"></i></span>`;
                     h += `</div>`;
                 }
                 h += `</div>`;
@@ -113,8 +139,8 @@ function cardForm(params) {
         let invalid = [];
         for (let i in params.fields) {
             if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
-                if (!params.fields[i].validate($(`#modalForm-${params.fields[i].id}`).val())) {
-                    invalid.push(`#modalForm-${params.fields[i].id}`);
+                if (!params.fields[i].validate($(`#${_prefix}${params.fields[i].id}`).val())) {
+                    invalid.push(`#${_prefix}${params.fields[i].id}`);
                 }
             }
         }
@@ -122,7 +148,7 @@ function cardForm(params) {
             if (typeof params.callback === "function") {
                 let result = {};
                 for (let i in params.fields) {
-                    result[params.fields[i].id] = $(`#modalForm-${params.fields[i].id}`).val();
+                    result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).val();
                 }
                 if (!params.target) {
                     $('#modal').modal('hide');
@@ -179,7 +205,19 @@ function cardForm(params) {
 
     for (let i in params.fields) {
         if (params.fields[i].button && typeof params.fields[i].button.click === "function") {
-            $(`#modalForm-${params.fields[i].id}-button`).off("click").on("click", params.fields[i].button.click);
+            $(`#${_prefix}${params.fields[i].id}-button`).off("click").on("click", params.fields[i].button.click);
+        }
+        if (params.fields[i].type === "select2") {
+            $(`#${_prefix}${params.fields[i].id}`).select2({
+                theme: "bootstrap4",
+                language: window.lang["_code"],
+                minimumResultsForSearch: params.fields[i].minimumResultsForSearch?params.fields[i].minimumResultsForSearch:0,
+            });
+            if (typeof params.fields[i].select === "function") {
+                $(`#${_prefix}${params.fields[i].id}`).off("select2:select").on("select2:select", function () {
+                    params.fields[i].select($(this), params.fields[i].id, _prefix);
+                });
+            }
         }
     }
 

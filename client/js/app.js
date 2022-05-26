@@ -377,8 +377,9 @@ function initAll() {
             ua: $.cookie("_ua"),
         }).done((a, b) => {
             if (b === "nocontent") {
-                GET("authorization", "available").done((a, b) => {
-                    if (a.available && b === "success") {
+                GET("authorization", "available").done(a => {
+                    console.log(a);
+                    if (a && a.available) {
                         window.myself = {
                             uid: -1,
                         };

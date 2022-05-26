@@ -268,13 +268,19 @@
 
         GET("accounts", "users", false, true).done(response => {
             cardTable({
-                addButton: {
-                    title: i18n("users.addUser"),
-                    click: window.modules["users"].addUser,
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("users.addUser"),
+                        click: window.modules["users"].addUser,
+                    },
+                    caption: i18n("users.users"),
+                    filter: true,
                 },
-                title: i18n("users.users"),
-                filter: true,
                 startPage: window.modules["users"].startPage,
+                pageChange: page => {
+                    window.modules["users"].startPage = page;
+                },
                 columns: [
                     {
                         title: i18n("users.uid"),
@@ -355,10 +361,6 @@
                     }
 
                     return rows;
-                },
-                target: "#mainForm",
-                pageChange: page => {
-                    window.modules["users"].startPage = page;
                 },
             });
         }).

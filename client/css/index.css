@@ -76,3 +76,7 @@ select {
 .opacity-disabled {
     opacity: 0.4;
 }
+
+.select2-container--open {
+    z-index: 9999999 !important;
+}

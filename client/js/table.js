@@ -1,22 +1,23 @@
 function cardTable(params) {
     let h = `<div class="card mt-2">`;
     let filterInput = '';
-    let addButton = '';
+    let titleButton = '';
 
-    if (params.addButton || params.title || params.filter) {
+    if (params.title) {
         h += `<div class="card-header">`;
-        if (params.addButton || params.title) {
+        if (params.title.button || params.title.caption) {
             h += `<h3 class="card-title">`;
-            if (params.addButton) {
-                addButton = md5(guid());
-                h += `<button id="${addButton}" class="btn btn-primary mr-2 btn-xs" title="${params.addButton.title}"><i class="fas fa-fw fa-plus-circle"></i></button>`;
+            if (params.title.button) {
+                titleButton = md5(guid());
+                let icon = params.title.button.icon?params.title.button.icon:"fas fa-plus-circle";
+                h += `<button id="${titleButton}" class="btn btn-primary mr-2 btn-xs" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
             }
-            if (params.title) {
-                h += " " + params.title;
+            if (params.title.caption) {
+                h += " " + params.title.caption;
             }
             h += `</h3>`;
         }
-        if (params.filter) {
+        if (params.title.filter) {
             filterInput = md5(guid());
             h += `<div class="card-tools d-none d-md-block col-2">`;
             h += `<div class="input-group input-group-sm">`;
@@ -36,7 +37,7 @@ function cardTable(params) {
     let startPage = params.startPage?params.startPage:1;
 
     h += `<div class="card-body table-responsive p-0">`;
-    if (params.filter) {
+    if (params.title.filter) {
         h += `<table class="table table-hover ${filterInput}-search-table">`;
     } else {
         h += `<table class="table table-hover">`;
@@ -240,8 +241,8 @@ function cardTable(params) {
     if (params.target) {
         $(params.target).html(h);
 
-        if (addButton && params.addButton && typeof params.addButton.click === "function") {
-            $("#" + addButton).off("click").on("click", params.addButton.click);
+        if (titleButton && params.title.button && typeof params.title.button.click === "function") {
+            $("#" + titleButton).off("click").on("click", params.title.button.click);
         }
 
         $(".menuItem-" + tableClass).off("click").on("click", function () {
@@ -252,7 +253,7 @@ function cardTable(params) {
             rows[parseInt($(this).attr("rowId"))].cols[parseInt($(this).attr("colId"))].click($(this).attr("uid"));
         });
 
-        if (params.filter) {
+        if (params.title.filter) {
             $("#" + filterInput).off("keyup").on("keyup", e => {
                 let f = $(e.currentTarget).val();
                 $.uiTableFilter($("." + filterInput + "-search-table"), f);
@@ -264,7 +265,7 @@ function cardTable(params) {
         }
 
         $(`.${tableClass}-navButton`).off("click").on("click", doPager);
-    } else {
-        return [ h, addButton, filterInput, tableClass, clickableClass, ];
+
+        return $(params.target);
     }
 }

@@ -6,7 +6,7 @@
         $apis = scandir("api");
 
         $db->exec("delete from api_methods");
-        $add = $db->prepare("insert into api_methods (api_method_id, api, method, request_method) values (:md5, :api, :method, :request_method)");
+        $add = $db->prepare("insert into api_methods (aid, api, method, request_method) values (:md5, :api, :method, :request_method)");
 
         $n = 0;
 

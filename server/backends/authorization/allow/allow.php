@@ -42,14 +42,15 @@
                 return false;
             }
 
-            /**
-             * stub
-             */
-            public function setRight($right) {
+            public function capabilities() {
                 return false;
             }
 
-            public function capabilities() {
+            /**
+             * stub
+             */
+
+            public function setRight($user, $id, $aid, $allow) {
                 return false;
             }
         }

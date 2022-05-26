@@ -38,44 +38,36 @@
                 if ($uid === 0) {
                     return $this->methods();
                 } else {
-                    $allowed = [];
-                    try {
-                        $all = $this->db->query("select api, method, request_method from api_methods", \PDO::FETCH_ASSOC)->fetchAll();
-                        foreach ($all as $a) {
-                            $allowed[$a['api']][$a['method']][] = $a['request_method'];
-                        }
-                    } catch (Exception $e) {
-                        //
-                    }
-                    return $allowed;
+                    return $this->methods();
                 }
             }
 
             /**
              * @return array
              */
+
             public function getRights() {
-                // TODO: Implement getRights() method.
+                $users = $this->db->query("select uid, aid, mode from users_rights", \PDO::FETCH_ASSOC)->fetchAll();
+                $groups = $this->db->query("select gid, aid, mode from groups_rights", \PDO::FETCH_ASSOC)->fetchAll();
+
+                return [
+                    "users" => $users,
+                    "groups" => $groups,
+                ];
             }
 
             /**
-             * [
-             *   "uids" => [
-             *     #uid => [
-             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
-             *     ],
-             *   ],
-             *   "gids" => [
-             *     #gid => [
-             *       #api_method_id => #allow (0 - default, 1 - allow, 2 - deny)
-             *     ],
-             *   ],
-             * ]
+             * add, modify or delete user or group access to api method
+             *
+             * @param boolean $user user or group
+             * @param integer $id uid or gid
+             * @param string $aid aid
+             * @param boolean|null $allow api
              *
              * @return boolean
-             *
              */
-            public function setRight($right) {
+
+            public function setRight($user, $id, $aid, $allow) {
                 // TODO: Implement setRight() method.
             }
 

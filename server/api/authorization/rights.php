@@ -28,14 +28,18 @@
 
     namespace api\authorization {
 
+        use api\api;
+
         /**
          * available method
          */
 
-        class rights extends \api\api {
+        class rights extends api {
 
             public static function GET($params) {
-                //
+                $rights = $params["_backends"]["authorization"]->getRights();
+
+                return api::ANSWER($rights, ($rights !== false)?"rights":"notFound");
             }
 
             public static function PUT($params) {
@@ -46,7 +50,7 @@
                 $authorization = loadBackend("authorization");
 
                 if ($authorization->capabilities() == "rw") {
-                    return [ "GET", "PUT" ];
+                    return [ "GET", "PUT", "POST", "DELETE" ];
                 } else {
                     return [ ];
                 }

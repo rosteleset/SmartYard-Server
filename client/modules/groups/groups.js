@@ -213,12 +213,14 @@
 
         GET("accounts", "groups", false, true).done(response => {
             cardTable({
-                addButton: {
-                    title: i18n("groups.addGroup"),
-                    click: window.modules["groups"].addGroup,
+                title: {
+                    caption: i18n("groups.groups"),
+                    button: {
+                        caption: i18n("groups.addGroup"),
+                        click: window.modules["groups"].addGroup,
+                    },
+                    filter: true,
                 },
-                title: i18n("groups.groups"),
-                filter: true,
                 startPage: window.modules["groups"].startPage,
                 columns: [
                     {

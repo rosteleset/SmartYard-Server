@@ -46,14 +46,16 @@
 
     namespace api\authorization {
 
+        use api\api;
+
         /**
          * available method
          */
 
-        class available extends \api\api {
+        class available extends api {
 
             public static function GET($params) {
-                return self::SUCCESS("available", $params["_backends"]["authorization"]->allowedMethods($params["_uid"]));
+                return api::SUCCESS("available", $params["_backends"]["authorization"]->allowedMethods($params["_uid"]));
             }
 
             public static function index() {
