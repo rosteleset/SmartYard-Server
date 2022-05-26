@@ -43,7 +43,9 @@
             }
 
             public static function PUT($params) {
-                //
+                $success = $params["_backends"]["authorization"]->setRights($params["user"], $params["user"]?$params["uid"]:$params["gid"], $params["action"], $params["allow"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"unknown");
             }
 
             public static function index() {

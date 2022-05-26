@@ -1,7 +1,6 @@
 var last_hash = false;
 var modules = [];
 var moduleLoadQueue = [];
-var me = {};
 
 function parseHash(hash, default_route) {
     let params = {};

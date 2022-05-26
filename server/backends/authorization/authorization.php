@@ -64,7 +64,7 @@
                             $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
                         }
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
@@ -88,7 +88,7 @@
              * @return boolean
              */
 
-            abstract public function setRight($user, $id, $aid, $allow);
+            abstract public function setRights($user, $id, $aid, $allow);
 
             /**
              * list of available methods for user

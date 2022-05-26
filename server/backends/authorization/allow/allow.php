@@ -50,7 +50,7 @@
              * stub
              */
 
-            public function setRight($user, $id, $aid, $allow) {
+            public function setRights($user, $id, $aid, $allow) {
                 return false;
             }
         }

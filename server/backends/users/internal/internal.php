@@ -37,7 +37,7 @@
                     }
 
                     return $_users;
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return false;
                 }
             }
@@ -80,7 +80,7 @@
                     } else {
                         return false;
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return false;
                 }
             }
@@ -124,7 +124,7 @@
                     } else {
                         return false;
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return false;
                 }
             }
@@ -150,7 +150,7 @@
                 try {
                     $sth = $this->db->prepare("update users set password = :password where uid = $uid");
                     $sth->execute([ ":password" => password_hash($password, PASSWORD_DEFAULT) ]);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return false;
                 }
 
@@ -177,7 +177,7 @@
                         if ($groups) {
                             $groups->deleteUser($uid);
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         return false;
                     }
                     return true;
@@ -209,7 +209,7 @@
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
                     ]);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
@@ -237,7 +237,7 @@
                     } else {
                         $this->db->exec("update users set enabled = 0 where uid = $uid");
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return false;
                 }
 
@@ -265,7 +265,7 @@
                     } else {
                         return false;
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return false;
                 }
             }

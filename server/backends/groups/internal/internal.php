@@ -74,7 +74,7 @@
                         ":acronym" => trim($acronym),
                         ":name" => trim($name),
                     ]);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
@@ -114,7 +114,7 @@
                     } else {
                         return false;
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     return false;
                 }
             }
@@ -135,7 +135,7 @@
                 try {
                     $this->db->exec("delete from groups where gid = $gid");
                     $this->db->exec("delete from users_groups where gid = $gid");
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
@@ -176,14 +176,14 @@
 
                 try {
                     $this->db->exec("delete from users_groups where gid = $gid");
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
 
                 try {
                     $sth = $this->db->prepare("insert into users_groups (uid, gid) values (:uid, :gid)");
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
@@ -212,7 +212,7 @@
 
                 try {
                     $this->db->exec("delete from users_groups where uid = $uid");
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }

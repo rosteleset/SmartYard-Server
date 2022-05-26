@@ -28,16 +28,18 @@
 
     namespace api\server {
 
+        use api\api;
+
         /**
          * version method
          */
 
-        class version extends \api\api {
+        class version extends api {
 
             public static function GET($params) {
                 try {
                     $version = (int)$params["_db"]->query("select var_value from vars where var_name = 'dbVersion'", \PDO::FETCH_ASSOC)->fetch()["var_value"];
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $version = 0;
                 }
 
