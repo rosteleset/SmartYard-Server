@@ -48,146 +48,28 @@
         UI functions
      */
 
-    addGroupRights: function () {
+    addRights: function (group) {
         let g = [];
-        for (let i in window.modules["permissions"].groups) {
-            g.push({
-                value: window.modules["permissions"].groups[i].gid,
-                text: window.modules["permissions"].groups[i].acronym,
-            });
-        }
-        let a = [];
-        a.push({
-            value: "",
-            text: "-",
-        });
-        for (let i in window.modules["permissions"].methods) {
-            a.push({
-                value: i,
-                text: (window.lang.methods[i] && window.lang.methods[i]["_title"])?window.lang.methods[i]["_title"]:i,
-            });
-        }
-        cardForm({
-            title: i18n("permissions.add"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "gid",
-                    type: "select2",
-                    title: i18n("groups.acronym"),
-                    options: g,
-                },
-                {
-                    id: "api",
-                    type: "select2",
-                    title: i18n("permissions.api"),
-                    options: a,
-                    select: (el, id, prefix) => {
-                        let m = [
-                            {
-                                id: "",
-                                text: "-",
-                            }
-                        ];
-                        let api = el.val();
-                        if (api) {
-                            for (let i in window.modules["permissions"].methods[api]) {
-                                m.push({
-                                    id: i,
-                                    text: (window.lang.methods[api] && window.lang.methods[api][i])?window.lang.methods[api][i]["_title"]:i,
-                                })
-                            }
-                        }
-                        $(`#${prefix}method`).html("").select2({
-                            data: m,
-                            language: window.lang["_code"],
-                        });
-                        $(`#${prefix}action`).html("");
-                    }
-                },
-                {
-                    id: "method",
-                    type: "select2",
-                    title: i18n("permissions.method"),
-                    options: [
-                        {
-                            value: "",
-                            text: "-",
-                        }
-                    ],
-                    select: (el, id, prefix) => {
-                        let a = [];
-                        let d = [];
-                        let api = $(`#${prefix}api`).val();
-                        let method = el.val();
-                        if (api && method) {
-                            for (let i in window.modules["permissions"].methods[api][method]) {
-                                a.push({
-                                    id: window.modules["permissions"].methods[api][method][i],
-                                    text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
-                                    selected: true,
-                                });
-                                d.push({
-                                    id: window.modules["permissions"].methods[api][method][i],
-                                    text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
-                                });
-                            }
-                        }
-                        $(`#${prefix}actionAllow`).html("").select2({
-                            data: a,
-                            language: window.lang["_code"],
-                        });
-                        $(`#${prefix}actionDeny`).html("").select2({
-                            data: d,
-                            language: window.lang["_code"],
-                        });
-                    }
-                },
-                {
-                    id: "actionAllow",
-                    type: "select2",
-                    title: i18n("permissions.allowYes"),
-                    minimumResultsForSearch: Infinity,
-                    multiple: true,
-                    color: "success",
-                    select: (el, id, prefix) => {
-                        let aa = $(`#${prefix}actionAllow`).val();
-                        let ad = $(`#${prefix}actionDeny`).val();
-                        $(`#${prefix}actionDeny`).val(ad.filter(n => !aa.includes(n))).trigger("change");
-                    },
-                },
-                {
-                    id: "actionDeny",
-                    type: "select2",
-                    title: i18n("permissions.allowNo"),
-                    minimumResultsForSearch: Infinity,
-                    multiple: true,
-                    color: "danger",
-                    select: (el, id, prefix) => {
-                        let aa = $(`#${prefix}actionAllow`).val();
-                        let ad = $(`#${prefix}actionDeny`).val();
-                        $(`#${prefix}actionAllow`).val(aa.filter(n => !ad.includes(n))).trigger("change");
-                    },
-                },
-            ],
-            callback: function (result) {
-                window.modules["permissions"].doAddGroupRights(result.gid, result.api, result.method, result.actionAllow, result.actionDeny);
-            },
-        }).show();
-    },
-
-    addUserRights: function () {
         let u = [];
-        for (let i in window.modules["permissions"].users) {
-            if (window.modules["permissions"].users[i].uid > 0) {
-                u.push({
-                    value: window.modules["permissions"].users[i].uid,
-                    text: window.modules["permissions"].users[i].login,
+
+        if (group) {
+            for (let i in window.modules["permissions"].groups) {
+                g.push({
+                    value: window.modules["permissions"].groups[i].gid,
+                    text: window.modules["permissions"].groups[i].acronym,
                 });
             }
+        } else {
+            for (let i in window.modules["permissions"].users) {
+                if (window.modules["permissions"].users[i].uid > 0) {
+                    u.push({
+                        value: window.modules["permissions"].users[i].uid,
+                        text: window.modules["permissions"].users[i].login,
+                    });
+                }
+            }
         }
+
         let a = [];
         a.push({
             value: "",
@@ -206,10 +88,10 @@
             topApply: true,
             fields: [
                 {
-                    id: "uid",
+                    id: group?"gid":"uid",
                     type: "select2",
-                    title: i18n("users.login"),
-                    options: u,
+                    title: group?i18n("groups.acronym"):i18n("users.login"),
+                    options: group?g:u,
                 },
                 {
                     id: "api",
@@ -305,12 +187,16 @@
                 },
             ],
             callback: function (result) {
-                window.modules["permissions"].doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
+                if (group) {
+                    window.modules["permissions"].doAddGroupRights(result.gid, result.api, result.method, result.actionAllow, result.actionDeny);
+                } else {
+                    window.modules["permissions"].doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
+                }
             },
         }).show();
     },
 
-    editGroupRights: function (acronym, api_name, method_name, allow, deny, options, gid, api, method) {
+    editRights: function (group, acronym_login, api_name, method_name, allow, deny, options, guid, api, method) {
         cardForm({
             title: i18n("permissions.edit"),
             footer: true,
@@ -318,10 +204,10 @@
             topApply: true,
             fields: [
                 {
-                    id: "gid",
+                    id: group?"gid":"uid",
                     type: "text",
-                    title: i18n("groups.acronym"),
-                    value: acronym,
+                    title: group?i18n("groups.acronym"):i18n("users.login"),
+                    value: acronym_login,
                     readonly: true,
                 },
                 {
@@ -370,72 +256,11 @@
                 },
             ],
             callback: function (result) {
-                window.modules["permissions"].doAddGroupRights(gid, api, method, result.actionAllow, result.actionDeny);
-            },
-        }).show();
-    },
-
-    editUserRights: function (login, api_name, method_name, allow, deny, options, uid, api, method) {
-        cardForm({
-            title: i18n("permissions.edit"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "uid",
-                    type: "text",
-                    title: i18n("users.login"),
-                    value: login,
-                    readonly: true,
-                },
-                {
-                    id: "api",
-                    type: "text",
-                    title: i18n("permissions.api"),
-                    value: api_name,
-                    readonly: true,
-                },
-                {
-                    id: "method",
-                    type: "text",
-                    title: i18n("permissions.method"),
-                    value: method_name,
-                    readonly: true,
-                },
-                {
-                    id: "actionAllow",
-                    type: "select2",
-                    title: i18n("permissions.allowYes"),
-                    minimumResultsForSearch: Infinity,
-                    multiple: true,
-                    value: allow,
-                    options: options,
-                    color: "success",
-                    select: (el, id, prefix) => {
-                        let aa = $(`#${prefix}actionAllow`).val();
-                        let ad = $(`#${prefix}actionDeny`).val();
-                        $(`#${prefix}actionDeny`).val(ad.filter(n => !aa.includes(n))).trigger("change");
-                    },
-                },
-                {
-                    id: "actionDeny",
-                    type: "select2",
-                    title: i18n("permissions.allowNo"),
-                    minimumResultsForSearch: Infinity,
-                    multiple: true,
-                    value: deny,
-                    options: options,
-                    color: "danger",
-                    select: (el, id, prefix) => {
-                        let aa = $(`#${prefix}actionAllow`).val();
-                        let ad = $(`#${prefix}actionDeny`).val();
-                        $(`#${prefix}actionAllow`).val(aa.filter(n => !ad.includes(n))).trigger("change");
-                    },
-                },
-            ],
-            callback: function (result) {
-                window.modules["permissions"].doAddUserRights(uid, api, method, result.actionAllow, result.actionDeny);
+                if (group) {
+                    window.modules["permissions"].doAddGroupRights(guid, api, method, result.actionAllow, result.actionDeny);
+                } else {
+                    window.modules["permissions"].doAddUserRights(guid, api, method, result.actionAllow, result.actionDeny);
+                }
             },
         }).show();
     },
@@ -507,7 +332,9 @@
                         title: {
                             button: {
                                 caption: i18n("permissions.addRights"),
-                                click: window.modules["permissions"].addGroupRights,
+                                click: () => {
+                                    window.modules["permissions"].addRights(true);
+                                },
                             },
                             caption: i18n("permissions.groups"),
                             filter: true,
@@ -611,7 +438,8 @@
                                                                 text: (window.lang.methods[uid[1]] && window.lang.methods[uid[1]][uid[2]] && window.lang.methods[uid[1]][uid[2]][i])?window.lang.methods[uid[1]][uid[2]][i]:i,
                                                             });
                                                         }
-                                                        window.modules["permissions"].editGroupRights(
+                                                        window.modules["permissions"].editRights(
+                                                            true,
                                                             g[uid[0]].acronym,
                                                             (window.lang.methods[uid[1]] && window.lang.methods[uid[1]]["_title"])?window.lang.methods[uid[1]]["_title"]:uid[1],
                                                             (window.lang.methods[uid[1]] && window.lang.methods[uid[1]][uid[2]])?window.lang.methods[uid[1]][uid[2]]["_title"]:uid[2],
@@ -671,7 +499,9 @@
                             title: {
                                 button: {
                                     caption: i18n("permissions.addRights"),
-                                    click: window.modules["permissions"].addUserRights,
+                                    click: () => {
+                                        window.modules["permissions"].addRights(false);
+                                    },
                                 },
                                 caption: i18n("permissions.users"),
                                 filter: true,
@@ -775,7 +605,8 @@
                                                                     text: (window.lang.methods[uid[1]] && window.lang.methods[uid[1]][uid[2]] && window.lang.methods[uid[1]][uid[2]][i])?window.lang.methods[uid[1]][uid[2]][i]:i,
                                                                 });
                                                             }
-                                                            window.modules["permissions"].editUserRights(
+                                                            window.modules["permissions"].editRights(
+                                                                false,
                                                                 u[uid[0]].login,
                                                                 (window.lang.methods[uid[1]] && window.lang.methods[uid[1]]["_title"])?window.lang.methods[uid[1]]["_title"]:uid[1],
                                                                 (window.lang.methods[uid[1]] && window.lang.methods[uid[1]][uid[2]])?window.lang.methods[uid[1]][uid[2]]["_title"]:uid[2],
