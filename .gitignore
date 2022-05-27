@@ -13,6 +13,7 @@
 __pycache__
 .phpdoc
 client/lib/AdminLTE
+client/lib/qrcodejs
 server/lib/PHPMailer
 server/db/internal.db
 server/config/config.json
