@@ -16,7 +16,7 @@
 
             // always available for all
 
-            protected $availableForAll = [
+            public $availableForAll = [
                 "accounts" => [
                     "whoAmI" => [ "GET" ],
                 ],
@@ -36,9 +36,10 @@
 
             // by default available for self (_id == uid)
 
-            protected $availableForSelf = [
+            public $availableForSelf = [
                 "accounts" => [
                     "user" => [ "GET", "PUT" ],
+                    "password" => [ "POST" ],
                 ],
             ];
 

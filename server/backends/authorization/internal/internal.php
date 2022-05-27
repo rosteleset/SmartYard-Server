@@ -20,6 +20,13 @@
              */
 
             public function allow($params) {
+/*
+
+select * from api_methods where aid in (select aid from (select aid from api_methods where aid in (select aid from groups_rights where allow = 1 and gid in (select gid from users_groups where uid = 1)) or aid in (select aid from api_methods_common) or aid in (select aid from api_methods_personal)) as t1 where aid not in (select aid from groups_rights where allow = 0 and gid in (select gid from users_groups where uid = 1)) and aid not in (select aid from users_rights where allow = 0 and uid = 1)
+union
+select aid from api_methods where aid in (select aid from users_rights where allow = 1 and uid = 1))
+
+*/
                 return true;
             }
 

@@ -20,3 +20,5 @@ CREATE TABLE users_rights(uid integer not null, aid text not null, allow integer
 CREATE UNIQUE INDEX users_rights_uniq on users_rights(uid, aid);
 CREATE TABLE groups_rights(gid integer not null, aid text not null, allow integer);
 CREATE UNIQUE INDEX groups_rights_uniq on groups_rights(gid, aid);
+CREATE TABLE api_methods_common(aid text not null primary key);
+CREATE TABLE api_methods_personal(aid text not null primary key);
