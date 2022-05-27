@@ -1,15 +1,16 @@
-download PHPMailer
+download server libs
 
 ```
 cd server/lib
 git clone https://github.com/PHPMailer/PHPMailer 
 ```
 
-and AdminLTE
+download client libs
 
 ```
 cd client/lib
 git clone https://github.com/ColorlibHQ/AdminLTE
+git clone https://github.com/davidshimjs/qrcodejs
 ```
 
 edit db, redis and email settings (email - optional)
