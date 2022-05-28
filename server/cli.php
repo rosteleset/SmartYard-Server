@@ -144,7 +144,7 @@
             echo "open in your browser:\n\n";
             echo "http://localhost:8000/client/index.html\n\n";
             chdir(dirname(__FILE__) . "/..");
-            passthru(PHP_BINARY . " -S 127.0.0.1:8000");
+            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
         } else {
             echo "no php interpreter found in path\n";
         }
