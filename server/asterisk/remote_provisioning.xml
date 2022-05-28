@@ -20,6 +20,7 @@
     <entry name="passwd" overwrite="true">123456</entry>
     <entry name="realm" overwrite="true">10.7.17.40</entry>
     <entry name="domain" overwrite="true">10.7.17.40</entry>
+    <!-- not sure -->
     <entry name="alhorithm" overwrite="true">CLRTXT</entry>
   </section>
   <section name="proxy_0" overwrite="true">
