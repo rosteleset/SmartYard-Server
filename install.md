@@ -84,7 +84,7 @@ optionally
 php server/cli.php --check-mail=<your email address>
 ```
 
-run local (built-in) server, not for production!
+run local (built-in) server (not for production!)
 
 ```
 php server/cli.php --run-demo-server

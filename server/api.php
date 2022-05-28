@@ -17,6 +17,7 @@
     require_once "utils/checkint.php";
     require_once "utils/email.php";
     require_once "utils/forgot.php";
+    require_once "utils/vars.php";
     require_once "utils/apache_request_headers.php";
     require_once "utils/array_key_first.php";
     require_once "utils/generate_password.php";

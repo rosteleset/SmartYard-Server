@@ -2,6 +2,7 @@
 <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
   <section name="sip">
     <entry name="default_proxy" overwrite="true">0</entry>
+    <entry name="store_ha1_passwd" overwrite="true">0</entry>
   </section>
   <section name="net">
     <entry name="nat_policy_ref" overwrite="true">0b72b32da2cb3ee5203385ae4013a759</entry>
@@ -19,6 +20,7 @@
     <entry name="passwd" overwrite="true">123456</entry>
     <entry name="realm" overwrite="true">10.7.17.40</entry>
     <entry name="domain" overwrite="true">10.7.17.40</entry>
+    <entry name="alhorithm" overwrite="true">CLRTXT</entry>
   </section>
   <section name="proxy_0" overwrite="true">
     <entry name="reg_proxy" overwrite="true">&lt;sip:10.7.17.40;transport=tcp&gt;</entry>
