@@ -10,7 +10,7 @@ namespace backends\addresses {
      * internal adresses class
      */
 
-    class internal extends buildings {
+    class internal extends addresses {
 
         /**
          * list of all buildings

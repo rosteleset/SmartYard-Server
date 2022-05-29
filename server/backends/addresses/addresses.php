@@ -12,7 +12,7 @@ namespace backends\addresses {
      * base users class
      */
 
-    abstract class buildings extends backend {
+    abstract class addresses extends backend {
 
         /**
          * get list of all buildings
