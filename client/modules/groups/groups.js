@@ -2,7 +2,7 @@
     startPage: 1,
 
     init: function () {
-        if (window.available["accounts"] && window.available["accounts"]["groups"]) {
+        if (AVAIL("accounts", "groups")) {
             leftSide("fas fa-fw fa-users", i18n("groups.groups"), "#groups");
         }
         moduleLoaded("groups", this);
@@ -161,28 +161,35 @@
         GET("accounts", "users", false, true).done(users => {
             GET("accounts", "groupUsers", gid, true).done(uids => {
                 let h = '';
-                h = `<div class="card mt-0 mb-0">`;
+                h = `<div class="card mt-2 mb-0">`;
                 h += `<div class="card-header">`;
                 h += `<h3 class="card-title">`;
-                h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="modalFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+                h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="groupFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
                 h += i18n("groups.users") + " " + i18n("groups.gid") + gid;
                 h += `</h3>`;
-                h += `<button type="button" class="btn btn-danger btn-xs float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+                h += `<button type="button" class="btn btn-danger btn-xs float-right" id="groupFormCancel" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
                 h += `</div>`;
-                h += `<div class="card-body pb-0" style="max-height: 400px; overflow: auto;">`;
+                h += `<div class="card-body pb-0" style="overflow: auto;">`;
                 h += `<div class="form-group">`;
                 for (let i in users.users) {
-                    h += `<div class="form-check"><input class="form-check-input gidToUid" uid="${users.users[i].uid}" type="checkbox" ${(uids.uids.indexOf(users.users[i].uid) >= 0)?"checked":""}><label class="form-check-label">${users.users[i].login + (users.users[i].realName?(" [" + users.users[i].realName + "]"):"")}</label></div>`;
+                    let id = md5(guid());
+                    h += `
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="gidToUid custom-control-input" id="${id}" uid="${users.users[i].uid}" ${(uids.uids.indexOf(users.users[i].uid) >= 0)?"checked":""}/>
+                            <label for="${id}" class="custom-control-label">${users.users[i].login + (users.users[i].realName?(" [" + users.users[i].realName + "]"):"")}</label>
+                        </div>
+                    `;
                 }
                 h += `</div>`;
                 h += `</div>`;
                 h += `</div>`;
-                modal(h);
 
-                $("#modalFormApply").off("click").on("click", () => {
+                $("#altForm").html(h).show();
+
+                $("#groupFormApply").off("click").on("click", () => {
                     loadingStart();
-                    $('#modal').modal('hide');
-                    uids = [];
+                    $("#altForm").hide();
+                    let uids = [];
                     $(".gidToUid").each(function () {
                         if ($(this).prop("checked")) {
                             uids.push($(this).attr("uid"));
@@ -196,6 +203,10 @@
                         message(i18n("groups.groupWasChanged"));
                     }).
                     always(window.modules["groups"].render);
+                });
+
+                $("#groupFormCancel").off("click").on("click", () => {
+                    $("#altForm").hide();
                 });
             }).
             fail(FAIL);

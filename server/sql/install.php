@@ -32,7 +32,7 @@
                 $db->exec($sql);
             }
 
-            $sth = $db->prepare("update vars set var_value = :version where var_name = 'dbVersion'");
+            $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");
             $sth->bindParam('version', $v);
             $sth->execute();
 

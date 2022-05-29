@@ -121,6 +121,7 @@
     $params = [];
 
     if (count($m) >= 3) {
+        checkInt($m[2]);
         $params["_id"] = $m[2];
     }
 
@@ -225,6 +226,7 @@
     }
 
     if ($token && $auth) {
+        checkInt($auth["uid"]);
         $params["_uid"] = $auth["uid"];
         $params["_login"] = $auth["login"];
     }

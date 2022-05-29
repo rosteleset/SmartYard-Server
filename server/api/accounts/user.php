@@ -180,7 +180,13 @@
             public static function PUT($params) {
                 $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["enabled"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                if (@$params["password"]) {
+                    $success = $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
+
+                    return self::ANSWER($success, ($success !== false)?false:"notFound");
+                } else {
+                    return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                }
             }
 
             public static function DELETE($params) {

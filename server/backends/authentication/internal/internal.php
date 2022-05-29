@@ -5,8 +5,9 @@
      */
 
     namespace backends\authentication {
+
         /**
-         * authorize by local database
+         * authenticate by local database
          */
 
         class internal extends authentication {
@@ -18,7 +19,7 @@
              */
 
             public function check_auth($login, $password) {
-                $sth = $this->db->prepare("select uid, password from users where login = :login and enabled = 1");
+                $sth = $this->db->prepare("select uid, password from core_users where login = :login and enabled = 1");
                 $sth->execute([ ":login" => $login ]);
                 $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
                 if (count($res) == 1 && password_verify($password, $res[0]["password"])) {

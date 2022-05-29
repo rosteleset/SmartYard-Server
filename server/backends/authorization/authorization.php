@@ -59,7 +59,7 @@
             public function methods($_all = true) {
                 $m = [];
                 try {
-                    $all = $this->db->query("select aid, api, method, request_method from api_methods", \PDO::FETCH_ASSOC)->fetchAll();
+                    $all = $this->db->query("select aid, api, method, request_method from core_api_methods", \PDO::FETCH_ASSOC)->fetchAll();
                     foreach ($all as $a) {
                         if ($_all || (@$this->availableForAll[$a['api']][$a['method']] && in_array($a['request_method'], $this->availableForAll[$a['api']][$a['method']])) === false) {
                             $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];

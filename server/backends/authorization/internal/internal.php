@@ -7,7 +7,7 @@
     namespace backends\authorization {
 
         /**
-         * allow-all security class
+         * authorize by local database
          */
 
         class internal extends authorization {
@@ -20,14 +20,50 @@
              */
 
             public function allow($params) {
-/*
+                if ($params["_path"]["api"] === "authentication" && $params["_path"]["method"] === "login") {
+                    return true;
+                }
 
-select * from api_methods where aid in (select aid from (select aid from api_methods where aid in (select aid from groups_rights where allow = 1 and gid in (select gid from users_groups where uid = 1)) or aid in (select aid from api_methods_common) or aid in (select aid from api_methods_personal)) as t1 where aid not in (select aid from groups_rights where allow = 0 and gid in (select gid from users_groups where uid = 1)) and aid not in (select aid from users_rights where allow = 0 and uid = 1)
-union
-select aid from api_methods where aid in (select aid from users_rights where allow = 1 and uid = 1))
+                if ($params["_uid"] === 0) {
+                    return true;
+                }
 
-*/
-                return true;
+                try {
+                    $sth = $this->db->prepare("
+                        select count(*) as allow from core_api_methods where aid in (
+                            select aid from (
+                                select aid from core_api_methods where aid in (
+                                    select aid from core_groups_rights where allow = 1 and gid in (
+                                        select gid from core_users_groups where uid = :uid
+                                     )
+                                ) or aid in (select aid from core_api_methods_common)
+                            ) as t1 where
+                                aid not in (select aid from core_groups_rights where allow = 0 and gid in (select gid from core_users_groups where uid = :uid)) and
+                                aid not in (select aid from core_users_rights where allow = 0 and uid = :uid)
+                            union
+                                select aid from core_api_methods where aid in (select aid from core_users_rights where allow = 1 and uid = :uid)
+                        ) and api = :api and method = :method and request_method = :request_method"
+                    );
+
+                    if ($sth->execute([
+                        ":uid" => $params["_uid"],
+                        ":api" => $params["_path"]["api"],
+                        ":method" => $params["_path"]["method"],
+                        ":request_method" => $params["_request_method"],
+                    ])) {
+                        $m = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                        if ($m && $m[0] && $m[0]["allow"]) {
+                            return true;
+                        }
+                        if (@$this->availableForSelf[$params["_path"]["api"]][$params["_path"]["method"]] && @in_array($params["_request_method"], $this->availableForSelf[$params["_path"]["api"]][$params["_path"]["method"]]) && $params["_id"] == $params["_uid"]) {
+                            return true;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return false;
             }
 
             /**
@@ -45,7 +81,38 @@ select aid from api_methods where aid in (select aid from users_rights where all
                 if ($uid === 0) {
                     return $this->methods();
                 } else {
-                    return $this->methods();
+                    $m = [];
+                    try {
+                        $sth = $this->db->prepare("
+                            select * from core_api_methods where aid in (
+                                select aid from (
+                                    select aid from core_api_methods where aid in (
+                                        select aid from core_groups_rights where allow = 1 and gid in (
+                                            select gid from core_users_groups where uid = :uid
+                                         )
+                                    ) or aid in (select aid from core_api_methods_common) or aid in (select aid from core_api_methods_personal)
+                                ) as t1 where
+                                    aid not in (select aid from core_groups_rights where allow = 0 and gid in (select gid from core_users_groups where uid = :uid)) and
+                                    aid not in (select aid from core_users_rights where allow = 0 and uid = :uid)
+                                union
+                                    select aid from core_api_methods where aid in (select aid from core_users_rights where allow = 1 and uid = :uid)
+                            )"
+                        );
+
+                        if ($sth->execute([
+                            ":uid" => $uid,
+                        ])) {
+                            $all = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                            foreach ($all as $a) {
+                                $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        error_log(print_r($e, true));
+                        return false;
+                    }
+
+                    return $m;
                 }
             }
 
@@ -54,8 +121,8 @@ select aid from api_methods where aid in (select aid from users_rights where all
              */
 
             public function getRights() {
-                $users = $this->db->query("select uid, aid, allow from users_rights", \PDO::FETCH_ASSOC)->fetchAll();
-                $groups = $this->db->query("select gid, aid, allow from groups_rights", \PDO::FETCH_ASSOC)->fetchAll();
+                $users = $this->db->query("select uid, aid, allow from core_users_rights", \PDO::FETCH_ASSOC)->fetchAll();
+                $groups = $this->db->query("select gid, aid, allow from core_groups_rights", \PDO::FETCH_ASSOC)->fetchAll();
 
                 return [
                     "users" => $users,
@@ -90,11 +157,11 @@ select aid from api_methods where aid in (select aid from users_rights where all
                     $deny = [ $deny ];
                 }
 
-                $tn = $user?"users_rights":"groups_rights";
+                $tn = $user?"core_users_rights":"core_groups_rights";
                 $ci = $user?"uid":"gid";
 
                 try {
-                    $sth = $this->db->prepare("delete from $tn where aid in (select aid from api_methods where api = :api and method = :method)");
+                    $sth = $this->db->prepare("delete from $tn where aid in (select aid from core_api_methods where api = :api and method = :method)");
                     $sth->execute([
                         ":api" => $api,
                         ":method" => $method,

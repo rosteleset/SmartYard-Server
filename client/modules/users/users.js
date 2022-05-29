@@ -2,7 +2,9 @@
     startPage: 1,
 
     init: function () {
-        leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
+        if (AVAIL("accounts", "users")) {
+            leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
+        }
         moduleLoaded("users", this);
     },
 
@@ -183,6 +185,26 @@
                         placeholder: i18n("phone"),
                         validate: (v) => {
                             return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "password",
+                        type: "password",
+                        title: i18n("password"),
+                        placeholder: i18n("password"),
+                        readonly: uid.toString() === "0",
+                        validate: (v, prefix) => {
+                            return $.trim(v).length >= 8 && $(`#${prefix}password`).val() == $(`#${prefix}confirm`).val();
+                        }
+                    },
+                    {
+                        id: "confirm",
+                        type: "password",
+                        title: i18n("confirm"),
+                        placeholder: i18n("confirm"),
+                        readonly: uid.toString() === "0",
+                        validate: (v, prefix) => {
+                            return $.trim(v).length >= 8 && $(`#${prefix}password`).val() == $(`#${prefix}confirm`).val();
                         }
                     },
                     {
