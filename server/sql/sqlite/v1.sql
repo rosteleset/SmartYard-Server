@@ -2,7 +2,7 @@ CREATE TABLE vars (var_id integer not null primary key autoincrement, var_name t
 CREATE INDEX vars_id on vars(var_id);
 CREATE INDEX vars_var_name on vars(var_name);
 INSERT INTO vars (var_name, var_value) values ('dbVersion', '0');
-CREATE TABLE users (uid integer not null primary key autoincrement, login text not null, password text not null, enabled integer, real_name text, e_mail text, phone text, avatar text);
+CREATE TABLE users (uid integer not null primary key autoincrement, login text not null, password text not null, enabled integer, real_name text, e_mail text, phone text);
 CREATE UNIQUE INDEX users_login on users(login);
 CREATE INDEX users_real_name on users(real_name);
 CREATE UNIQUE INDEX users_e_mail on users(e_mail);
