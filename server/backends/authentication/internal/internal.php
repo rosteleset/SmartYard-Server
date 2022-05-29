@@ -5,8 +5,9 @@
      */
 
     namespace backends\authentication {
+
         /**
-         * authorize by local database
+         * authenticate by local database
          */
 
         class internal extends authentication {

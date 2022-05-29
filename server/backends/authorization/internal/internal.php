@@ -7,7 +7,7 @@
     namespace backends\authorization {
 
         /**
-         * allow-all security class
+         * authorize by local database
          */
 
         class internal extends authorization {

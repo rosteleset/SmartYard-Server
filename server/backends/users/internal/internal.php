@@ -6,10 +6,8 @@
 
     namespace backends\users {
 
-        use PHPMailer\PHPMailer\Exception;
-
         /**
-         * internal users class
+         * internal.db users class
          */
 
         class internal extends users {

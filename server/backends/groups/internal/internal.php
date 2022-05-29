@@ -6,10 +6,8 @@
 
     namespace backends\groups {
 
-        use PHPMailer\PHPMailer\Exception;
-
         /**
-         * internal groups class
+         * internal.db groups class
          */
 
         class internal extends groups {
