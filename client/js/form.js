@@ -146,7 +146,7 @@ function cardForm(params) {
         let invalid = [];
         for (let i in params.fields) {
             if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
-                if (!params.fields[i].validate($(`#${_prefix}${params.fields[i].id}`).val())) {
+                if (!params.fields[i].validate($(`#${_prefix}${params.fields[i].id}`).val(), _prefix)) {
                     invalid.push(`#${_prefix}${params.fields[i].id}`);
                 }
             }

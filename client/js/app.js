@@ -280,9 +280,14 @@ function whoAmI(force) {
             window.myself.eMail = _me.user.eMail;
             window.myself.phone = _me.user.phone;
             if (window.myself.eMail) {
-                let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(window.myself.eMail).toLowerCase()) + "?s=64";
-                $(".userAvatar").attr("src", gravUrl);
+                let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(window.myself.eMail).toLowerCase()) + "?s=64&d=404";
+                $(".userAvatar").off("click").on("error", function () {
+                    $(this).attr("src", "avatars/noavatar.png");
+                }).attr("src", gravUrl);
             }
+            $("#selfSettings").off("click").on("click", () => {
+                window.modules["users"].modifyUser(window.myself.uid);
+            });
             let userCard = _me.user.login;
             if (_me.user.realName) {
                 userCard += "<br />" + _me.user.realName;
