@@ -2,7 +2,9 @@
     startPage: 1,
 
     init: function () {
-        leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
+        if (AVAIL("accounts", "users")) {
+            leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
+        }
         moduleLoaded("users", this);
     },
 

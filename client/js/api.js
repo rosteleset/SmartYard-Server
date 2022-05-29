@@ -63,8 +63,20 @@ function DELETE(api, method, id) {
 
 function FAIL(response) {
     if (response && response.responseJSON && response.responseJSON.error) {
-        error(i18n("errors." + response.responseJSON.error), "[" + i18n("users.users") + "]: " + i18n("error"), 30);
+        error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
     } else {
         error(i18n("errors.unknown"), "[" + i18n("users.users") + "]: " + i18n("error"), 30);
+    }
+}
+
+function AVAIL(api, method, request_method) {
+    if (request_method) {
+        return window.available && window.available[api] && window.available[api][method] && window.available[api][method][request_method];
+    }
+    if (method) {
+        return window.available && window.available[api] && window.available[api][method];
+    }
+    if (api) {
+        return window.available && window.available[api];
     }
 }

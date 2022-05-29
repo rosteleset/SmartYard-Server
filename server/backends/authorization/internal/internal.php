@@ -20,14 +20,46 @@
              */
 
             public function allow($params) {
-/*
+                if ($params["_uid"] === 0) {
+                    return true;
+                }
 
-select * from api_methods where aid in (select aid from (select aid from api_methods where aid in (select aid from groups_rights where allow = 1 and gid in (select gid from users_groups where uid = 1)) or aid in (select aid from api_methods_common) or aid in (select aid from api_methods_personal)) as t1 where aid not in (select aid from groups_rights where allow = 0 and gid in (select gid from users_groups where uid = 1)) and aid not in (select aid from users_rights where allow = 0 and uid = 1)
-union
-select aid from api_methods where aid in (select aid from users_rights where allow = 1 and uid = 1))
+                try {
+                    $sth = $this->db->prepare("
+                    select count(*) as allow from api_methods where aid in (
+                        select aid from (
+                            select aid from api_methods where aid in (
+                                select aid from groups_rights where allow = 1 and gid in (
+                                    select gid from users_groups where uid = :uid
+                                 )
+                            ) or aid in (select aid from api_methods_common)
+                        ) as t1 where
+                            aid not in (select aid from groups_rights where allow = 0 and gid in (select gid from users_groups where uid = :uid)) and
+                            aid not in (select aid from users_rights where allow = 0 and uid = :uid)
+                        union
+                            select aid from api_methods where aid in (select aid from users_rights where allow = 1 and uid = :uid)
+                    ) and api = :api and method = :method and request_method = :request_method"
+                    );
 
-*/
-                return true;
+                    if ($sth->execute([
+                        ":uid" => $params["_uid"],
+                        ":api" => $params["_path"]["api"],
+                        ":method" => $params["_path"]["method"],
+                        ":request_method" => $params["_request_method"],
+                    ])) {
+                        $m = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                        if ($m && $m[0] && $m[0]["allow"]) {
+                            return true;
+                        }
+                        if (@$this->availableForSelf[$params["_path"]["api"]][$params["_path"]["method"]] && @in_array($params["_request_method"], $this->availableForSelf[$params["_path"]["api"]][$params["_path"]["method"]]) && $params["_id"] == $params["_uid"]) {
+                            return true;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return false;
             }
 
             /**
@@ -45,7 +77,38 @@ select aid from api_methods where aid in (select aid from users_rights where all
                 if ($uid === 0) {
                     return $this->methods();
                 } else {
-                    return $this->methods();
+                    $m = [];
+                    try {
+                        $sth = $this->db->prepare("
+                            select * from api_methods where aid in (
+                                select aid from (
+                                    select aid from api_methods where aid in (
+                                        select aid from groups_rights where allow = 1 and gid in (
+                                            select gid from users_groups where uid = :uid
+                                         )
+                                    ) or aid in (select aid from api_methods_common) or aid in (select aid from api_methods_personal)
+                                ) as t1 where
+                                    aid not in (select aid from groups_rights where allow = 0 and gid in (select gid from users_groups where uid = :uid)) and
+                                    aid not in (select aid from users_rights where allow = 0 and uid = :uid)
+                                union
+                                    select aid from api_methods where aid in (select aid from users_rights where allow = 1 and uid = :uid)
+                            )"
+                        );
+
+                        if ($sth->execute([
+                            ":uid" => $uid,
+                        ])) {
+                            $all = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                            foreach ($all as $a) {
+                                $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        error_log(print_r($e, true));
+                        return false;
+                    }
+
+                    return $m;
                 }
             }
 
