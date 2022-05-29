@@ -22,7 +22,7 @@
 
             public function getUsers() {
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -57,7 +57,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($user)) {
                         $_user = [
@@ -80,6 +80,7 @@
                         return false;
                     }
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
             }
@@ -100,7 +101,7 @@
                 $password = generatePassword();
 
                 try {
-                    $sth = $this->db->prepare("insert into users (login, password, real_name, e_mail, phone, enabled) values (:login, :password, :real_name, :e_mail, :phone, 1)");
+                    $sth = $this->db->prepare("insert into core_users (login, password, real_name, e_mail, phone, enabled) values (:login, :password, :real_name, :e_mail, :phone, 1)");
                     if (!$sth->execute([
                         ":login" => $login,
                         ":password" => password_hash($password, PASSWORD_DEFAULT),
@@ -111,7 +112,7 @@
                         return false;
                     }
 
-                    $sth = $this->db->prepare("select uid from users where login = :login");
+                    $sth = $this->db->prepare("select uid from core_users where login = :login");
                     if ($sth->execute([ ":login" => $login, ])) {
                         $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
                         if (count($res) == 1) {
@@ -147,7 +148,7 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update users set password = :password where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set password = :password where uid = $uid");
                     $sth->execute([ ":password" => password_hash($password, PASSWORD_DEFAULT) ]);
                 } catch (\Exception $e) {
                     return false;
@@ -171,7 +172,7 @@
 
                 if ($uid > 0) { // admin cannot be deleted
                     try {
-                        $this->db->exec("delete from users where uid = $uid");
+                        $this->db->exec("delete from core_users where uid = $uid");
                         $groups = loadBackend("groups");
                         if ($groups) {
                             $groups->deleteUser($uid);
@@ -203,7 +204,7 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled where uid = $uid");
                     return $sth->execute([
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
@@ -228,7 +229,7 @@
 
             public function getUidByEMail($eMail) {
                 try {
-                    $sth = $this->db->prepare("select uid from users where e_mail = :e_mail");
+                    $sth = $this->db->prepare("select uid from core_users where e_mail = :e_mail");
                     if ($sth->execute([ ":e_mail" => $eMail ])) {
                         $users = $sth->fetchAll(\PDO::FETCH_ASSOC);
                         if (count($users)) {

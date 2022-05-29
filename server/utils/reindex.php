@@ -5,12 +5,12 @@
 
         $apis = scandir("api");
 
-        $db->exec("delete from api_methods");
-        $db->exec("delete from api_methods_common");
-        $db->exec("delete from api_methods_personal");
+        $db->exec("delete from core_api_methods");
+        $db->exec("delete from core_api_methods_common");
+        $db->exec("delete from core_api_methods_personal");
 
-        $add = $db->prepare("insert into api_methods (aid, api, method, request_method) values (:md5, :api, :method, :request_method)");
-        $aid = $db->prepare("select aid from api_methods where api = :api and method = :method and request_method = :request_method");
+        $add = $db->prepare("insert into core_api_methods (aid, api, method, request_method) values (:md5, :api, :method, :request_method)");
+        $aid = $db->prepare("select aid from core_api_methods where api = :api and method = :method and request_method = :request_method");
 
         $n = 0;
 
@@ -59,7 +59,7 @@
                         $aids = $aid->fetchAll(\PDO::FETCH_ASSOC);
                         for ($i = 0; $i < count($aids); $i++) {
                             try {
-                                $db->exec("insert into api_methods_common (aid) values ('{$aids[$i]["aid"]}')");
+                                $db->exec("insert into core_api_methods_common (aid) values ('{$aids[$i]["aid"]}')");
                             } catch (\Exception $e) {
                                 // uniq violation?
                             }
@@ -80,7 +80,7 @@
                         $aids = $aid->fetchAll(\PDO::FETCH_ASSOC);
                         for ($i = 0; $i < count($aids); $i++) {
                             try {
-                                $db->exec("insert into api_methods_personal (aid) values ('{$aids[$i]["aid"]}')");
+                                $db->exec("insert into core_api_methods_personal (aid) values ('{$aids[$i]["aid"]}')");
                             } catch (\Exception $e) {
                                 // uniq violation?
                             }

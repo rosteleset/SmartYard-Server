@@ -72,7 +72,7 @@
     }
 
     try {
-        $version = (int)$db->query("select var_value from vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC)->fetch()["var_value"];
+        $version = (int)$db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC)->fetch()["var_value"];
     } catch (Exception $e) {
         $version = 0;
     }
@@ -115,11 +115,11 @@
 
     if (count($args) == 1 && array_key_exists("--admin-password", $args) && isset($args["--admin-password"])) {
         try {
-            $db->exec("insert into users (uid, login, password) values (0, 'admin', 'admin')");
+            $db->exec("insert into core_users (uid, login, password) values (0, 'admin', 'admin')");
         } catch (Exception $e) {
             //
         }
-        $sth = $db->prepare("update users set password = :password, login = 'admin', enabled = 1 where uid = 0");
+        $sth = $db->prepare("update core_users set password = :password, login = 'admin', enabled = 1 where uid = 0");
         $sth->execute([ ":password" => password_hash($args["--admin-password"], PASSWORD_DEFAULT) ]);
         echo "admin account updated\n";
         exit(0);

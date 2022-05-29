@@ -20,25 +20,29 @@
              */
 
             public function allow($params) {
+                if ($params["_path"]["api"] === "authentication" && $params["_path"]["method"] === "login") {
+                    return true;
+                }
+
                 if ($params["_uid"] === 0) {
                     return true;
                 }
 
                 try {
                     $sth = $this->db->prepare("
-                    select count(*) as allow from api_methods where aid in (
-                        select aid from (
-                            select aid from api_methods where aid in (
-                                select aid from groups_rights where allow = 1 and gid in (
-                                    select gid from users_groups where uid = :uid
-                                 )
-                            ) or aid in (select aid from api_methods_common)
-                        ) as t1 where
-                            aid not in (select aid from groups_rights where allow = 0 and gid in (select gid from users_groups where uid = :uid)) and
-                            aid not in (select aid from users_rights where allow = 0 and uid = :uid)
-                        union
-                            select aid from api_methods where aid in (select aid from users_rights where allow = 1 and uid = :uid)
-                    ) and api = :api and method = :method and request_method = :request_method"
+                        select count(*) as allow from core_api_methods where aid in (
+                            select aid from (
+                                select aid from core_api_methods where aid in (
+                                    select aid from core_groups_rights where allow = 1 and gid in (
+                                        select gid from core_users_groups where uid = :uid
+                                     )
+                                ) or aid in (select aid from core_api_methods_common)
+                            ) as t1 where
+                                aid not in (select aid from core_groups_rights where allow = 0 and gid in (select gid from core_users_groups where uid = :uid)) and
+                                aid not in (select aid from core_users_rights where allow = 0 and uid = :uid)
+                            union
+                                select aid from core_api_methods where aid in (select aid from core_users_rights where allow = 1 and uid = :uid)
+                        ) and api = :api and method = :method and request_method = :request_method"
                     );
 
                     if ($sth->execute([
@@ -80,18 +84,18 @@
                     $m = [];
                     try {
                         $sth = $this->db->prepare("
-                            select * from api_methods where aid in (
+                            select * from core_api_methods where aid in (
                                 select aid from (
-                                    select aid from api_methods where aid in (
-                                        select aid from groups_rights where allow = 1 and gid in (
-                                            select gid from users_groups where uid = :uid
+                                    select aid from core_api_methods where aid in (
+                                        select aid from core_groups_rights where allow = 1 and gid in (
+                                            select gid from core_users_groups where uid = :uid
                                          )
-                                    ) or aid in (select aid from api_methods_common) or aid in (select aid from api_methods_personal)
+                                    ) or aid in (select aid from core_api_methods_common) or aid in (select aid from core_api_methods_personal)
                                 ) as t1 where
-                                    aid not in (select aid from groups_rights where allow = 0 and gid in (select gid from users_groups where uid = :uid)) and
-                                    aid not in (select aid from users_rights where allow = 0 and uid = :uid)
+                                    aid not in (select aid from core_groups_rights where allow = 0 and gid in (select gid from core_users_groups where uid = :uid)) and
+                                    aid not in (select aid from core_users_rights where allow = 0 and uid = :uid)
                                 union
-                                    select aid from api_methods where aid in (select aid from users_rights where allow = 1 and uid = :uid)
+                                    select aid from core_api_methods where aid in (select aid from core_users_rights where allow = 1 and uid = :uid)
                             )"
                         );
 
@@ -117,8 +121,8 @@
              */
 
             public function getRights() {
-                $users = $this->db->query("select uid, aid, allow from users_rights", \PDO::FETCH_ASSOC)->fetchAll();
-                $groups = $this->db->query("select gid, aid, allow from groups_rights", \PDO::FETCH_ASSOC)->fetchAll();
+                $users = $this->db->query("select uid, aid, allow from core_users_rights", \PDO::FETCH_ASSOC)->fetchAll();
+                $groups = $this->db->query("select gid, aid, allow from core_groups_rights", \PDO::FETCH_ASSOC)->fetchAll();
 
                 return [
                     "users" => $users,
@@ -153,11 +157,11 @@
                     $deny = [ $deny ];
                 }
 
-                $tn = $user?"users_rights":"groups_rights";
+                $tn = $user?"core_users_rights":"core_groups_rights";
                 $ci = $user?"uid":"gid";
 
                 try {
-                    $sth = $this->db->prepare("delete from $tn where aid in (select aid from api_methods where api = :api and method = :method)");
+                    $sth = $this->db->prepare("delete from $tn where aid in (select aid from core_api_methods where api = :api and method = :method)");
                     $sth->execute([
                         ":api" => $api,
                         ":method" => $method,

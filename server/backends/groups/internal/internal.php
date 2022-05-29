@@ -22,12 +22,12 @@
 
             public function getGroups($uid = false) {
                 if ($uid === false) {
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) users from groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users from core_groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from users_groups as g1 where g1.gid = groups.gid) users from groups where gid in (select gid from users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users from core_groups where gid in (select gid from core_users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 return $groups;
@@ -46,7 +46,7 @@
                     return false;
                 }
 
-                $groups = $this->db->query("select gid, name, acronym from groups where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
+                $groups = $this->db->query("select gid, name, acronym from core_groups where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 if (count($groups)) {
                     return $groups[0];
@@ -69,7 +69,7 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update groups set acronym = :acronym, name = :name where gid = $gid");
+                    $sth = $this->db->prepare("update core_groups set acronym = :acronym, name = :name where gid = $gid");
                     return $sth->execute([
                         ":acronym" => trim($acronym),
                         ":name" => trim($name),
@@ -95,7 +95,7 @@
                 $acronym = trim($acronym);
 
                 try {
-                    $sth = $this->db->prepare("insert into groups (acronym, name) values (:acronym, :name)");
+                    $sth = $this->db->prepare("insert into core_groups (acronym, name) values (:acronym, :name)");
                     if (!$sth->execute([
                         ":acronym" => $acronym,
                         ":name" => trim($name),
@@ -103,7 +103,7 @@
                         return false;
                     }
 
-                    $sth = $this->db->prepare("select gid from groups where acronym = :acronym");
+                    $sth = $this->db->prepare("select gid from core_groups where acronym = :acronym");
                     if ($sth->execute([ ":acronym" => $acronym, ])) {
                         $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
                         if (count($res) == 1) {
@@ -133,8 +133,8 @@
                 }
 
                 try {
-                    $this->db->exec("delete from groups where gid = $gid");
-                    $this->db->exec("delete from users_groups where gid = $gid");
+                    $this->db->exec("delete from core_groups where gid = $gid");
+                    $this->db->exec("delete from core_users_groups where gid = $gid");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -153,7 +153,7 @@
                     return false;
                 }
 
-                $uids = $this->db->query("select uid from users_groups where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
+                $uids = $this->db->query("select uid from core_users_groups where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 $users = [];
                 foreach ($uids as $uid) {
@@ -175,14 +175,14 @@
                 }
 
                 try {
-                    $this->db->exec("delete from users_groups where gid = $gid");
+                    $this->db->exec("delete from core_users_groups where gid = $gid");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into users_groups (uid, gid) values (:uid, :gid)");
+                    $sth = $this->db->prepare("insert into core_users_groups (uid, gid) values (:uid, :gid)");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -211,7 +211,7 @@
                 }
 
                 try {
-                    $this->db->exec("delete from users_groups where uid = $uid");
+                    $this->db->exec("delete from core_users_groups where uid = $uid");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
