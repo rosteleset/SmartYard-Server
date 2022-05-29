@@ -51,7 +51,7 @@ namespace api\address {
     class buildings extends api {
 
         public static function GET($params) {
-            $buildings = $params["_backends"]["addresses"]->getBuildings();
+            $buildings = loadBackend("addresses")->getBuildings();
 
             return api::ANSWER($buildings, ($buildings !== false)?"buildings":"notFound");
         }
