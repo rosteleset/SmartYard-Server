@@ -279,8 +279,9 @@ function whoAmI(force) {
             window.myself.realName = _me.user.realName;
             window.myself.eMail = _me.user.eMail;
             window.myself.phone = _me.user.phone;
-            if (_me.user.avatar) {
-                $(".user-avatar").attr("src", "data:image/png;base64," + _me.user.avatar);
+            if (window.myself.eMail) {
+                let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(window.myself.eMail).toLowerCase()) + "?s=64";
+                $(".userAvatar").attr("src", gravUrl);
             }
             let userCard = _me.user.login;
             if (_me.user.realName) {
