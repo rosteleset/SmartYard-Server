@@ -22,3 +22,12 @@ CREATE TABLE groups_rights(gid integer not null, aid text not null, allow intege
 CREATE UNIQUE INDEX groups_rights_uniq on groups_rights(gid, aid);
 CREATE TABLE api_methods_common(aid text not null primary key);
 CREATE TABLE api_methods_personal(aid text not null primary key);
+CREATE TABLE buildings (bid integer not null primary key autoincrement, address text not null, external_object_guid text);
+CREATE UNIQUE INDEX buildings_ext_obj_guid on buildings(external_object_guid);
+CREATE UNIQUE INDEX buildings_address on buildings(address);
+CREATE TABLE entrances (eid integer not null primary key autoincrement, bid integer not null, entrance text not null);
+CREATE INDEX entrances_bid on entrances(bid);
+CREATE TABLE flats (fid integer not null primary key autoincrement, eid integer not null, flat_number integer, floor integer);
+CREATE INDEX flats_eid on flats(eid);
+CREATE INDEX flats_floor on flats(floor);
+CREATE UNIQUE INDEX flats_flat_number on flats(flat_number);
