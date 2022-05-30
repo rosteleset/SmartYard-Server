@@ -68,7 +68,7 @@
  * @apiExample {curl} Example usage:
  *  curl -X POST http://127.0.0.1:8000/server/api.php/accounts/building \
  *      -H 'Content-Type: application/json' \
- *      -d '{"Some City, Some Street, XX - YY":"35158491-6746-43AB-8B61-847CF92FE044"}'
+ *      -d '{"address": "Some City, Some Street, XX - YY", "guid": "35158491-6746-43AB-8B61-847CF92FE044"}'
  */
 
 /**
@@ -152,7 +152,7 @@ namespace api\address {
         public static function POST($params) {
             $bid = loadBackend("addresses")->addBuilding($params["address"], $params["guid"]);
 
-            return api::ANSWER($bid, ($gid !== false)?"bid":"notAcceptable");
+            return api::ANSWER($bid, ($bid !== false)?"bid":"notAcceptable");
         }
 
         public static function PUT($params) {

@@ -56,9 +56,9 @@ namespace backends\addresses {
 
                 if (count($building)) {
                     $_building = [
-                        "bid" => $building[0]["uid"],
-                        "address" => $building[0]["login"],
-                        "guid" => $building[0]["real_name"],
+                        "bid" => $building[0]["bid"],
+                        "address" => $building[0]["address"],
+                        "guid" => $building[0]["guid"],
                     ];
 
                     return $_building;
@@ -90,7 +90,7 @@ namespace backends\addresses {
                     return false;
                 }
 
-                $sth = $this->db->prepare("select bid from users where login = :address");
+                $sth = $this->db->prepare("select bid from buildings where address = :address");
                 if ($sth->execute([ ":address" => $address, ])) {
                     $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
                     if (count($res) == 1) {
