@@ -41,6 +41,7 @@
             </li>
         `);
 
+        $("#altForm").hide();
         loadingDone();
     },
 

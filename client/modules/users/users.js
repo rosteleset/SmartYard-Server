@@ -27,7 +27,7 @@
         always(window.modules["users"].render);
     },
 
-    doModifyUser: function (uid, realName, eMail, phone, enabled, password, noreload) {
+    doModifyUser: function (uid, realName, eMail, phone, enabled, password) {
         loadingStart();
         PUT("accounts", "user", uid, {
             realName: realName,
@@ -44,13 +44,15 @@
             message(i18n("users.userWasChanged"));
         }).
         always(() => {
-            if (!noreload) {
-                window.modules["users"].render
+            if (currentPage === "users") {
+                window.modules["users"].render();
+            } else {
+                loadingDone();
             }
         });
     },
 
-    doDeleteUser: function (uid, noreload) {
+    doDeleteUser: function (uid) {
         loadingStart();
         DELETE("accounts", "user", uid).
         fail(FAIL).
@@ -58,8 +60,10 @@
             message(i18n("users.userWasDeleted"));
         }).
         always(() => {
-            if (!noreload) {
-                window.modules["users"].render
+            if (currentPage === "users") {
+                window.modules["users"].render();
+            } else {
+                loadingDone();
             }
         });
     },
@@ -130,7 +134,7 @@
         }).show();
     },
 
-    modifyUser: function (uid, noreload) {
+    modifyUser: function (uid) {
         loadingStart();
         GET("accounts", "user", uid, true).done(response => {
             cardForm({
@@ -247,9 +251,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        window.modules["users"].deleteUser(result.uid, noreload);
+                        window.modules["users"].deleteUser(result.uid);
                     } else {
-                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, noreload);
+                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password);
                     }
                 },
             }).show();
@@ -258,9 +262,9 @@
         always(loadingDone);
     },
 
-    deleteUser: function (uid, noreload) {
+    deleteUser: function (uid) {
         mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            window.modules["users"].doDeleteUser(uid, noreload);
+            window.modules["users"].doDeleteUser(uid);
         });
     },
 
@@ -398,6 +402,7 @@
                     return rows;
                 },
             });
+            $("#altForm").hide();
         }).
         fail(FAIL).
         always(loadingDone);

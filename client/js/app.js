@@ -1,6 +1,7 @@
-var last_hash = false;
+var lastHash = false;
 var modules = [];
 var moduleLoadQueue = [];
+var currentPage = false;
 
 function parseHash(hash, default_route) {
     let params = {};
@@ -44,18 +45,18 @@ function navigate(hash, force) {
 
     let [ route, params ] = parseHash(hash);
 
-    if (hash !== last_hash || force) {
+    if (hash !== lastHash || force) {
 
         loadingStart();
         $('.mainform').hide();
 
-        last_hash = hash;
+        lastHash = hash;
         if (force) {
             window.location.href = hash;
         }
 
         setTimeout(() => {
-            current_page = route;
+            currentPage = route;
 
             $(".sidebar .nav-item a").removeClass('active');
             $(".sidebar .nav-item a[href='#" + route.split('.')[0] + "']").addClass('active');
@@ -370,12 +371,12 @@ function initAll() {
 
     $("#searchInput").off("keypress").on("keypress", e => {
         if (e.charCode === 13) {
-            modules[current_page].search($("#searchInput").val());
+            modules[currentPage].search($("#searchInput").val());
         }
     });
 
     $("#searchButton").off("click").on("click", () => {
-        modules[current_page].search($("#searchInput").val());
+        modules[currentPage].search($("#searchInput").val());
     });
 
     if ($.cookie("_server") && $.cookie("_token")) {

@@ -199,7 +199,6 @@ function autoZ(target) {
 }
 
 function loadingStart() {
-    $("#altForm").hide();
     autoZ($('#loading').modal({
         backdrop: 'static',
         keyboard: false,
