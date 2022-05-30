@@ -283,10 +283,15 @@ function whoAmI(force) {
                 let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(window.myself.eMail).toLowerCase()) + "?s=64&d=404";
                 $(".userAvatar").off("click").on("error", function () {
                     $(this).attr("src", "avatars/noavatar.png");
+                    error(i18n("errors.noGravatar"));
                 }).attr("src", gravUrl);
+            } else {
+                if (parseInt(window.myself.uid) === 0) {
+                    $(".userAvatar").attr("src", "avatars/admin.png");
+                }
             }
             $("#selfSettings").off("click").on("click", () => {
-                window.modules["users"].modifyUser(window.myself.uid);
+                window.modules["users"].modifyUser(window.myself.uid, true);
             });
             let userCard = _me.user.login;
             if (_me.user.realName) {

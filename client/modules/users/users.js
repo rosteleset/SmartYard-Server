@@ -27,13 +27,14 @@
         always(window.modules["users"].render);
     },
 
-    doModifyUser: function (uid, realName, eMail, phone, enabled) {
+    doModifyUser: function (uid, realName, eMail, phone, enabled, password, noreload) {
         loadingStart();
         PUT("accounts", "user", uid, {
             realName: realName,
             eMail: eMail,
             phone: phone,
             enabled: enabled,
+            password: password,
         }).
         fail(FAIL).
         done(() => {
@@ -42,17 +43,25 @@
             }
             message(i18n("users.userWasChanged"));
         }).
-        always(window.modules["users"].render);
+        always(() => {
+            if (!noreload) {
+                window.modules["users"].render
+            }
+        });
     },
 
-    doDeleteUser: function (uid) {
+    doDeleteUser: function (uid, noreload) {
         loadingStart();
         DELETE("accounts", "user", uid).
         fail(FAIL).
         done(() => {
             message(i18n("users.userWasDeleted"));
         }).
-        always(window.modules["users"].render);
+        always(() => {
+            if (!noreload) {
+                window.modules["users"].render
+            }
+        });
     },
 
     doSetPassword: function (uid, password) {
@@ -65,16 +74,6 @@
             message(i18n("users.userWasChanged"));
         }).
         always(loadingDone);
-    },
-
-    doEnableUser: function (uid, enabled) {
-        loadingStart();
-        POST("accounts", enabled?"enableUser":"disableUser", uid).
-        fail(FAIL).
-        done(() => {
-            message(i18n("users.userWasChanged"));
-        }).
-        always(window.modules["users"].render);
     },
 
     /*
@@ -131,7 +130,8 @@
         }).show();
     },
 
-    modifyUser: function (uid) {
+    modifyUser: function (uid, noreload) {
+        console.log(uid.toString() === "0");
         loadingStart();
         GET("accounts", "user", uid, true).done(response => {
             cardForm({
@@ -193,8 +193,9 @@
                         title: i18n("password"),
                         placeholder: i18n("password"),
                         readonly: uid.toString() === "0",
+                        hidden: uid.toString() === "0",
                         validate: (v, prefix) => {
-                            return $.trim(v).length >= 8 && $(`#${prefix}password`).val() == $(`#${prefix}confirm`).val();
+                            return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                         }
                     },
                     {
@@ -203,8 +204,9 @@
                         title: i18n("confirm"),
                         placeholder: i18n("confirm"),
                         readonly: uid.toString() === "0",
+                        hidden: uid.toString() === "0",
                         validate: (v, prefix) => {
-                            return $.trim(v).length >= 8 && $(`#${prefix}password`).val() == $(`#${prefix}confirm`).val();
+                            return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                         }
                     },
                     {
@@ -246,9 +248,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        window.modules["users"].deleteUser(result.uid);
+                        window.modules["users"].deleteUser(result.uid, noreload);
                     } else {
-                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no");
+                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, noreload);
                     }
                 },
             }).show();
@@ -257,9 +259,9 @@
         always(loadingDone);
     },
 
-    deleteUser: function (uid) {
+    deleteUser: function (uid, noreload) {
         mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            window.modules["users"].doDeleteUser(uid);
+            window.modules["users"].doDeleteUser(uid, noreload);
         });
     },
 

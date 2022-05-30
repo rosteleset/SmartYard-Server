@@ -26,13 +26,13 @@ function cardForm(params) {
     h += `<tbody>`;
 
     for (let i in params.fields) {
+        if (params.fields[i].hidden) {
+            h += `<tr style="display: none;">`;
+        } else {
+            h += `<tr>`;
+        }
         switch (params.fields[i].type) {
             case "select":
-                if (params.fields[i].hidden) {
-                    h += `<tr style="display: none;">`;
-                } else {
-                    h += `<tr>`;
-                }
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
@@ -59,14 +59,8 @@ function cardForm(params) {
                 h += `</div>`;
                 h += `</div>`;
                 h += `</td>`;
-                h += `</tr>`;
                 break;
             case "select2":
-                if (params.fields[i].hidden) {
-                    h += `<tr style="display: none;">`;
-                } else {
-                    h += `<tr>`;
-                }
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 if (params.fields[i].color) {
@@ -90,7 +84,6 @@ function cardForm(params) {
                 h += `</select>`;
                 h += `</div>`;
                 h += `</td>`;
-                h += `</tr>`;
                 break;
             case "email":
             case "tel":
@@ -99,7 +92,6 @@ function cardForm(params) {
             case "password":
             default:
                 let type = params.fields[i].type?params.fields[i].type:"text";
-                h += `<tr>`;
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
@@ -116,9 +108,9 @@ function cardForm(params) {
                 }
                 h += `</div>`;
                 h += `</td>`;
-                h += `</tr>`;
                 break;
         }
+        h += `</tr>`;
     }
 
     h += `</tbody>`;

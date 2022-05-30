@@ -291,7 +291,7 @@
                         $code = array_key_first($result);
                         if ((int)$code) {
                             if ($params["_request_method"] == "GET" && (int)$code === 200) {
-                                $redis->setex("cache_" . $params["_md5"] . "_" .  $auth["uid"], $redis_cache_ttl, json_encode($result));
+                                $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $redis_cache_ttl, json_encode($result));
                             }
                             response($code, $result[$code]);
                         } else {
