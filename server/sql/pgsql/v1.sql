@@ -1,7 +1,7 @@
 CREATE TABLE core_vars (var_id serial not null primary key, var_name character varying not null, var_value character varying);
 CREATE INDEX core_vars_id on core_vars(var_id);
 CREATE INDEX core_vars_var_name on core_vars(var_name);
-INSERT INTO vars (var_name, var_value) values ('dbVersion', '0');
+INSERT INTO core_vars (var_name, var_value) values ('dbVersion', '0');
 CREATE TABLE core_users (uid serial not null primary key, login character varying not null, password character varying not null, enabled integer, real_name character varying, e_mail character varying, phone character varying);
 CREATE UNIQUE INDEX core_users_login on core_users(login);
 CREATE INDEX core_users_real_name on core_users(real_name);
