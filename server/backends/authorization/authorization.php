@@ -31,6 +31,7 @@
                 ],
                 "server" => [
                     "version" => [ "GET" ],
+                    "clearCache" => [ "POST" ],
                 ],
             ];
 
