@@ -1,5 +1,6 @@
 {
     "1": [
-        "v1_core.sql"
+        "v1_core.sql",
+        "v1_tt.sql"
     ]
 }
