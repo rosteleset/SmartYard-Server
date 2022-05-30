@@ -131,7 +131,6 @@
     },
 
     modifyUser: function (uid, noreload) {
-        console.log(uid.toString() === "0");
         loadingStart();
         GET("accounts", "user", uid, true).done(response => {
             cardForm({
