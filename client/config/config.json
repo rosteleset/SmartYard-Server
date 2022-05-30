@@ -13,6 +13,5 @@
         "groups",
         "permissions"
     ],
-    "defaultRoute": "address",
-    "ajaxCache": true
+    "defaultRoute": "address"
 }

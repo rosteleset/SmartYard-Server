@@ -24,6 +24,10 @@
                     return true;
                 }
 
+                if (!checkInt($params["_uid"])) {
+                    return false;
+                }
+
                 if ($params["_uid"] === 0) {
                     return true;
                 }

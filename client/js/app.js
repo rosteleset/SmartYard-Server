@@ -306,10 +306,6 @@ function initAll() {
         $.cookie("_cookie", "1", { expires: 36500 });
     }
 
-    $.ajaxSetup({
-        cache: window.config.ajaxCache,
-    });
-
     $(window.document.body).css("background-color", '#e9ecef');
 
     if (!$.cookie("_ua")) {
