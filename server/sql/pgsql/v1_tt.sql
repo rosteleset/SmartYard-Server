@@ -97,7 +97,7 @@ CREATE INDEX tt_roles_level on tt_roles(level);
 INSERT INTO tt_roles (level, name) values (1000, 'viewer');                 -- can view only
 INSERT INTO tt_roles (level, name) values (2000, 'commenter');              -- can comment, can edit and delete own comments, can attach files and delete own files
 INSERT INTO tt_roles (level, name) values (3000, 'reporter');               -- can create issue
-INSERT INTO tt_roles (level, name) values (4000, 'participant.junior');     -- can change status (withot final)
+INSERT INTO tt_roles (level, name) values (4000, 'participant.junior');     -- can change status (without final)
 INSERT INTO tt_roles (level, name) values (5000, 'participant.middle');     -- can change status
 INSERT INTO tt_roles (level, name) values (6000, 'participant.senior');     -- can edit issues
 INSERT INTO tt_roles (level, name) values (7000, 'manager');                -- can edit all comments and delete comments

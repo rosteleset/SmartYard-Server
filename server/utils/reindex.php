@@ -24,16 +24,17 @@
                         require_once "api/$api/$method.php";
                         if (class_exists("\\api\\$api\\$method")) {
                             $request_methods = call_user_func(["\\api\\$api\\$method", "index"]);
-
-                            foreach ($request_methods as $request_method) {
-                                $md5 = md5("$api/$method/$request_method");
-                                $add->execute([
-                                    ":md5" => $md5,
-                                    ":api" => $api,
-                                    ":method" => $method,
-                                    ":request_method" => $request_method
-                                ]);
-                                $n++;
+                            if ($request_methods) {
+                                foreach ($request_methods as $request_method) {
+                                    $md5 = md5("$api/$method/$request_method");
+                                    $add->execute([
+                                        ":md5" => $md5,
+                                        ":api" => $api,
+                                        ":method" => $method,
+                                        ":request_method" => $request_method
+                                    ]);
+                                    $n++;
+                                }
                             }
                         } else {
                             echo "warning: possible incomplete method $api/$method\n";
