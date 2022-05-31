@@ -9,7 +9,7 @@
         use backends\backend;
 
         /**
-         * base groups class
+         * base tt class
          */
 
         abstract class tt extends backend {

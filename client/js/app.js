@@ -3,21 +3,21 @@ var modules = [];
 var moduleLoadQueue = [];
 var currentPage = false;
 
-function parseHash(hash, default_route) {
+function parseHash(hash, defaultRoute) {
     let params = {};
     let route;
 
-    default_route = default_route?default_route:'default';
+    defaultRoute = defaultRoute?defaultRoute:'default';
 
     try {
         hash = hash.split('#')[1].split('&');
-        route = hash[0]?hash[0]:default_route;
+        route = hash[0]?hash[0]:defaultRoute;
         for (let i = 1; i < hash.length; i++) {
             let sp = hash[i].split('=');
             params[sp[0]] = sp[1]?decodeURIComponent(sp[1]):true;
         }
     } catch (e) {
-        route = default_route;
+        route = defaultRoute;
     }
 
     return [ route, params?params:[] ];
@@ -75,7 +75,7 @@ function navigate(hash, force) {
             } else
             if (route == "default") {
                 if (window.config.defaultRoute) {
-                    window.location = "#" + window.config.defaultRoute;
+                    window.location = window.config.defaultRoute;
                 } else {
                     loadingDone();
                 }
@@ -280,6 +280,9 @@ function whoAmI(force) {
             window.myself.realName = _me.user.realName;
             window.myself.eMail = _me.user.eMail;
             window.myself.phone = _me.user.phone;
+            if (_me.user.defaultRoute) {
+                window.config.defaultRoute = _me.user.defaultRoute;
+            }
             if (window.myself.eMail) {
                 let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(window.myself.eMail).toLowerCase()) + "?s=64&d=404";
                 $(".userAvatar").off("click").on("error", function () {
@@ -400,7 +403,7 @@ function initAll() {
                                 $("#app").show();
                                 if (window.config.defaultRoute) {
                                     window.onhashchange = hashChange;
-                                    window.location = "#" + window.config.defaultRoute;
+                                    window.location = window.config.defaultRoute;
                                 } else {
                                     hashChange();
                                     window.onhashchange = hashChange;

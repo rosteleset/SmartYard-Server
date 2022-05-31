@@ -13,7 +13,6 @@
         class internal extends tt {
 
             public function allow($params) {
-                error_log("*********************8!!!!!!!!!!!!!******************\n");
                 return false;
             }
         }

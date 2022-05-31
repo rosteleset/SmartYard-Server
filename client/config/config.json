@@ -14,5 +14,5 @@
         "groups",
         "permissions"
     ],
-    "defaultRoute": "tt"
+    "defaultRoute": "#tt"
 }

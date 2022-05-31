@@ -35,6 +35,7 @@
             phone: phone,
             enabled: enabled,
             password: password,
+            defaultRoute: defaultRoute,
         }).
         fail(FAIL).
         done(() => {
@@ -213,6 +214,17 @@
                         }
                     },
                     {
+                        id: "defaultRoute",
+                        type: "text",
+                        readonly: false,
+                        value: response.user.defaultRoute,
+                        title: i18n("users.defaultRoute"),
+                        placeholder: "#route",
+                        validate: (v) => {
+                            return $.trim(v) === "" || $.trim(v)[0] === "#";
+                        }
+                    },
+                    {
                         id: "disabled",
                         type: "select",
                         value: response.user.enabled?"no":"yes",
@@ -253,7 +265,7 @@
                     if (result.delete === "yes") {
                         window.modules["users"].deleteUser(result.uid);
                     } else {
-                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password);
+                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, result.defaultRoute);
                     }
                 },
             }).show();
