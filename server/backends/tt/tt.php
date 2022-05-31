@@ -14,5 +14,8 @@
 
         abstract class tt extends backend {
 
+            public function allow($params) {
+                return false;
+            }
         }
     }

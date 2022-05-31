@@ -5,7 +5,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName version
+     * @apiName tt
      * @apiGroup tt
      *
      * @apiHeader {String} authorization authentication token
@@ -32,14 +32,13 @@
         use api\api;
 
         /**
-         * version method
+         * tt (task tracker metadata(s)) method
          */
 
         class tt extends api {
 
             public static function GET($params) {
-                $tt_resolutions = loadBackend("tt")->getResolutions;
-
+//                $tt_resolutions = loadBackend("tt")->getResolutions;
                 return api::ANSWER();
             }
 

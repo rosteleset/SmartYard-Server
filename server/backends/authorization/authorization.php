@@ -14,29 +14,6 @@
 
         abstract class authorization extends backend {
 
-            // always available for all
-
-            public $availableForAll = [
-                "accounts" => [
-                    "whoAmI" => [ "GET" ],
-                ],
-                "authorization" => [
-                    "available" => [ "GET" ],
-                    "methods" => [ "GET" ],
-                ],
-                "authentication" => [
-                    "login" => [ "POST" ],
-                    "logout" => [ "POST" ],
-                    "ping" => [ "POST" ],
-                ],
-                "server" => [
-                    "version" => [ "GET" ],
-                    "clearCache" => [ "POST" ],
-                ],
-            ];
-
-            // by default available for self (_id == uid)
-
             public $availableForSelf = [
                 "accounts" => [
                     "user" => [ "GET", "PUT" ],
@@ -60,11 +37,24 @@
             public function methods($_all = true) {
                 $m = [];
                 try {
-                    $all = $this->db->query("select aid, api, method, request_method from core_api_methods", \PDO::FETCH_ASSOC)->fetchAll();
+                    if ($_all) {
+                        $all = $this->db->query("select aid, api, method, request_method from core_api_methods", \PDO::FETCH_ASSOC)->fetchAll();
+                    } else {
+                        $all = $this->db->query("
+                            select
+                                aid,
+                                api,
+                                method,
+                                request_method
+                            from
+                                core_api_methods
+                            where
+                                aid not in (select aid from core_api_methods_common) and 
+                                aid not in (select aid from core_api_methods_by_backend)
+                        ", \PDO::FETCH_ASSOC)->fetchAll();
+                    }
                     foreach ($all as $a) {
-                        if ($_all || (@$this->availableForAll[$a['api']][$a['method']] && in_array($a['request_method'], $this->availableForAll[$a['api']][$a['method']])) === false) {
-                            $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
-                        }
+                        $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

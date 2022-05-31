@@ -54,7 +54,9 @@
             }
 
             public static function index() {
-                return [ "POST" ];
+                return [
+                    "POST" => "#common",
+                ];
             }
         }
     }

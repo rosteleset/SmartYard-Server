@@ -178,12 +178,11 @@
             }
 
             public static function PUT($params) {
-                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["enabled"]);
+                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["enabled"], $params["defaultRoute"]);
 
                 if (@$params["password"]) {
                     $success = $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
-
-                    return self::ANSWER($success, ($success !== false)?false:"notFound");
+                    return self::ANSWER($success, ($success !== false)?false:"notAcceptable");
                 } else {
                     return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
                 }
@@ -199,7 +198,12 @@
                 $users = loadBackend("users");
 
                 if ($users && $users->capabilities()["mode"] === "rw") {
-                    return [ "GET", "POST", "PUT", "DELETE" ];
+                    return [
+                        "GET" => "#personal",
+                        "POST",
+                        "PUT" => "#personal",
+                        "DELETE"
+                    ];
                 } else {
                     return [ "GET" ];
                 }

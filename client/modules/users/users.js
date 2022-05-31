@@ -27,7 +27,7 @@
         always(window.modules["users"].render);
     },
 
-    doModifyUser: function (uid, realName, eMail, phone, enabled, password) {
+    doModifyUser: function (uid, realName, eMail, phone, enabled, password, defaultRoute) {
         loadingStart();
         PUT("accounts", "user", uid, {
             realName: realName,

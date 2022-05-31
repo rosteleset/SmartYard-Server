@@ -60,7 +60,9 @@
             }
 
             public static function index() {
-                return [ "GET" ];
+                return [
+                    "GET" => "#common",
+                ];
             }
         }
     }
