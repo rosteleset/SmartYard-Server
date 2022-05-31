@@ -94,7 +94,9 @@ function cardForm(params) {
                 let type = params.fields[i].type?params.fields[i].type:"text";
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
-                h += `<div class="input-group">`;
+                if (params.fields[i].button) {
+                    h += `<div class="input-group">`;
+                }
                 h += `<input id="${_prefix}${params.fields[i].id}" type="${type}" class="form-control modalFormField" autocomplete="off" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
@@ -105,14 +107,22 @@ function cardForm(params) {
                     h += `<div class="input-group-append">`;
                     h += `<span id="${_prefix}${params.fields[i].id}-button" class="input-group-text pointer"><i class="${params.fields[i].button.class}"></i></span>`;
                     h += `</div>`;
+                    h += `</div>`;
                 }
-                h += `</div>`;
                 h += `</td>`;
                 break;
         }
         h += `</tr>`;
     }
 
+/*
+    h += `<td class="tdform">tags-test</td>`;
+    h += `<td class="tdform-right">`;
+    h += `<select class="form-control" id="tags-input" multiple data-allow-new="true" data-allow-clear="true" data-badge-style="info"><option disabled hidden value="">Choose a tag...</option><option value="Apple">Apple</option><option value="Banana">Banana</option><option value="Orange">Orange</option></select>`;
+    h += `</td>`;
+
+    $.Tags("#tags-input");
+*/
     h += `</tbody>`;
 
     if (params.footer) {
@@ -129,7 +139,6 @@ function cardForm(params) {
     }
 
     h += `</table>`;
-
     h += `</div>`;
     h += `</div>`;
 

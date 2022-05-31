@@ -14,6 +14,7 @@ __pycache__
 .phpdoc
 /client/lib/AdminLTE/
 /client/lib/qrcodejs/
+/client/lib/bootstrap5-tags/
 /server/lib/PHPMailer/
 /server/db/internal.db
 /server/config/config.json
