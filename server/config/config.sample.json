@@ -16,7 +16,9 @@
         "host": "127.0.0.1",
         "port": 6379,
         "password": "[optional, can be removed or auth here]",
-        "cache_ttl": 3600
+        "cache_ttl": 3600,
+        "max_allowed_tokens": 15,
+        "token_idle_ttl": 3600
     },
 
     "backends": {
@@ -46,9 +48,6 @@
         "HTTP_X_FORWARDED_FOR",
         "REMOTE_ADDR"
     ],
-
-    "max_allowed_tokens": 15,
-    "token_idle_ttl": 3600,
 
     "email": {
         "server": "127.0.0.1",

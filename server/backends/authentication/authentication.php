@@ -35,13 +35,13 @@
                 $uid = $this->check_auth($login, $password);
                 if ($uid !== false) {
                     $keys = $this->redis->keys("auth_*_" . $uid);
-                    if (count($keys) < $this->config["max_allowed_tokens"]) {
+                    if (count($keys) < $this->config["redis"]["max_allowed_tokens"]) {
                         if ($rememberMe) {
                             $token = md5($uid . ":" . $login . ":" . $password . ":" . $did);
                         } else {
                             $token = md5(GUIDv4());
                         }
-                        $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe?(10 * 365 * 24 * 60 * 60):$this->config["token_idle_ttl"], json_encode([
+                        $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe?(10 * 365 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode([
                             "uid" => (string)$uid,
                             "login" => $login,
                             "persistent" => $rememberMe,
@@ -88,7 +88,7 @@
                         $auth["ip"] = $ip;
                     }
 
-                    $this->redis->setex($key, $auth["persistent"]?(10 * 365 * 24 * 60 * 60):$this->config["token_idle_ttl"], json_encode($auth));
+                    $this->redis->setex($key, $auth["persistent"]?(10 * 365 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
 
                     return $auth;
                 }

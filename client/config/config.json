@@ -6,6 +6,7 @@
         "en": "English"
     },
     "modules": [
+        "tt",
         "settings",
         "asterisk",
         "address",
@@ -13,5 +14,5 @@
         "groups",
         "permissions"
     ],
-    "defaultRoute": "address"
+    "defaultRoute": "tt"
 }
