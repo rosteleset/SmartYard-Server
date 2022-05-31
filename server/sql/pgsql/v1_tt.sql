@@ -8,7 +8,7 @@ CREATE UNIQUE INDEX tt_issue_types_uniq on tt_issue_types(type);
 -- issue statuses
 CREATE TABLE tt_issue_statuses (status_id serial primary key, status character varying, final integer);
 CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(status);
--- issue resulutions
+-- issue resolutions
 CREATE TABLE tt_issue_resolutions (resolution_id serial primary key, resolution character varying);
 CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(resolution);
 -- issues
@@ -84,14 +84,14 @@ CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_field
 -- projects roles types
 CREATE TABLE tt_roles (role_id serial primary key, name character varying, level integer);
 CREATE INDEX tt_roles_level on tt_roles(level);
-INSERT INTO tt_roles (name, level) values (1000, 'viewer');
-INSERT INTO tt_roles (name, level) values (2000, 'commenter');
-INSERT INTO tt_roles (name, level) values (3000, 'reporter');
-INSERT INTO tt_roles (name, level) values (4000, 'participant.junior');
-INSERT INTO tt_roles (name, level) values (5000, 'participant.middle');
-INSERT INTO tt_roles (name, level) values (6000, 'participant.senior');
-INSERT INTO tt_roles (name, level) values (7000, 'manager');
-INSERT INTO tt_roles (name, level) values (8000, 'admin');
+INSERT INTO tt_roles (name, level) values (1000, 'viewer');                 -- can view only
+INSERT INTO tt_roles (name, level) values (2000, 'commenter');              -- can comment and edit own comments
+INSERT INTO tt_roles (name, level) values (3000, 'reporter');               -- can create issue
+INSERT INTO tt_roles (name, level) values (4000, 'participant.junior');     -- can change status (withot final)
+INSERT INTO tt_roles (name, level) values (5000, 'participant.middle');     -- can change status
+INSERT INTO tt_roles (name, level) values (6000, 'participant.senior');     -- can edit issues
+INSERT INTO tt_roles (name, level) values (7000, 'manager');                -- can edit all comments and delete comments
+INSERT INTO tt_roles (name, level) values (8000, 'admin');                  -- can delete issues
 -- project rights
 CREATE TABLE tt_projects_roles (tt_project_role_id integer not null primary key autoincrement, project_id integer not null, role_id integer not null, uid integer, gid integer);
 CREATE UNIQUE INDEX tt_projects_roles_uniq on tt_projects_roles (project_id, role_id);
