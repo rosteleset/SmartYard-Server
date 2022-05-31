@@ -21,7 +21,7 @@ function setFavicon(icon, unreaded) {
     window.badge = new Favico({ animation: 'none', bgColor: '#000000' });
 
     if (unreaded) {
-        if (unreaded <= 9) {
+        if (unreaded <= 9 || !parseInt(unreaded)) {
             window.badge.badge(unreaded);
         } else {
             window.badge.badge('9+');
@@ -123,7 +123,7 @@ function mConfirm(body, title, button, callback) {
     $('#confirmModalBody').html(body);
     let bc = 'btn-primary';
     button = button.split(':');
-    if (button.length == 2) {
+    if (button.length === 2) {
         bc = 'btn-' + button[0];
         button = button[1];
     } else {
@@ -150,8 +150,7 @@ function mAlert(body, title, callback, title_button, main_button) {
     if (title.toLowerCase().indexOf(i18n("message").toLowerCase()) >= 0) {
         title = '<span class="text-success">' + title + '</span>';
     }
-    $('#alertModalLabel').html(title);
-    $('#alertModalLabel').next().remove();
+    $('#alertModalLabel').html(title).next().remove();
     if (title_button) {
         $('#alertModalLabel').parent().append($(title_button));
     }
@@ -186,7 +185,7 @@ function xblur() {
 
 function autoZ(target) {
     let maxZ = Math.max.apply(null, $.map($('body > *:visible'), function(e) {
-        if (e == target) {
+        if (e === target) {
             return 1;
         } else {
             return parseInt($(e).css('z-index')) || 1;

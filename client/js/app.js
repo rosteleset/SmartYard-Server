@@ -289,7 +289,7 @@ function initAll() {
         $.cookie("_cookie", "1", { expires: 36500 });
     }
 
-    setFavicon("img/tech.png", 5);
+    setFavicon("img/tech.png", 100);
 
     $(window.document.body).css("background-color", '#e9ecef');
 
