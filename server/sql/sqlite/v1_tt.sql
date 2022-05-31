@@ -81,3 +81,21 @@ CREATE INDEX tt_issue_custom_fields_values_type_value on tt_issue_custom_fields_
 -- custom fields values options
 CREATE TABLE tt_issue_custom_fields_options (custom_field_value_id integer not null primary key, custom_field_id integer, option text);
 CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_fields_options(custom_field_id, option);
+-- projects roles types
+CREATE TABLE tt_roles (role_id integer not null primary key autoincrement, name text, level integer);
+CREATE INDEX tt_roles_level on tt_roles(level);
+INSERT INTO tt_roles (name, level) values (1000, 'viewer');
+INSERT INTO tt_roles (name, level) values (2000, 'commenter');
+INSERT INTO tt_roles (name, level) values (3000, 'reporter');
+INSERT INTO tt_roles (name, level) values (4000, 'participant.junior');
+INSERT INTO tt_roles (name, level) values (5000, 'participant.middle');
+INSERT INTO tt_roles (name, level) values (6000, 'participant.senior');
+INSERT INTO tt_roles (name, level) values (7000, 'manager');
+INSERT INTO tt_roles (name, level) values (8000, 'admin');
+-- project rights
+CREATE TABLE tt_projects_roles (tt_project_role_id integer not null primary key autoincrement, project_id integer not null, role_id integer not null, uid integer, gid integer);
+CREATE UNIQUE INDEX tt_projects_roles_uniq on tt_projects_roles (project_id, role_id);
+CREATE INDEX tt_projects_roles_project_id on tt_projects_roles(project_id);
+CREATE INDEX tt_projects_roles_role_id on tt_projects_roles(role_id);
+CREATE INDEX tt_projects_roles_uid on tt_projects_roles(uid);
+CREATE INDEX tt_projects_roles_gid on tt_projects_roles(gid);
