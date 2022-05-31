@@ -116,6 +116,16 @@ function cardForm(params) {
     }
 
 /*
+    alternative to select2 tags
+
+    example with select2
+
+    $(".js-example-tags").select2({
+        tags: true
+    });
+
+    or use Tags:
+
     h += `<td class="tdform">tags-test</td>`;
     h += `<td class="tdform-right">`;
     h += `<select class="form-control" id="tags-input" multiple data-allow-new="true" data-allow-clear="true" data-badge-style="info"><option disabled hidden value="">Choose a tag...</option><option value="Apple">Apple</option><option value="Banana">Banana</option><option value="Orange">Orange</option></select>`;
@@ -123,6 +133,7 @@ function cardForm(params) {
 
     $.Tags("#tags-input");
 */
+
     h += `</tbody>`;
 
     if (params.footer) {
@@ -219,6 +230,7 @@ function cardForm(params) {
             $(`#${_prefix}${params.fields[i].id}`).select2({
                 language: window.lang["_code"],
                 minimumResultsForSearch: params.fields[i].minimumResultsForSearch?params.fields[i].minimumResultsForSearch:0,
+                tags: !!params.fields[i].tags,
             });
             if (typeof params.fields[i].select === "function") {
                 $(`#${_prefix}${params.fields[i].id}`).off("select2:select").on("select2:select", function () {
