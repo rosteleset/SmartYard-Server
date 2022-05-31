@@ -54,11 +54,21 @@ CREATE INDEX tt_issue_plans_uid on tt_issue_plans(uid);
 CREATE INDEX tt_issue_plans_gid on tt_issue_plans(gid);
 -- comments
 CREATE TABLE tt_issue_comments (comment_id integer not null primary key,
-    issue_id integer,               -- issue
-    comment text,                   -- comment
-    created text,                   -- "YYYY-MM-DD HH:MM:SS.SSS"
-    updated text,                   -- "YYYY-MM-DD HH:MM:SS.SSS"
-    author integer                  -- uid
+                                issue_id integer,               -- issue
+                                comment text,                   -- comment
+                                role_id integer,                -- permission level
+                                created text,                   -- "YYYY-MM-DD HH:MM:SS.SSS"
+                                updated text,                   -- "YYYY-MM-DD HH:MM:SS.SSS"
+                                author integer                  -- uid
+);
+CREATE INDEX tt_issue_comments_issue_id on tt_issue_comments(issue_id);
+-- attachments
+CREATE TABLE tt_issue_attachments (attachment_id integer not null primary key,
+                                issue_id integer,               -- issue
+                                internal text,                  -- internal url (filename)
+                                role_id integer,                -- permission level
+                                created text,                   -- "YYYY-MM-DD HH:MM:SS.SSS"
+                                author integer                  -- uid
 );
 CREATE INDEX tt_issue_comments_issue_id on tt_issue_comments(issue_id);
 -- checklist
@@ -85,7 +95,7 @@ CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_field
 CREATE TABLE tt_roles (role_id integer not null primary key autoincrement, name text, level integer);
 CREATE INDEX tt_roles_level on tt_roles(level);
 INSERT INTO tt_roles (name, level) values (1000, 'viewer');                 -- can view only
-INSERT INTO tt_roles (name, level) values (2000, 'commenter');              -- can comment and edit own comments
+INSERT INTO tt_roles (name, level) values (2000, 'commenter');              -- can comment, can edit and delete own comments, can attach files and delete own files
 INSERT INTO tt_roles (name, level) values (3000, 'reporter');               -- can create issue
 INSERT INTO tt_roles (name, level) values (4000, 'participant.junior');     -- can change status (withot final)
 INSERT INTO tt_roles (name, level) values (5000, 'participant.middle');     -- can change status
