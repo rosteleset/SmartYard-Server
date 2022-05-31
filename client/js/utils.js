@@ -4,14 +4,14 @@ function setFavicon(icon, unreaded) {
     }
 
     if ($.browser.chrome) {
-        $('#favicon').attr('href', icon.src);
+        $('#favicon').attr('href', icon);
     } else {
         document.head || (document.head = document.getElementsByTagName('head')[0]);
         let link = document.createElement('link');
         let oldLink = document.getElementById('dynamic-favicon');
         link.id = 'dynamic-favicon';
         link.rel = 'shortcut icon';
-        link.href = icon.src;
+        link.href = icon;
         if (oldLink){
             document.head.removeChild(oldLink);
         }
@@ -205,9 +205,9 @@ function loadingStart() {
     }));
 }
 
-function loadingDone(stay_hidden) {
+function loadingDone(stayHidden) {
     $('#loading').modal('hide');
-    if (stay_hidden === true) {
+    if (stayHidden === true) {
         $('#app').addClass("invisible");
     } else {
         $('#app').removeClass("invisible");

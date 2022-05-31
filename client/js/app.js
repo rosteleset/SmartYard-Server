@@ -3,57 +3,31 @@ var modules = [];
 var moduleLoadQueue = [];
 var currentPage = false;
 
-function parseHash(hash, defaultRoute) {
+function hashChange() {
+    let hash = window.location.href.split('#')[1];
+    hash = hash?('#' + hash):'';
+
+    $('.dropdownMenu').collapse('hide');
+    $('.modal').modal('hide');
+
     let params = {};
     let route;
 
-    defaultRoute = defaultRoute?defaultRoute:'default';
-
     try {
         hash = hash.split('#')[1].split('&');
-        route = hash[0]?hash[0]:defaultRoute;
+        route = hash[0]?hash[0]:"default";
         for (let i = 1; i < hash.length; i++) {
             let sp = hash[i].split('=');
             params[sp[0]] = sp[1]?decodeURIComponent(sp[1]):true;
         }
     } catch (e) {
-        route = defaultRoute;
+        route = "default";
     }
 
-    return [ route, params?params:[] ];
-}
-
-function implodeHash(route, params) {
-    let p_ = '';
-
-    for (let i in params) {
-        p_ += '&' + i + '=' + encodeURIComponent(params[i]);
-    }
-
-    return '#' + route + p_;
-}
-
-function hashChange() {
-    let hash = window.location.href.split('#')[1];
-    hash = hash?('#' + hash):'';
-    navigate(hash);
-}
-
-function navigate(hash, force) {
-    $('.dropdownMenu').collapse('hide');
-    $('.modal').modal('hide');
-
-    let [ route, params ] = parseHash(hash);
-
-    if (hash !== lastHash || force) {
+    if (hash !== lastHash) {
+        lastHash = hash;
 
         loadingStart();
-        $('.mainform').hide();
-
-        lastHash = hash;
-        if (force) {
-            window.location.href = hash;
-        }
 
         setTimeout(() => {
             currentPage = route;
@@ -314,6 +288,8 @@ function initAll() {
         warning(i18n("cookieWarning"), false, 3600);
         $.cookie("_cookie", "1", { expires: 36500 });
     }
+
+    setFavicon("img/tech.png", 5);
 
     $(window.document.body).css("background-color", '#e9ecef');
 
