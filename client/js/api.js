@@ -65,7 +65,7 @@ function FAIL(response) {
     if (response && response.responseJSON && response.responseJSON.error) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
     } else {
-        error(i18n("errors.unknown"), "[" + i18n("users.users") + "]: " + i18n("error"), 30);
+        error(i18n("errors.unknown"), i18n("error"), 30);
     }
 }
 
