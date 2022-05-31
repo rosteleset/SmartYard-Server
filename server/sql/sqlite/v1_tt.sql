@@ -70,7 +70,7 @@ CREATE TABLE tt_issue_attachments (attachment_id integer not null primary key,
                                 created text,                   -- "YYYY-MM-DD HH:MM:SS.SSS"
                                 author integer                  -- uid
 );
-CREATE INDEX tt_issue_comments_issue_id on tt_issue_comments(issue_id);
+CREATE INDEX tt_issue_attachments_issue_id on tt_issue_attachments(issue_id);
 -- checklist
 CREATE TABLE tt_issue_checklist (check_id integer not null primary key, issue_id integer, checkbox text, checked integer);
 CREATE UNIQUE INDEX tt_issue_checklist_uniq on tt_issue_checklist(issue_id, checkbox);
@@ -94,14 +94,14 @@ CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_field
 -- projects roles types
 CREATE TABLE tt_roles (role_id integer not null primary key autoincrement, name text, level integer);
 CREATE INDEX tt_roles_level on tt_roles(level);
-INSERT INTO tt_roles (name, level) values (1000, 'viewer');                 -- can view only
-INSERT INTO tt_roles (name, level) values (2000, 'commenter');              -- can comment, can edit and delete own comments, can attach files and delete own files
-INSERT INTO tt_roles (name, level) values (3000, 'reporter');               -- can create issue
-INSERT INTO tt_roles (name, level) values (4000, 'participant.junior');     -- can change status (withot final)
-INSERT INTO tt_roles (name, level) values (5000, 'participant.middle');     -- can change status
-INSERT INTO tt_roles (name, level) values (6000, 'participant.senior');     -- can edit issues
-INSERT INTO tt_roles (name, level) values (7000, 'manager');                -- can edit all comments and delete comments
-INSERT INTO tt_roles (name, level) values (8000, 'admin');                  -- can delete issues
+INSERT INTO tt_roles (level, name) values (1000, 'viewer');                 -- can view only
+INSERT INTO tt_roles (level, name) values (2000, 'commenter');              -- can comment, can edit and delete own comments, can attach files and delete own files
+INSERT INTO tt_roles (level, name) values (3000, 'reporter');               -- can create issue
+INSERT INTO tt_roles (level, name) values (4000, 'participant.junior');     -- can change status (withot final)
+INSERT INTO tt_roles (level, name) values (5000, 'participant.middle');     -- can change status
+INSERT INTO tt_roles (level, name) values (6000, 'participant.senior');     -- can edit issues
+INSERT INTO tt_roles (level, name) values (7000, 'manager');                -- can edit all comments and delete comments
+INSERT INTO tt_roles (level, name) values (8000, 'admin');                  -- can delete issues
 -- project rights
 CREATE TABLE tt_projects_roles (tt_project_role_id integer not null primary key autoincrement, project_id integer not null, role_id integer not null, uid integer, gid integer);
 CREATE UNIQUE INDEX tt_projects_roles_uniq on tt_projects_roles (project_id, role_id);
