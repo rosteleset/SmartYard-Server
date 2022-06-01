@@ -3,6 +3,7 @@ download server libs
 ```
 cd server/lib
 git clone https://github.com/PHPMailer/PHPMailer 
+git clone https://github.com/ezyang/htmlpurifier
 ```
 
 download client libs
@@ -11,6 +12,7 @@ download client libs
 cd client/lib
 git clone https://github.com/ColorlibHQ/AdminLTE
 git clone https://github.com/davidshimjs/qrcodejs
+git clone https://github.com/lekoala/bootstrap5-tags
 ```
 
 edit db, redis and email settings (email - optional)

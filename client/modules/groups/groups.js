@@ -220,6 +220,8 @@
      */
 
     render: function () {
+        $("#altForm").hide();
+
         loadingStart();
 
         GET("accounts", "groups", false, true).done(response => {

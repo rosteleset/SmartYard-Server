@@ -19,7 +19,7 @@
      *  }
      *
      * @apiExample {curl} Example usage:
-     *  curl -X POST http://127.0.0.1:8000/server/api.php/server/version
+     *  curl -X GET http://127.0.0.1:8000/server/api.php/server/version
      */
 
     /**
@@ -51,7 +51,9 @@
             }
 
             public static function index() {
-                return [ "GET" ];
+                return [
+                    "GET" => "#common",
+                ];
             }
         }
     }

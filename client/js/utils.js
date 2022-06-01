@@ -4,14 +4,14 @@ function setFavicon(icon, unreaded) {
     }
 
     if ($.browser.chrome) {
-        $('#favicon').attr('href', icon.src);
+        $('#favicon').attr('href', icon);
     } else {
         document.head || (document.head = document.getElementsByTagName('head')[0]);
         let link = document.createElement('link');
         let oldLink = document.getElementById('dynamic-favicon');
         link.id = 'dynamic-favicon';
         link.rel = 'shortcut icon';
-        link.href = icon.src;
+        link.href = icon;
         if (oldLink){
             document.head.removeChild(oldLink);
         }
@@ -21,7 +21,7 @@ function setFavicon(icon, unreaded) {
     window.badge = new Favico({ animation: 'none', bgColor: '#000000' });
 
     if (unreaded) {
-        if (unreaded <= 9) {
+        if (unreaded <= 9 || !parseInt(unreaded)) {
             window.badge.badge(unreaded);
         } else {
             window.badge.badge('9+');
@@ -123,7 +123,7 @@ function mConfirm(body, title, button, callback) {
     $('#confirmModalBody').html(body);
     let bc = 'btn-primary';
     button = button.split(':');
-    if (button.length == 2) {
+    if (button.length === 2) {
         bc = 'btn-' + button[0];
         button = button[1];
     } else {
@@ -150,8 +150,7 @@ function mAlert(body, title, callback, title_button, main_button) {
     if (title.toLowerCase().indexOf(i18n("message").toLowerCase()) >= 0) {
         title = '<span class="text-success">' + title + '</span>';
     }
-    $('#alertModalLabel').html(title);
-    $('#alertModalLabel').next().remove();
+    $('#alertModalLabel').html(title).next().remove();
     if (title_button) {
         $('#alertModalLabel').parent().append($(title_button));
     }
@@ -186,7 +185,7 @@ function xblur() {
 
 function autoZ(target) {
     let maxZ = Math.max.apply(null, $.map($('body > *:visible'), function(e) {
-        if (e == target) {
+        if (e === target) {
             return 1;
         } else {
             return parseInt($(e).css('z-index')) || 1;
@@ -199,16 +198,15 @@ function autoZ(target) {
 }
 
 function loadingStart() {
-    $("#altForm").hide();
     autoZ($('#loading').modal({
         backdrop: 'static',
         keyboard: false,
     }));
 }
 
-function loadingDone(stay_hidden) {
+function loadingDone(stayHidden) {
     $('#loading').modal('hide');
-    if (stay_hidden === true) {
+    if (stayHidden === true) {
         $('#app').addClass("invisible");
     } else {
         $('#app').removeClass("invisible");
@@ -284,4 +282,17 @@ function leftSide(button, title, target) {
             </a>
         </li>
     `);
+}
+
+function loadSubModules(parent, modules, done) {
+    let module = modules.shift();
+    if (!module) {
+        done();
+    } else{
+        $.getScript("modules/" + parent + "/" + module + ".js").
+        done(() => {
+            loadSubModules(parent, modules, done);
+        }).
+        fail(FAIL);
+    }
 }

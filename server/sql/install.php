@@ -15,6 +15,8 @@
 
         echo "current version $version\n";
 
+        $db->exec("BEGIN TRANSACTION");
+
         foreach ($install as $v => $steps) {
             $v = (int)$v;
 
@@ -25,11 +27,16 @@
 
             echo "upgradins to version $v\n";
 
-            foreach ($steps as $step) {
-                echo "================= $step\n";
-                $sql = trim(file_get_contents("sql/$driver/$step"));
-                echo "$sql\n";
-                $db->exec($sql);
+            try {
+                foreach ($steps as $step) {
+                    echo "================= $step\n";
+                    $sql = trim(file_get_contents("sql/$driver/$step"));
+                    echo "$sql\n";
+                    $db->exec($sql);
+                }
+            } catch (Exception $e) {
+                $db->exec("ROLLBACK");
+                die(print_r($e, true) . "\n================= fail\n\n");
             }
 
             $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");
@@ -38,5 +45,7 @@
 
             echo "================= done\n\n";
         }
+
+        $db->exec("COMMIT");
     }
 

@@ -21,6 +21,8 @@
     require_once "utils/apache_request_headers.php";
     require_once "utils/array_key_first.php";
     require_once "utils/generate_password.php";
+    require_once "utils/clear_cache.php";
+    require_once "utils/purifier.php";
 
     require_once "backends/backend.php";
 
@@ -39,6 +41,15 @@
 
     $token = @trim(explode('Bearer', $_SERVER['HTTP_AUTHORIZATION'])[1]);
     $refresh = array_key_exists('X-Api-Refresh', apache_request_headers());
+
+    try {
+        mb_internal_encoding("UTF-8");
+    } catch (Exception $e) {
+        error_log(print_r($e, true));
+        response(555, [
+            "error" => "mbstring",
+        ]);
+    }
 
     try {
         $config = @json_decode(file_get_contents("config/config.json"), true);
@@ -121,7 +132,6 @@
     $params = [];
 
     if (count($m) >= 3) {
-        checkInt($m[2]);
         $params["_id"] = $m[2];
     }
 
@@ -132,17 +142,21 @@
 
     $params["_request_method"] = $_SERVER['REQUEST_METHOD'];
 
+    $clearCache = false;
+
     if (count($_GET)) {
         foreach ($_GET as $key => $value) {
             if ($key == "_token") {
                 $token = $value;
             } else
             if ($key == "_refresh") {
-                $refresh = $value;
-            } else
-            // prevents timestamps
-            if ($key === "_") {
                 $refresh = true;
+            } else
+            if ($key == "_clearCache") {
+                $clearCache = true;
+            } else
+            if ($key === "_") {
+                // prevents timestamps
             } else {
                 $params[$key] = $value;
             }
@@ -154,12 +168,11 @@
             if ($key == '_token') {
                 $token = $value;
             } else
-            if ($key == '_refresh') {
-                $refresh = $value;
-            } else
-            // prevents timestamps
-            if ($key === "_") {
+            if ($key == "_refresh") {
                 $refresh = true;
+            } else
+            if ($key == "_clearCache") {
+                $clearCache = true;
             } else {
                 $params[$key] = $value;
             }
@@ -173,12 +186,11 @@
             if ($key == '_token') {
                 $token = $value;
             } else
-            if ($key == '_refresh') {
-                $refresh = $value;
-            } else
-            // prevents timestamps
-            if ($key === "_") {
+            if ($key == "_refresh") {
                 $refresh = true;
+            } else
+            if ($key == "_clearCache") {
+                $clearCache = true;
             } else {
                 $params[$key] = $value;
             }
@@ -226,7 +238,6 @@
     }
 
     if ($token && $auth) {
-        checkInt($auth["uid"]);
         $params["_uid"] = $auth["uid"];
         $params["_login"] = $auth["login"];
     }
@@ -248,18 +259,23 @@
     } else
     if (file_exists("api/$api/$method.php")) {
         if ($backends["authorization"]->allow($params)) {
-            try {
-                $cache = json_decode($redis->get("cache_" . $params["_md5"]), true);
-            } catch (Exception $e) {
-                error_log(print_r($e, true));
-                $cache = false;
+            $cache = false;
+            if ($params["_request_method"] === "GET") {
+                try {
+                    $cache = json_decode($redis->get("cache_" . $params["_md5"]) . "_" . $auth["uid"], true);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
             }
-            if ($params["_request_method"] == "GET" && $cache && !$refresh) {
-                header("X-Api-Data-Source: cache_" . $params["_md5"]);
+            if ($cache && !$refresh) {
+                header("X-Api-Data-Source: cache_" . $params["_md5"] . "_" . $auth["uid"]);
                 $code = array_key_first($cache);
                 response($code, $cache[$code]);
             } else {
                 header("X-Api-Data-Source: db");
+                if ($clearCache) {
+                    clearCache($auth["uid"]);
+                }
                 require_once "api/$api/$method.php";
                 if (class_exists("\\api\\$api\\$method")) {
                     try {
@@ -276,7 +292,7 @@
                         $code = array_key_first($result);
                         if ((int)$code) {
                             if ($params["_request_method"] == "GET" && (int)$code === 200) {
-                                $redis->setex("cache_" . $params["_md5"], $redis_cache_ttl, json_encode($result));
+                                $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $redis_cache_ttl, json_encode($result));
                             }
                             response($code, $result[$code]);
                         } else {

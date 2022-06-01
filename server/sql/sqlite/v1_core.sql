@@ -1,0 +1,94 @@
+-- vars
+CREATE TABLE core_vars
+(
+    var_id integer not null primary key autoincrement,
+    var_name text not null,
+    var_value text
+);
+CREATE INDEX core_vars_id on core_vars(var_id);
+CREATE INDEX core_vars_var_name on core_vars(var_name);
+INSERT INTO core_vars (var_name, var_value) values ('dbVersion', '0');
+
+-- users
+CREATE TABLE core_users
+(
+    uid integer not null primary key autoincrement,
+    login text not null,
+    password text not null,
+    enabled integer,
+    real_name text,
+    e_mail text,
+    phone text,
+    default_route text
+);
+CREATE UNIQUE INDEX core_users_login on core_users(login);
+CREATE INDEX core_users_real_name on core_users(real_name);
+CREATE UNIQUE INDEX core_users_e_mail on core_users(e_mail);
+CREATE INDEX core_users_phone on core_users(phone);
+
+-- groups
+CREATE TABLE core_groups
+(
+    gid integer not null primary key autoincrement,
+    acronym text not null,
+    name text not null
+);
+CREATE UNIQUE INDEX core_groups_acronym on core_groups(acronym);
+CREATE UNIQUE INDEX core_groups_name on core_groups(name);
+
+-- users <-> groups
+CREATE TABLE core_users_groups
+(
+    uid integer,
+    gid integer
+);
+CREATE INDEX core_users_groups_uid on core_users_groups(uid);
+CREATE INDEX core_users_groups_gid on core_users_groups(gid);
+CREATE UNIQUE INDEX core_users_groups_uid_gid on core_users_groups(uid, gid);
+
+-- list of all api methods
+CREATE TABLE core_api_methods
+(
+    aid text not null primary key,
+    api text not null,
+    method text not null,
+    request_method text not null
+);
+CREATE UNIQUE INDEX core_api_methods_uniq on core_api_methods(api, method, request_method);
+
+-- users rights (access to api methods)
+CREATE TABLE core_users_rights
+(
+    uid integer not null,
+    aid text not null,
+    allow integer
+);
+CREATE UNIQUE INDEX core_users_rights_uniq on core_users_rights(uid, aid);
+
+-- groups rights (access to api methods)
+CREATE TABLE core_groups_rights
+(
+    gid integer not null,
+    aid text not null,
+    allow integer
+);
+CREATE UNIQUE INDEX core_groups_rights_uniq on core_groups_rights(gid, aid);
+
+-- methods always availabe for all
+CREATE TABLE core_api_methods_common
+(
+    aid text not null primary key
+);
+
+-- methods available if _uid === _id
+CREATE TABLE core_api_methods_personal
+(
+    aid text not null primary key
+);
+
+-- methods authorized by backend (tasktracker, for example)
+CREATE TABLE core_api_methods_by_backend
+(
+    aid text not null primary key,
+    backend text
+);

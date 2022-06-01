@@ -24,6 +24,42 @@
                     return true;
                 }
 
+                if (!checkInt($params["_uid"])) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("
+                        select
+                            backend
+                        from
+                            core_api_methods_by_backend
+                        where aid in (
+                            select
+                                aid
+                            from
+                                core_api_methods
+                            where
+                                api = :api and
+                                method = :method and
+                                request_method = :request_method
+                        )
+                    ");
+                    if ($sth->execute([
+                        ":api" => $params["_path"]["api"],
+                        ":method" => $params["_path"]["method"],
+                        ":request_method" => $params["_request_method"],
+                    ])) {
+                        $b = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                        if ($b && $b[0] && $b[0]["backend"]) {
+                            return loadBackend($b[0]["backend"])->allow($params);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
                 if ($params["_uid"] === 0) {
                     return true;
                 }
@@ -55,8 +91,34 @@
                         if ($m && $m[0] && $m[0]["allow"]) {
                             return true;
                         }
-                        if (@$this->availableForSelf[$params["_path"]["api"]][$params["_path"]["method"]] && @in_array($params["_request_method"], $this->availableForSelf[$params["_path"]["api"]][$params["_path"]["method"]]) && $params["_id"] == $params["_uid"]) {
-                            return true;
+                        if ($params["_id"] == $params["_uid"]) {
+                            $sth = $this->db->prepare("
+                                select 
+                                    count(*) as allow
+                                from
+                                    core_api_methods_personal
+                                where
+                                    aid in (
+                                        select
+                                            aid
+                                        from
+                                            core_api_methods    
+                                        where
+                                            api = :api and
+                                            method = :method and
+                                            request_method = :request_method
+                                    )
+                            ");
+                            if ($sth->execute([
+                                ":api" => $params["_path"]["api"],
+                                ":method" => $params["_path"]["method"],
+                                ":request_method" => $params["_request_method"],
+                            ])) {
+                                $m = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                                if ($m && $m[0] && $m[0]["allow"]) {
+                                    return true;
+                                }
+                            }
                         }
                     }
                 } catch (\Exception $e) {
@@ -90,7 +152,11 @@
                                         select aid from core_groups_rights where allow = 1 and gid in (
                                             select gid from core_users_groups where uid = :uid
                                          )
-                                    ) or aid in (select aid from core_api_methods_common) or aid in (select aid from core_api_methods_personal)
+                                    ) or 
+                                    aid in (select aid from core_api_methods_common) or
+                                    aid in (select aid from core_api_methods_personal) or   
+                                    -- will be passed to backend
+                                    aid in (select aid from core_api_methods_by_backend)
                                 ) as t1 where
                                     aid not in (select aid from core_groups_rights where allow = 0 and gid in (select gid from core_users_groups where uid = :uid)) and
                                     aid not in (select aid from core_users_rights where allow = 0 and uid = :uid)

@@ -27,13 +27,15 @@
         always(window.modules["users"].render);
     },
 
-    doModifyUser: function (uid, realName, eMail, phone, enabled) {
+    doModifyUser: function (uid, realName, eMail, phone, enabled, password, defaultRoute) {
         loadingStart();
         PUT("accounts", "user", uid, {
             realName: realName,
             eMail: eMail,
             phone: phone,
             enabled: enabled,
+            password: password,
+            defaultRoute: defaultRoute,
         }).
         fail(FAIL).
         done(() => {
@@ -42,7 +44,13 @@
             }
             message(i18n("users.userWasChanged"));
         }).
-        always(window.modules["users"].render);
+        always(() => {
+            if (currentPage === "users") {
+                window.modules["users"].render();
+            } else {
+                loadingDone();
+            }
+        });
     },
 
     doDeleteUser: function (uid) {
@@ -52,7 +60,13 @@
         done(() => {
             message(i18n("users.userWasDeleted"));
         }).
-        always(window.modules["users"].render);
+        always(() => {
+            if (currentPage === "users") {
+                window.modules["users"].render();
+            } else {
+                loadingDone();
+            }
+        });
     },
 
     doSetPassword: function (uid, password) {
@@ -65,16 +79,6 @@
             message(i18n("users.userWasChanged"));
         }).
         always(loadingDone);
-    },
-
-    doEnableUser: function (uid, enabled) {
-        loadingStart();
-        POST("accounts", enabled?"enableUser":"disableUser", uid).
-        fail(FAIL).
-        done(() => {
-            message(i18n("users.userWasChanged"));
-        }).
-        always(window.modules["users"].render);
     },
 
     /*
@@ -193,8 +197,9 @@
                         title: i18n("password"),
                         placeholder: i18n("password"),
                         readonly: uid.toString() === "0",
+                        hidden: uid.toString() === "0",
                         validate: (v, prefix) => {
-                            return $.trim(v).length >= 8 && $(`#${prefix}password`).val() == $(`#${prefix}confirm`).val();
+                            return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                         }
                     },
                     {
@@ -203,8 +208,20 @@
                         title: i18n("confirm"),
                         placeholder: i18n("confirm"),
                         readonly: uid.toString() === "0",
+                        hidden: uid.toString() === "0",
                         validate: (v, prefix) => {
-                            return $.trim(v).length >= 8 && $(`#${prefix}password`).val() == $(`#${prefix}confirm`).val();
+                            return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
+                        }
+                    },
+                    {
+                        id: "defaultRoute",
+                        type: "text",
+                        readonly: false,
+                        value: response.user.defaultRoute,
+                        title: i18n("users.defaultRoute"),
+                        placeholder: "#route",
+                        validate: (v) => {
+                            return $.trim(v) === "" || $.trim(v)[0] === "#";
                         }
                     },
                     {
@@ -248,7 +265,7 @@
                     if (result.delete === "yes") {
                         window.modules["users"].deleteUser(result.uid);
                     } else {
-                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no");
+                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, result.defaultRoute);
                     }
                 },
             }).show();
@@ -305,6 +322,8 @@
      */
 
     render: function () {
+        $("#altForm").hide();
+
         loadingStart();
 
         GET("accounts", "users", false, true).done(response => {

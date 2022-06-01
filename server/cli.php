@@ -1,5 +1,11 @@
 <?php
 
+    try {
+        mb_internal_encoding("UTF-8");
+    } catch (Exception $e) {
+        die("mbstring extension is not available\n");
+    }
+
     chdir(dirname(__FILE__));
 
     require_once "utils/response.php";
@@ -9,6 +15,7 @@
     require_once "utils/checkint.php";
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
+    require_once "utils/clear_cache.php";
 
     require_once "backends/backend.php";
 
@@ -103,12 +110,7 @@
     }
 
     if (count($args) == 1 && array_key_exists("--clear-cache", $args) && !isset($args["--clear-cache"])) {
-        $keys = $redis->keys("cache_*");
-        $n = 0;
-        foreach ($keys as $key) {
-            $redis->del($key);
-            $n++;
-        }
+        $n = clearCache(true);
         echo "$n cache entries cleared\n";
         exit(0);
     }

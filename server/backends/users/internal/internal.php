@@ -36,6 +36,7 @@
 
                     return $_users;
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
             }
@@ -55,7 +56,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled, default_route from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($user)) {
                         $_user = [
@@ -65,6 +66,7 @@
                             "eMail" => $user[0]["e_mail"],
                             "phone" => $user[0]["phone"],
                             "enabled" => $user[0]["enabled"],
+                            "defaultRoute" => $user[0]["default_route"],
                         ];
 
                         $groups = loadBackend("groups");
@@ -123,6 +125,7 @@
                         return false;
                     }
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
             }
@@ -147,8 +150,11 @@
 
                 try {
                     $sth = $this->db->prepare("update core_users set password = :password where uid = $uid");
-                    $sth->execute([ ":password" => password_hash($password, PASSWORD_DEFAULT) ]);
+                    $sth->execute([
+                        ":password" => password_hash($password, PASSWORD_DEFAULT),
+                    ]);
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
 
@@ -176,6 +182,7 @@
                             $groups->deleteUser($uid);
                         }
                     } catch (\Exception $e) {
+                        error_log(print_r($e, true));
                         return false;
                     }
                     return true;
@@ -196,18 +203,19 @@
              * @return boolean
              */
 
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true) {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true, $defaultRoute = '#') {
                 if (!checkInt($uid)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled, default_route = :default_route where uid = $uid");
                     return $sth->execute([
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
                         ":enabled" => $enabled?"1":"0",
+                        ":default_route" => trim($defaultRoute),
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

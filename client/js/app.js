@@ -1,61 +1,36 @@
-var last_hash = false;
+var lastHash = false;
 var modules = [];
 var moduleLoadQueue = [];
+var currentPage = false;
 
-function parseHash(hash, default_route) {
+function hashChange() {
+    let hash = window.location.href.split('#')[1];
+    hash = hash?('#' + hash):'';
+
+    $('.dropdownMenu').collapse('hide');
+    $('.modal').modal('hide');
+
     let params = {};
     let route;
 
-    default_route = default_route?default_route:'default';
-
     try {
         hash = hash.split('#')[1].split('&');
-        route = hash[0]?hash[0]:default_route;
+        route = hash[0]?hash[0]:"default";
         for (let i = 1; i < hash.length; i++) {
             let sp = hash[i].split('=');
             params[sp[0]] = sp[1]?decodeURIComponent(sp[1]):true;
         }
     } catch (e) {
-        route = default_route;
+        route = "default";
     }
 
-    return [ route, params?params:[] ];
-}
-
-function implodeHash(route, params) {
-    let p_ = '';
-
-    for (let i in params) {
-        p_ += '&' + i + '=' + encodeURIComponent(params[i]);
-    }
-
-    return '#' + route + p_;
-}
-
-function hashChange() {
-    let hash = window.location.href.split('#')[1];
-    hash = hash?('#' + hash):'';
-    navigate(hash);
-}
-
-function navigate(hash, force) {
-    $('.dropdownMenu').collapse('hide');
-    $('.modal').modal('hide');
-
-    let [ route, params ] = parseHash(hash);
-
-    if (hash !== last_hash || force) {
+    if (hash !== lastHash) {
+        lastHash = hash;
 
         loadingStart();
-        $('.mainform').hide();
-
-        last_hash = hash;
-        if (force) {
-            window.location.href = hash;
-        }
 
         setTimeout(() => {
-            current_page = route;
+            currentPage = route;
 
             $(".sidebar .nav-item a").removeClass('active');
             $(".sidebar .nav-item a[href='#" + route.split('.')[0] + "']").addClass('active');
@@ -74,7 +49,7 @@ function navigate(hash, force) {
             } else
             if (route == "default") {
                 if (window.config.defaultRoute) {
-                    window.location = "#" + window.config.defaultRoute;
+                    window.location = window.config.defaultRoute;
                 } else {
                     loadingDone();
                 }
@@ -240,7 +215,7 @@ function forgot() {
 }
 
 function loadModule() {
-    module = moduleLoadQueue.shift();
+    let module = moduleLoadQueue.shift();
     if (!module) {
         hashChange();
         window.onhashchange = hashChange;
@@ -279,14 +254,22 @@ function whoAmI(force) {
             window.myself.realName = _me.user.realName;
             window.myself.eMail = _me.user.eMail;
             window.myself.phone = _me.user.phone;
+            if (_me.user.defaultRoute) {
+                window.config.defaultRoute = _me.user.defaultRoute;
+            }
             if (window.myself.eMail) {
                 let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(window.myself.eMail).toLowerCase()) + "?s=64&d=404";
                 $(".userAvatar").off("click").on("error", function () {
                     $(this).attr("src", "avatars/noavatar.png");
+                    error(i18n("errors.noGravatar"));
                 }).attr("src", gravUrl);
+            } else {
+                if (parseInt(window.myself.uid) === 0) {
+                    $(".userAvatar").attr("src", "avatars/admin.png");
+                }
             }
             $("#selfSettings").off("click").on("click", () => {
-                window.modules["users"].modifyUser(window.myself.uid);
+                window.modules["users"].modifyUser(window.myself.uid, true);
             });
             let userCard = _me.user.login;
             if (_me.user.realName) {
@@ -306,9 +289,7 @@ function initAll() {
         $.cookie("_cookie", "1", { expires: 36500 });
     }
 
-    $.ajaxSetup({
-        cache: window.config.ajaxCache,
-    });
+    setFavicon("img/tech.png", 100);
 
     $(window.document.body).css("background-color", '#e9ecef');
 
@@ -369,12 +350,12 @@ function initAll() {
 
     $("#searchInput").off("keypress").on("keypress", e => {
         if (e.charCode === 13) {
-            modules[current_page].search($("#searchInput").val());
+            modules[currentPage].search($("#searchInput").val());
         }
     });
 
     $("#searchButton").off("click").on("click", () => {
-        modules[current_page].search($("#searchInput").val());
+        modules[currentPage].search($("#searchInput").val());
     });
 
     if ($.cookie("_server") && $.cookie("_token")) {
@@ -398,7 +379,7 @@ function initAll() {
                                 $("#app").show();
                                 if (window.config.defaultRoute) {
                                     window.onhashchange = hashChange;
-                                    window.location = "#" + window.config.defaultRoute;
+                                    window.location = window.config.defaultRoute;
                                 } else {
                                     hashChange();
                                     window.onhashchange = hashChange;

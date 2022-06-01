@@ -130,11 +130,11 @@
             /**
              * internal function for indexing methods
              *
-             * @return string[]
+             * @return boolean|string[]
              */
 
             public static function index() {
-                return [];
+                return false;
             }
         }
     }

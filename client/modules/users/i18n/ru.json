@@ -13,5 +13,6 @@
     "disabled": "Зaблокирован",
     "userWasChanged": "Изменения сохранены успешно",
     "userWasAdded": "Пользователь добавлен",
-    "userWasDeleted": "Пользователь удален"
+    "userWasDeleted": "Пользователь удален",
+    "defaultRoute": "Начальная страница"
 }

@@ -54,9 +54,11 @@
                 $users = loadBackend("users");
 
                 if ($users && $users->capabilities()["mode"] === "rw") {
-                    return [ "POST" ];
+                    return [
+                        "POST" => "#personal",
+                    ];
                 } else {
-                    return [];
+                    return false;
                 }
             }
         }

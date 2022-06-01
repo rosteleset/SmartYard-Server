@@ -6,6 +6,7 @@
         "en": "English"
     },
     "modules": [
+        "tt",
         "settings",
         "asterisk",
         "address",
@@ -13,6 +14,5 @@
         "groups",
         "permissions"
     ],
-    "defaultRoute": "address",
-    "ajaxCache": true
+    "defaultRoute": "#tt"
 }

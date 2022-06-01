@@ -26,13 +26,13 @@ function cardForm(params) {
     h += `<tbody>`;
 
     for (let i in params.fields) {
+        if (params.fields[i].hidden) {
+            h += `<tr style="display: none;">`;
+        } else {
+            h += `<tr>`;
+        }
         switch (params.fields[i].type) {
             case "select":
-                if (params.fields[i].hidden) {
-                    h += `<tr style="display: none;">`;
-                } else {
-                    h += `<tr>`;
-                }
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
@@ -59,14 +59,8 @@ function cardForm(params) {
                 h += `</div>`;
                 h += `</div>`;
                 h += `</td>`;
-                h += `</tr>`;
                 break;
             case "select2":
-                if (params.fields[i].hidden) {
-                    h += `<tr style="display: none;">`;
-                } else {
-                    h += `<tr>`;
-                }
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 if (params.fields[i].color) {
@@ -90,7 +84,6 @@ function cardForm(params) {
                 h += `</select>`;
                 h += `</div>`;
                 h += `</td>`;
-                h += `</tr>`;
                 break;
             case "email":
             case "tel":
@@ -99,10 +92,11 @@ function cardForm(params) {
             case "password":
             default:
                 let type = params.fields[i].type?params.fields[i].type:"text";
-                h += `<tr>`;
                 h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
-                h += `<div class="input-group">`;
+                if (params.fields[i].button) {
+                    h += `<div class="input-group">`;
+                }
                 h += `<input id="${_prefix}${params.fields[i].id}" type="${type}" class="form-control modalFormField" autocomplete="off" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
@@ -113,13 +107,32 @@ function cardForm(params) {
                     h += `<div class="input-group-append">`;
                     h += `<span id="${_prefix}${params.fields[i].id}-button" class="input-group-text pointer"><i class="${params.fields[i].button.class}"></i></span>`;
                     h += `</div>`;
+                    h += `</div>`;
                 }
-                h += `</div>`;
                 h += `</td>`;
-                h += `</tr>`;
                 break;
         }
+        h += `</tr>`;
     }
+
+/*
+    alternative to select2 tags
+
+    example with select2
+
+    $(".js-example-tags").select2({
+        tags: true
+    });
+
+    or use Tags:
+
+    h += `<td class="tdform">tags-test</td>`;
+    h += `<td class="tdform-right">`;
+    h += `<select class="form-control" id="tags-input" multiple data-allow-new="true" data-allow-clear="true" data-badge-style="info"><option disabled hidden value="">Choose a tag...</option><option value="Apple">Apple</option><option value="Banana">Banana</option><option value="Orange">Orange</option></select>`;
+    h += `</td>`;
+
+    $.Tags("#tags-input");
+*/
 
     h += `</tbody>`;
 
@@ -137,7 +150,6 @@ function cardForm(params) {
     }
 
     h += `</table>`;
-
     h += `</div>`;
     h += `</div>`;
 
@@ -218,6 +230,7 @@ function cardForm(params) {
             $(`#${_prefix}${params.fields[i].id}`).select2({
                 language: window.lang["_code"],
                 minimumResultsForSearch: params.fields[i].minimumResultsForSearch?params.fields[i].minimumResultsForSearch:0,
+                tags: !!params.fields[i].tags,
             });
             if (typeof params.fields[i].select === "function") {
                 $(`#${_prefix}${params.fields[i].id}`).off("select2:select").on("select2:select", function () {

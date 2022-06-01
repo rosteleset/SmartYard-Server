@@ -44,5 +44,26 @@
             public function capabilities() {
                 return false;
             }
+
+            /**
+             * garbage collector
+             *
+             * @return boolean
+             */
+
+            public function cleanup() {
+                return false;
+            }
+
+            /**
+             * access rights regulator
+             *
+             * @param $params
+             * @return boolean
+             */
+
+            public function allow($params) {
+                return false;
+            }
         }
     }
