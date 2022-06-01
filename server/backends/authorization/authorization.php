@@ -22,15 +22,6 @@
             ];
 
             /**
-             * abstract definition
-             *
-             * @param object $params all params passed to api handlers
-             * @return boolean allow or not
-             */
-
-            abstract public function allow($params);
-
-            /**
              * @return array
              */
 

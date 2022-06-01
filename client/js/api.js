@@ -52,7 +52,7 @@ function PUT(api, method, id, query) {
 
 function DELETE(api, method, id) {
     return $.ajax({
-        url: $.cookie("_server") + "/" + api + "/" + ((typeof id !== "undefined" && id !== false)?("/" + id):""),
+        url: $.cookie("_server") + "/" + api + "/" + method + ((typeof id !== "undefined" && id !== false)?("/" + id):""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
         },

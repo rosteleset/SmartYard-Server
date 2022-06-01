@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/project/:id get project
+     * @api {get} /tt/customField/:id get customField
      *
      * @apiVersion 1.0.0
      *
@@ -20,11 +20,11 @@
      *  }
      *
      * @apiExample {curl} Example usage:
-     *  curl -X GET http://127.0.0.1:8000/server/api.php/tt/project/1
+     *  curl -X GET http://127.0.0.1:8000/server/api.php/tt/customField/1
      */
 
     /**
-     * @api {post} /tt/issue create project
+     * @api {post} /tt/issue create customField
      *
      * @apiVersion 1.0.0
      *
@@ -51,11 +51,11 @@
      *  }
      *
      * @apiExample {curl} Example usage:
-     *  curl -X POST http://127.0.0.1:8000/server/api.php/tt/project/1
+     *  curl -X POST http://127.0.0.1:8000/server/api.php/tt/customField/1
      */
 
     /**
-     * @api {put} /tt/project/:id modify project
+     * @api {put} /tt/customField/:id modify customField
      *
      * @apiVersion 1.0.0
      *
@@ -68,11 +68,11 @@
      *  HTTP/1.1 204 OK
      *
      * @apiExample {curl} Example usage:
-     *  curl -X PUT http://127.0.0.1:8000/server/api.php/tt/project/1
+     *  curl -X PUT http://127.0.0.1:8000/server/api.php/tt/customField/1
      */
 
     /**
-     * @api {delete} /tt/project/:id delete project
+     * @api {delete} /tt/customField/:id delete customField
      *
      * @apiVersion 1.0.0
      *
@@ -87,7 +87,7 @@
      *  HTTP/1.1 204 OK
      *
      * @apiExample {curl} Example usage:
-     *  curl -X DELETE http://127.0.0.1:8000/server/api.php/tt/project/1
+     *  curl -X DELETE http://127.0.0.1:8000/server/api.php/tt/customField/1
      */
 
     /**
@@ -99,33 +99,29 @@
         use api\api;
 
         /**
-         * project method
+         * customField method
          */
 
-        class project extends api {
+        class customField extends api {
 
             public static function GET($params) {
-                $project = loadBackend("tt")->getProject($params["_id"]);
-
-                return api::ANSWER($project, ($project !== false)?"project":"notFound");
+//                $tt_resolutions = loadBackend("tt")->getResolutions;
+                return api::ANSWER();
             }
 
             public static function POST($params) {
-                $projectId = loadBackend("tt")->addProject($params["acronym"], $params["project"]);
-
-                return api::ANSWER($projectId, ($projectId !== false)?"projectId":"notAcceptable");
+//                $tt_resolutions = loadBackend("tt")->getResolutions;
+                return api::ANSWER();
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyProject($params["_id"], $params["acronym"], $params["project"]);
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+//                $tt_resolutions = loadBackend("tt")->getResolutions;
+                return api::ANSWER();
             }
 
             public static function DELETE($params) {
-                $success = loadBackend("tt")->deleteProject($params["_id"]);
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+//                $tt_resolutions = loadBackend("tt")->getResolutions;
+                return api::ANSWER();
             }
 
             public static function index() {

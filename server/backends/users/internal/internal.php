@@ -36,6 +36,7 @@
 
                     return $_users;
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
             }
@@ -124,6 +125,7 @@
                         return false;
                     }
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
             }
@@ -148,8 +150,11 @@
 
                 try {
                     $sth = $this->db->prepare("update core_users set password = :password where uid = $uid");
-                    $sth->execute([ ":password" => password_hash($password, PASSWORD_DEFAULT) ]);
+                    $sth->execute([
+                        ":password" => password_hash($password, PASSWORD_DEFAULT),
+                    ]);
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
 
@@ -177,6 +182,7 @@
                             $groups->deleteUser($uid);
                         }
                     } catch (\Exception $e) {
+                        error_log(print_r($e, true));
                         return false;
                     }
                     return true;
