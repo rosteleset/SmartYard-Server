@@ -5,10 +5,11 @@
     },
 
     route: function (params) {
+        $("#altForm").hide();
+
         document.title = i18n("windowTitle") + " :: " + i18n("address.countries");
         $("#mainForm").html(i18n("address.countries"));
 
-        $("#altForm").hide();
         loadingDone();
     },
 

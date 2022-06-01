@@ -283,3 +283,16 @@ function leftSide(button, title, target) {
         </li>
     `);
 }
+
+function loadSubModules(parent, modules, done) {
+    let module = modules.shift();
+    if (!module) {
+        done();
+    } else{
+        $.getScript("modules/" + parent + "/" + module + ".js").
+        done(() => {
+            loadSubModules(parent, modules, done);
+        }).
+        fail(FAIL);
+    }
+}

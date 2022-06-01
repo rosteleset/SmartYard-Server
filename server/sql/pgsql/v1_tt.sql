@@ -100,12 +100,16 @@ INSERT INTO tt_roles (level, name) values (3000, 'reporter');               -- c
 INSERT INTO tt_roles (level, name) values (4000, 'participant.junior');     -- can change status (without final)
 INSERT INTO tt_roles (level, name) values (5000, 'participant.middle');     -- can change status
 INSERT INTO tt_roles (level, name) values (6000, 'participant.senior');     -- can edit issues
-INSERT INTO tt_roles (level, name) values (7000, 'manager');                -- can edit all comments and delete comments
-INSERT INTO tt_roles (level, name) values (8000, 'admin');                  -- can delete issues
+INSERT INTO tt_roles (level, name) values (7000, 'manager.junior');         -- can edit all comments and delete comments
+INSERT INTO tt_roles (level, name) values (8000, 'manager.middle');         -- can delete issues
+INSERT INTO tt_roles (level, name) values (9000, 'manager.senior');         -- can create and configure projects
 -- project rights
-CREATE TABLE tt_projects_roles (tt_project_role_id serial primary key, project_id integer not null, role_id integer not null, uid integer, gid integer);
+CREATE TABLE tt_projects_roles (project_role_id serial primary key, project_id integer not null, role_id integer not null, uid integer, gid integer);
 CREATE UNIQUE INDEX tt_projects_roles_uniq on tt_projects_roles (project_id, role_id);
 CREATE INDEX tt_projects_roles_project_id on tt_projects_roles(project_id);
 CREATE INDEX tt_projects_roles_role_id on tt_projects_roles(role_id);
 CREATE INDEX tt_projects_roles_uid on tt_projects_roles(uid);
 CREATE INDEX tt_projects_roles_gid on tt_projects_roles(gid);
+-- subtasks
+CREATE TABLE tt_subtasks(subtask_id serial primary key, issue_id integer, sub_issue_id integer);
+CREATE UNIQUE INDEX tt_subtasks_uniq on tt_subtasks(issue_id, sub_issue_id);

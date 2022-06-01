@@ -33,6 +33,28 @@
      *
      * @apiHeader {String} authorization authentication token
      *
+
+    project_id integer,             -- project id
+    type_id integer,                -- issue type
+    subject text not null,          -- subject
+    description text not null,      -- description
+    status_id integer,              -- status
+    resolution_id integer,          -- resolution
+    external_id integer,            -- link to external id
+    external_id_type text           -- external object description
+    assigned[]
+    watchers[]
+    checklist[]
+    tags[]
+    customFields[]
+
+     * @apiParam {Number} uid user id
+     * @apiParam {string} login login
+     * @apiParam {string} password password
+     * @apiParam {string} realName real name
+     * @apiParam {string} eMail e-mail
+     * @apiParam {string} phone phone
+     *
      * @apiSuccess {integer} issue_id issue_id
      *
      * @apiSuccessExample Success-Response:

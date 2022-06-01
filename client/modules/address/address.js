@@ -25,12 +25,14 @@
         });
 
         // load sub module
-        $.getScript("modules/address/countries.js", () => {
+        loadSubModules("address", [ "countries" ], () => {
             moduleLoaded("address", this);
-        });
+        })
     },
 
     route: function (params) {
+        $("#altForm").hide();
+
         document.title = i18n("windowTitle") + " :: " + i18n("address.addresses");
         $("#mainForm").html(i18n("address.addresses"));
 
@@ -41,7 +43,6 @@
             </li>
         `);
 
-        $("#altForm").hide();
         loadingDone();
     },
 

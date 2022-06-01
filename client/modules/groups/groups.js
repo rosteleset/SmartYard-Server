@@ -220,6 +220,8 @@
      */
 
     render: function () {
+        $("#altForm").hide();
+
         loadingStart();
 
         GET("accounts", "groups", false, true).done(response => {
@@ -284,7 +286,6 @@
                     window.modules["groups"].startPage = page;
                 },
             });
-            $("#altForm").hide();
         }).
         fail(FAIL).
         always(loadingDone);

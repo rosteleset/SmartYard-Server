@@ -22,6 +22,7 @@
     require_once "utils/array_key_first.php";
     require_once "utils/generate_password.php";
     require_once "utils/clear_cache.php";
+    require_once "utils/purifier.php";
 
     require_once "backends/backend.php";
 

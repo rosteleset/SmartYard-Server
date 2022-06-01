@@ -16,7 +16,7 @@
 
 @font-face{
     font-family: "Peignot";
-    src: url(ttf/peignot.ttf);
+    src: url(../ttf/peignot.ttf);
 }
 
 .centre-of-all {
@@ -33,6 +33,11 @@
 
 .pointer {
     cursor: pointer;
+}
+
+.tdform-top {
+    vertical-align: top!important;
+    white-space: nowrap!important;
 }
 
 .tdform {
@@ -79,4 +84,9 @@ select {
 
 .select2-container--open {
     z-index: 9999999 !important;
+}
+
+.tdform-right > .note-editor {
+    margin-bottom: 0px;
+    box-shadow: none;
 }

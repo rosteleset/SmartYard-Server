@@ -322,6 +322,8 @@
      */
 
     render: function () {
+        $("#altForm").hide();
+
         loadingStart();
 
         GET("accounts", "users", false, true).done(response => {
@@ -414,7 +416,6 @@
                     return rows;
                 },
             });
-            $("#altForm").hide();
         }).
         fail(FAIL).
         always(loadingDone);

@@ -215,7 +215,7 @@ function forgot() {
 }
 
 function loadModule() {
-    module = moduleLoadQueue.shift();
+    let module = moduleLoadQueue.shift();
     if (!module) {
         hashChange();
         window.onhashchange = hashChange;
