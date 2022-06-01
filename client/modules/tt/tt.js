@@ -14,6 +14,12 @@
     route: function (params) {
         $("#altForm").hide();
 
+        $("#topMenuLeftDynamic").html(`
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="#tt.settings&edit=projects" class="nav-link">${i18n("tt.settings")}</a>
+            </li>
+        `);
+
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
         $("#mainForm").html(i18n("tt.tt"));
 

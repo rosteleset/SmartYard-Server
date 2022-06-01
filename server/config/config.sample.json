@@ -41,6 +41,15 @@
         "geocoder": {
             "backend": "dadata",
             "token": "<!-- your dadata token here --!>"
+        },
+
+        "tt": {
+            "backend": "internal"
+        },
+
+        "attachments": {
+            "backend": "internal",
+            "path": "<-- path to local storage -->"
         }
     },
 
