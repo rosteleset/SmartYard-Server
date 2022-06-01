@@ -115,7 +115,7 @@ namespace backends\addresses {
          */
 
         public function deleteBuilding($bid) {
-            if (!checkInt($bid)) {
+            if (!checkInt($bid) || $this->getBuilding($bid)===false) {
                 return false;
             }
 
