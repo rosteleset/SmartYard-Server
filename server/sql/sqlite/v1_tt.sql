@@ -12,29 +12,26 @@ CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
 CREATE TABLE tt_issue_types
 (
     type_id integer not null primary key autoincrement,
-    project_id integer,
     type text
 );
-CREATE UNIQUE INDEX tt_issue_types_uniq on tt_issue_types(project_id, type);
+CREATE UNIQUE INDEX tt_issue_types_uniq on tt_issue_types(type);
 
 -- issue statuses
 CREATE TABLE tt_issue_statuses
 (
     status_id integer not null primary key autoincrement,
-    project_id integer,
     status text,
     final integer
 );
-CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(project_id, status);
+CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(status);
 
 -- issue resolutions
 CREATE TABLE tt_issue_resolutions
 (
     resolution_id integer not null primary key autoincrement,
-    project_id integerm,
     resolution text
 );
-CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(project_id, resolution);
+CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(resolution);
 
 -- issues
 CREATE TABLE tt_issues
@@ -154,7 +151,6 @@ CREATE INDEX tt_issue_tags_tag on tt_issue_tags(tag);
 CREATE TABLE tt_issue_custom_fields
 (
     custom_field_id integer not null primary key autoincrement,
-    project_id integer,
     name text not null,
     type text not null
 );
@@ -223,3 +219,47 @@ CREATE TABLE tt_subtasks
     sub_issue_id integer
 );
 CREATE UNIQUE INDEX tt_subtasks_uniq on tt_subtasks(issue_id, sub_issue_id);
+
+-- projects <-> types
+CREATE TABLE tt_projects_types
+(
+    project_type_id integer not null primary key autoincrement,
+    project_id integer,
+    type_id integer
+);
+CREATE UNIQUE INDEX tt_projects_types_uniq on tt_projects_types (project_id, type_id);
+CREATE INDEX tt_projects_types_project_id on tt_projects_types (project_id);
+CREATE INDEX tt_projects_types_type_id on tt_projects_types (type_id);
+
+-- projects <-> statuses
+CREATE TABLE tt_projects_statuses
+(
+    project_type_id integer not null primary key autoincrement,
+    project_id integer,
+    status_id integer
+);
+CREATE UNIQUE INDEX tt_projects_statuses_uniq on tt_projects_statuses (project_id, status_id);
+CREATE INDEX tt_projects_statuses_project_id on tt_projects_statuses (project_id);
+CREATE INDEX tt_projects_statuses_status_id on tt_projects_statuses (status_id);
+
+-- projects <-> resolutions
+CREATE TABLE tt_projects_resolutions
+(
+    project_type_id integer not null primary key autoincrement,
+    project_id integer,
+    resolution_id integer
+);
+CREATE UNIQUE INDEX tt_projects_resolutions_uniq on tt_projects_resolutions (project_id, resolution_id);
+CREATE INDEX tt_projects_resolutions_project_id on tt_projects_resolutions (project_id);
+CREATE INDEX tt_projects_resolutions_resolution_id on tt_projects_resolutions (resolution_id);
+
+-- projects <-> custom_fields
+CREATE TABLE tt_projects_custom_fields
+(
+    project_type_id integer not null primary key autoincrement,
+    project_id integer,
+    custom_field_id integer
+);
+CREATE UNIQUE INDEX tt_projects_custom_fields_uniq on tt_projects_custom_fields (project_id, custom_field_id);
+CREATE INDEX tt_projects_custom_fields_project_id on tt_projects_custom_fields (project_id);
+CREATE INDEX tt_projects_custom_fields_custom_field_id on tt_projects_custom_fields (custom_field_id);

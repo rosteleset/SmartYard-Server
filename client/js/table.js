@@ -31,8 +31,8 @@ function cardTable(params) {
         h += `</div>`;
     }
 
-    let pageLength = params.itemsPerPage?params.itemsPerPage:25;
-    let pagesCount = params.pagesCount?params.pagesCount:10;
+    let pageLength = params.itemsPerPage?params.itemsPerPage:Number.MAX_VALUE;
+    let pagerItemsCount = params.pagerItemsCount?params.pagerItemsCount:10;
     let currentPage = 1;
     let startPage = params.startPage?params.startPage:1;
 
@@ -173,13 +173,13 @@ function cardTable(params) {
         let h = '';
 
         let pages = Math.ceil(rows.length / pageLength);
-        let delta = Math.floor(pagesCount / 2);
+        let delta = Math.floor(pagerItemsCount / 2);
         let first = Math.max(page - delta, 1);
         let preFirst = Math.max(0, 1 - page + delta);
         let last = Math.min(page + delta, pages);
         let postLast = Math.max(pages, page + delta) - pages;
 
-        if (last + preFirst - first + postLast >= pagesCount) {
+        if (last + preFirst - first + postLast >= pagerItemsCount) {
             if (first > 1) {
                 first++;
             } else {

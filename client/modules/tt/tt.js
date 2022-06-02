@@ -1,14 +1,17 @@
 ({
+    meta: {},
+
     init: function () {
-        if (AVAIL("tt", "tt")) {
-            leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt");
-        }
         loadSubModules("tt", [
             "createIssue",
             "settings",
         ], () => {
             moduleLoaded("tt", this);
         })
+    },
+
+    tt: function (tt) {
+        window.modules["tt"].meta = tt["meta"];
     },
 
     route: function (params) {

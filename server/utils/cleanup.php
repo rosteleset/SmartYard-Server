@@ -1,24 +1,13 @@
 <?php
 
     function cleanup() {
-        global $db;
+        global $config;
 
-        $n = 0;
+        foreach ($config["backends"] as $backend => $_) {
+            $n = loadBackend($backend)->cleanup();
 
-        $c = [
-            "delete from core_users_rights where aid not in (select aid from api_methods)",
-            "delete from core_groups_rights where aid not in (select aid from api_methods)",
-            "delete from core_users_rights where uid not in (select uid from users)",
-            "delete from core_groups_rights where gid not in (select gid from groups)",
-            "delete from core_users_groups where uid not in (select uid from users)",
-            "delete from core_users_groups where gid not in (select uid from groups)",
-        ];
-
-        for ($i = 0; $i < count($c); $i++) {
-            $del = $db->prepare($c[$i]);
-            $del->execute();
-            $n += $del->rowCount();
+            if ($n !== false) {
+                echo "$backend: $n items cleaned\n";
+            }
         }
-
-        echo "$n rows cleaned\n";
     }

@@ -38,8 +38,13 @@
         class tt extends api {
 
             public static function GET($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $projects = loadBackend("tt")->getProjects();
+
+                $meta = [
+                    "projects" => $projects,
+                ];
+
+                return api::ANSWER($meta, "meta");
             }
 
             public static function index() {

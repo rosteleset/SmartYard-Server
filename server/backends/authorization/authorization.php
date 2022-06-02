@@ -14,13 +14,6 @@
 
         abstract class authorization extends backend {
 
-            public $availableForSelf = [
-                "accounts" => [
-                    "user" => [ "GET", "PUT" ],
-                    "password" => [ "POST" ],
-                ],
-            ];
-
             /**
              * @return array
              */

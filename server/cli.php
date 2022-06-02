@@ -16,6 +16,7 @@
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
     require_once "utils/clear_cache.php";
+    require_once "utils/cleanup.php";
 
     require_once "backends/backend.php";
 
@@ -54,13 +55,6 @@
         die("no backends defined");
     }
 
-    $backends = [];
-    foreach ($required_backends as $backend) {
-        if (loadBackend($backend) === false) {
-            die("can't load required backend [$backend]");
-        }
-    }
-
     try {
         $db = new PDO(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
@@ -84,6 +78,13 @@
         $version = 0;
     }
 
+    $backends = [];
+    foreach ($required_backends as $backend) {
+        if (loadBackend($backend) === false) {
+            die("can't load required backend [$backend]");
+        }
+    }
+
     $args = [];
 
     for ($i = 1; $i < count($argv); $i++) {
@@ -98,7 +99,6 @@
     }
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
-        require_once "utils/cleanup.php";
         cleanup();
         exit(0);
     }
