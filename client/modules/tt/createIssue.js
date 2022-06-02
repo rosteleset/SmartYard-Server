@@ -16,7 +16,6 @@
             let h = '';
 
             let projects = ``;
-
             for (let i in window.modules["tt"].meta.projects) {
                 projects += `<option value="${window.modules["tt"].meta.projects[i].projectId}">${window.modules["tt"].meta.projects[i].project}</option>`;
             }
