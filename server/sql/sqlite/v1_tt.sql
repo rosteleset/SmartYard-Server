@@ -3,35 +3,33 @@ CREATE TABLE tt_projects
 (
     project_id integer not null primary key autoincrement,
     acronym text not null,
-    project text not null
+    project text not null,
+    workflow text not null,
+    version text not null
 );
 CREATE UNIQUE INDEX tt_projects_acronym on tt_projects(acronym);
 CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
-
--- issue types
-CREATE TABLE tt_issue_types
-(
-    type_id integer not null primary key autoincrement,
-    type text
-);
-CREATE UNIQUE INDEX tt_issue_types_uniq on tt_issue_types(type);
 
 -- issue statuses
 CREATE TABLE tt_issue_statuses
 (
     status_id integer not null primary key autoincrement,
-    status text,
-    final integer
+    project_id integer not null,
+    final integer,
+    status text not null,
+    status_display text not null
 );
-CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(status);
+CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(project_id, status);
 
 -- issue resolutions
 CREATE TABLE tt_issue_resolutions
 (
     resolution_id integer not null primary key autoincrement,
-    resolution text
+    project_id integer not null,
+    resolution text,
+    resolution_display text not null
 );
-CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(resolution);
+CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(project_id, resolution);
 
 -- issues
 CREATE TABLE tt_issues
@@ -147,22 +145,25 @@ CREATE UNIQUE INDEX tt_issue_tags_uniq on tt_issue_tags (issue_id, tag);
 CREATE INDEX tt_issue_tags_issue_id on tt_issue_tags(issue_id);
 CREATE INDEX tt_issue_tags_tag on tt_issue_tags(tag);
 
--- custom fields names
+-- custom fields
 CREATE TABLE tt_issue_custom_fields
 (
     custom_field_id integer not null primary key autoincrement,
-    name text not null,
-    type text not null
+    project_id integer not null,
+    type text not null,
+    field text not null,
+    field_display text not null
 );
-CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(name);
+CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(project_id, field);
 
 -- custom fields values options
 CREATE TABLE tt_issue_custom_fields_options
 (
     custom_field_option_id integer not null primary key autoincrement,
     custom_field_id integer,
-    option text,
-    value text
+    value text,
+    option text not null,
+    option_display text
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_fields_options(custom_field_id, option);
 
@@ -219,47 +220,3 @@ CREATE TABLE tt_subtasks
     sub_issue_id integer
 );
 CREATE UNIQUE INDEX tt_subtasks_uniq on tt_subtasks(issue_id, sub_issue_id);
-
--- projects <-> types
-CREATE TABLE tt_projects_types
-(
-    project_type_id integer not null primary key autoincrement,
-    project_id integer,
-    type_id integer
-);
-CREATE UNIQUE INDEX tt_projects_types_uniq on tt_projects_types (project_id, type_id);
-CREATE INDEX tt_projects_types_project_id on tt_projects_types (project_id);
-CREATE INDEX tt_projects_types_type_id on tt_projects_types (type_id);
-
--- projects <-> statuses
-CREATE TABLE tt_projects_statuses
-(
-    project_type_id integer not null primary key autoincrement,
-    project_id integer,
-    status_id integer
-);
-CREATE UNIQUE INDEX tt_projects_statuses_uniq on tt_projects_statuses (project_id, status_id);
-CREATE INDEX tt_projects_statuses_project_id on tt_projects_statuses (project_id);
-CREATE INDEX tt_projects_statuses_status_id on tt_projects_statuses (status_id);
-
--- projects <-> resolutions
-CREATE TABLE tt_projects_resolutions
-(
-    project_type_id integer not null primary key autoincrement,
-    project_id integer,
-    resolution_id integer
-);
-CREATE UNIQUE INDEX tt_projects_resolutions_uniq on tt_projects_resolutions (project_id, resolution_id);
-CREATE INDEX tt_projects_resolutions_project_id on tt_projects_resolutions (project_id);
-CREATE INDEX tt_projects_resolutions_resolution_id on tt_projects_resolutions (resolution_id);
-
--- projects <-> custom_fields
-CREATE TABLE tt_projects_custom_fields
-(
-    project_type_id integer not null primary key autoincrement,
-    project_id integer,
-    custom_field_id integer
-);
-CREATE UNIQUE INDEX tt_projects_custom_fields_uniq on tt_projects_custom_fields (project_id, custom_field_id);
-CREATE INDEX tt_projects_custom_fields_project_id on tt_projects_custom_fields (project_id);
-CREATE INDEX tt_projects_custom_fields_custom_field_id on tt_projects_custom_fields (custom_field_id);

@@ -1,92 +1,87 @@
 #toast-container > div {
-    opacity: 1;
-    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-    filter: alpha(opacity=100);
+  opacity: 1;
+  filter: progid:dximagetransform.microsoft.alpha(opacity=100);
+  filter: alpha(opacity=100);
 }
 
-.direct-chat-text-secondary:after {
-    content: none!important;
-    display: none;
+.direct-chat-text-secondary::after {
+  content: none !important;
+  display: none;
 }
 
-.direct-chat-text-secondary:before {
-    content: none!important;
-    display: none;
+.direct-chat-text-secondary::before {
+  content: none !important;
+  display: none;
 }
 
-@font-face{
-    font-family: "Peignot";
-    src: url(../ttf/peignot.ttf);
+@font-face {
+  font-family: Peignot;
+  src: url(../ttf/peignot.ttf);
 }
 
 .centre-of-all {
-    position: fixed!important;
-    top: 50% !important;
-    left: 50% !important;
-    padding: 15px!important;
-    transform: translate(-50%, -50%)!important;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  padding: 15px !important;
+  transform: translate(-50%, -50%) !important;
 }
 
 .hoverable:hover {
-    text-decoration: underline;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .pointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .tdform-top {
-    vertical-align: top!important;
-    white-space: nowrap!important;
+  vertical-align: top !important;
+  white-space: nowrap !important;
 }
 
 .tdform {
-    vertical-align: middle!important;
-    white-space: nowrap!important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
 }
 
 .tdform-right {
-    vertical-align: middle!important;
-    white-space: nowrap!important;
-    width: 100% !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  width: 100% !important;
 }
 
 .tform-borderless > tbody > tr:first-child > td {
-    border-bottom: none!important;
+  border-bottom: none !important;
 }
 
 .tform-borderless > tbody > tr:last-child > td {
-    border-top: none!important;
+  border-top: none !important;
 }
 
 .tform-borderless > tbody > tr:not(:first-child):not(:last-child) > td {
-    border-top: none!important;
-    border-bottom: none!important;
+  border-top: none !important;
+  border-bottom: none !important;
 }
 
 .dropdown-toggle-no-icon::after {
-    display: none;
-}
-
-.hoverable:hover {
-    text-decoration: underline;
-    cursor: pointer;
+  display: none;
 }
 
 select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
+  appearance: none;
 }
 
 .opacity-disabled {
-    opacity: 0.4;
+  opacity: 0.4;
 }
 
 .select2-container--open {
-    z-index: 9999999 !important;
+  z-index: 9999999 !important;
 }
 
 .tdform-right > .note-editor {
-    margin-bottom: 0px;
-    box-shadow: none;
+  margin-bottom: 0;
+  box-shadow: none;
 }

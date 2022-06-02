@@ -119,6 +119,8 @@
              */
             public function modifyProject($projectId, $acronym, $project)
             {
+                error_log(dirname(__FILE__));
+                
                 if (!checkInt($projectId) || !trim($acronym) || !trim($project)) {
                     return false;
                 }

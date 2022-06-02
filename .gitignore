@@ -23,3 +23,4 @@ __pycache__
 /server/config/config.json
 /api/
 /doc/
+/.stylelintrc.json
