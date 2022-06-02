@@ -187,12 +187,12 @@ CREATE TABLE tt_roles
     level integer
 );
 CREATE INDEX tt_roles_level on tt_roles(level);
-INSERT INTO tt_roles (level, name) values (1000, 'viewer');                                                             -- can view only
-INSERT INTO tt_roles (level, name) values (2000, 'commenter');                                                          -- can comment, can edit and delete own comments, can attach files and delete own files
-INSERT INTO tt_roles (level, name) values (3000, 'reporter');                                                           -- can create issues
-INSERT INTO tt_roles (level, name) values (4000, 'participant.junior');                                                 -- can change status (by workflow, without final)
-INSERT INTO tt_roles (level, name) values (5000, 'participant.middle');                                                 -- can change status (by workflow)
-INSERT INTO tt_roles (level, name) values (6000, 'participant.senior');                                                 -- can edit issues
+INSERT INTO tt_roles (level, name) values (1000, 'participant.junior');                                                 -- can view only
+INSERT INTO tt_roles (level, name) values (2000, 'participant.middle');                                                 -- can comment, can edit and delete own comments, can attach files and delete own files
+INSERT INTO tt_roles (level, name) values (3000, 'participant.senior');                                                 -- can create issues
+INSERT INTO tt_roles (level, name) values (4000, 'employee.junior');                                                    -- can change status (by workflow, without final)
+INSERT INTO tt_roles (level, name) values (5000, 'employee.middle');                                                    -- can change status (by workflow)
+INSERT INTO tt_roles (level, name) values (6000, 'employee.senior');                                                    -- can edit issues
 INSERT INTO tt_roles (level, name) values (7000, 'manager.junior');                                                     -- can edit all comments and delete comments, can delete files, can create tag
 INSERT INTO tt_roles (level, name) values (8000, 'manager.middle');                                                     -- can delete issues
 INSERT INTO tt_roles (level, name) values (9000, 'manager.senior');                                                     -- can create and configure projects
