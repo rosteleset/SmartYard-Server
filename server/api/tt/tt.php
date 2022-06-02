@@ -39,9 +39,11 @@
 
             public static function GET($params) {
                 $projects = loadBackend("tt")->getProjects();
+                $issueTypes = loadBackend("tt")->getIssueTypes();
 
                 $meta = [
                     "projects" => $projects,
+                    "issueTypes" => $issueTypes,
                 ];
 
                 return api::ANSWER($meta, "meta");

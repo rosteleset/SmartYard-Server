@@ -76,8 +76,6 @@
                     error_log(print_r($e, true));
                     return false;
                 }
-
-                return true;
             }
 
             /**
@@ -143,7 +141,7 @@
             /**
              * list of all users in group
              *
-             * @return array
+             * @return false|array
              */
 
             public function getUsers($gid) {
@@ -168,19 +166,21 @@
              */
 
             public function setUsers($gid, $uids) {
+                // TODO: add transaction, commint, rollback
+
                 if (!checkInt($gid)) {
                     return false;
                 }
 
                 try {
-                    $this->db->exec("delete from core_users_groups where gid = $gid");
+                    $sth = $this->db->prepare("insert into core_users_groups (uid, gid) values (:uid, :gid)");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into core_users_groups (uid, gid) values (:uid, :gid)");
+                    $this->db->exec("delete from core_users_groups where gid = $gid");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -197,7 +197,6 @@
                     ])) {
                         return false;
                     }
-
                 }
 
                 return true;

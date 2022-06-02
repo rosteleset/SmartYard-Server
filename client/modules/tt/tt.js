@@ -2,6 +2,9 @@
     meta: {},
 
     init: function () {
+        if (AVAIL("tt", "tt")) {
+            leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt");
+        }
         loadSubModules("tt", [
             "createIssue",
             "settings",

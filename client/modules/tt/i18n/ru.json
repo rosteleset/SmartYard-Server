@@ -1,3 +1,18 @@
 {
-
+    "tt": "Менеджер задач",
+    "settings": "Настройки",
+    "projects": "Проекты",
+    "issueTypes": "Типы задач",
+    "projectId": "##",
+    "issueTypeId": "##",
+    "projectAcronym": "Ярлык",
+    "projectProject": "Проект",
+    "issueType": "Тип задачи",
+    "issueTypeProjects": "Проекты",
+    "issueTypeDelete": "Удалить тип задач",
+    "projectEdit": "Редактирование проекта",
+    "issueTypeEdit": "Редактирование типа задач",
+    "confirmIssueTypeDelete": "Удалить тип задач #%s?",
+    "confirmProjectDelete": "Удалить тип проект #%s?",
+    "projectDelete": "Удалить проект"
 }

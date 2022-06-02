@@ -58,5 +58,67 @@
              */
 
             abstract public function deleteProject($projectId);
+
+            /**
+             * get types
+             *
+             * @return false|array[]
+             */
+
+            abstract public function getIssueTypes();
+
+            /**
+             * get type
+             *
+             * @param $typeId integer typeId
+             * @return false|array
+             */
+
+            abstract public function getIssueType($typeId);
+
+            /**
+             * @param $type
+             * @return false|integer
+             */
+
+            abstract public function addIssueType($type);
+
+            /**
+             * @param $typeId integer
+             * @param $type string
+             * @return boolean
+             */
+
+            abstract public function modifyIssueType($typeId, $type);
+
+            /**
+             * delete type and all it derivatives
+             *
+             * @param $typeId
+             * @return boolean
+             */
+
+            abstract public function deleteIssueType($typeId);
+
+            /**
+             * get type to projects
+             *
+             * @param $typeId integer
+             *
+             * @return boolean|array[]
+             */
+
+            abstract public function getIssueTypeProjects($typeId);
+
+            /**
+             * set type to projects
+             *
+             * @param $typeId integer
+             * @param $projects array[]
+             *
+             * @return boolean
+             */
+
+            abstract public function setIssueTypeProjects($typeId, $projects);
         }
     }

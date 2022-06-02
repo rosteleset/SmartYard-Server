@@ -37,7 +37,7 @@
             public function getProjects()
             {
                 try {
-                    $projects = $this->db->query("select project_id, acronym, project from tt_projects order by project_id", \PDO::FETCH_ASSOC)->fetchAll();
+                    $projects = $this->db->query("select project_id, acronym, project from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
                     $_projects = [];
 
                     foreach ($projects as $project) {
@@ -62,7 +62,6 @@
              */
             public function getProject($projectId)
             {
-
                 if (!checkInt($projectId)) {
                     return false;
                 }
@@ -159,6 +158,217 @@
                 }
 
                 return true;
+            }
+
+            /**
+             * get types
+             *
+             * @return false|array[]
+             */
+            public function getIssueTypes()
+            {
+                try {
+                    $issueTypes = $this->db->query("
+                        select
+                            type_id,
+                            type,
+                            (select
+                                 count(*)
+                             from
+                                 tt_projects_types
+                             where
+                                 tt_projects_types.type_id = tt_issue_types.type_id
+                            ) as projects
+                        from
+                            tt_issue_types
+                        order by
+                            type
+                    ", \PDO::FETCH_ASSOC)->fetchAll();
+
+                    $_issueTypes = [];
+
+                    foreach ($issueTypes as $issueType) {
+                        $_issueTypes[] = [
+                            "typeId" => $issueType["type_id"],
+                            "type" => $issueType["type"],
+                            "projects" => $issueType["projects"],
+                        ];
+                    }
+
+                    return $_issueTypes;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * get type
+             *
+             * @param $typeId integer typeId
+             * @return false|array
+             */
+            public function getIssueType($typeId)
+            {
+                if (!checkInt($typeId)) {
+                    return false;
+                }
+
+                try {
+                    $issueType = $this->db->query("select type_id, type from tt_issue_types where type_id = $typeId", \PDO::FETCH_ASSOC)->fetchAll();
+
+                    if (count($issueType)) {
+                        return [
+                            "typeId" => $issueType[0]["type_id"],
+                            "type" => $issueType[0]["type"],
+                            "projects" => $this->getIssueTypeProjects($typeId),
+                        ];
+
+                    } else {
+                        return false;
+                    }
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+            }
+
+            /**
+             * @param $type
+             * @return false|integer
+             */
+            public function addIssueType($type)
+            {
+                $type = trim($type);
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_issue_types (type) values (:type)");
+                    if (!$sth->execute([
+                        ":type" => $type,
+                    ])) {
+                        return false;
+                    }
+
+                    return $this->db->lastInsertId();
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+            }
+
+            /**
+             * @param $typeId integer
+             * @param $type string
+             * @return boolean
+             */
+            public function modifyIssueType($typeId, $type)
+            {
+                if (!checkInt($typeId) || !trim($type)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("update tt_issue_types set type = :type where type_id = $typeId");
+                    $sth->execute([
+                        ":type" => $type,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * delete type and all it derivatives
+             *
+             * @param $typeId
+             * @return boolean
+             */
+            public function deleteIssueType($typeId)
+            {
+                if (!checkInt($typeId)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_issue_types where type_id = $typeId");
+                    $this->db->exec("delete from tt_projects_types where type_id = $typeId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * set type to projects
+             *
+             * @param $typeId integer
+             * @param $projects array[]
+             *
+             * @return boolean
+             */
+            public function setIssueTypeProjects($typeId, $projects)
+            {
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($typeId)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_projects_types (project_id, type_id) values (:project_id, :type_id)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_types where type_id = $typeId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                foreach ($projects as $projectId) {
+                    if (!checkInt($projectId)) {
+                        return false;
+                    }
+
+                    if (!$sth->execute([
+                        ":project_id" => $projectId,
+                        ":type_id" => $typeId,
+                    ])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            /**
+             * get type to projects
+             *
+             * @param $typeId integer
+             *
+             * @return false|array[]
+             */
+            public function getIssueTypeProjects($typeId)
+            {
+                if (!checkInt($typeId)) {
+                    return false;
+                }
+
+                $projects = $this->db->query("select project_id from tt_projects_types where type_id = $typeId", \PDO::FETCH_ASSOC)->fetchAll();
+
+                $_projects = [];
+                foreach ($projects as $project) {
+                    $_projects[] = $project["project_id"];
+                }
+
+                return $_projects;
             }
         }
     }
