@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {get} /addresses/buildings get buildings
+ * @api {get} /address/buildings get buildings
  *
  * @apiVersion 1.0.0
  *

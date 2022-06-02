@@ -30,7 +30,7 @@ namespace backends\addresses {
          * @return array
          */
 
-        abstract public function getBuilding($bid);
+        abstract public function getBuilding(int $bid);
 
         /**
          * add building
@@ -41,18 +41,17 @@ namespace backends\addresses {
          * @return integer
          */
 
-        abstract public function addBuilding($address, $guid = '');
+        abstract public function addBuilding(string $address, string $guid = '');
 
         /**
-         * set address of building
+         * delete building
          *
          * @param integer $bid
-         * @param string $address
          *
          * @return mixed
          */
 
-        abstract public function deleteBuilding($bid);
+        abstract public function deleteBuilding(int $bid);
 
         /**
          * modify building data
@@ -64,6 +63,58 @@ namespace backends\addresses {
          * @return boolean
          */
 
-        abstract public function modifyBuilding($bid, string $address = '', $guid = '');
+        abstract public function modifyBuilding(int $bid, string $address = '', string $guid = '');
+
+
+        /**
+         * get list of all entrances
+         *
+         * @return array
+         */
+
+        abstract public function getEntrances();
+
+        /**
+         * get building by eid
+         *
+         * @param integer $eid eid
+         *
+         * @return array
+         */
+
+        abstract public function getEntrance(int $eid);
+
+        /**
+         * add entrance
+         *
+         * @param integer $bid
+         * @param string $entrance
+         *
+         * @return integer
+         */
+
+        abstract public function addEntrance(int $bid, string $entrance);
+
+        /**
+         * delete entrance
+         *
+         * @param integer $eid
+         *
+         * @return mixed
+         */
+
+        abstract public function deleteEntrance(int $eid);
+
+        /**
+         * modify entrance data
+         *
+         * @param integer $eid
+         * @param integer $bid
+         * @param string $entrance
+         *
+         * @return boolean
+         */
+
+        abstract public function modifyEntrance(int $eid, int $bid, string $entrance);
     }
 }

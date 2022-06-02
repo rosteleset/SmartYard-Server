@@ -1,132 +1,132 @@
 <?php
 
 /**
- * @api {get} /address/building/:bid get building
+ * @api {get} /address/entrance/:eid get entrance
  *
  * @apiVersion 1.0.0
  *
- * @apiName getBuilding
+ * @apiName getEntrance
  * @apiGroup address
  *
  * @apiHeader {String} authorization authentication token
  *
- * @apiParam {Number} eid building id
+ * @apiParam {Number} eid entrance id
  *
- * @apiSuccess {Object} building building info
+ * @apiSuccess {Object} entrance entrance info
  *
  * @apiSuccessExample Success-Response:
  *  HTTP/1.1 200 OK
  *  {
- *      "building": {
- *          "bid": 1,
- *          "address": "Some City, Some Street, XX - YY",
- *          "guid": "35158491-6746-43AB-8B61-847CF92FE044"
+ *      "entrance": {
+ *          "eid": 1,
+ *          "bid": 123,
+ *          "entrance": "Подъезд №1"
  *      }
  *  }
  *
- * @apiError buildingNotFound building not found
+ * @apiError entranceNotFound entrance not found
  *
  * @apiErrorExample Error-Response:
  *  HTTP/1.1 404 Not Found
  *  {
- *      "error": "buildingNotFound"
+ *      "error": "entranceNotFound"
  *  }
  *
  * @apiExample {curl} Example usage:
- *  curl http://127.0.0.1:8000/server/api.php/address/building/1
+ *  curl http://127.0.0.1:8000/server/api.php/address/entrance/1
  */
 
 /**
- * @api {post} /accounts/building create building
+ * @api {post} /accounts/entrance create entrance
  *
  * @apiVersion 1.0.0
  *
- * @apiName createBuilding
- * @apiGroup address
- *
- * @apiHeader {String} authorization authentication token
- *
- * @apiParam {string} address
- * @apiParam {string} guid
- *
- * @apiSuccess {Number} eid building id
- *
- * @apiSuccessExample Success-Response:
- *  HTTP/1.1 200 OK
- *  {
- *      "bid": 1
- *  }
- *
- * @apiError invalidBuildingName invalid building name
- *
- * @apiErrorExample Error-Response:
- *  HTTP/1.1 406 Not Acceptable
- *  {
- *      "error": "invalidBuildingName"
- *  }
- *
- * @apiExample {curl} Example usage:
- *  curl -X POST http://127.0.0.1:8000/server/api.php/accounts/building \
- *      -H 'Content-Type: application/json' \
- *      -d '{"address": "Some City, Some Street, XX - YY", "guid": "35158491-6746-43AB-8B61-847CF92FE044"}'
- */
-
-/**
- * @api {put} /address/building/:bid update building
- *
- * @apiVersion 1.0.0
- *
- * @apiName updateBuilding
+ * @apiName createEntrance
  * @apiGroup address
  *
  * @apiHeader {String} authorization authentication token
  *
  * @apiParam {Number} bid Building id
- * @apiParam {string} address Building address
- * @apiParam {string} guid Building GUID
+ * @apiParam {String} entrance Entrance id
+ *
+ * @apiSuccess {Number} eid entrance id
  *
  * @apiSuccessExample Success-Response:
- *  HTTP/1.1 204 OK
+ *  HTTP/1.1 200 OK
+ *  {
+ *      "eid": 1
+ *  }
  *
- * @apiError buildingNotFound building not found
+ * @apiError invalidEntranceName invalid entrance name
  *
  * @apiErrorExample Error-Response:
- *  HTTP/1.1 404 Not Found
+ *  HTTP/1.1 406 Not Acceptable
  *  {
- *      "error": "buildingNotFound"
+ *      "error": "invalidEntranceName"
  *  }
  *
  * @apiExample {curl} Example usage:
- *  curl -X PUT http://127.0.0.1:8000/server/api.php/address/building/1 \
+ *  curl -X POST http://127.0.0.1:8000/server/api.php/accounts/entrance \
  *      -H 'Content-Type: application/json' \
- *      -d '{"Some City, Some Street, XX - YY":"35158491-6746-43AB-8B61-847CF92FE044"}'
+ *      -d '{"bid": 123, "entrance": "Подъезд 1"}'
  */
 
 /**
- * @api {delete} /address/building/:bid delete building
+ * @api {put} /address/entrance/:eid update entrance
  *
  * @apiVersion 1.0.0
  *
- * @apiName deleteBuilding
+ * @apiName updateEntrance
  * @apiGroup address
  *
  * @apiHeader {String} authorization authentication token
  *
- * @apiParam {Number} bid building id
+ * @apiParam {Number} eid Entrance id
+ * @apiParam {Number} bid Building id
+ * @apiParam {String} entrance Entrance name
  *
  * @apiSuccessExample Success-Response:
  *  HTTP/1.1 204 OK
  *
- * @apiError buildingNotFound building not found
+ * @apiError entranceNotFound entrance not found
  *
  * @apiErrorExample Error-Response:
  *  HTTP/1.1 404 Not Found
  *  {
- *      "error": "buildingNotFound"
+ *      "error": "entranceNotFound"
  *  }
  *
  * @apiExample {curl} Example usage:
- *  curl -X DELETE http://127.0.0.1:8000/server/api.php/address/building/1
+ *  curl -X PUT http://127.0.0.1:8000/server/api.php/address/entrance/1 \
+ *      -H 'Content-Type: application/json' \
+ *      -d '{"bid": 123, "entrance": "Подъезд 1"}'
+ */
+
+/**
+ * @api {delete} /address/entrance/:eid delete entrance
+ *
+ * @apiVersion 1.0.0
+ *
+ * @apiName deleteEntrance
+ * @apiGroup address
+ *
+ * @apiHeader {String} authorization authentication token
+ *
+ * @apiParam {Number} eid Entrance id
+ *
+ * @apiSuccessExample Success-Response:
+ *  HTTP/1.1 204 OK
+ *
+ * @apiError entranceNotFound entrance not found
+ *
+ * @apiErrorExample Error-Response:
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *      "error": "entranceNotFound"
+ *  }
+ *
+ * @apiExample {curl} Example usage:
+ *  curl -X DELETE http://127.0.0.1:8000/server/api.php/address/entrance/1
  */
 
 /**
@@ -138,31 +138,31 @@ namespace api\address {
     use api\api;
 
     /**
-     * building methods
+     * entrance methods
      */
 
-    class building extends api {
+    class entrance extends api {
 
         public static function GET($params) {
-            $building = loadBackend("addresses")->getBuilding($params["_id"]);
+            $entrance = loadBackend("addresses")->getEntrance($params["_id"]);
 
-            return api::ANSWER($building, ($building !== false)?"building":"notAcceptable");
+            return api::ANSWER($entrance, ($entrance !== false)?"entrance":"notAcceptable");
         }
 
         public static function POST($params) {
-            $bid = loadBackend("addresses")->addBuilding($params["address"], $params["guid"]);
+            $eid = loadBackend("addresses")->addEntrance($params["bid"], $params["entrance"]);
 
-            return api::ANSWER($bid, ($bid !== false)?"bid":"notAcceptable");
+            return api::ANSWER($eid, ($eid !== false)?"eid":"notAcceptable");
         }
 
         public static function PUT($params) {
-            $success = loadBackend("addresses")->modifyBuilding($params["_id"], $params["address"], $params["guid"]);
+            $success = loadBackend("addresses")->modifyEntrance($params["_id"], $params["bid"], $params["entrance"]);
 
             return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
         }
 
         public static function DELETE($params) {
-            $success = loadBackend("addresses")->deleteBuilding($params["_id"]);
+            $success = loadBackend("addresses")->deleteEntrance($params["_id"]);
 
             return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
         }

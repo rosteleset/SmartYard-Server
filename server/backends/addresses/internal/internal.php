@@ -45,7 +45,7 @@ namespace backends\addresses {
          * @return array|false
          */
 
-        public function getBuilding($bid) {
+        public function getBuilding(int $bid) {
 
             if (!checkInt($bid)) {
                 return false;
@@ -73,25 +73,25 @@ namespace backends\addresses {
         /**
          * add building
          *
-         * @param string $address
-         * @param string $guid
+         * @param int $bid
+         * @param string $entrance
          *
          * @return integer|false
          */
 
-        public function addBuilding($address, $guid = '') {
+        public function addBuilding(int $bid, $entrance) {
 
             try {
                 $sth = $this->db->prepare("insert into buildings (address, guid) values (:address, :guid)");
                 if (!$sth->execute([
-                    ":address" => $address,
-                    ":guid" => $guid,
+                    ":address" => $bid,
+                    ":guid" => $entrance,
                 ])) {
                     return false;
                 }
 
                 $sth = $this->db->prepare("select bid from buildings where address = :address");
-                if ($sth->execute([ ":address" => $address, ])) {
+                if ($sth->execute([ ":address" => $bid, ])) {
                     $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
                     if (count($res) == 1) {
                         return $res[0]["bid"];
@@ -166,6 +166,67 @@ namespace backends\addresses {
             return [
                 "mode" => "rw",
             ];
+        }
+
+        /**
+         * get list of all entrances
+         *
+         * @return array
+         */
+        public function getEntrances()
+        {
+            // TODO: Implement getEntrances() method.
+        }
+
+        /**
+         * get building by eid
+         *
+         * @param integer $eid eid
+         *
+         * @return array
+         */
+        public function getEntrance(int $eid)
+        {
+            // TODO: Implement getEntrance() method.
+        }
+
+        /**
+         * add entrance
+         *
+         * @param integer $bid
+         * @param string $entrance
+         *
+         * @return integer
+         */
+        public function addEntrance(int $bid, string $entrance)
+        {
+            // TODO: Implement addEntrance() method.
+        }
+
+        /**
+         * delete entrance
+         *
+         * @param integer $eid
+         *
+         * @return mixed
+         */
+        public function deleteEntrance(int $eid)
+        {
+            // TODO: Implement deleteEntrance() method.
+        }
+
+        /**
+         * modify entrance data
+         *
+         * @param integer $eid
+         * @param integer $bid
+         * @param string $entrance
+         *
+         * @return boolean
+         */
+        public function modifyEntrance(int $eid, int $bid, string $entrance)
+        {
+            // TODO: Implement modifyEntrance() method.
         }
     }
 }
