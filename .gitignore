@@ -12,6 +12,8 @@
 .vscode
 __pycache__
 .phpdoc
+/package.json
+/package-lock.json
 /client/lib/AdminLTE/
 /client/lib/qrcodejs/
 /client/lib/bootstrap5-tags/
