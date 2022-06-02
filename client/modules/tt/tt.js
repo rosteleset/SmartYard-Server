@@ -22,6 +22,9 @@
 
         $("#topMenuLeftDynamic").html(`
             <li class="nav-item d-none d-sm-inline-block">
+                <a href="#tt.createIssue" class="nav-link text-success text-bold">${i18n("tt.createIssue")}</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
                 <a href="#tt.settings&edit=projects" class="nav-link">${i18n("tt.settings")}</a>
             </li>
         `);

@@ -14,5 +14,11 @@
     "issueTypeEdit": "Редактирование типа задач",
     "confirmIssueTypeDelete": "Удалить тип задач #%s?",
     "confirmProjectDelete": "Удалить тип проект #%s?",
-    "projectDelete": "Удалить проект"
+    "projectDelete": "Удалить проект",
+    "createIssue": "Создать",
+    "project": "Проект",
+    "subject": "Тема",
+    "description": "Описание",
+    "tags": "Тэги",
+    "createIssueTitle": "Новая задача"
 }
