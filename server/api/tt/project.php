@@ -111,13 +111,21 @@
             }
 
             public static function POST($params) {
-                $projectId = loadBackend("tt")->addProject($params["acronym"], $params["project"], $params["workflow"]);
+                $projectId = loadBackend("tt")->addProject($params["acronym"], $params["project"]);
 
                 return api::ANSWER($projectId, ($projectId !== false)?"projectId":"notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyProject($params["_id"], $params["acronym"], $params["project"]);
+                $success = false;
+
+                if ($params["acronym"]) {
+                    $success = loadBackend("tt")->modifyProject($params["_id"], $params["acronym"]);
+                }
+
+                if ($params["workflows"]) {
+                    $success = loadBackend("tt")->setProjectWorkflows($params["_id"], $params["workflows"]);
+                }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

@@ -37,7 +37,7 @@
             public function getProjects()
             {
                 try {
-                    $projects = $this->db->query("select project_id, acronym, project, workflow, version from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
+                    $projects = $this->db->query("select project_id, acronym, project from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
                     $_projects = [];
 
                     foreach ($projects as $project) {
@@ -45,8 +45,6 @@
                             "projectId" => $project["project_id"],
                             "acronym" => $project["acronym"],
                             "project" => $project["project"],
-                            "workflow" => $project["workflow"],
-                            "version" => $project["version"],
                         ];
                     }
 
@@ -69,15 +67,21 @@
                 }
 
                 try {
-                    $project = $this->db->query("select project_id, acronym, project, workflow, version from tt_projects where project_id = $projectId", \PDO::FETCH_ASSOC)->fetchAll();
+                    $project = $this->db->query("select project_id, acronym, project from tt_projects where project_id = $projectId", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($project)) {
+                        $workflows = $this->db->query("select workflow from tt_projects_workflows where project_id = $projectId", \PDO::FETCH_ASSOC)->fetchAll();
+
+                        $w = [];
+                        foreach ($workflows as $workflow) {
+                            $w[] = $workflow["workflow"];
+                        }
+
                         return [
                             "projectId" => $project[0]["project_id"],
                             "acronym" => $project[0]["acronym"],
                             "project" => $project[0]["project"],
-                            "workflow" => $project[0]["workflow"],
-                            "version" => $project[0]["version"],
+                            "workflows" => $w,
                         ];
 
                     } else {
@@ -92,38 +96,24 @@
             /**
              * @param $acronym
              * @param $project
-             * @param $workflow
              *
              * @return false|integer
              */
-            public function addProject($acronym, $project, $workflowName)
+            public function addProject($acronym, $project)
             {
                 $acronym = trim($acronym);
                 $project = trim($project);
 
                 try {
-                    $workflow = $this->loadWorkflow($workflowName);
-
-                    if ($workflow) {
-                        $sth = $this->db->prepare("insert into tt_projects (acronym, project, workflow, version) values (:acronym, :project, :workflow, 0)");
-                        if (!$sth->execute([
-                            ":acronym" => $acronym,
-                            ":project" => $project,
-                            ":workflow" => $workflowName,
-                        ])) {
-                            return false;
-                        }
-
-                        $projectId = $this->db->lastInsertId();
-
-                        $workflow->initProject($projectId);
-
-                        return $projectId;
-                    } else {
-                        error_log("workflow ($workflowName) load fail!");
+                    $sth = $this->db->prepare("insert into tt_projects (acronym, project) values (:acronym, :project)");
+                    if (!$sth->execute([
+                        ":acronym" => $acronym,
+                        ":project" => $project,
+                    ])) {
                         return false;
                     }
 
+                    return $this->db->lastInsertId();
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -138,8 +128,6 @@
              */
             public function modifyProject($projectId, $acronym, $project)
             {
-                error_log(dirname(__FILE__));
-                
                 if (!checkInt($projectId) || !trim($acronym) || !trim($project)) {
                     return false;
                 }
@@ -173,6 +161,106 @@
                 try {
                     $this->db->exec("delete from tt_projects where project_id = $projectId");
                     // TODO: delete all derivatives
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * get workflow aliases
+             *
+             * @return false|array
+             */
+            public function getWorkflowAliases()
+            {
+                try {
+                    $workflows = $this->db->query("select workflow, alias from tt_workflows_aliases order by workflow", \PDO::FETCH_ASSOC)->fetchAll();
+                    $_workflows = [];
+
+                    foreach ($workflows as $workflow) {
+                        $_workflows[] = [
+                            "workflow" => $workflow["workflow"],
+                            "alias" => $workflow["alias"],
+                        ];
+                    }
+
+                    return $_workflows;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * set workflow alias
+             *
+             * @param $workflow
+             * @param $alias
+             * @return boolean
+             */
+            public function setWorkflowAlias($workflow, $alias)
+            {
+                try {
+                    $sth = $this->db->prepare("insert into tt_workflows_aliases (workflow) values (:workflow)");
+                    $sth->execute([
+                        ":workflow" => $workflow,
+                    ]);
+                } catch (\Exception $e) {
+                    // non uniq?
+                }
+
+                try {
+                    $sth = $this->db->prepare("update tt_workflows_aliases set alias = :alias where workflow = :workflow");
+                    $sth->execute([
+                        ":workflow" => $workflow,
+                        ":alias" => $alias,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @param $projectId
+             * @param $workflows
+             * @return boolean
+             */
+            public function setProjectWorkflows($projectId, $workflows)
+            {
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_projects_workflows (project_id, workflow) values (:project_id, :workflow)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_workflows where project_id = $projectId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    foreach ($workflows as $workflow) {
+                        if (!$sth->execute([
+                            ":project_id" => $projectId,
+                            ":workflow" => $workflow,
+                        ])) {
+                            return false;
+                        }
+                    }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;

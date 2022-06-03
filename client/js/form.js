@@ -18,14 +18,26 @@ function cardForm(params) {
         h += `</div>`;
     }
     h += `<div class="card-body table-responsive p-0">`;
+
+    h += '<table class="table';
     if (params.borderless) {
-        h += `<table class="table table-hover tform-borderless">`;
-    } else {
-        h += `<table class="table table-hover">`;
+        h += " tform-borderless";
     }
+    if (!params.noHover) {
+        h += " table-hover";
+    }
+    h += '">';
+
     h += `<tbody>`;
 
     for (let i in params.fields) {
+        if (params.fields[i].options) {
+            for (let j in params.fields[i].options) {
+                if (params.fields[i].options[j].id && !params.fields[i].options[j].value) {
+                    params.fields[i].options[j].value = params.fields[i].options[j].id;
+                }
+            }
+        }
         if (params.fields[i].hidden) {
             h += `<tr style="display: none;">`;
         } else {
@@ -33,7 +45,9 @@ function cardForm(params) {
         }
         switch (params.fields[i].type) {
             case "select":
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                if (!params.singleColumn) {
+                    h += `<td class="tdform">${params.fields[i].title}</td>`;
+                }
                 h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
                 h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField"`;
@@ -43,9 +57,6 @@ function cardForm(params) {
                 }
                 h += `>`;
                 for (let j in params.fields[i].options) {
-                    if (params.fields[i].options[j].id && !params.fields[i].options[j].value) {
-                        params.fields[i].options[j].value = params.fields[i].options[j].id;
-                    }
                     if (params.fields[i].options[j].value == params.fields[i].value) {
                         h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
                     } else {
@@ -63,8 +74,11 @@ function cardForm(params) {
                 h += `</div>`;
                 h += `</td>`;
                 break;
+
             case "select2":
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                if (!params.singleColumn) {
+                    h += `<td class="tdform">${params.fields[i].title}</td>`;
+                }
                 h += `<td class="tdform-right">`;
                 if (params.fields[i].color) {
                     h += `<div class="select2-${params.fields[i].color}">`;
@@ -82,28 +96,50 @@ function cardForm(params) {
                 }
                 h += `>`;
                 for (let j in params.fields[i].options) {
-                    if (params.fields[i].options[j].id && !params.fields[i].options[j].value) {
-                        params.fields[i].options[j].value = params.fields[i].options[j].id;
-                    }
                     h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
                 }
                 h += `</select>`;
                 h += `</div>`;
                 h += `</td>`;
                 break;
+
+            case "multiselect":
+                if (!params.singleColumn) {
+                    h += `<td class="tdform-top">${params.fields[i].title}</td>`;
+                }
+                h += `<td class="tdform-right">`;
+                // TODO: Do something with this!!! (max-height)
+                h += `<div class="overflow-auto" style="max-height: 400px;">`;
+                // TODO: Do something with this!!! (max-height)
+                for (let j in params.fields[i].options) {
+                    let id = md5(guid());
+                    let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
+                    h += `
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}/>
+                            <label for="${id}" class="custom-control-label">${params.fields[i].options[j].text}</label>
+                        </div>
+                    `;
+                }
+                h += `</div>`;
+                h += `</td>`;
+                break;
+
             case "email":
             case "tel":
             case "date":
             case "time":
             case "password":
             default:
+                if (!params.singleColumn) {
+                    h += `<td class="tdform">${params.fields[i].title}</td>`;
+                }
                 let type = params.fields[i].type?params.fields[i].type:"text";
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
                 h += `<td class="tdform-right">`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
-                h += `<input id="${_prefix}${params.fields[i].id}" type="${type}" class="form-control modalFormField" autocomplete="off" value="${params.fields[i].value?params.fields[i].value:""}" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<input id="${_prefix}${params.fields[i].id}" type="${type}" class="form-control modalFormField" autocomplete="off" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -145,7 +181,11 @@ function cardForm(params) {
     if (params.footer) {
         h += `<tfoot>`;
         h += `<tr>`;
-        h += `<td colspan="2">`;
+        if (params.singleColumn) {
+            h += `<td>`;
+        } else {
+            h += `<td colspan="2">`;
+        }
         h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n("apply")}</button>`;
         if (typeof params.cancel === "function") {
             h += `<button type="cancel" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
@@ -173,7 +213,26 @@ function cardForm(params) {
             if (typeof params.callback === "function") {
                 let result = {};
                 for (let i in params.fields) {
-                    result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).val();
+                    switch (params.fields[i].type) {
+                        case "select":
+                        case "email":
+                        case "tel":
+                        case "date":
+                        case "time":
+                        case "password":
+                        case "text":
+                            result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).val();
+                            break;
+                        case "multiselect":
+                            let o = [];
+                            $(`.checkBoxOption-${params.fields[i].id}`).each(function () {
+                                if ($(this).prop("checked")) {
+                                    o.push($(this).attr("data-id"));
+                                }
+                            });
+                            result[params.fields[i].id] = o;
+                            break;
+                    }
                 }
                 if (!params.target) {
                     $('#modal').modal('hide');
@@ -229,6 +288,21 @@ function cardForm(params) {
     });
 
     for (let i in params.fields) {
+
+        if (params.fields[i].value) {
+            switch (params.fields[i].type) {
+                case "select":
+                case "email":
+                case "tel":
+                case "date":
+                case "time":
+                case "password":
+                case "text":
+                    $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
+                    break;
+            }
+        }
+
         if (params.fields[i].button && typeof params.fields[i].button.click === "function") {
             $(`#${_prefix}${params.fields[i].id}-button`).off("click").on("click", params.fields[i].button.click);
         }

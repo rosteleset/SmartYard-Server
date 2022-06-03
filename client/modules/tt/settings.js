@@ -8,12 +8,11 @@
         action functions
      */
 
-    doAddProject: function (acronym, project, workflow) {
+    doAddProject: function (acronym, project) {
         loadingStart();
         POST("tt", "project", false, {
             acronym: acronym,
             project: project,
-            workflow: workflow,
         }).
         fail(FAIL).
         done(() => {
@@ -41,6 +40,31 @@
         fail(FAIL).
         done(() => {
             message(i18n("tt.projectWasDeleted"));
+        }).
+        always(window.modules["tt.settings"].renderProjects);
+    },
+
+    doSetWorkflowAlias: function (workflow, alias) {
+        loadingStart();
+        PUT("tt", "workflow", false, {
+            workflow: workflow,
+            alias: alias,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.workflowWasChanged"));
+        }).
+        always(window.modules["tt.settings"].renderAllWorkflows);
+    },
+
+    doSetProjectWorkflows: function (projectId, workflows) {
+        loadingStart();
+        PUT("tt", "project", projectId, {
+            workflows: workflows,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
         }).
         always(window.modules["tt.settings"].renderProjects);
     },
@@ -123,13 +147,6 @@
     },
 
     addProject: function () {
-        let workflows = [];
-        for (let i in window.modules["tt"].meta.workflows) {
-            workflows.push({
-                id: window.modules["tt"].meta.workflows[i],
-                text: window.modules["tt"].meta.workflows[i],
-            });
-        }
         cardForm({
             title: i18n("tt.addProject"),
             footer: true,
@@ -154,30 +171,139 @@
                         return $.trim(v) !== "";
                     }
                 },
-                {
-                    id: "workflow",
-                    type: "select2",
-                    title: i18n("tt.workflow"),
-                    placeholder: i18n("tt.workflow"),
-                    options: workflows,
-                },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddProject(result.acronym, result.project, result.workflow);
+                window.modules["tt.settings"].doAddProject(result.acronym, result.project);
             },
         }).show();
     },
 
-    statuses: function (projectId) {
+    setWorkflowAlias: function (workflow) {
+        let w = '';
 
+        for (let i in window.modules["tt"].meta.workflowAliases) {
+            if (window.modules["tt"].meta.workflowAliases[i].workflow === workflow) {
+                w = window.modules["tt"].meta.workflowAliases[i].alias;
+                break;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.workflowAlias"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "workflow",
+                    type: "text",
+                    title: i18n("tt.workflow"),
+                    value: workflow,
+                    readonly: true,
+                },
+                {
+                    id: "alias",
+                    type: "text",
+                    title: i18n("tt.workflowAlias"),
+                    placeholder: i18n("tt.workflowAlias"),
+                    value: w,
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doSetWorkflowAlias(workflow, result.alias);
+            },
+        }).show();
     },
 
-    resolutions: function (projectId) {
+    projectWorkflows: function (projectId) {
+        loadingStart();
+        GET("tt", "project", projectId, true).
+        done(project => {
+            let w = {};
+            for (let i in window.modules["tt"].meta.workflows) {
+                w[window.modules["tt"].meta.workflows[i]] = window.modules["tt"].meta.workflows[i];
+            }
+            for (let i in window.modules["tt"].meta.workflowAliases) {
+                if (w[window.modules["tt"].meta.workflowAliases[i].workflow]) {
+                    w[window.modules["tt"].meta.workflowAliases[i].workflow] = window.modules["tt"].meta.workflowAliases[i].alias;
+                }
+            }
 
+            let workflows = [];
+            for (let i in w) {
+                workflows.push({
+                    id: i,
+                    text: "[" + i + "] " + w[i],
+                });
+            }
+
+            cardForm({
+                title: i18n("tt.projectForkflows"),
+                footer: true,
+                borderless: true,
+                noHover: true,
+                topApply: true,
+                singleColumn: true,
+                fields: [
+                    {
+                        id: "workflows",
+                        type: "multiselect",
+                        title: i18n("tt.workflows"),
+                        options: workflows,
+                        value: project.project.workflows,
+                    },
+                ],
+                callback: function (result) {
+                    console.log(projectId, result.workflows);
+                    window.modules["tt.settings"].doSetProjectWorkflows(projectId, result.workflows);
+                },
+            }).show();
+            loadingDone();
+        }).
+        fail(FAIL);
     },
 
-    customFields: function (projectId) {
+    projectResolutions: function (projectId) {
+        loadingStart();
+        GET("tt", "project", projectId, true).
+        done(project => {
+            console.log(project);
+            loadingDone();
+        }).
+        fail(FAIL);
+    },
 
+    projectCustomFields: function (projectId) {
+        loadingStart();
+        GET("tt", "project", projectId, true).
+        done(project => {
+            console.log(project);
+            loadingDone();
+        }).
+        fail(FAIL);
+    },
+
+    projectUsers: function (projectId) {
+        loadingStart();
+        GET("tt", "project", projectId, true).
+        done(project => {
+            console.log(project);
+            loadingDone();
+        }).
+        fail(FAIL);
+    },
+
+    projectGroups: function (projectId) {
+        loadingStart();
+        GET("tt", "project", projectId, true).
+        done(project => {
+            console.log(project);
+            loadingDone();
+        }).
+        fail(FAIL);
     },
 
     renderProjects: function () {
@@ -203,12 +329,6 @@
                         title: i18n("tt.projectAcronym"),
                     },
                     {
-                        title: i18n("tt.workflow"),
-                    },
-                    {
-                        title: i18n("tt.version"),
-                    },
-                    {
                         title: i18n("tt.projectProject"),
                         fullWidth: true,
                     },
@@ -230,14 +350,6 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.projects[i].workflow,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: window.modules["tt"].meta.projects[i].version,
-                                    nowrap: true,
-                                },
-                                {
                                     data: window.modules["tt"].meta.projects[i].project,
                                 },
                             ],
@@ -245,19 +357,22 @@
                                 icon: "fas fa-tools",
                                 items: [
                                     {
-                                        icon: "fas fa-traffic-light",
-                                        title: i18n("tt.statuses"),
-                                        click: window.modules["tt.settings"].statuses,
+                                        icon: "fas fa-shoe-prints",
+                                        title: i18n("tt.workflows"),
+                                        click: window.modules["tt.settings"].projectWorkflows,
+                                    },
+                                    {
+                                        title: "-",
                                     },
                                     {
                                         icon: "fas fa-signature",
                                         title: i18n("tt.resolutions"),
-                                        click: window.modules["tt.settings"].resolutions,
+                                        click: window.modules["tt.settings"].projectResolutions,
                                     },
                                     {
                                         icon: "fas fa-edit",
                                         title: i18n("tt.customFields"),
-                                        click: window.modules["tt.settings"].customFields,
+                                        click: window.modules["tt.settings"].projectCustomFields,
                                     },
                                     {
                                         title: "-",
@@ -265,15 +380,67 @@
                                     {
                                         icon: "fas fa-user",
                                         title: i18n("tt.users"),
-                                        click: window.modules["tt.settings"].customFields,
+                                        click: window.modules["tt.settings"].projectUsers,
                                     },
                                     {
                                         icon: "fas fa-users",
                                         title: i18n("tt.groups"),
-                                        click: window.modules["tt.settings"].customFields,
+                                        click: window.modules["tt.settings"].projectGroups,
                                     },
                                 ],
                             }
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderAllWorkflows: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    caption: i18n("tt.workflows"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.workflow"),
+                    },
+                    {
+                        title: i18n("tt.workflowAlias"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    let w = {};
+                    for (let i = 0; i < window.modules["tt"].meta.workflowAliases.length; i++) {
+                        w[window.modules["tt"].meta.workflowAliases[i].workflow] = window.modules["tt"].meta.workflowAliases[i].alias;
+                    }
+
+                    for (let i = 0; i < window.modules["tt"].meta.workflows.length; i++) {
+                        rows.push({
+                            uid: window.modules["tt"].meta.workflows[i],
+                            cols: [
+                                {
+                                    data: window.modules["tt"].meta.workflows[i],
+                                    click: window.modules["tt.settings"].setWorkflowAlias,
+                                },
+                                {
+                                    data: w[window.modules["tt"].meta.workflows[i]]?w[window.modules["tt"].meta.workflows[i]]:window.modules["tt"].meta.workflows[i],
+                                    nowrap: true,
+                                },
+                            ],
                         });
                     }
 
@@ -292,6 +459,10 @@
 
         let sections = [
             "projects",
+            "workflows",
+            "statuses",
+            "resolutions",
+            "customFields"
         ];
         let section = (params["section"] && sections.indexOf(params["section"]) >= 0)?params["section"]:"projects";
 
@@ -322,8 +493,8 @@
                 window.modules["tt.settings"].renderProjects();
                 break;
 
-            case "issueTypes":
-                window.modules["tt.settings"].renderIssueTypes();
+            case "workflows":
+                window.modules["tt.settings"].renderAllWorkflows();
                 break;
         }
     },

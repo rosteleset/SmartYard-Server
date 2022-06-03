@@ -2,7 +2,7 @@
 
     namespace tt\workflow {
 
-        class base extends workflow {
+        class test extends workflow {
 
             public function getStatuses()
             {
@@ -21,12 +21,12 @@
 
             public function initProject($projectId)
             {
-                error_log("******* BASE *************" . $projectId . "######################");
+                error_log("******* TEST *************" . $projectId . "######################");
             }
 
             public function initIssue($issueId)
             {
-                error_log("------- BASE -------------" . $issueId . "++++++++++++++++++++++");
+                error_log("------- TEST -------------" . $issueId . "++++++++++++++++++++++");
             }
         }
     }

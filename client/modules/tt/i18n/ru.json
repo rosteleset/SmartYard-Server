@@ -26,6 +26,7 @@
     "customFields": "Настраиваемые поля",
     "addProject": "Добавить проект",
     "workflow": "Рабочий процесс",
+    "workflows": "Рабочие процессы",
     "version": "Версия",
     "users": "Пользователи",
     "groups": "Группы",
@@ -37,5 +38,7 @@
     "employee.senior": "Старий сотрудник",
     "manager.junior": "Младший менеджер",
     "manager.middle": "Менеджер",
-    "manager.senior": "Старший менеджер"
+    "manager.senior": "Старший менеджер",
+    "workflowAlias": "Описание",
+    "projectForkflows": "Рабочие процессы проекта"
 }

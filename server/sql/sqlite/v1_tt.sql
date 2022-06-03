@@ -3,32 +3,42 @@ CREATE TABLE tt_projects
 (
     project_id integer not null primary key autoincrement,
     acronym text not null,
-    project text not null,
-    workflow text not null,                                                                                             -- workflow name (.php)
-    version integer                                                                                                     -- current version (for workflow upgrade)
+    project text not null
 );
 CREATE UNIQUE INDEX tt_projects_acronym on tt_projects(acronym);
 CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
 
+-- workflows
+CREATE TABLE tt_workflows_aliases
+(
+    workflow text primary key,
+    alias text
+);
+
+-- projects <-> workflows
+CREATE TABLE tt_projects_workflows
+(
+    project_workflow_id integer not null primary key autoincrement,
+    project_id integer,
+    workflow text
+);
+CREATE UNIQUE INDEX tt_projects_workflows_uniq on tt_projects_workflows (project_id, workflow);
+
 -- issue statuses
-CREATE TABLE tt_issue_statuses
+CREATE TABLE tt_issue_statuses                                                                                          -- !!! managed by workflows !!!
 (
     status_id integer not null primary key autoincrement,
-    project_id integer not null,
-    final integer,
-    status text not null,
-    status_display text not null
+    status text not null,                                                                                               -- internal (workflow)
+    status_display text not null                                                                                        -- human readable value
 );
-CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(project_id, status);
+CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(status);
 
 -- issue resolutions
 CREATE TABLE tt_issue_resolutions
 (
     resolution_id integer not null primary key autoincrement,
     project_id integer not null,
-    workflow integer,                                                                                                   -- managed by workflow, only resolution_display can be edited
-    resolution text,
-    resolution_display text not null
+    resolution text
 );
 CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(project_id, resolution);
 
@@ -36,11 +46,11 @@ CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(project_id
 CREATE TABLE tt_issues
 (
     issue_id integer not null primary key autoincrement,                                                                -- primary key
-    project_id integer,                                                                                                 -- project id
+    project_id integer,                                                                                                 -- project_id
+    workflow text,                                                                                                      -- workflow
     subject text not null,                                                                                              -- subject
     description text not null,                                                                                          -- description
     author integer,                                                                                                     -- uid
-    type_id integer,                                                                                                    -- issue type
     status_id integer,                                                                                                  -- status
     resolution_id integer,                                                                                              -- resolution
     created text not null,                                                                                              -- "YYYY-MM-DD HH:MM:SS.SSS"
@@ -49,9 +59,10 @@ CREATE TABLE tt_issues
     external_id integer,                                                                                                -- link to external id
     external_id_type text                                                                                               -- external object description
 );
+CREATE INDEX tt_issues_project_id on tt_issues(project_id);
+CREATE INDEX tt_issues_workflow on tt_issues(workflow);
 CREATE INDEX tt_issues_subject on tt_issues(subject);
 CREATE INDEX tt_issues_author on tt_issues(author);
-CREATE INDEX tt_issues_type_id on tt_issues(type_id);
 CREATE INDEX tt_issues_status_id on tt_issues(status_id);
 CREATE INDEX tt_issues_resolution_id on tt_issues(resolution_id);
 CREATE INDEX tt_issues_created on tt_issues(created);
@@ -150,13 +161,22 @@ CREATE INDEX tt_issue_tags_tag on tt_issue_tags(tag);
 CREATE TABLE tt_issue_custom_fields
 (
     custom_field_id integer not null primary key autoincrement,
-    project_id integer not null,
     type text not null,
     workflow integer,                                                                                                   -- managed by workflow, only field_display can be edited
     field text not null,
     field_display text not null
 );
-CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(project_id, field);
+CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(field);
+
+-- custom fields per projects and workflows
+CREATE TABLE tt_issue_custom_fields_usage
+(
+    custom_fields_usage_id integer not null primary key autoincrement,
+    custom_field_id integer,
+    project_id integer,
+    workflow text
+);
+CREATE UNIQUE INDEX tt_issue_custom_fields_usage_uniq on tt_issue_custom_fields_usage (custom_field_id, project_id, workflow);
 
 -- custom fields values options
 CREATE TABLE tt_issue_custom_fields_options

@@ -16,53 +16,6 @@
 
         abstract class tt extends backend {
 
-            /* project(s) */
-
-            /**
-             * get projects
-             *
-             * @return false|array[]
-             */
-
-            abstract public function getProjects();
-
-            /**
-             * get project
-             *
-             * @param $projectId integer projectId
-             * @return false|array
-             */
-
-            abstract public function getProject($projectId);
-
-            /**
-             * @param $acronym
-             * @param $project
-             * @param $workflow
-             *
-             * @return false|integer
-             */
-
-            abstract public function addProject($acronym, $project, $workflow);
-
-            /**
-             * @param $projectId integer
-             * @param $acronym string
-             * @param $project string
-             * @return boolean
-             */
-
-            abstract public function modifyProject($projectId, $acronym, $project);
-
-            /**
-             * delete project and all it derivatives
-             *
-             * @param $projectId
-             * @return boolean
-             */
-
-            abstract public function deleteProject($projectId);
-
             /**
              * get available workflows
              *
@@ -127,5 +80,75 @@
                     return false;
                 }
             }
+
+            /**
+             * get projects
+             *
+             * @return false|array[]
+             */
+
+            abstract public function getProjects();
+
+            /**
+             * get project
+             *
+             * @param $projectId integer projectId
+             * @return false|array
+             */
+
+            abstract public function getProject($projectId);
+
+            /**
+             * @param $acronym
+             * @param $project
+             *
+             * @return false|integer
+             */
+
+            abstract public function addProject($acronym, $project);
+
+            /**
+             * @param $projectId integer
+             * @param $acronym string
+             * @param $project string
+             * @return boolean
+             */
+
+            abstract public function modifyProject($projectId, $acronym, $project);
+
+            /**
+             * delete project and all it derivatives
+             *
+             * @param $projectId
+             * @return boolean
+             */
+
+            abstract public function deleteProject($projectId);
+
+            /**
+             * get workflow aliases
+             *
+             * @return false|array
+             */
+
+            abstract public function getWorkflowAliases();
+
+            /**
+             * set workflow alias
+             *
+             * @param $workflow
+             * @param $alias
+             * @return boolean
+             */
+
+            abstract public function setWorkflowAlias($workflow, $alias);
+
+            /**
+             * @param $projectId
+             * @param $workflows
+             * @return boolean
+             */
+
+            abstract public function setProjectWorkflows($projectId, $workflows);
         }
     }

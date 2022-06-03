@@ -30,6 +30,8 @@
 
             abstract public function initProject($projectId);
 
+            abstract public function initIssue($issueId);
+
             abstract public function getStatuses();
 
             abstract public function getResolutions();

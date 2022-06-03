@@ -40,10 +40,12 @@
             public static function GET($params) {
                 $projects = loadBackend("tt")->getProjects();
                 $workflows = loadBackend("tt")->getWorkflows();
+                $workflowAliases = loadBackend("tt")->getWorkflowAliases();
 
                 $meta = [
                     "projects" => $projects,
                     "workflows" => $workflows,
+                    "workflowAliases" => $workflowAliases,
                 ];
 
                 return api::ANSWER($meta, "meta");
