@@ -4,8 +4,8 @@ CREATE TABLE tt_projects
     project_id serial not null primary key,
     acronym character varying not null,
     project character varying not null,
-    workflow character varying not null,
-    version character varying not null
+    workflow text not null,                                                                                             -- workflow name (.php)
+    version text not null                                                                                               -- current version (for workflow upgrade)
 );
 CREATE UNIQUE INDEX tt_projects_acronym on tt_projects(acronym);
 CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
@@ -26,6 +26,7 @@ CREATE TABLE tt_issue_resolutions
 (
     resolution_id serial not null primary key,
     project_id integer not null,
+    workflow integer,                                                                                                   -- managed by workflow, only resolution_display can be edited
     resolution character varying,
     resolution_display character varying not null
 );
@@ -151,6 +152,7 @@ CREATE TABLE tt_issue_custom_fields
     custom_field_id serial not null primary key,
     project_id integer not null,
     type character varying not null,
+    workflow integer,                                                                                                   -- managed by workflow, only field_display can be edited
     field character varying not null,
     field_display character varying not null
 );

@@ -111,7 +111,7 @@
             }
 
             public static function POST($params) {
-                $projectId = loadBackend("tt")->addProject($params["acronym"], $params["project"]);
+                $projectId = loadBackend("tt")->addProject($params["acronym"], $params["project"], $params["workflow"]);
 
                 return api::ANSWER($projectId, ($projectId !== false)?"projectId":"notAcceptable");
             }

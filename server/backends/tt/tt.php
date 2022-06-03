@@ -1,12 +1,12 @@
 <?php
 
-    require_once "workflow.php";
-
     /**
      * backends tt namespace
      */
 
     namespace backends\tt {
+
+        require_once "workflow.php";
 
         use backends\backend;
 
@@ -38,10 +38,12 @@
             /**
              * @param $acronym
              * @param $project
+             * @param $workflow
+             *
              * @return false|integer
              */
 
-            abstract public function addProject($acronym, $project);
+            abstract public function addProject($acronym, $project, $workflow);
 
             /**
              * @param $projectId integer
@@ -62,65 +64,68 @@
             abstract public function deleteProject($projectId);
 
             /**
-             * get types
+             * get available workflows
              *
-             * @return false|array[]
-             */
-
-            abstract public function getIssueTypes();
-
-            /**
-             * get type
-             *
-             * @param $typeId integer typeId
              * @return false|array
              */
 
-            abstract public function getIssueType($typeId);
+            public function getWorkflows() {
+                $class = get_class($this);
+                $ns = __NAMESPACE__;
+
+                if (strpos($class, $ns) === 0) {
+                    $class = substr($class, strlen($ns) + 1);
+                }
+
+                $base = dirname(__FILE__) . "/" . $class . "/workflows/";
+                $dir = scandir($base);
+
+                $w = [];
+                foreach ($dir as $f) {
+                    if ($f != "." && $f != ".." && file_exists($base . $f ."/" . $f . ".php")) {
+                        $w[] = $f;
+                    }
+                }
+
+                return $w;
+            }
 
             /**
-             * @param $type
-             * @return false|integer
+             * load workflow
+             *
+             * @param $workflow
+             * @return false|object
              */
 
-            abstract public function addIssueType($type);
+            public function loadWorkflow($workflow) {
+                $workflow = trim($workflow);
 
-            /**
-             * @param $typeId integer
-             * @param $type string
-             * @return boolean
-             */
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                    error_log("preg_match fail!");
+                    return false;
+                }
 
-            abstract public function modifyIssueType($typeId, $type);
+                $class = get_class($this);
+                $ns = __NAMESPACE__;
 
-            /**
-             * delete type and all it derivatives
-             *
-             * @param $typeId
-             * @return boolean
-             */
+                if (strpos($class, $ns) === 0) {
+                    $class = substr($class, strlen($ns) + 1);
+                }
 
-            abstract public function deleteIssueType($typeId);
+                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . "/" . $workflow . ".php";
 
-            /**
-             * get type to projects
-             *
-             * @param $typeId integer
-             *
-             * @return boolean|array[]
-             */
-
-            abstract public function getIssueTypeProjects($typeId);
-
-            /**
-             * set type to projects
-             *
-             * @param $typeId integer
-             * @param $projects array[]
-             *
-             * @return boolean
-             */
-
-            abstract public function setIssueTypeProjects($typeId, $projects);
+                if (file_exists($file)) {
+                    require_once $file;
+                    if (class_exists("tt\\workflow\\" . $workflow)) {
+                        return new ("tt\\workflow\\" . $workflow)($this->config, $this->db, $this->redis);
+                    } else {
+                        error_log("class not found!");
+                        return false;
+                    }
+                } else {
+                    error_log("file not found!");
+                    return false;
+                }
+            }
         }
     }

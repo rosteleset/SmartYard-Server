@@ -4,8 +4,8 @@ CREATE TABLE tt_projects
     project_id integer not null primary key autoincrement,
     acronym text not null,
     project text not null,
-    workflow text not null,
-    version text not null
+    workflow text not null,                                                                                             -- workflow name (.php)
+    version integer                                                                                                     -- current version (for workflow upgrade)
 );
 CREATE UNIQUE INDEX tt_projects_acronym on tt_projects(acronym);
 CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
@@ -26,6 +26,7 @@ CREATE TABLE tt_issue_resolutions
 (
     resolution_id integer not null primary key autoincrement,
     project_id integer not null,
+    workflow integer,                                                                                                   -- managed by workflow, only resolution_display can be edited
     resolution text,
     resolution_display text not null
 );
@@ -151,6 +152,7 @@ CREATE TABLE tt_issue_custom_fields
     custom_field_id integer not null primary key autoincrement,
     project_id integer not null,
     type text not null,
+    workflow integer,                                                                                                   -- managed by workflow, only field_display can be edited
     field text not null,
     field_display text not null
 );
@@ -195,7 +197,7 @@ INSERT INTO tt_roles (level, name) values (5000, 'employee.middle');            
 INSERT INTO tt_roles (level, name) values (6000, 'employee.senior');                                                    -- can edit issues
 INSERT INTO tt_roles (level, name) values (7000, 'manager.junior');                                                     -- can edit all comments and delete comments, can delete files, can create tag
 INSERT INTO tt_roles (level, name) values (8000, 'manager.middle');                                                     -- can delete issues
-INSERT INTO tt_roles (level, name) values (9000, 'manager.senior');                                                     -- can create and configure projects
+INSERT INTO tt_roles (level, name) values (9000, 'manager.senior');                                                     --
 
 -- project rights
 CREATE TABLE tt_projects_roles

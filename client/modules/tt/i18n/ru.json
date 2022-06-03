@@ -20,5 +20,13 @@
     "subject": "Тема",
     "description": "Описание",
     "tags": "Тэги",
-    "createIssueTitle": "Новая задача"
+    "createIssueTitle": "Новая задача",
+    "statuses": "Статусы",
+    "resolutions": "Резолюции",
+    "customFields": "Настраиваемые поля",
+    "addProject": "Добавить проект",
+    "workflow": "Рабочий процесс",
+    "version": "Версия",
+    "users": "Пользователи",
+    "groups": "Группы"
 }
