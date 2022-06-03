@@ -28,5 +28,14 @@
     "workflow": "Рабочий процесс",
     "version": "Версия",
     "users": "Пользователи",
-    "groups": "Группы"
+    "groups": "Группы",
+    "participant.junior": "Младший участник",
+    "participant.middle": "Участник",
+    "participant.senior": "Старий участник",
+    "employee.junior": "Младший сотрудник",
+    "employee.middle": "Сотрудник",
+    "employee.senior": "Старий сотрудник",
+    "manager.junior": "Младший менеджер",
+    "manager.middle": "Менеджер",
+    "manager.senior": "Старший менеджер"
 }
