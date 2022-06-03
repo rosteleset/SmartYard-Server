@@ -119,11 +119,11 @@
             public static function PUT($params) {
                 $success = false;
 
-                if ($params["acronym"]) {
+                if (@$params["acronym"]) {
                     $success = loadBackend("tt")->modifyProject($params["_id"], $params["acronym"]);
                 }
 
-                if ($params["workflows"]) {
+                if (@$params["workflows"]) {
                     $success = loadBackend("tt")->setProjectWorkflows($params["_id"], $params["workflows"]);
                 }
 
