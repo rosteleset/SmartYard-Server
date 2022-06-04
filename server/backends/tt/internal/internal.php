@@ -481,5 +481,30 @@
 
                 return true;
             }
+
+            /**
+             * @return array
+             */
+            public function getCustomFields()
+            {
+                try {
+                    $customFields = $this->db->query("select custom_field_id, type, workflow, field, field_display from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $_customFields = [];
+
+                    foreach ($customFields as $customField) {
+                        $_customFields[] = [
+                            "customFieldId" => $customField["resolution_id"],
+                            "type" => $customField["type"],
+                            "workflow" => $customField["workflow"],
+                            "field" => $customField["field"],
+                            "fieldDisplay" => $customField["field_display"],
+                        ];
+                    }
+
+                    return $_customFields;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
         }
     }

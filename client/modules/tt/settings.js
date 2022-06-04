@@ -775,6 +775,75 @@
         always(loadingDone);
     },
 
+    renderCustomFields: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("tt.addCustomField"),
+                        click: window.modules["tt.settings"].addCustomField,
+                    },
+                    caption: i18n("tt.customFields"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.customFieldId"),
+                    },
+                    {
+                        title: i18n("tt.customFieldName"),
+                    },
+                    {
+                        title: i18n("tt.customFieldType"),
+                    },
+                    {
+                        title: i18n("tt.customFieldWorflow"),
+                    },
+                    {
+                        title: i18n("tt.customFieldDisplay"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i = 0; i < window.modules["tt"].meta.customFields.length; i++) {
+                        rows.push({
+                            uid: window.modules["tt"].meta.customFields[i].customFieldId,
+                            cols: [
+                                {
+                                    data: window.modules["tt"].meta.customFields[i].customFieldId,
+                                    click: window.modules["tt.settings"].modifyCustomField,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.customFields[i].customFieldName,
+                                    click: window.modules["tt.settings"].modifyCustomField,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.customFields[i].customFieldName,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.customFields[i].customFieldWorflow,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.customFields[i].customFieldDisplay,
+                                },
+                            ],
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     route: function (params) {
         $("#altForm").hide();
 
@@ -826,6 +895,10 @@
 
             case "resolutions":
                 window.modules["tt.settings"].renderResolutions();
+                break;
+
+            case "customFields":
+                window.modules["tt.settings"].renderCustomFields();
                 break;
         }
     },

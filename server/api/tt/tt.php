@@ -47,6 +47,7 @@
                         "workflowAliases" => $tt->getWorkflowAliases(),
                         "statuses" => $tt->getStatuses(),
                         "resolutions" => $tt->getResolutions(),
+                        "customFields" => $tt->getCustomFields(),
                     ];
 
                     return api::ANSWER($meta, "meta");

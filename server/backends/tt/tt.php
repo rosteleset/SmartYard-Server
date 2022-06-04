@@ -194,5 +194,10 @@
              */
 
             abstract public function setProjectResolutions($projectId, $resolutions);
+
+            /**
+             * @return array
+             */
+            abstract public function getCustomFields();
         }
     }
