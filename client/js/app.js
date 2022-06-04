@@ -313,8 +313,6 @@ function initAll() {
         $('body').addClass('sidebar-collapse');
     }
 
-    setFavicon({ src: "img/tech.png" });
-
     document.title = i18n("windowTitle");
 
     $("#loginBoxLogo").html("<img src='img/rosteleset.png'/>");

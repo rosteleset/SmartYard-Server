@@ -6,6 +6,8 @@
 
     namespace backends\tt {
 
+        use api\accounts\password;
+
         /**
          * internal.db tt class
          */
@@ -77,11 +79,19 @@
                             $w[] = $workflow["workflow"];
                         }
 
+                        $resolutions = $this->db->query("select resolution_id from tt_projects_resolutions where project_id = $projectId", \PDO::FETCH_ASSOC)->fetchAll();
+
+                        $r = [];
+                        foreach ($resolutions as $resolution) {
+                            $r[] = $resolution["resolution_id"];
+                        }
+
                         return [
                             "projectId" => $project[0]["project_id"],
                             "acronym" => $project[0]["acronym"],
                             "project" => $project[0]["project"],
                             "workflows" => $w,
+                            "resolutions" => $r,
                         ];
 
                     } else {
@@ -103,6 +113,10 @@
             {
                 $acronym = trim($acronym);
                 $project = trim($project);
+
+                if (!$acronym || !$project) {
+                    return false;
+                }
 
                 try {
                     $sth = $this->db->prepare("insert into tt_projects (acronym, project) values (:acronym, :project)");
@@ -202,6 +216,12 @@
              */
             public function setWorkflowAlias($workflow, $alias)
             {
+                $alias = trim($alias);
+
+                if (!$alias) {
+                    return false;
+                }
+
                 try {
                     $sth = $this->db->prepare("insert into tt_workflows_aliases (workflow) values (:workflow)");
                     $sth->execute([
@@ -257,6 +277,199 @@
                         if (!$sth->execute([
                             ":project_id" => $projectId,
                             ":workflow" => $workflow,
+                        ])) {
+                            return false;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @return false|array
+             */
+            public function getStatuses()
+            {
+                try {
+                    $statuses = $this->db->query("select status_id, status, status_display from tt_issue_statuses order by status", \PDO::FETCH_ASSOC)->fetchAll();
+                    $_statuses = [];
+
+                    foreach ($statuses as $statuse) {
+                        $_statuses[] = [
+                            "statusId" => $statuse["status_id"],
+                            "status" => $statuse["status"],
+                            "statusDisplay" => $statuse["status_display"],
+                        ];
+                    }
+
+                    return $_statuses;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * @param $statusId
+             * @param $display
+             * @return boolean
+             */
+            public function moodifyStatus($statusId, $display)
+            {
+                $display = trim($display);
+
+                if (!checkInt($statusId) || !$display) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("update tt_issue_statuses set status_display = :status_display where status_id = $statusId");
+                    $sth->execute([
+                        ":status_display" => $display,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @return false|array
+             */
+            public function getResolutions()
+            {
+                try {
+                    $resolutions = $this->db->query("select resolution_id, resolution from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
+                    $_resolutions = [];
+
+                    foreach ($resolutions as $resolution) {
+                        $_resolutions[] = [
+                            "resolutionId" => $resolution["resolution_id"],
+                            "resolution" => $resolution["resolution"],
+                        ];
+                    }
+
+                    return $_resolutions;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * @param $resolution
+             * @return false|integer
+             */
+            public function addResolution($resolution)
+            {
+                $resolution = trim($resolution);
+
+                if (!$resolution) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_issue_resolutions (resolution) values (:resolution)");
+                    if (!$sth->execute([
+                        ":resolution" => $resolution,
+                    ])) {
+                        return false;
+                    }
+
+                    return $this->db->lastInsertId();
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+            }
+
+            /**
+             * @param $resolutionId
+             * @param $resolution
+             * @return boolean
+             */
+            public function modifyResolution($resolutionId, $resolution)
+            {
+                $resolution = trim($resolution);
+
+                if (!checkInt($resolutionId) || !$resolution) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("update tt_issue_resolutions set resolution = :resolution where resolution_id = $resolutionId");
+                    $sth->execute([
+                        ":resolution" => $resolution,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @param $resolutionId
+             * @return boolean
+             */
+            public function deleteResolution($resolutionId)
+            {
+                if (!checkInt($resolutionId)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_issue_resolutions where resolution_id = $resolutionId");
+                    $this->db->exec("delete from tt_projects_resolutions where resolution_id = $resolutionId");
+                    // TODO: delete all derivatives
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @param $projectId
+             * @param $resolutions
+             * @return boolean
+             */
+            public function setProjectResolutions($projectId, $resolutions)
+            {
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_projects_resolutions (project_id, resolution_id) values (:project_id, :resolution_id)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_resolutions where project_id = $projectId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    foreach ($resolutions as $resolution) {
+                        if (!checkInt($resolution)) {
+                            return false;
+                        }
+                        if (!$sth->execute([
+                            ":project_id" => $projectId,
+                            ":resolution_id" => $resolution,
                         ])) {
                             return false;
                         }

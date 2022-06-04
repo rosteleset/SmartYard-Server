@@ -54,20 +54,15 @@
 
         class status extends api {
 
-            public static function GET($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
-            }
-
             public static function PUT($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $success = loadBackend("tt")->moodifyStatus($params["_id"], $params["statusDisplay"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET" => "tt",
                         "PUT" => "tt",
                     ];
                 } else {

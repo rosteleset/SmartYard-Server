@@ -38,17 +38,21 @@
         class tt extends api {
 
             public static function GET($params) {
-                $projects = loadBackend("tt")->getProjects();
-                $workflows = loadBackend("tt")->getWorkflows();
-                $workflowAliases = loadBackend("tt")->getWorkflowAliases();
+                $tt = loadBackend("tt");
 
-                $meta = [
-                    "projects" => $projects,
-                    "workflows" => $workflows,
-                    "workflowAliases" => $workflowAliases,
-                ];
+                if ($tt) {
+                    $meta = [
+                        "projects" => $tt->getProjects(),
+                        "workflows" => $tt->getWorkflows(),
+                        "workflowAliases" => $tt->getWorkflowAliases(),
+                        "statuses" => $tt->getStatuses(),
+                        "resolutions" => $tt->getResolutions(),
+                    ];
 
-                return api::ANSWER($meta, "meta");
+                    return api::ANSWER($meta, "meta");
+                } else {
+                    return api::ERROR("inaccessible");
+                }
             }
 
             public static function index() {

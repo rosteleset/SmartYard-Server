@@ -21,6 +21,18 @@
         always(window.modules["tt.settings"].renderProjects);
     },
 
+    doAddResolution: function (resolution) {
+        loadingStart();
+        POST("tt", "resolution", false, {
+            resolution: resolution,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.resolutionWasAdded"));
+        }).
+        always(window.modules["tt.settings"].renderResolutions);
+    },
+
     doModifyProject: function (projectId, acronym, project) {
         loadingStart();
         PUT("tt", "project", projectId, {
@@ -69,6 +81,52 @@
         always(window.modules["tt.settings"].renderProjects);
     },
 
+    doSetProjectResolutions: function (projectId, resolutions) {
+        loadingStart();
+        PUT("tt", "project", projectId, {
+            resolutions: resolutions,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        always(window.modules["tt.settings"].renderProjects);
+    },
+
+    doModifyStatus: function (statusId, display) {
+        loadingStart();
+        PUT("tt", "status", statusId, {
+            statusDisplay: display,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.statusWasChanged"));
+        }).
+        always(window.modules["tt.settings"].renderStatuses);
+    },
+
+    doModifyResolution: function (resolutionId, resolution) {
+        loadingStart();
+        PUT("tt", "resolution", resolutionId, {
+            resolution: resolution,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.resolutionWasChanged"));
+        }).
+        always(window.modules["tt.settings"].renderResolutions);
+    },
+
+    doDeleteResolution: function (resolutionId) {
+        loadingStart();
+        DELETE("tt", "resolution", resolutionId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.resolutionWasDeleted"));
+        }).
+        always(window.modules["tt.settings"].renderResolutions);
+    },
+
     /*
         UI functions
      */
@@ -76,6 +134,12 @@
     deleteProject: function (projectId) {
         mConfirm(i18n("tt.confirmProjectDelete", projectId.toString()), i18n("confirm"), `danger:${i18n("tt.projectDelete")}`, () => {
             window.modules["tt.settings"].doDeleteProject(projectId);
+        });
+    },
+
+    deleteResolution: function (resolutionId) {
+        mConfirm(i18n("tt.confirmResolutionDelete", resolutionId.toString()), i18n("confirm"), `danger:${i18n("tt.resolutionDelete")}`, () => {
+            window.modules["tt.settings"].doDeleteResolution(resolutionId);
         });
     },
 
@@ -178,6 +242,29 @@
         }).show();
     },
 
+    addResolution: function () {
+        cardForm({
+            title: i18n("tt.addResolution"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "resolution",
+                    type: "text",
+                    title: i18n("tt.resolution"),
+                    placeholder: i18n("tt.resolution"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doAddResolution(result.resolution);
+            },
+        }).show();
+    },
+
     setWorkflowAlias: function (workflow) {
         let w = '';
 
@@ -218,6 +305,109 @@
         }).show();
     },
 
+    modifyStatus: function (statusId) {
+        let display = '';
+        let status = '';
+
+        for (let i in window.modules["tt"].meta.statuses) {
+            if (window.modules["tt"].meta.statuses[i].statusId == statusId) {
+                status = window.modules["tt"].meta.statuses[i].status;
+                display = window.modules["tt"].meta.statuses[i].statusDisplay;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.workflowAlias"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "statusId",
+                    type: "text",
+                    title: i18n("tt.statusId"),
+                    value: statusId,
+                    readonly: true,
+                },
+                {
+                    id: "status",
+                    type: "text",
+                    title: i18n("tt.status"),
+                    value: status,
+                    readonly: true,
+                },
+                {
+                    id: "display",
+                    type: "text",
+                    title: i18n("tt.statusDisplay"),
+                    placeholder: i18n("tt.statusDisplay"),
+                    value: display,
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doModifyStatus(statusId, result.display);
+            },
+        }).show();
+    },
+
+    modifyResolution: function (resolutionId) {
+        let resolution = '';
+
+        for (let i in window.modules["tt"].meta.resolutions) {
+            if (window.modules["tt"].meta.resolutions[i].resolutionId == resolutionId) {
+                resolution = window.modules["tt"].meta.resolutions[i].resolution;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.workflowAlias"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "resolutionId",
+                    type: "text",
+                    title: i18n("tt.resolutionId"),
+                    value: resolutionId,
+                    readonly: true,
+                },
+                {
+                    id: "resolution",
+                    type: "text",
+                    title: i18n("tt.resolution"),
+                    value: resolution,
+                },
+                {
+                    id: "delete",
+                    type: "select",
+                    value: "",
+                    title: i18n("tt.resolutionDelete"),
+                    options: [
+                        {
+                            value: "",
+                            text: "",
+                        },
+                        {
+                            value: "yes",
+                            text: i18n("yes"),
+                        },
+                    ]
+                },
+            ],
+            callback: function (result) {
+                if (result.delete === "yes") {
+                    window.modules["tt.settings"].deleteResolution(resolutionId);
+                } else {
+                    window.modules["tt.settings"].doModifyResolution(resolutionId, result.resolution);
+                }
+            },
+        }).show();
+    },
+
     projectWorkflows: function (projectId) {
         loadingStart();
         GET("tt", "project", projectId, true).
@@ -236,7 +426,7 @@
             for (let i in w) {
                 workflows.push({
                     id: i,
-                    text: "[" + i + "] " + w[i],
+                    text: "<span class='text-monospace'>[" + i + "]</span> " + w[i],
                 });
             }
 
@@ -270,7 +460,36 @@
         loadingStart();
         GET("tt", "project", projectId, true).
         done(project => {
-            console.log(project);
+            let resolutions = [];
+            for (let i in window.modules["tt"].meta.resolutions) {
+                resolutions.push({
+                    id: window.modules["tt"].meta.resolutions[i].resolutionId,
+                    text: window.modules["tt"].meta.resolutions[i].resolution,
+                });
+            }
+
+            console.log(resolutions, project.project.resolutions);
+
+            cardForm({
+                title: i18n("tt.projectResolutions"),
+                footer: true,
+                borderless: true,
+                noHover: true,
+                topApply: true,
+                singleColumn: true,
+                fields: [
+                    {
+                        id: "resolutions",
+                        type: "multiselect",
+                        title: i18n("tt.workflows"),
+                        options: resolutions,
+                        value: project.project.resolutions,
+                    },
+                ],
+                callback: function (result) {
+                    window.modules["tt.settings"].doSetProjectResolutions(projectId, result.resolutions);
+                },
+            }).show();
             loadingDone();
         }).
         fail(FAIL);
@@ -438,7 +657,111 @@
                                 },
                                 {
                                     data: w[window.modules["tt"].meta.workflows[i]]?w[window.modules["tt"].meta.workflows[i]]:window.modules["tt"].meta.workflows[i],
-                                    nowrap: true,
+                                },
+                            ],
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderStatuses: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    caption: i18n("tt.statuses"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.statusId"),
+                    },
+                    {
+                        title: i18n("tt.status"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("tt.statusDisplay"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i = 0; i < window.modules["tt"].meta.statuses.length; i++) {
+                        rows.push({
+                            uid: window.modules["tt"].meta.statuses[i].statusId,
+                            cols: [
+                                {
+                                    data: window.modules["tt"].meta.statuses[i].statusId,
+                                    click: window.modules["tt.settings"].modifyStatus,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.statuses[i].status,
+                                    click: window.modules["tt.settings"].modifyStatus,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.statuses[i].statusDisplay,
+                                },
+                            ],
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderResolutions: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("tt.addResolution"),
+                        click: window.modules["tt.settings"].addResolution,
+                    },
+                    caption: i18n("tt.resolutions"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.resolutionId"),
+                    },
+                    {
+                        title: i18n("tt.resolution"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i = 0; i < window.modules["tt"].meta.resolutions.length; i++) {
+                        rows.push({
+                            uid: window.modules["tt"].meta.resolutions[i].resolutionId,
+                            cols: [
+                                {
+                                    data: window.modules["tt"].meta.resolutions[i].resolutionId,
+                                    click: window.modules["tt.settings"].modifyResolution,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.resolutions[i].resolution,
+                                    click: window.modules["tt.settings"].modifyResolution,
                                 },
                             ],
                         });
@@ -495,6 +818,14 @@
 
             case "workflows":
                 window.modules["tt.settings"].renderAllWorkflows();
+                break;
+
+            case "statuses":
+                window.modules["tt.settings"].renderStatuses();
+                break;
+
+            case "resolutions":
+                window.modules["tt.settings"].renderResolutions();
                 break;
         }
     },

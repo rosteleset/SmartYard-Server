@@ -150,5 +150,49 @@
              */
 
             abstract public function setProjectWorkflows($projectId, $workflows);
+
+            /**
+             * @return false|array
+             */
+            abstract public function getStatuses();
+
+            /**
+             * @param $statusId
+             * @param $display
+             * @return boolean
+             */
+            abstract public function moodifyStatus($statusId, $display);
+
+            /**
+             * @return false|array
+             */
+            abstract public function getResolutions();
+
+            /**
+             * @param $resolution
+             * @return false|integer
+             */
+            abstract public function addResolution($resolution);
+
+            /**
+             * @param $resolutionId
+             * @param $resolution
+             * @return boolean
+             */
+            abstract public function modifyResolution($resolutionId, $resolution);
+
+            /**
+             * @param $resolutionId
+             * @return boolean
+             */
+            abstract public function deleteResolution($resolutionId);
+
+            /**
+             * @param $projectId
+             * @param $resolutions
+             * @return boolean
+             */
+
+            abstract public function setProjectResolutions($projectId, $resolutions);
         }
     }

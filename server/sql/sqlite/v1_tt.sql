@@ -18,7 +18,6 @@ CREATE TABLE tt_workflows_aliases
 -- projects <-> workflows
 CREATE TABLE tt_projects_workflows
 (
-    project_workflow_id integer not null primary key autoincrement,
     project_id integer,
     workflow text
 );
@@ -32,15 +31,27 @@ CREATE TABLE tt_issue_statuses                                                  
     status_display text not null                                                                                        -- human readable value
 );
 CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(status);
+INSERT INTO tt_issue_statuses (status, status_display) values ('opened', '');
+INSERT INTO tt_issue_statuses (status, status_display) values ('closed', '');
 
--- issue resolutions
+-- issues resolutions
 CREATE TABLE tt_issue_resolutions
 (
     resolution_id integer not null primary key autoincrement,
-    project_id integer not null,
     resolution text
 );
-CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(project_id, resolution);
+CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(resolution);
+INSERT INTO tt_issue_resolutions (resolution) values ('fixed');
+INSERT INTO tt_issue_resolutions (resolution) values ('can''t fix');
+INSERT INTO tt_issue_resolutions (resolution) values ('duplicate');
+
+-- projects <-> resolutions
+CREATE TABLE tt_projects_resolutions
+(
+    project_id integer,
+    resolution_id integer
+);
+CREATE UNIQUE INDEX tt_projects_resolutions_uniq on tt_projects_resolutions(project_id, resolution_id);
 
 -- issues
 CREATE TABLE tt_issues

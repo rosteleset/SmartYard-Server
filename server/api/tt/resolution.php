@@ -1,29 +1,6 @@
 <?php
 
     /**
-     * @api {get} /tt/resolution/:id get resolution
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName issue
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiSuccess {Object} issue issue
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "issue": {
-     *      }
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X GET http://127.0.0.1:8000/server/api.php/tt/resolution/1
-     */
-
-    /**
      * @api {post} /tt/issue create resolution
      *
      * @apiVersion 1.0.0
@@ -104,30 +81,27 @@
 
         class resolution extends api {
 
-            public static function GET($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
-            }
-
             public static function POST($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $resolutionId = loadBackend("tt")->addResolution($params["resolution"]);
+
+                return api::ANSWER($resolutionId, ($resolutionId !== false)?"$resolutionId":"notAcceptable");
             }
 
             public static function PUT($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $success = loadBackend("tt")->modifyResolution($params["_id"], $params["resolution"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $success = loadBackend("tt")->deleteResolution($params["_id"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET" => "tt",
                         "POST" => "tt",
                         "PUT" => "tt",
                         "DELETE" => "tt",

@@ -117,14 +117,19 @@
             }
 
             public static function PUT($params) {
-                $success = false;
+                $success = true;
+                $tt = loadBackend("tt");
 
                 if (@$params["acronym"]) {
-                    $success = loadBackend("tt")->modifyProject($params["_id"], $params["acronym"]);
+                    $success = $success && $tt->modifyProject($params["_id"], $params["acronym"]);
                 }
 
                 if (@$params["workflows"]) {
-                    $success = loadBackend("tt")->setProjectWorkflows($params["_id"], $params["workflows"]);
+                    $success = $success && $tt->setProjectWorkflows($params["_id"], $params["workflows"]);
+                }
+
+                if (@$params["resolutions"]) {
+                    $success = $success && $tt->setProjectResolutions($params["_id"], $params["resolutions"]);
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
