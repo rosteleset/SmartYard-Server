@@ -695,7 +695,6 @@
     },
 
     addProjectUser: function (projectId, users, roles) {
-        console.log(projectId);
         let u = [];
         for (let i in users) {
             u.push({
@@ -735,6 +734,46 @@
         }).show();
     },
 
+    addProjectGroup: function (projectId, groups, roles) {
+        let g = [];
+        for (let i in groups) {
+            g.push({
+                id: i,
+                text: groups[i],
+            })
+        }
+        let r = [];
+        for (let i in roles) {
+            r.push({
+                id: i,
+                text: roles[i],
+            })
+        }
+        cardForm({
+            title: i18n("tt.addProjectGroup"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "gid",
+                    type: "select2",
+                    title: i18n("tt.group"),
+                    options: g,
+                },
+                {
+                    id: "roleId",
+                    type: "select2",
+                    title: i18n("tt.role"),
+                    options: r,
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doAddProjectGroup(projectId, result.gid, result.roleId);
+            },
+        }).show();
+    },
+
     projectDeleteUser: function (projectRoleId, projectId) {
         mConfirm(i18n("users.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
             window.modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId, true);
@@ -743,7 +782,7 @@
 
     projectDeleteGroup: function (projectRoleId, projectId) {
         mConfirm(i18n("groups.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
-            window.modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId, true);
+            window.modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId);
         });
     },
 
@@ -850,14 +889,105 @@
     },
 
     projectGroups: function (projectId) {
-        let project = false;
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                project = window.modules["tt"].meta.projects[i];
-                break;
-            }
-        }
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+            GET("accounts", "groups").
+            done(response => {
+                let project = false;
+                for (let i in window.modules["tt"].meta.projects) {
+                    if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                        project = window.modules["tt"].meta.projects[i];
+                        break;
+                    }
+                }
 
+                let groups = {};
+                for (let i in response.groups) {
+                    if (response.groups[i].gid) {
+                        groups[response.groups[i].gid] = "[" + response.groups[i].acronym + "] " + response.groups[i].name;
+                    }
+                }
+
+                let roles = {};
+                for (let i in window.modules["tt"].meta.roles) {
+                    roles[window.modules["tt"].meta.roles[i].roleId] = "[" + window.modules["tt"].meta.roles[i].level + "] " + i18n("tt." + window.modules["tt"].meta.roles[i].name);
+                }
+
+                cardTable({
+                    target: "#altForm",
+                    title: {
+                        caption: i18n("tt.projectGroups") + " " + i18n("tt.projectId") + projectId,
+                        button: {
+                            caption: i18n("tt.addProjectGroup"),
+                            click: () => {
+                                window.modules["tt.settings"].addProjectGroup(projectId, groups, roles);
+                            },
+                        },
+                        altButton: {
+                            caption: i18n("close"),
+                            click: () => {
+                                $("#altForm").hide();
+                            },
+                        },
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.projectRoleId"),
+                        },
+                        {
+                            title: i18n("tt.projectGroup"),
+                            nowrap: true,
+                            fullWidth: true,
+                        },
+                        {
+                            title: i18n("tt.projectRole"),
+                            nowrap: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in project.groups) {
+                            rows.push({
+                                uid: project.groups[i].projectRoleId,
+                                cols: [
+                                    {
+                                        data: project.groups[i].projectRoleId,
+                                    },
+                                    {
+                                        data: groups[project.groups[i].gid],
+                                    },
+                                    {
+                                        data: roles[project.groups[i].roleId],
+                                        nowrap: true,
+                                    },
+                                ],
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("groups.delete"),
+                                            text: "text-danger",
+                                            click: projectRoleId => {
+                                                window.modules["tt.settings"].projectDeleteGroup(projectRoleId, projectId);
+                                            },
+                                        },
+                                    ],
+                                },
+                            });
+                        }
+
+                        return rows;
+                    },
+                }).show();
+            }).
+            fail(FAIL).
+            always(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
     },
 
     renderProjects: function () {

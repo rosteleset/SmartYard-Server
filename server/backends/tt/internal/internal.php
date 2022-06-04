@@ -626,7 +626,7 @@
              */
             public function addGroupRole($projectId, $gid, $roleId)
             {
-                if (!checkInt($projectId) || !checkInt($uid) || !checkInt($roleId)) {
+                if (!checkInt($projectId) || !checkInt($gid) || !checkInt($roleId)) {
                     return false;
                 }
 
