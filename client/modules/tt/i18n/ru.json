@@ -30,16 +30,8 @@
     "version": "Версия",
     "users": "Пользователи",
     "groups": "Группы",
-    "participant-junior": "Младший участник",
-    "participant-middle": "Участник",
-    "participant-senior": "Старий участник",
-    "employee-junior": "Младший сотрудник",
-    "employee-middle": "Сотрудник",
-    "employee-senior": "Старший сотрудник",
-    "manager-junior": "Младший менеджер",
-    "manager-middle": "Менеджер",
-    "manager-senior": "Старший менеджер",
     "workflowAlias": "Описание",
     "projectForkflows": "Рабочие процессы проекта",
-    "projectRoleId": "#"
+    "projectRoleId": "#",
+    "roles": "Роли"
 }

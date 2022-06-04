@@ -13,11 +13,11 @@ function cardForm(params) {
         h += `<div class="card-header">`;
         h += `<h3 class="card-title">`;
         if (params.topApply) {
-            h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="modalFormApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+            h += `<button class="btn btn-primary btn-xs btn-tool-rbt-left mr-2 modalFormOk" id="modalFormApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> `;
         }
         h += params.title;
         h += `</h3>`;
-        h += `<button type="button" class="btn btn-danger btn-xs float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+        h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
         h += `</div>`;
     }
     h += `<div class="card-body table-responsive p-0">`;

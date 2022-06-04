@@ -11,7 +11,7 @@ function cardTable(params) {
             if (params.title.button) {
                 titleButton = md5(guid());
                 let icon = params.title.button.icon?params.title.button.icon:"fas fa-plus-circle";
-                h += `<button id="${titleButton}" type="button" class="btn btn-primary mr-2 btn-xs" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
+                h += `<button id="${titleButton}" type="button" class="btn btn-primary btn-xs btn-tool-rbt-left mr-2" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
             }
             if (params.title.caption) {
                 h += " " + params.title.caption;
@@ -21,7 +21,7 @@ function cardTable(params) {
         if (params.title.altButton) {
             altButton = md5(guid());
             let icon = params.title.altButton.icon?params.title.altButton.icon:"far fa-fw fa-times-circle";
-            h += `<button id="${altButton}" type="button" class="ml-2 btn btn-secondary btn-xs float-right" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
+            h += `<button id="${altButton}" type="button" class="btn btn-info btn-xs btn-tool-rbt-right ml-2 float-right" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
         }
         if (params.title.filter) {
             filterInput = md5(guid());

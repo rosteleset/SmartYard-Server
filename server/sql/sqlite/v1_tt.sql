@@ -214,18 +214,19 @@ CREATE TABLE tt_roles
 (
     role_id integer not null primary key autoincrement,
     name text,
+    name_display text,
     level integer
 );
 CREATE INDEX tt_roles_level on tt_roles(level);
-INSERT INTO tt_roles (level, name) values (10, 'participant-junior');                                                 -- can view only
-INSERT INTO tt_roles (level, name) values (20, 'participant-middle');                                                 -- can comment, can edit and delete own comments, can attach files and delete own files
-INSERT INTO tt_roles (level, name) values (30, 'participant-senior');                                                 -- can create issues
-INSERT INTO tt_roles (level, name) values (40, 'employee-junior');                                                    -- can change status (by workflow, without final)
-INSERT INTO tt_roles (level, name) values (50, 'employee-middle');                                                    -- can change status (by workflow)
-INSERT INTO tt_roles (level, name) values (60, 'employee-senior');                                                    -- can edit issues
-INSERT INTO tt_roles (level, name) values (70, 'manager-junior');                                                     -- can edit all comments and delete comments, can delete files, can create tag
-INSERT INTO tt_roles (level, name) values (80, 'manager-middle');                                                     -- can delete issues
-INSERT INTO tt_roles (level, name) values (90, 'manager-senior');                                                     -- project owner
+INSERT INTO tt_roles (level, name) values (10, 'participant.junior');                                                   -- can view only
+INSERT INTO tt_roles (level, name) values (20, 'participant.middle');                                                   -- can comment, can edit and delete own comments, can attach files and delete own files
+INSERT INTO tt_roles (level, name) values (30, 'participant.senior');                                                   -- can create issues
+INSERT INTO tt_roles (level, name) values (40, 'employee.junior');                                                      -- can change status (by workflow, without final)
+INSERT INTO tt_roles (level, name) values (50, 'employee.middle');                                                      -- can change status (by workflow)
+INSERT INTO tt_roles (level, name) values (60, 'employee.senior');                                                      -- can edit issues
+INSERT INTO tt_roles (level, name) values (70, 'manager.junior');                                                       -- can edit all comments and delete comments, can delete files, can create tag
+INSERT INTO tt_roles (level, name) values (80, 'manager.middle');                                                       -- can delete issues
+INSERT INTO tt_roles (level, name) values (90, 'manager.senior');                                                       -- project owner
 
 -- project rights
 CREATE TABLE tt_projects_roles

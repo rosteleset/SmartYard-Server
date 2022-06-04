@@ -1319,6 +1319,7 @@
             "workflows",
             "statuses",
             "resolutions",
+            "roles",
             "customFields"
         ];
 

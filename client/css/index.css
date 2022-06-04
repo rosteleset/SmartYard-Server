@@ -85,3 +85,13 @@ select {
   margin-bottom: 0;
   box-shadow: none;
 }
+
+.btn-tool-rbt-left {
+  font-size: .875rem!important;
+  margin: -0.75rem 0;
+}
+
+.btn-tool-rbt-right {
+  font-size: .875rem!important;
+  margin: -0.15rem 0 -0.75rem;
+}

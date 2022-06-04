@@ -164,10 +164,10 @@
                 h = `<div class="card mt-2 mb-0">`;
                 h += `<div class="card-header">`;
                 h += `<h3 class="card-title">`;
-                h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="groupFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+                h += `<button class="btn btn-success btn-xs btn-tool-rbt-left mr-2 modalFormOk" id="groupFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
                 h += i18n("groups.users") + " " + i18n("groups.gid") + gid;
                 h += `</h3>`;
-                h += `<button type="button" class="btn btn-danger btn-xs float-right" id="groupFormCancel" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+                h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right" id="groupFormCancel" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
                 h += `</div>`;
                 h += `<div class="card-body pb-0" style="overflow: auto;">`;
                 h += `<div class="form-group">`;
