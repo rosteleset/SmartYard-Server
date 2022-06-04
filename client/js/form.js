@@ -46,6 +46,7 @@ function cardForm(params) {
         } else {
             h += `<tr>`;
         }
+        params.fields[i].type = params.fields[i].type?params.fields[i].type:"text";
         switch (params.fields[i].type) {
             case "select":
                 if (!params.singleColumn) {
@@ -128,21 +129,34 @@ function cardForm(params) {
                 h += `</td>`;
                 break;
 
+            case "area":
+                if (!params.singleColumn) {
+                    h += `<td class="tdform-top">${params.fields[i].title}</td>`;
+                }
+                h += `<td class="tdform-right">`;
+                h += `<textarea id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `></textarea>`;
+                h += `</td>`;
+                break;
+
+            case "text":
             case "email":
             case "tel":
             case "date":
             case "time":
             case "password":
-            default:
                 if (!params.singleColumn) {
                     h += `<td class="tdform">${params.fields[i].title}</td>`;
                 }
-                let type = params.fields[i].type?params.fields[i].type:"text";
                 h += `<td class="tdform-right">`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
-                h += `<input id="${_prefix}${params.fields[i].id}" type="${type}" class="form-control modalFormField" autocomplete="off" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<input id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" autocomplete="off" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;

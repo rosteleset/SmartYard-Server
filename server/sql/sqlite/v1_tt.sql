@@ -65,10 +65,7 @@ CREATE TABLE tt_issues
     status_id integer,                                                                                                  -- status
     resolution_id integer,                                                                                              -- resolution
     created text not null,                                                                                              -- "YYYY-MM-DD HH:MM:SS.SSS"
-    updated text,                                                                                                       -- "YYYY-MM-DD HH:MM:SS.SSS"
-    closed text,                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
-    external_id integer,                                                                                                -- link to external id
-    external_id_type text                                                                                               -- external object description
+    updated text                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
 );
 CREATE INDEX tt_issues_project_id on tt_issues(project_id);
 CREATE INDEX tt_issues_workflow on tt_issues(workflow);
@@ -175,7 +172,10 @@ CREATE TABLE tt_issue_custom_fields
     type text not null,
     workflow integer,                                                                                                   -- managed by workflow, only field_display can be edited
     field text not null,
-    field_display text not null
+    field_display text not null,
+    field_description text,
+    regex text,
+    link text
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(field);
 

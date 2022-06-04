@@ -486,24 +486,36 @@
              * @param $type
              * @param $field
              * @param $fieldDisplay
+             * @param $fieldDescription
+             * @param $regex
+             * @param $link
              * @return false|integer
              */
-            public function addCustomField($type, $field, $fieldDisplay)
+            public function addCustomField($type, $field, $fieldDisplay, $fieldDescription, $regex, $link)
             {
                 $type = trim($type);
                 $field = trim($field);
                 $fieldDisplay = trim($fieldDisplay);
+                $fieldDescription = trim($fieldDescription);
+                $regex = trim($regex);
+                $link = trim($link);
 
                 if (!$type || !$field || !$fieldDisplay) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into tt_issue_custom_fields (type, field, field_display, workflow) values (:type, :field, :field_display, 0)");
+                    $sth = $this->db->prepare("
+                        insert into 
+                            tt_issue_custom_fields (type, field, field_display, workflow, field_description, regex, link)
+                        values (:type, :field, :field_display, 0, :field_description, :regex, :link)");
                     if (!$sth->execute([
                         ":type" => $type,
                         ":field" => $field,
                         ":field_display" => $fieldDisplay,
+                        ":field_description" => $fieldDescription,
+                        ":regex" => $regex,
+                        ":link" => $link,
                     ])) {
                         return false;
                     }

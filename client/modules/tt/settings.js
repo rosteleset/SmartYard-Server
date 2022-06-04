@@ -33,12 +33,15 @@
         always(window.modules["tt.settings"].renderResolutions);
     },
 
-    doAddCustomField: function (type, field, fieldDisplay) {
+    doAddCustomField: function (type, field, fieldDisplay, fieldDescription, regex, link) {
         loadingStart();
         POST("tt", "customField", false, {
             type: type,
             field: field,
-            fieldDisplay: fieldDisplay
+            fieldDisplay: fieldDisplay,
+            fieldDescription: fieldDescription,
+            regex: regex,
+            link: link,
         }).
         fail(FAIL).
         done(() => {
@@ -320,6 +323,12 @@
                     }
                 },
                 {
+                    id: "fieldDescription",
+                    type: "area",
+                    title: i18n("tt.customFieldDescription"),
+                    placeholder: i18n("tt.customFieldDescription"),
+                },
+                {
                     id: "type",
                     type: "select2",
                     title: i18n("tt.customFieldType"),
@@ -344,9 +353,21 @@
                         },
                     ]
                 },
+                {
+                    id: "regex",
+                    type: "text",
+                    title: i18n("tt.customFieldRegex"),
+                    placeholder: i18n("tt.customFieldRegex"),
+                },
+                {
+                    id: "link",
+                    type: "text",
+                    title: i18n("tt.customFieldLink"),
+                    placeholder: i18n("tt.customFieldLink"),
+                },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddCustomField(result.type, result.field, result.fieldDisplay);
+                window.modules["tt.settings"].doAddCustomField(result.type, result.field, result.fieldDisplay, result.fieldDescription, result.regex, result.link);
             },
         }).show();
     },

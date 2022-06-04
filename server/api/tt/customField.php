@@ -105,7 +105,7 @@
         class customField extends api {
 
             public static function POST($params) {
-                $customFieldId = loadBackend("tt")->addCustomField($params["type"], $params["field"], $params["fieldDisplay"]);
+                $customFieldId = loadBackend("tt")->addCustomField($params["type"], $params["field"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["link"]);
 
                 return api::ANSWER($customFieldId, ($customFieldId !== false)?"customFieldId":"notAcceptable");
             }

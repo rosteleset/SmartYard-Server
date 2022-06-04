@@ -195,9 +195,12 @@
              * @param $type
              * @param $field
              * @param $fieldDisplay
+             * @param $fieldDescription
+             * @param $regex
+             * @param $link
              * @return false|integer
              */
-            abstract public function addCustomField($type, $field, $fieldDisplay);
+            abstract public function addCustomField($type, $field, $fieldDisplay, $fieldDescription, $regex, $link);
 
             /**
              * @param $projectId
