@@ -2,20 +2,26 @@ function cardTable(params) {
     let h = `<div class="card mt-2">`;
     let filterInput = '';
     let titleButton = '';
+    let altButton = '';
 
     if (params.title) {
         h += `<div class="card-header">`;
-        if (params.title.button || params.title.caption) {
+        if (params.title.button || params.title.caption || params.title.altButton) {
             h += `<h3 class="card-title">`;
             if (params.title.button) {
                 titleButton = md5(guid());
                 let icon = params.title.button.icon?params.title.button.icon:"fas fa-plus-circle";
-                h += `<button id="${titleButton}" class="btn btn-primary mr-2 btn-xs" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
+                h += `<button id="${titleButton}" type="button" class="btn btn-primary mr-2 btn-xs" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
             }
             if (params.title.caption) {
                 h += " " + params.title.caption;
             }
             h += `</h3>`;
+        }
+        if (params.title.altButton) {
+            altButton = md5(guid());
+            let icon = params.title.altButton.icon?params.title.altButton.icon:"far fa-fw fa-times-circle";
+            h += `<button id="${altButton}" type="button" class="ml-2 btn btn-secondary btn-xs float-right" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
         }
         if (params.title.filter) {
             filterInput = md5(guid());
@@ -243,6 +249,10 @@ function cardTable(params) {
 
         if (titleButton && params.title.button && typeof params.title.button.click === "function") {
             $("#" + titleButton).off("click").on("click", params.title.button.click);
+        }
+
+        if (altButton && params.title.altButton && typeof params.title.altButton.click === "function") {
+            $("#" + altButton).off("click").on("click", params.title.altButton.click);
         }
 
         $(".menuItem-" + tableClass).off("click").on("click", function () {

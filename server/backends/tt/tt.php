@@ -145,6 +145,7 @@
             /**
              * @return false|array
              */
+
             abstract public function getStatuses();
 
             /**
@@ -152,17 +153,20 @@
              * @param $display
              * @return boolean
              */
+
             abstract public function moodifyStatus($statusId, $display);
 
             /**
              * @return false|array
              */
+
             abstract public function getResolutions();
 
             /**
              * @param $resolution
              * @return false|integer
              */
+
             abstract public function addResolution($resolution);
 
             /**
@@ -176,6 +180,7 @@
              * @param $resolutionId
              * @return boolean
              */
+
             abstract public function deleteResolution($resolutionId);
 
             /**
@@ -189,6 +194,7 @@
             /**
              * @return array
              */
+
             abstract public function getCustomFields();
 
             /**
@@ -200,6 +206,7 @@
              * @param $link
              * @return false|integer
              */
+
             abstract public function addCustomField($type, $field, $fieldDisplay, $fieldDescription, $regex, $link);
 
             /**
@@ -207,6 +214,37 @@
              * @param $customFields
              * @return boolean
              */
+
             abstract public function setProjectCustomFields($projectId, $customFields);
+
+            /**
+             * @param $projectId
+             * @param $uid
+             * @param $roleId
+             * @return false|integer
+             */
+
+            abstract public function addUserRole($projectId, $uid, $roleId);
+
+            /**
+             * @param $projectId
+             * @param $gid
+             * @param $roleId
+             * @return false|integer
+             */
+
+            abstract public function addGroupRole($projectId, $gid, $roleId);
+
+            /**
+             * @return false|array
+             */
+
+            abstract public function getRoles();
+
+            /**
+             * @param $projectRoleId
+             * @return boolean
+             */
+            abstract public function deleteRole($projectRoleId);
         }
     }

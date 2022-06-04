@@ -48,6 +48,7 @@
                         "statuses" => $tt->getStatuses(),
                         "resolutions" => $tt->getResolutions(),
                         "customFields" => $tt->getCustomFields(),
+                        "roles" => $tt->getRoles(),
                     ];
 
                     return api::ANSWER($meta, "meta");

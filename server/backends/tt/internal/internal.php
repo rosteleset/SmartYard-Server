@@ -61,6 +61,26 @@
                             $f[] = $customField["custom_field_id"];
                         }
 
+                        $users = $this->db->query("select project_role_id, uid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and uid is not null");
+                        $u = [];
+                        foreach ($users as $user) {
+                            $u[] = [
+                                "projectRoleId" => $user["project_role_id"],
+                                "uid" => $user["uid"],
+                                "roleId" => $user["role_id"],
+                            ];
+                        }
+
+                        $groups = $this->db->query("select project_role_id, gid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and gid is not null");
+                        $g = [];
+                        foreach ($groups as $group) {
+                            $g[] = [
+                                "projectRoleId" => $group["project_role_id"],
+                                "gid" => $group["gid"],
+                                "roleId" => $group["role_id"],
+                            ];
+                        }
+
                         $_projects[] = [
                             "projectId" => $project["project_id"],
                             "acronym" => $project["acronym"],
@@ -68,6 +88,8 @@
                             "workflows" => $w,
                             "resolutions" => $r,
                             "customFields" => $f,
+                            "users" => $u,
+                            "groups" => $g,
                         ];
                     }
 
@@ -572,6 +594,93 @@
                 }
 
                 return true;
+            }
+
+            /**
+             * @param $projectId
+             * @param $uid
+             * @param $roleId
+             * @return false|integer
+             */
+            public function addUserRole($projectId, $uid, $roleId)
+            {
+                if (!checkInt($projectId) || !checkInt($uid) || !checkInt($roleId)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("insert into tt_projects_roles (project_id, uid, role_id) values ($projectId, $uid, $roleId)");
+                    return $this->db->lastInsertId();
+                } catch (\Exception $e) {
+                    // uniq violation
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $projectId
+             * @param $gid
+             * @param $roleId
+             * @return false|integer
+             */
+            public function addGroupRole($projectId, $gid, $roleId)
+            {
+                if (!checkInt($projectId) || !checkInt($uid) || !checkInt($roleId)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("insert into tt_projects_roles (project_id, gid, role_id) values ($projectId, $gid, $roleId)");
+                    return $this->db->lastInsertId();
+                } catch (\Exception $e) {
+                    // uniq violation
+                }
+
+                return false;
+            }
+
+            /**
+             * @return false|array
+             */
+            public function getRoles()
+            {
+                try {
+                    $roles = $this->db->query("select role_id, name, level from tt_roles order by level", \PDO::FETCH_ASSOC)->fetchAll();
+                    $_roles = [];
+
+                    foreach ($roles as $role) {
+                        $_roles[] = [
+                            "roleId" => $role["role_id"],
+                            "name" => $role["name"],
+                            "level" => $role["level"],
+                        ];
+                    }
+
+                    return $_roles;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * @param $projectRoleId
+             * @return boolean
+             */
+            public function deleteRole($projectRoleId)
+            {
+                if (!checkInt($projectRoleId)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_roles where project_role_id = $projectRoleId");
+
+                    return true;
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
             }
         }
     }

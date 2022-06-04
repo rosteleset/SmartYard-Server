@@ -156,6 +156,57 @@
         always(window.modules["tt.settings"].renderResolutions);
     },
 
+    doAddProjectUser: function (projectId, uid, roleId) {
+        loadingStart();
+        POST("tt", "role", false, {
+            projectId: projectId,
+            uid: uid,
+            roleId: roleId,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            window.modules["tt.settings"].projectUsers(projectId);
+        });
+    },
+
+    doAddProjectGroup: function (projectId, gid, roleId) {
+        loadingStart();
+        POST("tt", "role", false, {
+            projectId: projectId,
+            gid: gid,
+            roleId: roleId,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            window.modules["tt.settings"].projectGroups(projectId);
+        });
+    },
+
+    doProjectDeleteRole: function (projectRoleId, projectId, user) {
+        loadingStart();
+        DELETE("tt", "role", projectRoleId).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            if (user) {
+                window.modules["tt.settings"].projectUsers(projectId);
+            } else {
+                window.modules["tt.settings"].projectGroups(projectId);
+            }
+        });
+    },
+
     /*
         UI functions
      */
@@ -643,15 +694,159 @@
         }).show();
     },
 
-    projectUsers: function (projectId) {
-        let project = false;
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                project = window.modules["tt"].meta.projects[i];
-                break;
-            }
+    addProjectUser: function (projectId, users, roles) {
+        console.log(projectId);
+        let u = [];
+        for (let i in users) {
+            u.push({
+                id: i,
+                text: users[i],
+            })
         }
+        let r = [];
+        for (let i in roles) {
+            r.push({
+                id: i,
+                text: roles[i],
+            })
+        }
+        cardForm({
+            title: i18n("tt.addProjectUser"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "uid",
+                    type: "select2",
+                    title: i18n("tt.user"),
+                    options: u,
+                },
+                {
+                    id: "roleId",
+                    type: "select2",
+                    title: i18n("tt.role"),
+                    options: r,
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doAddProjectUser(projectId, result.uid, result.roleId);
+            },
+        }).show();
+    },
 
+    projectDeleteUser: function (projectRoleId, projectId) {
+        mConfirm(i18n("users.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
+            window.modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId, true);
+        });
+    },
+
+    projectDeleteGroup: function (projectRoleId, projectId) {
+        mConfirm(i18n("groups.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
+            window.modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId, true);
+        });
+    },
+
+    projectUsers: function (projectId) {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+            GET("accounts", "users").
+            done(response => {
+                let project = false;
+                for (let i in window.modules["tt"].meta.projects) {
+                    if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                        project = window.modules["tt"].meta.projects[i];
+                        break;
+                    }
+                }
+
+                let users = {};
+                for (let i in response.users) {
+                    if (response.users[i].uid) {
+                        users[response.users[i].uid] = "[" + response.users[i].login + "] " + response.users[i].realName;
+                    }
+                }
+
+                let roles = {};
+                for (let i in window.modules["tt"].meta.roles) {
+                    roles[window.modules["tt"].meta.roles[i].roleId] = "[" + window.modules["tt"].meta.roles[i].level + "] " + i18n("tt." + window.modules["tt"].meta.roles[i].name);
+                }
+
+                cardTable({
+                    target: "#altForm",
+                    title: {
+                        caption: i18n("tt.projectUsers") + " " + i18n("tt.projectId") + projectId,
+                        button: {
+                            caption: i18n("tt.addProjectUser"),
+                            click: () => {
+                                window.modules["tt.settings"].addProjectUser(projectId, users, roles);
+                            },
+                        },
+                        altButton: {
+                            caption: i18n("close"),
+                            click: () => {
+                                $("#altForm").hide();
+                            },
+                        },
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.projectRoleId"),
+                        },
+                        {
+                            title: i18n("tt.projectUser"),
+                            nowrap: true,
+                            fullWidth: true,
+                        },
+                        {
+                            title: i18n("tt.projectRole"),
+                            nowrap: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in project.users) {
+                            rows.push({
+                                uid: project.users[i].projectRoleId,
+                                cols: [
+                                    {
+                                        data: project.users[i].projectRoleId,
+                                    },
+                                    {
+                                        data: users[project.users[i].uid],
+                                    },
+                                    {
+                                        data: roles[project.users[i].roleId],
+                                        nowrap: true,
+                                    },
+                                ],
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("users.delete"),
+                                            text: "text-danger",
+                                            click: projectRoleId => {
+                                                window.modules["tt.settings"].projectDeleteUser(projectRoleId, projectId);
+                                            },
+                                        },
+                                    ],
+                                },
+                            });
+                        }
+
+                        return rows;
+                    },
+                }).show();
+            }).
+            fail(FAIL).
+            always(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
     },
 
     projectGroups: function (projectId) {
@@ -996,26 +1191,20 @@
             "resolutions",
             "customFields"
         ];
+
         let section = (params["section"] && sections.indexOf(params["section"]) >= 0)?params["section"]:"projects";
+        let alt = params["alt"];
 
         let top = '';
 
-        top += ``;
-
         for (let i in sections) {
+            top += `<li class="nav-item d-none d-sm-inline-block">`;
             if (sections[i] === section) {
-                top += `
-                    <li class="nav-item d-none d-sm-inline-block">
-                        <span class="nav-link text-primary text-bold">${i18n("tt." + sections[i])}</span>
-                    </li>
-                `;
+                top += `<a href="#tt.settings&section=${sections[i]}" class="nav-link text-primary text-bold">${i18n("tt." + sections[i])}</a>`;
             } else {
-                top += `
-                    <li class="nav-item d-none d-sm-inline-block">
-                        <a href="#tt.settings&section=${sections[i]}" class="nav-link">${i18n("tt." + sections[i])}</a>
-                    </li>
-                `;
+                top += `<a href="#tt.settings&section=${sections[i]}" class="nav-link">${i18n("tt." + sections[i])}</a>`;
             }
+            top += `</li>`;
         }
 
         $("#topMenuLeftDynamic").html(top);

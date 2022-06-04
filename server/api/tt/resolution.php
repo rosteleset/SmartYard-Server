@@ -84,7 +84,7 @@
             public static function POST($params) {
                 $resolutionId = loadBackend("tt")->addResolution($params["resolution"]);
 
-                return api::ANSWER($resolutionId, ($resolutionId !== false)?"$resolutionId":"notAcceptable");
+                return api::ANSWER($resolutionId, ($resolutionId !== false)?"resolutionId":"notAcceptable");
             }
 
             public static function PUT($params) {
