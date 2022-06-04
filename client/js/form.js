@@ -6,11 +6,14 @@ function cardForm(params) {
     } else {
         h = `<div class="card mt-0 mb-0">`;
     }
+    if (!params.apply) {
+        params.apply = "apply";
+    }
     if (params.title) {
         h += `<div class="card-header">`;
         h += `<h3 class="card-title">`;
         if (params.topApply) {
-            h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="modalFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+            h += `<button class="btn btn-success mr-2 btn-xs modalFormOk" id="modalFormApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> `;
         }
         h += params.title;
         h += `</h3>`;
@@ -109,7 +112,7 @@ function cardForm(params) {
                 }
                 h += `<td class="tdform-right">`;
                 // TODO: Do something with this!!! (max-height)
-                h += `<div class="overflow-auto" style="max-height: 400px;">`;
+                h += `<div class="overflow-auto pl-1" style="max-height: 400px;">`;
                 // TODO: Do something with this!!! (max-height)
                 for (let j in params.fields[i].options) {
                     let id = md5(guid());
@@ -186,7 +189,7 @@ function cardForm(params) {
         } else {
             h += `<td colspan="2">`;
         }
-        h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n("apply")}</button>`;
+        h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n(params.apply)}</button>`;
         if (typeof params.cancel === "function") {
             h += `<button type="cancel" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
         }
@@ -215,6 +218,7 @@ function cardForm(params) {
                 for (let i in params.fields) {
                     switch (params.fields[i].type) {
                         case "select":
+                        case "select2":
                         case "email":
                         case "tel":
                         case "date":

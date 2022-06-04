@@ -179,15 +179,14 @@ CREATE TABLE tt_issue_custom_fields
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(field);
 
--- custom fields per projects and workflows
-CREATE TABLE tt_issue_custom_fields_usage
+-- projects <-> custom fields
+CREATE TABLE tt_projects_custom_fields
 (
     custom_fields_usage_id integer not null primary key autoincrement,
-    custom_field_id integer,
     project_id integer,
-    workflow text
+    custom_field_id integer
 );
-CREATE UNIQUE INDEX tt_issue_custom_fields_usage_uniq on tt_issue_custom_fields_usage (custom_field_id, project_id, workflow);
+CREATE UNIQUE INDEX tt_projects_custom_fields_uniq on tt_projects_custom_fields (project_id, custom_field_id);
 
 -- custom fields values options
 CREATE TABLE tt_issue_custom_fields_options

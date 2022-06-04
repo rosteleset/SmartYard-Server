@@ -104,12 +104,6 @@
 
         class project extends api {
 
-            public static function GET($params) {
-                $project = loadBackend("tt")->getProject($params["_id"]);
-
-                return api::ANSWER($project, ($project !== false)?"project":"notFound");
-            }
-
             public static function POST($params) {
                 $projectId = loadBackend("tt")->addProject($params["acronym"], $params["project"]);
 
@@ -117,19 +111,23 @@
             }
 
             public static function PUT($params) {
-                $success = true;
+                $success = false;
                 $tt = loadBackend("tt");
 
                 if (@$params["acronym"]) {
-                    $success = $success && $tt->modifyProject($params["_id"], $params["acronym"]);
+                    $success = $tt->modifyProject($params["_id"], $params["acronym"]);
                 }
 
                 if (@$params["workflows"]) {
-                    $success = $success && $tt->setProjectWorkflows($params["_id"], $params["workflows"]);
+                    $success = $tt->setProjectWorkflows($params["_id"], $params["workflows"]);
                 }
 
                 if (@$params["resolutions"]) {
-                    $success = $success && $tt->setProjectResolutions($params["_id"], $params["resolutions"]);
+                    $success = $tt->setProjectResolutions($params["_id"], $params["resolutions"]);
+                }
+
+                if (@$params["customFields"]) {
+                    $success = $tt->setProjectCustomFields($params["_id"], $params["customFields"]);
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");

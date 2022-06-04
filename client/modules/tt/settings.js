@@ -33,6 +33,20 @@
         always(window.modules["tt.settings"].renderResolutions);
     },
 
+    doAddCustomField: function (type, field, fieldDisplay) {
+        loadingStart();
+        POST("tt", "customField", false, {
+            type: type,
+            field: field,
+            fieldDisplay: fieldDisplay
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.customFieldWasAdded"));
+        }).
+        always(window.modules["tt.settings"].renderCustomFields);
+    },
+
     doModifyProject: function (projectId, acronym, project) {
         loadingStart();
         PUT("tt", "project", projectId, {
@@ -93,6 +107,18 @@
         always(window.modules["tt.settings"].renderProjects);
     },
 
+    doSetProjectCustomFields: function (projectId, customFields) {
+        loadingStart();
+        PUT("tt", "project", projectId, {
+            customFields: customFields,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        always(window.modules["tt.settings"].renderProjects);
+    },
+
     doModifyStatus: function (statusId, display) {
         loadingStart();
         PUT("tt", "status", statusId, {
@@ -144,70 +170,72 @@
     },
 
     modifyProject: function (projectId) {
-        loadingStart();
-        GET("tt", "project", projectId, true).
-        done(response => {
-            cardForm({
-                title: i18n("tt.projectEdit"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                fields: [
-                    {
-                        id: "projectId",
-                        type: "text",
-                        readonly: true,
-                        value: response.project.projectId.toString(),
-                        title: i18n("tt.projectId"),
-                    },
-                    {
-                        id: "acronym",
-                        type: "text",
-                        value: response.project.acronym,
-                        title: i18n("tt.projectAcronym"),
-                        placeholder: i18n("tt.projectAcronym"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                    {
-                        id: "project",
-                        type: "text",
-                        value: response.project.project,
-                        title: i18n("tt.projectProject"),
-                        placeholder: i18n("tt.projectProject"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                    {
-                        id: "delete",
-                        type: "select",
-                        value: "",
-                        title: i18n("tt.projectDelete"),
-                        options: [
-                            {
-                                value: "",
-                                text: "",
-                            },
-                            {
-                                value: "yes",
-                                text: i18n("yes"),
-                            },
-                        ]
-                    },
-                ],
-                callback: function (result) {
-                    if (result.delete === "yes") {
-                        window.modules["tt.settings"].deleteProject(result.projectId);
-                    } else {
-                        window.modules["tt.settings"].doModifyProject(result.projectId, result.acronym, result.project);
+        let project = false;
+        for (let i in window.modules["tt"].meta.projects) {
+            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                project = window.modules["tt"].meta.projects[i];
+                break;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.projectEdit"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "projectId",
+                    type: "text",
+                    readonly: true,
+                    value: project.projectId.toString(),
+                    title: i18n("tt.projectId"),
+                },
+                {
+                    id: "acronym",
+                    type: "text",
+                    value: project.acronym,
+                    title: i18n("tt.projectAcronym"),
+                    placeholder: i18n("tt.projectAcronym"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
                     }
                 },
-            }).show();
-        }).
-        fail(FAIL).
-        always(loadingDone);
+                {
+                    id: "project",
+                    type: "text",
+                    value: project.project,
+                    title: i18n("tt.projectProject"),
+                    placeholder: i18n("tt.projectProject"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "delete",
+                    type: "select",
+                    value: "",
+                    title: i18n("tt.projectDelete"),
+                    options: [
+                        {
+                            value: "",
+                            text: "",
+                        },
+                        {
+                            value: "yes",
+                            text: i18n("yes"),
+                        },
+                    ]
+                },
+            ],
+            callback: function (result) {
+                if (result.delete === "yes") {
+                    window.modules["tt.settings"].deleteProject(result.projectId);
+                } else {
+                    window.modules["tt.settings"].doModifyProject(result.projectId, result.acronym, result.project);
+                }
+            },
+        }).show();
     },
 
     addProject: function () {
@@ -261,6 +289,64 @@
             ],
             callback: function (result) {
                 window.modules["tt.settings"].doAddResolution(result.resolution);
+            },
+        }).show();
+    },
+
+    addCustomField: function () {
+        cardForm({
+            title: i18n("tt.addResolution"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: "add",
+            fields: [
+                {
+                    id: "field",
+                    type: "text",
+                    title: i18n("tt.customFieldField"),
+                    placeholder: i18n("tt.customFieldField"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "fieldDisplay",
+                    type: "text",
+                    title: i18n("tt.customFieldDisplay"),
+                    placeholder: i18n("tt.customFieldDisplay"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "type",
+                    type: "select2",
+                    title: i18n("tt.customFieldType"),
+                    placeholder: i18n("tt.customFieldType"),
+                    minimumResultsForSearch: Infinity,
+                    options: [
+                        {
+                            id: "textString",
+                            text: i18n("customFieldTypeTextString"),
+                        },
+                        {
+                            id: "textArea",
+                            text: i18n("customFieldTypeTextArea"),
+                        },
+                        {
+                            id: "integer",
+                            text: i18n("customFieldTypeInteger"),
+                        },
+                        {
+                            id: "real",
+                            text: i18n("customFieldTypeReal"),
+                        },
+                    ]
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doAddCustomField(result.type, result.field, result.fieldDisplay);
             },
         }).show();
     },
@@ -409,120 +495,153 @@
     },
 
     projectWorkflows: function (projectId) {
-        loadingStart();
-        GET("tt", "project", projectId, true).
-        done(project => {
-            let w = {};
-            for (let i in window.modules["tt"].meta.workflows) {
-                w[window.modules["tt"].meta.workflows[i]] = window.modules["tt"].meta.workflows[i];
+        let project = false;
+        for (let i in window.modules["tt"].meta.projects) {
+            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                project = window.modules["tt"].meta.projects[i];
+                break;
             }
-            for (let i in window.modules["tt"].meta.workflowAliases) {
-                if (w[window.modules["tt"].meta.workflowAliases[i].workflow]) {
-                    w[window.modules["tt"].meta.workflowAliases[i].workflow] = window.modules["tt"].meta.workflowAliases[i].alias;
-                }
-            }
+        }
 
-            let workflows = [];
-            for (let i in w) {
-                workflows.push({
-                    id: i,
-                    text: "<span class='text-monospace'>[" + i + "]</span> " + w[i],
-                });
-            }
+        let w = {};
+        for (let i in window.modules["tt"].meta.workflows) {
+            w[window.modules["tt"].meta.workflows[i]] = window.modules["tt"].meta.workflows[i];
+        }
 
-            cardForm({
-                title: i18n("tt.projectForkflows"),
-                footer: true,
-                borderless: true,
-                noHover: true,
-                topApply: true,
-                singleColumn: true,
-                fields: [
-                    {
-                        id: "workflows",
-                        type: "multiselect",
-                        title: i18n("tt.workflows"),
-                        options: workflows,
-                        value: project.project.workflows,
-                    },
-                ],
-                callback: function (result) {
-                    console.log(projectId, result.workflows);
-                    window.modules["tt.settings"].doSetProjectWorkflows(projectId, result.workflows);
+        for (let i in window.modules["tt"].meta.workflowAliases) {
+            if (w[window.modules["tt"].meta.workflowAliases[i].workflow]) {
+                w[window.modules["tt"].meta.workflowAliases[i].workflow] = window.modules["tt"].meta.workflowAliases[i].alias;
+            }
+        }
+
+        let workflows = [];
+        for (let i in w) {
+            workflows.push({
+                id: i,
+                text: "<span class='text-monospace'>[" + i + "]</span> " + w[i],
+            });
+        }
+
+        cardForm({
+            title: i18n("tt.projectForkflows"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "workflows",
+                    type: "multiselect",
+                    title: i18n("tt.workflows"),
+                    options: workflows,
+                    value: project.workflows,
                 },
-            }).show();
-            loadingDone();
-        }).
-        fail(FAIL);
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doSetProjectWorkflows(projectId, result.workflows);
+            },
+        }).show();
     },
 
     projectResolutions: function (projectId) {
-        loadingStart();
-        GET("tt", "project", projectId, true).
-        done(project => {
-            let resolutions = [];
-            for (let i in window.modules["tt"].meta.resolutions) {
-                resolutions.push({
-                    id: window.modules["tt"].meta.resolutions[i].resolutionId,
-                    text: window.modules["tt"].meta.resolutions[i].resolution,
-                });
+        let project = false;
+        for (let i in window.modules["tt"].meta.projects) {
+            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                project = window.modules["tt"].meta.projects[i];
+                break;
             }
+        }
 
-            console.log(resolutions, project.project.resolutions);
+        let resolutions = [];
+        for (let i in window.modules["tt"].meta.resolutions) {
+            resolutions.push({
+                id: window.modules["tt"].meta.resolutions[i].resolutionId,
+                text: window.modules["tt"].meta.resolutions[i].resolution,
+            });
+        }
 
-            cardForm({
-                title: i18n("tt.projectResolutions"),
-                footer: true,
-                borderless: true,
-                noHover: true,
-                topApply: true,
-                singleColumn: true,
-                fields: [
-                    {
-                        id: "resolutions",
-                        type: "multiselect",
-                        title: i18n("tt.workflows"),
-                        options: resolutions,
-                        value: project.project.resolutions,
-                    },
-                ],
-                callback: function (result) {
-                    window.modules["tt.settings"].doSetProjectResolutions(projectId, result.resolutions);
+        cardForm({
+            title: i18n("tt.projectResolutions"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "resolutions",
+                    type: "multiselect",
+                    title: i18n("tt.resolutions"),
+                    options: resolutions,
+                    value: project.resolutions,
                 },
-            }).show();
-            loadingDone();
-        }).
-        fail(FAIL);
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doSetProjectResolutions(projectId, result.resolutions);
+            },
+        }).show();
     },
 
     projectCustomFields: function (projectId) {
-        loadingStart();
-        GET("tt", "project", projectId, true).
-        done(project => {
-            console.log(project);
-            loadingDone();
-        }).
-        fail(FAIL);
+        let project = false;
+        for (let i in window.modules["tt"].meta.projects) {
+            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                project = window.modules["tt"].meta.projects[i];
+                break;
+            }
+        }
+
+        let customFields = [];
+        for (let i in window.modules["tt"].meta.customFields) {
+            customFields.push({
+                id: window.modules["tt"].meta.customFields[i].customFieldId,
+                text: window.modules["tt"].meta.customFields[i].field,
+            });
+        }
+
+        cardForm({
+            title: i18n("tt.projectCustomFields"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "customFields",
+                    type: "multiselect",
+                    title: i18n("tt.customFields"),
+                    options: customFields,
+                    value: project.customFields,
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doSetProjectCustomFields(projectId, result.customFields);
+            },
+        }).show();
     },
 
     projectUsers: function (projectId) {
-        loadingStart();
-        GET("tt", "project", projectId, true).
-        done(project => {
-            console.log(project);
-            loadingDone();
-        }).
-        fail(FAIL);
+        let project = false;
+        for (let i in window.modules["tt"].meta.projects) {
+            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                project = window.modules["tt"].meta.projects[i];
+                break;
+            }
+        }
+
     },
 
     projectGroups: function (projectId) {
-        loadingStart();
-        GET("tt", "project", projectId, true).
-        done(project => {
-            console.log(project);
-            loadingDone();
-        }).
-        fail(FAIL);
+        let project = false;
+        for (let i in window.modules["tt"].meta.projects) {
+            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                project = window.modules["tt"].meta.projects[i];
+                break;
+            }
+        }
+
     },
 
     renderProjects: function () {
@@ -820,17 +939,17 @@
                                     click: window.modules["tt.settings"].modifyCustomField,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].customFieldName,
+                                    data: window.modules["tt"].meta.customFields[i].field,
                                     click: window.modules["tt.settings"].modifyCustomField,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].customFieldName,
+                                    data: window.modules["tt"].meta.customFields[i].type,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].customFieldWorflow,
+                                    data: window.modules["tt"].meta.customFields[i].workflow,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].customFieldDisplay,
+                                    data: window.modules["tt"].meta.customFields[i].fieldDisplay,
                                 },
                             ],
                         });

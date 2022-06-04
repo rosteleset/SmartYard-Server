@@ -43,60 +43,35 @@
                     $_projects = [];
 
                     foreach ($projects as $project) {
-                        $_projects[] = [
-                            "projectId" => $project["project_id"],
-                            "acronym" => $project["acronym"],
-                            "project" => $project["project"],
-                        ];
-                    }
-
-                    return $_projects;
-                } catch (\Exception $e) {
-                    return false;
-                }
-            }
-
-            /**
-             * get project, if $project_id is false, returns all projects
-             *
-             * @param $projectId integer project_id
-             * @return false|array
-             */
-            public function getProject($projectId)
-            {
-                if (!checkInt($projectId)) {
-                    return false;
-                }
-
-                try {
-                    $project = $this->db->query("select project_id, acronym, project from tt_projects where project_id = $projectId", \PDO::FETCH_ASSOC)->fetchAll();
-
-                    if (count($project)) {
-                        $workflows = $this->db->query("select workflow from tt_projects_workflows where project_id = $projectId", \PDO::FETCH_ASSOC)->fetchAll();
-
+                        $workflows = $this->db->query("select workflow from tt_projects_workflows where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
                         $w = [];
                         foreach ($workflows as $workflow) {
-                            $w[] = $workflow["workflow"];
+                            $w[] = $workflow['workflow'];
                         }
 
-                        $resolutions = $this->db->query("select resolution_id from tt_projects_resolutions where project_id = $projectId", \PDO::FETCH_ASSOC)->fetchAll();
-
+                        $resolutions = $this->db->query("select resolution_id from tt_projects_resolutions where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
                         $r = [];
                         foreach ($resolutions as $resolution) {
                             $r[] = $resolution["resolution_id"];
                         }
 
-                        return [
-                            "projectId" => $project[0]["project_id"],
-                            "acronym" => $project[0]["acronym"],
-                            "project" => $project[0]["project"],
+                        $customFields = $this->db->query("select custom_field_id from tt_projects_custom_fields where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
+                        $f = [];
+                        foreach ($customFields as $customField) {
+                            $f[] = $customField["custom_field_id"];
+                        }
+
+                        $_projects[] = [
+                            "projectId" => $project["project_id"],
+                            "acronym" => $project["acronym"],
+                            "project" => $project["project"],
                             "workflows" => $w,
                             "resolutions" => $r,
+                            "customFields" => $f,
                         ];
-
-                    } else {
-                        return false;
                     }
+
+                    return $_projects;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -493,7 +468,7 @@
 
                     foreach ($customFields as $customField) {
                         $_customFields[] = [
-                            "customFieldId" => $customField["resolution_id"],
+                            "customFieldId" => $customField["custom_field_id"],
                             "type" => $customField["type"],
                             "workflow" => $customField["workflow"],
                             "field" => $customField["field"],
@@ -505,6 +480,86 @@
                 } catch (\Exception $e) {
                     return false;
                 }
+            }
+
+            /**
+             * @param $type
+             * @param $field
+             * @param $fieldDisplay
+             * @return false|integer
+             */
+            public function addCustomField($type, $field, $fieldDisplay)
+            {
+                $type = trim($type);
+                $field = trim($field);
+                $fieldDisplay = trim($fieldDisplay);
+
+                if (!$type || !$field || !$fieldDisplay) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_issue_custom_fields (type, field, field_display, workflow) values (:type, :field, :field_display, 0)");
+                    if (!$sth->execute([
+                        ":type" => $type,
+                        ":field" => $field,
+                        ":field_display" => $fieldDisplay,
+                    ])) {
+                        return false;
+                    }
+
+                    return $this->db->lastInsertId();
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+            }
+
+            /**
+             * @param $projectId
+             * @param $customFields
+             * @return boolean
+             */
+            public function setProjectCustomFields($projectId, $customFields)
+            {
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_projects_custom_fields (project_id, custom_field_id) values (:project_id, :custom_field_id)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_custom_fields where project_id = $projectId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    foreach ($customFields as $customField) {
+                        if (!checkInt($customField)) {
+                            return false;
+                        }
+                        if (!$sth->execute([
+                            ":project_id" => $projectId,
+                            ":custom_field_id" => $customField,
+                        ])) {
+                            return false;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
             }
         }
     }

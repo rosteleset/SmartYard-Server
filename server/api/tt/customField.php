@@ -104,14 +104,10 @@
 
         class customField extends api {
 
-            public static function GET($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
-            }
-
             public static function POST($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $customFieldId = loadBackend("tt")->addCustomField($params["type"], $params["field"], $params["fieldDisplay"]);
+
+                return api::ANSWER($customFieldId, ($customFieldId !== false)?"customFieldId":"notAcceptable");
             }
 
             public static function PUT($params) {

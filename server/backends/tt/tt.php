@@ -90,15 +90,6 @@
             abstract public function getProjects();
 
             /**
-             * get project
-             *
-             * @param $projectId integer projectId
-             * @return false|array
-             */
-
-            abstract public function getProject($projectId);
-
-            /**
              * @param $acronym
              * @param $project
              *
@@ -199,5 +190,20 @@
              * @return array
              */
             abstract public function getCustomFields();
+
+            /**
+             * @param $type
+             * @param $field
+             * @param $fieldDisplay
+             * @return false|integer
+             */
+            abstract public function addCustomField($type, $field, $fieldDisplay);
+
+            /**
+             * @param $projectId
+             * @param $customFields
+             * @return boolean
+             */
+            abstract public function setProjectCustomFields($projectId, $customFields);
         }
     }
