@@ -119,9 +119,13 @@ function cardForm(params) {
                 break;
 
             case "multiselect":
-                // TODO: Do something with this!!! (max-height)
-                h += `<div class="overflow-auto pl-1" style="max-height: 400px;">`;
-                // TODO: Do something with this!!! (max-height)
+                if (params.target) {
+                    h += `<div class="overflow-auto pl-1">`;
+                } else {
+                    // TODO: Do something with this!!! (max-height)
+                    h += `<div class="overflow-auto pl-1" style="max-height: 400px;">`;
+                    // TODO: Do something with this!!! (max-height)
+                }
                 for (let j in params.fields[i].options) {
                     let id = md5(guid());
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
