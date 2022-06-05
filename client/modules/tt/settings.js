@@ -310,6 +310,7 @@
     },
 
     addCustomField: function () {
+        $("#altForm").hide();
         cardForm({
             title: i18n("tt.addCustomField"),
             footer: true,
