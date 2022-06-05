@@ -67,6 +67,12 @@
                 return api::ANSWER($projectRoleId, ($projectRoleId !== false)?"projectRoleId":"notAcceptable");
             }
 
+            public static function PUT($params) {
+                $success = loadBackend("tt")->setRoleDisplay($params["_id"], $params["display"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+            }
+
             public static function DELETE($params) {
                 $success = loadBackend("tt")->deleteRole($params["_id"]);
 

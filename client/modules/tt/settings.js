@@ -39,9 +39,6 @@
             type: type,
             field: field,
             fieldDisplay: fieldDisplay,
-            fieldDescription: fieldDescription,
-            regex: regex,
-            link: link,
         }).
         fail(FAIL).
         done(() => {
@@ -207,6 +204,19 @@
         });
     },
 
+    doModifyRole: function (roleId, display) {
+        loadingStart();
+        PUT("tt", "role", roleId, {
+            display: display,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(window.modules["tt.settings"].renderRoles);
+    },
+
     /*
         UI functions
      */
@@ -349,7 +359,7 @@
 
     addCustomField: function () {
         cardForm({
-            title: i18n("tt.addResolution"),
+            title: i18n("tt.addCustomField"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -374,12 +384,6 @@
                     }
                 },
                 {
-                    id: "fieldDescription",
-                    type: "area",
-                    title: i18n("tt.customFieldDescription"),
-                    placeholder: i18n("tt.customFieldDescription"),
-                },
-                {
                     id: "type",
                     type: "select2",
                     title: i18n("tt.customFieldType"),
@@ -387,38 +391,26 @@
                     minimumResultsForSearch: Infinity,
                     options: [
                         {
-                            id: "textString",
-                            text: i18n("customFieldTypeTextString"),
+                            id: "TextString",
+                            text: i18n("tt.customFieldTypeTextString"),
                         },
                         {
-                            id: "textArea",
-                            text: i18n("customFieldTypeTextArea"),
+                            id: "TextArea",
+                            text: i18n("tt.customFieldTypeTextArea"),
                         },
                         {
-                            id: "integer",
-                            text: i18n("customFieldTypeInteger"),
+                            id: "Integer",
+                            text: i18n("tt.customFieldTypeInteger"),
                         },
                         {
-                            id: "real",
-                            text: i18n("customFieldTypeReal"),
+                            id: "Real",
+                            text: i18n("tt.customFieldTypeReal"),
                         },
                     ]
                 },
-                {
-                    id: "regex",
-                    type: "text",
-                    title: i18n("tt.customFieldRegex"),
-                    placeholder: i18n("tt.customFieldRegex"),
-                },
-                {
-                    id: "link",
-                    type: "text",
-                    title: i18n("tt.customFieldLink"),
-                    placeholder: i18n("tt.customFieldLink"),
-                },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddCustomField(result.type, result.field, result.fieldDisplay, result.fieldDescription, result.regex, result.link);
+                window.modules["tt.settings"].doAddCustomField(result.type, result.field, result.fieldDisplay);
             },
         }).show();
     },
@@ -562,6 +554,54 @@
                 } else {
                     window.modules["tt.settings"].doModifyResolution(resolutionId, result.resolution);
                 }
+            },
+        }).show();
+    },
+
+    modifyRole: function (roleId) {
+        let name = '';
+        let display = '';
+
+        for (let i in window.modules["tt"].meta.roles) {
+            if (window.modules["tt"].meta.roles[i].roleId == roleId) {
+                name = window.modules["tt"].meta.roles[i].name;
+                display = window.modules["tt"].meta.roles[i].roleDisplay;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.roles"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "roleId",
+                    type: "text",
+                    title: i18n("tt.roleId"),
+                    value: roleId,
+                    readonly: true,
+                },
+                {
+                    id: "name",
+                    type: "text",
+                    title: i18n("tt.roleName"),
+                    value: name,
+                    readonly: true,
+                },
+                {
+                    id: "display",
+                    type: "text",
+                    title: i18n("tt.roleDisplay"),
+                    placeholder: i18n("tt.roleDisplay"),
+                    value: display,
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doModifyRole(roleId, result.display);
             },
         }).show();
     },
@@ -1240,6 +1280,67 @@
         always(loadingDone);
     },
 
+    renderRoles: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    caption: i18n("tt.roles"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.roleId"),
+                    },
+                    {
+                        title: i18n("tt.roleName"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("tt.roleLevel"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("tt.roleNameDisplay"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i = 0; i < window.modules["tt"].meta.roles.length; i++) {
+                        rows.push({
+                            uid: window.modules["tt"].meta.roles[i].roleId,
+                            cols: [
+                                {
+                                    data: window.modules["tt"].meta.roles[i].roleId,
+                                    click: window.modules["tt.settings"].modifyRole,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.roles[i].name,
+                                    click: window.modules["tt.settings"].modifyRole,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.roles[i].level,
+                                },
+                                {
+                                    data: window.modules["tt"].meta.roles[i].nameDisplay?window.modules["tt"].meta.roles[i].nameDisplay:"",
+                                },
+                            ],
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     renderCustomFields: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -1260,7 +1361,7 @@
                         title: i18n("tt.customFieldId"),
                     },
                     {
-                        title: i18n("tt.customFieldName"),
+                        title: i18n("tt.customFieldField"),
                     },
                     {
                         title: i18n("tt.customFieldType"),
@@ -1289,10 +1390,10 @@
                                     click: window.modules["tt.settings"].modifyCustomField,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].type,
+                                    data: i18n("tt.customFieldType" + window.modules["tt"].meta.customFields[i].type),
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].workflow,
+                                    data: window.modules["tt"].meta.customFields[i].workflow?i18n("yes"):i18n("no"),
                                 },
                                 {
                                     data: window.modules["tt"].meta.customFields[i].fieldDisplay,
@@ -1324,7 +1425,6 @@
         ];
 
         let section = (params["section"] && sections.indexOf(params["section"]) >= 0)?params["section"]:"projects";
-        let alt = params["alt"];
 
         let top = '';
 
@@ -1355,6 +1455,10 @@
 
             case "resolutions":
                 window.modules["tt.settings"].renderResolutions();
+                break;
+
+            case "roles":
+                window.modules["tt.settings"].renderRoles();
                 break;
 
             case "customFields":

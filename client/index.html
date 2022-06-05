@@ -71,11 +71,7 @@
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
             <ul class="navbar-nav" id="topMenuLeft">
-                <li class="nav-item">
-                    <a class="nav-link burger" data-widget="pushmenu" href="#" role="button">
-                        <i class="fas fa-lg fa-bars"></i>
-                    </a>
-                </li>
+
             </ul>
 
             <!-- Search form -->
@@ -90,7 +86,7 @@
                 </div>
             </div>
 
-            <ul class="navbar-nav ml-2" id="topMenuLeftDynamic"></ul>
+            <ul class="navbar-nav" id="topMenuLeftDynamic"></ul>
 
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto" id="topMenuRight">
@@ -124,7 +120,7 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand">
             <!-- Brand Logo -->
             <span href="#" class="brand-link">
-                <a href="https://rosteleset.ru/"><img src="img/tech.png" alt="RBT Logo" class="brand-image"></a>
+                <a href="#" data-widget="pushmenu"><img src="img/tech.png" alt="RBT Logo" class="brand-image" id="leftSideToggler"></a>
                 <span class="brand-text font-weight-bold brand-title" id="brandTitle"></span>
             </span>
 
@@ -211,8 +207,8 @@
     </div>
 
     <!-- modal -->
-    <div class="modal p-0 centre-of-all" id="modal" role="dialog" style="padding-top: 4rem!important;">
-        <div class="modal-dialog p-0 modal-lg" role="document">
+    <div class="modal p-0" id="modal" role="dialog" style="padding-top: 4rem!important;">
+        <div class="modal-dialog p-0" role="document">
             <div class="modal-content p-0" id="modalBody">
             </div>
         </div>

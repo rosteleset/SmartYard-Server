@@ -246,5 +246,12 @@
              * @return boolean
              */
             abstract public function deleteRole($projectRoleId);
+
+            /**
+             * @param $roleId
+             * @param $nameDisplay
+             * @return boolean
+             */
+            abstract public function setRoleDisplay($roleId, $nameDisplay);
         }
     }

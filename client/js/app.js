@@ -303,14 +303,14 @@ function initAll() {
 
     loadingStart();
 
-    $('.burger').on('click', () => {
+    $("#leftSideToggler").on("click", () => {
         setTimeout(() => {
-            $.cookie('_ls_collapse', $('body').hasClass('sidebar-collapse')?'1':'0', { expires: 36500 });
+            $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 36500 });
         }, 100);
     });
 
-    if (parseInt($.cookie('_ls_collapse'))) {
-        $('body').addClass('sidebar-collapse');
+    if (parseInt($.cookie("_ls_collapse"))) {
+        $("body").addClass("sidebar-collapse");
     }
 
     document.title = i18n("windowTitle");

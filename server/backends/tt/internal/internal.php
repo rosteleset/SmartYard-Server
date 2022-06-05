@@ -646,13 +646,14 @@
             public function getRoles()
             {
                 try {
-                    $roles = $this->db->query("select role_id, name, level from tt_roles order by level", \PDO::FETCH_ASSOC)->fetchAll();
+                    $roles = $this->db->query("select role_id, name, name_display, level from tt_roles order by level", \PDO::FETCH_ASSOC)->fetchAll();
                     $_roles = [];
 
                     foreach ($roles as $role) {
                         $_roles[] = [
                             "roleId" => $role["role_id"],
                             "name" => $role["name"],
+                            "nameDisplay" => $role["name_display"],
                             "level" => $role["level"],
                         ];
                     }
@@ -681,6 +682,32 @@
                     error_log(print_r($e, true));
                     return false;
                 }
+            }
+
+            /**
+             * @param $roleId
+             * @param $nameDisplay
+             * @return boolean
+             */
+            public function setRoleDisplay($roleId, $nameDisplay)
+            {
+                $nameDisplay = trim($nameDisplay);
+
+                if (!checkInt($roleId) || !$nameDisplay) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("update tt_roles set name_display = :name_display where role_id = $roleId");
+                    $sth->execute([
+                        ":name_display" => $nameDisplay,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
             }
         }
     }
