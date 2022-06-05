@@ -58,5 +58,7 @@
     "customFieldRegex": "Регулярное выражение",
     "customFieldLink": "Ссылка для URL",
     "customFieldDisplayFormat": "Форматирование",
-    "customFieldOptions": "Набор значений"
+    "customFieldOptions": "Набор значений",
+    "customFieldDelete": "Удалить поле",
+    "confirmCustomFieldDelete": "Удалить настраиваемое поле #%s?"
 }

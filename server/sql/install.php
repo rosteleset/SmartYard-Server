@@ -36,7 +36,9 @@
                 }
             } catch (Exception $e) {
                 $db->exec("ROLLBACK");
-                die(print_r($e, true) . "\n================= fail\n\n");
+                print_r($e);
+                echo "\n================= fail\n\n";
+                exit(1);
             }
 
             $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");

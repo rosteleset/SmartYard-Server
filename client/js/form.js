@@ -228,6 +228,7 @@ function cardForm(params) {
                         case "time":
                         case "password":
                         case "text":
+                        case "area":
                             result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).val();
                             break;
                         case "multiselect":
@@ -305,6 +306,7 @@ function cardForm(params) {
                 case "time":
                 case "password":
                 case "text":
+                case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
                     break;
             }

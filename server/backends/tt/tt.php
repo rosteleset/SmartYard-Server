@@ -8,6 +8,7 @@
 
         require_once "workflow.php";
 
+        use api\tt\customField;
         use backends\backend;
 
         /**
@@ -201,13 +202,10 @@
              * @param $type
              * @param $field
              * @param $fieldDisplay
-             * @param $fieldDescription
-             * @param $regex
-             * @param $link
              * @return false|integer
              */
 
-            abstract public function addCustomField($type, $field, $fieldDisplay, $fieldDescription, $regex, $link);
+            abstract public function addCustomField($type, $field, $fieldDisplay);
 
             /**
              * @param $projectId
@@ -253,5 +251,23 @@
              * @return boolean
              */
             abstract public function setRoleDisplay($roleId, $nameDisplay);
+
+            /**
+             * @param $customFieldId
+             * @param $fieldDisplay
+             * @param $fieldDescription
+             * @param $regex
+             * @param $format
+             * @param $link
+             * @param $options
+             * @return boolean
+             */
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options);
+
+            /**
+             * @param $customFieldId
+             * @return boolean
+             */
+            abstract public function deleteCustomField($customFieldId);
         }
     }

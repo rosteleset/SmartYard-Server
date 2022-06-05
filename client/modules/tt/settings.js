@@ -33,7 +33,7 @@
         always(window.modules["tt.settings"].renderResolutions);
     },
 
-    doAddCustomField: function (type, field, fieldDisplay, fieldDescription, regex, link) {
+    doAddCustomField: function (type, field, fieldDisplay) {
         loadingStart();
         POST("tt", "customField", false, {
             type: type,
@@ -111,6 +111,9 @@
         done(() => {
             message(i18n("tt.customFieldWasDeleted"));
         }).
+        done(() => {
+            $("#altForm").hide();
+        }).
         always(window.modules["tt.settings"].renderCustomFields);
     },
 
@@ -124,7 +127,7 @@
         done(() => {
             message(i18n("tt.workflowWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderAllWorkflows);
+        always(window.modules["tt.settings"].renderWorkflows);
     },
 
     doSetProjectWorkflows: function (projectId, workflows) {
@@ -227,19 +230,22 @@
         done(window.modules["tt.settings"].renderRoles);
     },
 
-    doModifyCustomField: function (customFieldId, options, fieldDisplay, fieldDescription, regex, format, link) {
+    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options) {
         loadingStart();
         PUT("tt", "customField", customFieldId, {
-            options: options,
             fieldDisplay: fieldDisplay,
             fieldDescription: fieldDescription,
             regex: regex,
             format: format,
             link: link,
+            options: options,
         }).
         fail(FAIL).
         done(() => {
             message(i18n("tt.customFieldWasChanged"));
+        }).
+        done(() => {
+            $("#altForm").hide();
         }).
         always(window.modules["tt.settings"].renderCustomFields);
     },
@@ -687,6 +693,10 @@
             } else {
                 let options = "";
 
+                for (let i in cf.options) {
+                    options += cf.options[i].optionDisplay + "\n";
+                }
+
                 cardForm({
                     title: i18n("tt.customFieldField") + " " + i18n("tt.customFieldId") + customFieldId,
                     footer: true,
@@ -739,7 +749,7 @@
                             type: "text",
                             title: i18n("tt.customFieldDisplayFormat"),
                             placeholder: i18n("tt.customFieldDisplayFormat"),
-                            value: cf.regex,
+                            value: cf.format,
                             hint: i18n("forExample") + " %.02d",
                             hidden: cf.type === "Text" || cf.type === "MultiSelect",
                         },
@@ -749,6 +759,7 @@
                             title: i18n("tt.customFieldLink"),
                             placeholder: i18n("tt.customFieldLink"),
                             value: cf.link,
+                            hint: i18n("forExample") + " https://example.com/?search=%value%",
                             hidden: cf.type === "Text" || cf.type === "MultiSelect",
                         },
                         {
@@ -758,6 +769,9 @@
                             placeholder: i18n("tt.customFieldOptions"),
                             value: options,
                             hidden: cf.type !== "Select" && cf.type !== "MultiSelect",
+                            validate: (v, prefix) => {
+                                return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                            }
                         },
                         {
                             id: "delete",
@@ -780,7 +794,7 @@
                         if (result.delete === "yes") {
                             window.modules["tt.settings"].deleteCustomField(customFieldId);
                         } else {
-                            window.modules["tt.settings"].doModifyCustomField(customFieldId, result.options, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link);
+                            window.modules["tt.settings"].doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options);
                         }
                     },
                     cancel: function () {

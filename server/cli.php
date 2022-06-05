@@ -35,30 +35,36 @@
 
     try {
         if (PHP_VERSION_ID < 50600) {
-            die("minimal supported php version is 5.6\n");
+            echo "minimal supported php version is 5.6\n";
+            exit(1);
         }
     } catch (Exception $e) {
-        die("can't determine php version\n");
+        echo "can't determine php version\n";
+        exit(1);
     }
 
     try {
         $config = @json_decode(file_get_contents("config/config.json"), true);
     } catch (Exception $e) {
-        die("can't load config file");
+        echo "can't load config file\n";
+        exit(1);
     }
 
     if (!$config) {
-        die("config is empty");
+        echo "config is empty\n";
+        exit(1);
     }
 
     if (@!$config["backends"]) {
-        die("no backends defined");
+        echo "no backends defined\n";
+        exit(1);
     }
 
     try {
         $db = new PDO(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
-        die("can't open database " . $config["db"]["dsn"] . "\n");
+        echo "can't open database " . $config["db"]["dsn"] . "\n";
+        exit(1);
     }
 
     try {
@@ -69,7 +75,8 @@
         }
         $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
-        die("can't connect to redis server\n");
+        echo "can't connect to redis server\n";
+        exit(1);
     }
 
     try {
@@ -137,7 +144,6 @@
             echo "no email config found\n";
             exit(0);
         }
-        print_r($r);
         exit(0);
     }
 
