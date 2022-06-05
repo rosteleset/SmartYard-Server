@@ -47,12 +47,17 @@ function cardForm(params) {
             h += `<tr>`;
         }
         params.fields[i].type = params.fields[i].type?params.fields[i].type:"text";
+        if (!params.singleColumn) {
+            if (params.fields[i].hint || params.fields[i].type === "multiselect" || params.fields[i].type === "area") {
+                h += `<td class="tdform-top">${params.fields[i].title}</td>`;
+            } else {
+                h += `<td class="tdform">${params.fields[i].title}</td>`;
+            }
+        }
+        h += `<td class="tdform-right">`;
+
         switch (params.fields[i].type) {
             case "select":
-                if (!params.singleColumn) {
-                    h += `<td class="tdform">${params.fields[i].title}</td>`;
-                }
-                h += `<td class="tdform-right">`;
                 h += `<div class="input-group">`;
                 h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField"`;
                 if (params.fields[i].readonly) {
@@ -76,14 +81,9 @@ function cardForm(params) {
                 }
                 h += `</div>`;
                 h += `</div>`;
-                h += `</td>`;
                 break;
 
             case "select2":
-                if (!params.singleColumn) {
-                    h += `<td class="tdform">${params.fields[i].title}</td>`;
-                }
-                h += `<td class="tdform-right">`;
                 if (params.fields[i].color) {
                     h += `<div class="select2-${params.fields[i].color}">`;
                 } else {
@@ -104,14 +104,9 @@ function cardForm(params) {
                 }
                 h += `</select>`;
                 h += `</div>`;
-                h += `</td>`;
                 break;
 
             case "multiselect":
-                if (!params.singleColumn) {
-                    h += `<td class="tdform-top">${params.fields[i].title}</td>`;
-                }
-                h += `<td class="tdform-right">`;
                 // TODO: Do something with this!!! (max-height)
                 h += `<div class="overflow-auto pl-1" style="max-height: 400px;">`;
                 // TODO: Do something with this!!! (max-height)
@@ -126,21 +121,15 @@ function cardForm(params) {
                     `;
                 }
                 h += `</div>`;
-                h += `</td>`;
                 break;
 
             case "area":
-                if (!params.singleColumn) {
-                    h += `<td class="tdform-top">${params.fields[i].title}</td>`;
-                }
-                h += `<td class="tdform-right">`;
                 h += `<textarea id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
                 }
                 h += `></textarea>`;
-                h += `</td>`;
                 break;
 
             case "text":
@@ -149,10 +138,6 @@ function cardForm(params) {
             case "date":
             case "time":
             case "password":
-                if (!params.singleColumn) {
-                    h += `<td class="tdform">${params.fields[i].title}</td>`;
-                }
-                h += `<td class="tdform-right">`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
@@ -168,9 +153,13 @@ function cardForm(params) {
                     h += `</div>`;
                     h += `</div>`;
                 }
-                h += `</td>`;
                 break;
         }
+
+        if (params.fields[i].hint) {
+            h += `<span class="text-secondary text-xs">${params.fields[i].hint}</span>`;
+        }
+        h += `</td>`;
         h += `</tr>`;
     }
 

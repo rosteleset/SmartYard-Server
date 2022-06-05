@@ -47,6 +47,40 @@
         always(window.modules["tt.settings"].renderCustomFields);
     },
 
+    doAddProjectUser: function (projectId, uid, roleId) {
+        loadingStart();
+        POST("tt", "role", false, {
+            projectId: projectId,
+            uid: uid,
+            roleId: roleId,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            window.modules["tt.settings"].projectUsers(projectId);
+        });
+    },
+
+    doAddProjectGroup: function (projectId, gid, roleId) {
+        loadingStart();
+        POST("tt", "role", false, {
+            projectId: projectId,
+            gid: gid,
+            roleId: roleId,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            window.modules["tt.settings"].projectGroups(projectId);
+        });
+    },
+
     doModifyProject: function (projectId, acronym, project) {
         loadingStart();
         PUT("tt", "project", projectId, {
@@ -68,6 +102,16 @@
             message(i18n("tt.projectWasDeleted"));
         }).
         always(window.modules["tt.settings"].renderProjects);
+    },
+
+    doDeleteCustomField: function (customFieldId) {
+        loadingStart();
+        DELETE("tt", "customField", customFieldId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.customFieldWasDeleted"));
+        }).
+        always(window.modules["tt.settings"].renderCustomFields);
     },
 
     doSetWorkflowAlias: function (workflow, alias) {
@@ -153,40 +197,6 @@
         always(window.modules["tt.settings"].renderResolutions);
     },
 
-    doAddProjectUser: function (projectId, uid, roleId) {
-        loadingStart();
-        POST("tt", "role", false, {
-            projectId: projectId,
-            uid: uid,
-            roleId: roleId,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            window.modules["tt.settings"].projectUsers(projectId);
-        });
-    },
-
-    doAddProjectGroup: function (projectId, gid, roleId) {
-        loadingStart();
-        POST("tt", "role", false, {
-            projectId: projectId,
-            gid: gid,
-            roleId: roleId,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            window.modules["tt.settings"].projectGroups(projectId);
-        });
-    },
-
     doProjectDeleteRole: function (projectRoleId, projectId, user) {
         loadingStart();
         DELETE("tt", "role", projectRoleId).
@@ -217,90 +227,26 @@
         done(window.modules["tt.settings"].renderRoles);
     },
 
+    doModifyCustomField: function (customFieldId, options, fieldDisplay, fieldDescription, regex, format, link) {
+        loadingStart();
+        PUT("tt", "customField", customFieldId, {
+            options: options,
+            fieldDisplay: fieldDisplay,
+            fieldDescription: fieldDescription,
+            regex: regex,
+            format: format,
+            link: link,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.customFieldWasChanged"));
+        }).
+        always(window.modules["tt.settings"].renderCustomFields);
+    },
+
     /*
         UI functions
      */
-
-    deleteProject: function (projectId) {
-        mConfirm(i18n("tt.confirmProjectDelete", projectId.toString()), i18n("confirm"), `danger:${i18n("tt.projectDelete")}`, () => {
-            window.modules["tt.settings"].doDeleteProject(projectId);
-        });
-    },
-
-    deleteResolution: function (resolutionId) {
-        mConfirm(i18n("tt.confirmResolutionDelete", resolutionId.toString()), i18n("confirm"), `danger:${i18n("tt.resolutionDelete")}`, () => {
-            window.modules["tt.settings"].doDeleteResolution(resolutionId);
-        });
-    },
-
-    modifyProject: function (projectId) {
-        let project = false;
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                project = window.modules["tt"].meta.projects[i];
-                break;
-            }
-        }
-
-        cardForm({
-            title: i18n("tt.projectEdit"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "projectId",
-                    type: "text",
-                    readonly: true,
-                    value: project.projectId.toString(),
-                    title: i18n("tt.projectId"),
-                },
-                {
-                    id: "acronym",
-                    type: "text",
-                    value: project.acronym,
-                    title: i18n("tt.projectAcronym"),
-                    placeholder: i18n("tt.projectAcronym"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "project",
-                    type: "text",
-                    value: project.project,
-                    title: i18n("tt.projectProject"),
-                    placeholder: i18n("tt.projectProject"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "delete",
-                    type: "select",
-                    value: "",
-                    title: i18n("tt.projectDelete"),
-                    options: [
-                        {
-                            value: "",
-                            text: "",
-                        },
-                        {
-                            value: "yes",
-                            text: i18n("yes"),
-                        },
-                    ]
-                },
-            ],
-            callback: function (result) {
-                if (result.delete === "yes") {
-                    window.modules["tt.settings"].deleteProject(result.projectId);
-                } else {
-                    window.modules["tt.settings"].doModifyProject(result.projectId, result.acronym, result.project);
-                }
-            },
-        }).show();
-    },
 
     addProject: function () {
         cardForm({
@@ -375,15 +321,6 @@
                     }
                 },
                 {
-                    id: "fieldDisplay",
-                    type: "text",
-                    title: i18n("tt.customFieldDisplay"),
-                    placeholder: i18n("tt.customFieldDisplay"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
                     id: "type",
                     type: "select2",
                     title: i18n("tt.customFieldType"),
@@ -406,7 +343,24 @@
                             id: "Real",
                             text: i18n("tt.customFieldTypeReal"),
                         },
+                        {
+                            id: "Select",
+                            text: i18n("tt.customFieldTypeSelect"),
+                        },
+                        {
+                            id: "MultiSelect",
+                            text: i18n("tt.customFieldTypeMultiSelect"),
+                        },
                     ]
+                },
+                {
+                    id: "fieldDisplay",
+                    type: "text",
+                    title: i18n("tt.customFieldDisplay"),
+                    placeholder: i18n("tt.customFieldDisplay"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
                 },
             ],
             callback: function (result) {
@@ -415,42 +369,151 @@
         }).show();
     },
 
-    setWorkflowAlias: function (workflow) {
-        let w = '';
-
-        for (let i in window.modules["tt"].meta.workflowAliases) {
-            if (window.modules["tt"].meta.workflowAliases[i].workflow === workflow) {
-                w = window.modules["tt"].meta.workflowAliases[i].alias;
-                break;
-            }
+    addProjectUser: function (projectId, users, roles) {
+        let u = [];
+        for (let i in users) {
+            u.push({
+                id: i,
+                text: users[i],
+            })
         }
-
+        let r = [];
+        for (let i in roles) {
+            r.push({
+                id: i,
+                text: roles[i],
+            })
+        }
         cardForm({
-            title: i18n("tt.workflowAlias"),
+            title: i18n("tt.addProjectUser"),
             footer: true,
             borderless: true,
             topApply: true,
             fields: [
                 {
-                    id: "workflow",
-                    type: "text",
-                    title: i18n("tt.workflow"),
-                    value: workflow,
-                    readonly: true,
+                    id: "uid",
+                    type: "select2",
+                    title: i18n("tt.user"),
+                    options: u,
                 },
                 {
-                    id: "alias",
+                    id: "roleId",
+                    type: "select2",
+                    title: i18n("tt.role"),
+                    options: r,
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doAddProjectUser(projectId, result.uid, result.roleId);
+            },
+        }).show();
+    },
+
+    addProjectGroup: function (projectId, groups, roles) {
+        let g = [];
+        for (let i in groups) {
+            g.push({
+                id: i,
+                text: groups[i],
+            })
+        }
+        let r = [];
+        for (let i in roles) {
+            r.push({
+                id: i,
+                text: roles[i],
+            })
+        }
+        cardForm({
+            title: i18n("tt.addProjectGroup"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "gid",
+                    type: "select2",
+                    title: i18n("tt.group"),
+                    options: g,
+                },
+                {
+                    id: "roleId",
+                    type: "select2",
+                    title: i18n("tt.role"),
+                    options: r,
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doAddProjectGroup(projectId, result.gid, result.roleId);
+            },
+        }).show();
+    },
+
+    modifyProject: function (projectId) {
+        let project = false;
+        for (let i in window.modules["tt"].meta.projects) {
+            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
+                project = window.modules["tt"].meta.projects[i];
+                break;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.projectEdit"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "projectId",
                     type: "text",
-                    title: i18n("tt.workflowAlias"),
-                    placeholder: i18n("tt.workflowAlias"),
-                    value: w,
+                    readonly: true,
+                    value: project.projectId.toString(),
+                    title: i18n("tt.projectId"),
+                },
+                {
+                    id: "acronym",
+                    type: "text",
+                    value: project.acronym,
+                    title: i18n("tt.projectAcronym"),
+                    placeholder: i18n("tt.projectAcronym"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "project",
+                    type: "text",
+                    value: project.project,
+                    title: i18n("tt.projectProject"),
+                    placeholder: i18n("tt.projectProject"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "delete",
+                    type: "select",
+                    value: "",
+                    title: i18n("tt.projectDelete"),
+                    options: [
+                        {
+                            value: "",
+                            text: "",
+                        },
+                        {
+                            value: "yes",
+                            text: i18n("yes"),
+                        },
+                    ]
+                },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doSetWorkflowAlias(workflow, result.alias);
+                if (result.delete === "yes") {
+                    window.modules["tt.settings"].deleteProject(result.projectId);
+                } else {
+                    window.modules["tt.settings"].doModifyProject(result.projectId, result.acronym, result.project);
+                }
             },
         }).show();
     },
@@ -565,7 +628,7 @@
         for (let i in window.modules["tt"].meta.roles) {
             if (window.modules["tt"].meta.roles[i].roleId == roleId) {
                 name = window.modules["tt"].meta.roles[i].name;
-                display = window.modules["tt"].meta.roles[i].roleDisplay;
+                display = window.modules["tt"].meta.roles[i].nameDisplay;
             }
         }
 
@@ -602,6 +665,187 @@
             ],
             callback: function (result) {
                 window.modules["tt.settings"].doModifyRole(roleId, result.display);
+            },
+        }).show();
+    },
+
+    modifyCustomField: function (customFieldId) {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        fail(FAIL).
+        done(window.modules["tt"].tt).
+        done(() => {
+            let cf = {};
+            for (let i in window.modules["tt"].meta.customFields) {
+                if (window.modules["tt"].meta.customFields[i].customFieldId == customFieldId) {
+                    cf = window.modules["tt"].meta.customFields[i];
+                }
+            }
+
+            if (cf.workflow) {
+
+            } else {
+                let options = "";
+
+                cardForm({
+                    title: i18n("tt.customFieldField") + " " + i18n("tt.customFieldId") + customFieldId,
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    target: "#altForm",
+                    fields: [
+                        {
+                            id: "field",
+                            type: "text",
+                            title: i18n("tt.customFieldField"),
+                            readonly: true,
+                            value: cf.field,
+                        },
+                        {
+                            id: "type",
+                            type: "text",
+                            title: i18n("tt.customFieldType"),
+                            readonly: true,
+                            value: i18n("tt.customFieldType" + cf.type),
+                        },
+                        {
+                            id: "fieldDisplay",
+                            type: "text",
+                            title: i18n("tt.customFieldDisplay"),
+                            placeholder: i18n("tt.customFieldDisplay"),
+                            value: cf.fieldDisplay,
+                            validate: (v, prefix) => {
+                                return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "fieldDescription",
+                            type: "area",
+                            title: i18n("tt.customFieldDescription"),
+                            placeholder: i18n("tt.customFieldDescription"),
+                            value: cf.fieldDescription,
+                        },
+                        {
+                            id: "regex",
+                            type: "text",
+                            title: i18n("tt.customFieldRegex"),
+                            placeholder: i18n("tt.customFieldRegex"),
+                            value: cf.regex,
+                            hint: i18n("forExample") + " ^[A-Z0-9]+$",
+                            hidden: cf.type === "Select" || cf.type === "MultiSelect",
+                        },
+                        {
+                            id: "format",
+                            type: "text",
+                            title: i18n("tt.customFieldDisplayFormat"),
+                            placeholder: i18n("tt.customFieldDisplayFormat"),
+                            value: cf.regex,
+                            hint: i18n("forExample") + " %.02d",
+                            hidden: cf.type === "Text" || cf.type === "MultiSelect",
+                        },
+                        {
+                            id: "link",
+                            type: "text",
+                            title: i18n("tt.customFieldLink"),
+                            placeholder: i18n("tt.customFieldLink"),
+                            value: cf.link,
+                            hidden: cf.type === "Text" || cf.type === "MultiSelect",
+                        },
+                        {
+                            id: "options",
+                            type: "area",
+                            title: i18n("tt.customFieldOptions"),
+                            placeholder: i18n("tt.customFieldOptions"),
+                            value: options,
+                            hidden: cf.type !== "Select" && cf.type !== "MultiSelect",
+                        },
+                        {
+                            id: "delete",
+                            type: "select",
+                            value: "",
+                            title: i18n("tt.customFieldDelete"),
+                            options: [
+                                {
+                                    value: "",
+                                    text: "",
+                                },
+                                {
+                                    value: "yes",
+                                    text: i18n("yes"),
+                                },
+                            ]
+                        },
+                    ],
+                    callback: function (result) {
+                        if (result.delete === "yes") {
+                            window.modules["tt.settings"].deleteCustomField(customFieldId);
+                        } else {
+                            window.modules["tt.settings"].doModifyCustomField(customFieldId, result.options, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link);
+                        }
+                    },
+                    cancel: function () {
+                        $("#altForm").hide();
+                    }
+                }).show();
+            }
+        }).
+        always(loadingDone);
+    },
+
+    deleteProject: function (projectId) {
+        mConfirm(i18n("tt.confirmProjectDelete", projectId.toString()), i18n("confirm"), `danger:${i18n("tt.projectDelete")}`, () => {
+            window.modules["tt.settings"].doDeleteProject(projectId);
+        });
+    },
+
+    deleteCustomField: function (customFieldId) {
+        mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDeleteDelete")}`, () => {
+            window.modules["tt.settings"].doDeleteCustomField(customFieldId);
+        });
+    },
+
+    deleteResolution: function (resolutionId) {
+        mConfirm(i18n("tt.confirmResolutionDelete", resolutionId.toString()), i18n("confirm"), `danger:${i18n("tt.resolutionDelete")}`, () => {
+            window.modules["tt.settings"].doDeleteResolution(resolutionId);
+        });
+    },
+
+    setWorkflowAlias: function (workflow) {
+        let w = '';
+
+        for (let i in window.modules["tt"].meta.workflowAliases) {
+            if (window.modules["tt"].meta.workflowAliases[i].workflow === workflow) {
+                w = window.modules["tt"].meta.workflowAliases[i].alias;
+                break;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.workflowAlias"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "workflow",
+                    type: "text",
+                    title: i18n("tt.workflow"),
+                    value: workflow,
+                    readonly: true,
+                },
+                {
+                    id: "alias",
+                    type: "text",
+                    title: i18n("tt.workflowAlias"),
+                    placeholder: i18n("tt.workflowAlias"),
+                    value: w,
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                window.modules["tt.settings"].doSetWorkflowAlias(workflow, result.alias);
             },
         }).show();
     },
@@ -708,7 +952,7 @@
         for (let i in window.modules["tt"].meta.customFields) {
             customFields.push({
                 id: window.modules["tt"].meta.customFields[i].customFieldId,
-                text: window.modules["tt"].meta.customFields[i].field,
+                text: $.trim(window.modules["tt"].meta.customFields[i].fieldDisplay + " [" + window.modules["tt"].meta.customFields[i].field + "]"),
             });
         }
 
@@ -730,86 +974,6 @@
             ],
             callback: function (result) {
                 window.modules["tt.settings"].doSetProjectCustomFields(projectId, result.customFields);
-            },
-        }).show();
-    },
-
-    addProjectUser: function (projectId, users, roles) {
-        let u = [];
-        for (let i in users) {
-            u.push({
-                id: i,
-                text: users[i],
-            })
-        }
-        let r = [];
-        for (let i in roles) {
-            r.push({
-                id: i,
-                text: roles[i],
-            })
-        }
-        cardForm({
-            title: i18n("tt.addProjectUser"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "uid",
-                    type: "select2",
-                    title: i18n("tt.user"),
-                    options: u,
-                },
-                {
-                    id: "roleId",
-                    type: "select2",
-                    title: i18n("tt.role"),
-                    options: r,
-                },
-            ],
-            callback: function (result) {
-                window.modules["tt.settings"].doAddProjectUser(projectId, result.uid, result.roleId);
-            },
-        }).show();
-    },
-
-    addProjectGroup: function (projectId, groups, roles) {
-        let g = [];
-        for (let i in groups) {
-            g.push({
-                id: i,
-                text: groups[i],
-            })
-        }
-        let r = [];
-        for (let i in roles) {
-            r.push({
-                id: i,
-                text: roles[i],
-            })
-        }
-        cardForm({
-            title: i18n("tt.addProjectGroup"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "gid",
-                    type: "select2",
-                    title: i18n("tt.group"),
-                    options: g,
-                },
-                {
-                    id: "roleId",
-                    type: "select2",
-                    title: i18n("tt.role"),
-                    options: r,
-                },
-            ],
-            callback: function (result) {
-                window.modules["tt.settings"].doAddProjectGroup(projectId, result.gid, result.roleId);
             },
         }).show();
     },
@@ -844,13 +1008,13 @@
                 let users = {};
                 for (let i in response.users) {
                     if (response.users[i].uid) {
-                        users[response.users[i].uid] = "[" + response.users[i].login + "] " + response.users[i].realName;
+                        users[response.users[i].uid] = $.trim(response.users[i].realName + " [" + response.users[i].login + "]");
                     }
                 }
 
                 let roles = {};
                 for (let i in window.modules["tt"].meta.roles) {
-                    roles[window.modules["tt"].meta.roles[i].roleId] = "[" + window.modules["tt"].meta.roles[i].level + "] " + i18n("tt." + window.modules["tt"].meta.roles[i].name);
+                    roles[window.modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + window.modules["tt"].meta.roles[i].name) + " [" + window.modules["tt"].meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -946,13 +1110,13 @@
                 let groups = {};
                 for (let i in response.groups) {
                     if (response.groups[i].gid) {
-                        groups[response.groups[i].gid] = "[" + response.groups[i].acronym + "] " + response.groups[i].name;
+                        groups[response.groups[i].gid] = $.trim(response.groups[i].name + " [" + response.groups[i].acronym + "]");
                     }
                 }
 
                 let roles = {};
                 for (let i in window.modules["tt"].meta.roles) {
-                    roles[window.modules["tt"].meta.roles[i].roleId] = "[" + window.modules["tt"].meta.roles[i].level + "] " + i18n("tt." + window.modules["tt"].meta.roles[i].name);
+                    roles[window.modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + window.modules["tt"].meta.roles[i].name) + " [" + window.modules["tt"].meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1124,7 +1288,7 @@
         always(loadingDone);
     },
 
-    renderAllWorkflows: function () {
+    renderWorkflows: function () {
         loadingStart();
         GET("tt", "tt", false, true).
         done(window.modules["tt"].tt).
@@ -1391,6 +1555,7 @@
                                 },
                                 {
                                     data: i18n("tt.customFieldType" + window.modules["tt"].meta.customFields[i].type),
+                                    nowrap: true,
                                 },
                                 {
                                     data: window.modules["tt"].meta.customFields[i].workflow?i18n("yes"):i18n("no"),
@@ -1446,7 +1611,7 @@
                 break;
 
             case "workflows":
-                window.modules["tt.settings"].renderAllWorkflows();
+                window.modules["tt.settings"].renderWorkflows();
                 break;
 
             case "statuses":

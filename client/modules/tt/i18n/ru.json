@@ -47,9 +47,16 @@
     "customFieldField": "Поле",
     "customFieldType": "Тип",
     "customFieldWorflow": "Авто",
-    "customFieldDisplay": "Описание",
+    "customFieldDisplay": "Имя",
+    "customFieldDescription": "Описание",
     "customFieldTypeTextString": "Строка",
     "customFieldTypeTextArea": "Текст",
     "customFieldTypeInteger": "Целое",
-    "customFieldTypeReal": "Число"
+    "customFieldTypeReal": "Число",
+    "customFieldTypeSelect": "Выбор",
+    "customFieldTypeMultiSelect": "Множественный выбор",
+    "customFieldRegex": "Регулярное выражение",
+    "customFieldLink": "Ссылка для URL",
+    "customFieldDisplayFormat": "Форматирование",
+    "customFieldOptions": "Набор значений"
 }

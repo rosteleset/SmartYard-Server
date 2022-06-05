@@ -173,7 +173,8 @@ CREATE TABLE tt_issue_custom_fields
     field_display text not null,
     field_description text,
     regex text,
-    link text
+    link text,
+    format text
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(field);
 
@@ -191,9 +192,9 @@ CREATE TABLE tt_issue_custom_fields_options
 (
     custom_field_option_id integer not null primary key autoincrement,
     custom_field_id integer,
-    value text,
     option text not null,
-    option_display text
+    option_display text,                                                                                                -- only for workflow's fields
+    display_order integer
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_fields_options(custom_field_id, option);
 
