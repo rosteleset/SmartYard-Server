@@ -34,6 +34,18 @@ function cardForm(params) {
     h += `<tbody>`;
 
     for (let i in params.fields) {
+        if (params.fields[i].id === "-") {
+            h += "<tr class='mt-0 mb-0 pt-0 pb-0'>";
+            if (params.singleColumn) {
+                h += "<td class='mt-0 mb-0 pt-0 pb-0'>";
+            } else {
+                h += "<td colspan='2' class='mt-0 mb-0 pt-0 pb-0'>";
+            }
+            h += "<hr class='mt-0 mb-0 pt-0 pb-0'/>";
+            h += "</td>";
+            h += "</tr>";
+            continue;
+        }
         if (params.fields[i].options) {
             for (let j in params.fields[i].options) {
                 if (params.fields[i].options[j].id && !params.fields[i].options[j].value) {
@@ -209,6 +221,7 @@ function cardForm(params) {
         $(".modalFormField").removeClass("is-invalid");
         let invalid = [];
         for (let i in params.fields) {
+            if (params.fields[i].id === "-") continue;
             if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
                 if (!params.fields[i].validate($(`#${_prefix}${params.fields[i].id}`).val(), _prefix)) {
                     invalid.push(`#${_prefix}${params.fields[i].id}`);
@@ -219,6 +232,7 @@ function cardForm(params) {
             if (typeof params.callback === "function") {
                 let result = {};
                 for (let i in params.fields) {
+                    if (params.fields[i].id === "-") continue;
                     switch (params.fields[i].type) {
                         case "select":
                         case "select2":
@@ -296,6 +310,7 @@ function cardForm(params) {
     });
 
     for (let i in params.fields) {
+        if (params.fields[i].id === "-") continue;
 
         if (params.fields[i].value) {
             switch (params.fields[i].type) {

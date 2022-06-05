@@ -690,7 +690,89 @@
             }
 
             if (cf.workflow) {
+                let fields = [
+                    {
+                        id: "field",
+                        type: "text",
+                        title: i18n("tt.customFieldField"),
+                        readonly: true,
+                        value: cf.field,
+                    },
+                    {
+                        id: "type",
+                        type: "text",
+                        title: i18n("tt.customFieldType"),
+                        readonly: true,
+                        value: i18n("tt.customFieldType" + cf.type),
+                    },
+                    {
+                        id: "fieldDisplay",
+                        type: "text",
+                        title: i18n("tt.customFieldDisplay"),
+                        placeholder: i18n("tt.customFieldDisplay"),
+                        value: cf.fieldDisplay,
+                        validate: (v, prefix) => {
+                            return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "fieldDescription",
+                        type: "area",
+                        title: i18n("tt.customFieldDescription"),
+                        placeholder: i18n("tt.customFieldDescription"),
+                        value: cf.fieldDescription,
+                    },
+                    {
+                        id: "link",
+                        type: "text",
+                        title: i18n("tt.customFieldLink"),
+                        placeholder: i18n("tt.customFieldLink"),
+                        value: cf.link,
+                        hint: i18n("forExample") + " https://example.com/?search=%value%",
+                    },
+                ];
 
+                if (cf.type === "Select" || cf.type === "MultiSelect") {
+                    fields.push({
+                        id: "-",
+                    });
+                    for (let i in cf.options) {
+                        let t = cf.options[i].option;
+                        fields.push({
+                            id: "_cfWorkflowOption_" + cf.options[i].customFieldOptionId,
+                            type: "text",
+                            title: t,
+                            placeholder: t,
+                            value: cf.options[i].optionDisplay?cf.options[i].optionDisplay:cf.options[i].option,
+                            validate: (v, prefix) => {
+                                return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                            }
+                        });
+                    }
+                }
+
+                cardForm({
+                    title: i18n("tt.customFieldField") + " " + i18n("tt.customFieldId") + customFieldId,
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    target: "#altForm",
+                    fields: fields,
+                    callback: function (result) {
+                        let options = {};
+                        if (cf.type === "Select" || cf.type === "MultiSelect") {
+                            for (let i in result) {
+                                if (i.indexOf("_cfWorkflowOption_") === 0) {
+                                    options[i.split("_cfWorkflowOption_")[1]] = result[i];
+                                }
+                            }
+                        }
+                        window.modules["tt.settings"].doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, false, false, result.link, options);
+                    },
+                    cancel: function () {
+                        $("#altForm").hide();
+                    }
+                }).show();
             } else {
                 let options = "";
 
@@ -761,7 +843,6 @@
                             placeholder: i18n("tt.customFieldLink"),
                             value: cf.link,
                             hint: i18n("forExample") + " https://example.com/?search=%value%",
-                            hidden: cf.type === "Text" || cf.type === "MultiSelect",
                         },
                         {
                             id: "options",

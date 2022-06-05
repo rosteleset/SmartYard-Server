@@ -720,8 +720,20 @@
                         $sth->execute([
                             ":field_display" => $fieldDisplay,
                             ":field_description" => $fieldDescription,
-                            ":format" => $format,
+                            ":link" => $link,
                         ]);
+
+                        $upd = $this->db->prepare("update tt_issue_custom_fields_options set option_display = :display where issue_custom_field_id = $customFieldId and issue_custom_field_option_id = :option");
+
+                        foreach ($options as $option => $display) {
+                            if (!checkInt($option)) {
+                                return false;
+                            }
+                            $upd->execute([
+                                ":option" => $option,
+                                ":display" => $display,
+                            ]);
+                        }
                     } else {
                         $sth = $this->db->prepare("
                             update
