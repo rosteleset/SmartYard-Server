@@ -1,7 +1,107 @@
 ({
     init: function () {
         // submodule - module<dot>submodule
-        moduleLoaded("tt.createIssue", this);
+        moduleLoaded("tt.issue", this);
+    },
+
+    createIssue: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(window.modules["tt"].tt).
+        done(() => {
+
+            function workflowsByProject(project) {
+                let w = [
+                    {
+                        id: "",
+                        text: "-",
+                    }
+                ];
+
+                if (project) {
+                    for (let i in window.modules["tt"].meta.projects) {
+                        if (window.modules["tt"].meta.projects[i].projectId == project) {
+                            for (let j in window.modules["tt"].meta.projects[i].workflows) {
+                                let a = "";
+                                for (let k in window.modules["tt"].meta.workflowAliases) {
+                                    if (window.modules["tt"].meta.workflowAliases[k].workflow == window.modules["tt"].meta.projects[i].workflows[j]) {
+                                        a = window.modules["tt"].meta.workflowAliases[k].alias;
+                                        break;
+                                    }
+                                }
+                                w.push({
+                                    id: window.modules["tt"].meta.projects[i].workflows[j],
+                                    text: $.trim(a + " [" + window.modules["tt"].meta.projects[i].workflows[j] + "]"),
+                                    selected: $.cookie("lastIssueWorkflow") == window.modules["tt"].meta.projects[i].workflows[j],
+                                });
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                return w;
+            }
+
+            let projects = [];
+
+            projects.push({
+                id: "",
+                text: "-",
+            })
+
+            for (let i in window.modules["tt"].meta.projects) {
+                projects.push({
+                    id: window.modules["tt"].meta.projects[i].projectId,
+                    text: $.trim(window.modules["tt"].meta.projects[i].project + " [" + window.modules["tt"].meta.projects[i].acronym + "]"),
+                    selected: $.cookie("lastIssueProject") == window.modules["tt"].meta.projects[i].projectId,
+                });
+            }
+
+            let project = $.cookie("lastIssueProject")?$.cookie("lastIssueProject"):"";
+
+            window.modules["tt"].meta.projects
+            cardForm({
+                title: i18n("tt.createIssue"),
+                footer: true,
+                borderless: true,
+                noHover: true,
+                topApply: true,
+                singleColumn: true,
+                fields: [
+                    {
+                        id: "project",
+                        type: "select2",
+                        title: i18n("tt.project"),
+                        options: projects,
+                        minimumResultsForSearch: Infinity,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}workflow`).html("").select2({
+                                data: workflowsByProject(el.val()),
+                                minimumResultsForSearch: Infinity,
+                                language: window.lang["_code"],
+                            });
+                        }
+                    },
+                    {
+                        id: "workflow",
+                        type: "select2",
+                        title: i18n("tt.workflow"),
+                        minimumResultsForSearch: Infinity,
+                        options: workflowsByProject(project),
+                    },
+                ],
+                callback: function (result) {
+                    if (result.project && result.workflow) {
+                        $.cookie("lastIssueProject", result.project, { expires: 36500 });
+                        $.cookie("lastIssueWorkflow", result.workflow, { expires: 36500 });
+                    }
+                    console.log(result);
+                },
+            }).show();
+        }).
+        fail(FAIL).
+        always(loadingDone)
     },
 
     route: function (params) {

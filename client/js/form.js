@@ -78,7 +78,7 @@ function cardForm(params) {
                 }
                 h += `>`;
                 for (let j in params.fields[i].options) {
-                    if (params.fields[i].options[j].value == params.fields[i].value) {
+                    if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
                         h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
                     } else {
                         h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
@@ -112,7 +112,11 @@ function cardForm(params) {
                 }
                 h += `>`;
                 for (let j in params.fields[i].options) {
-                    h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
+                    if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
+                        h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
+                    } else {
+                        h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
+                    }
                 }
                 h += `</select>`;
                 h += `</div>`;
