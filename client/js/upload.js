@@ -21,7 +21,7 @@ function modalUpload(url, post, callback) {
                         <tr>
                             <td class="tdform">${i18n("chooseFile")}</td>
                             <td class="tdform-right">
-                                <input type="file" id="fileInput" style="display: none"/>
+                                <input type="file" id="fileInput" style="display: none" accept="image/*,application/pdf"/>
                                 <div class="input-group">
                                     <input id="fakeFileInput" type="text" class="form-control modalFormField" autocomplete="off" placeholder="${i18n("chooseFile")}" readonly="readonly">
                                     <div class="input-group-append">
@@ -104,7 +104,7 @@ function modalUpload(url, post, callback) {
             progress(Math.round((e.loaded / e.total)*100));
         });
 
-        request.addEventListener("load", response => {
+        request.addEventListener("loadend", response => {
             $("#uploadFileProgress").hide();
             if (request.status !== 200) {
                 error(request.statusText, request.status);
