@@ -23,6 +23,7 @@
     require_once "utils/generate_password.php";
     require_once "utils/clear_cache.php";
     require_once "utils/purifier.php";
+    require_once "utils/max_upload_size.php";
 
     require_once "backends/backend.php";
 

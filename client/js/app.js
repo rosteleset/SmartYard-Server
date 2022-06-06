@@ -2,6 +2,7 @@ var lastHash = false;
 var modules = [];
 var moduleLoadQueue = [];
 var currentPage = false;
+var mainSidebarFirst = true;
 
 function hashChange() {
     let hash = window.location.href.split('#')[1];

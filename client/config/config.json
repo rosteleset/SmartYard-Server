@@ -12,7 +12,8 @@
         "address",
         "users",
         "groups",
-        "permissions"
+        "permissions",
+        "about"
     ],
-    "defaultRoute": "#tt"
+    "defaultRoute": "#about"
 }

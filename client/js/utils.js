@@ -252,6 +252,10 @@ function findBootstrapEnvironment() {
     return curEnv;
 }
 
+function nl2br(str) {
+    return str.split("\n").join("<br />");
+}
+
 function i18n(msg, ...args) {
     try {
         let t = msg.split(".");
@@ -260,9 +264,15 @@ function i18n(msg, ...args) {
         }
         let loc;
         if (t.length === 2) {
-            loc = sprintf(window.lang[t[0]][t[1]], ...args);
+            loc = window.lang[t[0]][t[1]];
         } else {
-            loc = sprintf(window.lang[t[0]], ...args);
+            loc = window.lang[t[0]];
+        }
+        if (loc) {
+            if (typeof loc === "object" && Array.isArray(loc)) {
+                loc = loc.join("\n");
+            }
+            loc = sprintf(loc, ...args);
         }
         if (!loc) {
             return msg;
@@ -273,12 +283,18 @@ function i18n(msg, ...args) {
     }
 }
 
-function leftSide(button, title, target) {
+function leftSide(button, title, target, separator) {
+    if (separator && !mainSidebarFirst) {
+        $("#leftside-menu").append(`
+            <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
+        `);
+    }
+    mainSidebarFirst = false;
     $("#leftside-menu").append(`
         <li class="nav-item" title="${title}">
             <a href="${target}" class="nav-link">
                 <i class="${button} nav-icon"></i>
-                <p>${title}</p>
+                <p class="text-nowrap">${title}</p>
             </a>
         </li>
     `);

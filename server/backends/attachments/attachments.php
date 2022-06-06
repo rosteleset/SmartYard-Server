@@ -17,12 +17,21 @@
             /**
              * add file to storage
              *
-             * @param string $fileName
+             * @param string $meta
              * @param string $fileContent
              * @return string uuid
              */
 
-            abstract public function addFile($fileName, $fileContent);
+            abstract public function addFile($meta, $fileContent);
+
+            /**
+             * add file to storage
+             *
+             * @param string $meta
+             * @return string uuid
+             */
+
+            abstract public function uploadFile($meta);
 
             /**
              * get file from storage
