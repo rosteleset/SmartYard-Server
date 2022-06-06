@@ -21,5 +21,28 @@
                 error_log("------- BASE -------------" . $issueId . "++++++++++++++++++++++");
                 return true;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function createIssueTemplate()
+            {
+                // TODO: Implement createIssueTemplate() method.
+            }
+
+            public function availableActions($issueId)
+            {
+                // TODO: Implement availableActions() method.
+            }
+
+            public function actionTemplate($issueId, $action)
+            {
+                // TODO: Implement actionTemplate() method.
+            }
+
+            public function progressAction($issueId, $action, $fields)
+            {
+                // TODO: Implement progressAction() method.
+            }
         }
     }

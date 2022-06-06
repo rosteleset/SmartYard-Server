@@ -91,7 +91,7 @@
                         if ($m && $m[0] && $m[0]["allow"]) {
                             return true;
                         }
-                        if ($params["_id"] == $params["_uid"]) {
+                        if (@$params["_id"] == $params["_uid"]) {
                             $sth = $this->db->prepare("
                                 select 
                                     count(*) as allow

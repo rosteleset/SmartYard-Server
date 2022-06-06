@@ -15,8 +15,6 @@
     require_once "utils/checkint.php";
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
-    require_once "utils/clear_cache.php";
-    require_once "utils/cleanup.php";
 
     require_once "backends/backend.php";
 
@@ -101,11 +99,18 @@
 
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
         require_once "sql/install.php";
+        require_once "utils/clear_cache.php";
+        require_once "utils/reindex.php";
         init_db();
+        $n = clearCache(true);
+        echo "$n cache entries cleared\n\n";
+        reindex();
+        echo "\n";
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
+        require_once "utils/cleanup.php";
         cleanup();
         exit(0);
     }
@@ -117,6 +122,7 @@
     }
 
     if (count($args) == 1 && array_key_exists("--clear-cache", $args) && !isset($args["--clear-cache"])) {
+        require_once "utils/clear_cache.php";
         $n = clearCache(true);
         echo "$n cache entries cleared\n";
         exit(0);
