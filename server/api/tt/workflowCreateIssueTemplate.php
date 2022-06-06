@@ -16,7 +16,7 @@
 
             public static function GET($params) {
 //                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                return api::ANSWER(); // $cache must (?) be set to 0 (zero, i.e. no-cache)
             }
 
             public static function index() {
