@@ -26,6 +26,10 @@ CREATE INDEX core_users_real_name on core_users(real_name);
 CREATE UNIQUE INDEX core_users_e_mail on core_users(e_mail);
 CREATE INDEX core_users_phone on core_users(phone);
 
+-- admin - admin && user - user
+INSERT INTO core_users (uid, login, password, enabled) values (0, 'admin', '$2y$10$rU6/RIgJi5ojfuvibG5yHO/Gv5WnclTK6Rc8u.b9mdONHkVMnhJpy', 1);
+INSERT INTO core_users (login, password, enabled) values ('user', '$2y$10$hA0uXz.PaoKrycZP4AQwAe4WrW7PeEyXegMftWLAaClbQTDHb.MnC', 1);
+
 -- groups
 CREATE TABLE core_groups
 (
@@ -36,6 +40,9 @@ CREATE TABLE core_groups
 CREATE UNIQUE INDEX core_groups_acronym on core_groups(acronym);
 CREATE UNIQUE INDEX core_groups_name on core_groups(name);
 
+-- users group
+INSERT INTO core_groups (acronym, name) values ('users', 'users');
+
 -- users <-> groups
 CREATE TABLE core_users_groups
 (
@@ -45,6 +52,9 @@ CREATE TABLE core_users_groups
 CREATE INDEX core_users_groups_uid on core_users_groups(uid);
 CREATE INDEX core_users_groups_gid on core_users_groups(gid);
 CREATE UNIQUE INDEX core_users_groups_uid_gid on core_users_groups(uid, gid);
+
+-- user to users group
+INSERT INTO core_users_groups (uid, gid) values (1, 1);
 
 -- list of all api methods
 CREATE TABLE core_api_methods
