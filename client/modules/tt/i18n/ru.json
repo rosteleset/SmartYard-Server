@@ -15,7 +15,7 @@
     "confirmIssueTypeDelete": "Удалить тип задач #%s?",
     "confirmProjectDelete": "Удалить тип проект #%s?",
     "projectDelete": "Удалить проект",
-    "createIssue": "Создать",
+    "createIssue": "Новая задача",
     "project": "Проект",
     "subject": "Тема",
     "description": "Описание",

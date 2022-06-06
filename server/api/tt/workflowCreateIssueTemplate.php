@@ -9,21 +9,20 @@
         use api\api;
 
         /**
-         * project method
+         * workflowCreateIssueTemplate method
          */
 
-        class workflow extends api {
+        class workflowCreateIssueTemplate extends api {
 
-            public static function PUT($params) {
-                $success = loadBackend("tt")->setWorkflowAlias($params["workflow"], $params["alias"]);
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+            public static function GET($params) {
+//                $tt_resolutions = loadBackend("tt")->getResolutions;
+                return api::ANSWER();
             }
 
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "PUT" => "tt",
+                        "GET" => "tt",
                     ];
                 } else {
                     return false;

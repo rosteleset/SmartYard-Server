@@ -9,21 +9,20 @@
         use api\api;
 
         /**
-         * project method
+         * workflowAvailableActions method
          */
 
-        class workflow extends api {
+        class workflowAvailableActions extends api {
 
-            public static function PUT($params) {
-                $success = loadBackend("tt")->setWorkflowAlias($params["workflow"], $params["alias"]);
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+            public static function GET($params) {
+//                $tt_resolutions = loadBackend("tt")->getResolutions;
+                return api::ANSWER(); // $cache must be set to 0 (zero, i.e. no-cache)
             }
 
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "PUT" => "tt",
+                        "GET" => "tt",
                     ];
                 } else {
                     return false;

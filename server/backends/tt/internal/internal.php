@@ -268,6 +268,10 @@
                         ])) {
                             return false;
                         }
+                        $w = $this->loadWorkflow($workflow);
+                        if (!$w->initProject($projectId)) {
+                            return false;
+                        }
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

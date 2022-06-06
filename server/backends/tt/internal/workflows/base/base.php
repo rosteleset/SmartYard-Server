@@ -4,29 +4,22 @@
 
         class base extends workflow {
 
-            public function getStatuses()
-            {
-                // TODO: Implement getStatuses() method.
-            }
-
-            public function getResolutions()
-            {
-                // TODO: Implement getResolutions() method.
-            }
-
-            public function getCustomFields()
-            {
-                // TODO: Implement getCustomFields() method.
-            }
-
+            /**
+             * @inheritDoc
+             */
             public function initProject($projectId)
             {
                 error_log("******* BASE *************" . $projectId . "######################");
+                return true;
             }
 
+            /**
+             * @inheritDoc
+             */
             public function initIssue($issueId)
             {
                 error_log("------- BASE -------------" . $issueId . "++++++++++++++++++++++");
+                return true;
             }
         }
     }

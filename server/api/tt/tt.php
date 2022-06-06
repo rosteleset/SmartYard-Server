@@ -1,30 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/tt get task tracker metadata(s) [types, statuses, roles, resolutions...]
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName tt
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiSuccess {Object} tt metadata
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "tt": {
-     *      }
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X GET http://127.0.0.1:8000/server/api.php/tt/tt
-     */
-
-    /**
-     * server api
+     * tt api
      */
 
     namespace api\tt {

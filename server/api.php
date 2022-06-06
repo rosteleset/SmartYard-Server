@@ -292,7 +292,8 @@
                         $code = array_key_first($result);
                         if ((int)$code) {
                             if ($params["_request_method"] == "GET" && (int)$code === 200) {
-                                $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $redis_cache_ttl, json_encode($result));
+                                $ttl = (array_key_exists("cache", $result))?((int)$cache):$redis_cache_ttl;
+                                $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $ttl, json_encode($result));
                             }
                             response($code, $result[$code]);
                         } else {

@@ -1,97 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/project/:id get project
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName issue
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiSuccess {Object} issue issue
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "issue": {
-     *      }
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X GET http://127.0.0.1:8000/server/api.php/tt/project/1
-     */
-
-    /**
-     * @api {post} /tt/issue create project
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName issue
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-
-
-     * @apiParam {Number} uid user id
-     * @apiParam {string} login login
-     * @apiParam {string} password password
-     * @apiParam {string} realName real name
-     * @apiParam {string} eMail e-mail
-     * @apiParam {string} phone phone
-     *
-     * @apiSuccess {integer} issue_id issue_id
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "issue_id": 1
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X POST http://127.0.0.1:8000/server/api.php/tt/project/1
-     */
-
-    /**
-     * @api {put} /tt/project/:id modify project
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName issue
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 204 OK
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X PUT http://127.0.0.1:8000/server/api.php/tt/project/1
-     */
-
-    /**
-     * @api {delete} /tt/project/:id delete project
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName issue
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiSuccess {integer} issue_id issue_id
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 204 OK
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X DELETE http://127.0.0.1:8000/server/api.php/tt/project/1
-     */
-
-    /**
-     * server api
+     * tt api
      */
 
     namespace api\tt {
@@ -114,19 +24,19 @@
                 $success = false;
                 $tt = loadBackend("tt");
 
-                if (@$params["acronym"]) {
+                if (array_key_exists("acronym", $params)) {
                     $success = $tt->modifyProject($params["_id"], $params["acronym"]);
                 }
 
-                if (@$params["workflows"]) {
+                if (array_key_exists("workflows", $params)) {
                     $success = $tt->setProjectWorkflows($params["_id"], $params["workflows"]);
                 }
 
-                if (@$params["resolutions"]) {
+                if (array_key_exists("resolutions", $params)) {
                     $success = $tt->setProjectResolutions($params["_id"], $params["resolutions"]);
                 }
 
-                if (@$params["customFields"]) {
+                if (array_key_exists("customFields", $params)) {
                     $success = $tt->setProjectCustomFields($params["_id"], $params["customFields"]);
                 }
 

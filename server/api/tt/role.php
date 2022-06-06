@@ -1,46 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/role add role
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName role
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiSuccess {Object} issue issue
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "roleId": 1
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X POST http://127.0.0.1:8000/server/api.php/tt/role
-     */
-
-    /**
-     * @api {delete} /tt/role/:id delete role
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName issue
-     * @apiGroup tt
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 204 OK
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X DELETE http://127.0.0.1:8000/server/api.php/tt/role/1
-     */
-
-    /**
-     * server api
+     * tt api
      */
 
     namespace api\tt {

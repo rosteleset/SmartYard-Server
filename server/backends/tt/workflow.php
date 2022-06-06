@@ -28,14 +28,27 @@
                 $this->redis = $redis;
             }
 
+            /**
+             * @param $projectId
+             * @return boolean
+             */
             abstract public function initProject($projectId);
 
+            /**
+             * @param $issueId
+             * @return boolean
+             */
             abstract public function initIssue($issueId);
 
-            abstract public function getStatuses();
+            /**
+             * @return false|array
+             */
+            abstract public function createIssueTemplate();
 
-            abstract public function getResolutions();
+            abstract public function availableActions($issueId);
 
-            abstract public function getCustomFields();
+            abstract public function actionTemplate($issueId, $action);
+
+            abstract public function progressAction($issueId, $action, $fields);
         }
     }

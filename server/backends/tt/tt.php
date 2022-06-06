@@ -17,6 +17,8 @@
 
         abstract class tt extends backend {
 
+            private $workflows = [];
+
             /**
              * get available workflows
              *
@@ -54,6 +56,10 @@
             public function loadWorkflow($workflow) {
                 $workflow = trim($workflow);
 
+                if (array_key_exists($workflow, $this->workflows)) {
+                    return $this->workflows[$workflow];
+                }
+
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
                     error_log("preg_match fail!");
                     return false;
@@ -71,7 +77,9 @@
                 if (file_exists($file)) {
                     require_once $file;
                     if (class_exists("tt\\workflow\\" . $workflow)) {
-                        return new ("tt\\workflow\\" . $workflow)($this->config, $this->db, $this->redis);
+                        $w = new ("tt\\workflow\\" . $workflow)($this->config, $this->db, $this->redis);
+                        $this->workflows[$workflow] = $w;
+                        return $w;
                     } else {
                         error_log("class not found!");
                         return false;

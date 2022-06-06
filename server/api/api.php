@@ -66,14 +66,15 @@
              *
              * @param boolean|array $result
              * @param boolean|array|string|integer $answer
+             * @param integer $cache
              * @return array
              */
 
-            public static function ANSWER($result = true, $answer = false) {
+            public static function ANSWER($result = true, $answer = false, $cache = -1) {
                 if ($result === false) {
                     return self::ERROR($answer);
                 } else {
-                    return self::SUCCESS($answer, $result);
+                    return self::SUCCESS($answer, $result, $cache);
                 }
             }
 
@@ -82,22 +83,38 @@
              *
              * @param string $key
              * @param mixed $data
+             * @param integer $cache
              *
              * @return array[]|false[]
              */
 
-            public static function SUCCESS($key, $data) {
+            public static function SUCCESS($key, $data, $cache = -1) {
+                global $redis_cache_ttl;
+
+                $r = [];
+
                 if ($data !== false) {
-                    return [
+                    $r = [
                         "200" => [
                             $key => $data,
                         ],
                     ];
                 } else {
-                    return [
+                    $r = [
                         "204" => false,
                     ];
                 }
+
+                $cache = (int)$cache;
+                if ($cache < 0) {
+                    $cache = $redis_cache_ttl;
+                }
+
+                $r[] = [
+                    "cache" => $cache,
+                ];
+
+                return $r;
             }
 
             /**
