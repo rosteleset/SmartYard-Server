@@ -121,34 +121,32 @@
                 }
             }
 
-            let workflowName = "";
+            let workflowName = "[" + workflow + "]";
             for (let i in window.modules["tt"].meta.workflowAliases) {
                 if (window.modules["tt"].meta.workflowAliases[i].workflow == workflow) {
                     workflowName = $.trim(window.modules["tt"].meta.workflowAliases[i].alias + " [" + workflow + "]");
                 }
             }
 
-            cardForm({
-                title: i18n("tt.createIssueTitle"),
-                footer: true,
-                borderless: true,
-                target: "#mainForm",
-                apply: "create",
-                fields: [
-                    {
-                        id: "project",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.project"),
-                        value: projectName,
-                    },
-                    {
-                        id: "workflow",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.workflow"),
-                        value: workflowName,
-                    },
+            let fields = [
+                {
+                    id: "project",
+                    type: "text",
+                    readonly: true,
+                    title: i18n("tt.project"),
+                    value: projectName,
+                },
+                {
+                    id: "workflow",
+                    type: "text",
+                    readonly: true,
+                    title: i18n("tt.workflow"),
+                    value: workflowName,
+                },
+            ];
+
+/*
+                [
                     {
                         id: "subject",
                         type: "text",
@@ -181,6 +179,15 @@
                         ]
                     }
                 ],
+ */
+
+            cardForm({
+                title: i18n("tt.createIssueTitle"),
+                footer: true,
+                borderless: true,
+                target: "#mainForm",
+                apply: "create",
+                fields: fields,
                 callback: function (result) {
                     console.log(result);
                 },
