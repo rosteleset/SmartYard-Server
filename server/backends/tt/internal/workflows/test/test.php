@@ -27,7 +27,16 @@
              */
             public function createIssueTemplate()
             {
-                // TODO: Implement createIssueTemplate() method.
+                return [
+                    "fields" => [
+                        "subject",
+                        "description",
+                        "tags"
+                    ],
+                    "customFields" => [
+
+                    ]
+                ];
             }
 
             public function availableActions($issueId)
