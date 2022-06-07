@@ -114,8 +114,6 @@
 
             document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
-            let h = '';
-
             let projectName = "";
             for (let i in window.modules["tt"].meta.projects) {
                 if (window.modules["tt"].meta.projects[i].projectId == project) {
@@ -135,6 +133,7 @@
                 footer: true,
                 borderless: true,
                 target: "#mainForm",
+                apply: "create",
                 fields: [
                     {
                         id: "project",

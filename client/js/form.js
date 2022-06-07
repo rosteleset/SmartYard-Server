@@ -192,25 +192,6 @@ function cardForm(params) {
         h += `</tr>`;
     }
 
-/*
-    alternative to select2 tags
-
-    example with select2
-
-    $(".js-example-tags").select2({
-        tags: true
-    });
-
-    or use Tags:
-
-    h += `<td class="tdform">tags-test</td>`;
-    h += `<td class="tdform-right">`;
-    h += `<select class="form-control" id="tags-input" multiple data-allow-new="true" data-allow-clear="true" data-badge-style="info"><option disabled hidden value="">Choose a tag...</option><option value="Apple">Apple</option><option value="Banana">Banana</option><option value="Orange">Orange</option></select>`;
-    h += `</td>`;
-
-    $.Tags("#tags-input");
-*/
-
     h += `</tbody>`;
 
     if (params.footer) {
@@ -234,13 +215,44 @@ function cardForm(params) {
     h += `</div>`;
     h += `</div>`;
 
+    function getVal(i) {
+        switch (params.fields[i].type) {
+            case "select":
+            case "select2":
+            case "email":
+            case "tel":
+            case "date":
+            case "time":
+            case "password":
+            case "text":
+            case "area":
+                return $(`#${_prefix}${params.fields[i].id}`).val();
+
+            case "multiselect":
+                let o = [];
+                $(`.checkBoxOption-${params.fields[i].id}`).each(function () {
+                    if ($(this).prop("checked")) {
+                        o.push($(this).attr("data-id"));
+                    }
+                });
+                return o;
+
+            case "rich":
+                if (!$(`#${_prefix}${params.fields[i].id}`).summernote("isEmpty")) {
+                    return $(`#${_prefix}${params.fields[i].id}`).summernote("code");
+                } else {
+                    return "";
+                }
+        }
+    }
+
     function ok() {
         $(".modalFormField").removeClass("is-invalid");
         let invalid = [];
         for (let i in params.fields) {
             if (params.fields[i].id === "-") continue;
             if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
-                if (!params.fields[i].validate($(`#${_prefix}${params.fields[i].id}`).val(), _prefix)) {
+                if (!params.fields[i].validate(getVal(i), _prefix)) {
                     invalid.push(`#${_prefix}${params.fields[i].id}`);
                 }
             }
@@ -250,33 +262,7 @@ function cardForm(params) {
                 let result = {};
                 for (let i in params.fields) {
                     if (params.fields[i].id === "-") continue;
-                    switch (params.fields[i].type) {
-                        case "select":
-                        case "select2":
-                        case "email":
-                        case "tel":
-                        case "date":
-                        case "time":
-                        case "password":
-                        case "text":
-                        case "area":
-                            result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).val();
-                            break;
-
-                        case "multiselect":
-                            let o = [];
-                            $(`.checkBoxOption-${params.fields[i].id}`).each(function () {
-                                if ($(this).prop("checked")) {
-                                    o.push($(this).attr("data-id"));
-                                }
-                            });
-                            result[params.fields[i].id] = o;
-                            break;
-
-                        case "rich":
-                            result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).summernote("code");
-                            break;
-                    }
+                    result[params.fields[i].id] = getVal(i);
                 }
                 if (!params.target) {
                     $('#modal').modal('hide');
