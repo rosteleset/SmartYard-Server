@@ -101,3 +101,7 @@ select {
   font-weight: bold;
   font-family: Verdana, serif;
 }
+
+.modal-backdrop {
+  background-color: transparent;
+}

@@ -354,6 +354,10 @@ function initAll() {
         }
     });
 
+    $("#inputTextLine").off("keypress").on("keypress", event => {
+        if (event.keyCode === 13) $('#inputTextButton').click();
+    });
+
     $("#searchButton").off("click").on("click", () => {
         modules[currentPage].search($("#searchInput").val());
     });
