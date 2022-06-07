@@ -11,9 +11,7 @@
         $("#topMenuLeftDynamic").html(`<li class="ml-2 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n("about.about")}</li>`);
 
         $("#mainForm").html(nl2br(i18n("about.text")));
+
         loadingDone();
-
-        modalUpload([ "image/jpeg", "image/png", "application/pdf" ], 2 * 1024 * 1024, '/server/');
-
     },
 }).init();

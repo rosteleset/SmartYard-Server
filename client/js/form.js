@@ -152,6 +152,15 @@ function cardForm(params) {
                 h += `></textarea>`;
                 break;
 
+            case "rich":
+                h += `<textarea id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                h += `></textarea>`;
+                break;
+
             case "text":
             case "email":
             case "tel":
@@ -253,6 +262,7 @@ function cardForm(params) {
                         case "area":
                             result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).val();
                             break;
+
                         case "multiselect":
                             let o = [];
                             $(`.checkBoxOption-${params.fields[i].id}`).each(function () {
@@ -261,6 +271,10 @@ function cardForm(params) {
                                 }
                             });
                             result[params.fields[i].id] = o;
+                            break;
+
+                        case "rich":
+                            result[params.fields[i].id] = $(`#${_prefix}${params.fields[i].id}`).summernote("code");
                             break;
                     }
                 }
@@ -283,6 +297,23 @@ function cardForm(params) {
         if (typeof params.cancel === "function") {
             params.cancel();
         }
+    }
+
+    function allowNewSelect2Tags(params) {
+        let term = $.trim(params.term);
+
+        if (term === '') {
+            return null;
+        }
+
+        return {
+            id: term,
+            text: term
+        };
+    }
+
+    function denyNewSelect2Tags(params) {
+        return undefined;
     }
 
     let target;
@@ -338,11 +369,13 @@ function cardForm(params) {
         if (params.fields[i].button && typeof params.fields[i].button.click === "function") {
             $(`#${_prefix}${params.fields[i].id}-button`).off("click").on("click", params.fields[i].button.click);
         }
+
         if (params.fields[i].type === "select2") {
             $(`#${_prefix}${params.fields[i].id}`).select2({
                 language: window.lang["_code"],
                 minimumResultsForSearch: params.fields[i].minimumResultsForSearch?params.fields[i].minimumResultsForSearch:0,
                 tags: !!params.fields[i].tags,
+                createTag: params.fields[i].createTags?allowNewSelect2Tags:denyNewSelect2Tags,
             });
             if (typeof params.fields[i].select === "function") {
                 $(`#${_prefix}${params.fields[i].id}`).off("select2:select").on("select2:select", function () {
@@ -351,6 +384,25 @@ function cardForm(params) {
             }
             if (params.fields[i].value) {
                 $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value).trigger("change");
+            }
+        }
+        if (params.fields[i].type === "rich") {
+            $(`#${_prefix}${params.fields[i].id}`).summernote({
+                tabDisable: false,
+                tabsize: 4,
+                height: 300,
+                minHeight: null,
+                maxHeight: null,
+                disableResizeEditor: true,
+                lang: (window.lang["_code"] === "ru") ? "ru-RU" : "en-US",
+                toolbar: [
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                ],
+            });
+            if (params.fields[i].value) {
+                $(`#${_prefix}${params.fields[i].id}`).summernote("code", params.fields[i].value);
             }
         }
     }

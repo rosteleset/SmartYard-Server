@@ -130,107 +130,64 @@
                 }
             }
 
-            h += `<div class="card mt-2">`;
-            h += `<div class="card-header">`;
-            h += `<h3 class="card-title">`;
-            h += i18n("tt.createIssueTitle");
-            h += `</h3>`;
-            h += `</div>`;
-            h += `<div class="card-body table-responsive p-0">`;
-            h += `<table class="table table-hover tform-borderless">`;
-
-            h += `<tbody>`;
-
-            h += `
-            <tr>
-                <td class="tdform">${i18n("tt.project")}</td>
-                <td class="tdform-right">
-                    <input type="text" class="form-control" disabled="disabled" value="${projectName}">
-                </td>
-            </tr>
-        `;
-
-            h += `
-            <tr>
-                <td class="tdform">${i18n("tt.workflow")}</td>
-                <td class="tdform-right">
-                    <input type="text" class="form-control" disabled="disabled" value="${workflowName}">
-                </td>
-            </tr>
-        `;
-
-            h += `
-            <tr>
-                <td class="tdform">${i18n("tt.subject")}</td>
-                <td class="tdform-right">
-                    <input id="newIssueSubject" type="text" class="form-control" autocomplete="off" placeholder="${i18n("tt.subject")}">
-                </td>
-            </tr>
-        `;
-
-            h += `
-            <tr>
-                <td class="tdform-top">${i18n("tt.description")}</td>
-                <td class="tdform-right">
-                    <textarea id="newIssueDescription" class="form-control" autocomplete="off" placeholder="${i18n("tt.description")}"></textarea>
-                </td>
-            </tr>
-        `;
-
-            h += `
-            <tr>
-                <td class="tdform">${i18n("tt.tags")}</td>
-                <td class="tdform-right">
-                    <select id="newIssueTags" class="form-control" multiple="multiple"></select>
-                </td>
-            </tr>
-        `;
-
-            h += `</tbody>`;
-
-            h += `<tfoot>`;
-            h += `<tr>`;
-            h += `<td colspan="2">`;
-            h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n("tt.createIssue")}</button>`;
-            h += `<button type="cancel" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
-            h += `</td>`;
-            h += `</tr>`;
-            h += `</tfoot>`;
-
-            h += `</table>`;
-            h += `</div>`;
-            h += `</div>`;
-
-            $("#mainForm").html(h);
-
-            $(".modalFormCancel").off("click").on("click", () => {
-                history.back();
-            });
-
-            $("#newIssueDescription").summernote({
-                tabDisable: false,
-                tabsize: 4,
-                height: 300,
-                minHeight: null,
-                maxHeight: null,
-                disableResizeEditor: true,
-                lang: (window.lang["_code"] === "ru") ? "ru-RU" : "en-US",
-                toolbar: [
-                    ['font', ['bold', 'italic', 'underline', 'clear']],
-                    ['fontsize', ['fontsize']],
-                    ['color', ['color']],
+            cardForm({
+                title: i18n("tt.createIssueTitle"),
+                footer: true,
+                borderless: true,
+                target: "#mainForm",
+                fields: [
+                    {
+                        id: "project",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.project"),
+                        value: projectName,
+                    },
+                    {
+                        id: "workflow",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.workflow"),
+                        value: workflowName,
+                    },
+                    {
+                        id: "subject",
+                        type: "text",
+                        title: i18n("tt.subject"),
+                        placeholder: i18n("tt.subject"),
+                    },
+                    {
+                        id: "description",
+                        type: "rich",
+                        title: i18n("tt.description"),
+                        placeholder: i18n("tt.description"),
+                    },
+                    {
+                        id: "tags",
+                        type: "select2",
+                        tags: true,
+                        createTags: false,
+                        multiple: true,
+                        title: i18n("tt.tags"),
+                        placeholder: i18n("tt.tags"),
+                        options: [
+                            {
+                                id: 1,
+                                text: "one",
+                            },
+                            {
+                                id: 2,
+                                text: "two",
+                            }
+                        ]
+                    }
                 ],
-            });
-            $('.note-statusbar').hide();
-
-            $("#newIssueTags").select2({
-                tags: true,
-                language: window.lang["_code"],
-                placeholder: i18n("tt.tags"),
-            });
-
-            $(".newIssueSelect2").select2({
-                language: window.lang["_code"],
+                callback: function (result) {
+                    console.log(result);
+                },
+                cancel: () => {
+                    window.history.back();
+                },
             });
 
             loadingDone();

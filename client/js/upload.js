@@ -1,3 +1,5 @@
+// modalUpload([ "image/jpeg", "image/png", "application/pdf" ], 2 * 1024 * 1024, '/server/');
+
 function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
     let h = `
         <div class="card mt-0 mb-0">
