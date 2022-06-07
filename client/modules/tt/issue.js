@@ -105,36 +105,43 @@
     },
 
     createIssueForm(project, workflow) {
-        document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
+        loadingStart();
+        QUERY("tt", "workflowCreateIssueTemplate", {
+            workflow: workflow,
+        }).
+        done(response => {
+            console.log(response);
 
-        let h = '';
+            document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
-        let projectName = "";
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == project) {
-                projectName = $.trim(window.modules["tt"].meta.projects[i].project + " [" + window.modules["tt"].meta.projects[i].acronym + "]");
+            let h = '';
+
+            let projectName = "";
+            for (let i in window.modules["tt"].meta.projects) {
+                if (window.modules["tt"].meta.projects[i].projectId == project) {
+                    projectName = $.trim(window.modules["tt"].meta.projects[i].project + " [" + window.modules["tt"].meta.projects[i].acronym + "]");
+                }
             }
-        }
 
-        let workflowName = "";
-        for (let i in window.modules["tt"].meta.workflowAliases) {
-            if (window.modules["tt"].meta.workflowAliases[i].workflow == workflow) {
-                workflowName = $.trim(window.modules["tt"].meta.workflowAliases[i].alias + " [" + workflow + "]");
+            let workflowName = "";
+            for (let i in window.modules["tt"].meta.workflowAliases) {
+                if (window.modules["tt"].meta.workflowAliases[i].workflow == workflow) {
+                    workflowName = $.trim(window.modules["tt"].meta.workflowAliases[i].alias + " [" + workflow + "]");
+                }
             }
-        }
 
-        h += `<div class="card mt-2">`;
-        h += `<div class="card-header">`;
-        h += `<h3 class="card-title">`;
-        h += i18n("tt.createIssueTitle");
-        h += `</h3>`;
-        h += `</div>`;
-        h += `<div class="card-body table-responsive p-0">`;
-        h += `<table class="table table-hover tform-borderless">`;
+            h += `<div class="card mt-2">`;
+            h += `<div class="card-header">`;
+            h += `<h3 class="card-title">`;
+            h += i18n("tt.createIssueTitle");
+            h += `</h3>`;
+            h += `</div>`;
+            h += `<div class="card-body table-responsive p-0">`;
+            h += `<table class="table table-hover tform-borderless">`;
 
-        h += `<tbody>`;
+            h += `<tbody>`;
 
-        h += `
+            h += `
             <tr>
                 <td class="tdform">${i18n("tt.project")}</td>
                 <td class="tdform-right">
@@ -143,7 +150,7 @@
             </tr>
         `;
 
-        h += `
+            h += `
             <tr>
                 <td class="tdform">${i18n("tt.workflow")}</td>
                 <td class="tdform-right">
@@ -152,7 +159,7 @@
             </tr>
         `;
 
-        h += `
+            h += `
             <tr>
                 <td class="tdform">${i18n("tt.subject")}</td>
                 <td class="tdform-right">
@@ -161,7 +168,7 @@
             </tr>
         `;
 
-        h += `
+            h += `
             <tr>
                 <td class="tdform-top">${i18n("tt.description")}</td>
                 <td class="tdform-right">
@@ -170,7 +177,7 @@
             </tr>
         `;
 
-        h += `
+            h += `
             <tr>
                 <td class="tdform">${i18n("tt.tags")}</td>
                 <td class="tdform-right">
@@ -179,72 +186,80 @@
             </tr>
         `;
 
-        h += `</tbody>`;
+            h += `</tbody>`;
 
-        h += `<tfoot>`;
-        h += `<tr>`;
-        h += `<td colspan="2">`;
-        h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n("tt.createIssue")}</button>`;
-        h += `<button type="cancel" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
-        h += `</td>`;
-        h += `</tr>`;
-        h += `</tfoot>`;
+            h += `<tfoot>`;
+            h += `<tr>`;
+            h += `<td colspan="2">`;
+            h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n("tt.createIssue")}</button>`;
+            h += `<button type="cancel" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
+            h += `</td>`;
+            h += `</tr>`;
+            h += `</tfoot>`;
 
-        h += `</table>`;
-        h += `</div>`;
-        h += `</div>`;
+            h += `</table>`;
+            h += `</div>`;
+            h += `</div>`;
 
-        $("#mainForm").html(h);
+            $("#mainForm").html(h);
 
-        $(".modalFormCancel").off("click").on("click", () => {
-            history.back();
-        });
+            $(".modalFormCancel").off("click").on("click", () => {
+                history.back();
+            });
 
-        $("#newIssueDescription").summernote({
-            tabDisable: false,
-            tabsize: 4,
-            height: 300,
-            minHeight: null,
-            maxHeight: null,
-            disableResizeEditor: true,
-            lang: (window.lang["_code"] === "ru") ? "ru-RU" : "en-US",
-            toolbar: [
-                ['font', ['bold', 'italic', 'underline', 'clear']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']],
-            ],
-        });
-        $('.note-statusbar').hide();
+            $("#newIssueDescription").summernote({
+                tabDisable: false,
+                tabsize: 4,
+                height: 300,
+                minHeight: null,
+                maxHeight: null,
+                disableResizeEditor: true,
+                lang: (window.lang["_code"] === "ru") ? "ru-RU" : "en-US",
+                toolbar: [
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                ],
+            });
+            $('.note-statusbar').hide();
 
-        $("#newIssueTags").select2({
-            tags: true,
-            language: window.lang["_code"],
-            placeholder: i18n("tt.tags"),
-        });
+            $("#newIssueTags").select2({
+                tags: true,
+                language: window.lang["_code"],
+                placeholder: i18n("tt.tags"),
+            });
 
-        $(".newIssueSelect2").select2({
-            language: window.lang["_code"],
+            $(".newIssueSelect2").select2({
+                language: window.lang["_code"],
+            });
+
+            loadingDone();
+        }).
+        fail(FAIL).
+        fail(() => {
+            window.history.back();
         });
     },
 
     route: function (params) {
         $("#altForm").hide();
 
-        console.log(params);
-
         GET("tt", "tt").
-        done(window.modules["tt"].tt).
         fail(FAIL).
+        fail(() => {
+            window.history.back();
+        }).
+        done(window.modules["tt"].tt).
         done(() => {
             switch (params.action) {
                 case "create":
                     window.modules["tt.issue"].createIssueForm(params.project, params.workflow);
                     break;
                 default:
+                    loadingDone();
                     page404();
                     break;
             }
-        }).
-        always(loadingDone);
+        });
     },
 }).init();

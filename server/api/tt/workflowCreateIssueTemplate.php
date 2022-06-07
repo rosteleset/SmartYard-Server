@@ -15,8 +15,10 @@
         class workflowCreateIssueTemplate extends api {
 
             public static function GET($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER(); // $cache must (?) be set to 0 (zero, i.e. no-cache)
+                $workflow = $params["workflow"];
+                $template = loadBackend("tt")->loadWorkflow($workflow)->createIssueTemplate();
+
+                return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
             }
 
             public static function index() {
