@@ -15,10 +15,16 @@
         class workflowCreateIssueTemplate extends api {
 
             public static function GET($params) {
-                $workflow = $params["workflow"];
-                $template = loadBackend("tt")->loadWorkflow($workflow)->createIssueTemplate();
+                $workflow = @$params["workflow"];
+                if ($workflow) {
+                    $w = loadBackend("tt")->loadWorkflow($workflow);
+                    if ($w) {
+                        $template = $w->createIssueTemplate();
 
-                return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
+                        return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
+                    }
+                }
+                return api::ERROR("notAcceptable");
             }
 
             public static function index() {
