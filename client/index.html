@@ -22,10 +22,13 @@
     <link rel="stylesheet" href="lib/AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- summernote -->
     <link rel="stylesheet" href="lib/AdminLTE/plugins/summernote/summernote-bs4.min.css">
+    <!-- loading-bar -->
+    <link rel="stylesheet" href="lib/loading-bar/dist/loading-bar.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="lib/AdminLTE/dist/css/adminlte.min.css">
     <!-- app css -->
     <link rel="stylesheet" href="css/index.css">
+
 
     <!-- wait for fully load -->
     <script type="application/javascript">
@@ -56,11 +59,15 @@
 <body class="hold-transition sidebar-mini">
 
     <div id="loading" class="centre-of-all" data-keyboard="false" data-backdrop="static" style="z-index: 1000;">
-        <svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-wedges" style="background: white; border-radius: 100px;"><g transform="translate(50,50)"><g ng-attr-transform="scale({{config.scale}})" transform="scale(0.7)"><g transform="translate(-50,-50)"><g transform="rotate(104.073 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="0.75s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c1}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" fill-opacity="0.8" fill="#337ab7"></path></g><g transform="rotate(348.054 50.0001 50.0001)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c2}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(90 50 50)" fill-opacity="0.8" fill="#5bc0de"></path></g><g transform="rotate(232.036 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1.5s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c3}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(180 50 50)" fill-opacity="0.8" fill="#5cb85c"></path></g><g transform="rotate(116.018 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="3s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c4}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(270 50 50)" fill-opacity="0.8" fill="#f0ad4e"></path></g></g></g></g></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-wedges" style="background: white; border-radius: 100px;"><g transform="translate(50,50)"><g ng-attr-transform="scale({{config.scale}})" transform="scale(0.7)"><g transform="translate(-50,-50)"><g transform="rotate(104.073 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="0.75s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c1}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" fill-opacity="0.8" fill="#337ab7"></path></g><g transform="rotate(348.054 50.0001 50.0001)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c2}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(90 50 50)" fill-opacity="0.8" fill="#5bc0de"></path></g><g transform="rotate(232.036 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1.5s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c3}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(180 50 50)" fill-opacity="0.8" fill="#5cb85c"></path></g><g transform="rotate(116.018 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="3s" begin="0s" repeatCount="indefinite"></animateTransform><path ng-attr-fill-opacity="{{config.opacity}}" ng-attr-fill="{{config.c4}}" d="M50 50L50 0A50 50 0 0 1 100 50Z" transform="rotate(270 50 50)" fill-opacity="0.8" fill="#f0ad4e"></path></g></g></g></g></svg>
     </div>
 
     <div id="timeout" class="centre-of-all" data-keyboard="false" data-backdrop="static" style="z-index: 1000; display: none;">
         <svg xmlns="http://www.w3.org/2000/svg" style="margin: auto; background: none; display: block;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><defs><clipPath id="ldio-5up9ejzpks-cp" x="0" y="0" width="100" height="100"><rect x="0" y="0" width="0" height="100"><animate class="timeout-animate" attributeName="width" repeatCount="1" dur="30s" values="0;100;100" keyTimes="0;0.5;1"></animate><animate class="timeout-animate" attributeName="x" repeatCount="1" dur="30s" values="0;0;100" keyTimes="0;0.5;1"></animate></rect></clipPath></defs><path fill="#ffffff" stroke="#e15b64" stroke-width="2.7928" d="M82 63H18c-7.2 0-13-5.8-13-13v0c0-7.2 5.8-13 13-13h64c7.2 0 13 5.8 13 13v0C95 57.2 89.2 63 82 63z"></path><path fill="#f8b26a" clip-path="url(#ldio-5up9ejzpks-cp)" d="M81.3 58.7H18.7c-4.8 0-8.7-3.9-8.7-8.7v0c0-4.8 3.9-8.7 8.7-8.7h62.7c4.8 0 8.7 3.9 8.7 8.7v0C90 54.8 86.1 58.7 81.3 58.7z"></path></svg>
+    </div>
+
+    <div id="progress" class="centre-of-all" data-keyboard="false" data-backdrop="static" style="z-index: 1000; display: none;">
+        <div id="loadingProgress" class="ldBar label-center" data-value="10" data-preset="bubble" data-unit="USD" data-pattern-size="64" data-fill="img/clouds.svg" style="width:200px; height:200px"></div>
     </div>
 
     <div id="page404" class="centre-of-all" data-keyboard="false" data-backdrop="static" style="z-index: 1000; display: none;">
@@ -344,6 +351,8 @@
     <script src="lib/AdminLTE/plugins/summernote/summernote-bs4.min.js"></script>
     <script src="lib/AdminLTE/plugins/summernote/lang/summernote-en-US.min.js"></script>
     <script src="lib/AdminLTE/plugins/summernote/lang/summernote-ru-RU.min.js"></script>
+    <!-- loading-bar -->
+    <script src="lib/loading-bar/dist/loading-bar.min.js"></script>
     <!-- API -->
     <script src="js/api.js"></script>
     <!-- Table creation -->

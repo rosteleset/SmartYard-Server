@@ -95,3 +95,9 @@ select {
   font-size: .875rem!important;
   margin: -0.15rem 0 -0.75rem;
 }
+
+.ldBar-label {
+  font-size: 24pt;
+  font-weight: bold;
+  font-family: Verdana, serif;
+}

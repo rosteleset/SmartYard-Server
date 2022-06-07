@@ -1,4 +1,4 @@
-function modalUpload(url, post, callback) {
+function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
     let h = `
         <div class="card mt-0 mb-0">
             <div class="card-header">
@@ -11,17 +11,10 @@ function modalUpload(url, post, callback) {
                         <tr style="display: none">
                             <td colspan="2" id="uploadFileInfo">&nbsp;</td>
                         </tr>
-                        <tr style="display: none" id="uploadFileProgress">
-                            <td colspan="2" class="pb-0">
-                                <div class="progress">
-                                    <div id="uploadFileProgressBar" class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width: 40%">&nbsp;</div>
-                                </div>
-                            </td>
-                        </tr>
                         <tr>
                             <td class="tdform">${i18n("chooseFile")}</td>
                             <td class="tdform-right">
-                                <input type="file" id="fileInput" style="display: none" accept="image/*,application/pdf"/>
+                                <input type="file" id="fileInput" style="display: none" accept="${mimeTypes?mimeTypes.join(","):""}"/>
                                 <div class="input-group">
                                     <input id="fakeFileInput" type="text" class="form-control modalFormField" autocomplete="off" placeholder="${i18n("chooseFile")}" readonly="readonly">
                                     <div class="input-group-append">
@@ -44,7 +37,7 @@ function modalUpload(url, post, callback) {
     $("#modalUploadBody").html(h);
 
     function progress(p) {
-        $("#uploadFileProgressBar").attr("aria-valuenow", p).css("width", p + "%");
+        loadingProgress.set(p);
     }
 
     $("#fakeFileInputButton").off("click").on("click", () => {
@@ -57,7 +50,10 @@ function modalUpload(url, post, callback) {
             if (files && files.length && files[0].name) {
                 $("#fakeFileInput").val(files[0].name);
                 $("#uploadFileInfo").html(`
-                    ${files[0]}<br />
+                    ${i18n("fileName")}: ${files[0].name}<br />
+                    ${i18n("fileSize")}: ${formatBytes(files[0].size)}<br />
+                    ${i18n("fileDate")}: ${date("Y-m-d H:i", files[0].lastModified / 1000)}<br />
+                    ${i18n("fileType")}: ${files[0].type}<br />
                 `).parent().show();
                 console.log(document.querySelector("#fileInput").files);
             }
@@ -70,28 +66,31 @@ function modalUpload(url, post, callback) {
             return;
         }
 
-        $("#uploadFileProgress").show();
-
         let file = document.querySelector('#fileInput').files[0];
-//            let allowed_size_mb = 20;
-//            let allowed_mime_types = [ 'image/jpeg', 'image/png' ];
-//
-//            if(allowed_mime_types.indexOf(file.type) == -1) {
-//                alert('Error : Incorrect file type');
-//                return;
-//            }
-//
-//            if(file.size > allowed_size_mb*1024*1024) {
-//                alert('Error : Exceeded size');
-//                return;
-//            }
+
+        if (mimeTypes && mimeTypes.indexOf(file.type) === -1) {
+            error("incorrectFileType");
+            return;
+        }
+
+        if (maxSize && file.size > maxSize) {
+            error("exceededSize");
+            return;
+        }
+
+        $('#modalUpload').modal('hide');
+
+        autoZ($('#progress').modal({
+            backdrop: 'static',
+            keyboard: false,
+        }));
 
         let data = new FormData();
 
         data.append('file', file);
 
-        for (let i in post) {
-            data.append(i, post[i]);
+        for (let i in postFields) {
+            data.append(i, postFields[i]);
         }
 
         data.append("_token", $.cookie("_token"));
@@ -99,13 +98,12 @@ function modalUpload(url, post, callback) {
         let request = new XMLHttpRequest();
         request.open('POST', url);
 
-        // upload progress event
         request.upload.addEventListener('progress', function(e) {
-            progress(Math.round((e.loaded / e.total)*100));
+            progress(Math.floor((e.loaded / e.total)*100));
         });
 
         request.addEventListener("loadend", response => {
-            $("#uploadFileProgress").hide();
+            $('#progress').modal('hide');
             if (request.status !== 200) {
                 error(request.statusText, request.status);
             } else {
@@ -113,11 +111,6 @@ function modalUpload(url, post, callback) {
                     callback(response);
                 }
             }
-        });
-
-        request.addEventListener("error", error => {
-            $("#uploadFileProgress").hide();
-            console.log(error);
         });
 
         request.send(data);

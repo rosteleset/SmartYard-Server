@@ -3,6 +3,7 @@ var modules = [];
 var moduleLoadQueue = [];
 var currentPage = false;
 var mainSidebarFirst = true;
+var loadingProgress = new ldBar("#loadingProgress");
 
 function hashChange() {
     let hash = window.location.href.split('#')[1];

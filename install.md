@@ -13,6 +13,7 @@ cd client/lib
 git clone https://github.com/ColorlibHQ/AdminLTE
 git clone https://github.com/davidshimjs/qrcodejs
 git clone https://github.com/lekoala/bootstrap5-tags
+git clone https://github.com/loadingio/loading-bar
 ```
 
 edit db, redis and email settings (email - optional)

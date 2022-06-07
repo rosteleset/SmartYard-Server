@@ -13,6 +13,7 @@
         $("#mainForm").html(nl2br(i18n("about.text")));
         loadingDone();
 
-        modalUpload('/server/');
+        modalUpload([ "image/jpeg", "image/png", "application/pdf" ], 2 * 1024 * 1024, '/server/');
+
     },
 }).init();
