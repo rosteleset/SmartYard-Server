@@ -89,31 +89,6 @@ function error(message, caption, timeout) {
     });
 }
 
-function mText(title, text, callback, singleline) {
-    $('#inputTextLabel').html(title);
-    if (singleline === true) {
-        $('#inputTextBody').hide();
-        $('#inputTextLine').val(text).show();
-    } else {
-        $('#inputTextBody').val(text).show();
-        $('#inputTextLine').hide();
-    }
-    $('#inputTextButton').off('click').on('click', () => {
-        $('#inputText').modal('hide');
-        let r = $.trim((singleline === true)?$('#inputTextLine').val():$('#inputTextBody').val());
-        if (typeof callback == 'function' && r) {
-            callback(r);
-        }
-    });
-    autoZ($('#inputText').modal('show'));
-    if (singleline === true) {
-        $('#inputTextLine').focus();
-    } else {
-        $('#inputTextBody').focus();
-    }
-    xblur();
-}
-
 // button - "class(danger, warning, success....):текст"
 function mConfirm(body, title, button, callback) {
     if (!title) {
