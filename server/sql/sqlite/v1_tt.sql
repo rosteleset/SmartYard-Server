@@ -67,7 +67,7 @@ CREATE TABLE tt_issues
     description text not null,                                                                                          -- description
     author integer,                                                                                                     -- uid
     issue_status_id integer,                                                                                            -- status
-    issue_resolution_id integer,                                                                                          -- resolution
+    issue_resolution_id integer,                                                                                        -- resolution
     created text not null,                                                                                              -- "YYYY-MM-DD HH:MM:SS.SSS"
     updated text                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
 );

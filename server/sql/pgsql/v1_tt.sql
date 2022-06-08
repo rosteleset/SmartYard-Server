@@ -125,7 +125,7 @@ CREATE TABLE tt_issue_comments
 (
     issue_comment_id serial not null primary key,
     issue_id integer,                                                                                                   -- issue
-    comment character                                                                                                   -- comment
+    comment character varying,                                                                                          -- comment
     role_id integer,                                                                                                    -- permission level
     created timestamp,                                                                                                  -- "YYYY-MM-DD HH:MM:SS.SSS"
     updated timestamp,                                                                                                  -- "YYYY-MM-DD HH:MM:SS.SSS"
@@ -140,7 +140,7 @@ CREATE TABLE tt_issue_attachments
     issue_id integer,                                                                                                   -- issue
     uuid character varying,                                                                                             -- file uuid for attachments backend
     role_id integer,                                                                                                    -- permission level
-    created timestamp                                                                                                   -- "YYYY-MM-DD HH:MM:SS.SSS"
+    created timestamp,                                                                                                  -- "YYYY-MM-DD HH:MM:SS.SSS"
     author integer                                                                                                      -- uid
 );
 CREATE INDEX tt_issue_attachments_issue_id on tt_issue_attachments(issue_id);
