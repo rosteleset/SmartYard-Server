@@ -349,6 +349,14 @@ function cardForm(params) {
                 case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
                     break;
+
+                case "multiselect":
+                    console.log(params.fields[i].value);
+                    $(`.checkBoxOption-${params.fields[i].id}`).prop("checked", false);
+                    for (let j in params.fields[i].value) {
+                        $(`.checkBoxOption-${params.fields[i].id}[data-id='${params.fields[i].value[j]}']`).prop("checked", true);
+                    }
+                    break;
             }
         }
 

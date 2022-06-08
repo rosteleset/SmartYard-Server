@@ -104,6 +104,10 @@
         always(loadingDone)
     },
 
+    issueField: function (custom, field, value) {
+
+    },
+
     createIssueForm(project, workflow) {
         loadingStart();
         QUERY("tt", "workflowCreateIssueTemplate", {

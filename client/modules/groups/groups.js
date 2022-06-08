@@ -2,7 +2,7 @@
     startPage: 1,
 
     init: function () {
-        if (AVAIL("accounts", "groups")) {
+        if (AVAIL("accounts", "group")) {
             leftSide("fas fa-fw fa-users", i18n("groups.groups"), "#groups");
         }
         moduleLoaded("groups", this);
@@ -160,54 +160,48 @@
         loadingStart();
         GET("accounts", "users", false, true).done(users => {
             GET("accounts", "groupUsers", gid, true).done(uids => {
-                let h = '';
-                h = `<div class="card mt-2 mb-0">`;
-                h += `<div class="card-header">`;
-                h += `<h3 class="card-title">`;
-                h += `<button class="btn btn-success btn-xs btn-tool-rbt-left mr-2 modalFormOk" id="groupFormApply" title="${i18n("apply")}"><i class="fas fa-fw fa-check-circle"></i></button> `;
-                h += i18n("groups.users") + " " + i18n("groups.gid") + gid;
-                h += `</h3>`;
-                h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right" id="groupFormCancel" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
-                h += `</div>`;
-                h += `<div class="card-body pb-0" style="overflow: auto;">`;
-                h += `<div class="form-group">`;
+                console.log(uids);
+
+                let users_list = [];
+
                 for (let i in users.users) {
-                    let id = md5(guid());
-                    h += `
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="gidToUid custom-control-input" id="${id}" uid="${users.users[i].uid}" ${(uids.uids.indexOf(users.users[i].uid) >= 0)?"checked":""}/>
-                            <label for="${id}" class="custom-control-label">${users.users[i].login + (users.users[i].realName?(" [" + users.users[i].realName + "]"):"")}</label>
-                        </div>
-                    `;
-                }
-                h += `</div>`;
-                h += `</div>`;
-                h += `</div>`;
-
-                $("#altForm").html(h).show();
-
-                $("#groupFormApply").off("click").on("click", () => {
-                    loadingStart();
-                    $("#altForm").hide();
-                    let uids = [];
-                    $(".gidToUid").each(function () {
-                        if ($(this).prop("checked")) {
-                            uids.push($(this).attr("uid"));
-                        }
+                    users_list.push({
+                        id: users.users[i].uid,
+                        text: $.trim(users.users[i].realName + " [" + users.users[i].login + "]"),
                     });
-                    PUT("accounts", "groupUsers", gid, {
-                        uids: uids,
-                    }).
-                    fail(FAIL).
-                    done(() => {
-                        message(i18n("groups.groupWasChanged"));
-                    }).
-                    always(window.modules["groups"].render);
-                });
+                }
 
-                $("#groupFormCancel").off("click").on("click", () => {
-                    $("#altForm").hide();
-                });
+                cardForm({
+                    title: i18n("groups.users") + " " + i18n("groups.gid") + gid,
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    target: "#altForm",
+                    singleColumn: true,
+                    fields: [
+                        {
+                            id: "users",
+                            type: "multiselect",
+                            options: users_list,
+                            value: uids.uids,
+                        }
+                    ],
+                    callback: result => {
+                        loadingStart();
+                        $("#altForm").hide();
+                        PUT("accounts", "groupUsers", gid, {
+                            uids: result.users,
+                        }).
+                        fail(FAIL).
+                        done(() => {
+                            message(i18n("groups.groupWasChanged"));
+                        }).
+                        always(window.modules["groups"].render);
+                    },
+                    cancel: () => {
+                        $("#altForm").hide();
+                    }
+                }).show();
             }).
             fail(FAIL);
         }).

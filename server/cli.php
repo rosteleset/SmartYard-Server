@@ -117,7 +117,10 @@
 
     if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["--reindex"])) {
         require_once "utils/reindex.php";
+        require_once "utils/clear_cache.php";
         reindex();
+        $n = clearCache(true);
+        echo "$n cache entries cleared\n";
         exit(0);
     }
 

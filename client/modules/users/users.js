@@ -2,7 +2,7 @@
     startPage: 1,
 
     init: function () {
-        if (AVAIL("accounts", "users")) {
+        if (AVAIL("accounts", "user")) {
             leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
         }
         moduleLoaded("users", this);

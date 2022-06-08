@@ -51,7 +51,9 @@
                 $groups = loadBackend("groups");
 
                 if ($groups) {
-                    return [ "GET" ];
+                    return [
+                        "GET" => "#common",
+                    ];
                 } else {
                     return [ ];
                 }
