@@ -13,6 +13,14 @@
         })
     },
 
+    issueField2FormField: function (issue, field) {
+
+    },
+
+    issueCustomField2FormField: function (issue, field) {
+
+    },
+
     tt: function (tt) {
         window.modules["tt"].meta = tt["meta"];
         console.log(window.modules["tt"].meta);
