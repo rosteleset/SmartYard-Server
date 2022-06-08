@@ -136,7 +136,7 @@ function cardForm(params) {
                     h += `
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}/>
-                            <label for="${id}" class="custom-control-label">${params.fields[i].options[j].text}</label>
+                            <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
                         </div>
                     `;
                 }
@@ -351,7 +351,6 @@ function cardForm(params) {
                     break;
 
                 case "multiselect":
-                    console.log(params.fields[i].value);
                     $(`.checkBoxOption-${params.fields[i].id}`).prop("checked", false);
                     for (let j in params.fields[i].value) {
                         $(`.checkBoxOption-${params.fields[i].id}[data-id='${params.fields[i].value[j]}']`).prop("checked", true);
