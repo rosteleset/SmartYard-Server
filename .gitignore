@@ -19,6 +19,7 @@ __pycache__
 /client/lib/loading-bar/
 /server/lib/PHPMailer/
 /server/lib/htmlpurifier/
+/server/lib/firebase-php/
 /server/db/internal.db
 /server/config/config.json
 /api/
