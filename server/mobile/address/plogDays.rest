@@ -1,0 +1,9 @@
+@bearer = 0bbaf6a8-1202-43b0-a461-fc6f9f56d759
+
+POST https://dm.lanta.me/api/address/plogDays
+Authorization: Bearer {{bearer}}
+Content-Type: application/json
+
+{
+	"flatId": 149742
+}

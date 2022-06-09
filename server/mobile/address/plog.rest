@@ -1,0 +1,12 @@
+### vars
+@bearer = 0bbaf6a8-1202-43b0-a461-fc6f9f56d759
+
+### request
+POST https://dm.lanta.me/api/address/plog HTTP/1.1
+Authorization: Bearer {{bearer}}
+Content-Type: application/json
+
+{
+	"flatId": 149742,
+	"day": "2021-06-22"	
+}
