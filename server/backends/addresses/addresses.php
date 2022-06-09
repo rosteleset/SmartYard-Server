@@ -67,12 +67,14 @@ namespace backends\addresses {
 
 
         /**
-         * get list of all entrances
+         * get list of all entrances of a building
+         *
+         * @param integer $bid bid
          *
          * @return array
          */
 
-        abstract public function getEntrances();
+        abstract public function getEntrances(int $bid);
 
         /**
          * get building by eid
@@ -116,5 +118,68 @@ namespace backends\addresses {
          */
 
         abstract public function modifyEntrance(int $eid, int $bid, string $entrance);
+
+        /**
+         *
+         * get list of all flats of a building
+         *
+         * @param integer $bid bid
+         *
+         * @return array
+         */
+
+        abstract public function getBuildingFlats(int $bid);
+        /**
+         *
+         * get list of all flats of an entrance
+         *
+         * @param integer $bid bid
+         *
+         * @return array
+         */
+
+        abstract public function getEntranceFlats(int $eid);
+
+        /**
+         * get flat by id
+         *
+         * @param integer $id id
+         *
+         * @return mixed integer/false
+         */
+
+        abstract public function getFlat(int $id);
+
+        /**
+         * add flat
+         *
+         * @param integer $eid
+         * @param integer $number
+         *
+         * @return integer
+         */
+
+        abstract public function addFlat(int $eid, int $number);
+
+        /**
+         * delete flat
+         *
+         * @param integer $id
+         *
+         * @return mixed
+         */
+
+        abstract public function deleteFlat(int $id);
+
+        /**
+         * modify flat number
+         *
+         * @param integer $id
+         * @param integer $number
+         *
+         * @return boolean
+         */
+
+        abstract public function modifyFlat(int $id, int $number);
     }
 }

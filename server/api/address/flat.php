@@ -1,60 +1,63 @@
 <?php
 
 /**
- * @api {get} /address/entrance/:eid get entrance
+ * @api {get} /address/flat/:fid get flat
  *
  * @apiVersion 1.0.0
  *
- * @apiName getEntrance
+ * @apiName getFlat
  * @apiGroup address
  *
  * @apiHeader {String} authorization authentication token
  *
- * @apiParam {Number} eid entrance id
+ * @apiParam {Number} fid flat id
  *
- * @apiSuccess {Object} entrance entrance info
+ * @apiSuccess {Object} flat flat info
  *
  * @apiSuccessExample Success-Response:
  *  HTTP/1.1 200 OK
  *  {
- *      "entrance": {
- *          "eid": 1,
- *          "bid": 123,
- *          "entrance": "Подъезд №1"
+ *      "flat": {
+ *          "fid": 211,
+ *          "number": 123,
+ *          "floor": 5,
+ *          "eid": 2,
+ *          "entrance": "Подъезд №2"
  *      }
  *  }
  *
- * @apiError entranceNotFound entrance not found
+ * @apiError entranceNotFound flat not found
  *
  * @apiErrorExample Error-Response:
  *  HTTP/1.1 404 Not Found
  *  {
- *      "error": "entranceNotFound"
+ *      "error": "flatNotFound"
  *  }
  *
  * @apiExample {curl} Example usage:
- *  curl http://127.0.0.1:8000/server/api.php/address/entrance/1
+ *  curl http://127.0.0.1:8000/server/api.php/address/flat/1
  */
 
 /**
- * @api {post} /accounts/entrance create entrance
+ * @api {post} /accounts/flat create flat
  *
  * @apiVersion 1.0.0
  *
- * @apiName createEntrance
+ * @apiName createFlat
  * @apiGroup address
  *
  * @apiHeader {String} authorization authentication token
  *
- * @apiParam {Number} bid Building id
- * @apiParam {String} entrance Entrance Name
+ * @apiParam {Number} eid Entrance id
+ * @apiParam {Number} number Flat number
+ * @apiParam {Number} floor Floor number
  *
- * @apiSuccess {Number} eid entrance id
+ * @apiSuccess {Number} fid flat id
  *
  * @apiSuccessExample Success-Response:
  *  HTTP/1.1 200 OK
  *  {
- *      "eid": 1
+ *      "fid": 1
  *  }
  *
  * @apiError invalidEntranceName invalid entrance name
@@ -66,13 +69,13 @@
  *  }
  *
  * @apiExample {curl} Example usage:
- *  curl -X POST http://127.0.0.1:8000/server/api.php/address/entrance \
+ *  curl -X POST http://127.0.0.1:8000/server/api.php/address/flat \
  *      -H 'Content-Type: application/json' \
- *      -d '{"bid": 123, "entrance": "Подъезд 1"}'
+ *      -d '{"eid": 123, "number": 1, "floor": 1}'
  */
 
 /**
- * @api {put} /address/entrance/:eid update entrance
+ * @api {put} /address/flat/:fid update entrance
  *
  * @apiVersion 1.0.0
  *

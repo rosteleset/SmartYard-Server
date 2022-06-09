@@ -7,10 +7,22 @@
 namespace backends\addresses {
 
     /**
-     * internal adresses class
+     * internal addresses class
      */
 
     class internal extends addresses {
+
+        /**
+         * returns class capabilities
+         *
+         * @return mixed
+         */
+
+        public function capabilities() {
+            return [
+                "mode" => "rw",
+            ];
+        }
 
         /**
          * list of all buildings
@@ -20,14 +32,14 @@ namespace backends\addresses {
 
         public function getBuildings() {
             try {
-                $buildings = $this->db->query("select bid, address, guid from buildings order by bid", \PDO::FETCH_ASSOC)->fetchAll();
+                $buildings = $this->db->query("select bid, address, guid from address_buildings order by bid", \PDO::FETCH_ASSOC)->fetchAll();
                 $_buildings = [];
 
                 foreach ($buildings as $building) {
                     $_buildings[] = [
                         "bid" => $building["bid"],
                         "address" => $building["address"],
-                        "guis" => $building["guid"],
+                        "guid" => $building["guid"],
                     ];
                 }
 
@@ -52,7 +64,7 @@ namespace backends\addresses {
             }
 
             try {
-                $building = $this->db->query("select bid, address, guid from buildings where bid = $bid", \PDO::FETCH_ASSOC)->fetchAll();
+                $building = $this->db->query("select bid, address, guid from address_buildings where bid = $bid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 if (count($building)) {
                     $_building = [
@@ -73,25 +85,24 @@ namespace backends\addresses {
         /**
          * add building
          *
-         * @param int $bid
-         * @param string $entrance
+         * @param string $address
+         * @param string $guid
          *
          * @return integer|false
          */
 
-        public function addBuilding(int $bid, $entrance) {
-
+        public function addBuilding(string $address, string $guid = '') {
             try {
-                $sth = $this->db->prepare("insert into buildings (address, guid) values (:address, :guid)");
+                $sth = $this->db->prepare("insert into address_buildings (address, guid) values (:address, :guid)");
                 if (!$sth->execute([
-                    ":address" => $bid,
-                    ":guid" => $entrance,
+                    ":address" => $address,
+                    ":guid" => $guid,
                 ])) {
                     return false;
                 }
 
-                $sth = $this->db->prepare("select bid from buildings where address = :address");
-                if ($sth->execute([ ":address" => $bid, ])) {
+                $sth = $this->db->prepare("select bid from address_buildings where address = :address");
+                if ($sth->execute([ ":address" => $address, ])) {
                     $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
                     if (count($res) == 1) {
                         return $res[0]["bid"];
@@ -114,13 +125,13 @@ namespace backends\addresses {
          * @return boolean
          */
 
-        public function deleteBuilding($bid) {
+        public function deleteBuilding(int $bid) {
             if (!checkInt($bid) || $this->getBuilding($bid)===false) {
                 return false;
             }
 
             try {
-                $this->db->exec("delete from buildings where bid = $bid");
+                $this->db->exec("delete from address_buildings where bid = $bid");
             } catch (\Exception $e) {
                 return false;
             }
@@ -137,11 +148,7 @@ namespace backends\addresses {
          * @return boolean
          */
 
-        public function modifyBuilding($bid, string $address = '', $guid = '') {
-            if (!checkInt($bid)) {
-                return false;
-            }
-
+        public function modifyBuilding(int $bid, string $address = '', string $guid = '') {
             try {
                 $sth = $this->db->prepare("update buildings set address = :address, guid = :guid where bid = $bid");
                 return $sth->execute([
@@ -157,25 +164,29 @@ namespace backends\addresses {
         }
 
         /**
-         * returns class capabilities
+         * get list of all entrances of a building
          *
-         * @return mixed
-         */
+         * @param integer $bid
 
-        public function capabilities() {
-            return [
-                "mode" => "rw",
-            ];
-        }
-
-        /**
-         * get list of all entrances
-         *
          * @return array
          */
-        public function getEntrances()
+        public function getEntrances(int $bid)
         {
-            // TODO: Implement getEntrances() method.
+            try {
+                $entrances = $this->db->query("select eid, entrance from address_entrances where bid = $bid order by eid", \PDO::FETCH_ASSOC)->fetchAll();
+                $_entrances = [];
+
+                foreach ($entrances as $entrance) {
+                    $_entrances[] = [
+                        "eid" => $entrance["eid"],
+                        "entrance" => $entrance["entrance"],
+                    ];
+                }
+
+                return $_entrances;
+            } catch (\Exception $e) {
+                return false;
+            }
         }
 
         /**
@@ -187,7 +198,27 @@ namespace backends\addresses {
          */
         public function getEntrance(int $eid)
         {
-            // TODO: Implement getEntrance() method.
+            if (!checkInt($eid)) {
+                return false;
+            }
+
+            try {
+                $entrance = $this->db->query("select eid, bid, entrance from address_entrances where eid = $eid", \PDO::FETCH_ASSOC)->fetchAll();
+
+                if (count($entrance)) {
+                    $_entrance = [
+                        "eid" => $entrance[0]["eid"],
+                        "bid" => $entrance[0]["bid"],
+                        "entrance" => $entrance[0]["entrance"],
+                    ];
+
+                    return $_entrance;
+                } else {
+                    return false;
+                }
+            } catch (\Exception $e) {
+                return false;
+            }
         }
 
         /**
@@ -200,7 +231,30 @@ namespace backends\addresses {
          */
         public function addEntrance(int $bid, string $entrance)
         {
-            // TODO: Implement addEntrance() method.
+            try {
+                $sth = $this->db->prepare("insert into address_entrances (bid, entrance) values (:bid, :entrance)");
+                if (!$sth->execute([
+
+                    ":bid" => $bid,
+                    ":entrance" => trim($entrance),
+                ])) {
+                    return false;
+                }
+
+                $sth = $this->db->prepare("select eid from address_entrances where bid = :bid and entrance = :entrance");
+                if ($sth->execute([ ":bid" => $bid, ":entrance" => $entrance, ] )) {
+                    $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                    if (count($res) == 1) {
+                        return $res[0]["eid"];
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } catch (\Exception $e) {
+                return false;
+            }
         }
 
         /**
@@ -212,7 +266,16 @@ namespace backends\addresses {
          */
         public function deleteEntrance(int $eid)
         {
-            // TODO: Implement deleteEntrance() method.
+            if (!checkInt($eid) || $this->getEntrance($eid)===false) {
+                return false;
+            }
+
+            try {
+                $this->db->exec("delete from address_entrances where eid = $eid");
+            } catch (\Exception $e) {
+                return false;
+            }
+            return true;
         }
 
         /**
@@ -226,7 +289,108 @@ namespace backends\addresses {
          */
         public function modifyEntrance(int $eid, int $bid, string $entrance)
         {
-            // TODO: Implement modifyEntrance() method.
+            try {
+                $sth = $this->db->prepare("update entrances set bid = :bid, entrance = :entrance where eid = $eid");
+                return $sth->execute([
+                    ":bid" => $bid,
+                    ":entrance" => trim($entrance),
+                ]);
+            } catch (\Exception $e) {
+                error_log(print_r($e, true));
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         *
+         * get list of all flats of a building
+         *
+         * @param integer $bid bid
+         *
+         * @return array
+         */
+        public function getBuildingFlats(int $bid)
+        {
+            try {
+                $entrances = $this->db->query("select flat_number, floor, eid from address_flats where bid = $bid order by flat_number", \PDO::FETCH_ASSOC)->fetchAll();
+                $_entrances = [];
+
+                foreach ($entrances as $entrance) {
+                    $_entrances[] = [
+                        "flatNumber" => $entrance["flat_number"],
+                        "floor" => $entrance["floor"],
+                        "eid"
+                    ];
+                }
+
+                return $_entrances;
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        /**
+         *
+         * get list of all flats of an entrance
+         *
+         * @param integer $bid bid
+         *
+         * @return array
+         */
+        public function getEntranceFlats(int $eid)
+        {
+            // TODO: Implement getEntranceFlats() method.
+        }
+
+        /**
+         * get flat by id
+         *
+         * @param integer $id id
+         *
+         * @return mixed integer/false
+         */
+        public function getFlat(int $id)
+        {
+            // TODO: Implement getFlat() method.
+        }
+
+        /**
+         * add flat
+         *
+         * @param integer $eid
+         * @param integer $number
+         *
+         * @return integer
+         */
+        public function addFlat(int $eid, int $number){
+            // TODO: Implement addFlat() method.
+        }
+
+        /**
+         * delete flat
+         *
+         * @param integer $id
+         *
+         * @return mixed
+         */
+        public function deleteFlat(int $id)
+        {
+            // TODO: Implement deleteFlat() method.
+        }
+
+        /**
+         * modify flat number
+         *
+         * @param integer $id
+         * @param integer $number
+         *
+         * @return boolean
+         */
+        public function modifyFlat(int $id, int $number)
+        {
+            // TODO: Implement modifyFlat() method.
         }
     }
 }

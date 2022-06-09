@@ -1,14 +1,16 @@
 <?php
 
 /**
- * @api {get} /address/entrances get entrances
+ * @api {get} /address/flats/:bid get flats
  *
  * @apiVersion 1.0.0
  *
- * @apiName getEntrances
+ * @apiName getFlats
  * @apiGroup addresses
  *
  * @apiHeader {String} authorization authentication token
+ *
+ * @apiParam {Number} bid building id
  *
  * @apiError forbidden access denied
  *
@@ -18,27 +20,27 @@
  *      "error": "entranceNotFound"
  *  }
  *
- * @apiSuccess {Object[]} entrances array of entrances
+ * @apiSuccess {Object[]} flats array of flats
  *
  * @apiSuccessExample Success-Response:
  *  HTTP/1.1 200 OK
  *  {
- *      "entrances": [
+ *      "flats": [
  *          {
- *              "eid": 1,
- *              "bid": 123,
+ *              "number": 1,
+ *              "floor": 1,
  *              "entrance": "подъезд 1"
  *          },
  *         {
- *              "eid": 2,
- *              "bid": 123,
- *              "entrance": "подъезд 2"
+ *              "number": 2,
+ *              "flor": 1,
+ *              "entrance": "подъезд 1"
  *          }
  *      ]
  *  }
  *
  * @apiExample {curl} Example usage:
- *  curl http://127.0.0.1:8000/server/api.php/addresses/entrances
+ *  curl http://127.0.0.1:8000/server/api.php/addresses/flats/1
  */
 
 /**
@@ -53,12 +55,12 @@ namespace api\address {
      * users method
      */
 
-    class entrances extends api {
+    class flats extends api {
 
         public static function GET($params) {
-            $entrances = loadBackend("addresses")->getEntrances($params["_id"]);
+            $flats = loadBackend("addresses")->getFlats($params["_id"]);
 
-            return api::ANSWER($entrances, ($entrances !== false)?"entrances":"notFound");
+            return api::ANSWER($flats, ($flats !== false)?"flats":"notFound");
         }
 
         public static function index() {
