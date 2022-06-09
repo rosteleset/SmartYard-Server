@@ -12,7 +12,7 @@
         /**
          * base subscribers class
          */
-        abstract class users extends backend
+        abstract class subscribers extends backend
         {
 
         }

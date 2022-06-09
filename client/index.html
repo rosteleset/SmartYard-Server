@@ -79,22 +79,23 @@
             <!-- Left navbar links -->
             <ul class="navbar-nav" id="topMenuLeft"></ul>
 
-            <!-- Search form -->
-            <div class="form-inline ml-2" id="searchForm">
-                <div class="input-group input-group-sm">
-                    <input id="searchInput" class="form-control form-control-navbar" type="search" aria-label="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-navbar" id="searchButton">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <ul class="navbar-nav" id="topMenuLeftDynamic"></ul>
 
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto" id="topMenuRight">
+
+                <!-- Search form -->
+                <div class="form-inline mr-3" id="searchForm" style="display: none;">
+                    <div class="input-group input-group-sm">
+                        <input id="searchInput" class="form-control form-control-navbar" type="search" aria-label="Search" style="width: 400px;">
+                        <div class="input-group-append">
+                            <button class="btn btn-navbar" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link text-dark" data-toggle="dropdown" href="#">
                         <i class="fas fa-lg fa-fw fa-user-cog"></i>
@@ -161,7 +162,7 @@
     </div>
 
     <!-- confirmModal -->
-    <div class="modal" id="confirmModal" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true" style="padding-top: 4rem!important;">
+    <div class="modal" id="confirmModal" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -177,7 +178,7 @@
     </div>
 
     <!-- alertModal -->
-    <div class="modal" id="alertModal" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" style="padding-top: 4rem!important;">
+    <div class="modal" id="alertModal" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

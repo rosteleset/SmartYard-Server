@@ -245,7 +245,7 @@ function i18n(msg, ...args) {
         }
         if (loc) {
             if (typeof loc === "object" && Array.isArray(loc)) {
-                loc = loc.join("\n");
+                loc = nl2br(loc.join("\n"));
             }
             loc = sprintf(loc, ...args);
         }

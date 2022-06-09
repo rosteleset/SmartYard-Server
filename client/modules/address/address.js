@@ -11,13 +11,13 @@
         `);
 
         // add icon-button to top-right menu
-        $("#topMenuRight").prepend(`
+        $(`
             <li class="nav-item">
                 <span class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("address.addresses")}" id="addressMenuRight">
                     <i class="fas fa-lg fa-fw fa-home"></i>
                 </span>
             </li>
-        `);
+        `).insertAfter("#searchForm");
 
         // and add handler to onclick
         $("#addressMenuRight").off("click").on("click", () => {
