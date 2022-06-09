@@ -1,5 +1,5 @@
 <?php
 
-    class domophone extends hw {
+    abstract class domophone extends hw {
 
     }
