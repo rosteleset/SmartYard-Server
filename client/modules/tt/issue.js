@@ -148,21 +148,8 @@
                     value: workflowName,
                 },
             ];
-
 /*
                 [
-                    {
-                        id: "subject",
-                        type: "text",
-                        title: i18n("tt.subject"),
-                        placeholder: i18n("tt.subject"),
-                    },
-                    {
-                        id: "description",
-                        type: "rich",
-                        title: i18n("tt.description"),
-                        placeholder: i18n("tt.description"),
-                    },
                     {
                         id: "tags",
                         type: "select2",

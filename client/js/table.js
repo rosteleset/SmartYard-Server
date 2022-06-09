@@ -106,11 +106,19 @@ function cardTable(params) {
             h += `>`;
             for (let j in rows[i].cols) {
                 h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
-                if (rows[i].cols[j].nowrap) {
-                    h += ` nowrap`;
-                }
+                let clss = '';
                 if (typeof rows[i].cols[j].click === "function") {
-                    h += ` class="hoverable ${clickableClass}"`;
+                    clss = `hoverable ${clickableClass} `;
+                }
+                if (rows[i].cols[j].nowrap) {
+                    clss += "cut-text ";
+                }
+                clss = $.trim(clss);
+                if (clss) {
+                    h += ` class="${clss}"`;
+                }
+                if (rows[i].cols[j].fullWidth) {
+                    h += ` width="100%"`;
                 }
                 h += `>`;
                 h += rows[i].cols[j].data;

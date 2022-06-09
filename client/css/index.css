@@ -113,3 +113,9 @@ select {
 #toast-container .toast-warning {
   background-color: #d4ac0d;
 }
+
+.cut-text {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

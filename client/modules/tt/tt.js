@@ -14,11 +14,57 @@
     },
 
     issueField2FormField: function (issue, field) {
+        let fieldId;
 
-    },
+        if (typeof field == "object") {
+            fieldId = field.field;
+        } else{
+            fieldId = field;
+        }
 
-    issueCustomField2FormField: function (issue, field) {
-
+        if (isNaN(fieldId)) {
+            // regular issue fields
+            switch (fieldId) {
+                case "subject":
+                    return {
+                        id: "subject",
+                        type: "text",
+                        title: i18n("tt.subject"),
+                        placeholder: i18n("tt.subject"),
+                        value: (issue && issue.subject)?issue.subject:"",
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    };
+                    break;
+                case "description":
+                    return {
+                        id: "description",
+                        type: "rich",
+                        title: i18n("tt.description"),
+                        placeholder: i18n("tt.description"),
+                        value: (issue && issue.description)?issue.description:"",
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    };
+                    break;
+                case "resolution":
+                    break;
+                case "tags":
+                    break;
+                case "assigned":
+                    break;
+                case "watchers":
+                    break;
+                case "plans":
+                    break;
+                case "checklist":
+                    break;
+            }
+        } else {
+            // custom fields
+        }
     },
 
     tt: function (tt) {

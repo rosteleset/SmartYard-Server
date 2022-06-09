@@ -378,6 +378,8 @@
                                 },
                                 {
                                     data: response.users[i].realName?response.users[i].realName:i18n("no"),
+                                    nowrap: true,
+                                    fullWidth: true,
                                 },
                                 {
                                     data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
