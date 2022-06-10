@@ -31,15 +31,11 @@
             public static function POST($params) {
                 $addresses = loadBackend("addresses");
 
-                $r = [
-                    "regions" => $addresses->getRegions(),
-                    "areas" => [],
-                    "cities" => [],
-                    "settlements" => [],
-                    "streets" => [],
-                ];
+                $regionId = $addresses->addRegion($params["regionFiasId"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"]);
 
-                return api::ANSWER($r, ($r !== false)?"addresses":"404");
+                error_log("                                    >$regionId<");
+
+                return api::ANSWER($regionId, ($regionId !== false)?"regionId":"notAcceptable");
             }
 
             public static function DELETE($params) {

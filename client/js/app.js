@@ -48,7 +48,8 @@ function hashChange() {
             if (modules[route]) {
                 $("#page404").hide();
                 $("#topMenuLeft").html(`<li class="ml-2 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
-                $("#topMenuLeftDynamic").html("");
+                $("#leftTopDynamic").html("");
+                $("#rightTopDynamic").html("");
                 if (modules[route].search) {
                     $("#searchForm").show();
                 } else {

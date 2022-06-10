@@ -138,7 +138,7 @@ function cardTable(params) {
                 let t = '';
                 let o = false;
                 if (rows[i].dropDown.items.length === 1 && rows[i].dropDown.items[0].icon) {
-                    t += `<button type="button" class="btn btn-xs btn-link"><span class="`;
+                    t += `<span class="pointer`;
                     if (rows[i].dropDown.items[0].class) {
                         t += " " + rows[i].dropDown.items[0].class;
                     }
@@ -149,18 +149,18 @@ function cardTable(params) {
                         o = true;
                     }
                     t += `" title="${rows[i].dropDown.items[0].title}" rowId="${i}" dropDownId="0" uid="${rows[i].uid}" action="${rows[i].dropDown.items[0].action}">`;
-                    t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw pointer"></i>`;
-                    t += `</span></button>`;
+                    t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw"></i>`;
+                    t += `</span>`;
                 } else {
                     let ddId = md5(guid());
                     t += `<div class="dropdown">`;
-                    t += `<button class="btn dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
+                    t += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
                     if (rows[i].dropDown.icon) {
                         t += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
                     } else {
                         t += `<i class="fa-fw fas fa-bars"></i>`;
                     }
-                    t += `</button>`;
+                    t += `</span>`;
                     t += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
                     for (let j in rows[i].dropDown.items) {
                         if (rows[i].dropDown.items[j].title === "-") {

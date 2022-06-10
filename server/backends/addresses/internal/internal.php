@@ -18,7 +18,15 @@
              */
             function getRegions()
             {
-                return $this->db->get("select address_region_id, region_fias_id, region_iso_code, region_with_type, region_type, region_type_full, region from addresses_regions order by region");
+                return $this->db->get("select address_region_id, region_fias_id, region_iso_code, region_with_type, region_type, region_type_full, region from addresses_regions order by region", false, [
+                    "address_region_id" => "regionId",
+                    "region_fias_id" => "regionFiasId",
+                    "region_iso_code" => "regionIsoCode",
+                    "region_with_type" => "regionWithType",
+                    "region_type" => "regionType",
+                    "region_type_full" => "regionTypeFull",
+                    "region" => "region",
+                ]);
             }
 
             /**
@@ -42,7 +50,18 @@
              */
             function addRegion($regionFiasId, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region)
             {
-                // TODO: Implement addRegion() method.
+                if (trim($regionWithType) && trim($region)) {
+                    return $this->db->insert("insert into addresses_regions (region_fias_id, region_iso_code, region_with_type, region_type, region_type_full, region) values (:region_fias_id, :region_iso_code, :region_with_type, :region_type, :region_type_full, :region)", [
+                        ":region_fias_id" => $regionFiasId,
+                        ":region_iso_code" => $regionIsoCode,
+                        ":region_with_type" => $regionWithType,
+                        ":region_type" => $regionType,
+                        ":region_type_full" => $regionTypeFull,
+                        ":region" => $region,
+                    ]);
+                } else {
+                    return false;
+                }
             }
 
             /**

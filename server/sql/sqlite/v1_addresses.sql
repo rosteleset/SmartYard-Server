@@ -4,13 +4,14 @@ CREATE TABLE addresses_regions
     address_region_id integer not null primary key autoincrement,
     region_fias_id text,
     region_iso_code text,
-    region_with_type text,
+    region_with_type text not null,
     region_type text,
     region_type_full text,
     region text not null
 );
 CREATE UNIQUE INDEX addresses_regions_region_fias_id on addresses_regions(region_fias_id);
 CREATE UNIQUE INDEX addresses_regions_region_iso_code on addresses_regions(region_iso_code);
+CREATE UNIQUE INDEX addresses_regions_region on addresses_regions(region_with_type);
 CREATE UNIQUE INDEX addresses_regions_region on addresses_regions(region);
 
 -- areas

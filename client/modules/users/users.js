@@ -69,18 +69,6 @@
         });
     },
 
-    doSetPassword: function (uid, password) {
-        loadingStart();
-        POST("accounts", "password", uid, {
-            password: password,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("users.userWasChanged"));
-        }).
-        always(loadingDone);
-    },
-
     /*
         UI functions
      */
@@ -280,43 +268,6 @@
         });
     },
 
-    setPassword: function (uid) {
-        cardForm({
-            title: i18n("users.setPassword"),
-            footer: true,
-            borderless: true,
-            topApply: false,
-            fields: [
-                {
-                    id: "uid",
-                    type: "text",
-                    title: i18n("users.uid"),
-                    placeholder: i18n("users.uid"),
-                    value: uid.toString(),
-                    readonly: true,
-                },
-                {
-                    id: "password",
-                    type: "password",
-                    title: i18n("users.password"),
-                    placeholder: i18n("users.password"),
-                    validate: (v) => {
-                        return $.trim(v).length >= 8;
-                    }
-                },
-            ],
-            callback: function (result) {
-                modules["users"].doSetPassword(result.uid, result.password);
-            },
-        }).show();
-    },
-
-    enableUser: function (uid, action) {
-        mConfirm(i18n((action == "enable")?"users.confirmEnable":"users.confirmDisable", uid), i18n("confirm"), i18n((action == "enable")?"users.enable":"users.disable"), () => {
-            modules["users"].doEnableUser(uid, action === "enable");
-        });
-    },
-
     /*
         main form (users) render function
      */
@@ -389,28 +340,6 @@
                                     nowrap: true,
                                 },
                             ],
-                            dropDown: {
-                                icon: (response.users[i].enabled != 1)?"fas fa-ban text-danger":"",
-                                items: [
-                                    {
-                                        icon: "fas fa-key",
-                                        title: i18n("users.setPassword"),
-                                        class: "text-primary",
-                                        disabled: response.users[i].uid.toString() === "0",
-                                        click: modules["users"].setPassword,
-                                    },
-                                    {
-                                        title: "-",
-                                    },
-                                    {
-                                        icon: "fas fa-trash-alt",
-                                        title: i18n("users.delete"),
-                                        class: "text-danger",
-                                        disabled: response.users[i].uid.toString() === "0" || response.users[i].uid.toString() === myself.uid.toString(),
-                                        click: modules["users"].deleteUser,
-                                    },
-                                ],
-                            }
                         });
                     }
 

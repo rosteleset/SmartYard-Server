@@ -7,7 +7,7 @@
                     <i class="fas fa-lg fa-fw fa-asterisk"></i>
                 </span>
             </li>
-        `).insertAfter("#searchForm");
+        `).insertAfter("#rightTopDynamic");
 
         moduleLoaded("asterisk", this);
     },

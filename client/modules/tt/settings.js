@@ -1699,7 +1699,7 @@
             top += `</li>`;
         }
 
-        $("#topMenuLeftDynamic").html(top);
+        $("#leftTopDynamic").html(top);
 
         switch (section) {
             case "projects":

@@ -75,12 +75,17 @@
     route: function (params) {
         $("#altForm").hide();
 
-        $("#topMenuLeftDynamic").html(`
+        $("#leftTopDynamic").html(`
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
             </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="#tt.settings&edit=projects" class="nav-link">${i18n("tt.settings")}</a>
+        `);
+
+        $("#rightTopDynamic").html(`
+            <li class="nav-item">
+                <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                    <i class="fas fa-lg fa-fw fa-cog"></i>
+                </a>
             </li>
         `);
 

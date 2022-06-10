@@ -180,6 +180,8 @@ function loadingStart() {
 }
 
 function loadingDone(stayHidden) {
+    xblur();
+
     $('#loading').modal('hide');
     if (stayHidden === true) {
         $('#app').addClass("invisible");
@@ -189,6 +191,7 @@ function loadingDone(stayHidden) {
     if (parseInt($.cookie('_ls_collapse'))) {
         $(document.body).addClass('sidebar-collapse');
     }
+
     $(window).resize();
 }
 
