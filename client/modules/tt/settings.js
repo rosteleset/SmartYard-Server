@@ -1317,6 +1317,7 @@
                         fullWidth: true,
                     },
                 ],
+                edit: modules["tt.settings"].modifyProject,
                 rows: () => {
                     let rows = [];
 
@@ -1326,11 +1327,9 @@
                             cols: [
                                 {
                                     data: modules["tt"].meta.projects[i].projectId,
-                                    click: modules["tt.settings"].modifyProject,
                                 },
                                 {
                                     data: modules["tt"].meta.projects[i].acronym,
-                                    click: modules["tt.settings"].modifyProject,
                                     nowrap: true,
                                 },
                                 {
@@ -1404,6 +1403,7 @@
                         fullWidth: true,
                     },
                 ],
+                edit: modules["tt.settings"].setWorkflowAlias,
                 rows: () => {
                     let rows = [];
 
@@ -1418,7 +1418,6 @@
                             cols: [
                                 {
                                     data: modules["tt"].meta.workflows[i],
-                                    click: modules["tt.settings"].setWorkflowAlias,
                                 },
                                 {
                                     data: w[modules["tt"].meta.workflows[i]]?w[modules["tt"].meta.workflows[i]]:modules["tt"].meta.workflows[i],
@@ -1459,6 +1458,7 @@
                         fullWidth: true,
                     },
                 ],
+                edit: modules["tt.settings"].modifyStatus,
                 rows: () => {
                     let rows = [];
 
@@ -1468,11 +1468,9 @@
                             cols: [
                                 {
                                     data: modules["tt"].meta.statuses[i].statusId,
-                                    click: modules["tt.settings"].modifyStatus,
                                 },
                                 {
                                     data: modules["tt"].meta.statuses[i].status,
-                                    click: modules["tt.settings"].modifyStatus,
                                 },
                                 {
                                     data: modules["tt"].meta.statuses[i].statusDisplay,
@@ -1513,6 +1511,7 @@
                         fullWidth: true,
                     },
                 ],
+                edit: modules["tt.settings"].modifyResolution,
                 rows: () => {
                     let rows = [];
 
@@ -1522,11 +1521,9 @@
                             cols: [
                                 {
                                     data: modules["tt"].meta.resolutions[i].resolutionId,
-                                    click: modules["tt.settings"].modifyResolution,
                                 },
                                 {
                                     data: modules["tt"].meta.resolutions[i].resolution,
-                                    click: modules["tt.settings"].modifyResolution,
                                 },
                             ],
                         });
@@ -1568,6 +1565,7 @@
                         fullWidth: true,
                     },
                 ],
+                edit: modules["tt.settings"].modifyRole,
                 rows: () => {
                     let rows = [];
 
@@ -1577,11 +1575,9 @@
                             cols: [
                                 {
                                     data: modules["tt"].meta.roles[i].roleId,
-                                    click: modules["tt.settings"].modifyRole,
                                 },
                                 {
                                     data: modules["tt"].meta.roles[i].name,
-                                    click: modules["tt.settings"].modifyRole,
                                 },
                                 {
                                     data: modules["tt"].meta.roles[i].level,
@@ -1634,6 +1630,7 @@
                         fullWidth: true,
                     },
                 ],
+                edit: modules["tt.settings"].modifyCustomField,
                 rows: () => {
                     let rows = [];
 
@@ -1643,11 +1640,9 @@
                             cols: [
                                 {
                                     data: modules["tt"].meta.customFields[i].customFieldId,
-                                    click: modules["tt.settings"].modifyCustomField,
                                 },
                                 {
                                     data: modules["tt"].meta.customFields[i].field,
-                                    click: modules["tt.settings"].modifyCustomField,
                                 },
                                 {
                                     data: i18n("tt.customFieldType" + modules["tt"].meta.customFields[i].type),

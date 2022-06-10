@@ -87,7 +87,103 @@
     },
 
     modifyRegion: function (regionId) {
+        let region = false;
 
+        for (let i in modules["addresses"].meta.regions) {
+            if (modules["addresses"].meta.regions[i].regionId == regionId) {
+                region = modules["addresses"].meta.regions[i];
+                break;
+            }
+        }
+
+        if (region) {
+            cardForm({
+                title: i18n("addresses.editRegion"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                fields: [
+                    {
+                        id: "regionId",
+                        type: "text",
+                        title: i18n("addresses.regionId"),
+                        value: regionId,
+                        readonly: true,
+                    },
+                    {
+                        id: "regionFiasId",
+                        type: "text",
+                        title: i18n("addresses.regionFiasId"),
+                        placeholder: i18n("addresses.regionFiasId"),
+                        value: region.regionFiasId,
+                    },
+                    {
+                        id: "regionIsoCode",
+                        type: "text",
+                        title: i18n("addresses.regionIsoCode"),
+                        placeholder: i18n("addresses.regionIsoCode"),
+                        value: region.regionIsoCode,
+                    },
+                    {
+                        id: "regionWithType",
+                        type: "text",
+                        title: i18n("addresses.regionWithType"),
+                        placeholder: i18n("addresses.regionWithType"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: region.regionWithType,
+                    },
+                    {
+                        id: "regionType",
+                        type: "text",
+                        title: i18n("addresses.regionType"),
+                        placeholder: i18n("addresses.regionType"),
+                        value: region.regionType,
+                    },
+                    {
+                        id: "regionTypeFull",
+                        type: "text",
+                        title: i18n("addresses.regionTypeFull"),
+                        placeholder: i18n("addresses.regionTypeFull"),
+                        value: region.regionTypeFull,
+                    },
+                    {
+                        id: "region",
+                        type: "text",
+                        title: i18n("addresses.region"),
+                        placeholder: i18n("addresses.region"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: region.region,
+                    },
+                    {
+                        id: "delete",
+                        type: "select",
+                        value: "",
+                        title: i18n("address.deleteRegion"),
+                        options: [
+                            {
+                                value: "",
+                                text: "",
+                            },
+                            {
+                                value: "yes",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        modules["addresses"].deleteRegion(result.uid);
+                    } else {
+                        modules["addresses"].doModifyRegion(regionId, result.regionFiasId, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+                    }
+                },
+            }).show();
+        }
     },
 
     renderRegions: function () {
