@@ -74,6 +74,9 @@ function cardTable(params) {
     }
 
     h += `<tr>`;
+    if (typeof params.edit === "function") {
+        h += `<th><i class="fa fa-fw"></i></th>`;
+    }
     for (let i in params.columns) {
         if (params.columns[i].fullWidth) {
             h += `<th nowrap style="width: 100%">${params.columns[i].title}</th>`;
@@ -82,13 +85,14 @@ function cardTable(params) {
         }
     }
     if (hasDropDowns) {
-        h += `<th>&nbsp;</th>`;
+        h += `<th><i class="fa fa-fw"></i></th>`;
     }
     h += `</tr>`;
     h += `</thead>`;
 
     let tableClass = md5(guid());
     let clickableClass = md5(guid());
+    let editClass = md5(guid());
 
     h += `<tbody id="${tableClass}">`;
 
@@ -104,6 +108,9 @@ function cardTable(params) {
                 h += ` uid="${rows[i].uid}"`;
             }
             h += `>`;
+            if (typeof params.edit === "function") {
+                h += `<td class="hoverable ${editClass}" uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
+            }
             for (let j in rows[i].cols) {
                 h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
                 let clss = '';
@@ -125,48 +132,62 @@ function cardTable(params) {
                 h += "</td>";
             }
             if (rows[i].dropDown) {
-                let ddId = md5(guid());
                 h += `<td>`;
-                h += `<div class="dropdown">`;
-                h += `<button class="btn dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
-                if (rows[i].dropDown.icon) {
-                    h += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
-                } else {
-                    h += `<i class="fa-fw fas fa-bars"></i>`;
-                }
-                h += `</button>`;
-                h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
-                for (let j in rows[i].dropDown.items) {
-                    if (typeof rows[i].dropDown.items[j].click === "function") {
-                        h += `<li class="pointer dropdown-item`;
-                        if (rows[i].dropDown.items[j].text) {
-                            h += " " + rows[i].dropDown.items[j].text;
-                        }
-                        if (rows[i].dropDown.items[j].disabled) {
-                            h += ` disabled opacity-disabled`;
-                        } else {
-                            h += ` menuItem-${tableClass}`;
-                        }
-                        h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action}">`;
-                        if (rows[i].dropDown.items[j].icon) {
-                            h += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
-                        } else {
-                            if (hasDropDownIcons) {
-                                h += `<i class="fa fa-fw mr-2"></i>`;
-                            }
-                        }
-                        h += `${rows[i].dropDown.items[j].title}</li>`;
-                    } else
-                    if (rows[i].dropDown.items[j].title === "-") {
-                        h += `<li class="dropdown-divider"></li>`;
+                if (rows[i].dropDown.items.length === 1 && rows[i].dropDown.items[0].icon) {
+                    h += `<span class="`;
+                    if (rows[i].dropDown.items[0].text) {
+                        h += " " + rows[i].dropDown.items[0].text;
                     }
+                    if (rows[i].dropDown.items[0].disabled || typeof rows[i].dropDown.items[0].click !== "function") {
+                        h += ` disabled opacity-disabled`;
+                    } else {
+                        h += ` menuItem-${tableClass}`;
+                    }
+                    h += `" title="${rows[i].dropDown.items[0].title}" rowId="${i}" dropDownId="0" uid="${rows[i].uid}" action="${rows[i].dropDown.items[0].action}">`;
+                    h += `<i class="${rows[i].dropDown.items[0].icon} fa-fw pointer"></i>`;
+                    h += `</span>`;
+                } else {
+                    let ddId = md5(guid());
+                    h += `<div class="dropdown">`;
+                    h += `<button class="btn dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
+                    if (rows[i].dropDown.icon) {
+                        h += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
+                    } else {
+                        h += `<i class="fa-fw fas fa-bars"></i>`;
+                    }
+                    h += `</button>`;
+                    h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
+                    for (let j in rows[i].dropDown.items) {
+                        if (rows[i].dropDown.items[j].title === "-") {
+                            h += `<li class="dropdown-divider"></li>`;
+                        } else {
+                            h += `<li class="pointer dropdown-item`;
+                            if (rows[i].dropDown.items[j].text) {
+                                h += " " + rows[i].dropDown.items[j].text;
+                            }
+                            if (rows[i].dropDown.items[j].disabled || typeof rows[i].dropDown.items[j].click !== "function") {
+                                h += ` disabled opacity-disabled`;
+                            } else {
+                                h += ` menuItem-${tableClass}`;
+                            }
+                            h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action}">`;
+                            if (rows[i].dropDown.items[j].icon) {
+                                h += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
+                            } else {
+                                if (hasDropDownIcons) {
+                                    h += `<i class="fa fa-fw mr-2"></i>`;
+                                }
+                            }
+                            h += `${rows[i].dropDown.items[j].title}</li>`;
+                        }
+                    }
+                    h += `</ul>`;
+                    h += `</div>`;
                 }
-                h += `</ul>`;
-                h += `</div>`;
                 h += `</td>`;
             } else {
                 if (hasDropDowns) {
-                    h += `<td>&nbsp;</td>`;
+                    h += `<td><i class="fa fa-fw"></i></td>`;
                 }
             }
             h += `</tr>`;
@@ -222,6 +243,9 @@ function cardTable(params) {
         if (hasDropDowns) {
             colCount++;
         }
+        if (typeof params.edit === "function") {
+            colCount++;
+        }
         h += `<td colspan="${colCount}">`;
 
         h += `<nav>`;
@@ -269,6 +293,10 @@ function cardTable(params) {
 
         $("." + clickableClass).off("click").on("click", function () {
             rows[parseInt($(this).attr("rowId"))].cols[parseInt($(this).attr("colId"))].click($(this).attr("uid"));
+        });
+
+        $("." + editClass).off("click").on("click", function () {
+            params.edit($(this).attr("uid"))
         });
 
         if (params.title.filter) {

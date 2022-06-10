@@ -24,7 +24,7 @@
         done(() => {
             message(i18n("users.userWasAdded"));
         }).
-        always(window.modules["users"].render);
+        always(modules["users"].render);
     },
 
     doModifyUser: function (uid, realName, eMail, phone, enabled, password, defaultRoute) {
@@ -39,14 +39,14 @@
         }).
         fail(FAIL).
         done(() => {
-            if (uid == window.window.myself.uid) {
+            if (uid == myself.uid) {
                 whoAmI(true);
             }
             message(i18n("users.userWasChanged"));
         }).
         always(() => {
             if (currentPage === "users") {
-                window.modules["users"].render();
+                modules["users"].render();
             } else {
                 loadingDone();
             }
@@ -62,7 +62,7 @@
         }).
         always(() => {
             if (currentPage === "users") {
-                window.modules["users"].render();
+                modules["users"].render();
             } else {
                 loadingDone();
             }
@@ -130,7 +130,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["users"].doAddUser(result.login, result.realName, result.eMail, result.phone);
+                modules["users"].doAddUser(result.login, result.realName, result.eMail, result.phone);
             },
         }).show();
     },
@@ -229,8 +229,8 @@
                         type: "select",
                         value: response.user.enabled?"no":"yes",
                         title: i18n("users.disabled"),
-                        readonly: uid.toString() === window.myself.uid.toString(),
-                        hidden: uid.toString() === window.myself.uid.toString(),
+                        readonly: uid.toString() === myself.uid.toString(),
+                        hidden: uid.toString() === myself.uid.toString(),
                         options: [
                             {
                                 value: "yes",
@@ -247,8 +247,8 @@
                         type: "select",
                         value: "",
                         title: i18n("users.delete"),
-                        readonly: uid.toString() === "0" || uid.toString() === window.myself.uid.toString(),
-                        hidden: uid.toString() === "0" || uid.toString() === window.myself.uid.toString(),
+                        readonly: uid.toString() === "0" || uid.toString() === myself.uid.toString(),
+                        hidden: uid.toString() === "0" || uid.toString() === myself.uid.toString(),
                         options: [
                             {
                                 value: "",
@@ -263,9 +263,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        window.modules["users"].deleteUser(result.uid);
+                        modules["users"].deleteUser(result.uid);
                     } else {
-                        window.modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, result.defaultRoute);
+                        modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, result.defaultRoute);
                     }
                 },
             }).show();
@@ -276,7 +276,7 @@
 
     deleteUser: function (uid) {
         mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            window.modules["users"].doDeleteUser(uid);
+            modules["users"].doDeleteUser(uid);
         });
     },
 
@@ -306,14 +306,14 @@
                 },
             ],
             callback: function (result) {
-                window.modules["users"].doSetPassword(result.uid, result.password);
+                modules["users"].doSetPassword(result.uid, result.password);
             },
         }).show();
     },
 
     enableUser: function (uid, action) {
         mConfirm(i18n((action == "enable")?"users.confirmEnable":"users.confirmDisable", uid), i18n("confirm"), i18n((action == "enable")?"users.enable":"users.disable"), () => {
-            window.modules["users"].doEnableUser(uid, action === "enable");
+            modules["users"].doEnableUser(uid, action === "enable");
         });
     },
 
@@ -332,15 +332,16 @@
                 title: {
                     button: {
                         caption: i18n("users.addUser"),
-                        click: window.modules["users"].addUser,
+                        click: modules["users"].addUser,
                     },
                     caption: i18n("users.users"),
                     filter: true,
                 },
-                startPage: window.modules["users"].startPage,
+                startPage: modules["users"].startPage,
                 pageChange: page => {
-                    window.modules["users"].startPage = page;
+                    modules["users"].startPage = page;
                 },
+                edit: modules["users"].modifyUser,
                 columns: [
                     {
                         title: i18n("users.uid"),
@@ -369,11 +370,9 @@
                             cols: [
                                 {
                                     data: response.users[i].uid,
-                                    click: window.modules["users"].modifyUser,
                                 },
                                 {
                                     data: response.users[i].login,
-                                    click: window.modules["users"].modifyUser,
                                     nowrap: true,
                                 },
                                 {
@@ -398,7 +397,7 @@
                                         title: i18n("users.setPassword"),
                                         text: "text-primary",
                                         disabled: response.users[i].uid.toString() === "0",
-                                        click: window.modules["users"].setPassword,
+                                        click: modules["users"].setPassword,
                                     },
                                     {
                                         title: "-",
@@ -407,8 +406,8 @@
                                         icon: "fas fa-trash-alt",
                                         title: i18n("users.delete"),
                                         text: "text-danger",
-                                        disabled: response.users[i].uid.toString() === "0" || response.users[i].uid.toString() === window.myself.uid.toString(),
-                                        click: window.modules["users"].deleteUser,
+                                        disabled: response.users[i].uid.toString() === "0" || response.users[i].uid.toString() === myself.uid.toString(),
+                                        click: modules["users"].deleteUser,
                                     },
                                 ],
                             }
@@ -426,6 +425,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("users.users");
 
-        window.modules["users"].render();
+        modules["users"].render();
     }
 }).init();

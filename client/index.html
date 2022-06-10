@@ -29,28 +29,27 @@
     <!-- app css -->
     <link rel="stylesheet" href="css/index.css">
 
-
     <!-- wait for fully load -->
     <script type="application/javascript">
         document.addEventListener("DOMContentLoaded", () => {
             $.get("config/config.json", c => {
-                window.config = c;
-                let lang = $.cookie("_lang");
-                if (!lang) {
-                    lang = window.config.defaultLanguage;
+                config = c;
+                let l = $.cookie("_lang");
+                if (!l) {
+                    l = config.defaultLanguage;
                 }
-                if (!lang) {
-                    lang = "ru";
+                if (!l) {
+                    l = "ru";
                 }
-                $.get("i18n/" + lang + ".json", l => {
-                    window.lang = l;
+                $.get("i18n/" + l + ".json", t => {
+                    lang = t;
                     initAll();
                 }).fail(function() {
-                    window.lang = {};
+                    lang = {};
                     initAll();
                 });
             }).fail(() => {
-                alert("woops can't get config");
+                error("Woops can't get config");
             });
         });
     </script>

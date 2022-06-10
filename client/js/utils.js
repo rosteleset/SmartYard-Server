@@ -18,13 +18,13 @@ function setFavicon(icon, unreaded) {
         document.head.appendChild(link);
     }
 
-    window.badge = new Favico({ animation: 'none', bgColor: '#000000' });
+    badge = new Favico({ animation: 'none', bgColor: '#000000' });
 
     if (unreaded) {
         if (unreaded <= 9 || !parseInt(unreaded)) {
-            window.badge.badge(unreaded);
+            badge.badge(unreaded);
         } else {
-            window.badge.badge('9+');
+            badge.badge('9+');
         }
     }
 }
@@ -239,9 +239,9 @@ function i18n(msg, ...args) {
         }
         let loc;
         if (t.length === 2) {
-            loc = window.lang[t[0]][t[1]];
+            loc = lang[t[0]][t[1]];
         } else {
-            loc = window.lang[t[0]];
+            loc = lang[t[0]];
         }
         if (loc) {
             if (typeof loc === "object" && Array.isArray(loc)) {

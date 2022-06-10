@@ -1,12 +1,18 @@
-var lastHash = false;
-var modules = [];
-var moduleLoadQueue = [];
-var currentPage = false;
-var mainSidebarFirst = true;
-var loadingProgress = new ldBar("#loadingProgress");
+const modules = {};
+const moduleLoadQueue = [];
+const loadingProgress = new ldBar("#loadingProgress");
+
+lastHash = false;
+currentPage = false;
+mainSidebarFirst = true;
+config = false;
+lang = false;
+myself = false;
+available = false;
+badge = false;
 
 function hashChange() {
-    let hash = window.location.href.split('#')[1];
+    let hash = location.href.split('#')[1];
     hash = hash?('#' + hash):'';
 
     $('.dropdownMenu').collapse('hide');
@@ -41,7 +47,7 @@ function hashChange() {
             $("#forgotForm").hide();
             if (modules[route]) {
                 $("#page404").hide();
-                $("#topMenuLeft").html(`<li class="ml-2 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route + "." + route)}</li>`);
+                $("#topMenuLeft").html(`<li class="ml-2 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
                 $("#topMenuLeftDynamic").html("");
                 if (modules[route].search) {
                     $("#searchForm").show();
@@ -51,8 +57,8 @@ function hashChange() {
                 modules[route].route(params);
             } else
             if (route == "default") {
-                if (window.config.defaultRoute) {
-                    window.location = window.config.defaultRoute;
+                if (config.defaultRoute) {
+                    location = config.defaultRoute;
                 } else {
                     loadingDone();
                 }
@@ -93,7 +99,7 @@ function showLoginForm() {
     $("#loginBoxLogin").val($.cookie("_login"));
     $("#loginBoxServer").val($.cookie("_server"));
     if (!$("#loginBoxServer").val()) {
-        $("#loginBoxServer").val(window.config.defaultServer);
+        $("#loginBoxServer").val(config.defaultServer);
     }
     $("#loginBoxRemember").attr("checked", $.cookie("_rememberMe") === "on");
 
@@ -126,7 +132,7 @@ function showForgotPasswordForm() {
         $("#forgotBoxServer").val($("#loginBoxServer").val());
     }
     if (!$("#forgotBoxServer").val()) {
-        $("#forgotBoxServer").val(window.config.defaultServer);
+        $("#forgotBoxServer").val(config.defaultServer);
     }
 
     loadingDone(true);
@@ -174,7 +180,7 @@ function login() {
                 } else {
                     $.cookie("_token", response.token);
                 }
-                window.location.reload();
+                location.reload();
             } else {
                 error(i18n("errors.unknown"), i18n("error"), 30);
             }
@@ -221,18 +227,18 @@ function loadModule() {
     let module = moduleLoadQueue.shift();
     if (!module) {
         hashChange();
-        window.onhashchange = hashChange;
+        onhashchange = hashChange;
         $("#app").show();
     } else {
-        let lang = $.cookie("_lang");
-        if (!lang) {
-            lang = window.config.defaultLanguage;
+        let l = $.cookie("_lang");
+        if (!l) {
+            l = config.defaultLanguage;
         }
-        if (!lang) {
-            lang = "ru";
+        if (!l) {
+            l = "ru";
         }
-        $.get("modules/" + module + "/i18n/" + lang + ".json", i18n => {
-            window.lang[module] = i18n;
+        $.get("modules/" + module + "/i18n/" + l + ".json", i18n => {
+            lang[module] = i18n;
             $.getScript("modules/" + module + "/" + module + ".js");
         }).fail(() => {
             $.getScript("modules/" + module + "/" + module + ".js");
@@ -253,26 +259,26 @@ function moduleLoaded(module, object) {
 function whoAmI(force) {
     return GET("accounts", "whoAmI", false, force).done(_me => {
         if (_me && _me.user) {
-            window.myself.uid = _me.user.uid;
-            window.myself.realName = _me.user.realName;
-            window.myself.eMail = _me.user.eMail;
-            window.myself.phone = _me.user.phone;
+            myself.uid = _me.user.uid;
+            myself.realName = _me.user.realName;
+            myself.eMail = _me.user.eMail;
+            myself.phone = _me.user.phone;
             if (_me.user.defaultRoute) {
-                window.config.defaultRoute = _me.user.defaultRoute;
+                config.defaultRoute = _me.user.defaultRoute;
             }
-            if (window.myself.eMail) {
-                let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(window.myself.eMail).toLowerCase()) + "?s=64&d=404";
+            if (myself.eMail) {
+                let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(myself.eMail).toLowerCase()) + "?s=64&d=404";
                 $(".userAvatar").off("click").on("error", function () {
                     $(this).attr("src", "avatars/noavatar.png");
                     error(i18n("errors.noGravatar"));
                 }).attr("src", gravUrl);
             } else {
-                if (parseInt(window.myself.uid) === 0) {
+                if (parseInt(myself.uid) === 0) {
                     $(".userAvatar").attr("src", "avatars/admin.png");
                 }
             }
             $("#selfSettings").off("click").on("click", () => {
-                window.modules["users"].modifyUser(window.myself.uid, true);
+                modules["users"].modifyUser(myself.uid, true);
             });
             let userCard = _me.user.login;
             if (_me.user.realName) {
@@ -294,7 +300,7 @@ function initAll() {
 
     setFavicon("img/tech.png", 100);
 
-    $(window.document.body).css("background-color", '#e9ecef');
+    $(document.body).css("background-color", '#e9ecef');
 
     if (!$.cookie("_ua")) {
         $.cookie("_ua", $.browser.ua, { expires: 36500 });
@@ -325,11 +331,11 @@ function initAll() {
     $("#loginBoxServer").attr("placeholder", i18n("server"));
 
     let l = "";
-    for (let i in window.config.languages) {
+    for (let i in config.languages) {
         if ($.cookie("_lang") == i) {
-            l += `<option value='${i}' selected>${window.config.languages[i]}</option>`;
+            l += `<option value='${i}' selected>${config.languages[i]}</option>`;
         } else {
-            l += `<option value='${i}'>${window.config.languages[i]}</option>`;
+            l += `<option value='${i}'>${config.languages[i]}</option>`;
         }
     }
     $("#loginBoxLang").html(l);
@@ -370,24 +376,24 @@ function initAll() {
             if (b === "nocontent") {
                 GET("authorization", "available").done(a => {
                     if (a && a.available) {
-                        window.myself = {
+                        myself = {
                             uid: -1,
                         };
                         whoAmI().done(() => {
-                            window.available = a.available;
-                            if (window.config && window.config.modules) {
-                                for (let i in window.config.modules) {
-                                    moduleLoadQueue.push(window.config.modules[i]);
+                            available = a.available;
+                            if (config && config.modules) {
+                                for (let i in config.modules) {
+                                    moduleLoadQueue.push(config.modules[i]);
                                 }
                                 loadModule();
                             } else {
                                 $("#app").show();
-                                if (window.config.defaultRoute) {
-                                    window.onhashchange = hashChange;
-                                    window.location = window.config.defaultRoute;
+                                if (config.defaultRoute) {
+                                    onhashchange = hashChange;
+                                    location = config.defaultRoute;
                                 } else {
                                     hashChange();
-                                    window.onhashchange = hashChange;
+                                    onhashchange = hashChange;
                                 }
                             }
                         }).fail(response => {

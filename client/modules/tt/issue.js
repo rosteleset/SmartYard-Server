@@ -7,7 +7,7 @@
     createIssue: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
 
             function workflowsByProject(project) {
@@ -19,20 +19,20 @@
                 ];
 
                 if (project) {
-                    for (let i in window.modules["tt"].meta.projects) {
-                        if (window.modules["tt"].meta.projects[i].projectId == project) {
-                            for (let j in window.modules["tt"].meta.projects[i].workflows) {
+                    for (let i in modules["tt"].meta.projects) {
+                        if (modules["tt"].meta.projects[i].projectId == project) {
+                            for (let j in modules["tt"].meta.projects[i].workflows) {
                                 let a = "";
-                                for (let k in window.modules["tt"].meta.workflowAliases) {
-                                    if (window.modules["tt"].meta.workflowAliases[k].workflow == window.modules["tt"].meta.projects[i].workflows[j]) {
-                                        a = window.modules["tt"].meta.workflowAliases[k].alias;
+                                for (let k in modules["tt"].meta.workflowAliases) {
+                                    if (modules["tt"].meta.workflowAliases[k].workflow == modules["tt"].meta.projects[i].workflows[j]) {
+                                        a = modules["tt"].meta.workflowAliases[k].alias;
                                         break;
                                     }
                                 }
                                 w.push({
-                                    id: window.modules["tt"].meta.projects[i].workflows[j],
-                                    text: $.trim(a + " [" + window.modules["tt"].meta.projects[i].workflows[j] + "]"),
-                                    selected: $.cookie("lastIssueWorkflow") == window.modules["tt"].meta.projects[i].workflows[j],
+                                    id: modules["tt"].meta.projects[i].workflows[j],
+                                    text: $.trim(a + " [" + modules["tt"].meta.projects[i].workflows[j] + "]"),
+                                    selected: $.cookie("lastIssueWorkflow") == modules["tt"].meta.projects[i].workflows[j],
                                 });
                             }
                             break;
@@ -50,17 +50,17 @@
                 text: "-",
             })
 
-            for (let i in window.modules["tt"].meta.projects) {
+            for (let i in modules["tt"].meta.projects) {
                 projects.push({
-                    id: window.modules["tt"].meta.projects[i].projectId,
-                    text: $.trim(window.modules["tt"].meta.projects[i].project + " [" + window.modules["tt"].meta.projects[i].acronym + "]"),
-                    selected: $.cookie("lastIssueProject") == window.modules["tt"].meta.projects[i].projectId,
+                    id: modules["tt"].meta.projects[i].projectId,
+                    text: $.trim(modules["tt"].meta.projects[i].project + " [" + modules["tt"].meta.projects[i].acronym + "]"),
+                    selected: $.cookie("lastIssueProject") == modules["tt"].meta.projects[i].projectId,
                 });
             }
 
             let project = $.cookie("lastIssueProject")?$.cookie("lastIssueProject"):"";
 
-            window.modules["tt"].meta.projects
+            modules["tt"].meta.projects
             cardForm({
                 title: i18n("tt.createIssue"),
                 footer: true,
@@ -79,7 +79,7 @@
                             $(`#${prefix}workflow`).html("").select2({
                                 data: workflowsByProject(el.val()),
                                 minimumResultsForSearch: Infinity,
-                                language: window.lang["_code"],
+                                language: lang["_code"],
                             });
                         }
                     },
@@ -96,7 +96,7 @@
                         $.cookie("lastIssueProject", result.project, { expires: 36500 });
                         $.cookie("lastIssueWorkflow", result.workflow, { expires: 36500 });
                     }
-                    window.location.href = `#tt.issue&action=create&project=${result.project}&workflow=${result.workflow}`;
+                    location.href = `#tt.issue&action=create&project=${result.project}&workflow=${result.workflow}`;
                 },
             }).show();
         }).
@@ -119,16 +119,16 @@
             document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
             let projectName = "";
-            for (let i in window.modules["tt"].meta.projects) {
-                if (window.modules["tt"].meta.projects[i].projectId == project) {
-                    projectName = $.trim(window.modules["tt"].meta.projects[i].project + " [" + window.modules["tt"].meta.projects[i].acronym + "]");
+            for (let i in modules["tt"].meta.projects) {
+                if (modules["tt"].meta.projects[i].projectId == project) {
+                    projectName = $.trim(modules["tt"].meta.projects[i].project + " [" + modules["tt"].meta.projects[i].acronym + "]");
                 }
             }
 
             let workflowName = "[" + workflow + "]";
-            for (let i in window.modules["tt"].meta.workflowAliases) {
-                if (window.modules["tt"].meta.workflowAliases[i].workflow == workflow) {
-                    workflowName = $.trim(window.modules["tt"].meta.workflowAliases[i].alias + " [" + workflow + "]");
+            for (let i in modules["tt"].meta.workflowAliases) {
+                if (modules["tt"].meta.workflowAliases[i].workflow == workflow) {
+                    workflowName = $.trim(modules["tt"].meta.workflowAliases[i].alias + " [" + workflow + "]");
                 }
             }
 
@@ -183,7 +183,7 @@
                     console.log(result);
                 },
                 cancel: () => {
-                    window.history.back();
+                    history.back();
                 },
             });
 
@@ -191,7 +191,7 @@
         }).
         fail(FAIL).
         fail(() => {
-            window.history.back();
+            history.back();
         });
     },
 
@@ -201,13 +201,13 @@
         GET("tt", "tt").
         fail(FAIL).
         fail(() => {
-            window.history.back();
+            history.back();
         }).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             switch (params.action) {
                 case "create":
-                    window.modules["tt.issue"].createIssueForm(params.project, params.workflow);
+                    modules["tt.issue"].createIssueForm(params.project, params.workflow);
                     break;
                 default:
                     loadingDone();

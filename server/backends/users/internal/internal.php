@@ -102,25 +102,16 @@
 
                 try {
                     $sth = $this->db->prepare("insert into core_users (login, password, real_name, e_mail, phone, enabled) values (:login, :password, :real_name, :e_mail, :phone, 1)");
-                    if (!$sth->execute([
+                    if ($sth->execute([
                         ":login" => $login,
                         ":password" => password_hash($password, PASSWORD_DEFAULT),
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
                     ])) {
-                        return false;
-                    }
-
-                    $sth = $this->db->prepare("select uid from core_users where login = :login");
-                    if ($sth->execute([ ":login" => $login, ])) {
-                        $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
-                        if (count($res) == 1) {
-                            eMail($this->config, trim($eMail), "new user", "your new password is $password");
-                            return $res[0]["uid"];
-                        } else {
-                            return false;
-                        }
+                        $uid = $this->db->lastInsertId();
+                        eMail($this->config, trim($eMail), "new user", "your new password is $password");
+                        return $uid;
                     } else {
                         return false;
                     }

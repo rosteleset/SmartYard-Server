@@ -10,7 +10,7 @@
             "settings",
         ], () => {
             moduleLoaded("tt", this);
-        })
+        });
     },
 
     issueField2FormField: function (issue, field) {
@@ -68,8 +68,8 @@
     },
 
     tt: function (tt) {
-        window.modules["tt"].meta = tt["meta"];
-        console.log(window.modules["tt"].meta);
+        modules["tt"].meta = tt["meta"];
+        console.log(modules["tt"].meta);
     },
 
     route: function (params) {
@@ -84,7 +84,7 @@
             </li>
         `);
 
-        $(".createIssue").off("click").on("click", window.modules["tt.issue"].createIssue);
+        $(".createIssue").off("click").on("click", modules["tt.issue"].createIssue);
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
         $("#mainForm").html(i18n("tt.tt"));

@@ -28,26 +28,12 @@ CREATE UNIQUE INDEX addresses_areas_area_fias_id on addresses_areas(area_fias_id
 CREATE UNIQUE INDEX addresses_areas_area on addresses_areas(address_region_id, area);
 CREATE INDEX addresses_areas_address_region_id on addresses_areas(address_region_id);
 
--- cities
-CREATE TABLE addresses_cities
-(
-    address_city_id integer not null primary key autoincrement,
-    address_area_id integer not null,
-    city_fias_id text,
-    city_with_type text,
-    city_type text,
-    city_type_full text,
-    city text not null
-);
-CREATE UNIQUE INDEX addresses_areas_city_fias_id on addresses_cities(city_fias_id);
-CREATE UNIQUE INDEX addresses_areas_city on addresses_cities(address_area_id, city);
-CREATE INDEX addresses_cities_address_region_id on addresses_cities(address_area_id);
-
 -- settlements
 CREATE TABLE addresses_settlements
 (
     address_settlement_id integer not null primary key autoincrement,
-    address_area_id integer not null,
+    address_region_id integer,
+    address_area_id integer,
     settlement_fias_id text,
     settlement_with_type text,
     settlement_type text,
@@ -55,14 +41,14 @@ CREATE TABLE addresses_settlements
     settlement text not null
 );
 CREATE UNIQUE INDEX addresses_settlements_settlement_fias_id on addresses_settlements(settlement_fias_id);
-CREATE UNIQUE INDEX addresses_settlements_settlement on addresses_settlements(address_area_id, settlement);
+CREATE UNIQUE INDEX addresses_settlements_settlement on addresses_settlements(address_region_id, address_area_id, settlement);
+CREATE INDEX addresses_settlements_address_region_id on addresses_settlements(address_region_id);
 CREATE INDEX addresses_settlements_address_area_id on addresses_settlements(address_area_id);
 
 -- streets
 CREATE TABLE addresses_streets
 (
     address_street_id integer not null primary key autoincrement,
-    address_city_id integer,
     address_settlement_id integer,
     street_fias_id text,
     street_with_type text,
@@ -71,8 +57,7 @@ CREATE TABLE addresses_streets
     street text
 );
 CREATE UNIQUE INDEX addresses_streets_street_fias_id on addresses_streets(street_fias_id);
-CREATE UNIQUE INDEX addresses_streets_street on addresses_streets(address_city_id, address_settlement_id, street);
-CREATE INDEX addresses_streets_address_city_id on addresses_streets(address_city_id);
+CREATE UNIQUE INDEX addresses_streets_street on addresses_streets(address_settlement_id, street);
 CREATE INDEX addresses_streets_address_address_settlement_id on addresses_streets(address_settlement_id);
 
 -- houses

@@ -1,6 +1,6 @@
 ({
     init: function () {
-        leftSide("fab fa-fw fa-intercom", i18n("domophones.domophones"), "#domophones");
+        leftSide("fas fa-fw fa-door-open", i18n("domophones.domophones"), "#domophones");
         moduleLoaded("domophones", this);
     },
 

@@ -365,7 +365,7 @@ function cardForm(params) {
 
         if (params.fields[i].type === "select2") {
             $(`#${_prefix}${params.fields[i].id}`).select2({
-                language: window.lang["_code"],
+                language: lang["_code"],
                 minimumResultsForSearch: params.fields[i].minimumResultsForSearch?params.fields[i].minimumResultsForSearch:0,
                 tags: !!params.fields[i].tags,
                 createTag: params.fields[i].createTags?allowNewSelect2Tags:denyNewSelect2Tags,
@@ -387,7 +387,7 @@ function cardForm(params) {
                 minHeight: null,
                 maxHeight: null,
                 disableResizeEditor: true,
-                lang: (window.lang["_code"] === "ru") ? "ru-RU" : "en-US",
+                lang: (lang["_code"] === "ru") ? "ru-RU" : "en-US",
                 toolbar: [
                     ['font', ['bold', 'italic', 'underline', 'clear']],
                     ['fontsize', ['fontsize']],

@@ -92,21 +92,11 @@
 
                 try {
                     $sth = $this->db->prepare("insert into core_groups (acronym, name) values (:acronym, :name)");
-                    if (!$sth->execute([
+                    if ($sth->execute([
                         ":acronym" => $acronym,
                         ":name" => trim($name),
                     ])) {
-                        return false;
-                    }
-
-                    $sth = $this->db->prepare("select gid from core_groups where acronym = :acronym");
-                    if ($sth->execute([ ":acronym" => $acronym, ])) {
-                        $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
-                        if (count($res) == 1) {
-                            return $res[0]["gid"];
-                        } else {
-                            return false;
-                        }
+                        return $this->db->lastInsertId();
                     } else {
                         return false;
                     }

@@ -18,7 +18,7 @@
         done(() => {
             message(i18n("tt.projectWasAdded"));
         }).
-        always(window.modules["tt.settings"].renderProjects);
+        always(modules["tt.settings"].renderProjects);
     },
 
     doAddResolution: function (resolution) {
@@ -30,7 +30,7 @@
         done(() => {
             message(i18n("tt.resolutionWasAdded"));
         }).
-        always(window.modules["tt.settings"].renderResolutions);
+        always(modules["tt.settings"].renderResolutions);
     },
 
     doAddCustomField: function (type, field, fieldDisplay) {
@@ -44,7 +44,7 @@
         done(() => {
             message(i18n("tt.customFieldWasAdded"));
         }).
-        always(window.modules["tt.settings"].renderCustomFields);
+        always(modules["tt.settings"].renderCustomFields);
     },
 
     doAddProjectUser: function (projectId, uid, roleId) {
@@ -60,7 +60,7 @@
             message(i18n("tt.projectWasChanged"));
         }).
         done(() => {
-            window.modules["tt.settings"].projectUsers(projectId);
+            modules["tt.settings"].projectUsers(projectId);
         });
     },
 
@@ -77,7 +77,7 @@
             message(i18n("tt.projectWasChanged"));
         }).
         done(() => {
-            window.modules["tt.settings"].projectGroups(projectId);
+            modules["tt.settings"].projectGroups(projectId);
         });
     },
 
@@ -91,7 +91,7 @@
         done(() => {
             message(i18n("tt.projectWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderProjects);
+        always(modules["tt.settings"].renderProjects);
     },
 
     doDeleteProject: function (projectId) {
@@ -101,7 +101,7 @@
         done(() => {
             message(i18n("tt.projectWasDeleted"));
         }).
-        always(window.modules["tt.settings"].renderProjects);
+        always(modules["tt.settings"].renderProjects);
     },
 
     doDeleteCustomField: function (customFieldId) {
@@ -114,7 +114,7 @@
         done(() => {
             $("#altForm").hide();
         }).
-        always(window.modules["tt.settings"].renderCustomFields);
+        always(modules["tt.settings"].renderCustomFields);
     },
 
     doSetWorkflowAlias: function (workflow, alias) {
@@ -127,7 +127,7 @@
         done(() => {
             message(i18n("tt.workflowWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderWorkflows);
+        always(modules["tt.settings"].renderWorkflows);
     },
 
     doSetProjectWorkflows: function (projectId, workflows) {
@@ -139,7 +139,7 @@
         done(() => {
             message(i18n("tt.projectWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderProjects);
+        always(modules["tt.settings"].renderProjects);
     },
 
     doSetProjectResolutions: function (projectId, resolutions) {
@@ -151,7 +151,7 @@
         done(() => {
             message(i18n("tt.projectWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderProjects);
+        always(modules["tt.settings"].renderProjects);
     },
 
     doSetProjectCustomFields: function (projectId, customFields) {
@@ -163,7 +163,7 @@
         done(() => {
             message(i18n("tt.projectWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderProjects);
+        always(modules["tt.settings"].renderProjects);
     },
 
     doModifyStatus: function (statusId, display) {
@@ -175,7 +175,7 @@
         done(() => {
             message(i18n("tt.statusWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderStatuses);
+        always(modules["tt.settings"].renderStatuses);
     },
 
     doModifyResolution: function (resolutionId, resolution) {
@@ -187,7 +187,7 @@
         done(() => {
             message(i18n("tt.resolutionWasChanged"));
         }).
-        always(window.modules["tt.settings"].renderResolutions);
+        always(modules["tt.settings"].renderResolutions);
     },
 
     doDeleteResolution: function (resolutionId) {
@@ -197,7 +197,7 @@
         done(() => {
             message(i18n("tt.resolutionWasDeleted"));
         }).
-        always(window.modules["tt.settings"].renderResolutions);
+        always(modules["tt.settings"].renderResolutions);
     },
 
     doProjectDeleteRole: function (projectRoleId, projectId, user) {
@@ -210,9 +210,9 @@
         }).
         done(() => {
             if (user) {
-                window.modules["tt.settings"].projectUsers(projectId);
+                modules["tt.settings"].projectUsers(projectId);
             } else {
-                window.modules["tt.settings"].projectGroups(projectId);
+                modules["tt.settings"].projectGroups(projectId);
             }
         });
     },
@@ -227,7 +227,7 @@
         done(() => {
             message(i18n("tt.projectWasChanged"));
         }).
-        done(window.modules["tt.settings"].renderRoles);
+        done(modules["tt.settings"].renderRoles);
     },
 
     doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options) {
@@ -247,7 +247,7 @@
         done(() => {
             $("#altForm").hide();
         }).
-        always(window.modules["tt.settings"].renderCustomFields);
+        always(modules["tt.settings"].renderCustomFields);
     },
 
     /*
@@ -281,7 +281,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddProject(result.acronym, result.project);
+                modules["tt.settings"].doAddProject(result.acronym, result.project);
             },
         }).show();
     },
@@ -304,7 +304,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddResolution(result.resolution);
+                modules["tt.settings"].doAddResolution(result.resolution);
             },
         }).show();
     },
@@ -371,7 +371,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddCustomField(result.type, result.field, result.fieldDisplay);
+                modules["tt.settings"].doAddCustomField(result.type, result.field, result.fieldDisplay);
             },
         }).show();
     },
@@ -411,7 +411,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddProjectUser(projectId, result.uid, result.roleId);
+                modules["tt.settings"].doAddProjectUser(projectId, result.uid, result.roleId);
             },
         }).show();
     },
@@ -451,16 +451,16 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doAddProjectGroup(projectId, result.gid, result.roleId);
+                modules["tt.settings"].doAddProjectGroup(projectId, result.gid, result.roleId);
             },
         }).show();
     },
 
     modifyProject: function (projectId) {
         let project = false;
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                project = window.modules["tt"].meta.projects[i];
+        for (let i in modules["tt"].meta.projects) {
+            if (modules["tt"].meta.projects[i].projectId == projectId) {
+                project = modules["tt"].meta.projects[i];
                 break;
             }
         }
@@ -517,9 +517,9 @@
             ],
             callback: function (result) {
                 if (result.delete === "yes") {
-                    window.modules["tt.settings"].deleteProject(result.projectId);
+                    modules["tt.settings"].deleteProject(result.projectId);
                 } else {
-                    window.modules["tt.settings"].doModifyProject(result.projectId, result.acronym, result.project);
+                    modules["tt.settings"].doModifyProject(result.projectId, result.acronym, result.project);
                 }
             },
         }).show();
@@ -529,10 +529,10 @@
         let display = '';
         let status = '';
 
-        for (let i in window.modules["tt"].meta.statuses) {
-            if (window.modules["tt"].meta.statuses[i].statusId == statusId) {
-                status = window.modules["tt"].meta.statuses[i].status;
-                display = window.modules["tt"].meta.statuses[i].statusDisplay;
+        for (let i in modules["tt"].meta.statuses) {
+            if (modules["tt"].meta.statuses[i].statusId == statusId) {
+                status = modules["tt"].meta.statuses[i].status;
+                display = modules["tt"].meta.statuses[i].statusDisplay;
             }
         }
 
@@ -568,7 +568,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doModifyStatus(statusId, result.display);
+                modules["tt.settings"].doModifyStatus(statusId, result.display);
             },
         }).show();
     },
@@ -576,9 +576,9 @@
     modifyResolution: function (resolutionId) {
         let resolution = '';
 
-        for (let i in window.modules["tt"].meta.resolutions) {
-            if (window.modules["tt"].meta.resolutions[i].resolutionId == resolutionId) {
-                resolution = window.modules["tt"].meta.resolutions[i].resolution;
+        for (let i in modules["tt"].meta.resolutions) {
+            if (modules["tt"].meta.resolutions[i].resolutionId == resolutionId) {
+                resolution = modules["tt"].meta.resolutions[i].resolution;
             }
         }
 
@@ -620,9 +620,9 @@
             ],
             callback: function (result) {
                 if (result.delete === "yes") {
-                    window.modules["tt.settings"].deleteResolution(resolutionId);
+                    modules["tt.settings"].deleteResolution(resolutionId);
                 } else {
-                    window.modules["tt.settings"].doModifyResolution(resolutionId, result.resolution);
+                    modules["tt.settings"].doModifyResolution(resolutionId, result.resolution);
                 }
             },
         }).show();
@@ -632,10 +632,10 @@
         let name = '';
         let display = '';
 
-        for (let i in window.modules["tt"].meta.roles) {
-            if (window.modules["tt"].meta.roles[i].roleId == roleId) {
-                name = window.modules["tt"].meta.roles[i].name;
-                display = window.modules["tt"].meta.roles[i].nameDisplay;
+        for (let i in modules["tt"].meta.roles) {
+            if (modules["tt"].meta.roles[i].roleId == roleId) {
+                name = modules["tt"].meta.roles[i].name;
+                display = modules["tt"].meta.roles[i].nameDisplay;
             }
         }
 
@@ -671,7 +671,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doModifyRole(roleId, result.display);
+                modules["tt.settings"].doModifyRole(roleId, result.display);
             },
         }).show();
     },
@@ -680,12 +680,12 @@
         loadingStart();
         GET("tt", "tt", false, true).
         fail(FAIL).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             let cf = {};
-            for (let i in window.modules["tt"].meta.customFields) {
-                if (window.modules["tt"].meta.customFields[i].customFieldId == customFieldId) {
-                    cf = window.modules["tt"].meta.customFields[i];
+            for (let i in modules["tt"].meta.customFields) {
+                if (modules["tt"].meta.customFields[i].customFieldId == customFieldId) {
+                    cf = modules["tt"].meta.customFields[i];
                 }
             }
 
@@ -767,7 +767,7 @@
                                 }
                             }
                         }
-                        window.modules["tt.settings"].doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, false, false, result.link, options);
+                        modules["tt.settings"].doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, false, false, result.link, options);
                     },
                     cancel: function () {
                         $("#altForm").hide();
@@ -874,9 +874,9 @@
                     ],
                     callback: function (result) {
                         if (result.delete === "yes") {
-                            window.modules["tt.settings"].deleteCustomField(customFieldId);
+                            modules["tt.settings"].deleteCustomField(customFieldId);
                         } else {
-                            window.modules["tt.settings"].doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options);
+                            modules["tt.settings"].doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options);
                         }
                     },
                     cancel: function () {
@@ -890,28 +890,28 @@
 
     deleteProject: function (projectId) {
         mConfirm(i18n("tt.confirmProjectDelete", projectId.toString()), i18n("confirm"), `danger:${i18n("tt.projectDelete")}`, () => {
-            window.modules["tt.settings"].doDeleteProject(projectId);
+            modules["tt.settings"].doDeleteProject(projectId);
         });
     },
 
     deleteCustomField: function (customFieldId) {
         mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDeleteDelete")}`, () => {
-            window.modules["tt.settings"].doDeleteCustomField(customFieldId);
+            modules["tt.settings"].doDeleteCustomField(customFieldId);
         });
     },
 
     deleteResolution: function (resolutionId) {
         mConfirm(i18n("tt.confirmResolutionDelete", resolutionId.toString()), i18n("confirm"), `danger:${i18n("tt.resolutionDelete")}`, () => {
-            window.modules["tt.settings"].doDeleteResolution(resolutionId);
+            modules["tt.settings"].doDeleteResolution(resolutionId);
         });
     },
 
     setWorkflowAlias: function (workflow) {
         let w = '';
 
-        for (let i in window.modules["tt"].meta.workflowAliases) {
-            if (window.modules["tt"].meta.workflowAliases[i].workflow === workflow) {
-                w = window.modules["tt"].meta.workflowAliases[i].alias;
+        for (let i in modules["tt"].meta.workflowAliases) {
+            if (modules["tt"].meta.workflowAliases[i].workflow === workflow) {
+                w = modules["tt"].meta.workflowAliases[i].alias;
                 break;
             }
         }
@@ -941,28 +941,28 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doSetWorkflowAlias(workflow, result.alias);
+                modules["tt.settings"].doSetWorkflowAlias(workflow, result.alias);
             },
         }).show();
     },
 
     projectWorkflows: function (projectId) {
         let project = false;
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                project = window.modules["tt"].meta.projects[i];
+        for (let i in modules["tt"].meta.projects) {
+            if (modules["tt"].meta.projects[i].projectId == projectId) {
+                project = modules["tt"].meta.projects[i];
                 break;
             }
         }
 
         let w = {};
-        for (let i in window.modules["tt"].meta.workflows) {
-            w[window.modules["tt"].meta.workflows[i]] = window.modules["tt"].meta.workflows[i];
+        for (let i in modules["tt"].meta.workflows) {
+            w[modules["tt"].meta.workflows[i]] = modules["tt"].meta.workflows[i];
         }
 
-        for (let i in window.modules["tt"].meta.workflowAliases) {
-            if (w[window.modules["tt"].meta.workflowAliases[i].workflow]) {
-                w[window.modules["tt"].meta.workflowAliases[i].workflow] = window.modules["tt"].meta.workflowAliases[i].alias;
+        for (let i in modules["tt"].meta.workflowAliases) {
+            if (w[modules["tt"].meta.workflowAliases[i].workflow]) {
+                w[modules["tt"].meta.workflowAliases[i].workflow] = modules["tt"].meta.workflowAliases[i].alias;
             }
         }
 
@@ -991,25 +991,25 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doSetProjectWorkflows(projectId, result.workflows);
+                modules["tt.settings"].doSetProjectWorkflows(projectId, result.workflows);
             },
         }).show();
     },
 
     projectResolutions: function (projectId) {
         let project = false;
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                project = window.modules["tt"].meta.projects[i];
+        for (let i in modules["tt"].meta.projects) {
+            if (modules["tt"].meta.projects[i].projectId == projectId) {
+                project = modules["tt"].meta.projects[i];
                 break;
             }
         }
 
         let resolutions = [];
-        for (let i in window.modules["tt"].meta.resolutions) {
+        for (let i in modules["tt"].meta.resolutions) {
             resolutions.push({
-                id: window.modules["tt"].meta.resolutions[i].resolutionId,
-                text: window.modules["tt"].meta.resolutions[i].resolution,
+                id: modules["tt"].meta.resolutions[i].resolutionId,
+                text: modules["tt"].meta.resolutions[i].resolution,
             });
         }
 
@@ -1030,25 +1030,25 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doSetProjectResolutions(projectId, result.resolutions);
+                modules["tt.settings"].doSetProjectResolutions(projectId, result.resolutions);
             },
         }).show();
     },
 
     projectCustomFields: function (projectId) {
         let project = false;
-        for (let i in window.modules["tt"].meta.projects) {
-            if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                project = window.modules["tt"].meta.projects[i];
+        for (let i in modules["tt"].meta.projects) {
+            if (modules["tt"].meta.projects[i].projectId == projectId) {
+                project = modules["tt"].meta.projects[i];
                 break;
             }
         }
 
         let customFields = [];
-        for (let i in window.modules["tt"].meta.customFields) {
+        for (let i in modules["tt"].meta.customFields) {
             customFields.push({
-                id: window.modules["tt"].meta.customFields[i].customFieldId,
-                text: $.trim(window.modules["tt"].meta.customFields[i].fieldDisplay + " [" + window.modules["tt"].meta.customFields[i].field + "]"),
+                id: modules["tt"].meta.customFields[i].customFieldId,
+                text: $.trim(modules["tt"].meta.customFields[i].fieldDisplay + " [" + modules["tt"].meta.customFields[i].field + "]"),
             });
         }
 
@@ -1069,34 +1069,34 @@
                 },
             ],
             callback: function (result) {
-                window.modules["tt.settings"].doSetProjectCustomFields(projectId, result.customFields);
+                modules["tt.settings"].doSetProjectCustomFields(projectId, result.customFields);
             },
         }).show();
     },
 
     projectDeleteUser: function (projectRoleId, projectId) {
         mConfirm(i18n("users.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            window.modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId, true);
+            modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId, true);
         });
     },
 
     projectDeleteGroup: function (projectRoleId, projectId) {
         mConfirm(i18n("groups.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
-            window.modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId);
+            modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId);
         });
     },
 
     projectUsers: function (projectId) {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             GET("accounts", "users").
             done(response => {
                 let project = false;
-                for (let i in window.modules["tt"].meta.projects) {
-                    if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                        project = window.modules["tt"].meta.projects[i];
+                for (let i in modules["tt"].meta.projects) {
+                    if (modules["tt"].meta.projects[i].projectId == projectId) {
+                        project = modules["tt"].meta.projects[i];
                         break;
                     }
                 }
@@ -1109,8 +1109,8 @@
                 }
 
                 let roles = {};
-                for (let i in window.modules["tt"].meta.roles) {
-                    roles[window.modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + window.modules["tt"].meta.roles[i].name) + " [" + window.modules["tt"].meta.roles[i].level + "]");
+                for (let i in modules["tt"].meta.roles) {
+                    roles[modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + modules["tt"].meta.roles[i].name) + " [" + modules["tt"].meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1120,7 +1120,7 @@
                         button: {
                             caption: i18n("tt.addProjectUser"),
                             click: () => {
-                                window.modules["tt.settings"].addProjectUser(projectId, users, roles);
+                                modules["tt.settings"].addProjectUser(projectId, users, roles);
                             },
                         },
                         altButton: {
@@ -1169,7 +1169,7 @@
                                             title: i18n("users.delete"),
                                             text: "text-danger",
                                             click: projectRoleId => {
-                                                window.modules["tt.settings"].projectDeleteUser(projectRoleId, projectId);
+                                                modules["tt.settings"].projectDeleteUser(projectRoleId, projectId);
                                             },
                                         },
                                     ],
@@ -1191,14 +1191,14 @@
     projectGroups: function (projectId) {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             GET("accounts", "groups").
             done(response => {
                 let project = false;
-                for (let i in window.modules["tt"].meta.projects) {
-                    if (window.modules["tt"].meta.projects[i].projectId == projectId) {
-                        project = window.modules["tt"].meta.projects[i];
+                for (let i in modules["tt"].meta.projects) {
+                    if (modules["tt"].meta.projects[i].projectId == projectId) {
+                        project = modules["tt"].meta.projects[i];
                         break;
                     }
                 }
@@ -1211,8 +1211,8 @@
                 }
 
                 let roles = {};
-                for (let i in window.modules["tt"].meta.roles) {
-                    roles[window.modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + window.modules["tt"].meta.roles[i].name) + " [" + window.modules["tt"].meta.roles[i].level + "]");
+                for (let i in modules["tt"].meta.roles) {
+                    roles[modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + modules["tt"].meta.roles[i].name) + " [" + modules["tt"].meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1222,7 +1222,7 @@
                         button: {
                             caption: i18n("tt.addProjectGroup"),
                             click: () => {
-                                window.modules["tt.settings"].addProjectGroup(projectId, groups, roles);
+                                modules["tt.settings"].addProjectGroup(projectId, groups, roles);
                             },
                         },
                         altButton: {
@@ -1271,7 +1271,7 @@
                                             title: i18n("groups.delete"),
                                             text: "text-danger",
                                             click: projectRoleId => {
-                                                window.modules["tt.settings"].projectDeleteGroup(projectRoleId, projectId);
+                                                modules["tt.settings"].projectDeleteGroup(projectRoleId, projectId);
                                             },
                                         },
                                     ],
@@ -1293,14 +1293,14 @@
     renderProjects: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
                 title: {
                     button: {
                         caption: i18n("tt.addProject"),
-                        click: window.modules["tt.settings"].addProject,
+                        click: modules["tt.settings"].addProject,
                     },
                     caption: i18n("tt.projects"),
                     filter: true,
@@ -1320,21 +1320,21 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < window.modules["tt"].meta.projects.length; i++) {
+                    for (let i = 0; i < modules["tt"].meta.projects.length; i++) {
                         rows.push({
-                            uid: window.modules["tt"].meta.projects[i].projectId.toString(),
+                            uid: modules["tt"].meta.projects[i].projectId.toString(),
                             cols: [
                                 {
-                                    data: window.modules["tt"].meta.projects[i].projectId,
-                                    click: window.modules["tt.settings"].modifyProject,
+                                    data: modules["tt"].meta.projects[i].projectId,
+                                    click: modules["tt.settings"].modifyProject,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.projects[i].acronym,
-                                    click: window.modules["tt.settings"].modifyProject,
+                                    data: modules["tt"].meta.projects[i].acronym,
+                                    click: modules["tt.settings"].modifyProject,
                                     nowrap: true,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.projects[i].project,
+                                    data: modules["tt"].meta.projects[i].project,
                                 },
                             ],
                             dropDown: {
@@ -1343,7 +1343,7 @@
                                     {
                                         icon: "fas fa-shoe-prints",
                                         title: i18n("tt.workflows"),
-                                        click: window.modules["tt.settings"].projectWorkflows,
+                                        click: modules["tt.settings"].projectWorkflows,
                                     },
                                     {
                                         title: "-",
@@ -1351,12 +1351,12 @@
                                     {
                                         icon: "fas fa-signature",
                                         title: i18n("tt.resolutions"),
-                                        click: window.modules["tt.settings"].projectResolutions,
+                                        click: modules["tt.settings"].projectResolutions,
                                     },
                                     {
                                         icon: "fas fa-edit",
                                         title: i18n("tt.customFields"),
-                                        click: window.modules["tt.settings"].projectCustomFields,
+                                        click: modules["tt.settings"].projectCustomFields,
                                     },
                                     {
                                         title: "-",
@@ -1364,12 +1364,12 @@
                                     {
                                         icon: "fas fa-user",
                                         title: i18n("tt.users"),
-                                        click: window.modules["tt.settings"].projectUsers,
+                                        click: modules["tt.settings"].projectUsers,
                                     },
                                     {
                                         icon: "fas fa-users",
                                         title: i18n("tt.groups"),
-                                        click: window.modules["tt.settings"].projectGroups,
+                                        click: modules["tt.settings"].projectGroups,
                                     },
                                 ],
                             }
@@ -1387,7 +1387,7 @@
     renderWorkflows: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1408,20 +1408,20 @@
                     let rows = [];
 
                     let w = {};
-                    for (let i = 0; i < window.modules["tt"].meta.workflowAliases.length; i++) {
-                        w[window.modules["tt"].meta.workflowAliases[i].workflow] = window.modules["tt"].meta.workflowAliases[i].alias;
+                    for (let i = 0; i < modules["tt"].meta.workflowAliases.length; i++) {
+                        w[modules["tt"].meta.workflowAliases[i].workflow] = modules["tt"].meta.workflowAliases[i].alias;
                     }
 
-                    for (let i = 0; i < window.modules["tt"].meta.workflows.length; i++) {
+                    for (let i = 0; i < modules["tt"].meta.workflows.length; i++) {
                         rows.push({
-                            uid: window.modules["tt"].meta.workflows[i],
+                            uid: modules["tt"].meta.workflows[i],
                             cols: [
                                 {
-                                    data: window.modules["tt"].meta.workflows[i],
-                                    click: window.modules["tt.settings"].setWorkflowAlias,
+                                    data: modules["tt"].meta.workflows[i],
+                                    click: modules["tt.settings"].setWorkflowAlias,
                                 },
                                 {
-                                    data: w[window.modules["tt"].meta.workflows[i]]?w[window.modules["tt"].meta.workflows[i]]:window.modules["tt"].meta.workflows[i],
+                                    data: w[modules["tt"].meta.workflows[i]]?w[modules["tt"].meta.workflows[i]]:modules["tt"].meta.workflows[i],
                                 },
                             ],
                         });
@@ -1438,7 +1438,7 @@
     renderStatuses: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1462,20 +1462,20 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < window.modules["tt"].meta.statuses.length; i++) {
+                    for (let i = 0; i < modules["tt"].meta.statuses.length; i++) {
                         rows.push({
-                            uid: window.modules["tt"].meta.statuses[i].statusId,
+                            uid: modules["tt"].meta.statuses[i].statusId,
                             cols: [
                                 {
-                                    data: window.modules["tt"].meta.statuses[i].statusId,
-                                    click: window.modules["tt.settings"].modifyStatus,
+                                    data: modules["tt"].meta.statuses[i].statusId,
+                                    click: modules["tt.settings"].modifyStatus,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.statuses[i].status,
-                                    click: window.modules["tt.settings"].modifyStatus,
+                                    data: modules["tt"].meta.statuses[i].status,
+                                    click: modules["tt.settings"].modifyStatus,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.statuses[i].statusDisplay,
+                                    data: modules["tt"].meta.statuses[i].statusDisplay,
                                 },
                             ],
                         });
@@ -1492,14 +1492,14 @@
     renderResolutions: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
                 title: {
                     button: {
                         caption: i18n("tt.addResolution"),
-                        click: window.modules["tt.settings"].addResolution,
+                        click: modules["tt.settings"].addResolution,
                     },
                     caption: i18n("tt.resolutions"),
                     filter: true,
@@ -1516,17 +1516,17 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < window.modules["tt"].meta.resolutions.length; i++) {
+                    for (let i = 0; i < modules["tt"].meta.resolutions.length; i++) {
                         rows.push({
-                            uid: window.modules["tt"].meta.resolutions[i].resolutionId,
+                            uid: modules["tt"].meta.resolutions[i].resolutionId,
                             cols: [
                                 {
-                                    data: window.modules["tt"].meta.resolutions[i].resolutionId,
-                                    click: window.modules["tt.settings"].modifyResolution,
+                                    data: modules["tt"].meta.resolutions[i].resolutionId,
+                                    click: modules["tt.settings"].modifyResolution,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.resolutions[i].resolution,
-                                    click: window.modules["tt.settings"].modifyResolution,
+                                    data: modules["tt"].meta.resolutions[i].resolution,
+                                    click: modules["tt.settings"].modifyResolution,
                                 },
                             ],
                         });
@@ -1543,7 +1543,7 @@
     renderRoles: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1571,23 +1571,23 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < window.modules["tt"].meta.roles.length; i++) {
+                    for (let i = 0; i < modules["tt"].meta.roles.length; i++) {
                         rows.push({
-                            uid: window.modules["tt"].meta.roles[i].roleId,
+                            uid: modules["tt"].meta.roles[i].roleId,
                             cols: [
                                 {
-                                    data: window.modules["tt"].meta.roles[i].roleId,
-                                    click: window.modules["tt.settings"].modifyRole,
+                                    data: modules["tt"].meta.roles[i].roleId,
+                                    click: modules["tt.settings"].modifyRole,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.roles[i].name,
-                                    click: window.modules["tt.settings"].modifyRole,
+                                    data: modules["tt"].meta.roles[i].name,
+                                    click: modules["tt.settings"].modifyRole,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.roles[i].level,
+                                    data: modules["tt"].meta.roles[i].level,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.roles[i].nameDisplay?window.modules["tt"].meta.roles[i].nameDisplay:"",
+                                    data: modules["tt"].meta.roles[i].nameDisplay?modules["tt"].meta.roles[i].nameDisplay:"",
                                 },
                             ],
                         });
@@ -1604,14 +1604,14 @@
     renderCustomFields: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(window.modules["tt"].tt).
+        done(modules["tt"].tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
                 title: {
                     button: {
                         caption: i18n("tt.addCustomField"),
-                        click: window.modules["tt.settings"].addCustomField,
+                        click: modules["tt.settings"].addCustomField,
                     },
                     caption: i18n("tt.customFields"),
                     filter: true,
@@ -1637,27 +1637,27 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < window.modules["tt"].meta.customFields.length; i++) {
+                    for (let i = 0; i < modules["tt"].meta.customFields.length; i++) {
                         rows.push({
-                            uid: window.modules["tt"].meta.customFields[i].customFieldId,
+                            uid: modules["tt"].meta.customFields[i].customFieldId,
                             cols: [
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].customFieldId,
-                                    click: window.modules["tt.settings"].modifyCustomField,
+                                    data: modules["tt"].meta.customFields[i].customFieldId,
+                                    click: modules["tt.settings"].modifyCustomField,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].field,
-                                    click: window.modules["tt.settings"].modifyCustomField,
+                                    data: modules["tt"].meta.customFields[i].field,
+                                    click: modules["tt.settings"].modifyCustomField,
                                 },
                                 {
-                                    data: i18n("tt.customFieldType" + window.modules["tt"].meta.customFields[i].type),
+                                    data: i18n("tt.customFieldType" + modules["tt"].meta.customFields[i].type),
                                     nowrap: true,
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].workflow?i18n("yes"):i18n("no"),
+                                    data: modules["tt"].meta.customFields[i].workflow?i18n("yes"):i18n("no"),
                                 },
                                 {
-                                    data: window.modules["tt"].meta.customFields[i].fieldDisplay,
+                                    data: modules["tt"].meta.customFields[i].fieldDisplay,
                                 },
                             ],
                         });
@@ -1703,27 +1703,27 @@
 
         switch (section) {
             case "projects":
-                window.modules["tt.settings"].renderProjects();
+                modules["tt.settings"].renderProjects();
                 break;
 
             case "workflows":
-                window.modules["tt.settings"].renderWorkflows();
+                modules["tt.settings"].renderWorkflows();
                 break;
 
             case "statuses":
-                window.modules["tt.settings"].renderStatuses();
+                modules["tt.settings"].renderStatuses();
                 break;
 
             case "resolutions":
-                window.modules["tt.settings"].renderResolutions();
+                modules["tt.settings"].renderResolutions();
                 break;
 
             case "roles":
-                window.modules["tt.settings"].renderRoles();
+                modules["tt.settings"].renderRoles();
                 break;
 
             case "customFields":
-                window.modules["tt.settings"].renderCustomFields();
+                modules["tt.settings"].renderCustomFields();
                 break;
         }
     },

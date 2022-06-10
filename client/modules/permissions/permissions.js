@@ -29,7 +29,7 @@
             deny: deny,
         }).
         fail(FAIL).
-        always(window.modules["permissions"].render);
+        always(modules["permissions"].render);
     },
 
     doAddUserRights: function (uid, api, method, allow, deny) {
@@ -43,7 +43,7 @@
             deny: deny,
         }).
         fail(FAIL).
-        always(window.modules["permissions"].render);
+        always(modules["permissions"].render);
     },
 
     /*
@@ -55,18 +55,18 @@
         let u = [];
 
         if (group) {
-            for (let i in window.modules["permissions"].groups) {
+            for (let i in modules["permissions"].groups) {
                 g.push({
-                    value: window.modules["permissions"].groups[i].gid,
-                    text: window.modules["permissions"].groups[i].acronym,
+                    value: modules["permissions"].groups[i].gid,
+                    text: modules["permissions"].groups[i].acronym,
                 });
             }
         } else {
-            for (let i in window.modules["permissions"].users) {
-                if (window.modules["permissions"].users[i].uid > 0) {
+            for (let i in modules["permissions"].users) {
+                if (modules["permissions"].users[i].uid > 0) {
                     u.push({
-                        value: window.modules["permissions"].users[i].uid,
-                        text: window.modules["permissions"].users[i].login,
+                        value: modules["permissions"].users[i].uid,
+                        text: modules["permissions"].users[i].login,
                     });
                 }
             }
@@ -77,10 +77,10 @@
             value: "",
             text: "-",
         });
-        for (let i in window.modules["permissions"].methods) {
+        for (let i in modules["permissions"].methods) {
             a.push({
                 value: i,
-                text: (window.lang.methods[i] && window.lang.methods[i]["_title"])?window.lang.methods[i]["_title"]:i,
+                text: (lang.methods[i] && lang.methods[i]["_title"])?lang.methods[i]["_title"]:i,
             });
         }
         cardForm({
@@ -109,16 +109,16 @@
                         ];
                         let api = el.val();
                         if (api) {
-                            for (let i in window.modules["permissions"].methods[api]) {
+                            for (let i in modules["permissions"].methods[api]) {
                                 m.push({
                                     id: i,
-                                    text: (window.lang.methods[api] && window.lang.methods[api][i])?window.lang.methods[api][i]["_title"]:i,
+                                    text: (lang.methods[api] && lang.methods[api][i])?lang.methods[api][i]["_title"]:i,
                                 })
                             }
                         }
                         $(`#${prefix}method`).html("").select2({
                             data: m,
-                            language: window.lang["_code"],
+                            language: lang["_code"],
                         });
                         $(`#${prefix}action`).html("");
                     }
@@ -139,25 +139,25 @@
                         let api = $(`#${prefix}api`).val();
                         let method = el.val();
                         if (api && method) {
-                            for (let i in window.modules["permissions"].methods[api][method]) {
+                            for (let i in modules["permissions"].methods[api][method]) {
                                 a.push({
-                                    id: window.modules["permissions"].methods[api][method][i],
-                                    text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
+                                    id: modules["permissions"].methods[api][method][i],
+                                    text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i])?lang.methods[api][method][i]:i,
                                     selected: true,
                                 });
                                 d.push({
-                                    id: window.modules["permissions"].methods[api][method][i],
-                                    text: (window.lang.methods[api] && window.lang.methods[api][method] && window.lang.methods[api][method][i])?window.lang.methods[api][method][i]:i,
+                                    id: modules["permissions"].methods[api][method][i],
+                                    text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i])?lang.methods[api][method][i]:i,
                                 });
                             }
                         }
                         $(`#${prefix}actionAllow`).html("").select2({
                             data: a,
-                            language: window.lang["_code"],
+                            language: lang["_code"],
                         });
                         $(`#${prefix}actionDeny`).html("").select2({
                             data: d,
-                            language: window.lang["_code"],
+                            language: lang["_code"],
                         });
                     }
                 },
@@ -190,9 +190,9 @@
             ],
             callback: function (result) {
                 if (group) {
-                    window.modules["permissions"].doAddGroupRights(result.gid, result.api, result.method, result.actionAllow, result.actionDeny);
+                    modules["permissions"].doAddGroupRights(result.gid, result.api, result.method, result.actionAllow, result.actionDeny);
                 } else {
-                    window.modules["permissions"].doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
+                    modules["permissions"].doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
                 }
             },
         }).show();
@@ -259,9 +259,9 @@
             ],
             callback: function (result) {
                 if (group) {
-                    window.modules["permissions"].doAddGroupRights(guid, api, method, result.actionAllow, result.actionDeny);
+                    modules["permissions"].doAddGroupRights(guid, api, method, result.actionAllow, result.actionDeny);
                 } else {
-                    window.modules["permissions"].doAddUserRights(guid, api, method, result.actionAllow, result.actionDeny);
+                    modules["permissions"].doAddUserRights(guid, api, method, result.actionAllow, result.actionDeny);
                 }
             },
         }).show();
@@ -275,8 +275,8 @@
         let x = {};
 
         if (group) {
-            for (let i in window.modules["permissions"].rights.groups) {
-                let t = window.modules["permissions"].rights.groups[i];
+            for (let i in modules["permissions"].rights.groups) {
+                let t = modules["permissions"].rights.groups[i];
                 if (!x[t.gid]) {
                     x[t.gid] = {};
                 }
@@ -296,8 +296,8 @@
                 }
             }
         } else {
-            for (let i in window.modules["permissions"].rights.users) {
-                let t = window.modules["permissions"].rights.users[i];
+            for (let i in modules["permissions"].rights.users) {
+                let t = modules["permissions"].rights.users[i];
                 if (!x[t.uid]) {
                     x[t.uid] = {};
                 }
@@ -324,18 +324,47 @@
                 button: {
                     caption: i18n("permissions.addRights"),
                     click: () => {
-                        window.modules["permissions"].addRights(group);
+                        modules["permissions"].addRights(group);
                     },
                 },
                 caption: group?i18n("permissions.groups"):i18n("permissions.users"),
                 filter: true,
             },
-            startPage: group?window.modules["permissions"].groupsStartPage:window.modules["permissions"].usersStartPage,
+            edit: uid => {
+                uid = uid.split('-');
+                let a = [];
+                let d = [];
+                let o = [];
+                for (let i in x[uid[0]][uid[1]][uid[2]]) {
+                    if (i === "_aid") continue;
+                    if (x[uid[0]][uid[1]][uid[2]][i].allow) a.push(x[uid[0]][uid[1]][uid[2]][i]._aid);
+                    if (!x[uid[0]][uid[1]][uid[2]][i].allow) d.push(x[uid[0]][uid[1]][uid[2]][i]._aid);
+                }
+                for (let i in modules["permissions"].methods[uid[1]][uid[2]]) {
+                    o.push({
+                        value: modules["permissions"].methods[uid[1]][uid[2]][i],
+                        text: (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]] && lang.methods[uid[1]][uid[2]][i])?lang.methods[uid[1]][uid[2]][i]:i,
+                    });
+                }
+                modules["permissions"].editRights(
+                    group,
+                    group?g[uid[0]].acronym:u[uid[0]].login,
+                    (lang.methods[uid[1]] && lang.methods[uid[1]]["_title"])?lang.methods[uid[1]]["_title"]:uid[1],
+                    (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]])?lang.methods[uid[1]][uid[2]]["_title"]:uid[2],
+                    a,
+                    d,
+                    o,
+                    uid[0],
+                    uid[1],
+                    uid[2]
+                );
+            },
+            startPage: group?modules["permissions"].groupsStartPage:modules["permissions"].usersStartPage,
             pageChange: page => {
                 if (group) {
-                    window.modules["permissions"].groupsStartPage = page;
+                    modules["permissions"].groupsStartPage = page;
                 } else {
-                    window.modules["permissions"].usersStartPage = page;
+                    modules["permissions"].usersStartPage = page;
                 }
             },
             columns: [
@@ -417,35 +446,6 @@
                                     },
                                     {
                                         data: "<span class='text-monospace text-bold'>" + d + "</span>",
-                                        click: uid => {
-                                            uid = uid.split('-');
-                                            let a = [];
-                                            let d = [];
-                                            let o = [];
-                                            for (let i in x[uid[0]][uid[1]][uid[2]]) {
-                                                if (i === "_aid") continue;
-                                                if (x[uid[0]][uid[1]][uid[2]][i].allow) a.push(x[uid[0]][uid[1]][uid[2]][i]._aid);
-                                                if (!x[uid[0]][uid[1]][uid[2]][i].allow) d.push(x[uid[0]][uid[1]][uid[2]][i]._aid);
-                                            }
-                                            for (let i in window.modules["permissions"].methods[uid[1]][uid[2]]) {
-                                                o.push({
-                                                    value: window.modules["permissions"].methods[uid[1]][uid[2]][i],
-                                                    text: (window.lang.methods[uid[1]] && window.lang.methods[uid[1]][uid[2]] && window.lang.methods[uid[1]][uid[2]][i])?window.lang.methods[uid[1]][uid[2]][i]:i,
-                                                });
-                                            }
-                                            window.modules["permissions"].editRights(
-                                                group,
-                                                group?g[uid[0]].acronym:u[uid[0]].login,
-                                                (window.lang.methods[uid[1]] && window.lang.methods[uid[1]]["_title"])?window.lang.methods[uid[1]]["_title"]:uid[1],
-                                                (window.lang.methods[uid[1]] && window.lang.methods[uid[1]][uid[2]])?window.lang.methods[uid[1]][uid[2]]["_title"]:uid[2],
-                                                a,
-                                                d,
-                                                o,
-                                                uid[0],
-                                                uid[1],
-                                                uid[2]
-                                            );
-                                        }
                                     },
                                 ],
                             });
@@ -462,7 +462,7 @@
     render: function () {
         loadingStart();
         GET("authorization", "rights", false, true).done(r => {
-            window.modules["permissions"].rights = r.rights;
+            modules["permissions"].rights = r.rights;
 
             QUERY("authorization", "methods", {
                 all: 0,
@@ -474,20 +474,20 @@
                         for (let k in _m.methods[i][j]) {
                             m[_m.methods[i][j][k]] = {
                                 api: i,
-                                api_text: (window.lang.methods[i] && window.lang.methods[i]._title)?window.lang.methods[i]._title:i,
+                                api_text: (lang.methods[i] && lang.methods[i]._title)?lang.methods[i]._title:i,
                                 method: j,
-                                method_text: (window.lang.methods[i] && window.lang.methods[i][j] && window.lang.methods[i][j]._title)?window.lang.methods[i][j]._title:j,
+                                method_text: (lang.methods[i] && lang.methods[i][j] && lang.methods[i][j]._title)?lang.methods[i][j]._title:j,
                                 action: k,
-                                action_text: (window.lang.methods[i] && window.lang.methods[i][j] && window.lang.methods[i][j][k])?window.lang.methods[i][j][k]:k,
+                                action_text: (lang.methods[i] && lang.methods[i][j] && lang.methods[i][j][k])?lang.methods[i][j][k]:k,
                             };
                         }
                     }
                 }
 
-                window.modules["permissions"].methods = _m.methods;
+                modules["permissions"].methods = _m.methods;
 
                 GET("accounts", "groups").done(_g => {
-                    window.modules["permissions"].groups = _g.groups;
+                    modules["permissions"].groups = _g.groups;
 
                     let g = {};
 
@@ -496,7 +496,7 @@
                     }
 
                     GET("accounts", "users").done(_u => {
-                        window.modules["permissions"].users = _u.users;
+                        modules["permissions"].users = _u.users;
 
                         let u = {};
 
@@ -504,8 +504,8 @@
                             u[_u.users[i].uid] = _u.users[i];
                         }
 
-                        window.modules["permissions"].rightsForm(true, g, u, m);
-                        window.modules["permissions"].rightsForm(false, g, u, m).show();
+                        modules["permissions"].rightsForm(true, g, u, m);
+                        modules["permissions"].rightsForm(false, g, u, m).show();
 
                         loadingDone();
                     }).
@@ -525,6 +525,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("permissions.permissions");
 
-        window.modules["permissions"].render();
+        modules["permissions"].render();
     }
 }).init();

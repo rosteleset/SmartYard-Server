@@ -1,33 +1,66 @@
 ({
     init: function () {
-        // add section to left vertical menu
-        $("#leftside-menu").append(`
-            <li class="nav-item" title="${i18n("addresses.addresses")}">
-                <a href="#addresses" class="nav-link">
-                    <i class="fas fa-fw fa-home nav-icon"></i>
-                    <p>${i18n("addresses.addresses")}</p>
-                </a>
-            </li>
-        `);
+        if (AVAIL("addresses", "region", "PUT")) {
+            leftSide("fas fa-fw fa-home", i18n("addresses.addresses"), "#addresses");
+        }
 
-        // add icon-button to top-right menu
-        $(`
-            <li class="nav-item">
-                <span class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("addresses.addresses")}" id="addressMenuRight">
-                    <i class="fas fa-lg fa-fw fa-home"></i>
-                </span>
-            </li>
-        `).insertAfter("#searchForm");
+        moduleLoaded("addresses", this);
+    },
 
-        // and add handler to onclick
-        $("#addressMenuRight").off("click").on("click", () => {
-            modules["addresses"].menuRight();
-        });
+    addresses: function (addresses) {
+        modules["addresses"].meta = addresses["addresses"];
+        console.log(modules["addresses"].meta);
+    },
 
-        // load sub module
-        loadSubModules("addresses", [ "countries" ], () => {
-            moduleLoaded("addresses", this);
-        })
+    regions: function () {
+        loadingStart();
+        GET("addresses", "addresses", false, true).
+        done(modules["addresses"].addresses).
+        done(() => {
+            cardTable({
+                title: {
+                    caption: i18n("addresses.regions"),
+                    button: {
+                        caption: i18n("addresses.addRegion"),
+                        click: modules["addresses"].addRegion,
+                    },
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("addresses.regionId"),
+                    },
+                    {
+                        title: i18n("addresses.region"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i = 0; i < modules["addresses"].meta.regions; i++) {
+                        rows.push({
+                            uid: modules["addresses"].meta.regions[i].regionId.toString(),
+                            cols: [
+                                {
+                                    data: modules["addresses"].meta.regions[i].regionId,
+                                    click: modules["addresses"].modifyRegion,
+                                },
+                                {
+                                    data: rmodules["addresses"].meta.regions[i].region,
+                                    nowrap: true,
+                                },
+                            ],
+                        });
+                    }
+
+                    return rows;
+                },
+                target: "#mainForm",
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     route: function (params) {
@@ -36,19 +69,11 @@
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
         $("#mainForm").html(i18n("addresses.addresses"));
 
-        // add menu item to left top menu
-        $("#topMenuLeftDynamic").html(`
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="#" class="nav-link">${i18n("addresses.addresses")}</a>
-            </li>
-        `);
-
-        loadingDone();
-    },
-
-    // just for example
-    menuRight: function () {
-        mAlert(i18n("addresses.addresses"));
+        switch (params.show) {
+            default:
+                modules["addresses"].regions();
+                break;
+        }
     },
 
     // if search function is defined, search string will be displayed

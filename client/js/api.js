@@ -71,12 +71,12 @@ function FAIL(response) {
 
 function AVAIL(api, method, request_method) {
     if (request_method) {
-        return window.available && window.available[api] && window.available[api][method] && window.available[api][method][request_method];
+        return available && available[api] && available[api][method] && available[api][method][request_method];
     }
     if (method) {
-        return window.available && window.available[api] && window.available[api][method];
+        return available && available[api] && available[api][method];
     }
     if (api) {
-        return window.available && window.available[api];
+        return available && available[api];
     }
 }

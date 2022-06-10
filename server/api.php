@@ -24,6 +24,7 @@
     require_once "utils/clear_cache.php";
     require_once "utils/purifier.php";
     require_once "utils/max_upload_size.php";
+    require_once "utils/db_ext.php";
 
     require_once "backends/backend.php";
 
@@ -104,7 +105,7 @@
     }
 
     try {
-        $db = new PDO(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (Exception $e) {
         error_log(print_r($e, true));

@@ -22,7 +22,7 @@
         done(() => {
             message(i18n("groups.groupWasAdded"));
         }).
-        always(window.modules["groups"].render);
+        always(modules["groups"].render);
     },
 
     doModifyGroup: function (gid, acronym, name) {
@@ -35,7 +35,7 @@
         done(() => {
             message(i18n("groups.groupWasChanged"));
         }).
-        always(window.modules["groups"].render);
+        always(modules["groups"].render);
     },
 
     doDeleteGroup: function (gid) {
@@ -45,7 +45,7 @@
         done(() => {
             message(i18n("groups.groupWasDeleted"));
         }).
-        always(window.modules["groups"].render);
+        always(modules["groups"].render);
     },
 
     /*
@@ -79,7 +79,7 @@
                 },
             ],
             callback: function (result) {
-                window.modules["groups"].doAddGroup(result.acronym, result.name);
+                modules["groups"].doAddGroup(result.acronym, result.name);
             },
         }).show();
     },
@@ -139,9 +139,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        window.modules["groups"].deleteGroup(result.gid);
+                        modules["groups"].deleteGroup(result.gid);
                     } else {
-                        window.modules["groups"].doModifyGroup(result.gid, result.acronym, result.name);
+                        modules["groups"].doModifyGroup(result.gid, result.acronym, result.name);
                     }
                 },
             }).show();
@@ -152,7 +152,7 @@
 
     deleteGroup: function (gid) {
         mConfirm(i18n("groups.confirmDelete", gid.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
-            window.modules["groups"].doDeleteGroup(gid);
+            modules["groups"].doDeleteGroup(gid);
         });
     },
 
@@ -196,7 +196,7 @@
                         done(() => {
                             message(i18n("groups.groupWasChanged"));
                         }).
-                        always(window.modules["groups"].render);
+                        always(modules["groups"].render);
                     },
                     cancel: () => {
                         $("#altForm").hide();
@@ -224,11 +224,12 @@
                     caption: i18n("groups.groups"),
                     button: {
                         caption: i18n("groups.addGroup"),
-                        click: window.modules["groups"].addGroup,
+                        click: modules["groups"].addGroup,
                     },
                     filter: true,
                 },
-                startPage: window.modules["groups"].startPage,
+                edit: modules["groups"].modifyGroup,
+                startPage: modules["groups"].startPage,
                 columns: [
                     {
                         title: i18n("groups.gid"),
@@ -242,7 +243,6 @@
                     },
                     {
                         title: i18n("groups.usersCount"),
-                        fullWidth: true,
                     },
                 ],
                 rows: () => {
@@ -254,11 +254,9 @@
                             cols: [
                                 {
                                     data: response.groups[i].gid,
-                                    click: window.modules["groups"].modifyGroup,
                                 },
                                 {
                                     data: response.groups[i].acronym,
-                                    click: window.modules["groups"].modifyGroup,
                                     nowrap: true,
                                 },
                                 {
@@ -267,7 +265,7 @@
                                 },
                                 {
                                     data: response.groups[i].users,
-                                    click: window.modules["groups"].modifyGroupUsers,
+                                    click: modules["groups"].modifyGroupUsers,
                                 },
                             ],
                         });
@@ -277,7 +275,7 @@
                 },
                 target: "#mainForm",
                 pageChange: page => {
-                    window.modules["groups"].startPage = page;
+                    modules["groups"].startPage = page;
                 },
             });
         }).
@@ -288,6 +286,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("groups.groups");
 
-        window.modules["groups"].render();
+        modules["groups"].render();
     }
 }).init();
