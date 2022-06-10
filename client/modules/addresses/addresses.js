@@ -103,6 +103,22 @@
         always(modules["addresses"].renderRegions);
     },
 
+    doDeleteRegion: function (regionId) {
+        loadingStart();
+        DELETE("addresses", "region", regionId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.regionWasDeleted"));
+        }).
+        always(modules["addresses"].renderRegions);
+    },
+
+    deleteRegion: function (regionId) {
+        mConfirm(i18n("addresses.confirmDeleteRegion", regionId), i18n("confirm"), `danger:${i18n("addresses.deleteRegion")}`, () => {
+            modules["addresses"].doDeleteRegion(regionId);
+        });
+    },
+
     modifyRegion: function (regionId) {
         let region = false;
 
@@ -194,7 +210,7 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteRegion(result.uid);
+                        modules["addresses"].deleteRegion(result.regionId);
                     } else {
                         modules["addresses"].doModifyRegion(regionId, result.regionFiasId, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
                     }

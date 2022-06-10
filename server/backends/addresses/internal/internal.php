@@ -47,7 +47,7 @@
                 }
 
                 if ($regionId && trim($regionWithType) && trim($region)) {
-                    return $this->db->insert("update addresses_regions set region_fias_id = :region_fias_id, region_iso_code = :region_iso_code, region_with_type = :region_with_type, region_type = :region_type, region_type_full = :region_type_full, region = :region where address_region_id = $regionId", [
+                    return $this->db->modify("update addresses_regions set region_fias_id = :region_fias_id, region_iso_code = :region_iso_code, region_with_type = :region_with_type, region_type = :region_type, region_type_full = :region_type_full, region = :region where address_region_id = $regionId", [
                         ":region_fias_id" => $regionFiasId,
                         ":region_iso_code" => $regionIsoCode,
                         ":region_with_type" => $regionWithType,
@@ -84,7 +84,11 @@
              */
             function deleteRegion($regionId)
             {
-                // TODO: Implement deleteRegion() method.
+                if (!checkInt($regionId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from addresses_regions where address_region_id = $regionId");
             }
 
             /**

@@ -33,15 +33,9 @@
             public static function DELETE($params) {
                 $addresses = loadBackend("addresses");
 
-                $r = [
-                    "regions" => $addresses->getRegions(),
-                    "areas" => [],
-                    "cities" => [],
-                    "settlements" => [],
-                    "streets" => [],
-                ];
+                $success = $addresses->deleteRegion($params["_id"]);
 
-                return api::ANSWER($r, ($r !== false)?"addresses":"404");
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {
