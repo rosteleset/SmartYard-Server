@@ -9,8 +9,6 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("domophones.domophones");
 
-        $("#topMenuLeftDynamic").html(`<li class="ml-2 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n("domophones.domophones")}</li>`);
-
         $("#mainForm").html(nl2br(i18n("domophones.domophones")));
 
         loadingDone();

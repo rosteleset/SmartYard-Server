@@ -9,6 +9,6 @@
             </li>
         `).insertAfter("#searchForm");
 
-        moduleLoaded("address", this);
+        moduleLoaded("asterisk", this);
     },
 }).init();

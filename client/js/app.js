@@ -41,6 +41,7 @@ function hashChange() {
             $("#forgotForm").hide();
             if (modules[route]) {
                 $("#page404").hide();
+                $("#topMenuLeft").html(`<li class="ml-2 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route + "." + route)}</li>`);
                 $("#topMenuLeftDynamic").html("");
                 if (modules[route].search) {
                     $("#searchForm").show();

@@ -3,6 +3,7 @@
         "v1_core.sql",
         "v1_tt.sql",
         "v1_attachments.sql",
-        "v1_subscribers.sql"
+        "v1_subscribers.sql",
+        "v1_addresses.sql"
     ]
 }

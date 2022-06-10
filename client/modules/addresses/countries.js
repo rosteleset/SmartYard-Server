@@ -1,14 +1,14 @@
 ({
     init: function () {
         // submodule - module<dot>submodule
-        moduleLoaded("address.countries", this);
+        moduleLoaded("addresses.countries", this);
     },
 
     route: function (params) {
         $("#altForm").hide();
 
-        document.title = i18n("windowTitle") + " :: " + i18n("address.countries");
-        $("#mainForm").html(i18n("address.countries"));
+        document.title = i18n("windowTitle") + " :: " + i18n("addresses.countries");
+        $("#mainForm").html(i18n("addresses.countries"));
 
         loadingDone();
     },
