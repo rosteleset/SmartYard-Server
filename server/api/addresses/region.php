@@ -17,23 +17,15 @@
             public static function PUT($params) {
                 $addresses = loadBackend("addresses");
 
-                $r = [
-                    "regions" => $addresses->getRegions(),
-                    "areas" => [],
-                    "cities" => [],
-                    "settlements" => [],
-                    "streets" => [],
-                ];
+                $success = $addresses->modifyRegion($params["_id"], $params["regionFiasId"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"]);
 
-                return api::ANSWER($r, ($r !== false)?"addresses":"404");
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function POST($params) {
                 $addresses = loadBackend("addresses");
 
                 $regionId = $addresses->addRegion($params["regionFiasId"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"]);
-
-                error_log("                                    >$regionId<");
 
                 return api::ANSWER($regionId, ($regionId !== false)?"regionId":"notAcceptable");
             }

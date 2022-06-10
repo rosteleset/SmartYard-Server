@@ -2,11 +2,20 @@
 
     class PDO_EXT extends PDO {
 
+        function trimParams($map) {
+            $remap = [];
+
+            foreach ($map as $key => $value) {
+                $remap[$key] = trim($value);
+            }
+
+            return $remap;
+        }
+
         function insert($query, $params = []) {
-            error_log(print_r($params, true));
             try {
                 $sth = $this->prepare($query);
-                if ($sth->execute($params)) {
+                if ($sth->execute($this->trimParams($params))) {
                     return $this->lastInsertId();
                 } else {
                     return false;
@@ -20,7 +29,7 @@
         function modify($query, $params = []) {
             try {
                 $sth = $this->prepare($query);
-                if ($sth->execute($params)) {
+                if ($sth->execute($this->trimParams($params))) {
                     return $sth->rowCount();
                 } else {
                     return false;

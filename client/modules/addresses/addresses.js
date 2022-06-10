@@ -86,6 +86,23 @@
         }).show();
     },
 
+    doModifyRegion: function (regionId, regionFiasId, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
+        loadingStart();
+        PUT("addresses", "region", regionId, {
+            regionFiasId: regionFiasId,
+            regionIsoCode: regionIsoCode,
+            regionWithType: regionWithType,
+            regionType: regionType,
+            regionTypeFull: regionTypeFull,
+            region: region,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.regionWasAdded"));
+        }).
+        always(modules["addresses"].renderRegions);
+    },
+
     modifyRegion: function (regionId) {
         let region = false;
 
