@@ -1075,13 +1075,13 @@
     },
 
     projectDeleteUser: function (projectRoleId, projectId) {
-        mConfirm(i18n("users.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
+        mConfirm(i18n("users.confirmDelete", projectRoleId.toString()), i18n("confirm"), `warning:${i18n("tt.removeUserFromProject")}`, () => {
             modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId, true);
         });
     },
 
     projectDeleteGroup: function (projectRoleId, projectId) {
-        mConfirm(i18n("groups.confirmDelete", projectRoleId.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
+        mConfirm(i18n("groups.confirmDelete", projectRoleId.toString()), i18n("confirm"), `warning:${i18n("tt.removeGroupFromProject")}`, () => {
             modules["tt.settings"].doProjectDeleteRole(projectRoleId, projectId);
         });
     },
@@ -1167,7 +1167,7 @@
                                         {
                                             icon: "fas fa-trash-alt",
                                             title: i18n("users.delete"),
-                                            text: "text-danger",
+                                            class: "text-warning",
                                             click: projectRoleId => {
                                                 modules["tt.settings"].projectDeleteUser(projectRoleId, projectId);
                                             },
@@ -1269,7 +1269,7 @@
                                         {
                                             icon: "fas fa-trash-alt",
                                             title: i18n("groups.delete"),
-                                            text: "text-danger",
+                                            class: "text-warning",
                                             click: projectRoleId => {
                                                 modules["tt.settings"].projectDeleteGroup(projectRoleId, projectId);
                                             },

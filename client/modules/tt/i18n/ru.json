@@ -60,5 +60,7 @@
     "customFieldDisplayFormat": "Форматирование",
     "customFieldOptions": "Набор значений",
     "customFieldDelete": "Удалить поле",
-    "confirmCustomFieldDelete": "Удалить настраиваемое поле #%s?"
+    "confirmCustomFieldDelete": "Удалить настраиваемое поле #%s?",
+    "removeUserFromProject": "Удалить пользователя из проекта",
+    "removeGroupFromProject": "Удалить группу из проекта"
 }

@@ -61,10 +61,12 @@ function cardTable(params) {
 
     for (let i in rows) {
         if (rows[i].dropDown && rows[i].dropDown.items) {
-            hasDropDowns = true;
             for (let j in rows[i].dropDown.items) {
                 if (rows[i].dropDown.items[j].icon) {
                     hasDropDownIcons = true;
+                }
+                if (!rows[i].dropDown.items[j].disabled && typeof rows[i].dropDown.items[j].click === "function") {
+                    hasDropDowns = true;
                 }
             }
         }
@@ -131,58 +133,67 @@ function cardTable(params) {
                 h += rows[i].cols[j].data;
                 h += "</td>";
             }
-            if (rows[i].dropDown) {
+            if (rows[i].dropDown && hasDropDowns) {
                 h += `<td>`;
+                let t = '';
+                let o = false;
                 if (rows[i].dropDown.items.length === 1 && rows[i].dropDown.items[0].icon) {
-                    h += `<span class="`;
-                    if (rows[i].dropDown.items[0].text) {
-                        h += " " + rows[i].dropDown.items[0].text;
+                    t += `<button type="button" class="btn btn-xs btn-link"><span class="`;
+                    if (rows[i].dropDown.items[0].class) {
+                        t += " " + rows[i].dropDown.items[0].class;
                     }
                     if (rows[i].dropDown.items[0].disabled || typeof rows[i].dropDown.items[0].click !== "function") {
-                        h += ` disabled opacity-disabled`;
+                        t += ` disabled opacity-disabled`;
                     } else {
-                        h += ` menuItem-${tableClass}`;
+                        t += ` menuItem-${tableClass}`;
+                        o = true;
                     }
-                    h += `" title="${rows[i].dropDown.items[0].title}" rowId="${i}" dropDownId="0" uid="${rows[i].uid}" action="${rows[i].dropDown.items[0].action}">`;
-                    h += `<i class="${rows[i].dropDown.items[0].icon} fa-fw pointer"></i>`;
-                    h += `</span>`;
+                    t += `" title="${rows[i].dropDown.items[0].title}" rowId="${i}" dropDownId="0" uid="${rows[i].uid}" action="${rows[i].dropDown.items[0].action}">`;
+                    t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw pointer"></i>`;
+                    t += `</span></button>`;
                 } else {
                     let ddId = md5(guid());
-                    h += `<div class="dropdown">`;
-                    h += `<button class="btn dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
+                    t += `<div class="dropdown">`;
+                    t += `<button class="btn dropdown-toggle btn-xs dropdown-toggle-no-icon" type="button" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
                     if (rows[i].dropDown.icon) {
-                        h += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
+                        t += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
                     } else {
-                        h += `<i class="fa-fw fas fa-bars"></i>`;
+                        t += `<i class="fa-fw fas fa-bars"></i>`;
                     }
-                    h += `</button>`;
-                    h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
+                    t += `</button>`;
+                    t += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
                     for (let j in rows[i].dropDown.items) {
                         if (rows[i].dropDown.items[j].title === "-") {
-                            h += `<li class="dropdown-divider"></li>`;
+                            t += `<li class="dropdown-divider"></li>`;
                         } else {
-                            h += `<li class="pointer dropdown-item`;
-                            if (rows[i].dropDown.items[j].text) {
-                                h += " " + rows[i].dropDown.items[j].text;
+                            t += `<li class="pointer dropdown-item`;
+                            if (rows[i].dropDown.items[j].class) {
+                                t += " " + rows[i].dropDown.items[j].class;
                             }
                             if (rows[i].dropDown.items[j].disabled || typeof rows[i].dropDown.items[j].click !== "function") {
-                                h += ` disabled opacity-disabled`;
+                                t += ` disabled opacity-disabled`;
                             } else {
-                                h += ` menuItem-${tableClass}`;
+                                t += ` menuItem-${tableClass}`;
+                                o = true;
                             }
-                            h += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action}">`;
+                            t += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action}">`;
                             if (rows[i].dropDown.items[j].icon) {
-                                h += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
+                                t += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
                             } else {
                                 if (hasDropDownIcons) {
-                                    h += `<i class="fa fa-fw mr-2"></i>`;
+                                    t += `<i class="fa fa-fw mr-2"></i>`;
                                 }
                             }
-                            h += `${rows[i].dropDown.items[j].title}</li>`;
+                            t += `${rows[i].dropDown.items[j].title}</li>`;
                         }
                     }
-                    h += `</ul>`;
-                    h += `</div>`;
+                    t += `</ul>`;
+                    t += `</div>`;
+                }
+                if (o) {
+                    h += t;
+                } else {
+                    h += '<i class="fa fa-fw"></i>';
                 }
                 h += `</td>`;
             } else {

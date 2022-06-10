@@ -395,7 +395,7 @@
                                     {
                                         icon: "fas fa-key",
                                         title: i18n("users.setPassword"),
-                                        text: "text-primary",
+                                        class: "text-primary",
                                         disabled: response.users[i].uid.toString() === "0",
                                         click: modules["users"].setPassword,
                                     },
@@ -405,7 +405,7 @@
                                     {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("users.delete"),
-                                        text: "text-danger",
+                                        class: "text-danger",
                                         disabled: response.users[i].uid.toString() === "0" || response.users[i].uid.toString() === myself.uid.toString(),
                                         click: modules["users"].deleteUser,
                                     },
