@@ -69,7 +69,7 @@
 
             /**
              * @param $areaId
-             * @param $addressRegionId
+             * @param $regionId
              * @param $areaFiasId
              * @param $areaWithType
              * @param $areaType
@@ -77,7 +77,7 @@
              * @param $area
              * @return boolean
              */
-            abstract function modifyArea($areaId, $addressRegionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area);
+            abstract function modifyArea($areaId, $regionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area);
 
             /**
              * @param $regionId
@@ -95,6 +95,50 @@
              * @return boolean
              */
             abstract function deleteArea($areaId);
+
+            /**
+             * @param $regionId
+             * @param $areaId
+             * @return false|array
+             */
+            abstract function getCities($regionId, $areaId);
+
+            /**
+             * @param $cityId
+             * @return false|array
+             */
+            abstract function getCity($cityId);
+
+            /**
+             * @param $cityId
+             * @param $regionId
+             * @param $areaId
+             * @param $cityFiasId
+             * @param $cityWithType
+             * @param $cityType
+             * @param $cityTypeFull
+             * @param $city
+             * @return boolean
+             */
+            abstract function modifyCity($cityId, $regionId, $areaId, $cityFiasId, $cityWithType, $cityType, $cityTypeFull, $city);
+
+            /**
+             * @param $regionId
+             * @param $areaId
+             * @param $cityFiasId
+             * @param $cityWithType
+             * @param $cityType
+             * @param $cityTypeFull
+             * @param $city
+             * @return false|integer
+             */
+            abstract function addCity($regionId, $areaId, $cityFiasId, $cityWithType, $cityType, $cityTypeFull, $city);
+
+            /**
+             * @param $cityId
+             * @return boolean
+             */
+            abstract function deleteCity($cityId);
 
         }
     }

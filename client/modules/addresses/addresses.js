@@ -314,7 +314,54 @@
     },
 
     addCity: function (regionId, areaId) {
-
+        cardForm({
+            title: i18n("addresses.addArea"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            fields: [
+                {
+                    id: "areaFiasId",
+                    type: "text",
+                    title: i18n("addresses.areaFiasId"),
+                    placeholder: i18n("addresses.areaFiasId"),
+                },
+                {
+                    id: "areaWithType",
+                    type: "text",
+                    title: i18n("addresses.regionWithType"),
+                    placeholder: i18n("addresses.regionWithType"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "areaType",
+                    type: "text",
+                    title: i18n("addresses.areaType"),
+                    placeholder: i18n("addresses.areaType"),
+                },
+                {
+                    id: "areaTypeFull",
+                    type: "text",
+                    title: i18n("addresses.areaTypeFull"),
+                    placeholder: i18n("addresses.areaTypeFull"),
+                },
+                {
+                    id: "area",
+                    type: "text",
+                    title: i18n("addresses.area"),
+                    placeholder: i18n("addresses.area"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules["addresses"].doAddArea(regionId, result.areaFiasId, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+            },
+        }).show();
     },
 
     modifyArea: function (areaId) {

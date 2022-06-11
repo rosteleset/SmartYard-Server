@@ -157,7 +157,7 @@
             /**
              * @inheritDoc
              */
-            function modifyArea($areaId, $addressRegionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area)
+            function modifyArea($areaId, $regionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area)
             {
                 if (!checkInt($areaId)) {
                     return false;
@@ -165,7 +165,7 @@
 
                 if ($areaId && trim($areaWithType) && trim($area)) {
                     return $this->db->modify("update addresses_areas set address_region_id = :address_region_id, area_fias_id = :area_fias_id, area_with_type = :area_with_type, area_type = :area_type, area_type_full = :area_type_full, area = :area where address_area_id = $areaId", [
-                        ":address_region_id" => $addressRegionId,
+                        ":address_region_id" => $regionId,
                         ":area_fias_id" => $areaFiasId,
                         ":area_with_type" => $areaWithType,
                         ":area_type" => $areaType,
@@ -210,6 +210,149 @@
                 }
 
                 return $this->db->modify("delete from addresses_areas where address_area_id = $areaId");
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getCities($regionId, $areaId)
+            {
+                if ($regionId && $areaId) {
+                    return false;
+                }
+
+                if ($regionId && !checkInt($regionId)) {
+                    return false;
+                }
+
+                if ($areaId && !checkInt($areaId)) {
+                    return false;
+                }
+
+                if ($regionId) {
+                    $query = "select address_city_id, address_region_id, address_area_id, city_fias_id, city_with_type, city_type, city_type_full, city from addresses_cities where address_region_id = $regionId and address_area_id is null order by city";
+                } else
+                if ($areaId) {
+                    $query = "select address_city_id, address_region_id, address_area_id, city_fias_id, city_with_type, city_type, city_type_full, city from addresses_cities where address_area_id = $areaId and addresses_cities.address_region_id is null order by city";
+                } else {
+                    $query = "select address_city_id, address_region_id, address_area_id, city_fias_id, city_with_type, city_type, city_type_full, city from addresses_cities order by city";
+                }
+
+                return $this->db->get($query, false, [
+                    "address_city_id" => "cityId",
+                    "address_region_id" => "regionId",
+                    "address_area_id" => "areaId",
+                    "city_fias_id" => "cityFiasId",
+                    "city_with_type" => "cityWithType",
+                    "city_type" => "cityType",
+                    "city_type_full" => "cityTypeFull",
+                    "city" => "city",
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getCity($cityId)
+            {
+                if (!checkInt($cityId)) {
+                    return false;
+                }
+
+                return $this->db->get("select address_city_id, address_region_id, address_area_id, city_fias_id, city_with_type, city_type, city_type_full, city from addresses_cities where address_city_id = $cityId", false, [
+                    "address_city_id" => "cityId",
+                    "address_region_id" => "regionId",
+                    "address_area_id" => "areaId",
+                    "city_fias_id" => "cityFiasId",
+                    "city_with_type" => "cityWithType",
+                    "city_type" => "cityType",
+                    "city_type_full" => "cityTypeFull",
+                    "city" => "city",
+                ], true);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function modifyCity($cityId, $regionId, $areaId, $cityFiasId, $cityWithType, $cityType, $cityTypeFull, $city)
+            {
+                if ($regionId && $areaId) {
+                    return false;
+                }
+
+                if ($regionId && !checkInt($regionId)) {
+                    return false;
+                }
+
+                if ($areaId && !checkInt($areaId)) {
+                    return false;
+                }
+
+                if (!$regionId && !$areaId) {
+                    return false;
+                }
+
+                if (trim($cityWithType) && trim($city)) {
+                    return $this->db->modify("update addresses_cities set address_region_id = :address_region_id, address_area_id = :address_area_id, city_fias_id = :city_fias_id, city_with_type = :city_with_type, city_type = :city_type, city_type_full = :city_type_full, city = :city where address_city_id = $cityId", [
+                        ":address_region_id" => $regionId,
+                        ":address_area_id" => $areaId,
+                        ":city_fias_id" => $cityFiasId,
+                        ":city_with_type" => $cityWithType,
+                        ":city_type" => $cityType,
+                        ":city_type_full" => $cityTypeFull,
+                        ":city" => $city,
+                    ]);
+                } else {
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function addCity($regionId, $areaId, $cityFiasId, $cityWithType, $cityType, $cityTypeFull, $city)
+            {
+                if ($regionId && $areaId) {
+                    return false;
+                }
+
+                if ($regionId && !checkInt($regionId)) {
+                    return false;
+                }
+
+                if ($areaId && !checkInt($areaId)) {
+                    return false;
+                }
+
+                if (!$regionId && !$areaId) {
+                    return false;
+                }
+
+                if (trim($cityWithType) && trim($city)) {
+                    return $this->db->insert("insert into addresses_cities (address_region_id, address_area_id, city_fias_id, city_with_type, city_type, city_type_full, city) values (:address_region_id, :address_area_id, :city_fias_id, :city_with_type, :city_type, :city_type_full, :city)", [
+                        ":address_region_id" => $regionId,
+                        ":address_area_id" => $areaId,
+                        ":city_fias_id" => $cityFiasId,
+                        ":city_with_type" => $cityWithType,
+                        ":city_type" => $cityType,
+                        ":city_type_full" => $cityTypeFull,
+                        ":city" => $city,
+                    ]);
+                } else {
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function deleteCity($cityId)
+            {
+                if (!checkInt($cityId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from addresses_cities where address_city_id = $cityId");
             }
         }
     }
