@@ -28,7 +28,7 @@
 
             /**
              * @param $regionId
-             * @param $regionFiasId
+             * @param $regionUuid
              * @param $regionIsoCode
              * @param $regionWithType
              * @param $regionType
@@ -36,10 +36,10 @@
              * @param $region
              * @return boolean
              */
-            abstract function modifyRegion($regionId, $regionFiasId, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
+            abstract function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
 
             /**
-             * @param $regionFiasId
+             * @param $regionUuid
              * @param $regionIsoCode
              * @param $regionWithType
              * @param $regionType
@@ -47,7 +47,7 @@
              * @param $region
              * @return false|integer
              */
-            abstract function addRegion($regionFiasId, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
+            abstract function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
 
             /**
              * @param $regionId
@@ -70,25 +70,25 @@
             /**
              * @param $areaId
              * @param $regionId
-             * @param $areaFiasId
+             * @param $areaUuid
              * @param $areaWithType
              * @param $areaType
              * @param $areaTypeFull
              * @param $area
              * @return boolean
              */
-            abstract function modifyArea($areaId, $regionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area);
+            abstract function modifyArea($areaId, $regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area);
 
             /**
              * @param $regionId
-             * @param $areaFiasId
+             * @param $areaUuid
              * @param $areaWithType
              * @param $areaType
              * @param $areaTypeFull
              * @param $area
              * @return false|integer
              */
-            abstract function addArea($regionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area);
+            abstract function addArea($regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area);
 
             /**
              * @param $areaId
@@ -113,26 +113,26 @@
              * @param $cityId
              * @param $regionId
              * @param $areaId
-             * @param $cityFiasId
+             * @param $cityUuid
              * @param $cityWithType
              * @param $cityType
              * @param $cityTypeFull
              * @param $city
              * @return boolean
              */
-            abstract function modifyCity($cityId, $regionId, $areaId, $cityFiasId, $cityWithType, $cityType, $cityTypeFull, $city);
+            abstract function modifyCity($cityId, $regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city);
 
             /**
              * @param $regionId
              * @param $areaId
-             * @param $cityFiasId
+             * @param $cityUuid
              * @param $cityWithType
              * @param $cityType
              * @param $cityTypeFull
              * @param $city
              * @return false|integer
              */
-            abstract function addCity($regionId, $areaId, $cityFiasId, $cityWithType, $cityType, $cityTypeFull, $city);
+            abstract function addCity($regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city);
 
             /**
              * @param $cityId

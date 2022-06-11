@@ -197,7 +197,7 @@ function cardForm(params) {
                 h += `>`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group-append">`;
-                    h += `<span id="${_prefix}${params.fields[i].id}-button" class="input-group-text pointer"><i class="${params.fields[i].button.class}"></i></span>`;
+                    h += `<span id="${_prefix}${params.fields[i].id}-button" class="input-group-text pointer"><i class="fa-fw ${params.fields[i].button.class}"></i></span>`;
                     h += `</div>`;
                     h += `</div>`;
                 }
@@ -379,7 +379,9 @@ function cardForm(params) {
         }
 
         if (params.fields[i].button && typeof params.fields[i].button.click === "function") {
-            $(`#${_prefix}${params.fields[i].id}-button`).off("click").on("click", params.fields[i].button.click);
+            $(`#${_prefix}${params.fields[i].id}-button`).off("click").on("click", () => {
+                params.fields[i].button.click(_prefix);
+            });
         }
 
         if (params.fields[i].type === "select2") {

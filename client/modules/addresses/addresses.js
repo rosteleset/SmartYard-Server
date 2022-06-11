@@ -12,10 +12,10 @@
         console.log(modules["addresses"].meta);
     },
 
-    doAddRegion: function (regionFiasId, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
+    doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
         loadingStart();
         POST("addresses", "region", false, {
-            regionFiasId,
+            regionUuid,
             regionIsoCode,
             regionWithType,
             regionType,
@@ -29,11 +29,11 @@
         always(modules["addresses"].renderRegions);
     },
 
-    doAddArea: function (regionId, areaFiasId, areaWithType, areaType, areaTypeFull, area) {
+    doAddArea: function (regionId, areaUuid, areaWithType, areaType, areaTypeFull, area) {
         loadingStart();
         POST("addresses", "area", false, {
             regionId,
-            areaFiasId,
+            areaUuid,
             areaWithType,
             areaType,
             areaTypeFull,
@@ -48,12 +48,12 @@
         });
     },
 
-    doAddCity: function (regionId, areaId, cityFiasId, cityWithType, cityType, cityTypeFull, city) {
+    doAddCity: function (regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city) {
         loadingStart();
         POST("addresses", "city", false, {
             regionId,
             areaId,
-            cityFiasId,
+            cityUuid,
             cityWithType,
             cityType,
             cityTypeFull,
@@ -81,10 +81,19 @@
             apply: i18n("add"),
             fields: [
                 {
-                    id: "regionFiasId",
+                    id: "regionUuid",
                     type: "text",
-                    title: i18n("addresses.regionFiasId"),
-                    placeholder: i18n("addresses.regionFiasId"),
+                    title: i18n("addresses.regionUuid"),
+                    placeholder: i18n("addresses.regionUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}regionUuid`).val(guid());
+                        },
+                    },
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
                 },
                 {
                     id: "regionIsoCode",
@@ -124,15 +133,15 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddRegion(result.regionFiasId, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+                modules["addresses"].doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
             },
         }).show();
     },
 
-    doModifyRegion: function (regionId, regionFiasId, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
+    doModifyRegion: function (regionId, regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
         loadingStart();
         PUT("addresses", "region", regionId, {
-            regionFiasId,
+            regionUuid,
             regionIsoCode,
             regionWithType,
             regionType,
@@ -156,11 +165,11 @@
         always(modules["addresses"].renderRegions);
     },
 
-    doModifyArea: function (areaId, regionId, areaFiasId, areaWithType, areaType, areaTypeFull, area, targetRegionId) {
+    doModifyArea: function (areaId, regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, targetRegionId) {
         loadingStart();
         PUT("addresses", "area", areaId, {
             regionId,
-            areaFiasId,
+            areaUuid,
             areaWithType,
             areaType,
             areaTypeFull,
@@ -179,12 +188,12 @@
         });
     },
 
-    doModifyCity: function (cityId, regionId, areaId, cityFiasId, cityWithType, cityType, cityTypeFull, city, targetRegionId, targetAreaId) {
+    doModifyCity: function (cityId, regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city, targetRegionId, targetAreaId) {
         loadingStart();
         PUT("addresses", "city", cityId, {
             areaId,
             regionId,
-            cityFiasId,
+            cityUuid,
             cityWithType,
             cityType,
             cityTypeFull,
@@ -283,11 +292,11 @@
                         readonly: true,
                     },
                     {
-                        id: "regionFiasId",
+                        id: "regionUuid",
                         type: "text",
-                        title: i18n("addresses.regionFiasId"),
-                        placeholder: i18n("addresses.regionFiasId"),
-                        value: region.regionFiasId,
+                        title: i18n("addresses.regionUuid"),
+                        placeholder: i18n("addresses.regionUuid"),
+                        value: region.regionUuid,
                     },
                     {
                         id: "regionIsoCode",
@@ -335,7 +344,7 @@
                     if (result.delete === "yes") {
                         modules["addresses"].deleteRegion(result.regionId);
                     } else {
-                        modules["addresses"].doModifyRegion(regionId, result.regionFiasId, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+                        modules["addresses"].doModifyRegion(regionId, result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
                     }
                 },
             }).show();
@@ -353,10 +362,10 @@
             apply: i18n("add"),
             fields: [
                 {
-                    id: "areaFiasId",
+                    id: "areaUuid",
                     type: "text",
-                    title: i18n("addresses.areaFiasId"),
-                    placeholder: i18n("addresses.areaFiasId"),
+                    title: i18n("addresses.areaUuid"),
+                    placeholder: i18n("addresses.areaUuid"),
                 },
                 {
                     id: "areaWithType",
@@ -390,7 +399,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddArea(regionId, result.areaFiasId, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+                modules["addresses"].doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
             },
         }).show();
     },
@@ -404,10 +413,10 @@
             apply: i18n("add"),
             fields: [
                 {
-                    id: "cityFiasId",
+                    id: "cityUuid",
                     type: "text",
-                    title: i18n("addresses.cityFiasId"),
-                    placeholder: i18n("addresses.cityFiasId"),
+                    title: i18n("addresses.cityUuid"),
+                    placeholder: i18n("addresses.cityUuid"),
                 },
                 {
                     id: "cityWithType",
@@ -441,7 +450,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddCity(regionId, areaId, result.cityFiasId, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
+                modules["addresses"].doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
             },
         }).show();
     },
@@ -487,11 +496,11 @@
                         options: regions,
                     },
                     {
-                        id: "areaFiasId",
+                        id: "areaUuid",
                         type: "text",
-                        title: i18n("addresses.areaFiasId"),
-                        placeholder: i18n("addresses.areaFiasId"),
-                        value: area.areaFiasId,
+                        title: i18n("addresses.areaUuid"),
+                        placeholder: i18n("addresses.areaUuid"),
+                        value: area.areaUuid,
                     },
                     {
                         id: "areaWithType",
@@ -532,7 +541,7 @@
                     if (result.delete === "yes") {
                         modules["addresses"].deleteArea(result.areaId, parseInt(area.regionId));
                     } else {
-                        modules["addresses"].doModifyArea(areaId, parseInt(result.regionId), result.areaFiasId, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId));
+                        modules["addresses"].doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId));
                     }
                 },
             }).show();
@@ -613,11 +622,11 @@
                         },
                     },
                     {
-                        id: "cityFiasId",
+                        id: "cityUuid",
                         type: "text",
-                        title: i18n("addresses.cityFiasId"),
-                        placeholder: i18n("addresses.cityFiasId"),
-                        value: city.cityFiasId,
+                        title: i18n("addresses.cityUuid"),
+                        placeholder: i18n("addresses.cityUuid"),
+                        value: city.cityUuid,
                     },
                     {
                         id: "cityWithType",
@@ -658,7 +667,7 @@
                     if (result.delete === "yes") {
                         modules["addresses"].deleteCity(result.cityId, parseInt(city.regionId), parseInt(city.areaId));
                     } else {
-                        modules["addresses"].doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityFiasId, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId));
+                        modules["addresses"].doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId));
                     }
                 },
             }).show();
