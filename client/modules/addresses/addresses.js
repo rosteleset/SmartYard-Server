@@ -188,7 +188,7 @@
         }).
         fail(FAIL).
         done(() => {
-            message(i18n("addresses.areaWasChanged"));
+            message(i18n("addresses.cityWasChanged"));
         }).
         always(() => {
             if (regionId) {
@@ -644,7 +644,7 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteCity(result.cityId, city.regionId, false);
+                        modules["addresses"].deleteCity(result.cityId, parseInt(city.regionId), parseInt(city.areaId));
                     } else {
                         modules["addresses"].doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityFiasId, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
                     }
@@ -653,6 +653,55 @@
         } else {
             error(i18n("addresses.cityNotFound"));
         }
+    },
+
+    cities: function (regionId, areaId) {
+        cardTable({
+            target: "#altForm",
+            title: {
+                caption: i18n("addresses.cities"),
+                button: {
+                    caption: i18n("addresses.addCity"),
+                    click: () => {
+                        modules["addresses"].addCity(regionId, areaId);
+                    },
+                },
+                filter: true,
+            },
+            edit: modules["addresses"].modifyCity,
+            columns: [
+                {
+                    title: i18n("addresses.cityId"),
+                },
+                {
+                    title: i18n("addresses.city"),
+                    fullWidth: true,
+                },
+            ],
+            rows: () => {
+                let rows = [];
+
+                for (let i in modules["addresses"].meta.cities) {
+                    if ((regionId && modules["addresses"].meta.cities[i].regionId == regionId && !modules["addresses"].meta.cities[i].areaId) || (areaId && modules["addresses"].meta.cities[i].areaId == areaId && !modules["addresses"].meta.cities[i].regionId)) {
+                        rows.push({
+                            uid: modules["addresses"].meta.cities[i].cityId,
+                            cols: [
+                                {
+                                    data: modules["addresses"].meta.cities[i].cityId,
+                                },
+                                {
+                                    data: modules["addresses"].meta.cities[i].cityWithType,
+                                    nowrap: true,
+                                    click: "#addresses&show=city&cityId=%s",
+                                },
+                            ],
+                        });
+                    }
+                }
+
+                return rows;
+            },
+        }).show();
     },
 
     renderRegion: function (regionId) {
@@ -706,52 +755,7 @@
                     return rows;
                 },
             });
-            cardTable({
-                target: "#altForm",
-                title: {
-                    caption: i18n("addresses.cities"),
-                    button: {
-                        caption: i18n("addresses.addCity"),
-                        click: () => {
-                            modules["addresses"].addCity(regionId);
-                        },
-                    },
-                    filter: true,
-                },
-                edit: modules["addresses"].modifyCity,
-                columns: [
-                    {
-                        title: i18n("addresses.cityId"),
-                    },
-                    {
-                        title: i18n("addresses.city"),
-                        fullWidth: true,
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
-
-                    for (let i in modules["addresses"].meta.cities) {
-                        if (modules["addresses"].meta.cities[i].regionId == regionId && !modules["addresses"].meta.cities[i].areaId) {
-                            rows.push({
-                                uid: modules["addresses"].meta.cities[i].cityId,
-                                cols: [
-                                    {
-                                        data: modules["addresses"].meta.cities[i].cityId,
-                                    },
-                                    {
-                                        data: modules["addresses"].meta.cities[i].cityWithType,
-                                        nowrap: true,
-                                        click: "#addresses&show=city&cityId=%s",
-                                    },
-                                ],
-                            });
-                        }
-                    }
-
-                    return rows;
-                },
-            }).show();
+            modules["addresses"].cities(regionId, false);
         }).
         fail(FAIL).
         always(loadingDone);
