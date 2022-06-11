@@ -98,7 +98,7 @@ CREATE INDEX addresses_houses_address_street_id on addresses_houses(address_stre
 CREATE TABLE addresses_entrances
 (
     address_entrance_id integer not null primary key autoincrement,
-    address_house_id integer,
+    address_house_id integer not null,
     entrance text not null
 );
 CREATE UNIQUE INDEX addresses_entrances_entrance on addresses_entrances(address_house_id, entrance);
@@ -107,8 +107,8 @@ CREATE UNIQUE INDEX addresses_entrances_entrance on addresses_entrances(address_
 CREATE TABLE addresses_flats
 (
     address_flat_id integer not null primary key autoincrement,
-    address_entrance_id integer,
-    address_house_id integer,
+    address_entrance_id integer not null,
+    address_house_id integer not null,
     floor integer,
     flat text not null
 );
