@@ -48,6 +48,30 @@
         });
     },
 
+    doAddCity: function (regionId, areaId, cityFiasId, cityWithType, cityType, cityTypeFull, city) {
+        loadingStart();
+        POST("addresses", "city", false, {
+            regionId,
+            areaId,
+            cityFiasId,
+            cityWithType,
+            cityType,
+            cityTypeFull,
+            city
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.cityWasAdded"));
+        }).
+        always(() => {
+            if (regionId) {
+                modules["addresses"].renderRegion(regionId);
+            } else {
+                modules["addresses"].renderArea(areaId);
+            }
+        });
+    },
+
     addRegion: function () {
         cardForm({
             title: i18n("addresses.addRegion"),
@@ -151,6 +175,30 @@
         });
     },
 
+    doModifyCity: function (cityId, regionId, areaId, cityFiasId, cityWithType, cityType, cityTypeFull, city) {
+        loadingStart();
+        PUT("addresses", "city", cityId, {
+            areaId,
+            regionId,
+            cityFiasId,
+            cityWithType,
+            cityType,
+            cityTypeFull,
+            city
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.areaWasChanged"));
+        }).
+        always(() => {
+            if (regionId) {
+                modules["addresses"].renderRegion(regionId);
+            } else {
+                modules["addresses"].renderArea(areaId);
+            }
+        });
+    },
+
     doDeleteArea: function (areaId, regionId) {
         loadingStart();
         DELETE("addresses", "area", areaId).
@@ -163,6 +211,22 @@
         });
     },
 
+    doDeleteCity: function (cityId, regionId, areaId) {
+        loadingStart();
+        DELETE("addresses", "city", cityId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.cityWasDeleted"));
+        }).
+        always(() => {
+            if (regionId) {
+                modules["addresses"].renderRegion(regionId);
+            } else {
+                modules["addresses"].renderArea(areaId);
+            }
+        });
+    },
+
     deleteRegion: function (regionId) {
         mConfirm(i18n("addresses.confirmDeleteRegion", regionId), i18n("confirm"), `danger:${i18n("addresses.deleteRegion")}`, () => {
             modules["addresses"].doDeleteRegion(regionId);
@@ -170,8 +234,14 @@
     },
 
     deleteArea: function (areaId, regionId) {
-        mConfirm(i18n("addresses.confirmDeletearea", areaId), i18n("confirm"), `danger:${i18n("addresses.deleteArea")}`, () => {
+        mConfirm(i18n("addresses.confirmDeleteArea", areaId), i18n("confirm"), `danger:${i18n("addresses.deleteArea")}`, () => {
             modules["addresses"].doDeleteArea(areaId, regionId);
+        });
+    },
+
+    deleteCity: function (cityId, areaId, regionId) {
+        mConfirm(i18n("addresses.confirmDeleteCity", areaId), i18n("confirm"), `danger:${i18n("addresses.deleteCity")}`, () => {
+            modules["addresses"].doDeleteCity(cityId, areaId, regionId);
         });
     },
 
@@ -279,8 +349,8 @@
                 {
                     id: "areaWithType",
                     type: "text",
-                    title: i18n("addresses.regionWithType"),
-                    placeholder: i18n("addresses.regionWithType"),
+                    title: i18n("addresses.areaWithType"),
+                    placeholder: i18n("addresses.areaWithType"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
@@ -315,51 +385,51 @@
 
     addCity: function (regionId, areaId) {
         cardForm({
-            title: i18n("addresses.addArea"),
+            title: i18n("addresses.addCity"),
             footer: true,
             borderless: true,
             topApply: true,
             apply: i18n("add"),
             fields: [
                 {
-                    id: "areaFiasId",
+                    id: "cityFiasId",
                     type: "text",
-                    title: i18n("addresses.areaFiasId"),
-                    placeholder: i18n("addresses.areaFiasId"),
+                    title: i18n("addresses.cityFiasId"),
+                    placeholder: i18n("addresses.cityFiasId"),
                 },
                 {
-                    id: "areaWithType",
+                    id: "cityWithType",
                     type: "text",
-                    title: i18n("addresses.regionWithType"),
-                    placeholder: i18n("addresses.regionWithType"),
+                    title: i18n("addresses.cityWithType"),
+                    placeholder: i18n("addresses.cityWithType"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
                 },
                 {
-                    id: "areaType",
+                    id: "cityType",
                     type: "text",
-                    title: i18n("addresses.areaType"),
-                    placeholder: i18n("addresses.areaType"),
+                    title: i18n("addresses.cityType"),
+                    placeholder: i18n("addresses.cityType"),
                 },
                 {
-                    id: "areaTypeFull",
+                    id: "cityTypeFull",
                     type: "text",
-                    title: i18n("addresses.areaTypeFull"),
-                    placeholder: i18n("addresses.areaTypeFull"),
+                    title: i18n("addresses.cityTypeFull"),
+                    placeholder: i18n("addresses.cityTypeFull"),
                 },
                 {
-                    id: "area",
+                    id: "city",
                     type: "text",
-                    title: i18n("addresses.area"),
-                    placeholder: i18n("addresses.area"),
+                    title: i18n("addresses.city"),
+                    placeholder: i18n("addresses.city"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddArea(regionId, result.areaFiasId, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+                modules["addresses"].doAddCity(regionId, areaId, result.cityFiasId, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
             },
         }).show();
     },
@@ -382,11 +452,9 @@
             });
         }
 
-        console.log(regions);
-
         if (area) {
             cardForm({
-                title: i18n("addresses.editRegion"),
+                title: i18n("addresses.editArea"),
                 footer: true,
                 borderless: true,
                 topApply: true,
@@ -462,7 +530,129 @@
     },
 
     modifyCity: function (cityId) {
+        let city = false;
 
+        for (let i in modules["addresses"].meta.cities) {
+            if (modules["addresses"].meta.cities[i].cityId == cityId) {
+                city = modules["addresses"].meta.cities[i];
+                break;
+            }
+        }
+
+        let regions = [];
+
+        regions.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.regions) {
+            regions.push({
+                id: modules["addresses"].meta.regions[i].regionId,
+                text: modules["addresses"].meta.regions[i].regionWithType,
+            });
+        }
+
+        let areas = [];
+
+        areas.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.areas) {
+            areas.push({
+                id: modules["addresses"].meta.areas[i].areaId,
+                text: modules["addresses"].meta.areas[i].areaWithType,
+            });
+        }
+
+        if (city) {
+            cardForm({
+                title: i18n("addresses.editCity"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                delete: i18n("address.deleteCity"),
+                fields: [
+                    {
+                        id: "cityId",
+                        type: "text",
+                        title: i18n("addresses.cityId"),
+                        value: cityId,
+                        readonly: true,
+                    },
+                    {
+                        id: "regionId",
+                        type: "select2",
+                        title: i18n("addresses.regionId"),
+                        value: city.regionId,
+                        options: regions,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}areaId`).val("0").trigger("change");
+                        },
+                    },
+                    {
+                        id: "areaId",
+                        type: "select2",
+                        title: i18n("addresses.areaId"),
+                        value: city.areaId,
+                        options: areas,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}regionId`).val("0").trigger("change");
+                        },
+                    },
+                    {
+                        id: "cityFiasId",
+                        type: "text",
+                        title: i18n("addresses.cityFiasId"),
+                        placeholder: i18n("addresses.cityFiasId"),
+                        value: city.cityFiasId,
+                    },
+                    {
+                        id: "cityWithType",
+                        type: "text",
+                        title: i18n("addresses.cityWithType"),
+                        placeholder: i18n("addresses.cityWithType"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: city.cityWithType,
+                    },
+                    {
+                        id: "cityType",
+                        type: "text",
+                        title: i18n("addresses.cityType"),
+                        placeholder: i18n("addresses.cityType"),
+                        value: city.cityType,
+                    },
+                    {
+                        id: "cityTypeFull",
+                        type: "text",
+                        title: i18n("addresses.cityTypeFull"),
+                        placeholder: i18n("addresses.cityTypeFull"),
+                        value: city.cityTypeFull,
+                    },
+                    {
+                        id: "city",
+                        type: "text",
+                        title: i18n("addresses.city"),
+                        placeholder: i18n("addresses.city"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: city.city,
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        modules["addresses"].deleteCity(result.cityId, city.regionId, false);
+                    } else {
+                        modules["addresses"].doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityFiasId, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
+                    }
+                },
+            }).show();
+        } else {
+            error(i18n("addresses.cityNotFound"));
+        }
     },
 
     renderRegion: function (regionId) {
@@ -544,7 +734,7 @@
                     for (let i in modules["addresses"].meta.cities) {
                         if (modules["addresses"].meta.cities[i].regionId == regionId && !modules["addresses"].meta.cities[i].areaId) {
                             rows.push({
-                                uid: modules["addresses"].meta.cities[i].citiyId,
+                                uid: modules["addresses"].meta.cities[i].cityId,
                                 cols: [
                                     {
                                         data: modules["addresses"].meta.cities[i].cityId,

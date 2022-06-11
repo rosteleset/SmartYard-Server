@@ -101,7 +101,7 @@
              * @param $areaId
              * @return false|array
              */
-            abstract function getCities($regionId, $areaId);
+            abstract function getCities($regionId = false, $areaId = false);
 
             /**
              * @param $cityId

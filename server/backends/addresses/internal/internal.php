@@ -215,7 +215,7 @@
             /**
              * @inheritDoc
              */
-            function getCities($regionId, $areaId)
+            function getCities($regionId = false, $areaId = false)
             {
                 if ($regionId && $areaId) {
                     return false;
