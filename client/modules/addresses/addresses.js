@@ -156,7 +156,7 @@
         always(modules["addresses"].renderRegions);
     },
 
-    doModifyArea: function (areaId, regionId, areaFiasId, areaWithType, areaType, areaTypeFull, area) {
+    doModifyArea: function (areaId, regionId, areaFiasId, areaWithType, areaType, areaTypeFull, area, targetRegionId) {
         loadingStart();
         PUT("addresses", "area", areaId, {
             regionId,
@@ -171,11 +171,15 @@
             message(i18n("addresses.areaWasChanged"));
         }).
         always(() => {
-            modules["addresses"].renderRegion(regionId);
+            if (regionId == targetRegionId) {
+                modules["addresses"].renderRegion(regionId);
+            } else {
+                location.href = "#addresses&show=region&regionId=" + regionId;
+            }
         });
     },
 
-    doModifyCity: function (cityId, regionId, areaId, cityFiasId, cityWithType, cityType, cityTypeFull, city) {
+    doModifyCity: function (cityId, regionId, areaId, cityFiasId, cityWithType, cityType, cityTypeFull, city, targetRegionId, targetAreaId) {
         loadingStart();
         PUT("addresses", "city", cityId, {
             areaId,
@@ -192,9 +196,17 @@
         }).
         always(() => {
             if (regionId) {
-                modules["addresses"].renderRegion(regionId);
+                if (regionId == targetRegionId) {
+                    modules["addresses"].renderRegion(regionId);
+                } else {
+                    location.href = "#addresses&show=region&regionId=" + regionId;
+                }
             } else {
-                modules["addresses"].renderArea(areaId);
+                if (areaId == targetAreaId) {
+                    modules["addresses"].renderRegion(areaId);
+                } else {
+                    location.href = "#addresses&show=area&areaId=" + areaId;
+                }
             }
         });
     },
@@ -518,9 +530,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteArea(result.areaId, area.regionId);
+                        modules["addresses"].deleteArea(result.areaId, parseInt(area.regionId));
                     } else {
-                        modules["addresses"].doModifyArea(areaId, result.regionId, result.areaFiasId, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+                        modules["addresses"].doModifyArea(areaId, parseInt(result.regionId), result.areaFiasId, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId));
                     }
                 },
             }).show();
@@ -646,7 +658,7 @@
                     if (result.delete === "yes") {
                         modules["addresses"].deleteCity(result.cityId, parseInt(city.regionId), parseInt(city.areaId));
                     } else {
-                        modules["addresses"].doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityFiasId, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
+                        modules["addresses"].doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityFiasId, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId));
                     }
                 },
             }).show();
@@ -702,6 +714,10 @@
                 return rows;
             },
         }).show();
+    },
+
+    settlements: function (target, areaId, cityId) {
+
     },
 
     renderRegion: function (regionId) {
@@ -767,6 +783,7 @@
         done(modules["addresses"].addresses).
         done(() => {
             modules["addresses"].cities("#mainForm", false, areaId);
+            modules["addresses"].settlements("#altForm", areaId, false);
         }).
         fail(FAIL).
         always(loadingDone);
