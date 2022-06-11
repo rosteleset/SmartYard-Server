@@ -578,12 +578,19 @@
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
         $("#mainForm").html(i18n("addresses.addresses"));
 
+        if (!params.show) {
+            params.show = "regions";
+        }
+
         switch (params.show) {
             case "region":
                 modules["addresses"].renderRegion(params.regionId);
                 break;
-            default:
+            case "regions":
                 modules["addresses"].renderRegions();
+                break;
+            default:
+                page404();
                 break;
         }
     },
