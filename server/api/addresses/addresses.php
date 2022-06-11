@@ -19,7 +19,7 @@
 
                 $r = [
                     "regions" => $addresses->getRegions(),
-                    "areas" => [],
+                    "areas" => $addresses->getAreas(),
                     "cities" => [],
                     "settlements" => [],
                     "streets" => [],

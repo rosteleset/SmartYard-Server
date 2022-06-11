@@ -80,7 +80,7 @@
             abstract function modifyArea($areaId, $addressRegionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area);
 
             /**
-             * @param $addressRegionId
+             * @param $regionId
              * @param $areaFiasId
              * @param $areaWithType
              * @param $areaType
@@ -88,7 +88,7 @@
              * @param $area
              * @return false|integer
              */
-            abstract function addArea($addressRegionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area);
+            abstract function addArea($regionId, $areaFiasId, $areaWithType, $areaType, $areaTypeFull, $area);
 
             /**
              * @param $areaId
