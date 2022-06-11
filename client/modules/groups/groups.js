@@ -120,23 +120,8 @@
                             return $.trim(v) !== "";
                         }
                     },
-                    {
-                        id: "delete",
-                        type: "select",
-                        value: "",
-                        title: i18n("groups.delete"),
-                        options: [
-                            {
-                                value: "",
-                                text: "",
-                            },
-                            {
-                                value: "yes",
-                                text: i18n("yes"),
-                            },
-                        ]
-                    },
                 ],
+                delete: i18n("groups.delete"),
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules["groups"].deleteGroup(result.gid);

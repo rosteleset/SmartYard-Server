@@ -498,23 +498,8 @@
                         return $.trim(v) !== "";
                     }
                 },
-                {
-                    id: "delete",
-                    type: "select",
-                    value: "",
-                    title: i18n("tt.projectDelete"),
-                    options: [
-                        {
-                            value: "",
-                            text: "",
-                        },
-                        {
-                            value: "yes",
-                            text: i18n("yes"),
-                        },
-                    ]
-                },
             ],
+            delete: i18n("tt.projectDelete"),
             callback: function (result) {
                 if (result.delete === "yes") {
                     modules["tt.settings"].deleteProject(result.projectId);
@@ -601,23 +586,8 @@
                     title: i18n("tt.resolution"),
                     value: resolution,
                 },
-                {
-                    id: "delete",
-                    type: "select",
-                    value: "",
-                    title: i18n("tt.resolutionDelete"),
-                    options: [
-                        {
-                            value: "",
-                            text: "",
-                        },
-                        {
-                            value: "yes",
-                            text: i18n("yes"),
-                        },
-                    ]
-                },
             ],
+            delete: i18n("tt.resolutionDelete"),
             callback: function (result) {
                 if (result.delete === "yes") {
                     modules["tt.settings"].deleteResolution(resolutionId);
@@ -855,23 +825,8 @@
                                 return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                             }
                         },
-                        {
-                            id: "delete",
-                            type: "select",
-                            value: "",
-                            title: i18n("tt.customFieldDelete"),
-                            options: [
-                                {
-                                    value: "",
-                                    text: "",
-                                },
-                                {
-                                    value: "yes",
-                                    text: i18n("yes"),
-                                },
-                            ]
-                        },
                     ],
+                    delete: i18n("tt.customFieldDelete"),
                     callback: function (result) {
                         if (result.delete === "yes") {
                             modules["tt.settings"].deleteCustomField(customFieldId);

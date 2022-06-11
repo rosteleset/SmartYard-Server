@@ -230,25 +230,8 @@
                             },
                         ]
                     },
-                    {
-                        id: "delete",
-                        type: "select",
-                        value: "",
-                        title: i18n("users.delete"),
-                        readonly: uid.toString() === "0" || uid.toString() === myself.uid.toString(),
-                        hidden: uid.toString() === "0" || uid.toString() === myself.uid.toString(),
-                        options: [
-                            {
-                                value: "",
-                                text: "",
-                            },
-                            {
-                                value: "yes",
-                                text: i18n("yes"),
-                            },
-                        ]
-                    },
                 ],
+                delete: i18n("users.delete"),
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules["users"].deleteUser(result.uid);

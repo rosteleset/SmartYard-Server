@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
-            leftSide("fas fa-fw fa-home", i18n("addresses.addresses"), "#addresses");
+            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "#addresses");
         }
 
         moduleLoaded("addresses", this);
@@ -135,6 +135,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                delete: i18n("address.deleteRegion"),
                 fields: [
                     {
                         id: "regionId",
@@ -191,22 +192,6 @@
                         },
                         value: region.region,
                     },
-                    {
-                        id: "delete",
-                        type: "select",
-                        value: "",
-                        title: i18n("address.deleteRegion"),
-                        options: [
-                            {
-                                value: "",
-                                text: "",
-                            },
-                            {
-                                value: "yes",
-                                text: i18n("yes"),
-                            },
-                        ]
-                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
@@ -217,6 +202,120 @@
                 },
             }).show();
         }
+    },
+
+    addArea: function (regionId) {
+
+    },
+
+    addCity: function (regionId, areaId) {
+
+    },
+
+    modifyArea: function (areaId) {
+
+    },
+
+    modifyCity: function (cityId) {
+
+    },
+
+    renderRegion: function (regionId) {
+        loadingStart();
+        GET("addresses", "addresses", false, true).
+        done(modules["addresses"].addresses).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    caption: i18n("addresses.areas"),
+                    button: {
+                        caption: i18n("addresses.addArea"),
+                        click: modules["addresses"].addArea(regionId),
+                    },
+                    filter: true,
+                },
+                edit: modules["addresses"].modifyArea,
+                columns: [
+                    {
+                        title: i18n("addresses.areaId"),
+                    },
+                    {
+                        title: i18n("addresses.area"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules["addresses"].meta.areas) {
+                        if (modules["addresses"].meta.areas[i].regionId == regionId) {
+                            rows.push({
+                                uid: modules["addresses"].meta.areas[i].areasId,
+                                cols: [
+                                    {
+                                        data: modules["addresses"].meta.areas[i].areasId,
+                                    },
+                                    {
+                                        data: modules["addresses"].meta.areas[i].areaWithType,
+                                        nowrap: true,
+                                        click: "#addresses&show=area&areaId=%s",
+                                    },
+                                ],
+                            });
+                        }
+                    }
+
+                    return rows;
+                },
+            });
+            cardTable({
+                target: "#altForm",
+                title: {
+                    caption: i18n("addresses.cities"),
+                    button: {
+                        caption: i18n("addresses.addCity"),
+                        click: modules["addresses"].addCity(regionId),
+                    },
+                    filter: true,
+                },
+                edit: modules["addresses"].modifyCity,
+                columns: [
+                    {
+                        title: i18n("addresses.cityId"),
+                    },
+                    {
+                        title: i18n("addresses.city"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules["addresses"].meta.cities) {
+                        if (modules["addresses"].meta.cities[i].regionId == regionId && !modules["addresses"].meta.cities[i].areaId) {
+                            rows.push({
+                                uid: modules["addresses"].meta.cities[i].citiyId,
+                                cols: [
+                                    {
+                                        data: modules["addresses"].meta.cities[i].cityId,
+                                    },
+                                    {
+                                        data: modules["addresses"].meta.cities[i].cityWithType,
+                                        nowrap: true,
+                                        click: "#addresses&show=city&cityId=%s",
+                                    },
+                                ],
+                            });
+                        }
+                    }
+
+                    return rows;
+                },
+            }).show();
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     renderRegions: function () {
@@ -256,6 +355,7 @@
                                 {
                                     data: modules["addresses"].meta.regions[i].regionWithType,
                                     nowrap: true,
+                                    click: "#addresses&show=region&regionId=%s",
                                 },
                             ],
                         });
@@ -277,6 +377,9 @@
         $("#mainForm").html(i18n("addresses.addresses"));
 
         switch (params.show) {
+            case "region":
+                modules["addresses"].renderRegion(params.regionId);
+                break;
             default:
                 modules["addresses"].renderRegions();
                 break;

@@ -33,6 +33,25 @@ function cardForm(params) {
 
     h += `<tbody>`;
 
+    if (params.delete) {
+        params.fields.push({
+            id: "delete",
+            type: "select",
+            value: "",
+            title: params.delete,
+            options: [
+                {
+                    value: "",
+                    text: "",
+                },
+                {
+                    value: "yes",
+                    text: i18n("yes"),
+                },
+            ]
+        });
+    }
+
     for (let i in params.fields) {
         if (params.fields[i].id === "-") {
             h += "<tr class='mt-0 mb-0 pt-0 pb-0'>";

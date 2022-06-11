@@ -130,7 +130,11 @@ function cardTable(params) {
                     h += ` width="100%"`;
                 }
                 h += `>`;
-                h += rows[i].cols[j].data;
+                if (typeof rows[i].cols[j].click === "string") {
+                    h += `<a href="${sprintf(rows[i].cols[j].click, rows[i].uid)}">${rows[i].cols[j].data}</a>`;
+                } else {
+                    h += rows[i].cols[j].data;
+                }
                 h += "</td>";
             }
             if (rows[i].dropDown && hasDropDowns) {
