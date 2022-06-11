@@ -110,12 +110,8 @@ CREATE TABLE addresses_flats
     address_entrance_id integer,
     address_house_id integer,
     floor integer,
-    flat_uuid text,
-    flat_type text,
-    flat_type_full text,
     flat text not null
 );
-CREATE UNIQUE INDEX addresses_flats_flat_uuid on addresses_flats(flat_uuid);
 CREATE UNIQUE INDEX addresses_flats_flat on addresses_flats(address_house_id, flat);
 CREATE INDEX addresses_flats_address_entrance_id on addresses_flats(address_entrance_id);
 CREATE INDEX addresses_flats_address_house_id on addresses_flats(address_house_id);
