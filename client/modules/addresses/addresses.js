@@ -655,9 +655,9 @@
         }
     },
 
-    cities: function (regionId, areaId) {
+    cities: function (target, regionId, areaId) {
         cardTable({
-            target: "#altForm",
+            target,
             title: {
                 caption: i18n("addresses.cities"),
                 button: {
@@ -755,7 +755,18 @@
                     return rows;
                 },
             });
-            modules["addresses"].cities(regionId, false);
+            modules["addresses"].cities("#altForm", regionId, false);
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderArea: function (areaId) {
+        loadingStart();
+        GET("addresses", "addresses", false, true).
+        done(modules["addresses"].addresses).
+        done(() => {
+            modules["addresses"].cities("#mainForm", false, areaId);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -826,6 +837,9 @@
         switch (params.show) {
             case "region":
                 modules["addresses"].renderRegion(params.regionId);
+                break;
+            case "area":
+                modules["addresses"].renderArea(params.areaId);
                 break;
             case "regions":
                 modules["addresses"].renderRegions();
