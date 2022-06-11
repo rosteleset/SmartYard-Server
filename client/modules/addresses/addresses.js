@@ -717,7 +717,15 @@
     },
 
     settlements: function (target, areaId, cityId) {
+        // TODO
+    },
 
+    streets: function (target, cityId, settlementId) {
+        // TODO
+    },
+
+    houses: function (target, settlementId, streetId) {
+        // TODO
     },
 
     renderRegion: function (regionId) {
