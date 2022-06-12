@@ -121,11 +121,11 @@ function cardForm(params) {
 
             case "select2":
                 if (params.fields[i].color) {
-                    h += `<div class="select2-${params.fields[i].color}">`;
+                    h += `<div class="select2-${params.fields[i].color} modalFormField">`;
                 } else {
-                    h += `<div class="select2-secondary">`;
+                    h += `<div class="select2-secondary modalFormField">`;
                 }
-                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField select2`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control select2`;
                 h += `"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
@@ -271,13 +271,13 @@ function cardForm(params) {
     }
 
     function ok() {
-        $(".modalFormField").removeClass("is-invalid");
+        $(".modalFormField").removeClass("is-invalid select2-invalid");
         let invalid = [];
         for (let i in params.fields) {
             if (params.fields[i].id === "-") continue;
             if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
                 if (!params.fields[i].validate(getVal(i), _prefix)) {
-                    invalid.push(`#${_prefix}${params.fields[i].id}`);
+                    invalid.push(i);
                 }
             }
         }
@@ -295,7 +295,11 @@ function cardForm(params) {
             }
         } else {
             for (let i in invalid) {
-                $(invalid[i]).addClass("is-invalid");
+                if (params.fields[invalid[i]].type == "select2") {
+                    $(`#${_prefix}${params.fields[invalid[i]].id}`).parent().addClass("select2-invalid");
+                } else {
+                    $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("is-invalid");
+                }
             }
         }
     }

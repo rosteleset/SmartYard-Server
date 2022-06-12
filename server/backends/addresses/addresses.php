@@ -140,5 +140,137 @@
              */
             abstract function deleteCity($cityId);
 
+            /**
+             * @param $areaId
+             * @param $cityId
+             * @return false|array
+             */
+            abstract function getSettlements($areaId = false, $cityId = false);
+
+            /**
+             * @param $settlementId
+             * @return false|array
+             */
+            abstract function getSettlement($settlementId);
+
+            /**
+             * @param $settlementId
+             * @param $areaId
+             * @param $cityId
+             * @param $settlementUuid
+             * @param $settlementWithType
+             * @param $settlementType
+             * @param $settlementTypeFull
+             * @param $settlement
+             * @return boolean
+             */
+            abstract function modifySettlement($settlementId, $areaId, $cityId, $settlementUuid, $settlementWithType, $settlementType, $settlementTypeFull, $settlement);
+
+            /**
+             * @param $areaId
+             * @param $cityId
+             * @param $settlementUuid
+             * @param $settlementWithType
+             * @param $settlementType
+             * @param $settlementTypeFull
+             * @param $settlement
+             * @return false|integer
+             */
+            abstract function addSettlement($areaId, $cityId, $settlementUuid, $settlementWithType, $settlementType, $settlementTypeFull, $settlement);
+
+            /**
+             * @param $settlementId
+             * @return boolean
+             */
+            abstract function deleteSettlement($settlementId);
+
+            /**
+             * @param $cityId
+             * @param $settlementId
+             * @return false|array
+             */
+            abstract function getStreets($cityId = false, $settlementId = false);
+
+            /**
+             * @param $streetId
+             * @return false|array
+             */
+            abstract function getStreet($streetId);
+
+            /**
+             * @param $streetId
+             * @param $cityId
+             * @param $settlementId
+             * @param $streetUuid
+             * @param $streetWithType
+             * @param $streetType
+             * @param $streetTypeFull
+             * @param $street
+             * @return boolean
+             */
+            abstract function modifyStreet($streetId, $cityId, $settlementId, $streetUuid, $streetWithType, $streetType, $streetTypeFull, $street);
+
+            /**
+             * @param $cityId
+             * @param $settlementId
+             * @param $streetUuid
+             * @param $streetWithType
+             * @param $streetType
+             * @param $streetTypeFull
+             * @param $street
+             * @return false|integer
+             */
+            abstract function addStreet($cityId, $settlementId, $streetUuid, $streetWithType, $streetType, $streetTypeFull, $street);
+
+            /**
+             * @param $streetId
+             * @return boolean
+             */
+            abstract function deleteStreet($streetId);
+
+            /**
+             * @param $settlementId
+             * @param $streetId
+             * @return false|array
+             */
+            abstract function getHouses($settlementId = false, $streetId = false);
+
+            /**
+             * @param $houseId
+             * @return false|array
+             */
+            abstract function getHouse($houseId);
+
+            /**
+             * @param $houseId
+             * @param $settlementId
+             * @param $streetId
+             * @param $houseUuid
+             * @param $houseWithType
+             * @param $houseType
+             * @param $houseTypeFull
+             * @param $house
+             * @return boolean
+             */
+            abstract function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseWithType, $houseType, $houseTypeFull, $house);
+
+            /**
+             * @param $settlementId
+             * @param $streetId
+             * @param $houseUuid
+             * @param $houseWithType
+             * @param $houseType
+             * @param $houseTypeFull
+             * @param $house
+             * @return false|integer
+             */
+            abstract function addHouse($settlementId, $streetId, $houseUuid, $houseWithType, $houseType, $houseTypeFull, $house);
+
+            /**
+             * @param $houseId
+             * @return boolean
+             */
+            abstract function deleteHouse($houseId);
+
         }
     }

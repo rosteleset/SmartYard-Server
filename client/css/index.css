@@ -87,12 +87,12 @@ select {
 }
 
 .btn-tool-rbt-left {
-  font-size: .875rem!important;
+  font-size: 0.875rem !important;
   margin: -0.75rem 0;
 }
 
 .btn-tool-rbt-right {
-  font-size: .875rem!important;
+  font-size: 0.875rem !important;
   margin: -0.15rem 0 -0.75rem;
 }
 
@@ -118,4 +118,8 @@ select {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.select2-invalid > span.select2 > span.selection > span.select2-selection {
+  border-color: #dc3435 !important;
 }

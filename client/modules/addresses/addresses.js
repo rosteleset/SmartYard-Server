@@ -511,6 +511,9 @@
                         title: i18n("addresses.regionId"),
                         value: area.regionId,
                         options: regions,
+                        validate: v => {
+                            return !!v;
+                        },
                     },
                     {
                         id: "areaUuid",
@@ -628,6 +631,9 @@
                         select: (el, id, prefix) => {
                             $(`#${prefix}areaId`).val("0").trigger("change");
                         },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}areaId`).val());
+                        },
                     },
                     {
                         id: "areaId",
@@ -637,6 +643,9 @@
                         options: areas,
                         select: (el, id, prefix) => {
                             $(`#${prefix}regionId`).val("0").trigger("change");
+                        },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}regionId`).val());
                         },
                     },
                     {
@@ -744,15 +753,150 @@
     },
 
     settlements: function (target, areaId, cityId) {
-        // TODO
+        cardTable({
+            target,
+            title: {
+                caption: i18n("addresses.settlements"),
+                button: {
+                    caption: i18n("addresses.addSettlement"),
+                    click: () => {
+                        modules["addresses"].addSettlement(areaId, cityId);
+                    },
+                },
+                filter: true,
+            },
+            edit: modules["addresses"].modifySettlement,
+            columns: [
+                {
+                    title: i18n("addresses.settlementId"),
+                },
+                {
+                    title: i18n("addresses.settlement"),
+                    fullWidth: true,
+                },
+            ],
+            rows: () => {
+                let rows = [];
+
+                for (let i in modules["addresses"].meta.settlements) {
+                    if ((areaId && modules["addresses"].meta.settlements[i].areaId == areaId && !modules["addresses"].meta.settlements[i].cityId) || (cityId && modules["addresses"].meta.settlements[i].cityId == cityId && !modules["addresses"].meta.settlements[i].areaId)) {
+                        rows.push({
+                            uid: modules["addresses"].meta.settlements[i].settlementId,
+                            cols: [
+                                {
+                                    data: modules["addresses"].meta.settlements[i].settlementId,
+                                },
+                                {
+                                    data: modules["addresses"].meta.settlements[i].cityWithType,
+                                    nowrap: true,
+                                    click: "#addresses&show=settlements&settlementsId=%s",
+                                },
+                            ],
+                        });
+                    }
+                }
+
+                return rows;
+            },
+        }).show();
     },
 
     streets: function (target, cityId, settlementId) {
-        // TODO
+        cardTable({
+            target,
+            title: {
+                caption: i18n("addresses.streets"),
+                button: {
+                    caption: i18n("addresses.addStreet"),
+                    click: () => {
+                        modules["addresses"].addStreet(cityId, settlementId);
+                    },
+                },
+                filter: true,
+            },
+            edit: modules["addresses"].modifyStreet,
+            columns: [
+                {
+                    title: i18n("addresses.streetId"),
+                },
+                {
+                    title: i18n("addresses.street"),
+                    fullWidth: true,
+                },
+            ],
+            rows: () => {
+                let rows = [];
+
+                for (let i in modules["addresses"].meta.streets) {
+                    if ((cityId && modules["addresses"].meta.streets[i].cityId == cityId && !modules["addresses"].meta.streets[i].settlementId) || (settlementId && modules["addresses"].meta.streets[i].settlementId == settlementId && !modules["addresses"].meta.streets[i].cityId)) {
+                        rows.push({
+                            uid: modules["addresses"].meta.streets[i].streetId,
+                            cols: [
+                                {
+                                    data: modules["addresses"].meta.streets[i].streetId,
+                                },
+                                {
+                                    data: modules["addresses"].meta.streets[i].streetWithType,
+                                    nowrap: true,
+                                    click: "#addresses&show=street&streetId=%s",
+                                },
+                            ],
+                        });
+                    }
+                }
+
+                return rows;
+            },
+        }).show();
     },
 
     houses: function (target, settlementId, streetId) {
-        // TODO
+        cardTable({
+            target,
+            title: {
+                caption: i18n("addresses.houses"),
+                button: {
+                    caption: i18n("addresses.addHouse"),
+                    click: () => {
+                        modules["addresses"].addHouse(settlementId, streetId);
+                    },
+                },
+                filter: true,
+            },
+            edit: modules["addresses"].modifyHouse,
+            columns: [
+                {
+                    title: i18n("addresses.houseId"),
+                },
+                {
+                    title: i18n("addresses.house"),
+                    fullWidth: true,
+                },
+            ],
+            rows: () => {
+                let rows = [];
+
+                for (let i in modules["addresses"].meta.houses) {
+                    if ((settlementId && modules["addresses"].meta.houses[i].settlementId == settlementId && !modules["addresses"].meta.houses[i].streetId) || (streetId && modules["addresses"].meta.houses[i].streetId == streetId && !modules["addresses"].meta.houses[i].settlementId)) {
+                        rows.push({
+                            uid: modules["addresses"].meta.houses[i].houseId,
+                            cols: [
+                                {
+                                    data: modules["addresses"].meta.houses[i].houseId,
+                                },
+                                {
+                                    data: modules["addresses"].meta.houses[i].houseWithType,
+                                    nowrap: true,
+                                    click: "#addresses.house&houseId=%s",
+                                },
+                            ],
+                        });
+                    }
+                }
+
+                return rows;
+            },
+        }).show();
     },
 
     renderRegion: function (regionId) {
@@ -892,6 +1036,15 @@
                 break;
             case "area":
                 modules["addresses"].renderArea(params.areaId);
+                break;
+            case "city":
+                modules["addresses"].renderCity(params.cityId);
+                break;
+            case "settlement":
+                modules["addresses"].renderSettlement(params.settlementId);
+                break;
+            case "street":
+                modules["addresses"].renderStreet(params.streetId);
                 break;
             case "regions":
                 modules["addresses"].renderRegions();
