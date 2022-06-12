@@ -5,6 +5,11 @@ function cardForm(params) {
         h += `<div class="card mt-2">`;
     } else {
         h = `<div class="card mt-0 mb-0">`;
+        $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
+        console.log(params.size);
+        if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
+            $("#modalBody").parent().addClass("modal-" + params.size);
+        }
     }
     if (!params.apply) {
         params.apply = "apply";

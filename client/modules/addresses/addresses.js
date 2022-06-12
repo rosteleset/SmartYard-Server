@@ -79,6 +79,7 @@
             borderless: true,
             topApply: true,
             apply: i18n("add"),
+            size: "lg",
             fields: [
                 {
                     id: "regionUuid",
@@ -283,6 +284,7 @@
                 borderless: true,
                 topApply: true,
                 delete: i18n("address.deleteRegion"),
+                size: "lg",
                 fields: [
                     {
                         id: "regionId",
@@ -360,6 +362,7 @@
             borderless: true,
             topApply: true,
             apply: i18n("add"),
+            size: "lg",
             fields: [
                 {
                     id: "areaUuid",
@@ -411,6 +414,7 @@
             borderless: true,
             topApply: true,
             apply: i18n("add"),
+            size: "lg",
             fields: [
                 {
                     id: "cityUuid",
@@ -480,6 +484,7 @@
                 borderless: true,
                 topApply: true,
                 delete: i18n("address.deleteArea"),
+                size: "lg",
                 fields: [
                     {
                         id: "areaId",
@@ -593,6 +598,7 @@
                 borderless: true,
                 topApply: true,
                 delete: i18n("address.deleteCity"),
+                size: "lg",
                 fields: [
                     {
                         id: "cityId",
