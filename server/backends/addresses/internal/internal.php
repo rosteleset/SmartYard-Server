@@ -595,7 +595,7 @@
                 }
 
                 if (trim($streetWithType) && trim($street)) {
-                    return $this->db->modify("update addresses_settlements set address_area_id = :address_area_id, address_city_id = :address_city_id, settlement_uuid = :settlement_uuid, settlement_with_type = :settlement_with_type, settlement_type = :settlement_type, settlement_type_full = :settlement_type_full, settlement = :settlement where address_settlement_id = $settlementId", [
+                    return $this->db->modify("update addresses_streets set address_city_id = :address_city_id, address_settlement_id = :address_settlement_id, street_uuid = :street_uuid, street_with_type = :street_with_type, street_type = :street_type, street_type_full = :street_type_full, street = :street where address_street_id = $settlementId", [
                         ":address_city_id" => $cityId,
                         ":address_settlement_id" => $settlementId,
                         ":street_uuid" => $streetUuid,
@@ -662,7 +662,37 @@
              */
             function getHouses($settlementId = false, $streetId = false)
             {
-                // TODO: Implement getHouses() method.
+                if ($settlementId && $streetId) {
+                    return false;
+                }
+
+                if ($settlementId && !checkInt($settlementId)) {
+                    return false;
+                }
+
+                if ($streetId && !checkInt($streetId)) {
+                    return false;
+                }
+
+                if ($settlementId) {
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_settlement_id = $settlementId and address_street_id is null order by house";
+                } else
+                if ($streetId) {
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_street_id = $streetId and addresses_houses.address_settlement_id is null order by house";
+                } else {
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses order by house";
+                }
+
+                return $this->db->get($query, false, [
+                    "address_house_id" => "houseId",
+                    "address_settlement_id" => "settlementId",
+                    "address_street_id" => "streetId",
+                    "house_uuid" => "houseUuid",
+                    "house_type" => "houseType",
+                    "house_type_full" => "houseTypeFull",
+                    "house_full" => "houseFull",
+                    "house" => "house",
+                ]);
             }
 
             /**
@@ -670,23 +700,96 @@
              */
             function getHouse($houseId)
             {
-                // TODO: Implement getHouse() method.
+                if (!checkInt($houseId)) {
+                    return false;
+                }
+
+                return $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_house_id = $houseId", false, [
+                    "address_house_id" => "houseId",
+                    "address_settlement_id" => "settlementId",
+                    "address_street_id" => "streetId",
+                    "house_uuid" => "houseUuid",
+                    "house_type" => "houseType",
+                    "house_type_full" => "houseTypeFull",
+                    "house_full" => "houseFull",
+                    "house" => "house",
+                ], true);
             }
 
             /**
              * @inheritDoc
              */
-            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseWithType, $houseType, $houseTypeFull, $house)
+            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house)
             {
-                // TODO: Implement modifyHouse() method.
+                if (!checkInt($houseId)) {
+                    return false;
+                }
+
+                if ($settlementId && $streetId) {
+                    return false;
+                }
+
+                if ($settlementId && !checkInt($settlementId)) {
+                    return false;
+                }
+
+                if ($streetId && !checkInt($streetId)) {
+                    return false;
+                }
+
+                if (!$settlementId && !$streetId) {
+                    return false;
+                }
+
+                if (trim($houseFull) && trim($house)) {
+                    return $this->db->modify("update addresses_houses set address_settlement_id = :address_settlement_id, address_street_id = :address_street_id, house_uuid = :house_uuid, house_type = :house_type, house_type_full = :house_type_full, house_full = :house_full, house = :house where address_house_id = $houseId", [
+                        ":address_settlement_id" => $settlementId,
+                        ":address_street_id" => $streetId,
+                        ":house_uuid" => $houseUuid,
+                        ":house_type" => $houseType,
+                        ":house_type_full" => $houseTypeFull,
+                        ":house_full" => $houseFull,
+                        ":house" => $house,
+                    ]);
+                } else {
+                    return false;
+                }
             }
 
             /**
              * @inheritDoc
              */
-            function addHouse($settlementId, $streetId, $houseUuid, $houseWithType, $houseType, $houseTypeFull, $house)
+            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house)
             {
-                // TODO: Implement addHouse() method.
+                if ($settlementId && $streetId) {
+                    return false;
+                }
+
+                if ($settlementId && !checkInt($settlementId)) {
+                    return false;
+                }
+
+                if ($streetId && !checkInt($streetId)) {
+                    return false;
+                }
+
+                if (!$settlementId && !$streetId) {
+                    return false;
+                }
+
+                if (trim($houseFull) && trim($house)) {
+                    return $this->db->insert("insert into addresses_houses (address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house) values (:address_settlement_id, :address_street_id, :house_uuid, :house_type, :house_type_full, :house_full, :house)", [
+                        ":address_settlement_id" => $settlementId,
+                        ":address_street_id" => $streetId,
+                        ":house_uuid" => $houseUuid,
+                        ":house_type" => $houseType,
+                        ":house_type_full" => $houseTypeFull,
+                        ":house_full" => $houseFull,
+                        ":house" => $house,
+                    ]);
+                } else {
+                    return false;
+                }
             }
 
             /**
@@ -694,7 +797,11 @@
              */
             function deleteHouse($houseId)
             {
-                // TODO: Implement deleteHouse() method.
+                if (!checkInt($houseId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from addresses_houses where address_house_id = $houseId");
             }
         }
     }

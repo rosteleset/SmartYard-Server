@@ -246,25 +246,25 @@
              * @param $settlementId
              * @param $streetId
              * @param $houseUuid
-             * @param $houseWithType
              * @param $houseType
              * @param $houseTypeFull
+             * @param $houseFull
              * @param $house
              * @return boolean
              */
-            abstract function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseWithType, $houseType, $houseTypeFull, $house);
+            abstract function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house);
 
             /**
              * @param $settlementId
              * @param $streetId
              * @param $houseUuid
-             * @param $houseWithType
              * @param $houseType
              * @param $houseTypeFull
+             * @param $houseFull
              * @param $house
              * @return false|integer
              */
-            abstract function addHouse($settlementId, $streetId, $houseUuid, $houseWithType, $houseType, $houseTypeFull, $house);
+            abstract function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house);
 
             /**
              * @param $houseId

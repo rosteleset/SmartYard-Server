@@ -87,12 +87,14 @@ CREATE TABLE addresses_houses
     house_uuid text,
     house_type text,
     house_type_full text,
+    house_full text not null,
     house text not null
 );
 CREATE UNIQUE INDEX addresses_houses_house_uuid on addresses_houses(house_uuid);
 CREATE UNIQUE INDEX addresses_houses_house on addresses_houses(address_settlement_id, address_street_id, house);
 CREATE INDEX addresses_houses_address_settlement_id on addresses_houses(address_settlement_id);
 CREATE INDEX addresses_houses_address_street_id on addresses_houses(address_street_id);
+CREATE INDEX addresses_houses_house_full on addresses_houses(house_full);
 
 -- entrances
 CREATE TABLE addresses_entrances
