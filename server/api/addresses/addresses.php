@@ -21,8 +21,9 @@
                     "regions" => $addresses->getRegions(),
                     "areas" => $addresses->getAreas(),
                     "cities" => $addresses->getCities(),
-                    "settlements" => [],
-                    "streets" => [],
+                    "settlements" => $addresses->getSettlements(),
+                    "streets" => $addresses->getStreets(),
+                    "houses" => $addresses->getHouses(),
                 ];
 
                 return api::ANSWER($r, ($r !== false)?"addresses":"404");
