@@ -55,16 +55,19 @@ function hashChange() {
                 } else {
                     $("#searchForm").hide();
                 }
-                modules[route].route(params);
+                if (typeof modules[route].route === "function") {
+                    modules[route].route(params);
+                } else {
+                    page404();
+                }
             } else
-            if (route == "default") {
+            if (route === "default") {
                 if (config.defaultRoute) {
                     location = config.defaultRoute;
                 } else {
                     loadingDone();
                 }
             } else {
-                $("#page404").show();
                 page404();
             }
         }, 50);

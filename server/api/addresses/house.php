@@ -25,7 +25,11 @@
             public static function POST($params) {
                 $addresses = loadBackend("addresses");
 
-                $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
+                if (@$params["magick"]) {
+                    $houseId = $addresses->addHouseByMagick($params["magick"]);
+                } else {
+                    $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
+                }
 
                 return api::ANSWER($houseId, ($houseId !== false)?"houseId":"notAcceptable");
             }

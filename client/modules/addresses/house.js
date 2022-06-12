@@ -52,6 +52,9 @@
             ],
             callback: function (result) {
                 console.log(result);
+                POST("addresses", "house", false, {
+                    magick: result.address,
+                });
             },
         }).show();
     }

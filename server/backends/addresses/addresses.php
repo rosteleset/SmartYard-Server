@@ -272,5 +272,10 @@
              */
             abstract function deleteHouse($houseId);
 
+            /**
+             * @param $houseUuid
+             * @return false|integer
+             */
+            abstract function addHouseByMagick($houseUuid);
         }
     }

@@ -52,7 +52,9 @@
                         "region_type_full" => "regionTypeFull",
                         "region" => "region",
                     ],
-                    true
+                    [
+                        "singlify"
+                    ]
                 );
             }
 
@@ -143,15 +145,20 @@
                     return false;
                 }
 
-                return $this->db->get("select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area from addresses_areas where address_area_id = $areaId", false, [
-                    "address_area_id" => "areaId",
-                    "address_region_id" => "regionId",
-                    "area_uuid" => "areaUuid",
-                    "area_with_type" => "areaWithType",
-                    "area_type" => "areaType",
-                    "area_type_full" => "areaTypeFull",
-                    "area" => "area",
-                ], true);
+                return $this->db->get("select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area from addresses_areas where address_area_id = $areaId", false,
+                    [
+                        "address_area_id" => "areaId",
+                        "address_region_id" => "regionId",
+                        "area_uuid" => "areaUuid",
+                        "area_with_type" => "areaWithType",
+                        "area_type" => "areaType",
+                        "area_type_full" => "areaTypeFull",
+                        "area" => "area",
+                    ],
+                    [
+                        "singlify"
+                    ]
+                );
             }
 
             /**
@@ -263,16 +270,21 @@
                     return false;
                 }
 
-                return $this->db->get("select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city from addresses_cities where address_city_id = $cityId", false, [
-                    "address_city_id" => "cityId",
-                    "address_region_id" => "regionId",
-                    "address_area_id" => "areaId",
-                    "city_uuid" => "cityUuid",
-                    "city_with_type" => "cityWithType",
-                    "city_type" => "cityType",
-                    "city_type_full" => "cityTypeFull",
-                    "city" => "city",
-                ], true);
+                return $this->db->get("select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city from addresses_cities where address_city_id = $cityId", false,
+                    [
+                        "address_city_id" => "cityId",
+                        "address_region_id" => "regionId",
+                        "address_area_id" => "areaId",
+                        "city_uuid" => "cityUuid",
+                        "city_with_type" => "cityWithType",
+                        "city_type" => "cityType",
+                        "city_type_full" => "cityTypeFull",
+                        "city" => "city",
+                    ],
+                    [
+                        "singlify"
+                    ]
+                );
             }
 
             /**
@@ -410,16 +422,21 @@
                     return false;
                 }
 
-                return $this->db->get("select address_settlement_id, address_area_id, address_city_id, settlement_uuid, settlement_with_type, settlement_type, settlement_type_full, settlement from addresses_settlements where address_settlement_id = $settlementId", false, [
-                    "address_settlement_id" => "settlementId",
-                    "address_area_id" => "areaId",
-                    "address_city_id" => "cityId",
-                    "settlement_uuid" => "settlementUuid",
-                    "settlement_with_type" => "settlementWithType",
-                    "settlement_type" => "settlementType",
-                    "settlement_type_full" => "settlementTypeFull",
-                    "settlement" => "settlement",
-                ], true);
+                return $this->db->get("select address_settlement_id, address_area_id, address_city_id, settlement_uuid, settlement_with_type, settlement_type, settlement_type_full, settlement from addresses_settlements where address_settlement_id = $settlementId", false,
+                    [
+                        "address_settlement_id" => "settlementId",
+                        "address_area_id" => "areaId",
+                        "address_city_id" => "cityId",
+                        "settlement_uuid" => "settlementUuid",
+                        "settlement_with_type" => "settlementWithType",
+                        "settlement_type" => "settlementType",
+                        "settlement_type_full" => "settlementTypeFull",
+                        "settlement" => "settlement",
+                    ],
+                    [
+                        "singlify"
+                    ]
+                );
             }
 
             /**
@@ -557,16 +574,21 @@
                     return false;
                 }
 
-                return $this->db->get("select address_street_id, address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street from addresses_streets where address_street_id = $streetId", false, [
-                    "address_street_id" => "streetId",
-                    "address_city_id" => "cityId",
-                    "address_settlement_id" => "settlementId",
-                    "street_uuid" => "streetUuid",
-                    "street_with_type" => "streetWithType",
-                    "street_type" => "streetType",
-                    "street_type_full" => "streetTypeFull",
-                    "street" => "street",
-                ], true);
+                return $this->db->get("select address_street_id, address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street from addresses_streets where address_street_id = $streetId", false,
+                    [
+                        "address_street_id" => "streetId",
+                        "address_city_id" => "cityId",
+                        "address_settlement_id" => "settlementId",
+                        "street_uuid" => "streetUuid",
+                        "street_with_type" => "streetWithType",
+                        "street_type" => "streetType",
+                        "street_type_full" => "streetTypeFull",
+                        "street" => "street",
+                    ],
+                    [
+                        "singlify"
+                    ]
+                );
             }
 
             /**
@@ -704,16 +726,21 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_house_id = $houseId", false, [
-                    "address_house_id" => "houseId",
-                    "address_settlement_id" => "settlementId",
-                    "address_street_id" => "streetId",
-                    "house_uuid" => "houseUuid",
-                    "house_type" => "houseType",
-                    "house_type_full" => "houseTypeFull",
-                    "house_full" => "houseFull",
-                    "house" => "house",
-                ], true);
+                return $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_house_id = $houseId", false,
+                    [
+                        "address_house_id" => "houseId",
+                        "address_settlement_id" => "settlementId",
+                        "address_street_id" => "streetId",
+                        "house_uuid" => "houseUuid",
+                        "house_type" => "houseType",
+                        "house_type_full" => "houseTypeFull",
+                        "house_full" => "houseFull",
+                        "house" => "house",
+                    ],
+                    [
+                        "singlify"
+                    ]
+                );
             }
 
             /**
@@ -802,6 +829,152 @@
                 }
 
                 return $this->db->modify("delete from addresses_houses where address_house_id = $houseId");
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function addHouseByMagick($houseUuid)
+            {
+                $house = $this->redis->get("house_" . $houseUuid);
+
+                if ($house) {
+                    $house = json_decode($house, true);
+
+                    $regionId = null;
+                    if ($house["data"]["region_fias_id"]) {
+                        $regionId = $this->db->get("select address_region_id from addresses_regions where region_uuid = :region_uuid",
+                            [
+                                ":region_uuid" => $house["data"]["region_fias_id"],
+                            ],
+                            false,
+                            [
+                                "fieldlify"
+                            ]
+                        );
+                        if (!$regionId) {
+                            $regionId = $this->addRegion($house["data"]["region_fias_id"], $house["data"]["region_iso_code"], $house["data"]["region_with_type"], $house["data"]["region_type"], $house["data"]["region_type_full"], $house["data"]["region"]);
+                        }
+                    }
+
+                    if (!$regionId) {
+                        error_log("no region");
+                        return false;
+                    }
+
+                    $areaId = null;
+                    if ($house["data"]["area_fias_id"]) {
+                        $areaId = $this->db->get("select address_area_id from addresses_areas where area_uuid = :area_uuid",
+                            [
+                                ":area_uuid" => $house["data"]["area_fias_id"],
+                            ],
+                            false,
+                            [
+                                "fieldlify"
+                            ]
+                        );
+                        if (!$areaId) {
+                            $areaId = $this->addArea($regionId, $house["data"]["area_fias_id"], $house["data"]["area_with_type"], $house["data"]["area_type"], $house["data"]["area_type_full"], $house["data"]["area"]);
+                        }
+                    }
+
+                    $cityId = null;
+                    if ($house["data"]["city_fias_id"]) {
+                        $cityId = $this->db->get("select address_city_id from addresses_cities where city_uuid = :city_uuid",
+                            [
+                                ":city_uuid" => $house["data"]["city_fias_id"],
+                            ],
+                            false,
+                            [
+                                "fieldlify"
+                            ]
+                        );
+                        if (!$cityId) {
+                            $cityId = $this->addCity($regionId, $areaId, $house["data"]["city_fias_id"], $house["data"]["city_with_type"], $house["data"]["city_type"], $house["data"]["city_type_full"], $house["data"]["city"]);
+                        }
+                    }
+
+                    if ($cityId) {
+                        $areaId = null;
+                    }
+
+                    if (!$areaId && !$cityId) {
+                        return false;
+                    }
+
+                    $settlementId = null;
+                    if ($house["data"]["settlement_fias_id"]) {
+                        $settlementId = $this->db->get("select address_settlement_id from addresses_settlements where settlement_uuid = :settlement_uuid",
+                            [
+                                ":settlement_uuid" => $house["data"]["settlement_fias_id"],
+                            ],
+                            false,
+                            [
+                                "fieldlify"
+                            ]
+                        );
+                        if (!$settlementId) {
+                            $settlementId = $this->addSettlement($areaId, $cityId, $house["data"]["settlement_fias_id"], $house["data"]["settlement_with_type"], $house["data"]["settlement_type"], $house["data"]["settlement_type_full"], $house["data"]["settlement"]);
+                        }
+                    }
+
+                    if ($settlementId) {
+                        $cityId = null;
+                    }
+
+                    if (!$cityId && !$settlementId) {
+                        return false;
+                    }
+
+                    $streetId = null;
+                    if ($house["data"]["street_fias_id"]) {
+                        $streetId = $this->db->get("select address_street_id from addresses_streets where street_uuid = :street_uuid",
+                            [
+                                ":street_uuid" => $house["data"]["street_fias_id"],
+                            ],
+                            false,
+                            [
+                                "fieldlify"
+                            ]
+                        );
+                        if (!$streetId) {
+                            $streetId = $this->addStreet($cityId, $settlementId, $house["data"]["street_fias_id"], $house["data"]["street_with_type"], $house["data"]["street_type"], $house["data"]["street_type_full"], $house["data"]["street"]);
+                        }
+                    }
+
+                    if ($streetId) {
+                        $settlementId = null;
+                    }
+
+                    if (!$settlementId && !$streetId) {
+                        return false;
+                    }
+
+                    $houseId = null;
+                    if ($house["data"]["house_fias_id"]) {
+                        $houseId = $this->db->get("select address_house_id from addresses_houses where house_uuid = :house_uuid",
+                            [
+                                ":house_uuid" => $house["data"]["house_fias_id"],
+                            ],
+                            false,
+                            [
+                                "fieldlify"
+                            ]
+                        );
+                        if (!$houseId) {
+                            $houseId = $this->addHouse($settlementId, $streetId, $house["data"]["house_fias_id"], $house["data"]["house_type"], $house["data"]["house_type_full"], $house["value"], $house["data"]["house"]);
+                        }
+                    }
+
+                    if ($houseId) {
+                        return $houseId;
+                    } else {
+                        return false;
+                    }
+
+                } else {
+                    return false;
+                }
             }
         }
     }

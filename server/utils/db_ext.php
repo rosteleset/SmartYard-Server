@@ -40,10 +40,10 @@
             }
         }
 
-        function get($query, $params = [], $map = [], $singlify = false) {
+        function get($query, $params = [], $map = [], $options = []) {
             try {
                 if ($params) {
-                    $sth = $this->prepare("select uid from core_users where e_mail = :e_mail");
+                    $sth = $this->prepare($query);
                     if ($sth->execute($params)) {
                         $a = $sth->fetchAll(\PDO::FETCH_ASSOC);
                     } else {
@@ -67,15 +67,23 @@
                     $r = $a;
                 }
 
-                if ($singlify) {
+                if (in_array("singlify", $options)) {
                     if (count($r) === 1) {
                         return $r[0];
                     } else {
                         return false;
                     }
-                } else {
-                    return $r;
                 }
+
+                if (in_array("fieldlify", $options)) {
+                    if (count($r) === 1) {
+                        return $r[0][array_key_first($r[0])];
+                    } else {
+                        return false;
+                    }
+                }
+
+                return $r;
 
             } catch (\Exception $e) {
                 error_log(print_r($e, true));
