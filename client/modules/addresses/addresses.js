@@ -566,7 +566,7 @@
                     {
                         id: "regionId",
                         type: "select2",
-                        title: i18n("addresses.regionId"),
+                        title: i18n("addresses.region"),
                         value: area.regionId,
                         options: regions,
                         validate: v => {
@@ -683,7 +683,7 @@
                     {
                         id: "regionId",
                         type: "select2",
-                        title: i18n("addresses.regionId"),
+                        title: i18n("addresses.region"),
                         value: city.regionId,
                         options: regions,
                         select: (el, id, prefix) => {
@@ -696,7 +696,7 @@
                     {
                         id: "areaId",
                         type: "select2",
-                        title: i18n("addresses.areaId"),
+                        title: i18n("addresses.area"),
                         value: city.areaId,
                         options: areas,
                         select: (el, id, prefix) => {
@@ -816,7 +816,7 @@
                     {
                         id: "areaId",
                         type: "select2",
-                        title: i18n("addresses.areaId"),
+                        title: i18n("addresses.area"),
                         value: settlement.areaId,
                         options: areas,
                         select: (el, id, prefix) => {
@@ -829,7 +829,7 @@
                     {
                         id: "cityId",
                         type: "select2",
-                        title: i18n("addresses.cityId"),
+                        title: i18n("addresses.city"),
                         value: settlement.cityId,
                         options: cities,
                         select: (el, id, prefix) => {
@@ -949,7 +949,7 @@
                     {
                         id: "cityId",
                         type: "select2",
-                        title: i18n("addresses.cityId"),
+                        title: i18n("addresses.city"),
                         value: street.cityId,
                         options: cities,
                         select: (el, id, prefix) => {
@@ -962,7 +962,7 @@
                     {
                         id: "settlementId",
                         type: "select2",
-                        title: i18n("addresses.settlementId"),
+                        title: i18n("addresses.settlement"),
                         value: street.settlementId,
                         options: settlements,
                         select: (el, id, prefix) => {
@@ -1082,7 +1082,7 @@
                     {
                         id: "settlementId",
                         type: "select2",
-                        title: i18n("addresses.settlementId"),
+                        title: i18n("addresses.settlement"),
                         value: house.settlementId,
                         options: settlements,
                         select: (el, id, prefix) => {
@@ -1095,7 +1095,7 @@
                     {
                         id: "streetId",
                         type: "select2",
-                        title: i18n("addresses.streetId"),
+                        title: i18n("addresses.street"),
                         value: house.streetId,
                         options: streets,
                         select: (el, id, prefix) => {
@@ -1826,8 +1826,8 @@
                 return;
             }
 
-            modules["addresses"].settlements("#mainForm", false, cityId);
-            modules["addresses"].streets("#altForm", cityId, false);
+            modules["addresses"].streets("#mainForm", cityId, false);
+            modules["addresses"].settlements("#altForm", false, cityId);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -1946,7 +1946,7 @@
         if (AVAIL("geo", "suggestions") && params.show === "regions") {
             $("#leftTopDynamic").html(`
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick">${i18n("tt.addHouse")}</a>
+                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick">${i18n("addresses.addHouse")}</a>
                 </li>
             `);
         }

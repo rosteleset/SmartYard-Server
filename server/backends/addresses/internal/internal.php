@@ -858,7 +858,7 @@
                     }
 
                     if (!$regionId) {
-                        error_log("no region");
+                        error_log($house["data"]["house_fias_id"] . " no region");
                         return false;
                     }
 
@@ -878,6 +878,10 @@
                         }
                     }
 
+                    if ($areaId) {
+                        $regionId = null;
+                    }
+
                     $cityId = null;
                     if ($house["data"]["city_fias_id"]) {
                         $cityId = $this->db->get("select address_city_id from addresses_cities where city_uuid = :city_uuid",
@@ -890,6 +894,7 @@
                             ]
                         );
                         if (!$cityId) {
+                            error_log(print_r([$regionId, $areaId, $house["data"]["city_fias_id"], $house["data"]["city_with_type"], $house["data"]["city_type"], $house["data"]["city_type_full"], $house["data"]["city"]], true));
                             $cityId = $this->addCity($regionId, $areaId, $house["data"]["city_fias_id"], $house["data"]["city_with_type"], $house["data"]["city_type"], $house["data"]["city_type_full"], $house["data"]["city"]);
                         }
                     }
@@ -899,6 +904,7 @@
                     }
 
                     if (!$areaId && !$cityId) {
+                        error_log($house["data"]["house_fias_id"] . " no area or city");
                         return false;
                     }
 
@@ -923,6 +929,7 @@
                     }
 
                     if (!$cityId && !$settlementId) {
+                        error_log($house["data"]["house_fias_id"] . " no city or settlement");
                         return false;
                     }
 
@@ -947,6 +954,7 @@
                     }
 
                     if (!$settlementId && !$streetId) {
+                        error_log($house["data"]["house_fias_id"] . " no setllement or street");
                         return false;
                     }
 
@@ -967,6 +975,7 @@
                     }
 
                     if ($houseId) {
+                        error_log($house["data"]["house_fias_id"] . " no house");
                         return $houseId;
                     } else {
                         return false;

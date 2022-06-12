@@ -1,3 +1,24 @@
 {
-    "addresses": "Адреса"
+    "addresses": "Адреса",
+    "address": "Адрес",
+    "addHouse": "Добавить дом",
+    "regions": "Регионы",
+    "region": "Регион",
+    "regionId": "#",
+    "areas": "Районы",
+    "area": "Район",
+    "areaId": "#",
+    "cities": "Города",
+    "city": "Город",
+    "cityId": "#",
+    "streets": "Улицы",
+    "street": "Улица",
+    "streetId": "#",
+    "settlements": "Населенные пункты",
+    "settlement": "Населенный пункт",
+    "settlementId": "#",
+    "houses": "Дома",
+    "house": "Дом",
+    "houseId": "#",
+    "houseFull": "Полный адрес"
 }
