@@ -16,6 +16,94 @@
         console.log(modules["addresses"].meta);
     },
 
+    path: function (object, id) {
+        let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
+
+        function region(id) {
+            for (let i in modules["addresses"].meta.regions) {
+                if (modules["addresses"].meta.regions[i].regionId == id) {
+                    return modules["addresses"].meta.regions[i];
+                }
+            }
+        }
+
+        function area(id) {
+            for (let i in modules["addresses"].meta.areas) {
+                if (modules["addresses"].meta.areas[i].areaId == id) {
+                    let a = modules["addresses"].meta.areas[i];
+                    a.parent = region(a.regionId).regionWithType;
+                    return a;
+                }
+            }
+        }
+
+        function city(id) {
+            for (let i in modules["addresses"].meta.cities) {
+                if (modules["addresses"].meta.cities[i].cityId == id) {
+                    let c = modules["addresses"].meta.cities[i];
+                    if (c.regionId) {
+                        c.parent = region(c.regionId).regionWithType;
+                    } else {
+                        c.parent = area(c.areaId).parent + sp + area(c.areaId).areaWithType;
+                    }
+                    return c;
+                }
+            }
+        }
+
+        function settlement(id) {
+            for (let i in modules["addresses"].meta.settlements) {
+                if (modules["addresses"].meta.settlements[i].settlementId == id) {
+                    let s = modules["addresses"].meta.settlements[i];
+                    if (s.areaId) {
+                        s.parent = area(s.areaId).parent + sp + area(s.areaId).areaWithType;
+                    } else {
+                        s.parent = city(s.cityId).parent + sp + city(s.cityId).cityWithType;
+                    }
+                    return s;
+                }
+            }
+        }
+
+        function street(id) {
+            for (let i in modules["addresses"].meta.streets) {
+                if (modules["addresses"].meta.streets[i].streetId == id) {
+                    let s = modules["addresses"].meta.streets[i];
+                    if (s.cityId) {
+                        s.parent = city(s.cityId).parent + sp + city(s.cityId).cityWithType;
+                    } else {
+                        s.parent = settlement(s.settlementId).parent + sp + settlement(s.settlementId).settlementWithType;
+                    }
+                    return s;
+                }
+            }
+        }
+
+        switch (object) {
+            case "region":
+                return region(id).regionWithType;
+
+            case "area":
+                let a = area(id);
+                return a.parent + sp + a.areaWithType;
+
+            case "city":
+                let c = city(id);
+                return c.parent + sp + c.cityWithType;
+
+            case "settlement":
+                let se = settlement(id);
+                return se.parent + sp + se.settlementWithType;
+
+            case "street":
+                let st = street(id);
+                return st.parent + sp + st.streetWithType;
+
+            default:
+                return "";
+        }
+    },
+
     doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
         loadingStart();
         POST("addresses", "region", false, {
@@ -473,6 +561,9 @@
                         title: i18n("addresses.regionUuid"),
                         placeholder: i18n("addresses.regionUuid"),
                         value: region.regionUuid,
+                        validate: v => {
+                            return !!v;
+                        },
                     },
                     {
                         id: "regionIsoCode",
@@ -579,6 +670,9 @@
                         title: i18n("addresses.areaUuid"),
                         placeholder: i18n("addresses.areaUuid"),
                         value: area.areaUuid,
+                        validate: v => {
+                            return !!v;
+                        },
                     },
                     {
                         id: "areaWithType",
@@ -712,6 +806,9 @@
                         title: i18n("addresses.cityUuid"),
                         placeholder: i18n("addresses.cityUuid"),
                         value: city.cityUuid,
+                        validate: v => {
+                            return !!v;
+                        },
                     },
                     {
                         id: "cityWithType",
@@ -845,6 +942,9 @@
                         title: i18n("addresses.settlementUuid"),
                         placeholder: i18n("addresses.settlementUuid"),
                         value: settlement.settlementUuid,
+                        validate: v => {
+                            return !!v;
+                        },
                     },
                     {
                         id: "settlementWithType",
@@ -978,6 +1078,9 @@
                         title: i18n("addresses.streetUuid"),
                         placeholder: i18n("addresses.streetUuid"),
                         value: street.streetUuid,
+                        validate: v => {
+                            return !!v;
+                        },
                     },
                     {
                         id: "streetWithType",
@@ -1111,6 +1214,9 @@
                         title: i18n("addresses.houseUuid"),
                         placeholder: i18n("addresses.houseUuid"),
                         value: house.houseUuid,
+                        validate: v => {
+                            return !!v;
+                        },
                     },
                     {
                         id: "houseType",
@@ -1247,6 +1353,9 @@
                             $(`#${prefix}areaUuid`).val(guid());
                         },
                     },
+                    validate: v => {
+                        return !!v;
+                    },
                 },
                 {
                     id: "areaWithType",
@@ -1304,6 +1413,9 @@
                         click: prefix => {
                             $(`#${prefix}cityUuid`).val(guid());
                         },
+                    },
+                    validate: v => {
+                        return !!v;
                     },
                 },
                 {
@@ -1363,6 +1475,9 @@
                             $(`#${prefix}settlementUuid`).val(guid());
                         },
                     },
+                    validate: v => {
+                        return !!v;
+                    },
                 },
                 {
                     id: "settlementWithType",
@@ -1421,6 +1536,9 @@
                             $(`#${prefix}streetUuid`).val(guid());
                         },
                     },
+                    validate: v => {
+                        return !!v;
+                    },
                 },
                 {
                     id: "streetWithType",
@@ -1478,6 +1596,9 @@
                         click: prefix => {
                             $(`#${prefix}houseUuid`).val(guid());
                         },
+                    },
+                    validate: v => {
+                        return !!v;
                     },
                 },
                 {
@@ -1718,18 +1839,20 @@
         GET("addresses", "addresses", false, true).
         done(modules["addresses"].addresses).
         done(() => {
-            let f = false;
+            let region = false;
 
             for (let i in modules["addresses"].meta.regions) {
                 if (modules["addresses"].meta.regions[i].regionId == regionId) {
-                    f = true;
+                    region = modules["addresses"].meta.regions[i];
                     break;
                 }
             }
-            if (!f) {
+            if (!region) {
                 page404();
                 return;
             }
+
+            subTop(modules["addresses"].path("region", regionId));
 
             cardTable({
                 target: "#mainForm",
@@ -1788,18 +1911,21 @@
         GET("addresses", "addresses", false, true).
         done(modules["addresses"].addresses).
         done(() => {
-            let f = false;
+            let area = false;
 
             for (let i in modules["addresses"].meta.areas) {
                 if (modules["addresses"].meta.areas[i].areaId == areaId) {
-                    f = true;
+                    area = modules["addresses"].meta.areas[i];
                     break;
                 }
             }
-            if (!f) {
+
+            if (!area) {
                 page404();
                 return;
             }
+
+            subTop(modules["addresses"].path("area", areaId));
 
             modules["addresses"].cities("#mainForm", false, areaId);
             modules["addresses"].settlements("#altForm", areaId, false);
@@ -1826,6 +1952,8 @@
                 return;
             }
 
+            subTop(modules["addresses"].path("city", cityId));
+
             modules["addresses"].streets("#mainForm", cityId, false);
             modules["addresses"].settlements("#altForm", false, cityId);
         }).
@@ -1851,6 +1979,8 @@
                 return;
             }
 
+            subTop(modules["addresses"].path("settlement", settlementId));
+
             modules["addresses"].streets("#mainForm", false, settlementId);
             modules["addresses"].houses("#altForm", settlementId, false);
         }).
@@ -1874,6 +2004,8 @@
                 page404();
                 return;
             }
+
+            subTop(modules["addresses"].path("street", streetId));
 
             modules["addresses"].houses("#mainForm", false, streetId);
         }).

@@ -296,3 +296,7 @@ function formatBytes(bytes) {
     for (; bytes > 1024; u++) bytes /= 1024;
     return Math.round(bytes) + ' ' + [ 'B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ][u];
 }
+
+function subTop(html) {
+    $("#subTop").html(`<div class="info-box mt-2 mb-1" style="min-height: 0px;"><div class="info-box-content"><span class="info-box-text">${html}</span></div></div>`);
+}
