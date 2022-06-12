@@ -471,6 +471,18 @@
         }).show();
     },
 
+    addSettlement: function (areaId, cityId) {
+        // TODO
+    },
+
+    addStreet: function (cityId, settlementId) {
+        // TODO
+    },
+
+    addHouse: function (settlementId, streetId) {
+        // TODO
+    },
+
     modifyArea: function (areaId) {
         let area = false;
 
@@ -703,6 +715,18 @@
         }
     },
 
+    modifySettlement: function (settlementId) {
+        // TODO
+    },
+
+    modifyStreet: function (streetId) {
+        // TODO
+    },
+
+    modifyHouse: function (houseId) {
+        // TODO
+    },
+
     cities: function (target, regionId, areaId) {
         cardTable({
             target,
@@ -904,6 +928,18 @@
         GET("addresses", "addresses", false, true).
         done(modules["addresses"].addresses).
         done(() => {
+            let f = false;
+
+            for (let i in modules["addresses"].meta.regions) {
+                if (modules["addresses"].meta.regions[i].regionId == regionId) {
+                    f = true;
+                }
+            }
+            if (!f) {
+                page404();
+                return;
+            }
+
             cardTable({
                 target: "#mainForm",
                 title: {
@@ -961,8 +997,91 @@
         GET("addresses", "addresses", false, true).
         done(modules["addresses"].addresses).
         done(() => {
+            let f = false;
+
+            for (let i in modules["addresses"].meta.areas) {
+                if (modules["addresses"].meta.areas[i].areaId == areaId) {
+                    f = true;
+                }
+            }
+            if (!f) {
+                page404();
+                return;
+            }
+
             modules["addresses"].cities("#mainForm", false, areaId);
             modules["addresses"].settlements("#altForm", areaId, false);
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderCity: function (cityId) {
+        loadingStart();
+        GET("addresses", "addresses", false, true).
+        done(modules["addresses"].addresses).
+        done(() => {
+            let f = false;
+
+            for (let i in modules["addresses"].meta.cities) {
+                if (modules["addresses"].meta.cities[i].cityId == cityId) {
+                    f = true;
+                }
+            }
+            if (!f) {
+                page404();
+                return;
+            }
+
+            modules["addresses"].settlements("#mainForm", false, cityId);
+            modules["addresses"].streets("#altForm", cityId, false);
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderSettlement: function (settlementId) {
+        loadingStart();
+        GET("addresses", "addresses", false, true).
+        done(modules["addresses"].addresses).
+        done(() => {
+            let f = false;
+
+            for (let i in modules["addresses"].meta.settlements) {
+                if (modules["addresses"].meta.settlements[i].settlementId == settlementId) {
+                    f = true;
+                }
+            }
+            if (!f) {
+                page404();
+                return;
+            }
+
+            modules["addresses"].streets("#mainForm", false, settlementId);
+            modules["addresses"].houses("#altForm", settlementId, false);
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderStreet: function (streetId) {
+        loadingStart();
+        GET("addresses", "addresses", false, true).
+        done(modules["addresses"].addresses).
+        done(() => {
+            let f = false;
+
+            for (let i in modules["addresses"].meta.streets) {
+                if (modules["addresses"].meta.streets[i].streetId == streetId) {
+                    f = true;
+                }
+            }
+            if (!f) {
+                page404();
+                return;
+            }
+
+            modules["addresses"].houses("#mainForm", false, streetId);
         }).
         fail(FAIL).
         always(loadingDone);
