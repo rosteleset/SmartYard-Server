@@ -515,7 +515,37 @@
              */
             function getStreets($cityId = false, $settlementId = false)
             {
-                // TODO: Implement getStreets() method.
+                if ($cityId && $cityId) {
+                    return false;
+                }
+
+                if ($cityId && !checkInt($cityId)) {
+                    return false;
+                }
+
+                if ($settlementId && !checkInt($settlementId)) {
+                    return false;
+                }
+
+                if ($cityId) {
+                    $query = "select address_street_id, address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street from addresses_streets where address_city_id = $cityId and address_settlement_id is null order by street";
+                } else
+                if ($settlementId) {
+                    $query = "select address_street_id, address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street from addresses_streets where address_settlement_id = $settlementId and address_city_id is null order by street";
+                } else {
+                    $query = "select address_street_id, address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street from addresses_streets order by street";
+                }
+
+                return $this->db->get($query, false, [
+                    "address_street_id" => "streetId",
+                    "address_city_id" => "cityId",
+                    "address_settlement_id" => "settlementId",
+                    "street_uuid" => "streetUuid",
+                    "street_with_type" => "streetWithType",
+                    "street_type" => "streetType",
+                    "street_type_full" => "streetTypeFull",
+                    "street" => "street",
+                ]);
             }
 
             /**
@@ -523,7 +553,20 @@
              */
             function getStreet($streetId)
             {
-                // TODO: Implement getStreet() method.
+                if (!checkInt($streetId)) {
+                    return false;
+                }
+
+                return $this->db->get("select address_street_id, address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street from addresses_streets where address_street_id = $streetId", false, [
+                    "address_street_id" => "streetId",
+                    "address_city_id" => "cityId",
+                    "address_settlement_id" => "settlementId",
+                    "street_uuid" => "streetUuid",
+                    "street_with_type" => "streetWithType",
+                    "street_type" => "streetType",
+                    "street_type_full" => "streetTypeFull",
+                    "street" => "street",
+                ], true);
             }
 
             /**
@@ -531,7 +574,39 @@
              */
             function modifyStreet($streetId, $cityId, $settlementId, $streetUuid, $streetWithType, $streetType, $streetTypeFull, $street)
             {
-                // TODO: Implement modifyStreet() method.
+                if (!checkInt($streetId)) {
+                    return false;
+                }
+
+                if ($cityId && $settlementId) {
+                    return false;
+                }
+
+                if ($cityId && !checkInt($cityId)) {
+                    return false;
+                }
+
+                if ($settlementId && !checkInt($settlementId)) {
+                    return false;
+                }
+
+                if (!$cityId && !$settlementId) {
+                    return false;
+                }
+
+                if (trim($streetWithType) && trim($street)) {
+                    return $this->db->modify("update addresses_settlements set address_area_id = :address_area_id, address_city_id = :address_city_id, settlement_uuid = :settlement_uuid, settlement_with_type = :settlement_with_type, settlement_type = :settlement_type, settlement_type_full = :settlement_type_full, settlement = :settlement where address_settlement_id = $settlementId", [
+                        ":address_city_id" => $cityId,
+                        ":address_settlement_id" => $settlementId,
+                        ":street_uuid" => $streetUuid,
+                        ":street_with_type" => $streetWithType,
+                        ":street_type" => $streetType,
+                        ":street_type_full" => $streetTypeFull,
+                        ":street" => $street,
+                    ]);
+                } else {
+                    return false;
+                }
             }
 
             /**
@@ -539,7 +614,35 @@
              */
             function addStreet($cityId, $settlementId, $streetUuid, $streetWithType, $streetType, $streetTypeFull, $street)
             {
-                // TODO: Implement addStreet() method.
+                if ($cityId && $settlementId) {
+                    return false;
+                }
+
+                if ($cityId && !checkInt($cityId)) {
+                    return false;
+                }
+
+                if ($settlementId && !checkInt($settlementId)) {
+                    return false;
+                }
+
+                if (!$cityId && !$settlementId) {
+                    return false;
+                }
+
+                if (trim($streetWithType) && trim($street)) {
+                    return $this->db->insert("insert into addresses_streets (address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street) values (:address_city_id, :address_settlement_id, :street_uuid, :street_with_type, :street_type, :street_type_full, :street)", [
+                        ":address_city_id" => $cityId,
+                        ":address_settlement_id" => $settlementId,
+                        ":street_uuid" => $streetUuid,
+                        ":street_with_type" => $streetWithType,
+                        ":street_type" => $streetType,
+                        ":street_type_full" => $streetTypeFull,
+                        ":street" => $street,
+                    ]);
+                } else {
+                    return false;
+                }
             }
 
             /**
@@ -547,7 +650,11 @@
              */
             function deleteStreet($streetId)
             {
-                // TODO: Implement deleteStreet() method.
+                if (!checkInt($streetId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from addresses_streets where address_settlement_id = $streetId");
             }
 
             /**
