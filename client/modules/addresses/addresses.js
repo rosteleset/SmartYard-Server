@@ -933,6 +933,7 @@
             for (let i in modules["addresses"].meta.regions) {
                 if (modules["addresses"].meta.regions[i].regionId == regionId) {
                     f = true;
+                    break;
                 }
             }
             if (!f) {
@@ -1002,6 +1003,7 @@
             for (let i in modules["addresses"].meta.areas) {
                 if (modules["addresses"].meta.areas[i].areaId == areaId) {
                     f = true;
+                    break;
                 }
             }
             if (!f) {
@@ -1026,6 +1028,7 @@
             for (let i in modules["addresses"].meta.cities) {
                 if (modules["addresses"].meta.cities[i].cityId == cityId) {
                     f = true;
+                    break;
                 }
             }
             if (!f) {
@@ -1050,6 +1053,7 @@
             for (let i in modules["addresses"].meta.settlements) {
                 if (modules["addresses"].meta.settlements[i].settlementId == settlementId) {
                     f = true;
+                    break;
                 }
             }
             if (!f) {
