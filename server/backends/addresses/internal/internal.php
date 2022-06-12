@@ -975,9 +975,9 @@
                     }
 
                     if ($houseId) {
-                        error_log($house["data"]["house_fias_id"] . " no house");
                         return $houseId;
                     } else {
+                        error_log($house["data"]["house_fias_id"] . " no house");
                         return false;
                     }
 

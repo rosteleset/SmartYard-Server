@@ -51,10 +51,17 @@
                 },
             ],
             callback: function (result) {
-                console.log(result);
-                POST("addresses", "house", false, {
-                    magick: result.address,
-                });
+                if (result && result.address) {
+                    loadingStart();
+                    POST("addresses", "house", false, {
+                        magick: result.address,
+                    }).
+                    done(() => {
+                        message(i18n("addresses.houseWasAdded"));
+                    }).
+                    fail(FAIL).
+                    always(modules["addresses"].renderRegions);
+                }
             },
         }).show();
     }
