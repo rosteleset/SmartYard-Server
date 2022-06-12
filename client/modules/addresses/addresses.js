@@ -19,6 +19,10 @@
     path: function (object, id) {
         let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
 
+        function link(target, text, id) {
+            return `<a href="#addresses&show=${target}&${target}Id=${id}">${text}</a>`;
+        }
+
         function region(id) {
             for (let i in modules["addresses"].meta.regions) {
                 if (modules["addresses"].meta.regions[i].regionId == id) {
@@ -31,7 +35,8 @@
             for (let i in modules["addresses"].meta.areas) {
                 if (modules["addresses"].meta.areas[i].areaId == id) {
                     let a = modules["addresses"].meta.areas[i];
-                    a.parent = region(a.regionId).regionWithType;
+                    let r = region(a.regionId);
+                    a.parent = link("region", r.regionWithType, r.regionId);
                     return a;
                 }
             }
@@ -42,9 +47,11 @@
                 if (modules["addresses"].meta.cities[i].cityId == id) {
                     let c = modules["addresses"].meta.cities[i];
                     if (c.regionId) {
-                        c.parent = region(c.regionId).regionWithType;
+                        let r = region(c.regionId);
+                        c.parent = link("region", r.regionWithType, r.regionId);
                     } else {
-                        c.parent = area(c.areaId).parent + sp + area(c.areaId).areaWithType;
+                        let a = area(c.areaId);
+                        c.parent = a.parent + sp + link("area", a.areaWithType, a.areaId);
                     }
                     return c;
                 }
@@ -56,9 +63,11 @@
                 if (modules["addresses"].meta.settlements[i].settlementId == id) {
                     let s = modules["addresses"].meta.settlements[i];
                     if (s.areaId) {
-                        s.parent = area(s.areaId).parent + sp + area(s.areaId).areaWithType;
+                        let a = area(s.areaId);
+                        s.parent = a.parent + sp + link("area", a.areaWithType, a.areaId);
                     } else {
-                        s.parent = city(s.cityId).parent + sp + city(s.cityId).cityWithType;
+                        let c = city(s.cityId);
+                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
                     }
                     return s;
                 }
@@ -70,9 +79,11 @@
                 if (modules["addresses"].meta.streets[i].streetId == id) {
                     let s = modules["addresses"].meta.streets[i];
                     if (s.cityId) {
-                        s.parent = city(s.cityId).parent + sp + city(s.cityId).cityWithType;
+                        let c = city(s.cityId);
+                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
                     } else {
-                        s.parent = settlement(s.settlementId).parent + sp + settlement(s.settlementId).settlementWithType;
+                        let e = settlement(s.settlementId);
+                        s.parent = e.parent + sp + link("settlement", e.settlementWithType, e.settlementId);
                     }
                     return s;
                 }
