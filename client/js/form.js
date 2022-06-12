@@ -314,23 +314,6 @@ function cardForm(params) {
         }
     }
 
-    function allowNewSelect2Tags(params) {
-        let term = $.trim(params.term);
-
-        if (term === '') {
-            return null;
-        }
-
-        return {
-            id: term,
-            text: term
-        };
-    }
-
-    function denyNewSelect2Tags(params) {
-        return undefined;
-    }
-
     let target;
 
     if (params.target) {
@@ -395,12 +378,29 @@ function cardForm(params) {
         }
 
         if (params.fields[i].type === "select2") {
-            $(`#${_prefix}${params.fields[i].id}`).select2({
+            let s2p = {
                 language: lang["_code"],
-                minimumResultsForSearch: params.fields[i].minimumResultsForSearch?params.fields[i].minimumResultsForSearch:0,
-                tags: !!params.fields[i].tags,
-                createTag: params.fields[i].createTags?allowNewSelect2Tags:denyNewSelect2Tags,
-            });
+            };
+
+            if (params.fields[i].minimumResultsForSearch) {
+                s2p.minimumResultsForSearch = params.fields[i].minimumResultsForSearch;
+            }
+
+            if (!params.fields[i].createTags) {
+                s2p.createTag = () => {
+                    return undefined;
+                }
+            }
+
+            if (params.fields[i].tags) {
+                s2p.tags = true;
+            }
+
+            if (params.fields[i].ajax) {
+                s2p.ajax = params.fields[i].ajax;
+            }
+
+            $(`#${_prefix}${params.fields[i].id}`).select2(s2p);
             if (typeof params.fields[i].select === "function") {
                 $(`#${_prefix}${params.fields[i].id}`).off("select2:select").on("select2:select", function () {
                     params.fields[i].select($(this), params.fields[i].id, _prefix);

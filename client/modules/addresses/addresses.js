@@ -4,7 +4,11 @@
             leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "#addresses");
         }
 
-        moduleLoaded("addresses", this);
+        loadSubModules("addresses", [
+            "house",
+        ], () => {
+            moduleLoaded("addresses", this);
+        });
     },
 
     addresses: function (addresses) {
@@ -1934,6 +1938,16 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
         $("#mainForm").html(i18n("addresses.addresses"));
+
+        if (AVAIL("geo", "suggestions")) {
+            $("#leftTopDynamic").html(`
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick">${i18n("tt.addHouse")}</a>
+            </li>
+        `);
+        }
+
+        $(".addHouseMagick").off("click").on("click", modules["addresses.house"].houseMagick);
 
         if (!params.show) {
             params.show = "regions";

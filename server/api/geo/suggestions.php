@@ -48,9 +48,9 @@
                 $geocoder = loadBackend("geocoder");
 
                 if ($geocoder) {
-                    return [ "GET" ];
-                } else {
-                    return [ ];
+                    return [
+                        "GET"
+                    ];
                 }
             }
         }
