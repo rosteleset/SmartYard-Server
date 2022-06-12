@@ -72,71 +72,76 @@
         });
     },
 
-    addRegion: function () {
-        cardForm({
-            title: i18n("addresses.addRegion"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            apply: i18n("add"),
-            size: "lg",
-            fields: [
-                {
-                    id: "regionUuid",
-                    type: "text",
-                    title: i18n("addresses.regionUuid"),
-                    placeholder: i18n("addresses.regionUuid"),
-                    button: {
-                        class: "fas fa-magic",
-                        click: prefix => {
-                            $(`#${prefix}regionUuid`).val(guid());
-                        },
-                    },
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "regionIsoCode",
-                    type: "text",
-                    title: i18n("addresses.regionIsoCode"),
-                    placeholder: i18n("addresses.regionIsoCode"),
-                },
-                {
-                    id: "regionWithType",
-                    type: "text",
-                    title: i18n("addresses.regionWithType"),
-                    placeholder: i18n("addresses.regionWithType"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "regionType",
-                    type: "text",
-                    title: i18n("addresses.regionType"),
-                    placeholder: i18n("addresses.regionType"),
-                },
-                {
-                    id: "regionTypeFull",
-                    type: "text",
-                    title: i18n("addresses.regionTypeFull"),
-                    placeholder: i18n("addresses.regionTypeFull"),
-                },
-                {
-                    id: "region",
-                    type: "text",
-                    title: i18n("addresses.region"),
-                    placeholder: i18n("addresses.region"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-            ],
-            callback: function (result) {
-                modules["addresses"].doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
-            },
-        }).show();
+    doAddSettlement: function (areaId, cityId, settlementUuid, settlementWithType, settlementType, settlementTypeFull, settlement) {
+        loadingStart();
+        POST("addresses", "settlement", false, {
+            areaId,
+            cityId,
+            settlementUuid,
+            settlementWithType,
+            settlementType,
+            settlementTypeFull,
+            settlement
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.settlementWasAdded"));
+        }).
+        always(() => {
+            if (areaId) {
+                modules["addresses"].renderArea(areaId);
+            } else {
+                modules["addresses"].renderCity(cityId);
+            }
+        });
+    },
+
+    doAddStreet: function (cityId, settlementId, streetUuid, streetWithType, streetType, streetTypeFull, street) {
+        loadingStart();
+        POST("addresses", "street", false, {
+            cityId,
+            settlementId,
+            streetUuid,
+            streetWithType,
+            streetType,
+            streetTypeFull,
+            street
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.streetWasAdded"));
+        }).
+        always(() => {
+            if (cityId) {
+                modules["addresses"].renderCity(cityId);
+            } else {
+                modules["addresses"].renderSettlement(settlementId);
+            }
+        });
+    },
+
+    doAddHouse: function (settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house) {
+        loadingStart();
+        POST("addresses", "house", false, {
+            settlementId,
+            streetId,
+            houseUuid,
+            houseType,
+            houseTypeFull,
+            houseFull,
+            house
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.houseWasAdded"));
+        }).
+        always(() => {
+            if (settlementId) {
+                modules["addresses"].renderSettlement(settlementId);
+            } else {
+                modules["addresses"].renderStreet(streetId);
+            }
+        });
     },
 
     doModifyRegion: function (regionId, regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
@@ -152,16 +157,6 @@
         fail(FAIL).
         done(() => {
             message(i18n("addresses.regionWasChanged"));
-        }).
-        always(modules["addresses"].renderRegions);
-    },
-
-    doDeleteRegion: function (regionId) {
-        loadingStart();
-        DELETE("addresses", "region", regionId).
-        fail(FAIL).
-        done(() => {
-            message(i18n("addresses.regionWasDeleted"));
         }).
         always(modules["addresses"].renderRegions);
     },
@@ -221,6 +216,115 @@
         });
     },
 
+    doModifySettlement: function (settlementId, areaId, cityId, settlementUuid, settlementWithType, settlementType, settlementTypeFull, settlement, targetAreaId, targetCityId) {
+        loadingStart();
+        PUT("addresses", "settlement", settlementId, {
+            settlementId,
+            areaId,
+            cityId,
+            settlementUuid,
+            settlementWithType,
+            settlementType,
+            settlementTypeFull,
+            settlement
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.settlementWasChanged"));
+        }).
+        always(() => {
+            if (areaId) {
+                if (areaId == targetAreaId) {
+                    modules["addresses"].renderArea(areaId);
+                } else {
+                    location.href = "#addresses&show=area&areaId=" + areaId;
+                }
+            } else {
+                if (cityId == targetCityId) {
+                    modules["addresses"].renderCity(cityId);
+                } else {
+                    location.href = "#addresses&show=city&cityId=" + cityId;
+                }
+            }
+        });
+    },
+
+    doModifyStreet: function (streetId, cityId, settlementId, streetUuid, streetWithType, streetType, streetTypeFull, street, targetCityId, targetSettlementId) {
+        loadingStart();
+        PUT("addresses", "street", streetId, {
+            streetId,
+            cityId,
+            settlementId,
+            streetUuid,
+            streetWithType,
+            streetType,
+            streetTypeFull,
+            street
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.streetWasChanged"));
+        }).
+        always(() => {
+            if (cityId) {
+                if (cityId == targetCityId) {
+                    modules["addresses"].renderCity(cityId);
+                } else {
+                    location.href = "#addresses&show=city&cityId=" + cityId;
+                }
+            } else {
+                if (settlementId == targetSettlementId) {
+                    modules["addresses"].renderSettlement(settlementId);
+                } else {
+                    location.href = "#addresses&show=settlement&settlementId=" + settlementId;
+                }
+            }
+        });
+    },
+
+    doModifyHouse: function (houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, targetSettlementId, targetStreetId) {
+        loadingStart();
+        PUT("addresses", "house", houseId, {
+            houseId,
+            settlementId,
+            streetId,
+            houseUuid,
+            houseType,
+            houseTypeFull,
+            houseFull,
+            house
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.houseWasChanged"));
+        }).
+        always(() => {
+            if (settlementId) {
+                if (settlementId == targetSettlementId) {
+                    modules["addresses"].renderSettlement(settlementId);
+                } else {
+                    location.href = "#addresses&show=settlement&settlementId=" + settlementId;
+                }
+            } else {
+                if (streetId == targetStreetId) {
+                    modules["addresses"].renderStreet(streetId);
+                } else {
+                    location.href = "#addresses&show=street&streetId=" + streetId;
+                }
+            }
+        });
+    },
+
+    doDeleteRegion: function (regionId) {
+        loadingStart();
+        DELETE("addresses", "region", regionId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.regionWasDeleted"));
+        }).
+        always(modules["addresses"].renderRegions);
+    },
+
     doDeleteArea: function (areaId, regionId) {
         loadingStart();
         DELETE("addresses", "area", areaId).
@@ -249,6 +353,54 @@
         });
     },
 
+    doDeleteSettlement: function (settlementId, areaId, cityId) {
+        loadingStart();
+        DELETE("addresses", "settlement", settlementId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.settlementWasDeleted"));
+        }).
+        always(() => {
+            if (areaId) {
+                modules["addresses"].renderArea(areaId);
+            } else {
+                modules["addresses"].renderCity(cityId);
+            }
+        });
+    },
+
+    doDeleteStreet: function (streetId, cityId, settlementId) {
+        loadingStart();
+        DELETE("addresses", "street", streetId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.streetWasDeleted"));
+        }).
+        always(() => {
+            if (cityId) {
+                modules["addresses"].renderCity(cityId);
+            } else {
+                modules["addresses"].renderSettlement(settlementId);
+            }
+        });
+    },
+
+    doDeleteHouse: function (houseId, settlementId, streetId) {
+        loadingStart();
+        DELETE("addresses", "house", houseId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.houseWasDeleted"));
+        }).
+        always(() => {
+            if (settlementId) {
+                modules["addresses"].renderSettlement(settlementId);
+            } else {
+                modules["addresses"].renderStreet(streetId);
+            }
+        });
+    },
+
     deleteRegion: function (regionId) {
         mConfirm(i18n("addresses.confirmDeleteRegion", regionId), i18n("confirm"), `danger:${i18n("addresses.deleteRegion")}`, () => {
             modules["addresses"].doDeleteRegion(regionId);
@@ -264,6 +416,24 @@
     deleteCity: function (cityId, areaId, regionId) {
         mConfirm(i18n("addresses.confirmDeleteCity", areaId), i18n("confirm"), `danger:${i18n("addresses.deleteCity")}`, () => {
             modules["addresses"].doDeleteCity(cityId, areaId, regionId);
+        });
+    },
+
+    deleteSettlement: function (settlementId, cityId, areaId) {
+        mConfirm(i18n("addresses.confirmDeleteSettlement", settlementId), i18n("confirm"), `danger:${i18n("addresses.deleteSettlement")}`, () => {
+            modules["addresses"].doDeleteSettlement(settlementId, cityId, areaId);
+        });
+    },
+
+    deleteStreet: function (streetId, settlementId, cityId) {
+        mConfirm(i18n("addresses.confirmDeleteStreet", streetId), i18n("confirm"), `danger:${i18n("addresses.deleteStreet")}`, () => {
+            modules["addresses"].doDeleteStreet(streetId, settlementId, cityId);
+        });
+    },
+
+    deleteHouse: function (houseId, streetId, settlementId) {
+        mConfirm(i18n("addresses.confirmDeleteHouse", houseId), i18n("confirm"), `danger:${i18n("addresses.deleteHouse")}`, () => {
+            modules["addresses"].doDeleteHouse(houseId, streetId, settlementId);
         });
     },
 
@@ -353,134 +523,6 @@
         } else {
             error(i18n("addresses.regionNotFound"));
         }
-    },
-
-    addArea: function (regionId) {
-        cardForm({
-            title: i18n("addresses.addArea"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            apply: i18n("add"),
-            size: "lg",
-            fields: [
-                {
-                    id: "areaUuid",
-                    type: "text",
-                    title: i18n("addresses.areaUuid"),
-                    placeholder: i18n("addresses.areaUuid"),
-                    button: {
-                        class: "fas fa-magic",
-                        click: prefix => {
-                            $(`#${prefix}areaUuid`).val(guid());
-                        },
-                    },
-                },
-                {
-                    id: "areaWithType",
-                    type: "text",
-                    title: i18n("addresses.areaWithType"),
-                    placeholder: i18n("addresses.areaWithType"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "areaType",
-                    type: "text",
-                    title: i18n("addresses.areaType"),
-                    placeholder: i18n("addresses.areaType"),
-                },
-                {
-                    id: "areaTypeFull",
-                    type: "text",
-                    title: i18n("addresses.areaTypeFull"),
-                    placeholder: i18n("addresses.areaTypeFull"),
-                },
-                {
-                    id: "area",
-                    type: "text",
-                    title: i18n("addresses.area"),
-                    placeholder: i18n("addresses.area"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-            ],
-            callback: function (result) {
-                modules["addresses"].doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
-            },
-        }).show();
-    },
-
-    addCity: function (regionId, areaId) {
-        cardForm({
-            title: i18n("addresses.addCity"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            apply: i18n("add"),
-            size: "lg",
-            fields: [
-                {
-                    id: "cityUuid",
-                    type: "text",
-                    title: i18n("addresses.cityUuid"),
-                    placeholder: i18n("addresses.cityUuid"),
-                    button: {
-                        class: "fas fa-magic",
-                        click: prefix => {
-                            $(`#${prefix}cityUuid`).val(guid());
-                        },
-                    },
-                },
-                {
-                    id: "cityWithType",
-                    type: "text",
-                    title: i18n("addresses.cityWithType"),
-                    placeholder: i18n("addresses.cityWithType"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "cityType",
-                    type: "text",
-                    title: i18n("addresses.cityType"),
-                    placeholder: i18n("addresses.cityType"),
-                },
-                {
-                    id: "cityTypeFull",
-                    type: "text",
-                    title: i18n("addresses.cityTypeFull"),
-                    placeholder: i18n("addresses.cityTypeFull"),
-                },
-                {
-                    id: "city",
-                    type: "text",
-                    title: i18n("addresses.city"),
-                    placeholder: i18n("addresses.city"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-            ],
-            callback: function (result) {
-                modules["addresses"].doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
-            },
-        }).show();
-    },
-
-    addSettlement: function (areaId, cityId) {
-        // TODO
-    },
-
-    addStreet: function (cityId, settlementId) {
-        // TODO
-    },
-
-    addHouse: function (settlementId, streetId) {
-        // TODO
     },
 
     modifyArea: function (areaId) {
@@ -716,15 +758,759 @@
     },
 
     modifySettlement: function (settlementId) {
-        // TODO
+        let settlement = false;
+
+        for (let i in modules["addresses"].meta.settlements) {
+            if (modules["addresses"].meta.settlements[i].settlementId == settlementId) {
+                settlement = modules["addresses"].meta.settlements[i];
+                break;
+            }
+        }
+
+        let areas = [];
+
+        areas.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.areas) {
+            areas.push({
+                id: modules["addresses"].meta.areas[i].areaId,
+                text: modules["addresses"].meta.areas[i].areaWithType,
+            });
+        }
+
+        let cities = [];
+
+        cities.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.cities) {
+            cities.push({
+                id: modules["addresses"].meta.cities[i].cityId,
+                text: modules["addresses"].meta.cities[i].cityWithType,
+            });
+        }
+
+        if (settlement) {
+            cardForm({
+                title: i18n("addresses.editSettlement"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                delete: i18n("address.deleteSettlement"),
+                size: "lg",
+                fields: [
+                    {
+                        id: "settlementId",
+                        type: "text",
+                        title: i18n("addresses.settlementId"),
+                        value: settlementId,
+                        readonly: true,
+                    },
+                    {
+                        id: "areaId",
+                        type: "select2",
+                        title: i18n("addresses.areaId"),
+                        value: settlement.areaId,
+                        options: areas,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}cityId`).val("0").trigger("change");
+                        },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}cityId`).val());
+                        },
+                    },
+                    {
+                        id: "cityId",
+                        type: "select2",
+                        title: i18n("addresses.cityId"),
+                        value: settlement.cityId,
+                        options: cities,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}areaId`).val("0").trigger("change");
+                        },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}areaId`).val());
+                        },
+                    },
+                    {
+                        id: "settlementUuid",
+                        type: "text",
+                        title: i18n("addresses.settlementUuid"),
+                        placeholder: i18n("addresses.settlementUuid"),
+                        value: settlement.settlementUuid,
+                    },
+                    {
+                        id: "settlementWithType",
+                        type: "text",
+                        title: i18n("addresses.settlementWithType"),
+                        placeholder: i18n("addresses.settlementWithType"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: settlement.settlementWithType,
+                    },
+                    {
+                        id: "settlementType",
+                        type: "text",
+                        title: i18n("addresses.settlementType"),
+                        placeholder: i18n("addresses.settlementType"),
+                        value: settlement.settlementType,
+                    },
+                    {
+                        id: "settlementTypeFull",
+                        type: "text",
+                        title: i18n("addresses.settlementTypeFull"),
+                        placeholder: i18n("addresses.settlementTypeFull"),
+                        value: settlement.settlementTypeFull,
+                    },
+                    {
+                        id: "settlement",
+                        type: "text",
+                        title: i18n("addresses.settlement"),
+                        placeholder: i18n("addresses.settlement"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: settlement.settlement,
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        modules["addresses"].deleteSettlement(result.settlementId, parseInt(settlement.areaId), parseInt(settlement.cityId));
+                    } else {
+                        modules["addresses"].doModifySettlement(settlementId, parseInt(result.areaId), parseInt(result.cityId), result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement, parseInt(settlement.areaId), parseInt(settlement.cityId));
+                    }
+                },
+            }).show();
+        } else {
+            error(i18n("addresses.settlementNotFound"));
+        }
     },
 
     modifyStreet: function (streetId) {
-        // TODO
+        let street = false;
+
+        for (let i in modules["addresses"].meta.streets) {
+            if (modules["addresses"].meta.streets[i].streetId == streetId) {
+                street = modules["addresses"].meta.streets[i];
+                break;
+            }
+        }
+
+        let cities = [];
+
+        cities.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.cities) {
+            cities.push({
+                id: modules["addresses"].meta.cities[i].cityId,
+                text: modules["addresses"].meta.cities[i].cityWithType,
+            });
+        }
+
+        let settlements = [];
+
+        settlements.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.settlements) {
+            settlements.push({
+                id: modules["addresses"].meta.settlements[i].settlementId,
+                text: modules["addresses"].meta.settlements[i].settlementWithType,
+            });
+        }
+
+        if (street) {
+            cardForm({
+                title: i18n("addresses.editStreet"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                delete: i18n("address.deleteStreet"),
+                size: "lg",
+                fields: [
+                    {
+                        id: "streetId",
+                        type: "text",
+                        title: i18n("addresses.streetId"),
+                        value: streetId,
+                        readonly: true,
+                    },
+                    {
+                        id: "cityId",
+                        type: "select2",
+                        title: i18n("addresses.cityId"),
+                        value: street.cityId,
+                        options: cities,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}settlementId`).val("0").trigger("change");
+                        },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}settlementId`).val());
+                        },
+                    },
+                    {
+                        id: "settlementId",
+                        type: "select2",
+                        title: i18n("addresses.settlementId"),
+                        value: street.settlementId,
+                        options: settlements,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}cityId`).val("0").trigger("change");
+                        },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}cityId`).val());
+                        },
+                    },
+                    {
+                        id: "streetUuid",
+                        type: "text",
+                        title: i18n("addresses.streetUuid"),
+                        placeholder: i18n("addresses.streetUuid"),
+                        value: street.streetUuid,
+                    },
+                    {
+                        id: "streetWithType",
+                        type: "text",
+                        title: i18n("addresses.streetWithType"),
+                        placeholder: i18n("addresses.streetWithType"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: street.streetWithType,
+                    },
+                    {
+                        id: "streetType",
+                        type: "text",
+                        title: i18n("addresses.streetType"),
+                        placeholder: i18n("addresses.streetType"),
+                        value: street.streetType,
+                    },
+                    {
+                        id: "streetTypeFull",
+                        type: "text",
+                        title: i18n("addresses.streetTypeFull"),
+                        placeholder: i18n("addresses.streetTypeFull"),
+                        value: street.streetTypeFull,
+                    },
+                    {
+                        id: "street",
+                        type: "text",
+                        title: i18n("addresses.street"),
+                        placeholder: i18n("addresses.street"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: street.street,
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        modules["addresses"].deleteStreet(streetId, parseInt(street.cityId), parseInt(street.settlementId));
+                    } else {
+                        modules["addresses"].doModifyStreet(streetId, parseInt(result.cityId), parseInt(result.settlementId), result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street, parseInt(street.cityId), parseInt(street.settlementId));
+                    }
+                },
+            }).show();
+        } else {
+            error(i18n("addresses.streetNotFound"));
+        }
     },
 
     modifyHouse: function (houseId) {
-        // TODO
+        let house = false;
+
+        for (let i in modules["addresses"].meta.houses) {
+            if (modules["addresses"].meta.houses[i].houseId == houseId) {
+                house = modules["addresses"].meta.houses[i];
+                break;
+            }
+        }
+
+        let settlements = [];
+
+        settlements.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.settlements) {
+            settlements.push({
+                id: modules["addresses"].meta.settlements[i].settlementId,
+                text: modules["addresses"].meta.settlements[i].settlementWithType,
+            });
+        }
+
+        let streets = [];
+
+        streets.push({
+            id: "0",
+            text: "-",
+        })
+        for (let i in modules["addresses"].meta.streets) {
+            streets.push({
+                id: modules["addresses"].meta.streets[i].streetId,
+                text: modules["addresses"].meta.streets[i].streetWithType,
+            });
+        }
+
+        if (house) {
+            cardForm({
+                title: i18n("addresses.editHouse"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                delete: i18n("address.deleteHouse"),
+                size: "lg",
+                fields: [
+                    {
+                        id: "houseId",
+                        type: "text",
+                        title: i18n("addresses.houseId"),
+                        value: houseId,
+                        readonly: true,
+                    },
+                    {
+                        id: "settlementId",
+                        type: "select2",
+                        title: i18n("addresses.settlementId"),
+                        value: house.settlementId,
+                        options: settlements,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}streetId`).val("0").trigger("change");
+                        },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}streetId`).val());
+                        },
+                    },
+                    {
+                        id: "streetId",
+                        type: "select2",
+                        title: i18n("addresses.streetId"),
+                        value: house.streetId,
+                        options: streets,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}settlementId`).val("0").trigger("change");
+                        },
+                        validate: (v, prefix) => {
+                            return !!parseInt(v) || !!parseInt($(`#${prefix}settlementId`).val());
+                        },
+                    },
+                    {
+                        id: "houseUuid",
+                        type: "text",
+                        title: i18n("addresses.houseUuid"),
+                        placeholder: i18n("addresses.houseUuid"),
+                        value: house.houseUuid,
+                    },
+                    {
+                        id: "houseType",
+                        type: "text",
+                        title: i18n("addresses.houseType"),
+                        placeholder: i18n("addresses.houseType"),
+                        value: house.houseType,
+                    },
+                    {
+                        id: "houseTypeFull",
+                        type: "text",
+                        title: i18n("addresses.houseTypeFull"),
+                        placeholder: i18n("addresses.houseTypeFull"),
+                        value: house.houseTypeFull,
+                    },
+                    {
+                        id: "houseFull",
+                        type: "text",
+                        title: i18n("addresses.houseFull"),
+                        placeholder: i18n("addresses.houseFull"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: house.houseFull,
+                    },
+                    {
+                        id: "house",
+                        type: "text",
+                        title: i18n("addresses.house"),
+                        placeholder: i18n("addresses.house"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: house.house,
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        modules["addresses"].deleteHouse(houseId, parseInt(house.settlementId), parseInt(house.streetId));
+                    } else {
+                        modules["addresses"].doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId));
+                    }
+                },
+            }).show();
+        } else {
+            error(i18n("addresses.houseNotFound"));
+        }
+    },
+
+    addRegion: function () {
+        cardForm({
+            title: i18n("addresses.addRegion"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            size: "lg",
+            fields: [
+                {
+                    id: "regionUuid",
+                    type: "text",
+                    title: i18n("addresses.regionUuid"),
+                    placeholder: i18n("addresses.regionUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}regionUuid`).val(guid());
+                        },
+                    },
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "regionIsoCode",
+                    type: "text",
+                    title: i18n("addresses.regionIsoCode"),
+                    placeholder: i18n("addresses.regionIsoCode"),
+                },
+                {
+                    id: "regionWithType",
+                    type: "text",
+                    title: i18n("addresses.regionWithType"),
+                    placeholder: i18n("addresses.regionWithType"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "regionType",
+                    type: "text",
+                    title: i18n("addresses.regionType"),
+                    placeholder: i18n("addresses.regionType"),
+                },
+                {
+                    id: "regionTypeFull",
+                    type: "text",
+                    title: i18n("addresses.regionTypeFull"),
+                    placeholder: i18n("addresses.regionTypeFull"),
+                },
+                {
+                    id: "region",
+                    type: "text",
+                    title: i18n("addresses.region"),
+                    placeholder: i18n("addresses.region"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules["addresses"].doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+            },
+        }).show();
+    },
+
+    addArea: function (regionId) {
+        cardForm({
+            title: i18n("addresses.addArea"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            size: "lg",
+            fields: [
+                {
+                    id: "areaUuid",
+                    type: "text",
+                    title: i18n("addresses.areaUuid"),
+                    placeholder: i18n("addresses.areaUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}areaUuid`).val(guid());
+                        },
+                    },
+                },
+                {
+                    id: "areaWithType",
+                    type: "text",
+                    title: i18n("addresses.areaWithType"),
+                    placeholder: i18n("addresses.areaWithType"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "areaType",
+                    type: "text",
+                    title: i18n("addresses.areaType"),
+                    placeholder: i18n("addresses.areaType"),
+                },
+                {
+                    id: "areaTypeFull",
+                    type: "text",
+                    title: i18n("addresses.areaTypeFull"),
+                    placeholder: i18n("addresses.areaTypeFull"),
+                },
+                {
+                    id: "area",
+                    type: "text",
+                    title: i18n("addresses.area"),
+                    placeholder: i18n("addresses.area"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules["addresses"].doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+            },
+        }).show();
+    },
+
+    addCity: function (regionId, areaId) {
+        cardForm({
+            title: i18n("addresses.addCity"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            size: "lg",
+            fields: [
+                {
+                    id: "cityUuid",
+                    type: "text",
+                    title: i18n("addresses.cityUuid"),
+                    placeholder: i18n("addresses.cityUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}cityUuid`).val(guid());
+                        },
+                    },
+                },
+                {
+                    id: "cityWithType",
+                    type: "text",
+                    title: i18n("addresses.cityWithType"),
+                    placeholder: i18n("addresses.cityWithType"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "cityType",
+                    type: "text",
+                    title: i18n("addresses.cityType"),
+                    placeholder: i18n("addresses.cityType"),
+                },
+                {
+                    id: "cityTypeFull",
+                    type: "text",
+                    title: i18n("addresses.cityTypeFull"),
+                    placeholder: i18n("addresses.cityTypeFull"),
+                },
+                {
+                    id: "city",
+                    type: "text",
+                    title: i18n("addresses.city"),
+                    placeholder: i18n("addresses.city"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules["addresses"].doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
+            },
+        }).show();
+    },
+
+    addSettlement: function (areaId, cityId) {
+        cardForm({
+            title: i18n("addresses.addSettlement"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            size: "lg",
+            fields: [
+                {
+                    id: "settlementUuid",
+                    type: "text",
+                    title: i18n("addresses.settlementUuid"),
+                    placeholder: i18n("addresses.settlementUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}settlementUuid`).val(guid());
+                        },
+                    },
+                },
+                {
+                    id: "settlementWithType",
+                    type: "text",
+                    title: i18n("addresses.settlementWithType"),
+                    placeholder: i18n("addresses.settlementWithType"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "settlementType",
+                    type: "text",
+                    title: i18n("addresses.settlementType"),
+                    placeholder: i18n("addresses.settlementType"),
+                },
+                {
+                    id: "settlementTypeFull",
+                    type: "text",
+                    title: i18n("addresses.settlementTypeFull"),
+                    placeholder: i18n("addresses.settlementTypeFull"),
+                },
+                {
+                    id: "settlement",
+                    type: "text",
+                    title: i18n("addresses.settlement"),
+                    placeholder: i18n("addresses.settlement"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules["addresses"].doAddSettlement(areaId, cityId, result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement);
+            },
+        }).show();
+    },
+
+    addStreet: function (cityId, settlementId) {
+        cardForm({
+            title: i18n("addresses.addStreet"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            size: "lg",
+            fields: [
+                {
+                    id: "streetUuid",
+                    type: "text",
+                    title: i18n("addresses.streetUuid"),
+                    placeholder: i18n("addresses.streetUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}streetUuid`).val(guid());
+                        },
+                    },
+                },
+                {
+                    id: "streetWithType",
+                    type: "text",
+                    title: i18n("addresses.streetWithType"),
+                    placeholder: i18n("addresses.streetWithType"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "streetType",
+                    type: "text",
+                    title: i18n("addresses.streetType"),
+                    placeholder: i18n("addresses.streetType"),
+                },
+                {
+                    id: "streetTypeFull",
+                    type: "text",
+                    title: i18n("addresses.streetTypeFull"),
+                    placeholder: i18n("addresses.streetTypeFull"),
+                },
+                {
+                    id: "street",
+                    type: "text",
+                    title: i18n("addresses.street"),
+                    placeholder: i18n("addresses.street"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules["addresses"].doAddStreet(cityId, settlementId, result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street);
+            },
+        }).show();
+    },
+
+    addHouse: function (settlementId, streetId) {
+        cardForm({
+            title: i18n("addresses.addHouse"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            size: "lg",
+            fields: [
+                {
+                    id: "houseUuid",
+                    type: "text",
+                    title: i18n("addresses.houseUuid"),
+                    placeholder: i18n("addresses.houseUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}houseUuid`).val(guid());
+                        },
+                    },
+                },
+                {
+                    id: "houseType",
+                    type: "text",
+                    title: i18n("addresses.houseType"),
+                    placeholder: i18n("addresses.houseType"),
+                },
+                {
+                    id: "houseTypeFull",
+                    type: "text",
+                    title: i18n("addresses.houseTypeFull"),
+                    placeholder: i18n("addresses.houseTypeFull"),
+                },
+                {
+                    id: "houseFull",
+                    type: "text",
+                    title: i18n("addresses.houseFull"),
+                    placeholder: i18n("addresses.houseFull"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "house",
+                    type: "text",
+                    title: i18n("addresses.house"),
+                    placeholder: i18n("addresses.house"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules["addresses"].doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house);
+            },
+        }).show();
     },
 
     cities: function (target, regionId, areaId) {
@@ -811,9 +1597,9 @@
                                     data: modules["addresses"].meta.settlements[i].settlementId,
                                 },
                                 {
-                                    data: modules["addresses"].meta.settlements[i].cityWithType,
+                                    data: modules["addresses"].meta.settlements[i].settlementWithType,
                                     nowrap: true,
-                                    click: "#addresses&show=settlements&settlementsId=%s",
+                                    click: "#addresses&show=settlement&settlementId=%s",
                                 },
                             ],
                         });
@@ -893,7 +1679,7 @@
                     title: i18n("addresses.houseId"),
                 },
                 {
-                    title: i18n("addresses.house"),
+                    title: i18n("addresses.houseFull"),
                     fullWidth: true,
                 },
             ],
@@ -909,7 +1695,7 @@
                                     data: modules["addresses"].meta.houses[i].houseId,
                                 },
                                 {
-                                    data: modules["addresses"].meta.houses[i].houseWithType,
+                                    data: modules["addresses"].meta.houses[i].houseFull,
                                     nowrap: true,
                                     click: "#addresses.house&houseId=%s",
                                 },

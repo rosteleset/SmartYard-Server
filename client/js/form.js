@@ -6,7 +6,6 @@ function cardForm(params) {
     } else {
         h = `<div class="card mt-0 mb-0">`;
         $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
-        console.log(params.size);
         if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
             $("#modalBody").parent().addClass("modal-" + params.size);
         }
@@ -273,11 +272,13 @@ function cardForm(params) {
     function ok() {
         $(".modalFormField").removeClass("is-invalid select2-invalid");
         let invalid = [];
-        for (let i in params.fields) {
-            if (params.fields[i].id === "-") continue;
-            if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
-                if (!params.fields[i].validate(getVal(i), _prefix)) {
-                    invalid.push(i);
+        if (!params.delete || $(`#${_prefix}delete`).val() !== "yes") {
+            for (let i in params.fields) {
+                if (params.fields[i].id === "-") continue;
+                if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
+                    if (!params.fields[i].validate(getVal(i), _prefix)) {
+                        invalid.push(i);
+                    }
                 }
             }
         }

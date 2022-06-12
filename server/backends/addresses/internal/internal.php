@@ -595,7 +595,7 @@
                 }
 
                 if (trim($streetWithType) && trim($street)) {
-                    return $this->db->modify("update addresses_streets set address_city_id = :address_city_id, address_settlement_id = :address_settlement_id, street_uuid = :street_uuid, street_with_type = :street_with_type, street_type = :street_type, street_type_full = :street_type_full, street = :street where address_street_id = $settlementId", [
+                    return $this->db->modify("update addresses_streets set address_city_id = :address_city_id, address_settlement_id = :address_settlement_id, street_uuid = :street_uuid, street_with_type = :street_with_type, street_type = :street_type, street_type_full = :street_type_full, street = :street where address_street_id = $streetId", [
                         ":address_city_id" => $cityId,
                         ":address_settlement_id" => $settlementId,
                         ":street_uuid" => $streetUuid,
@@ -654,7 +654,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_streets where address_settlement_id = $streetId");
+                return $this->db->modify("delete from addresses_streets where address_street_id = $streetId");
             }
 
             /**
