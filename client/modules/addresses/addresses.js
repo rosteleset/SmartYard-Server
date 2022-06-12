@@ -369,6 +369,12 @@
                     type: "text",
                     title: i18n("addresses.areaUuid"),
                     placeholder: i18n("addresses.areaUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}areaUuid`).val(guid());
+                        },
+                    },
                 },
                 {
                     id: "areaWithType",
@@ -421,6 +427,12 @@
                     type: "text",
                     title: i18n("addresses.cityUuid"),
                     placeholder: i18n("addresses.cityUuid"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}cityUuid`).val(guid());
+                        },
+                    },
                 },
                 {
                     id: "cityWithType",
