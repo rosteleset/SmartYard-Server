@@ -1833,7 +1833,7 @@
                                 {
                                     data: modules["addresses"].meta.houses[i].houseFull,
                                     nowrap: true,
-                                    click: "#addresses.house&houseId=%s",
+                                    click: "#houses&houseId=%s",
                                 },
                             ],
                         });

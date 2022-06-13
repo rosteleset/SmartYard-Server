@@ -81,11 +81,4 @@
             },
         }).show();
     },
-
-    route: function (params) {
-        $("#mainForm").html("");
-        $("#altForm").hide();
-        console.log(params);
-        loadingDone();
-    }
 }).init();

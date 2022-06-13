@@ -47,7 +47,7 @@ function hashChange() {
             $("#forgotForm").hide();
             if (modules[route]) {
                 $("#page404").hide();
-                $("#topMenuLeft").html(`<li class="ml-2 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
+                $("#topMenuLeft").html(`<li class="ml-4 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
                 $("#subTop").html("");
                 $("#leftTopDynamic").html("");
                 $("#rightTopDynamic").html("");
