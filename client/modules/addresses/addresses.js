@@ -556,7 +556,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: i18n("address.deleteRegion"),
+                delete: i18n("addresses.deleteRegion"),
                 size: "lg",
                 fields: [
                     {
@@ -655,7 +655,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: i18n("address.deleteArea"),
+                delete: i18n("addresses.deleteArea"),
                 size: "lg",
                 fields: [
                     {
@@ -775,7 +775,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: i18n("address.deleteCity"),
+                delete: i18n("addresses.deleteCity"),
                 size: "lg",
                 fields: [
                     {
@@ -911,7 +911,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: i18n("address.deleteSettlement"),
+                delete: i18n("addresses.deleteSettlement"),
                 size: "lg",
                 fields: [
                     {
@@ -1047,7 +1047,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: i18n("address.deleteStreet"),
+                delete: i18n("addresses.deleteStreet"),
                 size: "lg",
                 fields: [
                     {
@@ -1183,7 +1183,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: i18n("address.deleteHouse"),
+                delete: i18n("addresses.deleteHouse"),
                 size: "lg",
                 fields: [
                     {

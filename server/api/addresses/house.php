@@ -14,6 +14,14 @@
 
         class house extends api {
 
+            public static function GET($params) {
+                $addresses = loadBackend("addresses");
+
+                $house = $addresses->getHouse($params["_id"]);
+
+                return api::ANSWER($house, ($house !== false)?"house":"notAcceptable");
+            }
+
             public static function PUT($params) {
                 $addresses = loadBackend("addresses");
 
@@ -44,6 +52,7 @@
 
             public static function index() {
                 return [
+                    "GET",
                     "PUT",
                     "POST",
                     "DELETE",

@@ -56,11 +56,27 @@
                     POST("addresses", "house", false, {
                         magick: result.address,
                     }).
-                    done(() => {
-                        message(i18n("addresses.houseWasAdded"));
+                    done(result => {
+                        GET("addresses", "house", result.houseId).
+                        done(result => {
+                            console.log(result);
+                            message(i18n("addresses.houseWasAdded"));
+                            if (result && result.house && (result.house.streetId || result.house.settlementId)) {
+                                if (result.house.streetId) {
+                                    location.href = "#addresses&show=street&streetId=" + result.house.streetId;
+                                } else {
+                                    location.href = "#addresses&show=settlement&settlementId=" + result.house.settlementId;
+                                }
+                            } else {
+                                error(i18n("errors.unknown"));
+                                loadingDone();
+                            }
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
                     }).
                     fail(FAIL).
-                    always(modules["addresses"].renderRegions);
+                    fail(loadingDone);
                 }
             },
         }).show();
