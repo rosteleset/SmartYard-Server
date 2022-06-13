@@ -2,14 +2,14 @@ const modules = {};
 const moduleLoadQueue = [];
 const loadingProgress = new ldBar("#loadingProgress");
 
-lastHash = false;
-currentPage = false;
-mainSidebarFirst = true;
-config = false;
-lang = false;
-myself = false;
-available = false;
-badge = false;
+var lastHash = false;
+var currentPage = false;
+var mainSidebarFirst = true;
+var config = false;
+var lang = false;
+var myself = false;
+var available = false;
+var badge = false;
 
 function hashChange() {
     let hash = location.href.split('#')[1];
