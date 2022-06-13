@@ -95,25 +95,3 @@ CREATE UNIQUE INDEX addresses_houses_house on addresses_houses(address_settlemen
 CREATE INDEX addresses_houses_address_settlement_id on addresses_houses(address_settlement_id);
 CREATE INDEX addresses_houses_address_street_id on addresses_houses(address_street_id);
 CREATE INDEX addresses_houses_house_full on addresses_houses(house_full);
-
--- entrances
-CREATE TABLE addresses_entrances
-(
-    address_entrance_id integer not null primary key autoincrement,
-    address_house_id integer not null,
-    entrance text not null
-);
-CREATE UNIQUE INDEX addresses_entrances_entrance on addresses_entrances(address_house_id, entrance);
-
--- flats
-CREATE TABLE addresses_flats
-(
-    address_flat_id integer not null primary key autoincrement,
-    address_entrance_id integer not null,
-    address_house_id integer not null,
-    floor integer,
-    flat text not null
-);
-CREATE UNIQUE INDEX addresses_flats_flat on addresses_flats(address_house_id, flat);
-CREATE INDEX addresses_flats_address_entrance_id on addresses_flats(address_entrance_id);
-CREATE INDEX addresses_flats_address_house_id on addresses_flats(address_house_id);
