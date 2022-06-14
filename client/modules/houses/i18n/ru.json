@@ -15,5 +15,6 @@
     "entranceTypeGate": "Ворота",
     "entranceTypeBarrier": "Шлагбаум",
     "entranceType": "Тип",
-    "shared": "Общий"
+    "shared": "Общий",
+    "floor": "Этаж"
 }

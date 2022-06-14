@@ -55,5 +55,27 @@
              * @return boolean
              */
             abstract function removeEntrance($houseId, $entranceId);
+
+            /**
+             * @param $houseId
+             * @param $floor
+             * @param $flat
+             * @return boolean|integer
+             */
+            abstract function addFlat($houseId, $floor, $flat);
+
+            /**
+             * @param $flatId
+             * @param $floor
+             * @param $flat
+             * @return boolean
+             */
+            abstract function modifyFlat($flatId, $floor, $flat);
+
+            /**
+             * @param $flatId
+             * @return boolean
+             */
+            abstract function deleteFlat($flatId);
         }
     }

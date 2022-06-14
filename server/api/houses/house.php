@@ -31,6 +31,10 @@
                     case "createEntrance":
                         $success = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"]);
                         break;
+
+                    case "addFlat":
+                        $success = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"]);
+                        break;
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");

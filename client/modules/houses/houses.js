@@ -3,8 +3,51 @@
         moduleLoaded("houses", this);
     },
 
-    addFlat: function (houseId) {
+    doAddFlat: function (houseId, floor, flat) {
+        loadingStart();
+        PUT("houses", "house", false, {
+            action: "addFlat",
+            houseId,
+            floor,
+            flat,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("houses.flatWasAdded"));
+        }).
+        always(() => {
+            modules["houses"].renderHouse(houseId);
+        });
+    },
 
+    addFlat: function (houseId) {
+        cardForm({
+            title: i18n("houses.addFlat"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            fields: [
+                {
+                    id: "floor",
+                    type: "text",
+                    title: i18n("houses.floor"),
+                    placeholder: i18n("houses.floor"),
+                },
+                {
+                    id: "flat",
+                    type: "text",
+                    title: i18n("houses.flat"),
+                    placeholder: i18n("houses.flat"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: result => {
+                modules["houses"].doAddFlat(houseId, result.floor, result.flat);
+            },
+        });
     },
 
     modifyFlat: function (flatId) {
@@ -133,6 +176,9 @@
                         title: i18n("houses.flatId"),
                     },
                     {
+                        title: i18n("houses.floor"),
+                    },
+                    {
                         title: i18n("houses.flat"),
                         fullWidth: true,
                     },
@@ -146,6 +192,9 @@
                             cols: [
                                 {
                                     data: house.flats[i].flatId,
+                                },
+                                {
+                                    data: house.flats[i].floor,
                                 },
                                 {
                                     data: house.flats[i].flat,

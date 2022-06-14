@@ -20,7 +20,7 @@
                     return false;
                 }
 
-                $entrances = $this->db->get("select house_entrance_id, entrance_type, entrance, shared, lat, lon from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId)",
+                $entrances = $this->db->get("select house_entrance_id, entrance_type, entrance, shared, lat, lon from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId) order by entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -32,9 +32,18 @@
                     ]
                 );
 
+                $flats = $this->db->get("select house_flat_id, floor, flat from houses_flats where address_house_id = $houseId order by flat",
+                    false,
+                    [
+                        "house_flat_id" => "flatId",
+                        "floor" => "floor",
+                        "flat" => "flat",
+                    ]
+                );
+
                 return [
-                    "flats" => [],
                     "entrances" => $entrances,
+                    "flats" => $flats,
                 ];
             }
 
@@ -87,6 +96,38 @@
             function removeEntrance($houseId, $entranceId)
             {
                 // TODO: Implement removeEntrance() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function addFlat($houseId, $floor, $flat)
+            {
+                if (checkInt($houseId) && trim($flat)) {
+                    return $this->db->insert("insert into houses_flats (address_house_id, floor, flat) values (:address_house_id, :floor, :flat)", [
+                        ":address_house_id" => $houseId,
+                        ":floor" => $floor,
+                        ":flat" => $flat,
+                    ]);
+                } else {
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function modifyFlat($flatId, $floor, $flat)
+            {
+                // TODO: Implement modifyFlat() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function deleteFlat($flatId)
+            {
+                // TODO: Implement deleteFlat() method.
             }
         }
     }
