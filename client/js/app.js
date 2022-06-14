@@ -47,7 +47,7 @@ function hashChange() {
             $("#forgotForm").hide();
             if (modules[route]) {
                 $("#page404").hide();
-                $("#topMenuLeft").html(`<li class="ml-4 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
+                $("#topMenuLeft").html(`<li class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
                 $("#subTop").html("");
                 $("#leftTopDynamic").html("");
                 $("#rightTopDynamic").html("");
@@ -303,7 +303,7 @@ function initAll() {
         $.cookie("_cookie", "1", { expires: 36500 });
     }
 
-    setFavicon("img/tech.png", 100);
+//    setFavicon("img/smartNoBorder.png", 100);
 
     $(document.body).css("background-color", '#e9ecef');
 
@@ -329,7 +329,7 @@ function initAll() {
 
     document.title = i18n("windowTitle");
 
-    $("#loginBoxLogo").html("<img src='img/rosteleset.png'/>");
+    $("#loginBoxLogo").html("<img class='mb-2' src='img/smartTextSmall.png'/>");
     $("#loginBoxTitle").text(i18n("loginFormTitle"));
     $("#loginBoxLogin").attr("placeholder", i18n("login"));
     $("#loginBoxPassword").attr("placeholder", i18n("password"));
@@ -349,7 +349,7 @@ function initAll() {
     $("#loginBoxForgotPassword").text(i18n("passowrdForgot"));
     $("#loginBoxRememberLabel").text(i18n("rememberMe"));
 
-    $("#forgotBoxLogo").html("<img src='img/rosteleset.png'/>");
+    $("#forgotBoxLogo").html("<img class='mb-2' src='img/smartTextSmall.png'/>");
     $("#forgotBoxTitle").text(i18n("forgotFormTitle"));
     $("#forgotBoxEMail").attr("placeholder", i18n("eMail"));
     $("#forgotBoxButton").text(i18n("forgotAction"));
