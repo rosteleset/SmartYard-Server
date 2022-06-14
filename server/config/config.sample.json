@@ -50,6 +50,14 @@
         "attachments": {
             "backend": "internal",
             "path": "<-- path to local storage -->"
+        },
+
+        "addresses": {
+            "backend": "internal"
+        },
+
+        "houses": {
+            "backend": "internal"
         }
     },
 

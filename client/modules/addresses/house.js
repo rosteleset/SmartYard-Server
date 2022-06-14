@@ -25,8 +25,15 @@
                             QUERY("geo", "suggestions", {
                                 search: params.data.term,
                             }).
-                            then(success).
-                            fail(failure).
+                            then(response => {
+                                loadingDone();
+                                success(response);
+                            }).
+                            fail(response => {
+                                FAIL(response);
+                                loadingDone();
+                                failure(response);
+                            }).
                             fail(FAIL).
                             always(loadingDone);
                         },

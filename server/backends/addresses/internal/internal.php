@@ -894,7 +894,6 @@
                             ]
                         );
                         if (!$cityId) {
-                            error_log(print_r([$regionId, $areaId, $house["data"]["city_fias_id"], $house["data"]["city_with_type"], $house["data"]["city_type"], $house["data"]["city_type_full"], $house["data"]["city"]], true));
                             $cityId = $this->addCity($regionId, $areaId, $house["data"]["city_fias_id"], $house["data"]["city_with_type"], $house["data"]["city_type"], $house["data"]["city_type_full"], $house["data"]["city"]);
                         }
                     }
@@ -980,7 +979,6 @@
                         error_log($house["data"]["house_fias_id"] . " no house");
                         return false;
                     }
-
                 } else {
                     return false;
                 }

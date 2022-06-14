@@ -13,12 +13,8 @@ namespace backends\geocoder {
     class dadata extends geocoder {
 
         /**
-         * search for geo objects
-         *
-         * @param $search
-         * @return array
+         * @inheritDoc
          */
-
         public function suggestions($search) {
             if ($search) {
                 $curl = curl_init();
@@ -33,7 +29,7 @@ namespace backends\geocoder {
                 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
                 curl_setopt($curl, CURLOPT_URL, "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address");
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 30);
                 curl_setopt($curl, CURLOPT_VERBOSE, 0);
 
                 $result_raw = curl_exec($curl);

@@ -17,5 +17,6 @@
         "permissions",
         "about"
     ],
-    "defaultRoute": "#about"
+    "defaultRoute": "#about",
+    "logo": "rosteleset"
 }

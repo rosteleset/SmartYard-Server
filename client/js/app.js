@@ -303,7 +303,12 @@ function initAll() {
         $.cookie("_cookie", "1", { expires: 36500 });
     }
 
-//    setFavicon("img/smartNoBorder.png", 100);
+    if (config.logo) {
+        setFavicon("img/" + config.logo + "NoBorder.png");
+        $("#leftSideToggler").attr("src", "img/" + config.logo + ".png");
+        $("#loginBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "TextSmall.png' width='285px'/>");
+        $("#forgotBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "TextSmall.png' width='285px'/>");
+    }
 
     $(document.body).css("background-color", '#e9ecef');
 
@@ -329,7 +334,6 @@ function initAll() {
 
     document.title = i18n("windowTitle");
 
-    $("#loginBoxLogo").html("<img class='mb-2' src='img/smartTextSmall.png'/>");
     $("#loginBoxTitle").text(i18n("loginFormTitle"));
     $("#loginBoxLogin").attr("placeholder", i18n("login"));
     $("#loginBoxPassword").attr("placeholder", i18n("password"));
@@ -349,7 +353,6 @@ function initAll() {
     $("#loginBoxForgotPassword").text(i18n("passowrdForgot"));
     $("#loginBoxRememberLabel").text(i18n("rememberMe"));
 
-    $("#forgotBoxLogo").html("<img class='mb-2' src='img/smartTextSmall.png'/>");
     $("#forgotBoxTitle").text(i18n("forgotFormTitle"));
     $("#forgotBoxEMail").attr("placeholder", i18n("eMail"));
     $("#forgotBoxButton").text(i18n("forgotAction"));

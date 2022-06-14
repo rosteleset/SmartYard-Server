@@ -233,14 +233,14 @@
                         ":method" => $method,
                     ]);
                 } catch (\Exception $e) {
-                    error_log(print_r($e));
+                    error_log(print_r($e, true));
                     return false;
                 }
 
                 try {
                     $sthI = $this->db->prepare("insert into $tn ($ci, aid, allow) values (:id, :aid, :allow)");
                 } catch (\Exception $e) {
-                    error_log(print_r($e));
+                    error_log(print_r($e, true));
                     return false;
                 }
 
@@ -252,7 +252,7 @@
                             ":allow" => 1,
                         ]);
                     } catch (\Exception $e) {
-                        error_log(print_r($e));
+                        error_log(print_r($e, true));
                         return false;
                     }
                 }
@@ -265,7 +265,7 @@
                             ":allow" => 0,
                         ]);
                     } catch (\Exception $e) {
-                        error_log(print_r($e));
+                        error_log(print_r($e, true));
                         return false;
                     }
                 }

@@ -18,7 +18,7 @@
              * search for geo objects
              *
              * @param $search
-             * @return array
+             * @return false|array
              */
 
             public abstract function suggestions($search);
