@@ -16,10 +16,10 @@
         }
         GET("houses", "house", houseId, true).
         fail(response => {
-
+            // ?
         }).
         done(response => {
-            render(house);
+            render(response.house);
         });
     },
 
