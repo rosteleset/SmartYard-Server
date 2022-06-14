@@ -24,7 +24,11 @@ namespace backends\geocoder {
                     "Authorization: Token {$this->config["backends"]["geocoder"]["token"]}"
                 ]);
                 curl_setopt($curl, CURLOPT_POST, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([ "query" => $search ]));
+                if (@$this->config["backends"]["geocoder"]["locations"]) {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([ "query" => $search, "locations" => $this->config["backends"]["geocoder"]["locations"] ]));
+                } else {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([ "query" => $search ]));
+                }
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
                 curl_setopt($curl, CURLOPT_URL, "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address");

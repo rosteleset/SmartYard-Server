@@ -40,7 +40,13 @@
 
         "geocoder": {
             "backend": "dadata",
-            "token": "<!-- your dadata token here --!>"
+            "token": "<!-- your dadata token here --!>",
+            "location is optional, can limit geocoder, see dadata api": "!!! comment, remove this line !!!",
+            "locations": [
+                {
+                    "fias_id": "a9a71961-9363-44ba-91b5-ddf0463aebc2"
+                }
+            ]
         },
 
         "tt": {
