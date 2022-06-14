@@ -11,14 +11,14 @@
 
     },
 
-    doCreateEntrance: function (houseId, entranceType, entrance, multidest, lat, lon) {
+    doCreateEntrance: function (houseId, entranceType, entrance, shared, lat, lon) {
         loadingStart();
         PUT("houses", "house", false, {
             action: "createEntrance",
             houseId,
             entranceType,
             entrance,
-            multidest,
+            shared,
             lat,
             lon
         }).
@@ -45,7 +45,6 @@
                         type: "select",
                         title: i18n("houses.entranceType"),
                         options: [
-                            // "entrance","wicket","gate","barrier"
                             {
                                 id: "entrance",
                                 text: i18n("houses.entranceTypeEntrance"),
@@ -74,9 +73,9 @@
                         }
                     },
                     {
-                        id: "multidest",
+                        id: "shared",
                         type: "select",
-                        title: i18n("houses.multidest"),
+                        title: i18n("houses.shared"),
                         options: [
                             {
                                 id: "0",
@@ -102,7 +101,7 @@
                     },
                 ],
                 callback: result => {
-                    modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.multidest, result.lat, result.lon);
+                    modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.shared, result.lat, result.lon);
                 },
             });
         }, () => {
@@ -179,7 +178,7 @@
                         title: i18n("houses.entranceType"),
                     },
                     {
-                        title: i18n("houses.multidest"),
+                        title: i18n("houses.shared"),
                     },
                     {
                         title: i18n("houses.entrance"),
@@ -197,7 +196,7 @@
                                     data: house.entrances[i].entranceId,
                                 },
                                 {
-                                    data: house.entrances[i].entranceType,
+                                    data: i18n("houses.entranceType" + house.entrances[i].entranceType.substring(0, 1).toUpperCase() + house.entrances[i].entranceType.substring(1)),
                                 },
                                 {
                                     data: parseInt(house.entrances[i].entranceType)?i18n("yes"):i18n("no"),

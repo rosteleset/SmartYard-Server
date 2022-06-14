@@ -24,12 +24,12 @@
              * @param $houseId
              * @param $entranceType
              * @param $entrance
-             * @param $multidest
+             * @param $shared
              * @param $lat
              * @param $lon
              * @return boolean|integer
              */
-            abstract function createEntrance($houseId, $entranceType, $entrance, $multidest, $lat, $lon);
+            abstract function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon);
 
             /**
              * @param $houseId
@@ -42,12 +42,12 @@
              * @param $entranceId
              * @param $entranceType
              * @param $entrance
-             * @param $multidest
+             * @param $shared
              * @param $lat
              * @param $lon
              * @return boolean
              */
-            abstract function modifyEntrance($entranceId, $entranceType, $entrance, $multidest, $lat, $lon);
+            abstract function modifyEntrance($entranceId, $entranceType, $entrance, $shared, $lat, $lon);
 
             /**
              * @param $houseId

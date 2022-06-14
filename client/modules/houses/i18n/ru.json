@@ -9,5 +9,11 @@
     "entrances": "Входы",
     "flatId": "#",
     "flats": "Квартиры",
-    "flat": "Квартира"
+    "flat": "Квартира",
+    "entranceTypeEntrance": "Подъезд",
+    "entranceTypeWicket": "Калитка",
+    "entranceTypeGate": "Ворота",
+    "entranceTypeBarrier": "Шлагбаум",
+    "entranceType": "Тип",
+    "shared": "Общий"
 }

@@ -20,13 +20,13 @@
                     return false;
                 }
 
-                $entrances = $this->db->get("select house_entrance_id, entrance_type, entrance, multidest, lat, lon from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId)",
+                $entrances = $this->db->get("select house_entrance_id, entrance_type, entrance, shared, lat, lon from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId)",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
                         "entrance_type" => "entranceType",
                         "entrance" => "entrance",
-                        "multidest" => "multidest",
+                        "shared" => "shared",
                         "lat" => "lat",
                         "lon" => "lon",
                     ]
@@ -41,13 +41,13 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $multidest, $lat, $lon)
+            function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon)
             {
                 if (checkInt($houseId) && trim($entranceType) && trim($entrance)) {
-                    $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, multidest, lat, lon) values (:entrance_type, :entrance, :multidest, :lat, :lon)", [
+                    $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, shared, lat, lon) values (:entrance_type, :entrance, :shared, :lat, :lon)", [
                         ":entrance_type" => $entranceType,
                         ":entrance" => $entrance,
-                        ":multidest" => $multidest,
+                        ":shared" => $shared,
                         ":lat" => $lat,
                         ":lon" => $lon,
                     ]);
@@ -76,7 +76,7 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $entranceType, $entrance, $multidest, $lat, $lon)
+            function modifyEntrance($entranceId, $entranceType, $entrance, $shared, $lat, $lon)
             {
                 // TODO: Implement modifyEntrance() method.
             }

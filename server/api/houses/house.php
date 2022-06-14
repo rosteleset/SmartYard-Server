@@ -29,7 +29,7 @@
 
                 switch (@$params["action"]) {
                     case "createEntrance":
-                        $success = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["multidest"], $params["lat"], $params["lon"]);
+                        $success = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"]);
                         break;
                 }
 

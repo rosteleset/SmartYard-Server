@@ -4,11 +4,11 @@ CREATE TABLE houses_entrances
     house_entrance_id integer not null primary key autoincrement,
     entrance_type text,
     entrance text not null,
-    multidest integer,
+    shared integer,
     lat real,
     lon real
 );
-CREATE INDEX houses_entrances_multihouse on houses_entrances(multidest);
+CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);
 
 -- houses <-> entrances
 CREATE TABLE houses_houses_entrances
