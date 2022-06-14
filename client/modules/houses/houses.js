@@ -11,12 +11,103 @@
 
     },
 
+    doCreateEntrance: function (houseId, entranceType, entrance, multidest, lat, lon) {
+        loadingStart();
+        PUT("houses", "house", false, {
+            action: "createEntrance",
+            houseId,
+            entranceType,
+            entrance,
+            multidest,
+            lat,
+            lon
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("houses.entranceWasCreated"));
+        }).
+        always(() => {
+            modules["houses"].renderHouse(houseId);
+        });
+    },
+
     addEntrance: function (houseId) {
-        mYesNo(i18n("houses.useExistingEntranceQuestion"), "houses.addEntrance", () => {
-            console.log("yes");
+        mYesNo(i18n("houses.useExistingEntranceQuestion"), i18n("houses.addEntrance"), () => {
+            cardForm({
+                title: i18n("houses.addEntrance"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("add"),
+                fields: [
+                    {
+                        id: "entranceType",
+                        type: "select",
+                        title: i18n("houses.entranceType"),
+                        options: [
+                            // "entrance","wicket","gate","barrier"
+                            {
+                                id: "entrance",
+                                text: i18n("houses.entranceTypeEntrance"),
+                            },
+                            {
+                                id: "wicket",
+                                text: i18n("houses.entranceTypeWicket"),
+                            },
+                            {
+                                id: "gate",
+                                text: i18n("houses.entranceTypeGate"),
+                            },
+                            {
+                                id: "barrier",
+                                text: i18n("houses.entranceTypeBarrier"),
+                            }
+                        ]
+                    },
+                    {
+                        id: "entrance",
+                        type: "text",
+                        title: i18n("houses.entrance"),
+                        placeholder: i18n("houses.entrance"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "multidest",
+                        type: "select",
+                        title: i18n("houses.multidest"),
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            }
+                        ]
+                    },
+                    {
+                        id: "lat",
+                        type: "text",
+                        title: i18n("houses.lat"),
+                        placeholder: i18n("houses.lat"),
+                    },
+                    {
+                        id: "lon",
+                        type: "text",
+                        title: i18n("houses.lon"),
+                        placeholder: i18n("houses.lon"),
+                    },
+                ],
+                callback: result => {
+                    modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.multidest, result.lat, result.lon);
+                },
+            });
         }, () => {
             console.log("no");
-        }, i18n("houses.useExistingEntrance"), i18n("houses.addNewEntrance"));
+        }, i18n("houses.addNewEntrance"), i18n("houses.useExistingEntrance"));
     },
 
     modifyEntrance: function (entranceId) {
@@ -85,6 +176,12 @@
                         title: i18n("houses.entranceId"),
                     },
                     {
+                        title: i18n("houses.entranceType"),
+                    },
+                    {
+                        title: i18n("houses.multidest"),
+                    },
+                    {
                         title: i18n("houses.entrance"),
                         fullWidth: true,
                     },
@@ -98,6 +195,12 @@
                             cols: [
                                 {
                                     data: house.entrances[i].entranceId,
+                                },
+                                {
+                                    data: house.entrances[i].entranceType,
+                                },
+                                {
+                                    data: parseInt(house.entrances[i].entranceType)?i18n("yes"):i18n("no"),
                                 },
                                 {
                                     data: house.entrances[i].entrance,
@@ -123,8 +226,26 @@
             // ?
         }).
         done(response => {
+            console.log(houseId, response);
             render(response.house);
         });
+    },
+
+    renderHouse: function (houseId) {
+        if (AVAIL("addresses", "house", "GET")) {
+            GET("addresses", "house", houseId).
+            fail(FAIL).
+            fail(() => {
+//                history.back();
+            }).
+            done(result => {
+                modules["houses"].house(houseId, result.house);
+            });
+        } else {
+            modules["houses"].house(houseId);
+        }
+
+        loadingDone();
     },
 
     route: function (params) {
@@ -132,19 +253,6 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("houses.houses");
 
-        if (AVAIL("addresses", "house", "GET")) {
-            GET("addresses", "house", params.houseId).
-            fail(FAIL).
-            done(result => {
-                modules["houses"].house(params.houseId, result.house);
-            }).
-            fail(() => {
-                modules["houses"].house(params.houseId);
-            });
-        } else {
-            modules["houses"].house(params.houseId);
-        }
-
-        loadingDone();
+        modules["houses"].renderHouse(params.houseId)
     },
 }).init();

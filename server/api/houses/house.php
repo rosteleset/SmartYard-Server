@@ -25,7 +25,13 @@
             public static function PUT($params) {
                 $houses = loadBackend("houses");
 
-                $success = $houses->modifyHouse($params["_id"]);
+                $success = false;
+
+                switch (@$params["action"]) {
+                    case "createEntrance":
+                        $success = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["multidest"], $params["lat"], $params["lon"]);
+                        break;
+                }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

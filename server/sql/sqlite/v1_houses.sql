@@ -3,16 +3,16 @@ CREATE TABLE houses_entrances
 (
     house_entrance_id integer not null primary key autoincrement,
     entrance_type text,
-    entrance_type_full text,
     entrance text not null,
-    multihouse integer default 0
+    multidest integer,
+    lat real,
+    lon real
 );
-CREATE INDEX houses_entrances_multihouse on houses_entrances(multihouse);
+CREATE INDEX houses_entrances_multihouse on houses_entrances(multidest);
 
 -- houses <-> entrances
 CREATE TABLE houses_houses_entrances
 (
-    houses_house_entrance_id integer not null primary key autoincrement,
     address_house_id integer not null,
     house_entrance_id integer not null
 );
@@ -34,7 +34,6 @@ CREATE INDEX houses_flats_address_house_id on houses_flats(address_house_id);
 -- entrances <-> flats
 CREATE TABLE houses_entrances_flats
 (
-    houses_entrance_flat_id integer not null primary key autoincrement,
     house_entrance_id integer not null,
     house_flat_id integer not null
 );

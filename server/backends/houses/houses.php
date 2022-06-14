@@ -22,8 +22,38 @@
 
             /**
              * @param $houseId
+             * @param $entranceType
+             * @param $entrance
+             * @param $multidest
+             * @param $lat
+             * @param $lon
+             * @return boolean|integer
+             */
+            abstract function createEntrance($houseId, $entranceType, $entrance, $multidest, $lat, $lon);
+
+            /**
+             * @param $houseId
+             * @param $entranceId
              * @return boolean
              */
-            abstract function modifyHouse($houseId);
+            abstract function addEntrance($houseId, $entranceId);
+
+            /**
+             * @param $entranceId
+             * @param $entranceType
+             * @param $entrance
+             * @param $multidest
+             * @param $lat
+             * @param $lon
+             * @return boolean
+             */
+            abstract function modifyEntrance($entranceId, $entranceType, $entrance, $multidest, $lat, $lon);
+
+            /**
+             * @param $houseId
+             * @param $entranceId
+             * @return boolean
+             */
+            abstract function removeEntrance($houseId, $entranceId);
         }
     }

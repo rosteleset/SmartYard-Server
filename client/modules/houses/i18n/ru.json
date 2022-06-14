@@ -1,3 +1,13 @@
 {
-    "houses": "Дома"
+    "houses": "Дома",
+    "addNewEntrance": "Добавить новый вход",
+    "useExistingEntrance": "Использовать существующий",
+    "addEntrance": "Добавить вход",
+    "useExistingEntranceQuestion": "Добавить новый вход или использовать существующий?",
+    "entranceId": "#",
+    "entrance": "Вход",
+    "entrances": "Входы",
+    "flatId": "#",
+    "flats": "Квартиры",
+    "flat": "Квартира"
 }

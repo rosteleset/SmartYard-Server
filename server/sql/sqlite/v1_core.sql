@@ -49,9 +49,9 @@ CREATE TABLE core_users_groups
     uid integer,
     gid integer
 );
+CREATE UNIQUE INDEX core_users_groups_uniq on core_users_groups(uid, gid);
 CREATE INDEX core_users_groups_uid on core_users_groups(uid);
 CREATE INDEX core_users_groups_gid on core_users_groups(gid);
-CREATE UNIQUE INDEX core_users_groups_uid_gid on core_users_groups(uid, gid);
 
 -- user to users group
 INSERT INTO core_users_groups (uid, gid) values (1, 1);
