@@ -16,7 +16,10 @@
              */
             function getHouse($houseId)
             {
-                // TODO: Implement getHouse() method.
+                return [
+                    "flats" => [],
+                    "entrances" => [],
+                ];
             }
 
             /**

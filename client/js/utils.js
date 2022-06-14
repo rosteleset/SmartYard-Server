@@ -112,6 +112,24 @@ function mConfirm(body, title, button, callback) {
     xblur();
 }
 
+function mYesNo(body, title, callbackYes, callbackNo, yes, no) {
+    if (!title) {
+        title = i18n("confirm");
+    }
+    $('#yesnoModalLabel').html(title);
+    $('#yesnoModalBody').html(body);
+    $('#yesnoModalButtonYes').html(yes?yes:i18n("yes")).off('click').on('click', () => {
+        $('#yesnoModal').modal('hide');
+        if (typeof callbackYes == 'function') callbackYes();
+    });
+    $('#yesnoModalButtonNo').html(no?no:i18n("no")).off('click').on('click', () => {
+        $('#yesnoModal').modal('hide');
+        if (typeof callbackNo == 'function') callbackNo();
+    });
+    autoZ($('#yesnoModal').modal('show'));
+    xblur();
+}
+
 function mAlert(body, title, callback, title_button, main_button) {
     if (!title) {
         title = i18n("message");

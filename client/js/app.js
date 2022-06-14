@@ -306,8 +306,8 @@ function initAll() {
     if (config.logo) {
         setFavicon("img/" + config.logo + "NoBorder.png");
         $("#leftSideToggler").attr("src", "img/" + config.logo + ".png");
-        $("#loginBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "TextSmall.png' width='285px'/>");
-        $("#forgotBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "TextSmall.png' width='285px'/>");
+        $("#loginBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
+        $("#forgotBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
     }
 
     $(document.body).css("background-color", '#e9ecef');
@@ -360,10 +360,9 @@ function initAll() {
     $("#forgotBoxServer").attr("placeholder", i18n("server"));
 
     $("#brandTitle").text(i18n("windowTitle"));
-    $("#searchInput").attr("placeholder", i18n("search"));
     $("#logout").text(i18n("logout"));
 
-    $("#searchInput").off("keypress").on("keypress", e => {
+    $("#searchInput").attr("placeholder", i18n("search")).off("keypress").on("keypress", e => {
         if (e.charCode === 13) {
             modules[currentPage].search($("#searchInput").val());
         }
