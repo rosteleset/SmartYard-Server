@@ -21,7 +21,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_flat_id, floor, flat from houses_flats where address_house_id = $houseId order by flat",
+                $flats = $this->db->get("select house_flat_id, floor, flat from houses_flats where address_house_id = $houseId order by flat",
                     false,
                     [
                         "house_flat_id" => "flatId",
@@ -29,6 +29,18 @@
                         "flat" => "flat",
                     ]
                 );
+
+                if ($flats) {
+                    foreach ($flats as &$flat) {
+                        $entrances = $this->db->get("select house_entrance_id from houses_entrances_flats where house_flat_id = {$flat["flatId"]}");
+                        $flat["entrances"] = [];
+                        foreach ($entrances as $e) {
+                            $flat["entrances"][] = $e["house_entrance_id"];
+                        }
+                    }
+                }
+
+                return $flats;
             }
 
             /**
@@ -63,9 +75,9 @@
                     $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, shared, lat, lon) values (:entrance_type, :entrance, :shared, :lat, :lon)", [
                         ":entrance_type" => $entranceType,
                         ":entrance" => $entrance,
-                        ":shared" => $shared,
-                        ":lat" => $lat,
-                        ":lon" => $lon,
+                        ":shared" => (int)$shared,
+                        ":lat" => (float)$lat,
+                        ":lon" => (float)$lon,
                     ]);
 
                     if (!$entranceId) {
@@ -101,13 +113,23 @@
              */
             function modifyEntrance($entranceId, $entranceType, $entrance, $shared, $lat, $lon)
             {
-                // TODO: Implement modifyEntrance() method.
+                if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance)) {
+                    return false;
+                }
+
+                return $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, shared = :shared, lat = :lat, lon = :lon where house_entrance_id = $entranceId", [
+                    ":entrance_type" => $entranceType,
+                    ":entrance" => $entrance,
+                    ":shared" => (int)$shared,
+                    ":lat" => (float)$lat,
+                    ":lon" => (float)$lon,
+                ]);
             }
 
             /**
              * @inheritDoc
              */
-            function removeEntrance($houseId, $entranceId)
+            function deleteEntrance($houseId, $entranceId)
             {
                 // TODO: Implement removeEntrance() method.
             }
@@ -120,7 +142,7 @@
                 if (checkInt($houseId) && trim($flat)) {
                     $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat) values (:address_house_id, :floor, :flat)", [
                         ":address_house_id" => $houseId,
-                        ":floor" => $floor,
+                        ":floor" => (int)$floor,
                         ":flat" => $flat,
                     ]);
 
@@ -129,11 +151,11 @@
                             if (!checkInt($entrances[$i])) {
                                 return false;
                             } else {
-                                if (!$this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id) values (:house_entrance_id, :house_flat_id)", [
+                                if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id) values (:house_entrance_id, :house_flat_id)", [
                                     ":house_entrance_id" => $entrances[$i],
                                     ":house_flat_id" => $flatId,
 
-                                ])) {
+                                ]) === false) {
                                     return false;
                                 }
                             }
@@ -150,9 +172,38 @@
             /**
              * @inheritDoc
              */
-            function modifyFlat($flatId, $floor, $flat)
+            function modifyFlat($flatId, $floor, $flat, $entrances)
             {
-                // TODO: Implement modifyFlat() method.
+                if (checkInt($flatId) && trim($flat)) {
+                    $mod = $this->db->modify("update houses_flats set floor = :floor, flat = :flat where house_flat_id = $flatId", [
+                        ":floor" => (int)$floor,
+                        ":flat" => $flat,
+                    ]);
+
+                    if ($mod !== false) {
+                        if ($this->db->modify("delete from houses_entrances_flats where house_flat_id = $flatId") === false) {
+                            return false;
+                        }
+                        for ($i = 0; $i < count($entrances); $i++) {
+                            if (!checkInt($entrances[$i])) {
+                                return false;
+                            } else {
+                                if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id) values (:house_entrance_id, :house_flat_id)", [
+                                    ":house_entrance_id" => $entrances[$i],
+                                    ":house_flat_id" => $flatId,
+
+                                ]) === false) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
             }
 
             /**
@@ -191,6 +242,14 @@
                         "address_house_id" => "houseId",
                     ]);
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function destroyEntrance($entranceId)
+            {
+                // TODO: Implement destroyEntrance() method.
             }
         }
     }

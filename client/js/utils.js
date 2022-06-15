@@ -172,7 +172,7 @@ function modal(body) {
 
 function xblur() {
     setTimeout(() => {
-        $('a input button').blur();
+        $('a, input, button, .nav-item').blur();
     }, 100);
 }
 
@@ -201,11 +201,13 @@ function loadingDone(stayHidden) {
     xblur();
 
     $('#loading').modal('hide');
+
     if (stayHidden === true) {
         $('#app').addClass("invisible");
     } else {
         $('#app').removeClass("invisible");
     }
+
     if (parseInt($.cookie('_ls_collapse'))) {
         $(document.body).addClass('sidebar-collapse');
     }

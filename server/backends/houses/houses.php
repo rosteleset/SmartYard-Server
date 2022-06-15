@@ -61,7 +61,13 @@
              * @param $entranceId
              * @return boolean
              */
-            abstract function removeEntrance($houseId, $entranceId);
+            abstract function deleteEntrance($houseId, $entranceId);
+
+            /**
+             * @param $entranceId
+             * @return boolean
+             */
+            abstract function destroyEntrance($entranceId);
 
             /**
              * @param $houseId
@@ -76,9 +82,10 @@
              * @param $flatId
              * @param $floor
              * @param $flat
+             * @param $entrances
              * @return boolean
              */
-            abstract function modifyFlat($flatId, $floor, $flat);
+            abstract function modifyFlat($flatId, $floor, $flat, $entrances);
 
             /**
              * @param $flatId

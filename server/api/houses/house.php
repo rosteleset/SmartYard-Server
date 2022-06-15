@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * addresses api
+     * houses api
      */
 
     namespace api\houses
@@ -28,35 +28,10 @@
                 return api::ANSWER($house, ($house !== false)?"house":"notFound");
             }
 
-            public static function PUT($params)
-            {
-                $houses = loadBackend("houses");
-
-                $success = false;
-
-                switch (@$params["action"])
-                {
-                    case "createEntrance":
-                        $success = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"]);
-                        break;
-
-                    case "addEntrance":
-                        $success = $houses->addEntrance($params["houseId"], $params["entranceId"]);
-                        break;
-
-                    case "addFlat":
-                        $success = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"]);
-                        break;
-                }
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
-
             public static function index()
             {
                 return [
                     "GET",
-                    "PUT",
                 ];
             }
         }

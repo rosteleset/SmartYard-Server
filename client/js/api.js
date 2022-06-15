@@ -26,39 +26,28 @@ function GET(api, method, id, fresh) {
     });
 }
 
-function POST(api, method, id, query) {
+function AJAX(type, api, method, id, query) {
     return $.ajax({
         url: $.cookie("_server") + "/" + api + "/" + method + ((typeof id !== "undefined" && id !== false)?("/" + id):""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
         },
-        type: "POST",
+        type: type,
         contentType: "json",
         data: query?JSON.stringify(query):null,
     });
+}
+
+function POST(api, method, id, query) {
+    return AJAX(arguments.callee.name.toString(), api, method, id, query);
 }
 
 function PUT(api, method, id, query) {
-    return $.ajax({
-        url: $.cookie("_server") + "/" + api + "/" + method + ((typeof id !== "undefined" && id !== false)?("/" + id):""),
-        beforeSend: xhr => {
-            xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
-        },
-        type: "PUT",
-        contentType: "json",
-        data: query?JSON.stringify(query):null,
-    });
+    return AJAX(arguments.callee.name.toString(), api, method, id, query);
 }
 
-function DELETE(api, method, id) {
-    return $.ajax({
-        url: $.cookie("_server") + "/" + api + "/" + method + ((typeof id !== "undefined" && id !== false)?("/" + id):""),
-        beforeSend: xhr => {
-            xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
-        },
-        type: "DELETE",
-        contentType: "json",
-    });
+function DELETE(api, method, id, query) {
+    return AJAX(arguments.callee.name.toString(), api, method, id, query);
 }
 
 function FAIL(response) {
