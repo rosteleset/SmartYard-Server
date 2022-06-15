@@ -20,7 +20,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $entrances = $houses->getSharedEntrances();
+                $entrances = $houses->getSharedEntrances(@$params["_id"]);
 
                 return api::ANSWER($entrances, ($entrances !== false)?"entrances":"notAcceptable");
             }

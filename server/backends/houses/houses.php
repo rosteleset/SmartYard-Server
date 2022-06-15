@@ -85,5 +85,11 @@
              * @return boolean
              */
             abstract function deleteFlat($flatId);
+
+            /**
+             * @param $houseId
+             * @return false|array
+             */
+            abstract function getSharedEntrances($houseId = false);
         }
     }

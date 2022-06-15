@@ -40,6 +40,10 @@
                         $success = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"]);
                         break;
 
+                    case "addEntrance":
+                        $success = $houses->addEntrance($params["houseId"], $params["entranceId"]);
+                        break;
+
                     case "addFlat":
                         $success = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"]);
                         break;

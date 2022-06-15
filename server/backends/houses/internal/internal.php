@@ -40,7 +40,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, shared, lat, lon from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId) order by entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, shared, lat, lon from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId) order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -86,7 +86,14 @@
              */
             function addEntrance($houseId, $entranceId)
             {
-                // TODO: Implement addEntranceToHouse() method.
+                if (!checkInt($houseId) || !checkInt($entranceId)) {
+                    return false;
+                }
+
+                return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id) values (:address_house_id, :house_entrance_id)", [
+                    ":address_house_id" => $houseId,
+                    ":house_entrance_id" => $entranceId,
+                ]);
             }
 
             /**
@@ -154,6 +161,36 @@
             function deleteFlat($flatId)
             {
                 // TODO: Implement deleteFlat() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getSharedEntrances($houseId = false)
+            {
+                if ($houseId && !checkInt($houseId)) {
+                    return false;
+                }
+
+                if ($houseId) {
+                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, lat, lon, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id and address_house_id <> $houseId limit 1) address_house_id from houses_entrances where shared = 1) as t1 where address_house_id is not null", false, [
+                        "house_entrance_id" => "entranceId",
+                        "entrance_type" => "entranceType",
+                        "entrance" => "entrance",
+                        "lat" => "lat",
+                        "lon" => "lon",
+                        "address_house_id" => "houseId",
+                    ]);
+                } else {
+                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, lat, lon, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id limit 1) address_house_id from houses_entrances where shared = 1) as t1 where address_house_id is not null", false, [
+                        "house_entrance_id" => "entranceId",
+                        "entrance_type" => "entranceType",
+                        "entrance" => "entrance",
+                        "lat" => "lat",
+                        "lon" => "lon",
+                        "address_house_id" => "houseId",
+                    ]);
+                }
             }
         }
     }

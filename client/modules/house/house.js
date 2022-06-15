@@ -91,6 +91,22 @@
         });
     },
 
+    doAddEntrance: function (houseId, entranceId) {
+        loadingStart();
+        PUT("houses", "house", false, {
+            action: "addEntrance",
+            houseId,
+            entranceId,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("house.entranceWasAdded"));
+        }).
+        always(() => {
+            modules["house"].renderHouse(houseId);
+        });
+    },
+
     addEntrance: function (houseId) {
         mYesNo(i18n("house.useExistingEntranceQuestion"), i18n("house.addEntrance"), () => {
             cardForm({
@@ -165,7 +181,60 @@
                 },
             });
         }, () => {
-            console.log("no");
+            loadingStart();
+            GET("houses", "sharedEntrances", houseId, true).
+            done(response => {
+                let entrances = [];
+
+                entrances.push({
+                    id: 0,
+                    text: "-",
+                });
+
+                for (let j in response.entrances) {
+                    let house = "";
+
+                    if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
+                        for (let i in modules["addresses"].meta.houses) {
+                            if (modules["addresses"].meta.houses[i].houseId == response.entrances[j].houseId) {
+                                house = modules["addresses"].meta.houses[i].houseFull;
+                            }
+                        }
+                    }
+
+                    if (!house) {
+                        house = "#" + houseId;
+                    }
+
+                    entrances.push({
+                        id: response.entrances[j].entranceId,
+                        text: house + ", " + i18n("house.entranceType" +response.entrances[j].entranceType.substring(0, 1).toUpperCase() + response.entrances[j].entranceType.substring(1) + "Full").toLowerCase() + " " + response.entrances[j].entrance,
+                    });
+                }
+
+                cardForm({
+                    title: i18n("house.addEntrance"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("add"),
+                    fields: [
+                        {
+                            id: "entranceId",
+                            type: "select2",
+                            title: i18n("house.entrance"),
+                            options: entrances,
+                        },
+                    ],
+                    callback: result => {
+                        if (parseInt(result.entranceId)) {
+                            modules["house"].doAddEntrance(houseId, result.entranceId);
+                        }
+                    },
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }, i18n("house.addNewEntrance"), i18n("house.useExistingEntrance"));
     },
 
@@ -281,6 +350,7 @@
         }
 
         if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
+            let f = false;
             for (let i in modules["addresses"].meta.houses) {
                 if (modules["addresses"].meta.houses[i].houseId == houseId) {
                     if (!modules["house"].meta) {
@@ -288,9 +358,11 @@
                     }
                     modules["house"].meta.house = modules["addresses"].meta.houses[i];
                     subTop(modules["house"].meta.house.houseFull);
-                } else {
-                    subTop("#" + houseId);
+                    f = true;
                 }
+            }
+            if (!f) {
+                subTop("#" + houseId);
             }
         }
 
