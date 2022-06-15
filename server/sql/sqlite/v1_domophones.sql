@@ -52,6 +52,7 @@ CREATE TABLE domophones_flats
     sip_password text                                                                                                   -- sip password
 );
 
+-- rfid keys
 CREATE TABLE domophones_keys
 (
     domophone_key_id integer not null primary key autoincrement,
