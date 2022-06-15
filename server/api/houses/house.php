@@ -32,6 +32,7 @@
             {
                 return [
                     "GET",
+                    "PUT", // fake method, only for "same" permissions
                 ];
             }
         }

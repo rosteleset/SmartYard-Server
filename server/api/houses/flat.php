@@ -34,11 +34,21 @@
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
+            public static function DELETE($params)
+            {
+                $houses = loadBackend("houses");
+
+                $success = $houses->deleteFlat($params["_id"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+            }
+
             public static function index()
             {
                 return [
-                    "POST",
-                    "PUT"
+                    "POST" => "#same(houses,house,PUT)",
+                    "PUT" => "#same(houses,house,PUT)",
+                    "DELETE" => "#same(houses,house,PUT)",
                 ];
             }
         }

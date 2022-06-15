@@ -57,11 +57,11 @@
             abstract function modifyEntrance($entranceId, $entranceType, $entrance, $shared, $lat, $lon);
 
             /**
-             * @param $houseId
              * @param $entranceId
+             * @param $houseId
              * @return boolean
              */
-            abstract function deleteEntrance($houseId, $entranceId);
+            abstract function deleteEntrance($entranceId, $houseId);
 
             /**
              * @param $entranceId

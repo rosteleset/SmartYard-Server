@@ -129,9 +129,18 @@
             /**
              * @inheritDoc
              */
-            function deleteEntrance($houseId, $entranceId)
+            function deleteEntrance($entranceId, $houseId)
             {
-                // TODO: Implement removeEntrance() method.
+                if (!checkInt($houseId) || !checkInt($entranceId)) {
+                    return false;
+                }
+
+                return
+                    $this->db->modify("delete from houses_houses_entrances where address_house_id = $houseId and house_entrance_id = $entranceId") !== false
+                    and
+                    $this->db->modify("delete from houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances)") !== false
+                    and
+                    $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
             }
 
             /**
@@ -211,7 +220,14 @@
              */
             function deleteFlat($flatId)
             {
-                // TODO: Implement deleteFlat() method.
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                return
+                    $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false
+                    and
+                    $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
             }
 
             /**
@@ -249,7 +265,16 @@
              */
             function destroyEntrance($entranceId)
             {
-                // TODO: Implement destroyEntrance() method.
+                if (!checkInt($entranceId)) {
+                    return false;
+                }
+
+                return
+                    $this->db->modify("delete from houses_entrances where house_entrance_id = $entranceId") !== false
+                    and
+                    $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
+                    and
+                    $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
             }
         }
     }

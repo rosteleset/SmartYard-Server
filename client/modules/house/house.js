@@ -97,16 +97,27 @@
 
     doDeleteEntrance: function (entranceId, complete, houseId) {
         loadingStart();
-        DELETE("houses", "entrance", entranceId, {
-            complete
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("house.entranceWasDeleted"));
-        }).
-        always(() => {
-            modules["house"].renderHouse(houseId);
-        });
+        if (complete) {
+            DELETE("houses", "entrance", entranceId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("house.entranceWasDeleted"));
+            }).
+            always(() => {
+                modules["house"].renderHouse(houseId);
+            });
+        } else {
+            DELETE("houses", "entrance", entranceId, {
+                houseId
+            }).
+            fail(FAIL).
+            done(() => {
+                message(i18n("house.entranceWasDeleted"));
+            }).
+            always(() => {
+                modules["house"].renderHouse(houseId);
+            });
+        }
     },
 
     doDeleteFlat: function (flatId, houseId) {
@@ -428,7 +439,7 @@
                 borderless: true,
                 topApply: true,
                 delete: i18n("house.deleteFlat"),
-                apply: i18n("add"),
+                apply: i18n("edit"),
                 fields: [
                     {
                         id: "flatId",
@@ -489,7 +500,7 @@
             }, i18n("house.deleteEntrance"), i18n("house.deleteEntranceLink"));
         } else {
             mConfirm(i18n("house.confirmDeleteEntrance", entranceId), i18n("confirm"), `danger:${i18n("house.deleteEntrance")}`, () => {
-                modules["house"].doDeleteEntrance(entranceId, false, houseId);
+                modules["house"].doDeleteEntrance(entranceId, true, houseId);
             });
         }
     },

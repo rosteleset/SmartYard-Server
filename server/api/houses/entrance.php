@@ -21,7 +21,7 @@
             {
                 $houses = loadBackend("houses");
 
-                if (@$params("entranceId")) {
+                if (@$params["entranceId"]) {
                     $success = $houses->addEntrance($params["houseId"], $params["entranceId"]);
 
                     return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
@@ -41,10 +41,25 @@
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
+            public static function DELETE($params)
+            {
+                $houses = loadBackend("houses");
+
+                if (@$params["houseId"]) {
+                    $success = $houses->deleteEntrance($params["_id"], $params["houseId"]);
+                } else {
+                    $success = $houses->destroyEntrance($params["_id"]);
+                }
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+            }
+
             public static function index()
             {
                 return [
-                    "POST",
+                    "POST" => "#same(houses,house,PUT)",
+                    "PUT" => "#same(houses,house,PUT)",
+                    "DELETE" => "#same(houses,house,PUT)",
                 ];
             }
         }
