@@ -2,31 +2,32 @@
 CREATE TABLE domophones_models
 (
     domphone_model_id integer not null primary key autoincrement,
-    model text
+    model text,
+    class text
 );
 
 -- panels
-CREATE TABLE domophones_panels
+CREATE TABLE domophones_devices
 (
-    domophone_panel_id integer not null primary key autoincrement,
-    url text,
-    domphone_model_id integer
+    domophone_device_id integer not null primary key autoincrement,
+    domophone_model_id integer not null,
+    ip text,
+    credentials text                                                                                                    -- plaintext:login:password, token:token, or something else
 );
-CREATE UNIQUE INDEX domophones_panels_uniq on domophones_panels(url);
 
--- panels <-> entrances
-CREATE TABLE domophones_panels_entrances
+-- entrances
+CREATE TABLE domophones_entrances
 (
-    domophone_panel_entrance_id integer not null primary key autoincrement,
-    domophone_panel_id integer,
-    house_entrance_id integer
+    house_entrance_id integer not null,                                                                                 -- link to house entrance
+    domophone_device_id integer,
+    domophone_device_output integer,
+    camera_device_id integer,
+    address text not null                                                                                               -- "backup" address string
 );
-CREATE UNIQUE INDEX domophones_panels_entrances_uniq on domophones_panels_entrances(domophone_panel_id, house_entrance_id);
 
 -- panels <-> flats (cms attached)
 CREATE TABLE domophones_panels_flats
 (
-    domophone_panel_flat_id integer not null primary key autoincrement,
     domophone_panel_id integer,
     house_flat_id integer
 );
@@ -36,14 +37,16 @@ CREATE UNIQUE INDEX domophones_panels_flats_uniq on domophones_panels_flats(domo
 CREATE TABLE domophones_flats
 (
     house_flat_id integer primary key not null,
-    blocked integer default 0,
-    code text,
-    cms integer default 0,
-    cms_number integer,
-    cms_blocked integer default 0,
-    cms_levels text,
-    auto_open text,
-    white_rabbit text,
-    sip integer default 0,
-    sip_password text
+    flat_number text,                                                                                                   -- "backup" flat number
+    manual_block integer,                                                                                               -- 1/0 manaul blocking (by abonent?)
+    auto_block integer,                                                                                                 -- 1/0 auto block (by billing system?)
+    code text,                                                                                                          -- door open code
+    cms integer,                                                                                                        -- 1/0 cms enabled
+    cms_blocked integer,                                                                                                -- 1/0 cms blocked
+    cms_number integer,                                                                                                 -- cms number
+    cms_levels text,                                                                                                    -- cms levels
+    auto_open text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
+    white_rabbit integer,                                                                                               -- 1/0
+    sip integer,                                                                                                        -- 0 - disabled, 1 - classic sip, 2 - webrtc
+    sip_password text                                                                                                   -- sip password
 );
