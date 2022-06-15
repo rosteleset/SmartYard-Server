@@ -51,3 +51,12 @@ CREATE TABLE domophones_flats
     sip integer,                                                                                                        -- 0 - disabled, 1 - classic sip, 2 - webrtc
     sip_password text                                                                                                   -- sip password
 );
+
+CREATE TABLE domophones_keys
+(
+    domophone_key_id integer not null primary key autoincrement,
+    type integer not null,                                                                                              -- 0 - subscriber, 1 - flat, 2 - engtrance, 3 - house, 4 - house cluster, 5 - universal
+    target_id integer not null,
+    rfid text
+);
+
