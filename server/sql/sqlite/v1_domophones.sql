@@ -18,6 +18,7 @@ CREATE TABLE domophones_devices
 -- entrances
 CREATE TABLE domophones_entrances
 (
+    address_house_id integer not null,                                                                                  -- link to house address
     house_entrance_id integer not null,                                                                                 -- link to house entrance
     domophone_device_id integer,
     domophone_device_output integer,
