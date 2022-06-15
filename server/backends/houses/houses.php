@@ -14,11 +14,18 @@
          */
         abstract class houses extends backend
         {
+
             /**
              * @param $houseId
              * @return false|array
              */
-            abstract function getHouse($houseId);
+            abstract function getHouseFlats($houseId);
+
+            /**
+             * @param $houseId
+             * @return false|array
+             */
+            abstract function getHouseEntrances($houseId);
 
             /**
              * @param $houseId
@@ -60,9 +67,10 @@
              * @param $houseId
              * @param $floor
              * @param $flat
+             * @param $entrances
              * @return boolean|integer
              */
-            abstract function addFlat($houseId, $floor, $flat);
+            abstract function addFlat($houseId, $floor, $flat, $entrances);
 
             /**
              * @param $flatId

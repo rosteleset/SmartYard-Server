@@ -13,6 +13,7 @@
         $add = $db->prepare("insert into core_api_methods (aid, api, method, request_method) values (:md5, :api, :method, :request_method)");
         $aid = $db->prepare("select aid from core_api_methods where api = :api and method = :method and request_method = :request_method");
         $adb = $db->prepare("insert into core_api_methods_by_backend (aid, backend) values (:aid, :backend)");
+        $ads = $db->prepare("update core_api_methods set permissions_same = :permissions_same where aid = :aid");
 
         $n = 0;
 
@@ -56,10 +57,26 @@
                                                 }
                                                 break;
                                             default:
-                                                $adb->execute([
-                                                    ":aid" => $md5,
-                                                    ":backend" => $backend,
-                                                ]);
+                                                if (substr($backend, 0, 6) === "#same(") {
+                                                    $same = explode(",", explode(")", explode("(", $backend)[1])[0]);
+                                                    if (count($same) === 3) {
+                                                        $same_api = trim($same[0]);
+                                                        $same_method = trim($same[1]);
+                                                        $same_request_method = trim($same[2]);
+                                                        $same_md5 = md5("$same_api/$same_method/$same_request_method");
+                                                        $ads->execute([
+                                                            ":aid" => $md5,
+                                                            ":permissions_same" => $same_md5,
+                                                        ]);
+                                                    } else {
+                                                        echo "warning: \"same\" format is wrong for method $api/$method\n";
+                                                    }
+                                                } else {
+                                                    $adb->execute([
+                                                        ":aid" => $md5,
+                                                        ":backend" => $backend,
+                                                    ]);
+                                                }
                                                 break;
                                         }
                                     }

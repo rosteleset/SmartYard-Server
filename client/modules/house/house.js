@@ -1,28 +1,38 @@
 ({
     init: function () {
-        moduleLoaded("houses", this);
+        moduleLoaded("house", this);
     },
 
-    doAddFlat: function (houseId, floor, flat) {
+    doAddFlat: function (houseId, floor, flat, entrances) {
         loadingStart();
         PUT("houses", "house", false, {
             action: "addFlat",
             houseId,
             floor,
             flat,
+            entrances
         }).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.flatWasAdded"));
+            message(i18n("house.flatWasAdded"));
         }).
         always(() => {
-            modules["houses"].renderHouse(houseId);
+            modules["house"].renderHouse(houseId);
         });
     },
 
     addFlat: function (houseId) {
+        let entrances = [];
+
+        for (let i in modules["house"].meta.entrances) {
+            entrances.push({
+                id: modules["house"].meta.entrances[i].entranceId,
+                text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance,
+            });
+        }
+
         cardForm({
-            title: i18n("houses.addFlat"),
+            title: i18n("house.addFlat"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -31,21 +41,28 @@
                 {
                     id: "floor",
                     type: "text",
-                    title: i18n("houses.floor"),
-                    placeholder: i18n("houses.floor"),
+                    title: i18n("house.floor"),
+                    placeholder: i18n("house.floor"),
                 },
                 {
                     id: "flat",
                     type: "text",
-                    title: i18n("houses.flat"),
-                    placeholder: i18n("houses.flat"),
+                    title: i18n("house.flat"),
+                    placeholder: i18n("house.flat"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "entrances",
+                    type: "multiselect",
+                    title: i18n("house.entrances"),
+                    hidden: entrances.length <= 0,
+                    options: entrances,
+                }
             ],
             callback: result => {
-                modules["houses"].doAddFlat(houseId, result.floor, result.flat);
+                modules["house"].doAddFlat(houseId, result.floor, result.flat, result.entrances);
             },
         });
     },
@@ -67,17 +84,17 @@
         }).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.entranceWasCreated"));
+            message(i18n("house.entranceWasCreated"));
         }).
         always(() => {
-            modules["houses"].renderHouse(houseId);
+            modules["house"].renderHouse(houseId);
         });
     },
 
     addEntrance: function (houseId) {
-        mYesNo(i18n("houses.useExistingEntranceQuestion"), i18n("houses.addEntrance"), () => {
+        mYesNo(i18n("house.useExistingEntranceQuestion"), i18n("house.addEntrance"), () => {
             cardForm({
-                title: i18n("houses.addEntrance"),
+                title: i18n("house.addEntrance"),
                 footer: true,
                 borderless: true,
                 topApply: true,
@@ -86,31 +103,31 @@
                     {
                         id: "entranceType",
                         type: "select",
-                        title: i18n("houses.entranceType"),
+                        title: i18n("house.entranceType"),
                         options: [
                             {
                                 id: "entrance",
-                                text: i18n("houses.entranceTypeEntrance"),
+                                text: i18n("house.entranceTypeEntranceFull"),
                             },
                             {
                                 id: "wicket",
-                                text: i18n("houses.entranceTypeWicket"),
+                                text: i18n("house.entranceTypeWicketFull"),
                             },
                             {
                                 id: "gate",
-                                text: i18n("houses.entranceTypeGate"),
+                                text: i18n("house.entranceTypeGateFull"),
                             },
                             {
                                 id: "barrier",
-                                text: i18n("houses.entranceTypeBarrier"),
+                                text: i18n("house.entranceTypeBarrierFull"),
                             }
                         ]
                     },
                     {
                         id: "entrance",
                         type: "text",
-                        title: i18n("houses.entrance"),
-                        placeholder: i18n("houses.entrance"),
+                        title: i18n("house.entrance"),
+                        placeholder: i18n("house.entrance"),
                         validate: (v) => {
                             return $.trim(v) !== "";
                         }
@@ -118,7 +135,7 @@
                     {
                         id: "shared",
                         type: "select",
-                        title: i18n("houses.shared"),
+                        title: i18n("house.shared"),
                         options: [
                             {
                                 id: "0",
@@ -133,71 +150,71 @@
                     {
                         id: "lat",
                         type: "text",
-                        title: i18n("houses.lat"),
-                        placeholder: i18n("houses.lat"),
+                        title: i18n("house.lat"),
+                        placeholder: i18n("house.lat"),
                     },
                     {
                         id: "lon",
                         type: "text",
-                        title: i18n("houses.lon"),
-                        placeholder: i18n("houses.lon"),
+                        title: i18n("house.lon"),
+                        placeholder: i18n("house.lon"),
                     },
                 ],
                 callback: result => {
-                    modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.shared, result.lat, result.lon);
+                    modules["house"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.shared, result.lat, result.lon);
                 },
             });
         }, () => {
             console.log("no");
-        }, i18n("houses.addNewEntrance"), i18n("houses.useExistingEntrance"));
+        }, i18n("house.addNewEntrance"), i18n("house.useExistingEntrance"));
     },
 
     modifyEntrance: function (entranceId) {
 
     },
 
-    house: function (houseId, address_house) {
+    house: function (houseId) {
 
-        function render(house) {
+        function render() {
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("houses.flats"),
+                    caption: i18n("house.flats"),
                     button: {
-                        caption: i18n("houses.addFlat"),
+                        caption: i18n("house.addFlat"),
                         click: () => {
-                            modules["houses"].addFlat(houseId);
+                            modules["house"].addFlat(houseId);
                         },
                     },
                 },
-                edit: modules["houses"].modifyFlat,
+                edit: modules["house"].modifyFlat,
                 columns: [
                     {
-                        title: i18n("houses.flatId"),
+                        title: i18n("house.flatId"),
                     },
                     {
-                        title: i18n("houses.floor"),
+                        title: i18n("house.floor"),
                     },
                     {
-                        title: i18n("houses.flat"),
+                        title: i18n("house.flat"),
                         fullWidth: true,
                     },
                 ],
                 rows: () => {
                     let rows = [];
 
-                    for (let i in house.flats) {
+                    for (let i in modules["house"].meta.flats) {
                         rows.push({
-                            uid: house.flats[i].flatId,
+                            uid: modules["house"].meta.flats[i].flatId,
                             cols: [
                                 {
-                                    data: house.flats[i].flatId,
+                                    data: modules["house"].meta.flats[i].flatId,
                                 },
                                 {
-                                    data: house.flats[i].floor,
+                                    data: modules["house"].meta.flats[i].floor,
                                 },
                                 {
-                                    data: house.flats[i].flat,
+                                    data: modules["house"].meta.flats[i].flat,
                                     nowrap: true,
                                 },
                             ],
@@ -210,48 +227,48 @@
             cardTable({
                 target: "#altForm",
                 title: {
-                    caption: i18n("houses.entrances"),
+                    caption: i18n("house.entrances"),
                     button: {
-                        caption: i18n("houses.addEntrance"),
+                        caption: i18n("house.addEntrance"),
                         click: () => {
-                            modules["houses"].addEntrance(houseId);
+                            modules["house"].addEntrance(houseId);
                         },
                     },
                 },
-                edit: modules["houses"].modifyEntrance,
+                edit: modules["house"].modifyEntrance,
                 columns: [
                     {
-                        title: i18n("houses.entranceId"),
+                        title: i18n("house.entranceId"),
                     },
                     {
-                        title: i18n("houses.entranceType"),
+                        title: i18n("house.entranceType"),
                     },
                     {
-                        title: i18n("houses.shared"),
+                        title: i18n("house.shared"),
                     },
                     {
-                        title: i18n("houses.entrance"),
+                        title: i18n("house.entrance"),
                         fullWidth: true,
                     },
                 ],
                 rows: () => {
                     let rows = [];
 
-                    for (let i in house.entrances) {
+                    for (let i in modules["house"].meta.entrances) {
                         rows.push({
-                            uid: house.entrances[i].entranceId,
+                            uid: modules["house"].meta.entrances[i].entranceId,
                             cols: [
                                 {
-                                    data: house.entrances[i].entranceId,
+                                    data: modules["house"].meta.entrances[i].entranceId,
                                 },
                                 {
-                                    data: i18n("houses.entranceType" + house.entrances[i].entranceType.substring(0, 1).toUpperCase() + house.entrances[i].entranceType.substring(1)),
+                                    data: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full"),
                                 },
                                 {
-                                    data: parseInt(house.entrances[i].entranceType)?i18n("yes"):i18n("no"),
+                                    data: parseInt(modules["house"].meta.entrances[i].shared)?i18n("yes"):i18n("no"),
                                 },
                                 {
-                                    data: house.entrances[i].entrance,
+                                    data: modules["house"].meta.entrances[i].entrance,
                                     nowrap: true,
                                 },
                             ],
@@ -263,10 +280,18 @@
             }).show();
         }
 
-        if (address_house) {
-            subTop(address_house.houseFull);
-        } else {
-            subTop("#" + houseId);
+        if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
+            for (let i in modules["addresses"].meta.houses) {
+                if (modules["addresses"].meta.houses[i].houseId == houseId) {
+                    if (!modules["house"].meta) {
+                        modules["house"].meta = {};
+                    }
+                    modules["house"].meta.house = modules["addresses"].meta.houses[i];
+                    subTop(modules["house"].meta.house.houseFull);
+                } else {
+                    subTop("#" + houseId);
+                }
+            }
         }
 
         GET("houses", "house", houseId, true).
@@ -274,23 +299,29 @@
             // ?
         }).
         done(response => {
-            console.log(houseId, response);
-            render(response.house);
+            if (!modules["house"].meta) {
+                modules["house"].meta = {};
+            }
+            modules["house"].meta.entrances = response["house"].entrances;
+            modules["house"].meta.flats = response["house"].flats;
+            console.log(modules["house"].meta);
+            render();
         });
     },
 
     renderHouse: function (houseId) {
-        if (AVAIL("addresses", "house", "GET")) {
-            GET("addresses", "house", houseId).
+        if (AVAIL("addresses", "addresses", "GET")) {
+            GET("addresses", "addresses").
+            done(modules["addresses"].addresses).
             fail(FAIL).
             fail(() => {
 //                history.back();
             }).
             done(result => {
-                modules["houses"].house(houseId, result.house);
+                modules["house"].house(houseId);
             });
         } else {
-            modules["houses"].house(houseId);
+            modules["house"].house(houseId);
         }
 
         loadingDone();
@@ -299,8 +330,8 @@
     route: function (params) {
         $("#altForm").hide();
 
-        document.title = i18n("windowTitle") + " :: " + i18n("houses.houses");
+        document.title = i18n("windowTitle") + " :: " + i18n("house.houses");
 
-        modules["houses"].renderHouse(params.houseId)
+        modules["house"].renderHouse(params.houseId)
     },
 }).init();

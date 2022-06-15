@@ -28,7 +28,43 @@
                     return false;
                 }
 
+                $rights_api = $params["_path"]["api"];
+                $rights_method = $params["_path"]["method"];
+                $rights_request_method = $params["_request_method"];
+
                 try {
+                    $sth = $this->db->prepare("
+                        select
+                            api,
+                            method,
+                            request_method
+                        from
+                            core_api_methods as m1
+                        where aid in (
+                            select
+                                permissions_same
+                            from
+                                core_api_methods as m2
+                            where
+                                api = :api and
+                                method = :method and
+                                request_method = :request_method
+                        )
+                    ");
+
+                    if ($sth->execute([
+                        ":api" => $params["_path"]["api"],
+                        ":method" => $params["_path"]["method"],
+                        ":request_method" => $params["_request_method"],
+                    ])) {
+                        $s = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                        if ($s && $s[0]) {
+                            $rights_api = $s[0]["api"];
+                            $rights_method = $s[0]["method"];
+                            $rights_request_method = $s[0]["request_method"];
+                        }
+                    }
+
                     $sth = $this->db->prepare("
                         select
                             backend
@@ -45,14 +81,20 @@
                                 request_method = :request_method
                         )
                     ");
+
                     if ($sth->execute([
-                        ":api" => $params["_path"]["api"],
-                        ":method" => $params["_path"]["method"],
-                        ":request_method" => $params["_request_method"],
+                        ":api" => $rights_api,
+                        ":method" => $rights_method,
+                        ":request_method" => $rights_request_method,
                     ])) {
                         $b = $sth->fetchAll(\PDO::FETCH_ASSOC);
                         if ($b && $b[0] && $b[0]["backend"]) {
-                            return loadBackend($b[0]["backend"])->allow($params);
+                            $_params = $params;
+                            $_params["_path"]["api"] = $rights_api;
+                            $_params["_path"]["method"] = $rights_method;
+                            $_params["_request_method"] = $rights_request_method;
+
+                            return loadBackend($b[0]["backend"])->allow($_params);
                         }
                     }
                 } catch (\Exception $e) {
@@ -83,9 +125,9 @@
 
                     if ($sth->execute([
                         ":uid" => $params["_uid"],
-                        ":api" => $params["_path"]["api"],
-                        ":method" => $params["_path"]["method"],
-                        ":request_method" => $params["_request_method"],
+                        ":api" => $rights_api,
+                        ":method" => $rights_method,
+                        ":request_method" => $rights_request_method,
                     ])) {
                         $m = $sth->fetchAll(\PDO::FETCH_ASSOC);
                         if ($m && $m[0] && $m[0]["allow"]) {
@@ -110,9 +152,9 @@
                                     )
                             ");
                             if ($sth->execute([
-                                ":api" => $params["_path"]["api"],
-                                ":method" => $params["_path"]["method"],
-                                ":request_method" => $params["_request_method"],
+                                ":api" => $rights_api,
+                                ":method" => $rights_method,
+                                ":request_method" => $rights_request_method,
                             ])) {
                                 $m = $sth->fetchAll(\PDO::FETCH_ASSOC);
                                 if ($m && $m[0] && $m[0]["allow"]) {
@@ -162,15 +204,36 @@
                                     aid not in (select aid from core_users_rights where allow = 0 and uid = :uid)
                                 union
                                     select aid from core_api_methods where aid in (select aid from core_users_rights where allow = 1 and uid = :uid)
-                            )"
+                            ) and permissions_same is null"
                         );
 
                         if ($sth->execute([
                             ":uid" => $uid,
                         ])) {
                             $all = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                            $r = [];
                             foreach ($all as $a) {
                                 $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                                $r[$a['aid']] = true;
+                            }
+
+                            $same = $this->db->query("
+                                select
+                                    aid,
+                                    api,
+                                    method,
+                                    request_method,
+                                    permissions_same
+                                from
+                                    core_api_methods
+                                where
+                                    permissions_same is not null
+                            ", \PDO::FETCH_ASSOC)->fetchAll();
+
+                            foreach ($same as $a) {
+                                if ($r[$a["permissions_same"]]) {
+                                    $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                                }
                             }
                         }
                     } catch (\Exception $e) {

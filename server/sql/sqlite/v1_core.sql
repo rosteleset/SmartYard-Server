@@ -62,7 +62,8 @@ CREATE TABLE core_api_methods
     aid text not null primary key,
     api text not null,
     method text not null,
-    request_method text not null
+    request_method text not null,
+    permissions_same text
 );
 CREATE UNIQUE INDEX core_api_methods_uniq on core_api_methods(api, method, request_method);
 
