@@ -14,8 +14,8 @@ function cardForm(params) {
         params.apply = "apply";
     }
     if (params.title) {
-        h += `<div class="card-header">`;
-        h += `<h3 class="card-title">`;
+        h += `<div class="card-header pointer" id="modalHeader">`;
+        h += `<h3 class="card-title text-bold">`;
         if (params.topApply) {
             h += `<button class="btn btn-primary btn-xs btn-tool-rbt-left mr-2 modalFormOk" id="modalFormApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> `;
         }
@@ -320,6 +320,11 @@ function cardForm(params) {
         target = $(params.target).html(h);
     } else {
         target = modal(h);
+        if (params.title) {
+            $("#modal").draggable({
+                handle: "#modalHeader",
+            });
+        }
     }
 
     $(".modalFormOk").off("click").on("click", ok);

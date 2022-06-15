@@ -143,9 +143,10 @@ function mAlert(body, title, callback, title_button, main_button) {
     if (title.toLowerCase().indexOf(i18n("message").toLowerCase()) >= 0) {
         title = '<span class="text-success">' + title + '</span>';
     }
-    $('#alertModalLabel').html(title).next().remove();
+    let l = $('#alertModalLabel').html(title);
     if (title_button) {
-        $('#alertModalLabel').parent().append($(title_button));
+        l.next().remove();
+        l.parent().append($(title_button));
     }
     $('#alertModalBody').html(body);
     if (main_button) {

@@ -3,6 +3,7 @@
     "addNewEntrance": "Добавить новый вход",
     "useExistingEntrance": "Использовать существующий",
     "addEntrance": "Добавить вход",
+    "addFlat": "Добавить квартиру",
     "useExistingEntranceQuestion": "Добавить новый вход или использовать существующий?",
     "entranceId": "#",
     "entrance": "Вход",
@@ -20,5 +21,19 @@
     "entranceTypeBarrier": "ш",
     "entranceType": "Тип",
     "shared": "Общий",
-    "floor": "Этаж"
+    "floor": "Этаж",
+    "deleteFlat": "Удалить квартиру",
+    "deleteEntrance": "Удалить вход",
+    "confirmDeleteFlat": "Удалить квариру #%s?",
+    "entranceWasDeleted": "Вход удален",
+    "flatWasDeleted": "Квартира удалена",
+    "entranceWasAdded": "Вход добавлен",
+    "flatWasAdded": "Квартира добавлена",
+    "entranceWasChanged": "Вход изменен",
+    "flatWasChanged": "Квартира изменена",
+    "lat": "Долгота",
+    "lon": "Широта",
+    "completelyDeleteEntrance": "Удалить вход #%s полностью или только для этого дома?",
+    "deleteEntranceComletely": "Удалить полностью",
+    "deleteEntranceLink": "Только для этого дома"
 }

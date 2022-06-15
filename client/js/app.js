@@ -378,6 +378,18 @@ function initAll() {
         modules[currentPage].search($("#searchInput").val());
     });
 
+    $("#confirmModal").draggable({
+        handle: "#confirmModalHeader",
+    });
+
+    $("#yesnoModal").draggable({
+        handle: "#yesnoModalHeader",
+    });
+
+    $("#alertModal").draggable({
+        handle: "#alertModalHeader",
+    });
+
     if ($.cookie("_server") && $.cookie("_token")) {
         POST("authentication", "ping", false, {
             ua: $.cookie("_ua"),

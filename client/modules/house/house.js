@@ -189,16 +189,16 @@
                         ]
                     },
                     {
-                        id: "lat",
-                        type: "text",
-                        title: i18n("house.lat"),
-                        placeholder: i18n("house.lat"),
-                    },
-                    {
                         id: "lon",
                         type: "text",
                         title: i18n("house.lon"),
                         placeholder: i18n("house.lon"),
+                    },
+                    {
+                        id: "lat",
+                        type: "text",
+                        title: i18n("house.lat"),
+                        placeholder: i18n("house.lat"),
                     },
                 ],
                 callback: result => {
@@ -386,18 +386,18 @@
                         value: entrance.shared.toString(),
                     },
                     {
-                        id: "lat",
-                        type: "text",
-                        title: i18n("house.lat"),
-                        placeholder: i18n("house.lat"),
-                        value: entrance.lat,
-                    },
-                    {
                         id: "lon",
                         type: "text",
                         title: i18n("house.lon"),
                         placeholder: i18n("house.lon"),
                         value: entrance.lon,
+                    },
+                    {
+                        id: "lat",
+                        type: "text",
+                        title: i18n("house.lat"),
+                        placeholder: i18n("house.lat"),
+                        value: entrance.lat,
                     },
                 ],
                 callback: result => {
@@ -493,11 +493,11 @@
 
     deleteEntrance: function (entranceId, shared, houseId) {
         if (shared) {
-            mYesNo(i18n("house.completelyDeleteEntrance"), i18n("house.deleteEntrance"), () => {
+            mYesNo(i18n("house.completelyDeleteEntrance", entranceId), i18n("house.deleteEntrance"), () => {
                 modules["house"].doDeleteEntrance(entranceId, true, houseId);
             }, () => {
                 modules["house"].doDeleteEntrance(entranceId, false, houseId);
-            }, i18n("house.deleteEntrance"), i18n("house.deleteEntranceLink"));
+            }, i18n("house.deleteEntranceComletely"), i18n("house.deleteEntranceLink"));
         } else {
             mConfirm(i18n("house.confirmDeleteEntrance", entranceId), i18n("confirm"), `danger:${i18n("house.deleteEntrance")}`, () => {
                 modules["house"].doDeleteEntrance(entranceId, true, houseId);
