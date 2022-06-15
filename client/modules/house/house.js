@@ -341,6 +341,17 @@
                                     nowrap: true,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-door-open",
+                                        title: i18n("domophones.domophone"),
+                                        click: entranceId => {
+                                            location.href = "#domophones&entranceId=" + entranceId;
+                                        },
+                                    },
+                                ],
+                            },
                         });
                     }
 
