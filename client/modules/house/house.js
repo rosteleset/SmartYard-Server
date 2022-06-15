@@ -1,5 +1,12 @@
 ({
     init: function () {
+        leftSide("fas fa-fw fa-home", i18n("house.house"), "#house", false, true);
+
+        $(".sidebar .nav-item a[href='#house']").on("click", function (event) {
+            event.stopPropagation();
+            return false;
+        });
+
         moduleLoaded("house", this);
     },
 
@@ -398,9 +405,9 @@
             done(modules["addresses"].addresses).
             fail(FAIL).
             fail(() => {
-//                history.back();
+                history.back();
             }).
-            done(result => {
+            done(() => {
                 modules["house"].house(houseId);
             });
         } else {
@@ -415,6 +422,6 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("house.houses");
 
-        modules["house"].renderHouse(params.houseId)
+        modules["house"].renderHouse(params.houseId);
     },
 }).init();

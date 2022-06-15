@@ -41,7 +41,9 @@ function hashChange() {
             currentPage = route;
 
             $(".sidebar .nav-item a").removeClass('active');
+            $(".sidebar .withibleOnlyWhenActive").hide();
             $(".sidebar .nav-item a[href='#" + route.split('.')[0] + "']").addClass('active');
+            $(".sidebar .withibleOnlyWhenActive[target='#" + route.split('.')[0] + "']").show();
 
             $("#loginForm").hide();
             $("#forgotForm").hide();

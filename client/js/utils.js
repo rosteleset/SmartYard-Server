@@ -279,21 +279,33 @@ function i18n(msg, ...args) {
     }
 }
 
-function leftSide(button, title, target, separator) {
+function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
     if (separator && !mainSidebarFirst) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
         `);
     }
     mainSidebarFirst = false;
-    $("#leftside-menu").append(`
-        <li class="nav-item" title="${title}">
-            <a href="${target}" class="nav-link">
-                <i class="${button} nav-icon"></i>
-                <p class="text-nowrap">${title}</p>
-            </a>
-        </li>
-    `);
+
+    if (withibleOnlyWhenActive) {
+        $("#leftside-menu").append(`
+            <li class="nav-item withibleOnlyWhenActive" target="${target}" title="${title}" style="display: none;">
+                <a href="${target}" class="nav-link">
+                    <i class="${button} nav-icon"></i>
+                    <p class="text-nowrap">${title}</p>
+                </a>
+            </li>
+        `);
+    } else {
+        $("#leftside-menu").append(`
+            <li class="nav-item" title="${title}">
+                <a href="${target}" class="nav-link">
+                    <i class="${button} nav-icon"></i>
+                    <p class="text-nowrap">${title}</p>
+                </a>
+            </li>
+        `);
+    }
 }
 
 function loadSubModules(parent, modules, done) {
