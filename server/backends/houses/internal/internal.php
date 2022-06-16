@@ -84,29 +84,36 @@
              */
             function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix)
             {
-                if (checkInt($houseId) && trim($entranceType) && trim($entrance) && checkInt($cmsType) && checkInt($prefix))
-                {
-                    $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, shared, lat, lon, cms_type) values (:entrance_type, :entrance, :shared, :lat, :lon, :cms_type)", [
-                        ":entrance_type" => $entranceType,
-                        ":entrance" => $entrance,
-                        ":shared" => (int)$shared,
-                        ":lat" => (float)$lat,
-                        ":lon" => (float)$lon,
-                        ":cms_type" => $cmsType,
-                    ]);
-
-                    if (!$entranceId) {
-                        return false;
-                    }
-
-                    return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
-                        ":address_house_id" => $houseId,
-                        ":house_entrance_id" => $entranceId,
-                        ":prefix" => $prefix,
-                    ]);
-                } else {
+                if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
                 }
+
+                if ((int)$shared && !(int)$prefix) {
+                    return false;
+                }
+
+                if (!(int)$shared) {
+                    $prefix = 0;
+                }
+
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, shared, lat, lon, cms_type) values (:entrance_type, :entrance, :shared, :lat, :lon, :cms_type)", [
+                    ":entrance_type" => $entranceType,
+                    ":entrance" => $entrance,
+                    ":shared" => (int)$shared,
+                    ":lat" => (float)$lat,
+                    ":lon" => (float)$lon,
+                    ":cms_type" => $cmsType,
+                ]);
+
+                if (!$entranceId) {
+                    return false;
+                }
+
+                return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
+                    ":address_house_id" => $houseId,
+                    ":house_entrance_id" => $entranceId,
+                    ":prefix" => $prefix,
+                ]);
             }
 
             /**
@@ -130,9 +137,16 @@
              */
             function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix)
             {
-                error_log(print_r([ $entranceId, $houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix ], true));
-                if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($prefix)) {
+                if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
+                }
+
+                if ((int)$shared && !(int)$prefix) {
+                    return false;
+                }
+
+                if (!(int)$shared) {
+                    $prefix = 0;
                 }
 
                 return
@@ -172,7 +186,9 @@
              */
             function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
-                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($autoOpen) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                    $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
+
                     $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password) values (:address_house_id, :floor, :flat, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
@@ -223,7 +239,9 @@
              */
             function modifyFlat($flatId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
-                if (checkInt($flatId) && trim($flat) && checkInt($manualBlock) && checkInt($autoOpen) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                if (checkInt($flatId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                    $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
+
                     $mod = $this->db->modify("update houses_flats set floor = :floor, flat = :flat, manual_block = :manual_block, open_code = :open_code, auto_open = :auto_open, white_rabbit = :white_rabbit, sip_enabled = :sip_enabled, sip_password = :sip_password where house_flat_id = $flatId", [
                         ":floor" => (int)$floor,
                         ":flat" => $flat,

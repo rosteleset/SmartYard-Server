@@ -225,6 +225,9 @@
                         placeholder: i18n("house.prefix"),
                         value: "0",
                         hidden: true,
+                        validate: (v, prefix) => {
+                            return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                        },
                     },
                     {
                         id: "lon",
@@ -414,19 +417,9 @@
                 },
                 {
                     id: "autoOpen",
-                    type: "select",
+                    type: "datetime",
                     title: i18n("house.autoOpen"),
                     placeholder: i18n("house.autoOpen"),
-                    options: [
-                        {
-                            id: "0",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "1",
-                            text: i18n("yes"),
-                        },
-                    ]
                 },
                 {
                     id: "whiteRabbit",
@@ -440,7 +433,27 @@
                         },
                         {
                             id: "1",
-                            text: i18n("yes"),
+                            text: i18n("house.1m"),
+                        },
+                        {
+                            id: "2",
+                            text: i18n("house.2m"),
+                        },
+                        {
+                            id: "3",
+                            text: i18n("house.3m"),
+                        },
+                        {
+                            id: "5",
+                            text: i18n("house.5m"),
+                        },
+                        {
+                            id: "7",
+                            text: i18n("house.7m"),
+                        },
+                        {
+                            id: "10",
+                            text: i18n("house.10m"),
                         },
                     ]
                 },
@@ -595,6 +608,9 @@
                         placeholder: i18n("house.prefix"),
                         value: entrance.prefix?entrance.prefix.toString():"0",
                         hidden: !parseInt(entrance.shared),
+                        validate: (v, prefix) => {
+                            return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                        },
                     },
                     {
                         id: "lon",
@@ -758,20 +774,10 @@
                     },
                     {
                         id: "autoOpen",
-                        type: "select",
+                        type: "datetime",
                         title: i18n("house.autoOpen"),
                         placeholder: i18n("house.autoOpen"),
-                        value: flat.autoOpen,
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("yes"),
-                            },
-                        ]
+                        value: date("Y-m-d", strtotime(flat.autoOpen)) + "T" + date("H:i", strtotime(flat.autoOpen)),
                     },
                     {
                         id: "whiteRabbit",
@@ -786,7 +792,27 @@
                             },
                             {
                                 id: "1",
-                                text: i18n("yes"),
+                                text: i18n("house.1m"),
+                            },
+                            {
+                                id: "2",
+                                text: i18n("house.2m"),
+                            },
+                            {
+                                id: "3",
+                                text: i18n("house.3m"),
+                            },
+                            {
+                                id: "5",
+                                text: i18n("house.5m"),
+                            },
+                            {
+                                id: "7",
+                                text: i18n("house.7m"),
+                            },
+                            {
+                                id: "10",
+                                text: i18n("house.10m"),
                             },
                         ]
                     },
@@ -987,24 +1013,6 @@
                                     nowrap: true,
                                 },
                             ],
-                            dropDown: {
-                                items: [
-                                    {
-                                        icon: "fas fa-door-open",
-                                        title: i18n("domophones.domophone"),
-                                        click: entranceId => {
-                                            location.href = "#domophones&entranceId=" + entranceId;
-                                        },
-                                    },
-                                    {
-                                        icon: "fas fa-video",
-                                        title: i18n("cctv.cctv"),
-                                        click: entranceId => {
-                                            location.href = "#cctv&entranceId=" + entranceId;
-                                        },
-                                    },
-                                ],
-                            },
                         });
                     }
 

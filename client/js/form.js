@@ -95,6 +95,10 @@ function cardForm(params) {
 
         first = "";
 
+        if (params.fields[i].type === "datetime") {
+            params.fields[i].type = "datetime-local";
+        }
+
         switch (params.fields[i].type) {
             case "select":
                 h += `<div class="input-group">`;
@@ -193,6 +197,7 @@ function cardForm(params) {
             case "tel":
             case "date":
             case "time":
+            case "datetime-local":
             case "password":
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
@@ -250,6 +255,7 @@ function cardForm(params) {
             case "tel":
             case "date":
             case "time":
+            case "datetime-local":
             case "password":
             case "text":
             case "area":
@@ -370,6 +376,7 @@ function cardForm(params) {
                 case "tel":
                 case "date":
                 case "time":
+                case "datetime-local":
                 case "password":
                 case "text":
                 case "area":
