@@ -32,10 +32,14 @@
 
                 if ($flats) {
                     foreach ($flats as &$flat) {
-                        $entrances = $this->db->get("select house_entrance_id from houses_entrances_flats where house_flat_id = {$flat["flatId"]}");
+                        $entrances = $this->db->get("select house_entrance_id, apartment, cms_levels from houses_entrances_flats where house_flat_id = {$flat["flatId"]}", false, [
+                            "house_entrance_id" => "entranceId",
+                            "apartment" => "apartment",
+                            "cms_levels" => "apartmentLevels",
+                        ]);
                         $flat["entrances"] = [];
                         foreach ($entrances as $e) {
-                            $flat["entrances"][] = $e["house_entrance_id"];
+                            $flat["entrances"][] = $e;
                         }
                     }
                 }
@@ -146,7 +150,7 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $entrances)
+            function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndFlats = false)
             {
                 if (checkInt($houseId) && trim($flat)) {
                     $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat) values (:address_house_id, :floor, :flat)", [
@@ -160,11 +164,21 @@
                             if (!checkInt($entrances[$i])) {
                                 return false;
                             } else {
-                                if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id) values (:house_entrance_id, :house_flat_id)", [
-                                    ":house_entrance_id" => $entrances[$i],
-                                    ":house_flat_id" => $flatId,
-
-                                ]) === false) {
+                                $ap = $flat;
+                                $lv = "";
+                                if ($apartmentsAndFlats && @$apartmentsAndFlats[$entrances[$i]]) {
+                                    $ap = (int)$apartmentsAndFlats[$entrances[$i]]["apartment"];
+                                    if (!$ap || $ap <= 0 || $ap > 9999) {
+                                        $ap = $flat;
+                                    }
+                                    $lv = $apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
+                                }
+                                if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
+                                        ":house_entrance_id" => $entrances[$i],
+                                        ":house_flat_id" => $flatId,
+                                        ":apartment" => $ap,
+                                        ":cms_levels" => $lv,
+                                    ]) === false) {
                                     return false;
                                 }
                             }
@@ -181,7 +195,7 @@
             /**
              * @inheritDoc
              */
-            function modifyFlat($flatId, $floor, $flat, $entrances)
+            function modifyFlat($flatId, $floor, $flat, $entrances, $apartmentsAndFlats = false)
             {
                 if (checkInt($flatId) && trim($flat)) {
                     $mod = $this->db->modify("update houses_flats set floor = :floor, flat = :flat where house_flat_id = $flatId", [
@@ -197,10 +211,20 @@
                             if (!checkInt($entrances[$i])) {
                                 return false;
                             } else {
-                                if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id) values (:house_entrance_id, :house_flat_id)", [
+                                $ap = $flat;
+                                $lv = "";
+                                if ($apartmentsAndFlats && @$apartmentsAndFlats[$entrances[$i]]) {
+                                    $ap = (int)$apartmentsAndFlats[$entrances[$i]]["apartment"];
+                                    if (!$ap || $ap <= 0 || $ap > 9999) {
+                                        $ap = $flat;
+                                    }
+                                    $lv = $apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
+                                }
+                                if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
                                     ":house_entrance_id" => $entrances[$i],
                                     ":house_flat_id" => $flatId,
-
+                                    ":apartment" => $ap,
+                                    ":cms_levels" => $lv,
                                 ]) === false) {
                                     return false;
                                 }

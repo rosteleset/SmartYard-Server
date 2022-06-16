@@ -43,7 +43,10 @@ CREATE INDEX houses_flats_address_house_id on houses_flats(address_house_id);
 CREATE TABLE houses_entrances_flats
 (
     house_entrance_id integer not null,
-    house_flat_id integer not null
+    house_flat_id integer not null,
+-- domophone's specific flat settings
+    apartment integer,                                                                                                  -- flat number
+    cms_levels text                                                                                                     -- cms levels
 );
 CREATE UNIQUE INDEX houses_entrances_flats_uniq on houses_entrances_flats (house_entrance_id, house_flat_id);
 CREATE INDEX houses_entrances_flats_house_entrance_id on houses_entrances_flats(house_entrance_id);

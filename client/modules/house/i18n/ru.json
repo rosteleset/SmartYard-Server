@@ -4,6 +4,8 @@
     "useExistingEntrance": "Использовать существующий",
     "addEntrance": "Добавить вход",
     "addFlat": "Добавить квартиру",
+    "editEntrance": "Изменить вход",
+    "editFlat": "Изменить квартиру",
     "useExistingEntranceQuestion": "Добавить новый вход или использовать существующий?",
     "entranceId": "#",
     "entrance": "Вход",
@@ -35,5 +37,7 @@
     "lon": "Широта",
     "completelyDeleteEntrance": "Удалить вход #%s полностью или только для этого дома?",
     "deleteEntranceComletely": "Удалить полностью",
-    "deleteEntranceLink": "Только для этого дома"
+    "deleteEntranceLink": "Только для этого дома",
+    "apartment": "Домофонный номер",
+    "apartmentLevels": "Уровни домофона"
 }

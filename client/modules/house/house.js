@@ -44,13 +44,14 @@
         });
     },
 
-    doAddFlat: function (houseId, floor, flat, entrances) {
+    doAddFlat: function (houseId, floor, flat, entrances, apartmentsAndLevels) {
         loadingStart();
         POST("houses", "flat", false, {
             houseId,
             floor,
             flat,
-            entrances
+            entrances,
+            apartmentsAndLevels
         }).
         fail(FAIL).
         done(() => {
@@ -79,12 +80,13 @@
         });
     },
 
-    doModifyFlat: function (flatId, floor, flat, entrances, houseId) {
+    doModifyFlat: function (flatId, floor, flat, entrances, apartmentsAndLevels, houseId) {
         loadingStart();
         PUT("houses", "flat", flatId, {
             floor,
             flat,
-            entrances
+            entrances,
+            apartmentsAndLevels
         }).
         fail(FAIL).
         done(() => {
@@ -267,11 +269,24 @@
 
     addFlat: function (houseId) {
         let entrances = [];
+        let prefx = md5(guid());
 
         for (let i in modules["house"].meta.entrances) {
+            let inputs = '';
+
+            inputs += `
+                <div class="row mt-2 ${prefx}" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" style="display: none;">
+                    <div class="col-6">
+                        <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" placeholder="${i18n("house.apartment")}">
+                    </div>
+                    <div class="col-6">
+                        <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" placeholder="${i18n("house.apartmentLevels")}">
+                    </div>
+                </div>
+            `;
             entrances.push({
                 id: modules["house"].meta.entrances[i].entranceId,
-                text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance,
+                text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance + inputs,
             });
         }
 
@@ -281,6 +296,7 @@
             borderless: true,
             topApply: true,
             apply: i18n("add"),
+            size: "lg",
             fields: [
                 {
                     id: "floor",
@@ -306,8 +322,23 @@
                 }
             ],
             callback: result => {
-                modules["house"].doAddFlat(houseId, result.floor, result.flat, result.entrances);
+                let apartmentsAndLevels = {};
+                for (let i in entrances) {
+                    apartmentsAndLevels[entrances[i].id] = {
+                        apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
+                        apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                    }
+                }
+                modules["house"].doAddFlat(houseId, result.floor, result.flat, result.entrances, apartmentsAndLevels);
             },
+        });
+
+        $(".checkBoxOption-entrances").off("change").on("change", function () {
+            if ($(this).prop("checked")) {
+                $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").show();
+            } else {
+                $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").hide();
+            }
         });
     },
 
@@ -425,16 +456,38 @@
             }
         }
 
-        let entrances = [];
-
-        for (let i in modules["house"].meta.entrances) {
-            entrances.push({
-                id: modules["house"].meta.entrances[i].entranceId,
-                text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance,
-            });
-        }
-
         if (flat) {
+
+            let entrances = [];
+            let entrances_selected = [];
+            let entrances_settings = {};
+
+            let prefx = md5(guid());
+
+            for (let i in flat.entrances) {
+                entrances_selected.push(flat.entrances[i].entranceId);
+                entrances_settings[flat.entrances[i].entranceId] = flat.entrances[i];
+            }
+
+            for (let i in modules["house"].meta.entrances) {
+                let inputs = '';
+
+                inputs += `
+                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" style="display: none;">
+                        <div class="col-6">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" placeholder="${i18n("house.apartment")}" value="${entrances_settings[modules["house"].meta.entrances[i].entranceId]?entrances_settings[modules["house"].meta.entrances[i].entranceId].apartment:""}">
+                        </div>
+                        <div class="col-6">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" placeholder="${i18n("house.apartmentLevels")}" value="${entrances_settings[modules["house"].meta.entrances[i].entranceId]?entrances_settings[modules["house"].meta.entrances[i].entranceId].apartmentLevels:""}">
+                        </div>
+                    </div>
+                `;
+                entrances.push({
+                    id: modules["house"].meta.entrances[i].entranceId,
+                    text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance + inputs,
+                });
+            }
+
             cardForm({
                 title: i18n("house.editFlat"),
                 footer: true,
@@ -442,6 +495,7 @@
                 topApply: true,
                 delete: houseId?i18n("house.deleteFlat"):false,
                 apply: i18n("edit"),
+                size: "lg",
                 fields: [
                     {
                         id: "flatId",
@@ -476,17 +530,36 @@
                         title: i18n("house.entrances"),
                         hidden: entrances.length <= 0,
                         options: entrances,
-                        value: flat.entrances,
+                        value: entrances_selected,
                     }
                 ],
                 callback: result => {
+                    let apartmentsAndLevels = {};
+                    for (let i in entrances) {
+                        apartmentsAndLevels[entrances[i].id] = {
+                            apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
+                            apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                        }
+                    }
                     if (result.delete === "yes") {
                         modules["house"].deleteFlat(flatId, houseId);
                     } else {
-                        modules["house"].doModifyFlat(flatId, result.floor, result.flat, result.entrances, houseId);
+                        modules["house"].doModifyFlat(flatId, result.floor, result.flat, result.entrances, apartmentsAndLevels, houseId);
                     }
                 },
 
+            });
+
+            for (let i in entrances_selected) {
+                $("." + prefx + "[data-entrance-id='" + entrances_selected[i] + "']").show();
+            }
+
+            $(".checkBoxOption-entrances").off("change").on("change", function () {
+                if ($(this).prop("checked")) {
+                    $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").show();
+                } else {
+                    $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").hide();
+                }
             });
         } else {
             error(i18n("houses.flatNotFound"));
@@ -553,7 +626,7 @@
                                     data: modules["house"].meta.flats[i].flatId,
                                 },
                                 {
-                                    data: modules["house"].meta.flats[i].floor,
+                                    data: modules["house"].meta.flats[i].floor?modules["house"].meta.flats[i].floor:"-",
                                 },
                                 {
                                     data: modules["house"].meta.flats[i].flat,

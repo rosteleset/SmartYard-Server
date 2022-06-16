@@ -74,18 +74,20 @@
              * @param $floor
              * @param $flat
              * @param $entrances
+             * @param $apartmentsAndFlats
              * @return boolean|integer
              */
-            abstract function addFlat($houseId, $floor, $flat, $entrances);
+            abstract function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndFlats = false);
 
             /**
              * @param $flatId
              * @param $floor
              * @param $flat
              * @param $entrances
+             * @param $apartmentsAndFlats
              * @return boolean
              */
-            abstract function modifyFlat($flatId, $floor, $flat, $entrances);
+            abstract function modifyFlat($flatId, $floor, $flat, $entrances, $apartmentsAndFlats = false);
 
             /**
              * @param $flatId

@@ -151,17 +151,17 @@ function cardForm(params) {
 
             case "multiselect":
                 if (params.target) {
-                    h += `<div class="overflow-auto pl-1">`;
+                    h += `<div class="overflow-y-auto pl-1">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div class="overflow-auto pl-1" style="max-height: 400px;">`;
+                    h += `<div class="overflow-y-auto pl-1" style="max-height: 400px;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
-                for (let j in params.fields[i].options) {
+                for (let j = 0; j < params.fields[i].options.length; j++) {
                     let id = md5(guid());
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
                     h += `
-                        <div class="custom-control custom-checkbox">
+                        <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1)?" mb-3":""}">
                             <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}/>
                             <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
                         </div>

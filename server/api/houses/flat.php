@@ -20,7 +20,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $flatId = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"]);
+                $flatId = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"]);
 
                 return api::ANSWER($flatId, ($flatId !== false)?"flatId":"notAcceptable");
             }
@@ -29,7 +29,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $success = $houses->modifyFlat($params["_id"], $params["floor"], $params["flat"], $params["entrances"]);
+                $success = $houses->modifyFlat($params["_id"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

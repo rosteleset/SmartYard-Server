@@ -25,16 +25,6 @@ CREATE TABLE domophones_entrances
 );
 CREATE UNIQUE INDEX domophones_entrances_uniq on domophones_entrances(domophone_id, domophone_output);
 
--- domophones flats -> apartments
-CREATE TABLE domophones_flats
-(
-    domophone_id integer not null,
-    house_flat_id integer not null,
-    apartment integer,                                                                                                  -- flat number
-    cms_levels text                                                                                                     -- cms levels
-);
-CREATE UNIQUE INDEX domophones_flats_uniq on domophones_flats(domophone_id, house_flat_id);
-
 -- domophones apartments -> cms
 CREATE TABLE domophones_cmses
 (
