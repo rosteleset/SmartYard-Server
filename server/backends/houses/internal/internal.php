@@ -27,7 +27,7 @@
                         "house_flat_id" => "flatId",
                         "floor" => "floor",
                         "flat" => "flat",
-                        "autoBlock" => "autoBlock",
+                        "auto_block" => "autoBlock",
                         "manual_block" => "manualBlock",
                         "open_code" => "openCode",
                         "auto_open" => "autoOpen",

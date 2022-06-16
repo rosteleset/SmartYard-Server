@@ -79,5 +79,6 @@
     "cityWasDeleted": "Город удален",
     "settlementWasDeleted": "Населенный пункт удален",
     "streetWasDeleted": "Улица удалена",
-    "houseWasDeleted": "Дом удален"
+    "houseWasDeleted": "Дом удален",
+    "regionIsoCode": "ISO код региона"
 }

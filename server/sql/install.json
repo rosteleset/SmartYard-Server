@@ -5,6 +5,7 @@
         "v1_attachments.sql",
         "v1_subscribers.sql",
         "v1_addresses.sql",
-        "v1_houses.sql"
+        "v1_houses.sql",
+        "v1_domophones.sql"
     ]
 }

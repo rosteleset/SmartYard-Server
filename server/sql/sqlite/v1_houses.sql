@@ -65,4 +65,4 @@ CREATE TABLE houses_flats_keys
     last_seen text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     comments text
 );
-CREATE UNIQUE INDEX domophones_keys_uniq on houses_flats_keys(house_flat_id, rfid);
+CREATE UNIQUE INDEX houses_flats_keys_uniq on houses_flats_keys(house_flat_id, rfid);
