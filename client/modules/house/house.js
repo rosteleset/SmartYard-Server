@@ -200,6 +200,13 @@
                         id: "shared",
                         type: "select",
                         title: i18n("house.shared"),
+                        select: (el, id, prefix) => {
+                            if (parseInt(el.val())) {
+                                $("#" + prefix + "prefix").parent().parent().show();
+                            } else {
+                                $("#" + prefix + "prefix").parent().parent().hide();
+                            }
+                        },
                         options: [
                             {
                                 id: "0",
@@ -217,6 +224,7 @@
                         title: i18n("house.prefix"),
                         placeholder: i18n("house.prefix"),
                         value: "0",
+                        hidden: true,
                     },
                     {
                         id: "lon",
@@ -519,7 +527,7 @@
                     {
                         id: "entranceId",
                         type: "text",
-                        title: i18n("house.entrance"),
+                        title: i18n("house.entranceId"),
                         value: entranceId,
                         readonly: true,
                     },
@@ -571,6 +579,13 @@
                                 text: i18n("yes"),
                             }
                         ],
+                        select: (el, id, prefix) => {
+                            if (parseInt(el.val())) {
+                                $("#" + prefix + "prefix").parent().parent().show();
+                            } else {
+                                $("#" + prefix + "prefix").parent().parent().hide();
+                            }
+                        },
                         value: entrance.shared.toString(),
                     },
                     {
@@ -579,6 +594,7 @@
                         title: i18n("house.prefix"),
                         placeholder: i18n("house.prefix"),
                         value: entrance.prefix?entrance.prefix.toString():"0",
+                        hidden: !parseInt(entrance.shared),
                     },
                     {
                         id: "lon",

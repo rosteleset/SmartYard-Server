@@ -98,7 +98,7 @@ function cardForm(params) {
         switch (params.fields[i].type) {
             case "select":
                 h += `<div class="input-group">`;
-                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control modalFormField"`;
+                h += `<select id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="form-control modalFormField"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -336,6 +336,7 @@ function cardForm(params) {
 
     $(".cardFormSelectWithRotate").off("click").on("click", function () {
         let select = $(this).parent().parent().children().first();
+        let i = parseInt(select.attr("data-field-index"));
         let val = select.val();
         let first = select.children().first();
         let found = false;
@@ -353,6 +354,10 @@ function cardForm(params) {
             next = first;
         }
         select.val(next.attr("value"));
+
+        if (typeof params.fields[i].select === "function") {
+            params.fields[i].select(select, params.fields[i].id, _prefix);
+        }
     });
 
     for (let i in params.fields) {
@@ -386,6 +391,14 @@ function cardForm(params) {
             });
         }
 
+        if (params.fields[i].type === "select") {
+            if (typeof params.fields[i].select === "function") {
+                $(`#${_prefix}${params.fields[i].id}`).off("change").on("change", function () {
+                    params.fields[i].select($(this), params.fields[i].id, _prefix);
+                });
+            }
+        }
+
         if (params.fields[i].type === "select2") {
             let s2p = {
                 language: lang["_code"],
@@ -410,15 +423,18 @@ function cardForm(params) {
             }
 
             $(`#${_prefix}${params.fields[i].id}`).select2(s2p);
+
             if (typeof params.fields[i].select === "function") {
                 $(`#${_prefix}${params.fields[i].id}`).off("select2:select").on("select2:select", function () {
                     params.fields[i].select($(this), params.fields[i].id, _prefix);
                 });
             }
+
             if (params.fields[i].value) {
                 $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value).trigger("change");
             }
         }
+
         if (params.fields[i].type === "rich") {
             $(`#${_prefix}${params.fields[i].id}`).summernote({
                 tabDisable: false,
