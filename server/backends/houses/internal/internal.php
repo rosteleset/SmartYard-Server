@@ -63,15 +63,18 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, shared, lat, lon from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId) order by entrance_type, entrance",
+                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, shared, lat, lon, cms_type, prefix from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
                     false,
                     [
+                        "address_house_id" => "houseId",
                         "house_entrance_id" => "entranceId",
                         "entrance_type" => "entranceType",
                         "entrance" => "entrance",
                         "shared" => "shared",
                         "lat" => "lat",
                         "lon" => "lon",
+                        "cms_type" => "cmsType",
+                        "prefix" => "prefix",
                     ]
                 );
             }
@@ -79,25 +82,27 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon)
+            function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix)
             {
-                if (checkInt($houseId) && trim($entranceType) && trim($entrance))
+                if (checkInt($houseId) && trim($entranceType) && trim($entrance) && checkInt($cmsType) && checkInt($prefix))
                 {
-                    $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, shared, lat, lon) values (:entrance_type, :entrance, :shared, :lat, :lon)", [
+                    $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, shared, lat, lon, cms_type) values (:entrance_type, :entrance, :shared, :lat, :lon, :cms_type)", [
                         ":entrance_type" => $entranceType,
                         ":entrance" => $entrance,
                         ":shared" => (int)$shared,
                         ":lat" => (float)$lat,
                         ":lon" => (float)$lon,
+                        ":cms_type" => $cmsType,
                     ]);
 
                     if (!$entranceId) {
                         return false;
                     }
 
-                    return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id) values (:address_house_id, :house_entrance_id)", [
+                    return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
                         ":address_house_id" => $houseId,
                         ":house_entrance_id" => $entranceId,
+                        ":prefix" => $prefix,
                     ]);
                 } else {
                     return false;
@@ -107,34 +112,42 @@
             /**
              * @inheritDoc
              */
-            function addEntrance($houseId, $entranceId)
+            function addEntrance($houseId, $entranceId, $prefix)
             {
-                if (!checkInt($houseId) || !checkInt($entranceId)) {
+                if (!checkInt($houseId) || !checkInt($entranceId) || !checkInt($prefix)) {
                     return false;
                 }
 
-                return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id) values (:address_house_id, :house_entrance_id)", [
+                return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
                     ":address_house_id" => $houseId,
                     ":house_entrance_id" => $entranceId,
+                    ":prefix" => $prefix,
                 ]);
             }
 
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $entranceType, $entrance, $shared, $lat, $lon)
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix)
             {
-                if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance)) {
+                error_log(print_r([ $entranceId, $houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix ], true));
+                if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($prefix)) {
                     return false;
                 }
 
-                return $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, shared = :shared, lat = :lat, lon = :lon where house_entrance_id = $entranceId", [
-                    ":entrance_type" => $entranceType,
-                    ":entrance" => $entrance,
-                    ":shared" => (int)$shared,
-                    ":lat" => (float)$lat,
-                    ":lon" => (float)$lon,
-                ]);
+                return
+                    $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
+                        ":prefix" => $prefix,
+                    ]) !== false
+                    and
+                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, shared = :shared, lat = :lat, lon = :lon, cms_type = :cms_type where house_entrance_id = $entranceId", [
+                        ":entrance_type" => $entranceType,
+                        ":entrance" => $entrance,
+                        ":shared" => (int)$shared,
+                        ":lat" => (float)$lat,
+                        ":lon" => (float)$lon,
+                        ":cms_type" => $cmsType,
+                    ]) !== false;
             }
 
             /**
@@ -283,7 +296,7 @@
                 }
 
                 if ($houseId) {
-                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, lat, lon, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id and address_house_id <> $houseId limit 1) address_house_id from houses_entrances where shared = 1) as t1 where address_house_id is not null", false, [
+                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, lat, lon, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id and address_house_id <> $houseId limit 1) address_house_id from houses_entrances where shared = 1 and house_entrance_id in (select house_entrance_id from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId))) as t1 where address_house_id is not null", false, [
                         "house_entrance_id" => "entranceId",
                         "entrance_type" => "entranceType",
                         "entrance" => "entrance",

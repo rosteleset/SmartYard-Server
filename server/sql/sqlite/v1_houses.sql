@@ -6,7 +6,8 @@ CREATE TABLE houses_entrances
     entrance text not null,
     shared integer,
     lat real,
-    lon real
+    lon real,
+    cms_type integer
 );
 CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);
 
@@ -14,11 +15,14 @@ CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);
 CREATE TABLE houses_houses_entrances
 (
     address_house_id integer not null,
-    house_entrance_id integer not null
+    house_entrance_id integer not null,
+    prefix integer not null
 );
-CREATE UNIQUE INDEX houses_houses_entrances_uniq on houses_houses_entrances(address_house_id, house_entrance_id);
+CREATE UNIQUE INDEX houses_houses_entrances_uniq_1 on houses_houses_entrances(address_house_id, house_entrance_id);
+CREATE UNIQUE INDEX houses_houses_entrances_uniq_2 on houses_houses_entrances(house_entrance_id, prefix);
 CREATE INDEX houses_houses_entrances_address_house_id on houses_houses_entrances(address_house_id);
 CREATE INDEX houses_houses_entrances_house_entrance_id on houses_houses_entrances(house_entrance_id);
+CREATE INDEX houses_houses_entrances_prefix on houses_houses_entrances(prefix);
 
 -- flats
 CREATE TABLE houses_flats

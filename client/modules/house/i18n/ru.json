@@ -40,5 +40,17 @@
     "deleteEntranceComletely": "Удалить полностью",
     "deleteEntranceLink": "Только для этого дома",
     "apartment": "Домофонный номер",
-    "apartmentLevels": "Уровни домофона"
+    "apartmentLevels": "Уровни домофона",
+    "manualBlock": "Отключена",
+    "openCode": "Код открытия дверм",
+    "autoOpen": "Автооткрытие",
+    "whiteRabbit": "&quot;Белый кролик&quot;",
+    "sipEnabled": "SIP интерком",
+    "sip": "SIP",
+    "webRtc": "WebRTC",
+    "sipPassword": "Пароль учетной записи SIP",
+    "cmsType": "Тип КМС",
+    "cmsA": "Аналоговая линия",
+    "cmsAV": "Аналоговая линия с видео",
+    "prefix": "Префикс выбора дома"
 }

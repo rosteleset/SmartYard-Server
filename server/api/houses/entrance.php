@@ -22,11 +22,11 @@
                 $houses = loadBackend("houses");
 
                 if (@$params["entranceId"]) {
-                    $success = $houses->addEntrance($params["houseId"], $params["entranceId"]);
+                    $success = $houses->addEntrance($params["houseId"], $params["entranceId"], $params["prefix"]);
 
                     return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
                 } else {
-                    $entranceId = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"]);
+                    $entranceId = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"], $params["cmsType"], $params["prefix"]);
 
                     return api::ANSWER($entranceId, ($entranceId !== false)?"entranceId":"notAcceptable");
                 }
@@ -36,7 +36,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $success = $houses->modifyEntrance($params["_id"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"]);
+                $success = $houses->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["shared"], $params["lat"], $params["lon"], $params["cmsType"], $params["prefix"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

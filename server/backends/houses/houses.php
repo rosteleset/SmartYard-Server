@@ -34,27 +34,33 @@
              * @param $shared
              * @param $lat
              * @param $lon
+             * @param $cmsType
+             * @param $prefix
              * @return boolean|integer
              */
-            abstract function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon);
+            abstract function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix);
 
             /**
              * @param $houseId
              * @param $entranceId
+             * @param $prefix
              * @return boolean
              */
-            abstract function addEntrance($houseId, $entranceId);
+            abstract function addEntrance($houseId, $entranceId, $prefix);
 
             /**
              * @param $entranceId
+             * @param $houseId
              * @param $entranceType
              * @param $entrance
              * @param $shared
              * @param $lat
              * @param $lon
+             * @param $cmsType
+             * @param $prefix
              * @return boolean
              */
-            abstract function modifyEntrance($entranceId, $entranceType, $entrance, $shared, $lat, $lon);
+            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix);
 
             /**
              * @param $entranceId

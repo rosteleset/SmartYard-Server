@@ -10,11 +10,12 @@
         moduleLoaded("house", this);
     },
 
-    doAddEntrance: function (houseId, entranceId) {
+    doAddEntrance: function (houseId, entranceId, prefix) {
         loadingStart();
         POST("houses", "entrance", false, {
             houseId,
             entranceId,
+            prefix,
         }).
         fail(FAIL).
         done(() => {
@@ -25,7 +26,7 @@
         });
     },
 
-    doCreateEntrance: function (houseId, entranceType, entrance, shared, lat, lon) {
+    doCreateEntrance: function (houseId, entranceType, entrance, shared, lat, lon, cmsType, prefix) {
         loadingStart();
         POST("houses", "entrance", false, {
             houseId,
@@ -33,7 +34,9 @@
             entrance,
             shared,
             lat,
-            lon
+            lon,
+            cmsType,
+            prefix
         }).
         fail(FAIL).
         done(() => {
@@ -68,14 +71,17 @@
         });
     },
 
-    doModifyEntrance: function (entranceId, entranceType, entrance, shared, lat, lon, houseId) {
+    doModifyEntrance: function (entranceId, houseId, entranceType, entrance, shared, lat, lon, cmsType, prefix) {
         loadingStart();
         PUT("houses", "entrance", entranceId, {
+            houseId,
             entranceType,
             entrance,
             shared,
             lat,
-            lon
+            lon,
+            cmsType,
+            prefix,
         }).
         fail(FAIL).
         done(() => {
@@ -156,6 +162,7 @@
                 borderless: true,
                 topApply: true,
                 apply: i18n("add"),
+                size: "lg",
                 fields: [
                     {
                         id: "entranceType",
@@ -205,6 +212,13 @@
                         ]
                     },
                     {
+                        id: "prefix",
+                        type: "text",
+                        title: i18n("house.prefix"),
+                        placeholder: i18n("house.prefix"),
+                        value: "0",
+                    },
+                    {
                         id: "lon",
                         type: "text",
                         title: i18n("house.lon"),
@@ -216,15 +230,36 @@
                         title: i18n("house.lat"),
                         placeholder: i18n("house.lat"),
                     },
+                    {
+                        id: "cmsType",
+                        type: "select",
+                        title: i18n("house.cmsType"),
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("house.cmsA"),
+                            },
+                            {
+                                id: "2",
+                                text: i18n("house.cmsAV"),
+                            },
+                        ]
+                    },
                 ],
                 callback: result => {
-                    modules["house"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.shared, result.lat, result.lon);
+                    modules["house"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.shared, result.lat, result.lon, result.cmsType, result.prefix);
                 },
             });
         }, () => {
             loadingStart();
             GET("houses", "sharedEntrances", houseId, true).
             done(response => {
+                console.log(response);
+
                 let entrances = [];
 
                 entrances.push({
@@ -249,7 +284,7 @@
 
                     entrances.push({
                         id: response.entrances[j].entranceId,
-                        text: house + ", " + i18n("house.entranceType" +response.entrances[j].entranceType.substring(0, 1).toUpperCase() + response.entrances[j].entranceType.substring(1) + "Full").toLowerCase() + " " + response.entrances[j].entrance,
+                        text: house + ", " + i18n("house.entranceType" + response.entrances[j].entranceType.substring(0, 1).toUpperCase() + response.entrances[j].entranceType.substring(1) + "Full").toLowerCase() + " " + response.entrances[j].entrance,
                     });
                 }
 
@@ -265,11 +300,21 @@
                             type: "select2",
                             title: i18n("house.entrance"),
                             options: entrances,
+                            validate: v => {
+                                return parseInt(v) > 0;
+                            },
+                        },
+                        {
+                            id: "prefix",
+                            type: "text",
+                            title: i18n("house.prefix"),
+                            placeholder: i18n("house.prefix"),
+                            value: "0",
                         },
                     ],
                     callback: result => {
                         if (parseInt(result.entranceId)) {
-                            modules["house"].doAddEntrance(houseId, result.entranceId);
+                            modules["house"].doAddEntrance(houseId, result.entranceId, result.prefix);
                         }
                     },
                 });
@@ -294,10 +339,17 @@
                     </div>
                 </div>
             `;
-            entrances.push({
-                id: modules["house"].meta.entrances[i].entranceId,
-                text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance + inputs,
-            });
+            if (parseInt(modules["house"].meta.entrances[i].cmsType)) {
+                entrances.push({
+                    id: modules["house"].meta.entrances[i].entranceId,
+                    text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance + inputs,
+                });
+            } else {
+                entrances.push({
+                    id: modules["house"].meta.entrances[i].entranceId,
+                    text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance,
+                });
+            }
         }
 
         cardForm({
@@ -407,8 +459,8 @@
                 {
                     id: "sipPassword",
                     type: "text",
-                    title: i18n("sipPassword"),
-                    placeholder: i18n("sipPassword"),
+                    title: i18n("house.sipPassword"),
+                    placeholder: i18n("house.sipPassword"),
                     validate: v => {
                         return $.trim(v).length === 0 || $.trim(v).length >= 8;
                     },
@@ -424,9 +476,11 @@
             callback: result => {
                 let apartmentsAndLevels = {};
                 for (let i in entrances) {
-                    apartmentsAndLevels[entrances[i].id] = {
-                        apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
-                        apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                    if ($(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).length) {
+                        apartmentsAndLevels[entrances[i].id] = {
+                            apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
+                            apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                        }
                     }
                 }
                 modules["house"].doAddFlat(houseId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword);
@@ -460,6 +514,7 @@
                 topApply: true,
                 apply: i18n("edit"),
                 delete: i18n("house.deleteEntrance"),
+                size: "lg",
                 fields: [
                     {
                         id: "entranceId",
@@ -519,6 +574,13 @@
                         value: entrance.shared.toString(),
                     },
                     {
+                        id: "prefix",
+                        type: "text",
+                        title: i18n("house.prefix"),
+                        placeholder: i18n("house.prefix"),
+                        value: entrance.prefix?entrance.prefix.toString():"0",
+                    },
+                    {
                         id: "lon",
                         type: "text",
                         title: i18n("house.lon"),
@@ -532,12 +594,32 @@
                         placeholder: i18n("house.lat"),
                         value: entrance.lat,
                     },
+                    {
+                        id: "cmsType",
+                        type: "select",
+                        title: i18n("house.cmsType"),
+                        value: entrance.cmsType,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("house.cmsA"),
+                            },
+                            {
+                                id: "2",
+                                text: i18n("house.cmsAV"),
+                            },
+                        ]
+                    },
                 ],
                 callback: result => {
                     if (result.delete === "yes") {
                         modules["house"].deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
                     } else {
-                        modules["house"].doModifyEntrance(entranceId, result.entranceType, result.entrance, result.shared, result.lat, result.lon, houseId);
+                        modules["house"].doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.shared, result.lat, result.lon, result.cmsType, result.prefix);
                     }
                 },
             });
@@ -580,10 +662,17 @@
                         </div>
                     </div>
                 `;
-                entrances.push({
-                    id: modules["house"].meta.entrances[i].entranceId,
-                    text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance + inputs,
-                });
+                if (parseInt(modules["house"].meta.entrances[i].cmsType)) {
+                    entrances.push({
+                        id: modules["house"].meta.entrances[i].entranceId,
+                        text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance + inputs,
+                    });
+                } else {
+                    entrances.push({
+                        id: modules["house"].meta.entrances[i].entranceId,
+                        text: i18n("house.entranceType" + modules["house"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["house"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["house"].meta.entrances[i].entrance,
+                    });
+                }
             }
 
             cardForm({
@@ -709,8 +798,8 @@
                     {
                         id: "sipPassword",
                         type: "text",
-                        title: i18n("sipPassword"),
-                        placeholder: i18n("sipPassword"),
+                        title: i18n("house.sipPassword"),
+                        placeholder: i18n("house.sipPassword"),
                         value: flat.sipPassword,
                         validate: v => {
                             return $.trim(v).length === 0 || $.trim(v).length >= 8;
@@ -727,9 +816,11 @@
                 callback: result => {
                     let apartmentsAndLevels = {};
                     for (let i in entrances) {
-                        apartmentsAndLevels[entrances[i].id] = {
-                            apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
-                            apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                        if ($(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).length) {
+                            apartmentsAndLevels[entrances[i].id] = {
+                                apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
+                                apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                            }
                         }
                     }
                     if (result.delete === "yes") {
@@ -753,7 +844,7 @@
                 }
             });
         } else {
-            error(i18n("houses.flatNotFound"));
+            error(i18n("house.flatNotFound"));
         }
     },
 
@@ -937,6 +1028,8 @@
             if (modules["house"].meta.house && modules["house"].meta.house.houseFull) {
                 document.title = i18n("windowTitle") + " :: " + i18n("house.house") + " :: " + modules["house"].meta.house.houseFull;
             }
+
+            console.log( modules["house"].meta);
 
             render();
         });
