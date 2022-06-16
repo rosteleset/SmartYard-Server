@@ -417,9 +417,9 @@
                 },
                 {
                     id: "autoOpen",
-                    type: "datetime",
+                    type: "text",
                     title: i18n("house.autoOpen"),
-                    placeholder: i18n("house.autoOpen"),
+                    placeholder: date("Y-m-d H:i"),
                 },
                 {
                     id: "whiteRabbit",
@@ -774,10 +774,10 @@
                     },
                     {
                         id: "autoOpen",
-                        type: "datetime",
+                        type: "text",
                         title: i18n("house.autoOpen"),
-                        placeholder: i18n("house.autoOpen"),
-                        value: date("Y-m-d", strtotime(flat.autoOpen)) + "T" + date("H:i", strtotime(flat.autoOpen)),
+                        placeholder: date("Y-m-d H:i"),
+                        value: date("Y-m-d H:i", strtotime(flat.autoOpen)),
                     },
                     {
                         id: "whiteRabbit",

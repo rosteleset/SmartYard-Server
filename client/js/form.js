@@ -207,6 +207,9 @@ function cardForm(params) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
                 }
+                if (params.fields[i].pattern) {
+                    h += ` pattern="${params.fields[i].pattern}"`;
+                }
                 h += `>`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group-append">`;
