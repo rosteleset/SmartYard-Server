@@ -91,7 +91,9 @@
             message(i18n("house.flatWasChanged"));
         }).
         always(() => {
-            modules["house"].renderHouse(houseId);
+            if (houseId) {
+                modules["house"].renderHouse(houseId);
+            }
         });
     },
 
@@ -438,7 +440,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: i18n("house.deleteFlat"),
+                delete: houseId?i18n("house.deleteFlat"):false,
                 apply: i18n("edit"),
                 fields: [
                     {
