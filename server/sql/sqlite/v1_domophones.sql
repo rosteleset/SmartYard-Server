@@ -1,7 +1,7 @@
 -- panels
-CREATE TABLE domophones_devices
+CREATE TABLE domophones
 (
-    domophone_device_id integer not null primary key autoincrement,
+    domophone_id integer not null primary key autoincrement,
     enabled integer,
     model text not null,
     version text not null,
@@ -13,28 +13,38 @@ CREATE TABLE domophones_devices
     locks_disabled integer,
     cms_levels text
 );
+CREATE INDEX domophones_ip on domophones(ip);
 
 -- entrances
 CREATE TABLE domophones_entrances
 (
-    domophone_entrance_id integer not null primary key autoincrement,
-    house_entrance_id integer not null,                                                                                 -- link to house entrance
-    domophone_device_id integer,
-    domophone_device_output integer,
-    camera_device_id integer
+    house_entrance_id integer not null primary key,                                                                     -- link to house entrance
+    domophone_id integer not null,
+    domophone_output integer,
+    camera_id integer
 );
+CREATE UNIQUE INDEX domophones_entrances_uniq on domophones_entrances(domophone_id, domophone_output);
 
--- panels <-> flats (cms attached)
-CREATE TABLE domophones_panels_flats
+-- domophones cmses
+CREATE TABLE domophones_cmses
 (
-    domophone_panel_id integer not null,
-    house_flat_id integer not null,
+    domophone_id integer not null,
     apartment integer not null,                                                                                         -- flat number
     cms text not null,
     dozen integer not null,
     unit text not null
 );
-CREATE UNIQUE INDEX domophones_panels_flats_uniq on domophones_panels_flats(domophone_panel_id, house_flat_id);
+CREATE UNIQUE INDEX domophones_cmses_uniq on domophones_cmses(domophone_id, cms, dozen, unit);
+
+-- domophones flats
+CREATE TABLE domophones_flats
+(
+    domophone_id integer not null,
+    apartment integer not null,                                                                                         -- flat number
+    cms_levels text,                                                                                                    -- cms levels
+    house_flat_id integer not null
+);
+CREATE UNIQUE INDEX domophones_flats_uniq on domophones_flats(domophone_id, apartment, house_flat_id);
 
 -- domophone's specific flat settings
 CREATE TABLE domophones_flats
@@ -45,11 +55,8 @@ CREATE TABLE domophones_flats
     code text,                                                                                                          -- door open code
     auto_open text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     white_rabbit integer,                                                                                               -- 1/0
-    sip integer,                                                                                                        -- 0 - disabled, 1 - classic sip, 2 - webrtc
-    sip_password text,                                                                                                  -- sip password
-    cms integer,                                                                                                        -- 1/0 cms enabled
-    cms_blocked integer,                                                                                                -- 1/0 cms blocked
-    cms_levels text                                                                                                     -- cms levels
+    sip_enabled integer,                                                                                                -- 0 - disabled, 1 - classic sip, 2 - webrtc
+    sip_password text                                                                                                   -- sip password
 );
 
 -- rfid keys
