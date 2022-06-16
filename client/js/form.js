@@ -56,6 +56,8 @@ function cardForm(params) {
         });
     }
 
+    let first = " no-border-top";
+
     for (let i in params.fields) {
         if (params.fields[i].id === "-") {
             h += "<tr class='mt-0 mb-0 pt-0 pb-0'>";
@@ -84,12 +86,14 @@ function cardForm(params) {
         params.fields[i].type = params.fields[i].type?params.fields[i].type:"text";
         if (!params.singleColumn) {
             if (params.fields[i].hint || params.fields[i].type === "multiselect" || params.fields[i].type === "area") {
-                h += `<td class="tdform-top">${params.fields[i].title}</td>`;
+                h += `<td class="tdform-top${first}">${params.fields[i].title}</td>`;
             } else {
-                h += `<td class="tdform">${params.fields[i].title}</td>`;
+                h += `<td class="tdform${first}">${params.fields[i].title}</td>`;
             }
         }
-        h += `<td class="tdform-right">`;
+        h += `<td class="tdform-right${first}">`;
+
+        first = "";
 
         switch (params.fields[i].type) {
             case "select":

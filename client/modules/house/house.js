@@ -623,6 +623,13 @@
                                             location.href = "#domophones&entranceId=" + entranceId;
                                         },
                                     },
+                                    {
+                                        icon: "fas fa-video",
+                                        title: i18n("cctv.cctv"),
+                                        click: entranceId => {
+                                            location.href = "#cctv&entranceId=" + entranceId;
+                                        },
+                                    },
                                 ],
                             },
                         });

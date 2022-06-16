@@ -123,3 +123,7 @@ select {
 .select2-invalid > span.select2 > span.selection > span.select2-selection {
   border-color: #dc3435 !important;
 }
+
+.no-border-top {
+  border-top: none !important;
+}
