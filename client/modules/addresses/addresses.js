@@ -13,7 +13,6 @@
 
     addresses: function (addresses) {
         modules["addresses"].meta = addresses["addresses"];
-        console.log(modules["addresses"].meta);
     },
 
     path: function (object, id) {

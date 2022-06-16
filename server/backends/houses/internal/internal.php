@@ -21,12 +21,19 @@
                     return false;
                 }
 
-                $flats = $this->db->get("select house_flat_id, floor, flat from houses_flats where address_house_id = $houseId order by flat",
+                $flats = $this->db->get("select house_flat_id, floor, flat, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password from houses_flats where address_house_id = $houseId order by flat",
                     false,
                     [
                         "house_flat_id" => "flatId",
                         "floor" => "floor",
                         "flat" => "flat",
+                        "autoBlock" => "autoBlock",
+                        "manual_block" => "manualBlock",
+                        "open_code" => "openCode",
+                        "auto_open" => "autoOpen",
+                        "white_rabbit" => "whiteRabbit",
+                        "sip_enabled" => "sipEnabled",
+                        "sip_password" => "sipPassword",
                     ]
                 );
 
@@ -150,13 +157,19 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndFlats = false)
+            function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
-                if (checkInt($houseId) && trim($flat)) {
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat) values (:address_house_id, :floor, :flat)", [
+                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($autoOpen) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password) values (:address_house_id, :floor, :flat, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
+                        ":manual_block" => $manualBlock,
+                        ":open_code" => $openCode,
+                        ":auto_open" => $autoOpen,
+                        ":white_rabbit" => $whiteRabbit,
+                        ":sip_enabled" => $sipEnabled,
+                        ":sip_password" => $sipPassword,
                     ]);
 
                     if ($flatId) {
@@ -195,12 +208,18 @@
             /**
              * @inheritDoc
              */
-            function modifyFlat($flatId, $floor, $flat, $entrances, $apartmentsAndFlats = false)
+            function modifyFlat($flatId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
-                if (checkInt($flatId) && trim($flat)) {
-                    $mod = $this->db->modify("update houses_flats set floor = :floor, flat = :flat where house_flat_id = $flatId", [
+                if (checkInt($flatId) && trim($flat) && checkInt($manualBlock) && checkInt($autoOpen) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                    $mod = $this->db->modify("update houses_flats set floor = :floor, flat = :flat, manual_block = :manual_block, open_code = :open_code, auto_open = :auto_open, white_rabbit = :white_rabbit, sip_enabled = :sip_enabled, sip_password = :sip_password where house_flat_id = $flatId", [
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
+                        ":manual_block" => $manualBlock,
+                        ":open_code" => $openCode,
+                        ":auto_open" => $autoOpen,
+                        ":white_rabbit" => $whiteRabbit,
+                        ":sip_enabled" => $sipEnabled,
+                        ":sip_password" => $sipPassword,
                     ]);
 
                     if ($mod !== false) {

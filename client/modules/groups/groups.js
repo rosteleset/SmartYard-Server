@@ -145,8 +145,6 @@
         loadingStart();
         GET("accounts", "users", false, true).done(users => {
             GET("accounts", "groupUsers", gid, true).done(uids => {
-                console.log(uids);
-
                 let users_list = [];
 
                 for (let i in users.users) {

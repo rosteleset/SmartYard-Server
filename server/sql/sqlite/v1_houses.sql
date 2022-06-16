@@ -30,7 +30,7 @@ CREATE TABLE houses_flats
 -- domophone's specific flat settings
     manual_block integer,                                                                                               -- 1/0 manaul blocking (by abonent?)
     auto_block integer,                                                                                                 -- 1/0 auto block (by billing system?)
-    code text,                                                                                                          -- door open code
+    open_code text,                                                                                                     -- door open code
     auto_open text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     white_rabbit integer,                                                                                               -- 1/0
     sip_enabled integer,                                                                                                -- 0 - disabled, 1 - classic sip, 2 - webrtc

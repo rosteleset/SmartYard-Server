@@ -7,7 +7,6 @@
     },
     "modules": [
         "tt",
-        "settings",
         "asterisk",
         "addresses",
         "house",

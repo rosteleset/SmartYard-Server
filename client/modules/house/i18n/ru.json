@@ -27,6 +27,7 @@
     "deleteFlat": "Удалить квартиру",
     "deleteEntrance": "Удалить вход",
     "confirmDeleteFlat": "Удалить квариру #%s?",
+    "confirmDeleteEntrance": "Удалить вход #%s?",
     "entranceWasDeleted": "Вход удален",
     "flatWasDeleted": "Квартира удалена",
     "entranceWasAdded": "Вход добавлен",

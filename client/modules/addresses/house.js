@@ -66,7 +66,6 @@
                     done(result => {
                         GET("addresses", "house", result.houseId).
                         done(result => {
-                            console.log(result);
                             message(i18n("addresses.houseWasAdded"));
                             if (result && result.house && (result.house.streetId || result.house.settlementId)) {
                                 if (result.house.streetId) {

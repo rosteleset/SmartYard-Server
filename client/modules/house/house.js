@@ -44,14 +44,20 @@
         });
     },
 
-    doAddFlat: function (houseId, floor, flat, entrances, apartmentsAndLevels) {
+    doAddFlat: function (houseId, floor, flat, entrances, apartmentsAndLevels, manualBlock, openCode, autoOpen, whiteRabbit, sipEnabled, sipPassword) {
         loadingStart();
         POST("houses", "flat", false, {
             houseId,
             floor,
             flat,
             entrances,
-            apartmentsAndLevels
+            apartmentsAndLevels,
+            manualBlock,
+            openCode,
+            autoOpen,
+            whiteRabbit,
+            sipEnabled,
+            sipPassword
         }).
         fail(FAIL).
         done(() => {
@@ -80,13 +86,19 @@
         });
     },
 
-    doModifyFlat: function (flatId, floor, flat, entrances, apartmentsAndLevels, houseId) {
+    doModifyFlat: function (flatId, floor, flat, entrances, apartmentsAndLevels, manualBlock, openCode, autoOpen, whiteRabbit, sipEnabled, sipPassword, houseId) {
         loadingStart();
         PUT("houses", "flat", flatId, {
             floor,
             flat,
             entrances,
-            apartmentsAndLevels
+            apartmentsAndLevels,
+            manualBlock,
+            openCode,
+            autoOpen,
+            whiteRabbit,
+            sipEnabled,
+            sipPassword
         }).
         fail(FAIL).
         done(() => {
@@ -272,9 +284,7 @@
         let prefx = md5(guid());
 
         for (let i in modules["house"].meta.entrances) {
-            let inputs = '';
-
-            inputs += `
+            let inputs = `
                 <div class="row mt-2 ${prefx}" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" style="display: none;">
                     <div class="col-6">
                         <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" placeholder="${i18n("house.apartment")}">
@@ -319,7 +329,97 @@
                     title: i18n("house.entrances"),
                     hidden: entrances.length <= 0,
                     options: entrances,
-                }
+                },
+                {
+                    id: "manualBlock",
+                    type: "select",
+                    title: i18n("house.manualBlock"),
+                    placeholder: i18n("house.manualBlock"),
+                    options: [
+                        {
+                            id: "0",
+                            text: i18n("no"),
+                        },
+                        {
+                            id: "1",
+                            text: i18n("yes"),
+                        },
+                    ]
+                },
+                {
+                    id: "openCode",
+                    type: "text",
+                    title: i18n("house.openCode"),
+                    placeholder: i18n("house.openCode"),
+                },
+                {
+                    id: "autoOpen",
+                    type: "select",
+                    title: i18n("house.autoOpen"),
+                    placeholder: i18n("house.autoOpen"),
+                    options: [
+                        {
+                            id: "0",
+                            text: i18n("no"),
+                        },
+                        {
+                            id: "1",
+                            text: i18n("yes"),
+                        },
+                    ]
+                },
+                {
+                    id: "whiteRabbit",
+                    type: "select",
+                    title: i18n("house.whiteRabbit"),
+                    placeholder: i18n("house.whiteRabbit"),
+                    options: [
+                        {
+                            id: "0",
+                            text: i18n("no"),
+                        },
+                        {
+                            id: "1",
+                            text: i18n("yes"),
+                        },
+                    ]
+                },
+                {
+                    id: "sipEnabled",
+                    type: "select",
+                    title: i18n("house.sipEnabled"),
+                    placeholder: i18n("house.sipEnabled"),
+                    options: [
+                        {
+                            id: "0",
+                            text: i18n("no"),
+                        },
+                        {
+                            id: "1",
+                            text: i18n("house.sip"),
+                        },
+                        {
+                            id: "2",
+                            text: i18n("house.webRtc"),
+                        },
+                    ]
+                },
+                {
+                    id: "sipPassword",
+                    type: "text",
+                    title: i18n("sipPassword"),
+                    placeholder: i18n("sipPassword"),
+                    validate: v => {
+                        return $.trim(v).length === 0 || $.trim(v).length >= 8;
+                    },
+                    button: {
+                        "class": "fas fa-magic",
+                        click: prefix => {
+                            PWGen.initialize();
+                            $("#" + prefix + "sipPassword").val(PWGen.generate());
+                        }
+                    }
+                },
             ],
             callback: result => {
                 let apartmentsAndLevels = {};
@@ -329,7 +429,7 @@
                         apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
                     }
                 }
-                modules["house"].doAddFlat(houseId, result.floor, result.flat, result.entrances, apartmentsAndLevels);
+                modules["house"].doAddFlat(houseId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword);
             },
         });
 
@@ -470,9 +570,7 @@
             }
 
             for (let i in modules["house"].meta.entrances) {
-                let inputs = '';
-
-                inputs += `
+                let inputs = `
                     <div class="row mt-2 ${prefx}" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" style="display: none;">
                         <div class="col-6">
                             <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["house"].meta.entrances[i].entranceId}" placeholder="${i18n("house.apartment")}" value="${entrances_settings[modules["house"].meta.entrances[i].entranceId]?entrances_settings[modules["house"].meta.entrances[i].entranceId].apartment:""}">
@@ -510,9 +608,6 @@
                         title: i18n("house.floor"),
                         placeholder: i18n("house.floor"),
                         value: flat.floor,
-                        validate: v => {
-                            return !!parseInt(v);
-                        }
                     },
                     {
                         id: "flat",
@@ -531,7 +626,103 @@
                         hidden: entrances.length <= 0,
                         options: entrances,
                         value: entrances_selected,
-                    }
+                    },
+                    {
+                        id: "manualBlock",
+                        type: "select",
+                        title: i18n("house.manualBlock"),
+                        placeholder: i18n("house.manualBlock"),
+                        value: flat.manualBlock,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                    {
+                        id: "openCode",
+                        type: "text",
+                        title: i18n("house.openCode"),
+                        placeholder: i18n("house.openCode"),
+                        value: flat.openCode,
+                    },
+                    {
+                        id: "autoOpen",
+                        type: "select",
+                        title: i18n("house.autoOpen"),
+                        placeholder: i18n("house.autoOpen"),
+                        value: flat.autoOpen,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                    {
+                        id: "whiteRabbit",
+                        type: "select",
+                        title: i18n("house.whiteRabbit"),
+                        placeholder: i18n("house.whiteRabbit"),
+                        value: flat.whiteRabbit,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                    {
+                        id: "sipEnabled",
+                        type: "select",
+                        title: i18n("house.sipEnabled"),
+                        placeholder: i18n("house.sipEnabled"),
+                        value: flat.sipEnabled,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("house.sip"),
+                            },
+                            {
+                                id: "2",
+                                text: i18n("house.webRtc"),
+                            },
+                        ]
+                    },
+                    {
+                        id: "sipPassword",
+                        type: "text",
+                        title: i18n("sipPassword"),
+                        placeholder: i18n("sipPassword"),
+                        value: flat.sipPassword,
+                        validate: v => {
+                            return $.trim(v).length === 0 || $.trim(v).length >= 8;
+                        },
+                        button: {
+                            "class": "fas fa-magic",
+                            click: prefix => {
+                                PWGen.initialize();
+                                $("#" + prefix + "sipPassword").val(PWGen.generate());
+                            }
+                        }
+                    },
                 ],
                 callback: result => {
                     let apartmentsAndLevels = {};
@@ -544,7 +735,7 @@
                     if (result.delete === "yes") {
                         modules["house"].deleteFlat(flatId, houseId);
                     } else {
-                        modules["house"].doModifyFlat(flatId, result.floor, result.flat, result.entrances, apartmentsAndLevels, houseId);
+                        modules["house"].doModifyFlat(flatId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword, houseId);
                     }
                 },
 

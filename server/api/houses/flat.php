@@ -20,7 +20,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $flatId = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"]);
+                $flatId = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["openCode"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
 
                 return api::ANSWER($flatId, ($flatId !== false)?"flatId":"notAcceptable");
             }
@@ -29,7 +29,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $success = $houses->modifyFlat($params["_id"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"]);
+                $success = $houses->modifyFlat($params["_id"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["openCode"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
