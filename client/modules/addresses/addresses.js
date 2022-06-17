@@ -2088,7 +2088,7 @@
         if (AVAIL("geo", "suggestions")) {
             $("#leftTopDynamic").html(`
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick">${i18n("addresses.addHouse")}</a>
+                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
                 </li>
             `);
         }
