@@ -4,11 +4,16 @@ CREATE TABLE houses_entrances
     house_entrance_id integer not null primary key autoincrement,
     entrance_type text,
     entrance text not null,
-    shared integer,
     lat real,
     lon real,
-    cms_type integer
+    shared integer,
+-- domophone's specisic entrance settings
+    domophone_id integer not null,
+    domophone_output integer,
+    cms_type integer,
+    camera_id integer
 );
+CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(domophone_id, domophone_output);
 CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);
 
 -- houses <-> entrances
@@ -16,6 +21,7 @@ CREATE TABLE houses_houses_entrances
 (
     address_house_id integer not null,
     house_entrance_id integer not null,
+-- domophone's specisic entrance settings
     prefix integer not null
 );
 CREATE UNIQUE INDEX houses_houses_entrances_uniq_1 on houses_houses_entrances(address_house_id, house_entrance_id);
@@ -56,13 +62,14 @@ CREATE UNIQUE INDEX houses_entrances_flats_uniq on houses_entrances_flats (house
 CREATE INDEX houses_entrances_flats_house_entrance_id on houses_entrances_flats(house_entrance_id);
 CREATE INDEX houses_entrances_flats_house_flat_id on houses_entrances_flats(house_flat_id);
 
--- flats rfid keys
-CREATE TABLE houses_flats_keys
+-- rfid keys
+CREATE TABLE houses_rfids
 (
-    house_flat_key_id integer not null primary key autoincrement,
-    house_flat_id integer not null,
-    rfid text,
+    house_rfid_id integer not null primary key autoincrement,
+    rfid text not null,
+    access_type integer not null,                                                                                       -- 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house
+    access_to integer not null,                                                                                         -- 0 - universal, > 0 - subscribers_id, flat_id, ...
     last_seen text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     comments text
 );
-CREATE UNIQUE INDEX houses_flats_keys_uniq on houses_flats_keys(house_flat_id, rfid);
+CREATE UNIQUE INDEX houses_rfids_uniq on houses_rfids(rfid, access_type, access_to);

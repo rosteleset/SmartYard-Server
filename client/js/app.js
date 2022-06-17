@@ -11,7 +11,7 @@ var myself = false;
 var available = false;
 var badge = false;
 
-function hashChange() {
+function hashParse() {
     let hash = location.href.split('#')[1];
     hash = hash?('#' + hash):'';
 
@@ -32,6 +32,12 @@ function hashChange() {
         route = "default";
     }
 
+    return [ route, params, hash ];
+}
+
+function hashChange() {
+    let [ route, params, hash ] = hashParse();
+
     if (hash !== lastHash) {
         lastHash = hash;
 
@@ -40,10 +46,10 @@ function hashChange() {
         setTimeout(() => {
             currentPage = route;
 
-            $(".sidebar .nav-item a").removeClass('active');
-            $(".sidebar .withibleOnlyWhenActive").hide();
-            $(".sidebar .nav-item a[href='#" + route.split('.')[0] + "']").addClass('active');
+            $(".sidebar .withibleOnlyWhenActive[target!='#" + route.split('.')[0] + "']").hide();
             $(".sidebar .withibleOnlyWhenActive[target='#" + route.split('.')[0] + "']").show();
+            $(".sidebar .nav-item a[href!='#" + route.split('.')[0] + "']").removeClass('active');
+            $(".sidebar .nav-item a[href='#" + route.split('.')[0] + "']").addClass('active');
 
             $("#loginForm").hide();
             $("#forgotForm").hide();

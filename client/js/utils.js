@@ -290,25 +290,16 @@ function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
     }
     mainSidebarFirst = false;
 
-    if (withibleOnlyWhenActive) {
-        $("#leftside-menu").append(`
-            <li class="nav-item withibleOnlyWhenActive" target="${target}" title="${title}" style="display: none;">
-                <a href="${target}" class="nav-link">
-                    <i class="${button} nav-icon"></i>
-                    <p class="text-nowrap">${title}</p>
-                </a>
-            </li>
-        `);
-    } else {
-        $("#leftside-menu").append(`
-            <li class="nav-item" title="${title}">
-                <a href="${target}" class="nav-link">
-                    <i class="${button} nav-icon"></i>
-                    <p class="text-nowrap">${title}</p>
-                </a>
-            </li>
-        `);
-    }
+    let [ route ] = hashParse();
+
+    $("#leftside-menu").append(`
+        <li class="nav-item${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${title}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+            <a href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
+                <i class="${button} nav-icon"></i>
+                <p class="text-nowrap">${title}</p>
+            </a>
+        </li>
+    `);
 }
 
 function loadSubModules(parent, modules, done) {

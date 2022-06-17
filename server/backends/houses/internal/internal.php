@@ -63,18 +63,21 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, shared, lat, lon, cms_type, prefix from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
+                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, domophone_id, domophone_output, cms_type, camera_id from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
                     false,
                     [
                         "address_house_id" => "houseId",
                         "house_entrance_id" => "entranceId",
                         "entrance_type" => "entranceType",
                         "entrance" => "entrance",
-                        "shared" => "shared",
                         "lat" => "lat",
                         "lon" => "lon",
-                        "cms_type" => "cmsType",
+                        "shared" => "shared",
                         "prefix" => "prefix",
+                        "domophone_id" => "domophoneId",
+                        "domophone_output" => "domophoneOutput",
+                        "cms_type" => "cmsType",
+                        "camera_id" => "cameraId",
                     ]
                 );
             }
@@ -82,7 +85,7 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix)
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cmsType, $cameraId)
             {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
@@ -96,13 +99,16 @@
                     $prefix = 0;
                 }
 
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, shared, lat, lon, cms_type) values (:entrance_type, :entrance, :shared, :lat, :lon, :cms_type)", [
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, domophone_id, domophone_output, cms_type, camera_id) values (:entrance_type, :entrance, :lat, :lon, :shared, :domophone_id, :domophone_output, :cms_type, :camera_id)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
-                    ":shared" => (int)$shared,
                     ":lat" => (float)$lat,
                     ":lon" => (float)$lon,
+                    ":shared" => (int)$shared,
+                    ":domophone_id" => (int)$domophoneId,
+                    ":domophone_output" => (int)$domophoneOutput,
                     ":cms_type" => $cmsType,
+                    ":camera_id" => $cameraId,
                 ]);
 
                 if (!$entranceId) {
@@ -135,7 +141,7 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $shared, $lat, $lon, $cmsType, $prefix)
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cmsType, $cameraId)
             {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
@@ -154,13 +160,16 @@
                         ":prefix" => $prefix,
                     ]) !== false
                     and
-                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, shared = :shared, lat = :lat, lon = :lon, cms_type = :cms_type where house_entrance_id = $entranceId", [
+                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, domophone_id = :domophone_id, domophone_output = :domophone_output, cms_type = :cms_type, camera_id = :camera_id where house_entrance_id = $entranceId", [
                         ":entrance_type" => $entranceType,
                         ":entrance" => $entrance,
-                        ":shared" => (int)$shared,
                         ":lat" => (float)$lat,
                         ":lon" => (float)$lon,
+                        ":shared" => (int)$shared,
+                        ":domophone_id" => (int)$domophoneId,
+                        ":domophone_output" => (int)$domophoneOutput,
                         ":cms_type" => $cmsType,
+                        ":camera_id" => $cameraId,
                     ]) !== false;
             }
 
@@ -314,21 +323,17 @@
                 }
 
                 if ($houseId) {
-                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, lat, lon, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id and address_house_id <> $houseId limit 1) address_house_id from houses_entrances where shared = 1 and house_entrance_id in (select house_entrance_id from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId))) as t1 where address_house_id is not null", false, [
+                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id and address_house_id <> $houseId limit 1) address_house_id from houses_entrances where shared = 1 and house_entrance_id in (select house_entrance_id from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances where address_house_id = $houseId))) as t1 where address_house_id is not null", false, [
                         "house_entrance_id" => "entranceId",
                         "entrance_type" => "entranceType",
                         "entrance" => "entrance",
-                        "lat" => "lat",
-                        "lon" => "lon",
                         "address_house_id" => "houseId",
                     ]);
                 } else {
-                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, lat, lon, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id limit 1) address_house_id from houses_entrances where shared = 1) as t1 where address_house_id is not null", false, [
+                    return $this->db->get("select * from (select house_entrance_id, entrance_type, entrance, (select address_house_id from houses_houses_entrances where houses_houses_entrances.house_entrance_id = houses_entrances.house_entrance_id limit 1) address_house_id from houses_entrances where shared = 1) as t1 where address_house_id is not null", false, [
                         "house_entrance_id" => "entranceId",
                         "entrance_type" => "entranceType",
                         "entrance" => "entrance",
-                        "lat" => "lat",
-                        "lon" => "lon",
                         "address_house_id" => "houseId",
                     ]);
                 }
