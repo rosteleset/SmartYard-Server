@@ -6,8 +6,29 @@
 
     domophones: false,
 
-    addDomophone: function () {
+    doAddDomophone: function (ip) {
 
+    },
+
+    addDomophone: function () {
+        cardForm({
+            title: i18n("domophones.addDomophone"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            fields: [
+                {
+                    id: "ip",
+                    type: "text",
+                    title: i18n("domophones.ip"),
+                    placeholder: i18n("domophones.ip"),
+                },
+            ],
+            callback: result => {
+                modules["domophones"].doAddDomophone(result.ip);
+            },
+        });
     },
 
     modifyDomophone: function (domophoneId) {
@@ -32,7 +53,7 @@
                     caption: i18n("domophones.domophones"),
                     button: {
                         caption: i18n("domophones.addDomophone"),
-                        click: modules["domophones"].addDomophone(),
+                        click: modules["domophones"].addDomophone,
                     },
                     filter: true,
                 },
