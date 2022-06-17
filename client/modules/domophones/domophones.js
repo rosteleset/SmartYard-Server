@@ -24,6 +24,8 @@
         done(response => {
             $("#altForm").hide();
 
+            modules["domophones"].domophones = response.domophones;
+
             cardTable({
                 target: "#mainForm",
                 title: {
