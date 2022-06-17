@@ -255,9 +255,43 @@
                     },
                     {
                         id: "domophoneOutput",
-                        type: "text",
+                        type: "select",
                         title: i18n("houses.domophoneOutput"),
                         placeholder: i18n("houses.domophoneOutput"),
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("houses.domophoneOutputPrimary"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("houses.domophoneOutputSecondary", 1),
+                            },
+                            {
+                                id: "2",
+                                text: i18n("houses.domophoneOutputSecondary", 2),
+                            },
+                            {
+                                id: "3",
+                                text: i18n("houses.domophoneOutputSecondary", 3),
+                            },
+                            {
+                                id: "4",
+                                text: i18n("houses.domophoneOutputSecondary", 4),
+                            },
+                            {
+                                id: "5",
+                                text: i18n("houses.domophoneOutputSecondary", 5),
+                            },
+                            {
+                                id: "6",
+                                text: i18n("houses.domophoneOutputSecondary", 6),
+                            },
+                            {
+                                id: "7",
+                                text: i18n("houses.domophoneOutputSecondary", 7),
+                            },
+                        ]
                     },
                     {
                         id: "cmsType",
@@ -659,10 +693,44 @@
                     },
                     {
                         id: "domophoneOutput",
-                        type: "text",
+                        type: "select",
                         title: i18n("houses.domophoneOutput"),
                         placeholder: i18n("houses.domophoneOutput"),
                         value: entrance.domophoneOutput,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("houses.domophoneOutputPrimary"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("houses.domophoneOutputSecondary", 1),
+                            },
+                            {
+                                id: "2",
+                                text: i18n("houses.domophoneOutputSecondary", 2),
+                            },
+                            {
+                                id: "3",
+                                text: i18n("houses.domophoneOutputSecondary", 3),
+                            },
+                            {
+                                id: "4",
+                                text: i18n("houses.domophoneOutputSecondary", 4),
+                            },
+                            {
+                                id: "5",
+                                text: i18n("houses.domophoneOutputSecondary", 5),
+                            },
+                            {
+                                id: "6",
+                                text: i18n("houses.domophoneOutputSecondary", 6),
+                            },
+                            {
+                                id: "7",
+                                text: i18n("houses.domophoneOutputSecondary", 7),
+                            },
+                        ]
                     },
                     {
                         id: "cmsType",
@@ -1082,7 +1150,7 @@
                                 items: [
                                     {
                                         icon: "fas fa-door-open",
-                                        title: i18n("domophones.domophones"),
+                                        title: i18n("domophones.domophone"),
                                         disabled: ! modules["houses"].meta.entrances[i].domophoneId,
                                         click: entranceId => {
                                             location.href = "#domophones&domophoneId=" + entrances[entranceId].domophoneId;
@@ -1090,7 +1158,7 @@
                                     },
                                     {
                                         icon: "fas fa-video",
-                                        title: i18n("cameras.cameras"),
+                                        title: i18n("cameras.camera"),
                                         disabled: ! modules["houses"].meta.entrances[i].cameraId,
                                         click: entranceId => {
                                             location.href = "#cameras&cameraId=" + entrances[entranceId].cameraId;

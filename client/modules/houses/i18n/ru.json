@@ -61,5 +61,7 @@
     "10m": "Десять минут",
     "domophoneId": "Домофон",
     "domophoneOutput": "&quotВыход&quot; домофона",
-    "cameraId": "Камера"
+    "cameraId": "Камера",
+    "domophoneOutputPrimary": "Основной",
+    "domophoneOutputSecondary":  "Дополнительный #%s"
 }

@@ -9,8 +9,12 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("domophones.domophones");
 
-        $("#mainForm").html(nl2br(i18n("domophones.domophones")));
 
-        loadingDone();
+        GET("domophones", "domophones", false, true).
+        done(response => {
+            $("#mainForm").html(nl2br(i18n("domophones.domophones")));
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 }).init();

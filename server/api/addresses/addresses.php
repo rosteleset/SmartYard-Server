@@ -26,7 +26,7 @@
                     "houses" => $addresses->getHouses(),
                 ];
 
-                return api::ANSWER($r, ($r !== false)?"addresses":"404");
+                return api::ANSWER($r, ($r !== false)?"addresses":"badRequest");
             }
 
             public static function index() {
