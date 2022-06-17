@@ -131,6 +131,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                delete: (uid.toString() !== "0")?i18n("users.delete"):false,
                 fields: [
                     {
                         id: "uid",
@@ -231,7 +232,6 @@
                         ]
                     },
                 ],
-                delete: i18n("users.delete"),
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules["users"].deleteUser(result.uid);
