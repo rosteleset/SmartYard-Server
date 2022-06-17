@@ -1,16 +1,13 @@
 {
-    "model": "DKS15374",
     "vendor": "BEWARD",
-    "versions": {
-        "3.4": {
-            "class": "dks74",
-            "outputs": 1,
-            "cmses": [
-                "KKM100-S2",
-                "COM-220U",
-                "KAD2501",
-                "COM-25U"
-            ]
-        }
-    }
+    "model": "DKS15374",
+    "version": "3.4",
+    "class": "dks74",
+    "outputs": 1,
+    "cmses": [
+        "KKM100-S2",
+        "COM-220U",
+        "KAD2501",
+        "COM-25U"
+    ]
 }

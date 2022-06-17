@@ -1002,6 +1002,24 @@
                                     nowrap: true,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-mobile-alt",
+                                        title: i18n("subscribers.subscribers"),
+                                        click: flatId => {
+                                            // ?
+                                        },
+                                    },
+                                    {
+                                        icon: "fas fa-key",
+                                        title: i18n("keys.keys"),
+                                        click: flatId => {
+                                            // ?
+                                        },
+                                    },
+                                ],
+                            },
                         });
                     }
 
@@ -1039,8 +1057,10 @@
                 ],
                 rows: () => {
                     let rows = [];
+                    let entrances = {};
 
                     for (let i in modules["houses"].meta.entrances) {
+                        entrances[modules["houses"].meta.entrances[i].entranceId] = modules["houses"].meta.entrances[i];
                         rows.push({
                             uid: modules["houses"].meta.entrances[i].entranceId,
                             cols: [
@@ -1062,9 +1082,18 @@
                                 items: [
                                     {
                                         icon: "fas fa-door-open",
-                                        title: i18n("domophones.domophone"),
+                                        title: i18n("domophones.domophones"),
+                                        disabled: ! modules["houses"].meta.entrances[i].domophoneId,
                                         click: entranceId => {
-                                            location.href = "#domophones&entranceId=" + entranceId;
+                                            location.href = "#domophones&domophoneId=" + entrances[entranceId].domophoneId;
+                                        },
+                                    },
+                                    {
+                                        icon: "fas fa-video",
+                                        title: i18n("cameras.cameras"),
+                                        disabled: ! modules["houses"].meta.entrances[i].cameraId,
+                                        click: entranceId => {
+                                            location.href = "#cameras&cameraId=" + entrances[entranceId].cameraId;
                                         },
                                     },
                                 ],

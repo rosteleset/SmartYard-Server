@@ -73,3 +73,12 @@ CREATE TABLE houses_rfids
     comments text
 );
 CREATE UNIQUE INDEX houses_rfids_uniq on houses_rfids(rfid, access_type, access_to);
+
+-- flats <-> subscribers
+CREATE TABLE houses_flats_subscribers
+(
+    house_flat_id integer not null,
+    subscriber_mobile_id integer not null,
+    role integer                                                                                                        -- ?
+);
+CREATE UNIQUE INDEX houses_flats_subscribers_uniq on houses_flats_subscribers(house_flat_id, subscriber_mobile_id);
