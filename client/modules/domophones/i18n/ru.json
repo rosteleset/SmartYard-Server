@@ -1,4 +1,6 @@
 {
     "domophones": "Домофоны",
-    "domophone": "Домофон"
+    "domophone": "Домофон",
+    "domophoneId": "#",
+    "ip": "ip"
 }

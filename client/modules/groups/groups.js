@@ -248,9 +248,17 @@
                                 },
                                 {
                                     data: response.groups[i].users,
-                                    click: modules["groups"].modifyGroupUsers,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-users",
+                                        title: i18n("groups.users"),
+                                        click: modules["groups"].modifyGroupUsers
+                                    },
+                                ],
+                            },
                         });
                     }
 
