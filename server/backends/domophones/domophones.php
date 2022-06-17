@@ -14,6 +14,9 @@
          */
         abstract class domophones extends backend
         {
-
+            /**
+             * @return false|array
+             */
+            abstract public function getDomophones();
         }
     }

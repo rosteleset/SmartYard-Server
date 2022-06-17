@@ -64,6 +64,34 @@
 
         "houses": {
             "backend": "internal"
+        },
+
+        "subscribers": {
+            "backend": "internal"
+        },
+
+        "keys": {
+            "backend": "internal"
+        },
+
+        "domophones": {
+            "backend": "internal",
+            "asterisk_servers": [
+                {
+                    "alias": "First server",
+                    "ip": "127.0.0.1",
+                    "sip_tcp_port": 5060,
+                    "sip_udp_port": 5060,
+                    "ami_port": 5038,
+                    "ami_password": "b47c9917fd1eed2b450483282faea0cf",
+                    "http_port": 8088,
+                    "ari_password": "b47c9917fd1eed2b450483282faea0cf"
+                }
+            ]
+        },
+
+        "cameras": {
+            "backend": "internal"
         }
     },
 
