@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
-            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "#addresses");
+            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "#addresses", true);
         }
 
         loadSubModules("addresses", [
@@ -2085,7 +2085,7 @@
             params.show = "regions";
         }
 
-        if (AVAIL("geo", "suggestions") && params.show === "regions") {
+        if (AVAIL("geo", "suggestions")) {
             $("#leftTopDynamic").html(`
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick">${i18n("addresses.addHouse")}</a>

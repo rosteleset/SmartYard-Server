@@ -3,7 +3,7 @@
 
     init: function () {
         if (AVAIL("accounts", "user")) {
-            leftSide("fas fa-fw fa-user", i18n("users.users"), "#users");
+            leftSide("fas fa-fw fa-user", i18n("users.users"), "#users", true);
         }
         moduleLoaded("users", this);
     },

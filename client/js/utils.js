@@ -288,18 +288,19 @@ function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
         `);
     }
-    mainSidebarFirst = false;
 
     let [ route ] = hashParse();
 
     $("#leftside-menu").append(`
-        <li class="nav-item${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${title}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+        <li class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${title}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
             <a href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
             </a>
         </li>
     `);
+
+    mainSidebarFirst = false;
 }
 
 function loadSubModules(parent, modules, done) {
