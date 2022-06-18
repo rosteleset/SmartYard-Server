@@ -5,6 +5,7 @@
     "version": "3.4",
     "class": "dks74",
     "outputs": 1,
+    "camera": "beward",
     "cmses": [
         "kkm-100s2",
         "com-220u",

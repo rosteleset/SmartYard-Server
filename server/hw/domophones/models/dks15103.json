@@ -4,6 +4,7 @@
     "model": "DKS15103",
     "class": "dks03",
     "outputs": 3,
+    "camera": "beward",
     "cmses": [
         "kkm-100s2"
     ]
