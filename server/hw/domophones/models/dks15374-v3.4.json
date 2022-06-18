@@ -6,9 +6,9 @@
     "class": "dks74",
     "outputs": 1,
     "cmses": [
-        "KKM100-S2",
-        "COM-220U",
-        "KAD2501",
-        "COM-25U"
+        "kkm-100s2",
+        "com-220u",
+        "kad-2501",
+        "com-25u"
     ]
 }

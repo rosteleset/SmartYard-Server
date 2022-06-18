@@ -1206,8 +1206,6 @@
                 document.title = i18n("windowTitle") + " :: " + i18n("houses.house") + " :: " + modules["houses"].meta.house.houseFull;
             }
 
-            console.log( modules["houses"].meta);
-
             render();
         });
     },

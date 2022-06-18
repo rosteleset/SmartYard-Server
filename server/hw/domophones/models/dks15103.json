@@ -1,0 +1,10 @@
+{
+    "title": "BEWARD DKS15103",
+    "vendor": "BEWARD",
+    "model": "DKS15103",
+    "class": "dks03",
+    "outputs": 3,
+    "cmses": [
+        "kkm-100s2"
+    ]
+}

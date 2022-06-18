@@ -12,5 +12,8 @@
     "callerId": "Отображаемое имя",
     "comment": "Примечания",
     "locksDisabled": "Замки открыты",
-    "cmsLevels": "Настройки уровней"
+    "cmsLevels": "Настройки уровней",
+    "deleteDomophone": "Удалить домофон",
+    "modifyDomophone": "Редактирование домофона",
+    "confirmDeleteDomophone": "Удалить домофон #%s?"
 }

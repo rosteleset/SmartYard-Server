@@ -6,11 +6,62 @@
 
     meta: false,
 
-    doAddDomophone: function (ip) {
+    doAddDomophone: function (domophone) {
+        loadingStart();
+        POST("domophones", "domophone", false, domophone).
+        fail(FAIL).
+        always(modules["domophones"].route);
+    },
 
+    doModifyDomophone: function (domophone) {
+        loadingStart();
+        PUT("domophones", "domophone", domophone.domophoneId, domophone).
+        fail(FAIL).
+        always(modules["domophones"].route);
+    },
+
+    doDeleteDomophone: function (domophoneId) {
+        loadingStart();
+        DELETE("domophones", "domophone", domophoneId).
+        fail(FAIL).
+        always(modules["domophones"].route);
+    },
+
+    cmses: function (domophoneId, selected) {
+        let c = [
+            {
+                id: "0",
+                text: "-",
+            },
+        ];
+
+        for (let id in modules["domophones"].meta.cmses) {
+            if (modules["domophones"].meta.models[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
+                c.push({
+                    id: id,
+                    text: modules["domophones"].meta.cmses[id].title,
+                    selected: selected === id,
+                })
+            }
+        }
+
+        return c;
     },
 
     addDomophone: function () {
+        let models = [];
+        let first;
+
+        for (let id in modules["domophones"].meta.models) {
+            if (!first) {
+                first = id;
+            }
+            models.push({
+                id,
+                text: modules["domophones"].meta.models[id].title,
+            })
+        }
+
         cardForm({
             title: i18n("domophones.addDomophone"),
             footer: true,
@@ -26,27 +77,42 @@
                 },
                 {
                     id: "model",
-                    type: "text",
+                    type: "select2",
                     title: i18n("domophones.model"),
                     placeholder: i18n("domophones.model"),
+                    options: models,
+                    select: (el, id, prefix) => {
+                        $(`#${prefix}cms`).html("").select2({
+                            data: modules["domophones"].cmses(el.val()),
+                            language: lang["_code"],
+                        });
+                    }
                 },
                 {
                     id: "cms",
-                    type: "text",
+                    type: "select2",
                     title: i18n("domophones.cms"),
                     placeholder: i18n("domophones.cms"),
+                    options: modules["domophones"].cmses(first),
                 },
                 {
                     id: "ip",
                     type: "text",
                     title: i18n("domophones.ip"),
                     placeholder: "IP",
+                    validate: v => {
+                        return !!ip2long(v);
+                    },
                 },
                 {
                     id: "port",
                     type: "text",
                     title: i18n("domophones.port"),
-                    placeholder: i18n("domophones.port"),
+                    placeholder: "80",
+                    value: "80",
+                    validate: v => {
+                        return !!parseInt(v);
+                    },
                 },
                 {
                     id: "credentials",
@@ -59,12 +125,18 @@
                     type: "text",
                     title: i18n("domophones.callerId"),
                     placeholder: i18n("domophones.callerId"),
+                    validate: v => {
+                        return $.trim(v) !== "" && $.trim(v).length <= 32;
+                    },
                 },
                 {
                     id: "comment",
                     type: "text",
                     title: i18n("domophones.comment"),
                     placeholder: i18n("domophones.comment"),
+                    validate: v => {
+                        return $.trim(v).length <= 64;
+                    },
                 },
                 {
                     id: "locksDisabled",
@@ -79,14 +151,157 @@
                     placeholder: i18n("domophones.cmsLevels"),
                 },
             ],
-            callback: result => {
-                modules["domophones"].doAddDomophone(result.ip);
-            },
+            callback: modules["domophones"].doAddDomophone,
         });
     },
 
     modifyDomophone: function (domophoneId) {
+        let models = [];
+        let first;
 
+        for (let id in modules["domophones"].meta.models) {
+            if (!first) {
+                first = id;
+            }
+            models.push({
+                id,
+                text: modules["domophones"].meta.models[id].title,
+            })
+        }
+
+        let domophone = false;
+
+        for (let i in modules["domophones"].meta.domophones) {
+            if (modules["domophones"].meta.domophones[i].domophoneId == domophoneId) {
+                domophone = modules["domophones"].meta.domophones[i];
+                break;
+            }
+        }
+
+        if (domophone) {
+            cardForm({
+                title: i18n("domophones.modifyDomophone"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("edit"),
+                delete: i18n("domophones.deleteDomophone"),
+                fields: [
+                    {
+                        id: "domophoneId",
+                        type: "text",
+                        title: i18n("domophones.domophoneId"),
+                        value: domophoneId,
+                        readonly: true,
+                    },
+                    {
+                        id: "enabled",
+                        type: "yesno",
+                        title: i18n("domophones.enabled"),
+                        value: domophone.enabled,
+                    },
+                    {
+                        id: "model",
+                        type: "select2",
+                        title: i18n("domophones.model"),
+                        placeholder: i18n("domophones.model"),
+                        options: models,
+                        value: domophone.model,
+                        select: (el, id, prefix) => {
+                            $(`#${prefix}cms`).html("").select2({
+                                data: modules["domophones"].cmses(el.val()),
+                                language: lang["_code"],
+                            }).val(domophone.cms).trigger("change");
+                        }
+                    },
+                    {
+                        id: "cms",
+                        type: "select2",
+                        title: i18n("domophones.cms"),
+                        placeholder: i18n("domophones.cms"),
+                        options: modules["domophones"].cmses(first, domophone.cms),
+                        select: el => {
+                            domophone.cms = el.val();
+                        }
+                    },
+                    {
+                        id: "ip",
+                        type: "text",
+                        title: i18n("domophones.ip"),
+                        placeholder: "IP",
+                        value: domophone.ip,
+                        validate: v => {
+                            return !!ip2long(v);
+                        },
+                    },
+                    {
+                        id: "port",
+                        type: "text",
+                        title: i18n("domophones.port"),
+                        placeholder: "80",
+                        value: domophone.port,
+                        validate: v => {
+                            return !!parseInt(v);
+                        },
+                    },
+                    {
+                        id: "credentials",
+                        type: "text",
+                        title: i18n("domophones.credentials"),
+                        placeholder: i18n("domophones.credentials"),
+                        value: domophone.credentials,
+                    },
+                    {
+                        id: "callerId",
+                        type: "text",
+                        title: i18n("domophones.callerId"),
+                        placeholder: i18n("domophones.callerId"),
+                        value: domophone.callerId,
+                        validate: v => {
+                            return $.trim(v) !== "" && $.trim(v).length <= 32;
+                        },
+                    },
+                    {
+                        id: "comment",
+                        type: "text",
+                        title: i18n("domophones.comment"),
+                        placeholder: i18n("domophones.comment"),
+                        value: domophone.comment,
+                        validate: v => {
+                            return $.trim(v).length <= 64;
+                        },
+                    },
+                    {
+                        id: "locksDisabled",
+                        type: "yesno",
+                        title: i18n("domophones.locksDisabled"),
+                        value: domophone.locksDisabled,
+                    },
+                    {
+                        id: "cmsLevels",
+                        type: "text",
+                        title: i18n("domophones.cmsLevels"),
+                        placeholder: i18n("domophones.cmsLevels"),
+                        value: domophone.cmsLevels,
+                    },
+                ],
+                callback: result => {
+                    if (result.delete === "yes") {
+                        modules["domophones"].deleteDomophone(domophoneId);
+                    } else {
+                        modules["domophones"].doModifyDomophone(result);
+                    }
+                },
+            });
+        } else {
+            error(i18n("domophones.domophoneNotFound"));
+        }
+    },
+
+    deleteDomophone: function (domophoneId) {
+        mConfirm(i18n("domophones.confirmDeleteDomophone", domophoneId), i18n("confirm"), `danger:${i18n("domophones.deleteDomophone")}`, () => {
+            modules["domophones"].doDeleteDomophone(domophoneId);
+        });
     },
 
     route: function (params) {
@@ -119,6 +334,12 @@
                     },
                     {
                         title: i18n("domophones.ip"),
+                    },
+                    {
+                        title: i18n("domophones.callerId"),
+                    },
+                    {
+                        title: i18n("domophones.comment"),
                         fullWidth: true,
                     },
                 ],
@@ -133,8 +354,15 @@
                                     data: modules["domophones"].meta.domophones[i].domophoneId,
                                 },
                                 {
-                                    data: modules["domophones"].meta.domophones[i].domophoneIp,
+                                    data: modules["domophones"].meta.domophones[i].ip,
                                     nowrap: true,
+                                },
+                                {
+                                    data: modules["domophones"].meta.domophones[i].callerId,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules["domophones"].meta.domophones[i].comment,
                                 },
                             ],
                         });
