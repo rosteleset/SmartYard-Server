@@ -1844,6 +1844,58 @@
         }).show();
     },
 
+    renderRegions: function () {
+        loadingStart();
+        GET("addresses", "addresses", false, true).
+        done(modules["addresses"].addresses).
+        done(() => {
+            cardTable({
+                title: {
+                    caption: i18n("addresses.regions"),
+                    button: {
+                        caption: i18n("addresses.addRegion"),
+                        click: modules["addresses"].addRegion,
+                    },
+                    filter: false,
+                },
+                edit: modules["addresses"].modifyRegion,
+                columns: [
+                    {
+                        title: i18n("addresses.regionId"),
+                    },
+                    {
+                        title: i18n("addresses.region"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules["addresses"].meta.regions) {
+                        rows.push({
+                            uid: modules["addresses"].meta.regions[i].regionId.toString(),
+                            cols: [
+                                {
+                                    data: modules["addresses"].meta.regions[i].regionId,
+                                },
+                                {
+                                    data: modules["addresses"].meta.regions[i].regionWithType,
+                                    nowrap: true,
+                                    click: "#addresses&show=region&regionId=%s",
+                                },
+                            ],
+                        });
+                    }
+
+                    return rows;
+                },
+                target: "#mainForm",
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     renderRegion: function (regionId) {
         loadingStart();
         GET("addresses", "addresses", false, true).
@@ -1874,7 +1926,7 @@
                             modules["addresses"].addArea(regionId);
                         },
                     },
-                    filter: true,
+                    filter: false,
                 },
                 edit: modules["addresses"].modifyArea,
                 columns: [
@@ -2018,58 +2070,6 @@
             subTop(modules["addresses"].path("street", streetId));
 
             modules["addresses"].houses("#mainForm", false, streetId);
-        }).
-        fail(FAIL).
-        always(loadingDone);
-    },
-
-    renderRegions: function () {
-        loadingStart();
-        GET("addresses", "addresses", false, true).
-        done(modules["addresses"].addresses).
-        done(() => {
-            cardTable({
-                title: {
-                    caption: i18n("addresses.regions"),
-                    button: {
-                        caption: i18n("addresses.addRegion"),
-                        click: modules["addresses"].addRegion,
-                    },
-                    filter: true,
-                },
-                edit: modules["addresses"].modifyRegion,
-                columns: [
-                    {
-                        title: i18n("addresses.regionId"),
-                    },
-                    {
-                        title: i18n("addresses.region"),
-                        fullWidth: true,
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
-
-                    for (let i in modules["addresses"].meta.regions) {
-                        rows.push({
-                            uid: modules["addresses"].meta.regions[i].regionId.toString(),
-                            cols: [
-                                {
-                                    data: modules["addresses"].meta.regions[i].regionId,
-                                },
-                                {
-                                    data: modules["addresses"].meta.regions[i].regionWithType,
-                                    nowrap: true,
-                                    click: "#addresses&show=region&regionId=%s",
-                                },
-                            ],
-                        });
-                    }
-
-                    return rows;
-                },
-                target: "#mainForm",
-            });
         }).
         fail(FAIL).
         always(loadingDone);
