@@ -8,11 +8,13 @@ CREATE TABLE houses_entrances
     lon real,
     shared integer,
 -- domophone's specisic entrance settings
+    camera_id integer,
     domophone_id integer not null,
     domophone_output integer,
     cms text,                                                                                                           -- for visualization only
     cms_type integer,
-    camera_id integer
+    cms_levels text,
+    locks_disabled integer
 );
 CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(domophone_id, domophone_output);
 CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);

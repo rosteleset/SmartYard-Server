@@ -26,7 +26,7 @@
 
                     return api::ANSWER($success);
                 } else {
-                    $entranceId = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"]);
+                    $entranceId = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["locksDisabled"], $params["cmsLevels"]);
 
                     return api::ANSWER($entranceId, ($entranceId !== false)?"entranceId":false);
                 }
@@ -36,7 +36,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $success = $houses->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"]);
+                $success = $houses->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["locksDisabled"], $params["cmsLevels"]);
 
                 return api::ANSWER($success);
             }

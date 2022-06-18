@@ -17,7 +17,7 @@
             public static function POST($params) {
                 $domophones = loadBackend("domophones");
 
-                $domophoneId = $domophones->addDomophone($params["enabled"], $params["model"], $params["ip"], $params["port"],  $params["credentials"], $params["callerId"], $params["comment"], $params["locksDisabled"], $params["cmsLevels"]);
+                $domophoneId = $domophones->addDomophone($params["enabled"], $params["model"], $params["ip"], $params["port"],  $params["credentials"], $params["callerId"], $params["comment"]);
 
                 return api::ANSWER($domophoneId, ($domophoneId !== false)?"domophoneId":false);
             }
@@ -25,7 +25,7 @@
             public static function PUT($params) {
                 $domophones = loadBackend("domophones");
 
-                $success = $domophones->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["ip"], $params["port"],  $params["credentials"], $params["callerId"], $params["comment"], $params["locksDisabled"], $params["cmsLevels"]);
+                $success = $domophones->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["ip"], $params["port"],  $params["credentials"], $params["callerId"], $params["comment"]);
 
                 return api::ANSWER($success);
             }

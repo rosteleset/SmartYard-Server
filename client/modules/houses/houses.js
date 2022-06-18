@@ -15,7 +15,7 @@
 
         c.push({
             id: "0",
-            text: "-",
+            text: "нет",
         })
 
         for (let id in modules["houses"].meta.cmses) {
@@ -29,6 +29,32 @@
         }
 
         return c;
+    },
+
+    outputs: function (domophoneId, selected) {
+        let o = [];
+
+/* TODO
+        for (let i = 0; i < 32; i++) {
+            if (domophoneId && modules["houses"].meta.models[domophoneId] && i < parseInt(modules["houses"].meta.models[domophoneId].outputs)) {
+                o.push({
+                    id: i,
+                    text: i?i18n("houses.domophoneOutputSecondary", i):i18n("houses.domophoneOutputPrimary"),
+                    selected: selected === i,
+                });
+            }
+        }
+*/
+
+        for (let i = 0; i < 4; i++) {
+            o.push({
+                id: i,
+                text: i?i18n("houses.domophoneOutputSecondary", i):i18n("houses.domophoneOutputPrimary"),
+                selected: selected === i,
+            });
+        }
+
+        return o;
     },
 
     doAddEntrance: function (houseId, entranceId, prefix) {
@@ -271,6 +297,20 @@
                             options: domophones,
                             validate: v => {
                                 return parseInt(v) > 0;
+                            },
+                            select: (el, id, prefix) => {
+                                $(`#${prefix}cms`).html("").select2({
+                                    data: modules["houses"].cmses(models[el.val()]),
+                                    language: lang["_code"],
+                                });
+/* TODO
+                                let h = "";
+                                let o = modules["houses"].outputs(models[el.val()]);
+                                for (let i in o) {
+                                    h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
+                                }
+                                $("#" + prefix + "domophoneOutput").html(h);
+*/
                             }
                         },
                         {
@@ -278,40 +318,7 @@
                             type: "select",
                             title: i18n("houses.domophoneOutput"),
                             placeholder: i18n("houses.domophoneOutput"),
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("houses.domophoneOutputPrimary"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("houses.domophoneOutputSecondary", 1),
-                                },
-                                {
-                                    id: "2",
-                                    text: i18n("houses.domophoneOutputSecondary", 2),
-                                },
-                                {
-                                    id: "3",
-                                    text: i18n("houses.domophoneOutputSecondary", 3),
-                                },
-                                {
-                                    id: "4",
-                                    text: i18n("houses.domophoneOutputSecondary", 4),
-                                },
-                                {
-                                    id: "5",
-                                    text: i18n("houses.domophoneOutputSecondary", 5),
-                                },
-                                {
-                                    id: "6",
-                                    text: i18n("houses.domophoneOutputSecondary", 6),
-                                },
-                                {
-                                    id: "7",
-                                    text: i18n("houses.domophoneOutputSecondary", 7),
-                                },
-                            ],
+                            options: modules["houses"].outputs(models[first]),
                             select: (el, id, prefix) => {
                                 if (parseInt(el.val()) > 0) {
                                     $("#" + prefix + "cms").parent().parent().parent().hide();
@@ -352,6 +359,7 @@
                             id: "cmsType",
                             type: "select",
                             title: i18n("houses.cmsType"),
+                            hidden: true,
                             options: [
                                 {
                                     id: "1",
@@ -424,7 +432,7 @@
 
                 entrances.push({
                     id: 0,
-                    text: "-",
+                    text: "нет",
                 });
 
                 for (let j in response.entrances) {
@@ -771,6 +779,20 @@
                             title: i18n("houses.domophoneId"),
                             value: entrance.domophoneId,
                             options: domophones,
+                            select: (el, id, prefix) => {
+                                $(`#${prefix}cms`).html("").select2({
+                                    data: modules["houses"].cmses(models[el.val()]),
+                                    language: lang["_code"],
+                                });
+/* TODO
+                                let h = "";
+                                let o = modules["houses"].outputs(models[el.val()]);
+                                for (let i in o) {
+                                    h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
+                                }
+                                $("#" + prefix + "domophoneOutput").html(h);
+*/
+                            }
                         },
                         {
                             id: "domophoneOutput",
@@ -778,40 +800,7 @@
                             title: i18n("houses.domophoneOutput"),
                             placeholder: i18n("houses.domophoneOutput"),
                             value: entrance.domophoneOutput,
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("houses.domophoneOutputPrimary"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("houses.domophoneOutputSecondary", 1),
-                                },
-                                {
-                                    id: "2",
-                                    text: i18n("houses.domophoneOutputSecondary", 2),
-                                },
-                                {
-                                    id: "3",
-                                    text: i18n("houses.domophoneOutputSecondary", 3),
-                                },
-                                {
-                                    id: "4",
-                                    text: i18n("houses.domophoneOutputSecondary", 4),
-                                },
-                                {
-                                    id: "5",
-                                    text: i18n("houses.domophoneOutputSecondary", 5),
-                                },
-                                {
-                                    id: "6",
-                                    text: i18n("houses.domophoneOutputSecondary", 6),
-                                },
-                                {
-                                    id: "7",
-                                    text: i18n("houses.domophoneOutputSecondary", 7),
-                                },
-                            ],
+                            options: modules["houses"].outputs(),
                             select: (el, id, prefix) => {
                                 if (parseInt(el.val()) > 0) {
                                     $("#" + prefix + "cms").parent().parent().parent().hide();
@@ -854,7 +843,7 @@
                             type: "select",
                             title: i18n("houses.cmsType"),
                             value: entrance.cmsType,
-                            hidden: parseInt(entrance.domophoneOutput) > 0,
+                            hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                             options: [
                                 {
                                     id: "1",

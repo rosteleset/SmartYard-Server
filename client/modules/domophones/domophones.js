@@ -60,12 +60,6 @@
                     title: i18n("domophones.model"),
                     placeholder: i18n("domophones.model"),
                     options: models,
-                    select: (el, id, prefix) => {
-                        $(`#${prefix}cms`).html("").select2({
-                            data: modules["domophones"].cmses(el.val()),
-                            language: lang["_code"],
-                        });
-                    }
                 },
                 {
                     id: "ip",
@@ -179,22 +173,6 @@
                         placeholder: i18n("domophones.model"),
                         options: models,
                         value: domophone.model,
-                        select: (el, id, prefix) => {
-                            $(`#${prefix}cms`).html("").select2({
-                                data: modules["domophones"].cmses(el.val()),
-                                language: lang["_code"],
-                            }).val(domophone.cms).trigger("change");
-                        }
-                    },
-                    {
-                        id: "cms",
-                        type: "select2",
-                        title: i18n("domophones.cms"),
-                        placeholder: i18n("domophones.cms"),
-                        options: modules["domophones"].cmses(first, domophone.cms),
-                        select: el => {
-                            domophone.cms = el.val();
-                        }
                     },
                     {
                         id: "ip",
