@@ -315,8 +315,6 @@
 
             modules["domophones"].meta = response.domophones;
 
-            console.log(modules["domophones"].meta);
-
             cardTable({
                 target: "#mainForm",
                 title: {
