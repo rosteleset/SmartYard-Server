@@ -334,12 +334,13 @@
                                 } else {
                                     $("#" + prefix + "cms").parent().parent().parent().show();
                                     $("#" + prefix + "shared").parent().parent().parent().show();
-                                    $("#" + prefix + "cmsLevels").parent().parent().show();
                                     $("#" + prefix + "locksDisabled").parent().parent().parent().show();
                                     if (parseInt($("#" + prefix + "cms").val()) !== 0) {
-                                        $("#" + prefix + "prefix").parent().parent().show();
+                                        $("#" + prefix + "cmsType").parent().parent().parent().show();
+                                        $("#" + prefix + "cmsLevels").parent().parent().show();
                                     } else {
-                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                        $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                        $("#" + prefix + "cmsLevels").parent().parent().hide();
                                     }
                                     if (parseInt($("#" + prefix + "shared").val())) {
                                         $("#" + prefix + "prefix").parent().parent().show();
@@ -358,8 +359,10 @@
                             select: (el, id, prefix) => {
                                 if (parseInt(el.val()) === 0) {
                                     $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
                                 } else {
                                     $("#" + prefix + "cmsType").parent().parent().parent().show();
+                                    $("#" + prefix + "cmsLevels").parent().parent().show();
                                 }
                             },
                         },
@@ -383,6 +386,7 @@
                             id: "cmsLevels",
                             type: "text",
                             title: i18n("houses.cmsLevels"),
+                            hidden: true,
                         },
                         {
                             id: "locksDisabled",
@@ -519,26 +523,29 @@
         let prefx = md5(guid());
 
         for (let i in modules["houses"].meta.entrances) {
-            let inputs = `
-                <div class="row mt-2 ${prefx}" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" style="display: none;">
-                    <div class="col-6">
-                        <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}">
+            if (parseInt(modules["houses"].meta.entrances[i].domophoneOutput) === 0) {
+                let inputs = `
+                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" style="display: none;">
+                        <div class="col-6">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}">
+                        </div>
+                        <div class="col-6">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}">
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}">
-                    </div>
-                </div>
-            `;
-            if (parseInt(modules["houses"].meta.entrances[i].cmsType)) {
-                entrances.push({
-                    id: modules["houses"].meta.entrances[i].entranceId,
-                    text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance + inputs,
-                });
-            } else {
-                entrances.push({
-                    id: modules["houses"].meta.entrances[i].entranceId,
-                    text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance,
-                });
+                `;
+                console.log(modules["houses"].meta.entrances[i]);
+                if (parseInt(modules["houses"].meta.entrances[i].cms) !== 0) {
+                    entrances.push({
+                        id: modules["houses"].meta.entrances[i].entranceId,
+                        text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance + inputs,
+                    });
+                } else {
+                    entrances.push({
+                        id: modules["houses"].meta.entrances[i].entranceId,
+                        text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance,
+                    });
+                }
             }
         }
 
@@ -831,12 +838,13 @@
                                 } else {
                                     $("#" + prefix + "cms").parent().parent().parent().show();
                                     $("#" + prefix + "shared").parent().parent().parent().show();
-                                    $("#" + prefix + "cmsLevels").parent().parent().show();
                                     $("#" + prefix + "locksDisabled").parent().parent().parent().show();
                                     if (parseInt($("#" + prefix + "cms").val()) !== 0) {
-                                        $("#" + prefix + "prefix").parent().parent().show();
+                                        $("#" + prefix + "cmsType").parent().parent().parent().show();
+                                        $("#" + prefix + "cmsLevels").parent().parent().show();
                                     } else {
-                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                        $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                        $("#" + prefix + "cmsLevels").parent().parent().hide();
                                     }
                                     if (parseInt($("#" + prefix + "shared").val())) {
                                         $("#" + prefix + "prefix").parent().parent().show();
@@ -852,12 +860,15 @@
                             title: i18n("domophones.cms"),
                             placeholder: i18n("domophones.cms"),
                             options: modules["houses"].cmses(models[entrance.domophoneId]),
+                            hidden: parseInt(entrance.domophoneOutput) !== 0,
                             value: entrance.cms,
                             select: (el, id, prefix) => {
                                 if (parseInt(el.val()) === 0) {
                                     $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
                                 } else {
                                     $("#" + prefix + "cmsType").parent().parent().parent().show();
+                                    $("#" + prefix + "cmsLevels").parent().parent().show();
                                 }
                             },
                         },
@@ -866,7 +877,7 @@
                             type: "select",
                             title: i18n("houses.cmsType"),
                             value: entrance.cmsType,
-                            hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
+                            hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
                             options: [
                                 {
                                     id: "1",
@@ -883,20 +894,20 @@
                             type: "text",
                             title: i18n("houses.cmsLevels"),
                             value: entrance.cmsLevels,
-                            hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
+                            hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
                         },
                         {
                             id: "locksDisabled",
                             type: "yesno",
                             title: i18n("houses.locksDisabled"),
                             value: entrance.locksDisabled,
-                            hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
+                            hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
                         },
                         {
                             id: "shared",
                             type: "select",
                             title: i18n("houses.shared"),
-                            hidden: parseInt(entrance.domophoneOutput) > 0,
+                            hidden: parseInt(entrance.domophoneOutput) !== 0,
                             value: entrance.shared.toString(),
                             options: [
                                 {
@@ -936,10 +947,10 @@
                                 result.cms = 0;
                                 result.shared = 0;
                             }
-                            if (!result.shared) {
+                            if (parseInt(result.shared) === 0) {
                                 result.prefix = 0;
                             }
-                            if (!result.cms) {
+                            if (parseInt(result.cms) === 0) {
                                 result.cmsType = 0;
                             }
                             modules["houses"].doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
