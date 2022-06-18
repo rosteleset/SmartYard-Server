@@ -27,27 +27,6 @@
         always(modules["domophones"].route);
     },
 
-    cmses: function (domophoneId, selected) {
-        let c = [
-            {
-                id: "0",
-                text: "-",
-            },
-        ];
-
-        for (let id in modules["domophones"].meta.cmses) {
-            if (modules["domophones"].meta.models[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
-                c.push({
-                    id: id,
-                    text: modules["domophones"].meta.cmses[id].title,
-                    selected: selected === id,
-                })
-            }
-        }
-
-        return c;
-    },
-
     addDomophone: function () {
         let models = [];
         let first;
@@ -87,13 +66,6 @@
                             language: lang["_code"],
                         });
                     }
-                },
-                {
-                    id: "cms",
-                    type: "select2",
-                    title: i18n("domophones.cms"),
-                    placeholder: i18n("domophones.cms"),
-                    options: modules["domophones"].cmses(first),
                 },
                 {
                     id: "ip",

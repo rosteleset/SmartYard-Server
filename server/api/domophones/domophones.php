@@ -20,7 +20,6 @@
                 $response = [
                     "domophones" => $domophones->getDomophones(),
                     "models" => $domophones->getModels(),
-                    "cmses" => $domophones->getCMSes(),
                 ];
 
                 return api::ANSWER($response, "domophones");

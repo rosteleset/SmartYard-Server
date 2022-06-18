@@ -24,11 +24,11 @@
                 if (@$params["entranceId"]) {
                     $success = $houses->addEntrance($params["houseId"], $params["entranceId"], $params["prefix"]);
 
-                    return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                    return api::ANSWER($success);
                 } else {
-                    $entranceId = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cmsType"], $params["cameraId"]);
+                    $entranceId = $houses->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"]);
 
-                    return api::ANSWER($entranceId, ($entranceId !== false)?"entranceId":"notAcceptable");
+                    return api::ANSWER($entranceId, ($entranceId !== false)?"entranceId":false);
                 }
             }
 
@@ -36,9 +36,9 @@
             {
                 $houses = loadBackend("houses");
 
-                $success = $houses->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cmsType"], $params["cameraId"]);
+                $success = $houses->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["prefix"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success);
             }
 
             public static function DELETE($params)
@@ -51,7 +51,7 @@
                     $success = $houses->destroyEntrance($params["_id"]);
                 }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success);
             }
 
             public static function index()

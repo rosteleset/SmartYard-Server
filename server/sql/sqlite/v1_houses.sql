@@ -10,11 +10,23 @@ CREATE TABLE houses_entrances
 -- domophone's specisic entrance settings
     domophone_id integer not null,
     domophone_output integer,
+    cms text,                                                                                                           -- for visualization only
     cms_type integer,
     camera_id integer
 );
 CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(domophone_id, domophone_output);
 CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);
+
+-- domophones apartments -> cms
+CREATE TABLE houses_entrances_cmses
+(
+    domophone_id integer not null,
+    apartment integer not null,                                                                                         -- flat number
+    cms text not null,
+    dozen integer not null,
+    unit text not null
+);
+CREATE UNIQUE INDEX houses_entrances_cmses_uniq on houses_entrances_cmses(domophone_id, cms, dozen, unit);
 
 -- houses <-> entrances
 CREATE TABLE houses_houses_entrances

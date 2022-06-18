@@ -22,7 +22,7 @@
     "entranceTypeGate": "в",
     "entranceTypeBarrier": "ш",
     "entranceType": "Тип",
-    "shared": "Общий",
+    "shared": "Несколько домов",
     "floor": "Этаж",
     "deleteFlat": "Удалить квартиру",
     "deleteEntrance": "Удалить вход",
@@ -31,6 +31,7 @@
     "entranceWasDeleted": "Вход удален",
     "flatWasDeleted": "Квартира удалена",
     "entranceWasAdded": "Вход добавлен",
+    "entranceWasCreated": "Вход добавлен",
     "flatWasAdded": "Квартира добавлена",
     "entranceWasChanged": "Вход изменен",
     "flatWasChanged": "Квартира изменена",
@@ -63,5 +64,9 @@
     "domophoneOutput": "&quotВыход&quot; домофона",
     "cameraId": "Камера",
     "domophoneOutputPrimary": "Основной",
-    "domophoneOutputSecondary":  "Дополнительный #%s"
+    "domophoneOutputSecondary":  "Дополнительный #%s",
+    "errors": {
+        "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",
+        "UNIQUE constraint failed: houses_entrances.domophone_id, houses_entrances.domophone_output": "Этот выход уже занят"
+    }
 }

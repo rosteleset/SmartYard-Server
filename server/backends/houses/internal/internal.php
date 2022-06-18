@@ -63,7 +63,7 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, domophone_id, domophone_output, cms_type, camera_id from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
+                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, domophone_id, domophone_output, cms, cms_type, camera_id from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
                     false,
                     [
                         "address_house_id" => "houseId",
@@ -76,6 +76,7 @@
                         "prefix" => "prefix",
                         "domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
+                        "cms" => "cms",
                         "cms_type" => "cmsType",
                         "camera_id" => "cameraId",
                     ]
@@ -85,7 +86,7 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cmsType, $cameraId)
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId)
             {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
@@ -99,7 +100,7 @@
                     $prefix = 0;
                 }
 
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, domophone_id, domophone_output, cms_type, camera_id) values (:entrance_type, :entrance, :lat, :lon, :shared, :domophone_id, :domophone_output, :cms_type, :camera_id)", [
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, domophone_id, domophone_output, cms, cms_type, camera_id) values (:entrance_type, :entrance, :lat, :lon, :shared, :domophone_id, :domophone_output, :cms, :cms_type, :camera_id)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -107,6 +108,7 @@
                     ":shared" => (int)$shared,
                     ":domophone_id" => (int)$domophoneId,
                     ":domophone_output" => (int)$domophoneOutput,
+                    ":cms" => $cms,
                     ":cms_type" => $cmsType,
                     ":camera_id" => $cameraId,
                 ]);
@@ -141,35 +143,45 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cmsType, $cameraId)
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId)
             {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
                 }
 
-                if ((int)$shared && !(int)$prefix) {
+                $shared = (int)$shared;
+                $prefix = (int)$prefix;
+
+                if ($shared && !$prefix) {
                     return false;
                 }
 
-                if (!(int)$shared) {
+                if (!$shared) {
                     $prefix = 0;
                 }
 
-                return
-                    $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
+                if ($shared) {
+                    $r1 = $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
                         ":prefix" => $prefix,
-                    ]) !== false
+                    ]) !== false;
+                } else {
+                    $r1 = $this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") !== false;
+                }
+
+                return
+                    $r1
                     and
-                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, domophone_id = :domophone_id, domophone_output = :domophone_output, cms_type = :cms_type, camera_id = :camera_id where house_entrance_id = $entranceId", [
+                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, domophone_id = :domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id where house_entrance_id = $entranceId", [
                         ":entrance_type" => $entranceType,
                         ":entrance" => $entrance,
                         ":lat" => (float)$lat,
                         ":lon" => (float)$lon,
-                        ":shared" => (int)$shared,
+                        ":shared" => $shared,
                         ":domophone_id" => (int)$domophoneId,
                         ":domophone_output" => (int)$domophoneOutput,
+                        ":cms" => $cms,
                         ":cms_type" => $cmsType,
-                        ":camera_id" => $cameraId,
+                        ":camera_id" => (int)$cameraId,
                     ]) !== false;
             }
 

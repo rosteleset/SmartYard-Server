@@ -10,6 +10,27 @@
         moduleLoaded("houses", this);
     },
 
+    cmses: function (domophoneId, selected) {
+        let c = [];
+
+        c.push({
+            id: "0",
+            text: "-",
+        })
+
+        for (let id in modules["houses"].meta.cmses) {
+            if (domophoneId && modules["houses"].meta.models[domophoneId] && modules["houses"].meta.models[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
+                c.push({
+                    id: id,
+                    text: modules["houses"].meta.cmses[id].title,
+                    selected: selected === id,
+                })
+            }
+        }
+
+        return c;
+    },
+
     doAddEntrance: function (houseId, entranceId, prefix) {
         loadingStart();
         POST("houses", "entrance", false, {
@@ -26,7 +47,7 @@
         });
     },
 
-    doCreateEntrance: function (houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cmsType, cameraId) {
+    doCreateEntrance: function (houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId) {
         loadingStart();
         POST("houses", "entrance", false, {
             houseId,
@@ -38,6 +59,7 @@
             prefix,
             domophoneId,
             domophoneOutput,
+            cms,
             cmsType,
             cameraId
         }).
@@ -74,7 +96,7 @@
         });
     },
 
-    doModifyEntrance: function (entranceId, houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cmsType, cameraId) {
+    doModifyEntrance: function (entranceId, houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId) {
         loadingStart();
         PUT("houses", "entrance", entranceId, {
             houseId,
@@ -86,6 +108,7 @@
             prefix,
             domophoneId,
             domophoneOutput,
+            cms,
             cmsType,
             cameraId
         }).
@@ -162,167 +185,235 @@
 
     addEntrance: function (houseId) {
         mYesNo(i18n("houses.useExistingEntranceQuestion"), i18n("houses.addEntrance"), () => {
-            cardForm({
-                title: i18n("houses.addEntrance"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                apply: i18n("add"),
-                size: "lg",
-                fields: [
-                    {
-                        id: "entranceType",
-                        type: "select",
-                        title: i18n("houses.entranceType"),
-                        options: [
-                            {
-                                id: "entrance",
-                                text: i18n("houses.entranceTypeEntranceFull"),
-                            },
-                            {
-                                id: "wicket",
-                                text: i18n("houses.entranceTypeWicketFull"),
-                            },
-                            {
-                                id: "gate",
-                                text: i18n("houses.entranceTypeGateFull"),
-                            },
-                            {
-                                id: "barrier",
-                                text: i18n("houses.entranceTypeBarrierFull"),
+            loadingStart();
+            GET("domophones", "domophones").
+            done(response => {
+                console.log(response);
+
+                let first = false;
+                let models = {};
+
+                let domophones = [];
+
+                for (let i in response.domophones.domophones) {
+                    if (!first) {
+                        first = response.domophones.domophones[i].domophoneId;
+                    }
+                    models[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                    domophones.push({
+                        id: response.domophones.domophones[i].domophoneId,
+                        text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):"") + " [" + response.domophones.domophones[i].ip + "]",
+                    })
+                }
+
+                cardForm({
+                    title: i18n("houses.addEntrance"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("add"),
+                    size: "lg",
+                    fields: [
+                        {
+                            id: "entranceType",
+                            type: "select",
+                            title: i18n("houses.entranceType"),
+                            options: [
+                                {
+                                    id: "entrance",
+                                    text: i18n("houses.entranceTypeEntranceFull"),
+                                },
+                                {
+                                    id: "wicket",
+                                    text: i18n("houses.entranceTypeWicketFull"),
+                                },
+                                {
+                                    id: "gate",
+                                    text: i18n("houses.entranceTypeGateFull"),
+                                },
+                                {
+                                    id: "barrier",
+                                    text: i18n("houses.entranceTypeBarrierFull"),
+                                }
+                            ]
+                        },
+                        {
+                            id: "entrance",
+                            type: "text",
+                            title: i18n("houses.entrance"),
+                            placeholder: i18n("houses.entrance"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
                             }
-                        ]
-                    },
-                    {
-                        id: "entrance",
-                        type: "text",
-                        title: i18n("houses.entrance"),
-                        placeholder: i18n("houses.entrance"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
+                        },
+                        {
+                            id: "lon",
+                            type: "text",
+                            title: i18n("houses.lon"),
+                            placeholder: i18n("houses.lon"),
+                        },
+                        {
+                            id: "lat",
+                            type: "text",
+                            title: i18n("houses.lat"),
+                            placeholder: i18n("houses.lat"),
+                        },
+                        {
+                            id: "cameraId",
+                            type: "text",
+                            title: i18n("houses.cameraId"),
+                            placeholder: i18n("houses.cameraId"),
+                        },
+                        {
+                            id: "domophoneId",
+                            type: "select2",
+                            title: i18n("houses.domophoneId"),
+                            options: domophones,
+                            validate: v => {
+                                return parseInt(v) > 0;
+                            }
+                        },
+                        {
+                            id: "domophoneOutput",
+                            type: "select",
+                            title: i18n("houses.domophoneOutput"),
+                            placeholder: i18n("houses.domophoneOutput"),
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("houses.domophoneOutputPrimary"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("houses.domophoneOutputSecondary", 1),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("houses.domophoneOutputSecondary", 2),
+                                },
+                                {
+                                    id: "3",
+                                    text: i18n("houses.domophoneOutputSecondary", 3),
+                                },
+                                {
+                                    id: "4",
+                                    text: i18n("houses.domophoneOutputSecondary", 4),
+                                },
+                                {
+                                    id: "5",
+                                    text: i18n("houses.domophoneOutputSecondary", 5),
+                                },
+                                {
+                                    id: "6",
+                                    text: i18n("houses.domophoneOutputSecondary", 6),
+                                },
+                                {
+                                    id: "7",
+                                    text: i18n("houses.domophoneOutputSecondary", 7),
+                                },
+                            ],
+                            select: (el, id, prefix) => {
+                                if (parseInt(el.val()) > 0) {
+                                    $("#" + prefix + "cms").parent().parent().parent().hide();
+                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                    $("#" + prefix + "shared").parent().parent().parent().hide();
+                                    $("#" + prefix + "prefix").parent().parent().hide();
+                                } else {
+                                    $("#" + prefix + "cms").parent().parent().parent().show();
+                                    $("#" + prefix + "shared").parent().parent().parent().show();
+                                    if (parseInt($("#" + prefix + "cms").val()) !== 0) {
+                                        $("#" + prefix + "prefix").parent().parent().show();
+                                    } else {
+                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                    }
+                                    if (parseInt($("#" + prefix + "shared").val())) {
+                                        $("#" + prefix + "prefix").parent().parent().show();
+                                    } else {
+                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                    }
+                                }
+                            },
+                        },
+                        {
+                            id: "cms",
+                            type: "select2",
+                            title: i18n("domophones.cms"),
+                            placeholder: i18n("domophones.cms"),
+                            options: modules["houses"].cmses(models[first]),
+                            select: (el, id, prefix) => {
+                                if (parseInt(el.val()) === 0) {
+                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                } else {
+                                    $("#" + prefix + "cmsType").parent().parent().parent().show();
+                                }
+                            },
+                        },
+                        {
+                            id: "cmsType",
+                            type: "select",
+                            title: i18n("houses.cmsType"),
+                            options: [
+                                {
+                                    id: "1",
+                                    text: i18n("houses.cmsA"),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("houses.cmsAV"),
+                                },
+                            ]
+                        },
+                        {
+                            id: "shared",
+                            type: "select",
+                            title: i18n("houses.shared"),
+                            select: (el, id, prefix) => {
+                                if (parseInt(el.val())) {
+                                    $("#" + prefix + "prefix").parent().parent().show();
+                                } else {
+                                    $("#" + prefix + "prefix").parent().parent().hide();
+                                }
+                            },
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                }
+                            ]
+                        },
+                        {
+                            id: "prefix",
+                            type: "text",
+                            title: i18n("houses.prefix"),
+                            placeholder: i18n("houses.prefix"),
+                            value: "0",
+                            hidden: true,
+                            validate: (v, prefix) => {
+                                return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                            },
+                        },
+                    ],
+                    callback: result => {
+                        if (parseInt(result.domophoneOutput) > 0) {
+                            result.cms = 0;
+                            result.shared = 0;
                         }
+                        if (!result.shared) {
+                            result.prefix = 0;
+                        }
+                        if (!result.cms) {
+                            result.cmsType = 0;
+                        }
+                        modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId);
                     },
-                    {
-                        id: "lon",
-                        type: "text",
-                        title: i18n("houses.lon"),
-                        placeholder: i18n("houses.lon"),
-                    },
-                    {
-                        id: "lat",
-                        type: "text",
-                        title: i18n("houses.lat"),
-                        placeholder: i18n("houses.lat"),
-                    },
-                    {
-                        id: "shared",
-                        type: "select",
-                        title: i18n("houses.shared"),
-                        select: (el, id, prefix) => {
-                            if (parseInt(el.val())) {
-                                $("#" + prefix + "prefix").parent().parent().show();
-                            } else {
-                                $("#" + prefix + "prefix").parent().parent().hide();
-                            }
-                        },
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("yes"),
-                            }
-                        ]
-                    },
-                    {
-                        id: "prefix",
-                        type: "text",
-                        title: i18n("houses.prefix"),
-                        placeholder: i18n("houses.prefix"),
-                        value: "0",
-                        hidden: true,
-                        validate: (v, prefix) => {
-                            return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
-                        },
-                    },
-                    {
-                        id: "domophoneId",
-                        type: "text",
-                        title: i18n("houses.domophoneId"),
-                        placeholder: i18n("houses.domophoneId"),
-                    },
-                    {
-                        id: "domophoneOutput",
-                        type: "select",
-                        title: i18n("houses.domophoneOutput"),
-                        placeholder: i18n("houses.domophoneOutput"),
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("houses.domophoneOutputPrimary"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("houses.domophoneOutputSecondary", 1),
-                            },
-                            {
-                                id: "2",
-                                text: i18n("houses.domophoneOutputSecondary", 2),
-                            },
-                            {
-                                id: "3",
-                                text: i18n("houses.domophoneOutputSecondary", 3),
-                            },
-                            {
-                                id: "4",
-                                text: i18n("houses.domophoneOutputSecondary", 4),
-                            },
-                            {
-                                id: "5",
-                                text: i18n("houses.domophoneOutputSecondary", 5),
-                            },
-                            {
-                                id: "6",
-                                text: i18n("houses.domophoneOutputSecondary", 6),
-                            },
-                            {
-                                id: "7",
-                                text: i18n("houses.domophoneOutputSecondary", 7),
-                            },
-                        ]
-                    },
-                    {
-                        id: "cmsType",
-                        type: "select",
-                        title: i18n("houses.cmsType"),
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("houses.cmsA"),
-                            },
-                            {
-                                id: "2",
-                                text: i18n("houses.cmsAV"),
-                            },
-                        ]
-                    },
-                    {
-                        id: "cameraId",
-                        type: "text",
-                        title: i18n("houses.cameraId"),
-                        placeholder: i18n("houses.cameraId"),
-                    },
-                ],
-                callback: result => {
-                    modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cmsType, result.cameraId);
-                },
-            });
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }, () => {
             loadingStart();
             GET("houses", "sharedEntrances", houseId, true).
@@ -379,6 +470,9 @@
                             title: i18n("houses.prefix"),
                             placeholder: i18n("houses.prefix"),
                             value: "0",
+                            validate: v => {
+                                return parseInt(v) > 0;
+                            },
                         },
                     ],
                     callback: result => {
@@ -576,201 +670,262 @@
     },
 
     modifyEntrance: function (entranceId, houseId) {
-        let entrance = false;
+        loadingStart();
+        GET("domophones", "domophones").
+        done(response => {
+            let domophones = [];
+            let models = {};
 
-        for (let i in modules["houses"].meta.entrances) {
-            if (modules["houses"].meta.entrances[i].entranceId == entranceId) {
-                entrance = modules["houses"].meta.entrances[i];
-                break;
+            for (let i in response.domophones.domophones) {
+                models[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                domophones.push({
+                    id: response.domophones.domophones[i].domophoneId,
+                    text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : "") + " [" + response.domophones.domophones[i].ip + "]",
+                })
             }
-        }
 
-        if (entrance) {
-            cardForm({
-                title: i18n("houses.editEntrance"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                apply: i18n("edit"),
-                delete: i18n("houses.deleteEntrance"),
-                size: "lg",
-                fields: [
-                    {
-                        id: "entranceId",
-                        type: "text",
-                        title: i18n("houses.entranceId"),
-                        value: entranceId,
-                        readonly: true,
-                    },
-                    {
-                        id: "entranceType",
-                        type: "select",
-                        title: i18n("houses.entranceType"),
-                        options: [
-                            {
-                                id: "entrance",
-                                text: i18n("houses.entranceTypeEntranceFull"),
-                            },
-                            {
-                                id: "wicket",
-                                text: i18n("houses.entranceTypeWicketFull"),
-                            },
-                            {
-                                id: "gate",
-                                text: i18n("houses.entranceTypeGateFull"),
-                            },
-                            {
-                                id: "barrier",
-                                text: i18n("houses.entranceTypeBarrierFull"),
-                            }
-                        ],
-                        value: entrance.entranceType,
-                    },
-                    {
-                        id: "entrance",
-                        type: "text",
-                        title: i18n("houses.entrance"),
-                        placeholder: i18n("houses.entrance"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
+            let entrance = false;
+
+            for (let i in modules["houses"].meta.entrances) {
+                if (modules["houses"].meta.entrances[i].entranceId == entranceId) {
+                    entrance = modules["houses"].meta.entrances[i];
+                    break;
+                }
+            }
+
+            if (entrance) {
+                cardForm({
+                    title: i18n("houses.editEntrance"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("edit"),
+                    delete: i18n("houses.deleteEntrance"),
+                    size: "lg",
+                    fields: [
+                        {
+                            id: "entranceId",
+                            type: "text",
+                            title: i18n("houses.entranceId"),
+                            value: entranceId,
+                            readonly: true,
                         },
-                        value: entrance.entrance,
-                    },
-                    {
-                        id: "lon",
-                        type: "text",
-                        title: i18n("houses.lon"),
-                        placeholder: i18n("houses.lon"),
-                        value: entrance.lon,
-                    },
-                    {
-                        id: "lat",
-                        type: "text",
-                        title: i18n("houses.lat"),
-                        placeholder: i18n("houses.lat"),
-                        value: entrance.lat,
-                    },
-                    {
-                        id: "shared",
-                        type: "select",
-                        title: i18n("houses.shared"),
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("yes"),
-                            }
-                        ],
-                        select: (el, id, prefix) => {
-                            if (parseInt(el.val())) {
-                                $("#" + prefix + "prefix").parent().parent().show();
-                            } else {
-                                $("#" + prefix + "prefix").parent().parent().hide();
-                            }
+                        {
+                            id: "entranceType",
+                            type: "select",
+                            title: i18n("houses.entranceType"),
+                            options: [
+                                {
+                                    id: "entrance",
+                                    text: i18n("houses.entranceTypeEntranceFull"),
+                                },
+                                {
+                                    id: "wicket",
+                                    text: i18n("houses.entranceTypeWicketFull"),
+                                },
+                                {
+                                    id: "gate",
+                                    text: i18n("houses.entranceTypeGateFull"),
+                                },
+                                {
+                                    id: "barrier",
+                                    text: i18n("houses.entranceTypeBarrierFull"),
+                                }
+                            ],
+                            value: entrance.entranceType,
                         },
-                        value: entrance.shared.toString(),
-                    },
-                    {
-                        id: "prefix",
-                        type: "text",
-                        title: i18n("houses.prefix"),
-                        placeholder: i18n("houses.prefix"),
-                        value: entrance.prefix?entrance.prefix.toString():"0",
-                        hidden: !parseInt(entrance.shared),
-                        validate: (v, prefix) => {
-                            return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                        {
+                            id: "entrance",
+                            type: "text",
+                            title: i18n("houses.entrance"),
+                            placeholder: i18n("houses.entrance"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            },
+                            value: entrance.entrance,
                         },
+                        {
+                            id: "lon",
+                            type: "text",
+                            title: i18n("houses.lon"),
+                            placeholder: i18n("houses.lon"),
+                            value: entrance.lon,
+                        },
+                        {
+                            id: "lat",
+                            type: "text",
+                            title: i18n("houses.lat"),
+                            placeholder: i18n("houses.lat"),
+                            value: entrance.lat,
+                        },
+                        {
+                            id: "cameraId",
+                            type: "text",
+                            title: i18n("houses.cameraId"),
+                            placeholder: i18n("houses.cameraId"),
+                            value: entrance.cameraId,
+                        },
+                        {
+                            id: "domophoneId",
+                            type: "select2",
+                            title: i18n("houses.domophoneId"),
+                            value: entrance.domophoneId,
+                            options: domophones,
+                        },
+                        {
+                            id: "domophoneOutput",
+                            type: "select",
+                            title: i18n("houses.domophoneOutput"),
+                            placeholder: i18n("houses.domophoneOutput"),
+                            value: entrance.domophoneOutput,
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("houses.domophoneOutputPrimary"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("houses.domophoneOutputSecondary", 1),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("houses.domophoneOutputSecondary", 2),
+                                },
+                                {
+                                    id: "3",
+                                    text: i18n("houses.domophoneOutputSecondary", 3),
+                                },
+                                {
+                                    id: "4",
+                                    text: i18n("houses.domophoneOutputSecondary", 4),
+                                },
+                                {
+                                    id: "5",
+                                    text: i18n("houses.domophoneOutputSecondary", 5),
+                                },
+                                {
+                                    id: "6",
+                                    text: i18n("houses.domophoneOutputSecondary", 6),
+                                },
+                                {
+                                    id: "7",
+                                    text: i18n("houses.domophoneOutputSecondary", 7),
+                                },
+                            ],
+                            select: (el, id, prefix) => {
+                                if (parseInt(el.val()) > 0) {
+                                    $("#" + prefix + "cms").parent().parent().parent().hide();
+                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                    $("#" + prefix + "shared").parent().parent().parent().hide();
+                                    $("#" + prefix + "prefix").parent().parent().hide();
+                                } else {
+                                    $("#" + prefix + "cms").parent().parent().parent().show();
+                                    $("#" + prefix + "shared").parent().parent().parent().show();
+                                    if (parseInt($("#" + prefix + "cms").val()) !== 0) {
+                                        $("#" + prefix + "prefix").parent().parent().show();
+                                    } else {
+                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                    }
+                                    if (parseInt($("#" + prefix + "shared").val())) {
+                                        $("#" + prefix + "prefix").parent().parent().show();
+                                    } else {
+                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                    }
+                                }
+                            },
+                        },
+                        {
+                            id: "cms",
+                            type: "select2",
+                            title: i18n("domophones.cms"),
+                            placeholder: i18n("domophones.cms"),
+                            options: modules["houses"].cmses(models[entrance.domophoneId]),
+                            value: entrance.cms,
+                            select: (el, id, prefix) => {
+                                if (parseInt(el.val()) === 0) {
+                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                                } else {
+                                    $("#" + prefix + "cmsType").parent().parent().parent().show();
+                                }
+                            },
+                        },
+                        {
+                            id: "cmsType",
+                            type: "select",
+                            title: i18n("houses.cmsType"),
+                            value: entrance.cmsType,
+                            hidden: parseInt(entrance.domophoneOutput) > 0,
+                            options: [
+                                {
+                                    id: "1",
+                                    text: i18n("houses.cmsA"),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("houses.cmsAV"),
+                                },
+                            ]
+                        },
+                        {
+                            id: "shared",
+                            type: "select",
+                            title: i18n("houses.shared"),
+                            hidden: parseInt(entrance.domophoneOutput) > 0,
+                            value: entrance.shared.toString(),
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                }
+                            ],
+                            select: (el, id, prefix) => {
+                                if (parseInt(el.val())) {
+                                    $("#" + prefix + "prefix").parent().parent().show();
+                                } else {
+                                    $("#" + prefix + "prefix").parent().parent().hide();
+                                }
+                            },
+                        },
+                        {
+                            id: "prefix",
+                            type: "text",
+                            title: i18n("houses.prefix"),
+                            placeholder: i18n("houses.prefix"),
+                            value: entrance.prefix?entrance.prefix.toString():"0",
+                            hidden: !parseInt(entrance.shared) || parseInt(entrance.domophoneOutput) > 0,
+                            validate: (v, prefix) => {
+                                return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                            },
+                        },
+                    ],
+                    callback: result => {
+                        if (result.delete === "yes") {
+                            modules["houses"].deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
+                        } else {
+                            if (parseInt(result.domophoneOutput) > 0) {
+                                result.cms = 0;
+                                result.shared = 0;
+                            }
+                            if (!result.shared) {
+                                result.prefix = 0;
+                            }
+                            if (!result.cms) {
+                                result.cmsType = 0;
+                            }
+                            modules["houses"].doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId);
+                        }
                     },
-                    {
-                        id: "domophoneId",
-                        type: "text",
-                        title: i18n("houses.domophoneId"),
-                        placeholder: i18n("houses.domophoneId"),
-                        value: entrance.domophoneId,
-                    },
-                    {
-                        id: "domophoneOutput",
-                        type: "select",
-                        title: i18n("houses.domophoneOutput"),
-                        placeholder: i18n("houses.domophoneOutput"),
-                        value: entrance.domophoneOutput,
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("houses.domophoneOutputPrimary"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("houses.domophoneOutputSecondary", 1),
-                            },
-                            {
-                                id: "2",
-                                text: i18n("houses.domophoneOutputSecondary", 2),
-                            },
-                            {
-                                id: "3",
-                                text: i18n("houses.domophoneOutputSecondary", 3),
-                            },
-                            {
-                                id: "4",
-                                text: i18n("houses.domophoneOutputSecondary", 4),
-                            },
-                            {
-                                id: "5",
-                                text: i18n("houses.domophoneOutputSecondary", 5),
-                            },
-                            {
-                                id: "6",
-                                text: i18n("houses.domophoneOutputSecondary", 6),
-                            },
-                            {
-                                id: "7",
-                                text: i18n("houses.domophoneOutputSecondary", 7),
-                            },
-                        ]
-                    },
-                    {
-                        id: "cmsType",
-                        type: "select",
-                        title: i18n("houses.cmsType"),
-                        value: entrance.cmsType,
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("houses.cmsA"),
-                            },
-                            {
-                                id: "2",
-                                text: i18n("houses.cmsAV"),
-                            },
-                        ]
-                    },
-                    {
-                        id: "cameraId",
-                        type: "text",
-                        title: i18n("houses.cameraId"),
-                        placeholder: i18n("houses.cameraId"),
-                        value: entrance.cameraId,
-                    },
-                ],
-                callback: result => {
-                    if (result.delete === "yes") {
-                        modules["houses"].deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
-                    } else {
-                        modules["houses"].doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cmsType, result.cameraId);
-                    }
-                },
-            });
-        } else {
-            error(i18n("houses.entranceNotFound"));
-        }
+                });
+            } else {
+                error(i18n("houses.entranceNotFound"));
+            }
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     modifyFlat: function (flatId, houseId) {
@@ -1116,10 +1271,10 @@
                         title: i18n("houses.entranceType"),
                     },
                     {
-                        title: i18n("houses.shared"),
+                        title: i18n("houses.entrance"),
                     },
                     {
-                        title: i18n("houses.entrance"),
+                        title: i18n("houses.shared"),
                         fullWidth: true,
                     },
                 ],
@@ -1139,11 +1294,11 @@
                                     data: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full"),
                                 },
                                 {
-                                    data: parseInt(modules["houses"].meta.entrances[i].shared)?i18n("yes"):i18n("no"),
-                                },
-                                {
                                     data: modules["houses"].meta.entrances[i].entrance,
                                     nowrap: true,
+                                },
+                                {
+                                    data: parseInt(modules["houses"].meta.entrances[i].shared)?i18n("yes"):i18n("no"),
                                 },
                             ],
                             dropDown: {
@@ -1201,6 +1356,8 @@
             }
             modules["houses"].meta.entrances = response["house"].entrances;
             modules["houses"].meta.flats = response["house"].flats;
+            modules["houses"].meta.models = response["house"].models;
+            modules["houses"].meta.cmses = response["house"].cmses;
 
             if (modules["houses"].meta.house && modules["houses"].meta.house.houseFull) {
                 document.title = i18n("windowTitle") + " :: " + i18n("houses.house") + " :: " + modules["houses"].meta.house.houseFull;
