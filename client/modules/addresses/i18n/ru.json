@@ -80,5 +80,10 @@
     "settlementWasDeleted": "Населенный пункт удален",
     "streetWasDeleted": "Улица удалена",
     "houseWasDeleted": "Дом удален",
-    "regionIsoCode": "ISO код региона"
+    "regionIsoCode": "ISO код региона",
+    "addRegion": "Добавить регион",
+    "addArea": "Добавить район",
+    "addCity": "Добавить город",
+    "addSettlement": "Добавить населенный пункт",
+    "addStreet": "Добавить улицу"
 }

@@ -40,7 +40,13 @@
                     id: "ip",
                     type: "text",
                     title: i18n("domophones.ip"),
-                    placeholder: i18n("domophones.ip"),
+                    placeholder: "IP",
+                },
+                {
+                    id: "port",
+                    type: "text",
+                    title: i18n("domophones.port"),
+                    placeholder: i18n("domophones.port"),
                 },
                 {
                     id: "credentials",
@@ -55,10 +61,10 @@
                     placeholder: i18n("domophones.callerId"),
                 },
                 {
-                    id: "comments",
+                    id: "comment",
                     type: "text",
-                    title: i18n("domophones.comments"),
-                    placeholder: i18n("domophones.comments"),
+                    title: i18n("domophones.comment"),
+                    placeholder: i18n("domophones.comment"),
                 },
                 {
                     id: "locksDisabled",

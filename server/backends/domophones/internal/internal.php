@@ -23,9 +23,10 @@
                     "model" => "model",
                     "cms" => "cms",
                     "ip" => "ip",
+                    "port" => "port",
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
-                    "comments" => "comments",
+                    "comment" => "comment",
                     "locks_disabled" => "locksDisabled",
                     "cms_levels" => "cmsLevels"
                 ]);
@@ -34,7 +35,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels)
+            public function addDomophone($enabled, $model, $cms, $ip, $port,  $credentials, $callerId, $comment, $locksDisabled, $cmsLevels)
             {
                 // TODO: Implement addDomophone() method.
             }
@@ -42,7 +43,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels)
+            public function modifyDomophone($domophoneId, $enabled, $model, $cms, $ip, $port, $credentials, $callerId, $comment, $locksDisabled, $cmsLevels)
             {
                 // TODO: Implement modifyDomophone() method.
             }
@@ -69,6 +70,22 @@
             public function setCms($domophoneId, $cms)
             {
                 // TODO: Implement setCms() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getModels()
+            {
+                // TODO: Implement getModels() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getCMSes()
+            {
+                // TODO: Implement getCMSes() method.
             }
         }
     }

@@ -6,9 +6,10 @@ CREATE TABLE domophones
     model text not null,
     cms text,                                                                                                           -- for visualization only
     ip text,
+    port integer,
     credentials text,                                                                                                   -- plaintext:login:password, token:token, or something else
     caller_id text,
-    comments text,
+    comment text,
     locks_disabled integer,
     cms_levels text
 );

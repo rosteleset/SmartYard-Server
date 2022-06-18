@@ -1,6 +1,16 @@
 {
     "domophones": "Домофоны",
     "domophone": "Домофон",
+    "addDomophone": "Добавить домофон",
     "domophoneId": "#",
-    "ip": "ip"
+    "enabled": "Включен",
+    "model": "Модель",
+    "cms": "КМС",
+    "ip": "Адрес",
+    "port": "Порт",
+    "credentials": "Авторизация",
+    "callerId": "Отображаемое имя",
+    "comment": "Примечания",
+    "locksDisabled": "Замки открыты",
+    "cmsLevels": "Настройки уровней"
 }
