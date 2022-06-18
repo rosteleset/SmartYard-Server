@@ -19,10 +19,58 @@
             apply: i18n("add"),
             fields: [
                 {
+                    id: "enabled",
+                    type: "yesno",
+                    title: i18n("domophones.enabled"),
+                    value: "1",
+                },
+                {
+                    id: "model",
+                    type: "text",
+                    title: i18n("domophones.model"),
+                    placeholder: i18n("domophones.model"),
+                },
+                {
+                    id: "cms",
+                    type: "text",
+                    title: i18n("domophones.cms"),
+                    placeholder: i18n("domophones.cms"),
+                },
+                {
                     id: "ip",
                     type: "text",
                     title: i18n("domophones.ip"),
                     placeholder: i18n("domophones.ip"),
+                },
+                {
+                    id: "credentials",
+                    type: "text",
+                    title: i18n("domophones.credentials"),
+                    placeholder: i18n("domophones.credentials"),
+                },
+                {
+                    id: "callerId",
+                    type: "text",
+                    title: i18n("domophones.callerId"),
+                    placeholder: i18n("domophones.callerId"),
+                },
+                {
+                    id: "comments",
+                    type: "text",
+                    title: i18n("domophones.comments"),
+                    placeholder: i18n("domophones.comments"),
+                },
+                {
+                    id: "locksDisabled",
+                    type: "yesno",
+                    title: i18n("domophones.locksDisabled"),
+                    value: "0",
+                },
+                {
+                    id: "cmsLevels",
+                    type: "text",
+                    title: i18n("domophones.cmsLevels"),
+                    placeholder: i18n("domophones.cmsLevels"),
                 },
             ],
             callback: result => {
@@ -40,12 +88,11 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("domophones.domophones");
 
-
         GET("domophones", "domophones", false, true).
         done(response => {
             $("#altForm").hide();
 
-            modules["domophones"].domophones = response.domophones;
+            modules["domophones"].meta = response.domophones;
 
             cardTable({
                 target: "#mainForm",
@@ -70,15 +117,15 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i in response.domophones) {
+                    for (let i in modules["domophones"].meta.domophones) {
                         rows.push({
-                            uid: response.domophones[i].domophoneId,
+                            uid: modules["domophones"].meta.domophones[i].domophoneId,
                             cols: [
                                 {
-                                    data: response.domophones[i].domophoneId,
+                                    data: modules["domophones"].meta.domophones[i].domophoneId,
                                 },
                                 {
-                                    data: response.domophones[i].domophoneIp,
+                                    data: modules["domophones"].meta.domophones[i].domophoneIp,
                                     nowrap: true,
                                 },
                             ],

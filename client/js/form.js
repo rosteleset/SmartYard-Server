@@ -59,6 +59,20 @@ function cardForm(params) {
     let first = " no-border-top";
 
     for (let i in params.fields) {
+        if (params.fields[i].type === "yesno") {
+            params.fields[i].type = "select";
+            params.fields[i].options = [
+                {
+                    id: "0",
+                    text: i18n("no"),
+                },
+                {
+                    id: "1",
+                    text: i18n("yes"),
+                },
+            ];
+        }
+
         if (params.fields[i].id === "-") {
             h += "<tr class='mt-0 mb-0 pt-0 pb-0'>";
             if (params.singleColumn) {

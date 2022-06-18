@@ -85,6 +85,7 @@
                     "ami_port": 5038,
                     "ami_password": "b47c9917fd1eed2b450483282faea0cf",
                     "http_port": 8088,
+                    "ari_username": "domophone",
                     "ari_password": "b47c9917fd1eed2b450483282faea0cf"
                 }
             ]

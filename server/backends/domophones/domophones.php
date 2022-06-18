@@ -22,7 +22,6 @@
             /**
              * @param $enabled
              * @param $model
-             * @param $version
              * @param $cms
              * @param $ip
              * @param $credentials
@@ -32,13 +31,12 @@
              * @param $cmsLevels
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $version, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels);
+            abstract public function addDomophone($enabled, $model, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels);
 
             /**
              * @param $domophoneId
              * @param $enabled
              * @param $model
-             * @param $version
              * @param $cms
              * @param $ip
              * @param $credentials
@@ -48,7 +46,7 @@
              * @param $cmsLevels
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $version, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels);
 
             /**
              * @param $domophoneId

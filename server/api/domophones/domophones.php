@@ -17,9 +17,13 @@
             public static function GET($params) {
                 $domophones = loadBackend("domophones");
 
-                $domophones = $domophones?$domophones->getDomophones():$domophones;
+                $response = [
+                    "domophones" => $domophones->getDomophones(),
+                    "models" => $domophones->getModels(),
+                    "cmses" => $domophones->getCMSes(),
+                ];
 
-                return api::ANSWER($domophones, ($domophones !== false)?"domophones":"badRequest");
+                return api::ANSWER($response, ($response !== false)?"domophones":"badRequest");
             }
 
             public static function index() {

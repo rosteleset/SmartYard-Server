@@ -21,7 +21,6 @@
                     "domophone_id" => "domophoneId",
                     "enabled" => "enabled",
                     "model" => "model",
-                    "version" => "version",
                     "cms" => "cms",
                     "ip" => "ip",
                     "credentials" => "credentials",
@@ -35,7 +34,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $version, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels)
+            public function addDomophone($enabled, $model, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels)
             {
                 // TODO: Implement addDomophone() method.
             }
@@ -43,7 +42,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $version, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels)
+            public function modifyDomophone($domophoneId, $enabled, $model, $cms, $ip, $credentials, $callerId, $comments, $locksDisabled, $cmsLevels)
             {
                 // TODO: Implement modifyDomophone() method.
             }

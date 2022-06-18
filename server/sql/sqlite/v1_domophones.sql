@@ -4,7 +4,6 @@ CREATE TABLE domophones
     domophone_id integer not null primary key autoincrement,
     enabled integer,
     model text not null,
-    version text not null,
     cms text,                                                                                                           -- for visualization only
     ip text,
     credentials text,                                                                                                   -- plaintext:login:password, token:token, or something else
