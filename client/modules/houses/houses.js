@@ -73,7 +73,7 @@
         });
     },
 
-    doCreateEntrance: function (houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId) {
+    doCreateEntrance: function (houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId, cmsLevels, locksDisabled) {
         loadingStart();
         POST("houses", "entrance", false, {
             houseId,
@@ -87,7 +87,9 @@
             domophoneOutput,
             cms,
             cmsType,
-            cameraId
+            cameraId,
+            cmsLevels,
+            locksDisabled,
         }).
         fail(FAIL).
         done(() => {
@@ -122,7 +124,7 @@
         });
     },
 
-    doModifyEntrance: function (entranceId, houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId) {
+    doModifyEntrance: function (entranceId, houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId, cmsLevels, locksDisabled) {
         loadingStart();
         PUT("houses", "entrance", entranceId, {
             houseId,
@@ -136,7 +138,9 @@
             domophoneOutput,
             cms,
             cmsType,
-            cameraId
+            cameraId,
+            cmsLevels,
+            locksDisabled,
         }).
         fail(FAIL).
         done(() => {
@@ -325,9 +329,13 @@
                                     $("#" + prefix + "cmsType").parent().parent().parent().hide();
                                     $("#" + prefix + "shared").parent().parent().parent().hide();
                                     $("#" + prefix + "prefix").parent().parent().hide();
+                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
+                                    $("#" + prefix + "locksDisabled").parent().parent().parent().hide();
                                 } else {
                                     $("#" + prefix + "cms").parent().parent().parent().show();
                                     $("#" + prefix + "shared").parent().parent().parent().show();
+                                    $("#" + prefix + "cmsLevels").parent().parent().show();
+                                    $("#" + prefix + "locksDisabled").parent().parent().parent().show();
                                     if (parseInt($("#" + prefix + "cms").val()) !== 0) {
                                         $("#" + prefix + "prefix").parent().parent().show();
                                     } else {
@@ -370,6 +378,17 @@
                                     text: i18n("houses.cmsAV"),
                                 },
                             ]
+                        },
+                        {
+                            id: "cmsLevels",
+                            type: "text",
+                            title: i18n("houses.cmsLevels"),
+                        },
+                        {
+                            id: "locksDisabled",
+                            type: "yesno",
+                            title: i18n("houses.locksDisabled"),
+                            value: 0,
                         },
                         {
                             id: "shared",
@@ -416,7 +435,7 @@
                         if (!result.cms) {
                             result.cmsType = 0;
                         }
-                        modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId);
+                        modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
                     },
                 });
             }).
@@ -807,9 +826,13 @@
                                     $("#" + prefix + "cmsType").parent().parent().parent().hide();
                                     $("#" + prefix + "shared").parent().parent().parent().hide();
                                     $("#" + prefix + "prefix").parent().parent().hide();
+                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
+                                    $("#" + prefix + "locksDisabled").parent().parent().parent().hide();
                                 } else {
                                     $("#" + prefix + "cms").parent().parent().parent().show();
                                     $("#" + prefix + "shared").parent().parent().parent().show();
+                                    $("#" + prefix + "cmsLevels").parent().parent().show();
+                                    $("#" + prefix + "locksDisabled").parent().parent().parent().show();
                                     if (parseInt($("#" + prefix + "cms").val()) !== 0) {
                                         $("#" + prefix + "prefix").parent().parent().show();
                                     } else {
@@ -854,6 +877,20 @@
                                     text: i18n("houses.cmsAV"),
                                 },
                             ]
+                        },
+                        {
+                            id: "cmsLevels",
+                            type: "text",
+                            title: i18n("houses.cmsLevels"),
+                            value: entrance.cmsLevels,
+                            hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
+                        },
+                        {
+                            id: "locksDisabled",
+                            type: "yesno",
+                            title: i18n("houses.locksDisabled"),
+                            value: entrance.locksDisabled,
+                            hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                         },
                         {
                             id: "shared",
@@ -905,7 +942,7 @@
                             if (!result.cms) {
                                 result.cmsType = 0;
                             }
-                            modules["houses"].doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId);
+                            modules["houses"].doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
                         }
                     },
                 });

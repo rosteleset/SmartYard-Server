@@ -65,6 +65,8 @@
     "cameraId": "Камера",
     "domophoneOutputPrimary": "Основной",
     "domophoneOutputSecondary":  "Дополнительный #%s",
+    "locksDisabled": "Замки открыты",
+    "cmsLevels": "Настройки уровней",
     "errors": {
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",
         "UNIQUE constraint failed: houses_entrances.domophone_id, houses_entrances.domophone_output": "Этот выход уже занят"

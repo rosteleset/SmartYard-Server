@@ -63,7 +63,7 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, domophone_id, domophone_output, cms, cms_type, camera_id from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
+                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
                     false,
                     [
                         "address_house_id" => "houseId",
@@ -79,6 +79,8 @@
                         "cms" => "cms",
                         "cms_type" => "cmsType",
                         "camera_id" => "cameraId",
+                        "cms_levels" => "cmsLevels",
+                        "locks_disabled" => "locksDisabled",
                     ]
                 );
             }
