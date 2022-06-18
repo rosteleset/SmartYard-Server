@@ -8,6 +8,7 @@
 
     chdir(dirname(__FILE__));
 
+    require_once "utils/error.php";
     require_once "utils/response.php";
     require_once "utils/hooks.php";
     require_once "utils/guidv4.php";

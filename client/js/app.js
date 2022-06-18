@@ -251,9 +251,15 @@ function loadModule() {
             l = "ru";
         }
         $.get("modules/" + module + "/i18n/" + l + ".json", i18n => {
+            if (i18n.errors) {
+                if (!lang.errors) {
+                    lang.errors = {};
+                }
+                lang.errors = {...lang.errors, ...i18n.errors};
+                delete i18n.errors;
+            }
             lang[module] = i18n;
-            $.getScript("modules/" + module + "/" + module + ".js");
-        }).fail(() => {
+        }).always(() => {
             $.getScript("modules/" + module + "/" + module + ".js");
         });
     }

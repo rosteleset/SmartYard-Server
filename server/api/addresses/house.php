@@ -39,7 +39,7 @@
                     $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
                 }
 
-                return api::ANSWER($houseId, ($houseId !== false)?"houseId":"notAcceptable");
+                return api::ANSWER($houseId, ($houseId !== false)?"houseId":false);
             }
 
             public static function DELETE($params) {

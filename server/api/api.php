@@ -125,8 +125,12 @@
              */
 
             public static function ERROR($error) {
+
                 if (!$error) {
-                    $error = "unknown";
+                    $error = getLastError();
+                    if (!$error) {
+                        $error = "unknown";
+                    }
                 }
 
                 $errors = [
@@ -139,7 +143,7 @@
 
                 return [
                     $code => [
-                        $code => $error,
+                        "error" => $error,
                     ],
                 ];
             }

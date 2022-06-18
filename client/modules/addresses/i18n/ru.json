@@ -85,5 +85,8 @@
     "addArea": "Добавить район",
     "addCity": "Добавить город",
     "addSettlement": "Добавить населенный пункт",
-    "addStreet": "Добавить улицу"
+    "addStreet": "Добавить улицу",
+    "errors": {
+        "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "Такой дом уже существует"
+    }
 }

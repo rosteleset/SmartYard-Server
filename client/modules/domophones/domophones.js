@@ -4,7 +4,7 @@
         moduleLoaded("domophones", this);
     },
 
-    domophones: false,
+    meta: false,
 
     doAddDomophone: function (ip) {
 
@@ -99,6 +99,8 @@
             $("#altForm").hide();
 
             modules["domophones"].meta = response.domophones;
+
+            console.log(modules["domophones"].meta);
 
             cardTable({
                 target: "#mainForm",

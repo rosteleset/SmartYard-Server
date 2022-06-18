@@ -20,7 +20,12 @@
                 } else {
                     return false;
                 }
+            } catch (\PDOException $e) {
+                setLastError($e->errorInfo[2]?:$e->getMessage());
+                error_log(print_r($e, true));
+                return false;
             } catch (\Exception $e) {
+                setLastError($e->getMessage());
                 error_log(print_r($e, true));
                 return false;
             }
@@ -34,7 +39,12 @@
                 } else {
                     return false;
                 }
+            } catch (\PDOException $e) {
+                setLastError($e->errorInfo[2]?:$e->getMessage());
+                error_log(print_r($e, true));
+                return false;
             } catch (\Exception $e) {
+                setLastError($e->getMessage());
                 error_log(print_r($e, true));
                 return false;
             }
@@ -85,7 +95,12 @@
 
                 return $r;
 
+            } catch (\PDOException $e) {
+                setLastError($e->errorInfo[2]?:$e->getMessage());
+                error_log(print_r($e, true));
+                return false;
             } catch (\Exception $e) {
+                setLastError($e->getMessage());
                 error_log(print_r($e, true));
                 return false;
             }

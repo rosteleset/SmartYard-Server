@@ -23,7 +23,7 @@
                     "cmses" => $domophones->getCMSes(),
                 ];
 
-                return api::ANSWER($response, ($response !== false)?"domophones":"badRequest");
+                return api::ANSWER($response, "domophones");
             }
 
             public static function index() {

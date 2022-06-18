@@ -259,7 +259,10 @@ function i18n(msg, ...args) {
     try {
         let t = msg.split(".");
         if (t.length > 2) {
-            return msg;
+            let t_ = [];
+            t_[0] = t.shift();
+            t_[1] = t.join(".");
+            t = t_;
         }
         let loc;
         if (t.length === 2) {
@@ -274,7 +277,11 @@ function i18n(msg, ...args) {
             loc = sprintf(loc, ...args);
         }
         if (!loc) {
-            return msg;
+            if (t[0] === "errors") {
+                return t[1];
+            } else {
+                return msg;
+            }
         }
         return loc;
     } catch (_) {

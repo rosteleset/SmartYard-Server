@@ -77,7 +77,17 @@
              */
             public function getModels()
             {
-                // TODO: Implement getModels() method.
+                $files = scandir(__DIR__ . "/../../../hw/domophones/models");
+
+                $models = [];
+
+                foreach ($files as $file) {
+                    if (substr($file, -5) === ".json") {
+                        $models[] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $file), true);
+                    }
+                }
+
+                return $models;
             }
 
             /**
@@ -85,7 +95,17 @@
              */
             public function getCMSes()
             {
-                // TODO: Implement getCMSes() method.
+                $files = scandir(__DIR__ . "/../../../hw/domophones/cmses");
+
+                $cmses = [];
+
+                foreach ($files as $file) {
+                    if (substr($file, -5) === ".json") {
+                        $cmses[] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/cmses/" . $file), true);
+                    }
+                }
+
+                return $cmses;
             }
         }
     }
