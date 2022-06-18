@@ -49,7 +49,7 @@
     "sipEnabled": "SIP интерком",
     "sip": "SIP",
     "webRtc": "WebRTC",
-    "sipPassword": "Пароль учетной записи SIP",
+    "sipPassword": "Пароль",
     "cmsType": "Аналоговые линии",
     "cmsA": "Только аудио",
     "cmsAV": "Аудио и видео",

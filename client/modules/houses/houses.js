@@ -661,13 +661,21 @@
                             id: "2",
                             text: i18n("houses.webRtc"),
                         },
-                    ]
+                    ],
+                    select: (el, id, prefix) => {
+                        if (parseInt(el.val()) > 0) {
+                            $("#" + prefix + "sipPassword").parent().parent().parent().show();
+                        } else {
+                            $("#" + prefix + "sipPassword").parent().parent().parent().hide();
+                        }
+                    },
                 },
                 {
                     id: "sipPassword",
                     type: "text",
                     title: i18n("houses.sipPassword"),
                     placeholder: i18n("houses.sipPassword"),
+                    hidden: true,
                     validate: v => {
                         return $.trim(v).length === 0 || $.trim(v).length >= 8;
                     },
@@ -1140,7 +1148,14 @@
                                 id: "2",
                                 text: i18n("houses.webRtc"),
                             },
-                        ]
+                        ],
+                        select: (el, id, prefix) => {
+                            if (parseInt(el.val()) > 0) {
+                                $("#" + prefix + "sipPassword").parent().parent().parent().show();
+                            } else {
+                                $("#" + prefix + "sipPassword").parent().parent().parent().hide();
+                            }
+                        },
                     },
                     {
                         id: "sipPassword",
@@ -1148,6 +1163,7 @@
                         title: i18n("houses.sipPassword"),
                         placeholder: i18n("houses.sipPassword"),
                         value: flat.sipPassword,
+                        hidden: !parseInt(flat.sipEnabled),
                         validate: v => {
                             return $.trim(v).length === 0 || $.trim(v).length >= 8;
                         },
