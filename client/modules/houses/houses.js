@@ -378,8 +378,8 @@
                             {
                                 id: "cms",
                                 type: "select2",
-                                title: i18n("domophones.cms"),
-                                placeholder: i18n("domophones.cms"),
+                                title: i18n("houses.cms"),
+                                placeholder: i18n("houses.cms"),
                                 options: modules.houses.cmses(modules.houses.meta.domophoneModelsById[first]),
                                 select: modules.houses.cmsSelect,
                             },
@@ -555,7 +555,7 @@
                         </div>
                     </div>
                 `;
-                if (parseInt(modules.houses.meta.entrances[i].cms) !== 0) {
+                if (modules.houses.meta.entrances[i].cms.toString().substring() !== "0") {
                     entrances.push({
                         id: modules.houses.meta.entrances[i].entranceId,
                         text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
@@ -696,8 +696,12 @@
                     title: i18n("houses.sipPassword"),
                     placeholder: i18n("houses.sipPassword"),
                     hidden: true,
-                    validate: v => {
-                        return $.trim(v).length === 0 || $.trim(v).length >= 8;
+                    validate: (v, prefix) => {
+                        if (parseInt($("#" + prefix + "sipEnabled").val())) {
+                            return $.trim(v).length >= 8 && $.trim(v).length <= 16;
+                        } else {
+                            return $.trim(v).length === 0 || ($.trim(v).length >= 8 && $.trim(v).length <= 16);
+                        }
                     },
                     button: {
                         "class": "fas fa-magic",
@@ -866,8 +870,8 @@
                             {
                                 id: "cms",
                                 type: "select2",
-                                title: i18n("domophones.cms"),
-                                placeholder: i18n("domophones.cms"),
+                                title: i18n("houses.cms"),
+                                placeholder: i18n("houses.cms"),
                                 options: modules.houses.cmses(modules.houses.meta.domophoneModelsById[entrance.domophoneId]),
                                 hidden: parseInt(entrance.domophoneOutput) !== 0,
                                 value: entrance.cms,
@@ -1005,7 +1009,7 @@
                         </div>
                     </div>
                 `;
-                if (parseInt(modules.houses.meta.entrances[i].cmsType)) {
+                if (modules.houses.meta.entrances[i].cms.toString().substring() !== "0") {
                     entrances.push({
                         id: modules.houses.meta.entrances[i].entranceId,
                         text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
@@ -1162,8 +1166,12 @@
                         placeholder: i18n("houses.sipPassword"),
                         value: flat.sipPassword,
                         hidden: !parseInt(flat.sipEnabled),
-                        validate: v => {
-                            return $.trim(v).length === 0 || $.trim(v).length >= 8;
+                        validate: (v, prefix) => {
+                            if (parseInt($("#" + prefix + "sipEnabled").val())) {
+                                return $.trim(v).length >= 8 && $.trim(v).length <= 16;
+                            } else {
+                                return $.trim(v).length === 0 || ($.trim(v).length >= 8 && $.trim(v).length <= 16);
+                            }
                         },
                         button: {
                             "class": "fas fa-magic",
@@ -1372,7 +1380,7 @@
                                     },
                                     {
                                         icon: "fas fa-phone-volume",
-                                        title: i18n("domophones.cms"),
+                                        title: i18n("houses.cms"),
                                         disabled: !parseInt(modules.houses.meta.entrances[i].cms),
                                         click: entranceId => {
                                             // ?
