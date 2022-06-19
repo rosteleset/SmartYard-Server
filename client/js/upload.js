@@ -118,7 +118,7 @@ function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
         request.send(data);
     });
 
-    autoZ($('#modalUpload').modal('show'));
+    autoZ($('#modalUpload')).modal('show');
 
     xblur();
 }

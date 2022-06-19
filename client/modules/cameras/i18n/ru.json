@@ -1,4 +1,16 @@
 {
     "cameras": "Камеры",
-    "camera": "Камера"
+    "camera": "Камера",
+    "addCamera": "Добавить камеру",
+    "cameraId": "#",
+    "enabled": "Включена",
+    "model": "Модель",
+    "ip": "IP адрес",
+    "httpPort": "HTTP порт",
+    "rtspPort": "RTSP порт",
+    "credentials": "Авторизация",
+    "comment": "Примечания",
+    "deleteCamera": "Удалить камеру",
+    "modifyCamera": "Редактирование камеры",
+    "confirmDeleteCamera": "Удалить камеру #%s?"
 }

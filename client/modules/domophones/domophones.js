@@ -85,6 +85,9 @@
                     type: "text",
                     title: i18n("domophones.credentials"),
                     placeholder: i18n("domophones.credentials"),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    }
                 },
                 {
                     id: "callerId",
@@ -103,18 +106,6 @@
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
-                },
-                {
-                    id: "locksDisabled",
-                    type: "yesno",
-                    title: i18n("domophones.locksDisabled"),
-                    value: "0",
-                },
-                {
-                    id: "cmsLevels",
-                    type: "text",
-                    title: i18n("domophones.cmsLevels"),
-                    placeholder: i18n("domophones.cmsLevels"),
                 },
             ],
             callback: modules.domophones.doAddDomophone,
@@ -200,6 +191,9 @@
                         title: i18n("domophones.credentials"),
                         placeholder: i18n("domophones.credentials"),
                         value: domophone.credentials,
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        }
                     },
                     {
                         id: "callerId",
@@ -220,19 +214,6 @@
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
-                    },
-                    {
-                        id: "locksDisabled",
-                        type: "yesno",
-                        title: i18n("domophones.locksDisabled"),
-                        value: domophone.locksDisabled,
-                    },
-                    {
-                        id: "cmsLevels",
-                        type: "text",
-                        title: i18n("domophones.cmsLevels"),
-                        placeholder: i18n("domophones.cmsLevels"),
-                        value: domophone.cmsLevels,
                     },
                 ],
                 callback: result => {

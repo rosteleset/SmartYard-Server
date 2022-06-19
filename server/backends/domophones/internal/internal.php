@@ -90,7 +90,6 @@
                 }
 
                 $models = $this->getModels();
-                $cmses = $this->getCMSes();
 
                 if (!@$models[$model]) {
                     setLastError("modelUnknown");

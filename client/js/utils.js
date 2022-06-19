@@ -108,7 +108,7 @@ function mConfirm(body, title, button, callback) {
         $('#confirmModal').modal('hide');
         if (typeof callback == 'function') callback();
     });
-    autoZ($('#confirmModal').modal('show'));
+    autoZ($('#confirmModal')).modal('show');
     xblur();
 }
 
@@ -126,7 +126,7 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no) {
         $('#yesnoModal').modal('hide');
         if (typeof callbackNo == 'function') callbackNo();
     });
-    autoZ($('#yesnoModal').modal('show'));
+    autoZ($('#yesnoModal')).modal('show');
     xblur();
 }
 
@@ -159,16 +159,14 @@ function mAlert(body, title, callback, title_button, main_button) {
         if (typeof callback == 'function') callback();
         e.stopPropagation();
     });
-    autoZ($('#alertModal').modal('show'));
+    autoZ($('#alertModal')).modal('show');
     xblur();
 }
 
 function modal(body) {
     $("#modalBody").html(body);
-    autoZ($('#modal').modal('show'));
     xblur();
-
-    return $('#modal');
+    return autoZ($('#modal')).modal('show');
 }
 
 function xblur() {
@@ -182,13 +180,23 @@ function autoZ(target) {
         if (e === target) {
             return 1;
         } else {
-            return parseInt($(e).css('z-index')) || 1;
+            // no great than 9999999
+            let z = parseInt($(e).css('z-index'));
+            if (z < 9999999) {
+                return parseInt($(e).css('z-index')) || 1;
+            } else {
+                return 1;
+            }
         }
     }));
 
-    target.css('z-index', maxZ + 1);
+    maxZ = Math.max(maxZ, 100500);
 
-    return maxZ + 1;
+    if (target) {
+        target.css('z-index', maxZ + 1);
+    }
+
+    return target;
 }
 
 function loadingStart() {

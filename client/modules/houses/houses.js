@@ -76,13 +76,13 @@
     
     domophoneIdSelect: (el, id, prefix) => {
         $(`#${prefix}cms`).html("").select2({
-            data: modules.houses.cmses(modules.houses.meta.modelsById[el.val()]),
+            data: modules.houses.cmses(modules.houses.meta.domophoneModelsById[el.val()]),
             language: lang["_code"],
         });
 
         let h = "";
 
-        let o = modules.houses.outputs(modules.houses.meta.modelsById[el.val()]);
+        let o = modules.houses.outputs(modules.houses.meta.domophoneModelsById[el.val()]);
         for (let i in o) {
             h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
         }
@@ -261,189 +261,212 @@
     addEntrance: function (houseId) {
         mYesNo(i18n("houses.useExistingEntranceQuestion"), i18n("houses.addEntrance"), () => {
             loadingStart();
-            GET("domophones", "domophones").
+            GET("cameras", "cameras").
             done(response => {
-                modules.houses.meta.domophones = response.domophones;
-                modules.houses.meta.modelsById = {};
+                modules.houses.meta.cameras = response.cameras;
+
+                let cameras = [];
 
                 let first = false;
 
-                let domophones = [];
-
-                for (let i in response.domophones.domophones) {
+                for (let i in response.cameras.cameras) {
                     if (!first) {
-                        first = response.domophones.domophones[i].domophoneId;
+                        first = response.cameras.cameras[i].cameraId;
                     }
-                    modules.houses.meta.modelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
-                    domophones.push({
-                        id: response.domophones.domophones[i].domophoneId,
-                        text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):"") + " [" + response.domophones.domophones[i].ip + "]",
+                    cameras.push({
+                        id: response.cameras.cameras[i].cameraId,
+                        text:  response.cameras.cameras[i].ip + (response.cameras.cameras[i].comment?(" (" + response.cameras.cameras[i].comment + ")"):""),
                     })
                 }
 
-                cardForm({
-                    title: i18n("houses.addEntrance"),
-                    footer: true,
-                    borderless: true,
-                    topApply: true,
-                    apply: i18n("add"),
-                    size: "lg",
-                    fields: [
-                        {
-                            id: "entranceType",
-                            type: "select",
-                            title: i18n("houses.entranceType"),
-                            options: [
-                                {
-                                    id: "entrance",
-                                    text: i18n("houses.entranceTypeEntranceFull"),
-                                },
-                                {
-                                    id: "wicket",
-                                    text: i18n("houses.entranceTypeWicketFull"),
-                                },
-                                {
-                                    id: "gate",
-                                    text: i18n("houses.entranceTypeGateFull"),
-                                },
-                                {
-                                    id: "barrier",
-                                    text: i18n("houses.entranceTypeBarrierFull"),
+                GET("domophones", "domophones").
+                done(response => {
+                    modules.houses.meta.domophones = response.domophones;
+                    modules.houses.meta.domophoneModelsById = {};
+
+                    let domophones = [];
+
+                    let first = false;
+
+                    for (let i in response.domophones.domophones) {
+                        if (!first) {
+                            first = response.domophones.domophones[i].domophoneId;
+                        }
+                        modules.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                        domophones.push({
+                            id: response.domophones.domophones[i].domophoneId,
+                            text:  response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):""),
+                        })
+                    }
+
+                    cardForm({
+                        title: i18n("houses.addEntrance"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        apply: i18n("add"),
+                        size: "lg",
+                        fields: [
+                            {
+                                id: "entranceType",
+                                type: "select",
+                                title: i18n("houses.entranceType"),
+                                options: [
+                                    {
+                                        id: "entrance",
+                                        text: i18n("houses.entranceTypeEntranceFull"),
+                                    },
+                                    {
+                                        id: "wicket",
+                                        text: i18n("houses.entranceTypeWicketFull"),
+                                    },
+                                    {
+                                        id: "gate",
+                                        text: i18n("houses.entranceTypeGateFull"),
+                                    },
+                                    {
+                                        id: "barrier",
+                                        text: i18n("houses.entranceTypeBarrierFull"),
+                                    }
+                                ]
+                            },
+                            {
+                                id: "entrance",
+                                type: "text",
+                                title: i18n("houses.entrance"),
+                                placeholder: i18n("houses.entrance"),
+                                validate: (v) => {
+                                    return $.trim(v) !== "";
                                 }
-                            ]
-                        },
-                        {
-                            id: "entrance",
-                            type: "text",
-                            title: i18n("houses.entrance"),
-                            placeholder: i18n("houses.entrance"),
-                            validate: (v) => {
-                                return $.trim(v) !== "";
+                            },
+                            {
+                                id: "lon",
+                                type: "text",
+                                title: i18n("houses.lon"),
+                                placeholder: i18n("houses.lon"),
+                            },
+                            {
+                                id: "lat",
+                                type: "text",
+                                title: i18n("houses.lat"),
+                                placeholder: i18n("houses.lat"),
+                            },
+                            {
+                                id: "cameraId",
+                                type: "select2",
+                                title: i18n("houses.cameraId"),
+                                options: cameras,
+                            },
+                            {
+                                id: "domophoneId",
+                                type: "select2",
+                                title: i18n("houses.domophoneId"),
+                                options: domophones,
+                                validate: v => {
+                                    return parseInt(v) > 0;
+                                },
+                                select: modules.houses.domophoneIdSelect,
+                            },
+                            {
+                                id: "domophoneOutput",
+                                type: "select",
+                                title: i18n("houses.domophoneOutput"),
+                                placeholder: i18n("houses.domophoneOutput"),
+                                options: modules.houses.outputs(modules.houses.meta.domophoneModelsById[first]),
+                                select: modules.houses.outputsSelect,
+                            },
+                            {
+                                id: "cms",
+                                type: "select2",
+                                title: i18n("domophones.cms"),
+                                placeholder: i18n("domophones.cms"),
+                                options: modules.houses.cmses(modules.houses.meta.domophoneModelsById[first]),
+                                select: modules.houses.cmsSelect,
+                            },
+                            {
+                                id: "cmsType",
+                                type: "select",
+                                title: i18n("houses.cmsType"),
+                                hidden: true,
+                                options: [
+                                    {
+                                        id: "1",
+                                        text: i18n("houses.cmsA"),
+                                    },
+                                    {
+                                        id: "2",
+                                        text: i18n("houses.cmsAV"),
+                                    },
+                                ]
+                            },
+                            {
+                                id: "cmsLevels",
+                                type: "text",
+                                title: i18n("houses.cmsLevels"),
+                                hidden: true,
+                            },
+                            {
+                                id: "locksDisabled",
+                                type: "yesno",
+                                title: i18n("houses.locksDisabled"),
+                                value: 0,
+                            },
+                            {
+                                id: "shared",
+                                type: "select",
+                                title: i18n("houses.shared"),
+                                select: (el, id, prefix) => {
+                                    if (parseInt(el.val())) {
+                                        $("#" + prefix + "prefix").parent().parent().show();
+                                    } else {
+                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                    }
+                                },
+                                options: [
+                                    {
+                                        id: "0",
+                                        text: i18n("no"),
+                                    },
+                                    {
+                                        id: "1",
+                                        text: i18n("yes"),
+                                    }
+                                ]
+                            },
+                            {
+                                id: "prefix",
+                                type: "text",
+                                title: i18n("houses.prefix"),
+                                placeholder: i18n("houses.prefix"),
+                                value: "0",
+                                hidden: true,
+                                validate: (v, prefix) => {
+                                    return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                                },
+                            },
+                        ],
+                        callback: result => {
+                            if (parseInt(result.domophoneOutput) > 0) {
+                                result.cms = 0;
+                                result.shared = 0;
                             }
+                            if (!result.shared) {
+                                result.prefix = 0;
+                            }
+                            if (!result.cms) {
+                                result.cmsType = 0;
+                            }
+                            modules.houses.doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
                         },
-                        {
-                            id: "lon",
-                            type: "text",
-                            title: i18n("houses.lon"),
-                            placeholder: i18n("houses.lon"),
-                        },
-                        {
-                            id: "lat",
-                            type: "text",
-                            title: i18n("houses.lat"),
-                            placeholder: i18n("houses.lat"),
-                        },
-                        {
-                            id: "cameraId",
-                            type: "text",
-                            title: i18n("houses.cameraId"),
-                            placeholder: i18n("houses.cameraId"),
-                        },
-                        {
-                            id: "domophoneId",
-                            type: "select2",
-                            title: i18n("houses.domophoneId"),
-                            options: domophones,
-                            validate: v => {
-                                return parseInt(v) > 0;
-                            },
-                            select: modules.houses.domophoneIdSelect,
-                        },
-                        {
-                            id: "domophoneOutput",
-                            type: "select",
-                            title: i18n("houses.domophoneOutput"),
-                            placeholder: i18n("houses.domophoneOutput"),
-                            options: modules.houses.outputs(modules.houses.meta.modelsById[first]),
-                            select: modules.houses.outputsSelect,
-                        },
-                        {
-                            id: "cms",
-                            type: "select2",
-                            title: i18n("domophones.cms"),
-                            placeholder: i18n("domophones.cms"),
-                            options: modules.houses.cmses(modules.houses.meta.modelsById[first]),
-                            select: modules.houses.cmsSelect,
-                        },
-                        {
-                            id: "cmsType",
-                            type: "select",
-                            title: i18n("houses.cmsType"),
-                            hidden: true,
-                            options: [
-                                {
-                                    id: "1",
-                                    text: i18n("houses.cmsA"),
-                                },
-                                {
-                                    id: "2",
-                                    text: i18n("houses.cmsAV"),
-                                },
-                            ]
-                        },
-                        {
-                            id: "cmsLevels",
-                            type: "text",
-                            title: i18n("houses.cmsLevels"),
-                            hidden: true,
-                        },
-                        {
-                            id: "locksDisabled",
-                            type: "yesno",
-                            title: i18n("houses.locksDisabled"),
-                            value: 0,
-                        },
-                        {
-                            id: "shared",
-                            type: "select",
-                            title: i18n("houses.shared"),
-                            select: (el, id, prefix) => {
-                                if (parseInt(el.val())) {
-                                    $("#" + prefix + "prefix").parent().parent().show();
-                                } else {
-                                    $("#" + prefix + "prefix").parent().parent().hide();
-                                }
-                            },
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("yes"),
-                                }
-                            ]
-                        },
-                        {
-                            id: "prefix",
-                            type: "text",
-                            title: i18n("houses.prefix"),
-                            placeholder: i18n("houses.prefix"),
-                            value: "0",
-                            hidden: true,
-                            validate: (v, prefix) => {
-                                return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
-                            },
-                        },
-                    ],
-                    callback: result => {
-                        if (parseInt(result.domophoneOutput) > 0) {
-                            result.cms = 0;
-                            result.shared = 0;
-                        }
-                        if (!result.shared) {
-                            result.prefix = 0;
-                        }
-                        if (!result.cms) {
-                            result.cmsType = 0;
-                        }
-                        modules.houses.doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
-                    },
-                });
+                    });
+
+                    loadingDone();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
             }).
             fail(FAIL).
-            always(loadingDone);
+            fail(loadingDone);
         }, () => {
             loadingStart();
             GET("houses", "sharedEntrances", houseId, true).
@@ -710,217 +733,242 @@
 
     modifyEntrance: function (entranceId, houseId) {
         loadingStart();
-        GET("domophones", "domophones").
+        GET("cameras", "cameras").
         done(response => {
-            let domophones = [];
-            modules.houses.meta.modelsById = {};
+            modules.houses.meta.cameras = response.cameras;
 
-            for (let i in response.domophones.domophones) {
-                modules.houses.meta.modelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
-                domophones.push({
-                    id: response.domophones.domophones[i].domophoneId,
-                    text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : "") + " [" + response.domophones.domophones[i].ip + "]",
+            let cameras = [];
+
+            let first = false;
+
+            for (let i in response.cameras.cameras) {
+                if (!first) {
+                    first = response.cameras.cameras[i].cameraId;
+                }
+                cameras.push({
+                    id: response.cameras.cameras[i].cameraId,
+                    text: response.cameras.cameras[i].ip + (response.cameras.cameras[i].comment ? (" (" + response.cameras.cameras[i].comment + ")") : ""),
                 })
             }
 
-            let entrance = false;
+            GET("domophones", "domophones").
+            done(response => {
+                modules.houses.meta.domophones = response.domophones;
+                modules.houses.meta.domophoneModelsById = {};
 
-            for (let i in modules.houses.meta.entrances) {
-                if (modules.houses.meta.entrances[i].entranceId == entranceId) {
-                    entrance = modules.houses.meta.entrances[i];
-                    break;
+                let domophones = [];
+
+                for (let i in response.domophones.domophones) {
+                    modules.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                    domophones.push({
+                        id: response.domophones.domophones[i].domophoneId,
+                        text: response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : ""),
+                    })
                 }
-            }
 
-            if (entrance) {
-                cardForm({
-                    title: i18n("houses.editEntrance"),
-                    footer: true,
-                    borderless: true,
-                    topApply: true,
-                    apply: i18n("edit"),
-                    delete: i18n("houses.deleteEntrance"),
-                    size: "lg",
-                    fields: [
-                        {
-                            id: "entranceId",
-                            type: "text",
-                            title: i18n("houses.entranceId"),
-                            value: entranceId,
-                            readonly: true,
-                        },
-                        {
-                            id: "entranceType",
-                            type: "select",
-                            title: i18n("houses.entranceType"),
-                            options: [
-                                {
-                                    id: "entrance",
-                                    text: i18n("houses.entranceTypeEntranceFull"),
-                                },
-                                {
-                                    id: "wicket",
-                                    text: i18n("houses.entranceTypeWicketFull"),
-                                },
-                                {
-                                    id: "gate",
-                                    text: i18n("houses.entranceTypeGateFull"),
-                                },
-                                {
-                                    id: "barrier",
-                                    text: i18n("houses.entranceTypeBarrierFull"),
-                                }
-                            ],
-                            value: entrance.entranceType,
-                        },
-                        {
-                            id: "entrance",
-                            type: "text",
-                            title: i18n("houses.entrance"),
-                            placeholder: i18n("houses.entrance"),
-                            validate: (v) => {
-                                return $.trim(v) !== "";
+                let entrance = false;
+
+                for (let i in modules.houses.meta.entrances) {
+                    if (modules.houses.meta.entrances[i].entranceId == entranceId) {
+                        entrance = modules.houses.meta.entrances[i];
+                        break;
+                    }
+                }
+
+                if (entrance) {
+                    cardForm({
+                        title: i18n("houses.editEntrance"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        apply: i18n("edit"),
+                        delete: i18n("houses.deleteEntrance"),
+                        size: "lg",
+                        fields: [
+                            {
+                                id: "entranceId",
+                                type: "text",
+                                title: i18n("houses.entranceId"),
+                                value: entranceId,
+                                readonly: true,
                             },
-                            value: entrance.entrance,
-                        },
-                        {
-                            id: "lon",
-                            type: "text",
-                            title: i18n("houses.lon"),
-                            placeholder: i18n("houses.lon"),
-                            value: entrance.lon,
-                        },
-                        {
-                            id: "lat",
-                            type: "text",
-                            title: i18n("houses.lat"),
-                            placeholder: i18n("houses.lat"),
-                            value: entrance.lat,
-                        },
-                        {
-                            id: "cameraId",
-                            type: "text",
-                            title: i18n("houses.cameraId"),
-                            placeholder: i18n("houses.cameraId"),
-                            value: entrance.cameraId,
-                        },
-                        {
-                            id: "domophoneId",
-                            type: "select2",
-                            title: i18n("houses.domophoneId"),
-                            value: entrance.domophoneId,
-                            options: domophones,
-                            select: modules.houses.domophoneIdSelect,
-                        },
-                        {
-                            id: "domophoneOutput",
-                            type: "select",
-                            title: i18n("houses.domophoneOutput"),
-                            placeholder: i18n("houses.domophoneOutput"),
-                            options: modules.houses.outputs(modules.houses.meta.modelsById[entrance.domophoneId], entrance.domophoneOutput),
-                            select: modules.houses.outputsSelect,
-                        },
-                        {
-                            id: "cms",
-                            type: "select2",
-                            title: i18n("domophones.cms"),
-                            placeholder: i18n("domophones.cms"),
-                            options: modules.houses.cmses(modules.houses.meta.modelsById[entrance.domophoneId]),
-                            hidden: parseInt(entrance.domophoneOutput) !== 0,
-                            value: entrance.cms,
-                            select: modules.houses.cmsSelect,
-                        },
-                        {
-                            id: "cmsType",
-                            type: "select",
-                            title: i18n("houses.cmsType"),
-                            value: entrance.cmsType,
-                            hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
-                            options: [
-                                {
-                                    id: "1",
-                                    text: i18n("houses.cmsA"),
-                                },
-                                {
-                                    id: "2",
-                                    text: i18n("houses.cmsAV"),
-                                },
-                            ]
-                        },
-                        {
-                            id: "cmsLevels",
-                            type: "text",
-                            title: i18n("houses.cmsLevels"),
-                            value: entrance.cmsLevels,
-                            hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
-                        },
-                        {
-                            id: "locksDisabled",
-                            type: "yesno",
-                            title: i18n("houses.locksDisabled"),
-                            value: entrance.locksDisabled,
-                            hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
-                        },
-                        {
-                            id: "shared",
-                            type: "select",
-                            title: i18n("houses.shared"),
-                            hidden: parseInt(entrance.domophoneOutput) !== 0,
-                            value: entrance.shared.toString(),
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("yes"),
-                                }
-                            ],
-                            select: (el, id, prefix) => {
-                                if (parseInt(el.val())) {
-                                    $("#" + prefix + "prefix").parent().parent().show();
-                                } else {
-                                    $("#" + prefix + "prefix").parent().parent().hide();
-                                }
+                            {
+                                id: "entranceType",
+                                type: "select",
+                                title: i18n("houses.entranceType"),
+                                options: [
+                                    {
+                                        id: "entrance",
+                                        text: i18n("houses.entranceTypeEntranceFull"),
+                                    },
+                                    {
+                                        id: "wicket",
+                                        text: i18n("houses.entranceTypeWicketFull"),
+                                    },
+                                    {
+                                        id: "gate",
+                                        text: i18n("houses.entranceTypeGateFull"),
+                                    },
+                                    {
+                                        id: "barrier",
+                                        text: i18n("houses.entranceTypeBarrierFull"),
+                                    }
+                                ],
+                                value: entrance.entranceType,
                             },
-                        },
-                        {
-                            id: "prefix",
-                            type: "text",
-                            title: i18n("houses.prefix"),
-                            placeholder: i18n("houses.prefix"),
-                            value: entrance.prefix?entrance.prefix.toString():"0",
-                            hidden: !parseInt(entrance.shared) || parseInt(entrance.domophoneOutput) > 0,
-                            validate: (v, prefix) => {
-                                return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                            {
+                                id: "entrance",
+                                type: "text",
+                                title: i18n("houses.entrance"),
+                                placeholder: i18n("houses.entrance"),
+                                validate: (v) => {
+                                    return $.trim(v) !== "";
+                                },
+                                value: entrance.entrance,
                             },
+                            {
+                                id: "lon",
+                                type: "text",
+                                title: i18n("houses.lon"),
+                                placeholder: i18n("houses.lon"),
+                                value: entrance.lon,
+                            },
+                            {
+                                id: "lat",
+                                type: "text",
+                                title: i18n("houses.lat"),
+                                placeholder: i18n("houses.lat"),
+                                value: entrance.lat,
+                            },
+                            {
+                                id: "cameraId",
+                                type: "select2",
+                                title: i18n("houses.cameraId"),
+                                value: entrance.cameraId,
+                                options: cameras,
+                            },
+                            {
+                                id: "domophoneId",
+                                type: "select2",
+                                title: i18n("houses.domophoneId"),
+                                value: entrance.domophoneId,
+                                options: domophones,
+                                select: modules.houses.domophoneIdSelect,
+                            },
+                            {
+                                id: "domophoneOutput",
+                                type: "select",
+                                title: i18n("houses.domophoneOutput"),
+                                placeholder: i18n("houses.domophoneOutput"),
+                                options: modules.houses.outputs(modules.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
+                                select: modules.houses.outputsSelect,
+                            },
+                            {
+                                id: "cms",
+                                type: "select2",
+                                title: i18n("domophones.cms"),
+                                placeholder: i18n("domophones.cms"),
+                                options: modules.houses.cmses(modules.houses.meta.domophoneModelsById[entrance.domophoneId]),
+                                hidden: parseInt(entrance.domophoneOutput) !== 0,
+                                value: entrance.cms,
+                                select: modules.houses.cmsSelect,
+                            },
+                            {
+                                id: "cmsType",
+                                type: "select",
+                                title: i18n("houses.cmsType"),
+                                value: entrance.cmsType,
+                                hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
+                                options: [
+                                    {
+                                        id: "1",
+                                        text: i18n("houses.cmsA"),
+                                    },
+                                    {
+                                        id: "2",
+                                        text: i18n("houses.cmsAV"),
+                                    },
+                                ]
+                            },
+                            {
+                                id: "cmsLevels",
+                                type: "text",
+                                title: i18n("houses.cmsLevels"),
+                                value: entrance.cmsLevels,
+                                hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
+                            },
+                            {
+                                id: "locksDisabled",
+                                type: "yesno",
+                                title: i18n("houses.locksDisabled"),
+                                value: entrance.locksDisabled,
+                                hidden: parseInt(entrance.domophoneOutput) !== 0 || parseInt(entrance.cms) === 0,
+                            },
+                            {
+                                id: "shared",
+                                type: "select",
+                                title: i18n("houses.shared"),
+                                hidden: parseInt(entrance.domophoneOutput) !== 0,
+                                value: entrance.shared.toString(),
+                                options: [
+                                    {
+                                        id: "0",
+                                        text: i18n("no"),
+                                    },
+                                    {
+                                        id: "1",
+                                        text: i18n("yes"),
+                                    }
+                                ],
+                                select: (el, id, prefix) => {
+                                    if (parseInt(el.val())) {
+                                        $("#" + prefix + "prefix").parent().parent().show();
+                                    } else {
+                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                    }
+                                },
+                            },
+                            {
+                                id: "prefix",
+                                type: "text",
+                                title: i18n("houses.prefix"),
+                                placeholder: i18n("houses.prefix"),
+                                value: entrance.prefix?entrance.prefix.toString():"0",
+                                hidden: !parseInt(entrance.shared) || parseInt(entrance.domophoneOutput) > 0,
+                                validate: (v, prefix) => {
+                                    return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
+                                },
+                            },
+                        ],
+                        callback: result => {
+                            if (result.delete === "yes") {
+                                modules.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
+                            } else {
+                                if (parseInt(result.domophoneOutput) > 0) {
+                                    result.cms = 0;
+                                    result.shared = 0;
+                                }
+                                if (parseInt(result.shared) === 0) {
+                                    result.prefix = 0;
+                                }
+                                if (parseInt(result.cms) === 0) {
+                                    result.cmsType = 0;
+                                }
+                                modules.houses.doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
+                            }
                         },
-                    ],
-                    callback: result => {
-                        if (result.delete === "yes") {
-                            modules.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
-                        } else {
-                            if (parseInt(result.domophoneOutput) > 0) {
-                                result.cms = 0;
-                                result.shared = 0;
-                            }
-                            if (parseInt(result.shared) === 0) {
-                                result.prefix = 0;
-                            }
-                            if (parseInt(result.cms) === 0) {
-                                result.cmsType = 0;
-                            }
-                            modules.houses.doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
-                        }
-                    },
-                });
-            } else {
-                error(i18n("houses.entranceNotFound"));
-            }
+                    });
+                } else {
+                    error(i18n("houses.entranceNotFound"));
+                }
+
+                loadingDone();
+            }).
+            fail(FAIL).
+            fail(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     modifyFlat: function (flatId, houseId) {
