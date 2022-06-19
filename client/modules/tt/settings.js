@@ -458,9 +458,9 @@
 
     modifyProject: function (projectId) {
         let project = false;
-        for (let i in modules["tt"].meta.projects) {
-            if (modules["tt"].meta.projects[i].projectId == projectId) {
-                project = modules["tt"].meta.projects[i];
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
                 break;
             }
         }
@@ -514,10 +514,10 @@
         let display = '';
         let status = '';
 
-        for (let i in modules["tt"].meta.statuses) {
-            if (modules["tt"].meta.statuses[i].statusId == statusId) {
-                status = modules["tt"].meta.statuses[i].status;
-                display = modules["tt"].meta.statuses[i].statusDisplay;
+        for (let i in modules.tt.meta.statuses) {
+            if (modules.tt.meta.statuses[i].statusId == statusId) {
+                status = modules.tt.meta.statuses[i].status;
+                display = modules.tt.meta.statuses[i].statusDisplay;
             }
         }
 
@@ -561,9 +561,9 @@
     modifyResolution: function (resolutionId) {
         let resolution = '';
 
-        for (let i in modules["tt"].meta.resolutions) {
-            if (modules["tt"].meta.resolutions[i].resolutionId == resolutionId) {
-                resolution = modules["tt"].meta.resolutions[i].resolution;
+        for (let i in modules.tt.meta.resolutions) {
+            if (modules.tt.meta.resolutions[i].resolutionId == resolutionId) {
+                resolution = modules.tt.meta.resolutions[i].resolution;
             }
         }
 
@@ -602,10 +602,10 @@
         let name = '';
         let display = '';
 
-        for (let i in modules["tt"].meta.roles) {
-            if (modules["tt"].meta.roles[i].roleId == roleId) {
-                name = modules["tt"].meta.roles[i].name;
-                display = modules["tt"].meta.roles[i].nameDisplay;
+        for (let i in modules.tt.meta.roles) {
+            if (modules.tt.meta.roles[i].roleId == roleId) {
+                name = modules.tt.meta.roles[i].name;
+                display = modules.tt.meta.roles[i].nameDisplay;
             }
         }
 
@@ -650,12 +650,12 @@
         loadingStart();
         GET("tt", "tt", false, true).
         fail(FAIL).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             let cf = {};
-            for (let i in modules["tt"].meta.customFields) {
-                if (modules["tt"].meta.customFields[i].customFieldId == customFieldId) {
-                    cf = modules["tt"].meta.customFields[i];
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].customFieldId == customFieldId) {
+                    cf = modules.tt.meta.customFields[i];
                 }
             }
 
@@ -864,9 +864,9 @@
     setWorkflowAlias: function (workflow) {
         let w = '';
 
-        for (let i in modules["tt"].meta.workflowAliases) {
-            if (modules["tt"].meta.workflowAliases[i].workflow === workflow) {
-                w = modules["tt"].meta.workflowAliases[i].alias;
+        for (let i in modules.tt.meta.workflowAliases) {
+            if (modules.tt.meta.workflowAliases[i].workflow === workflow) {
+                w = modules.tt.meta.workflowAliases[i].alias;
                 break;
             }
         }
@@ -903,21 +903,21 @@
 
     projectWorkflows: function (projectId) {
         let project = false;
-        for (let i in modules["tt"].meta.projects) {
-            if (modules["tt"].meta.projects[i].projectId == projectId) {
-                project = modules["tt"].meta.projects[i];
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
                 break;
             }
         }
 
         let w = {};
-        for (let i in modules["tt"].meta.workflows) {
-            w[modules["tt"].meta.workflows[i]] = modules["tt"].meta.workflows[i];
+        for (let i in modules.tt.meta.workflows) {
+            w[modules.tt.meta.workflows[i]] = modules.tt.meta.workflows[i];
         }
 
-        for (let i in modules["tt"].meta.workflowAliases) {
-            if (w[modules["tt"].meta.workflowAliases[i].workflow]) {
-                w[modules["tt"].meta.workflowAliases[i].workflow] = modules["tt"].meta.workflowAliases[i].alias;
+        for (let i in modules.tt.meta.workflowAliases) {
+            if (w[modules.tt.meta.workflowAliases[i].workflow]) {
+                w[modules.tt.meta.workflowAliases[i].workflow] = modules.tt.meta.workflowAliases[i].alias;
             }
         }
 
@@ -953,18 +953,18 @@
 
     projectResolutions: function (projectId) {
         let project = false;
-        for (let i in modules["tt"].meta.projects) {
-            if (modules["tt"].meta.projects[i].projectId == projectId) {
-                project = modules["tt"].meta.projects[i];
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
                 break;
             }
         }
 
         let resolutions = [];
-        for (let i in modules["tt"].meta.resolutions) {
+        for (let i in modules.tt.meta.resolutions) {
             resolutions.push({
-                id: modules["tt"].meta.resolutions[i].resolutionId,
-                text: modules["tt"].meta.resolutions[i].resolution,
+                id: modules.tt.meta.resolutions[i].resolutionId,
+                text: modules.tt.meta.resolutions[i].resolution,
             });
         }
 
@@ -992,18 +992,18 @@
 
     projectCustomFields: function (projectId) {
         let project = false;
-        for (let i in modules["tt"].meta.projects) {
-            if (modules["tt"].meta.projects[i].projectId == projectId) {
-                project = modules["tt"].meta.projects[i];
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
                 break;
             }
         }
 
         let customFields = [];
-        for (let i in modules["tt"].meta.customFields) {
+        for (let i in modules.tt.meta.customFields) {
             customFields.push({
-                id: modules["tt"].meta.customFields[i].customFieldId,
-                text: $.trim(modules["tt"].meta.customFields[i].fieldDisplay + " [" + modules["tt"].meta.customFields[i].field + "]"),
+                id: modules.tt.meta.customFields[i].customFieldId,
+                text: $.trim(modules.tt.meta.customFields[i].fieldDisplay + " [" + modules.tt.meta.customFields[i].field + "]"),
             });
         }
 
@@ -1044,14 +1044,14 @@
     projectUsers: function (projectId) {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             GET("accounts", "users").
             done(response => {
                 let project = false;
-                for (let i in modules["tt"].meta.projects) {
-                    if (modules["tt"].meta.projects[i].projectId == projectId) {
-                        project = modules["tt"].meta.projects[i];
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].projectId == projectId) {
+                        project = modules.tt.meta.projects[i];
                         break;
                     }
                 }
@@ -1064,8 +1064,8 @@
                 }
 
                 let roles = {};
-                for (let i in modules["tt"].meta.roles) {
-                    roles[modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + modules["tt"].meta.roles[i].name) + " [" + modules["tt"].meta.roles[i].level + "]");
+                for (let i in modules.tt.meta.roles) {
+                    roles[modules.tt.meta.roles[i].roleId] = $.trim(i18n("tt." + modules.tt.meta.roles[i].name) + " [" + modules.tt.meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1146,14 +1146,14 @@
     projectGroups: function (projectId) {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             GET("accounts", "groups").
             done(response => {
                 let project = false;
-                for (let i in modules["tt"].meta.projects) {
-                    if (modules["tt"].meta.projects[i].projectId == projectId) {
-                        project = modules["tt"].meta.projects[i];
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].projectId == projectId) {
+                        project = modules.tt.meta.projects[i];
                         break;
                     }
                 }
@@ -1166,8 +1166,8 @@
                 }
 
                 let roles = {};
-                for (let i in modules["tt"].meta.roles) {
-                    roles[modules["tt"].meta.roles[i].roleId] = $.trim(i18n("tt." + modules["tt"].meta.roles[i].name) + " [" + modules["tt"].meta.roles[i].level + "]");
+                for (let i in modules.tt.meta.roles) {
+                    roles[modules.tt.meta.roles[i].roleId] = $.trim(i18n("tt." + modules.tt.meta.roles[i].name) + " [" + modules.tt.meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1248,7 +1248,7 @@
     renderProjects: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1276,19 +1276,19 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < modules["tt"].meta.projects.length; i++) {
+                    for (let i = 0; i < modules.tt.meta.projects.length; i++) {
                         rows.push({
-                            uid: modules["tt"].meta.projects[i].projectId.toString(),
+                            uid: modules.tt.meta.projects[i].projectId.toString(),
                             cols: [
                                 {
-                                    data: modules["tt"].meta.projects[i].projectId,
+                                    data: modules.tt.meta.projects[i].projectId,
                                 },
                                 {
-                                    data: modules["tt"].meta.projects[i].acronym,
+                                    data: modules.tt.meta.projects[i].acronym,
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules["tt"].meta.projects[i].project,
+                                    data: modules.tt.meta.projects[i].project,
                                 },
                             ],
                             dropDown: {
@@ -1341,7 +1341,7 @@
     renderWorkflows: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1363,19 +1363,19 @@
                     let rows = [];
 
                     let w = {};
-                    for (let i = 0; i < modules["tt"].meta.workflowAliases.length; i++) {
-                        w[modules["tt"].meta.workflowAliases[i].workflow] = modules["tt"].meta.workflowAliases[i].alias;
+                    for (let i = 0; i < modules.tt.meta.workflowAliases.length; i++) {
+                        w[modules.tt.meta.workflowAliases[i].workflow] = modules.tt.meta.workflowAliases[i].alias;
                     }
 
-                    for (let i = 0; i < modules["tt"].meta.workflows.length; i++) {
+                    for (let i = 0; i < modules.tt.meta.workflows.length; i++) {
                         rows.push({
-                            uid: modules["tt"].meta.workflows[i],
+                            uid: modules.tt.meta.workflows[i],
                             cols: [
                                 {
-                                    data: modules["tt"].meta.workflows[i],
+                                    data: modules.tt.meta.workflows[i],
                                 },
                                 {
-                                    data: w[modules["tt"].meta.workflows[i]]?w[modules["tt"].meta.workflows[i]]:modules["tt"].meta.workflows[i],
+                                    data: w[modules.tt.meta.workflows[i]]?w[modules.tt.meta.workflows[i]]:modules.tt.meta.workflows[i],
                                 },
                             ],
                         });
@@ -1392,7 +1392,7 @@
     renderStatuses: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1417,18 +1417,18 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < modules["tt"].meta.statuses.length; i++) {
+                    for (let i = 0; i < modules.tt.meta.statuses.length; i++) {
                         rows.push({
-                            uid: modules["tt"].meta.statuses[i].statusId,
+                            uid: modules.tt.meta.statuses[i].statusId,
                             cols: [
                                 {
-                                    data: modules["tt"].meta.statuses[i].statusId,
+                                    data: modules.tt.meta.statuses[i].statusId,
                                 },
                                 {
-                                    data: modules["tt"].meta.statuses[i].status,
+                                    data: modules.tt.meta.statuses[i].status,
                                 },
                                 {
-                                    data: modules["tt"].meta.statuses[i].statusDisplay,
+                                    data: modules.tt.meta.statuses[i].statusDisplay,
                                 },
                             ],
                         });
@@ -1445,7 +1445,7 @@
     renderResolutions: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1470,15 +1470,15 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < modules["tt"].meta.resolutions.length; i++) {
+                    for (let i = 0; i < modules.tt.meta.resolutions.length; i++) {
                         rows.push({
-                            uid: modules["tt"].meta.resolutions[i].resolutionId,
+                            uid: modules.tt.meta.resolutions[i].resolutionId,
                             cols: [
                                 {
-                                    data: modules["tt"].meta.resolutions[i].resolutionId,
+                                    data: modules.tt.meta.resolutions[i].resolutionId,
                                 },
                                 {
-                                    data: modules["tt"].meta.resolutions[i].resolution,
+                                    data: modules.tt.meta.resolutions[i].resolution,
                                 },
                             ],
                         });
@@ -1495,7 +1495,7 @@
     renderRoles: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1524,21 +1524,21 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < modules["tt"].meta.roles.length; i++) {
+                    for (let i = 0; i < modules.tt.meta.roles.length; i++) {
                         rows.push({
-                            uid: modules["tt"].meta.roles[i].roleId,
+                            uid: modules.tt.meta.roles[i].roleId,
                             cols: [
                                 {
-                                    data: modules["tt"].meta.roles[i].roleId,
+                                    data: modules.tt.meta.roles[i].roleId,
                                 },
                                 {
-                                    data: modules["tt"].meta.roles[i].name,
+                                    data: modules.tt.meta.roles[i].name,
                                 },
                                 {
-                                    data: modules["tt"].meta.roles[i].level,
+                                    data: modules.tt.meta.roles[i].level,
                                 },
                                 {
-                                    data: modules["tt"].meta.roles[i].nameDisplay?modules["tt"].meta.roles[i].nameDisplay:"",
+                                    data: modules.tt.meta.roles[i].nameDisplay?modules.tt.meta.roles[i].nameDisplay:"",
                                 },
                             ],
                         });
@@ -1555,7 +1555,7 @@
     renderCustomFields: function () {
         loadingStart();
         GET("tt", "tt", false, true).
-        done(modules["tt"].tt).
+        done(modules.tt.tt).
         done(() => {
             cardTable({
                 target: "#mainForm",
@@ -1589,25 +1589,25 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < modules["tt"].meta.customFields.length; i++) {
+                    for (let i = 0; i < modules.tt.meta.customFields.length; i++) {
                         rows.push({
-                            uid: modules["tt"].meta.customFields[i].customFieldId,
+                            uid: modules.tt.meta.customFields[i].customFieldId,
                             cols: [
                                 {
-                                    data: modules["tt"].meta.customFields[i].customFieldId,
+                                    data: modules.tt.meta.customFields[i].customFieldId,
                                 },
                                 {
-                                    data: modules["tt"].meta.customFields[i].field,
+                                    data: modules.tt.meta.customFields[i].field,
                                 },
                                 {
-                                    data: i18n("tt.customFieldType" + modules["tt"].meta.customFields[i].type),
+                                    data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type),
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules["tt"].meta.customFields[i].workflow?i18n("yes"):i18n("no"),
+                                    data: modules.tt.meta.customFields[i].workflow?i18n("yes"):i18n("no"),
                                 },
                                 {
-                                    data: modules["tt"].meta.customFields[i].fieldDisplay,
+                                    data: modules.tt.meta.customFields[i].fieldDisplay,
                                 },
                             ],
                         });

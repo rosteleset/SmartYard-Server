@@ -10,34 +10,34 @@
         loadingStart();
         POST("domophones", "domophone", false, domophone).
         fail(FAIL).
-        always(modules["domophones"].route);
+        always(modules.domophones.route);
     },
 
     doModifyDomophone: function (domophone) {
         loadingStart();
         PUT("domophones", "domophone", domophone.domophoneId, domophone).
         fail(FAIL).
-        always(modules["domophones"].route);
+        always(modules.domophones.route);
     },
 
     doDeleteDomophone: function (domophoneId) {
         loadingStart();
         DELETE("domophones", "domophone", domophoneId).
         fail(FAIL).
-        always(modules["domophones"].route);
+        always(modules.domophones.route);
     },
 
     addDomophone: function () {
         let models = [];
         let first;
 
-        for (let id in modules["domophones"].meta.models) {
+        for (let id in modules.domophones.meta.models) {
             if (!first) {
                 first = id;
             }
             models.push({
                 id,
-                text: modules["domophones"].meta.models[id].title,
+                text: modules.domophones.meta.models[id].title,
             })
         }
 
@@ -117,7 +117,7 @@
                     placeholder: i18n("domophones.cmsLevels"),
                 },
             ],
-            callback: modules["domophones"].doAddDomophone,
+            callback: modules.domophones.doAddDomophone,
         });
     },
 
@@ -125,21 +125,21 @@
         let models = [];
         let first;
 
-        for (let id in modules["domophones"].meta.models) {
+        for (let id in modules.domophones.meta.models) {
             if (!first) {
                 first = id;
             }
             models.push({
                 id,
-                text: modules["domophones"].meta.models[id].title,
+                text: modules.domophones.meta.models[id].title,
             })
         }
 
         let domophone = false;
 
-        for (let i in modules["domophones"].meta.domophones) {
-            if (modules["domophones"].meta.domophones[i].domophoneId == domophoneId) {
-                domophone = modules["domophones"].meta.domophones[i];
+        for (let i in modules.domophones.meta.domophones) {
+            if (modules.domophones.meta.domophones[i].domophoneId == domophoneId) {
+                domophone = modules.domophones.meta.domophones[i];
                 break;
             }
         }
@@ -237,9 +237,9 @@
                 ],
                 callback: result => {
                     if (result.delete === "yes") {
-                        modules["domophones"].deleteDomophone(domophoneId);
+                        modules.domophones.deleteDomophone(domophoneId);
                     } else {
-                        modules["domophones"].doModifyDomophone(result);
+                        modules.domophones.doModifyDomophone(result);
                     }
                 },
             });
@@ -250,7 +250,7 @@
 
     deleteDomophone: function (domophoneId) {
         mConfirm(i18n("domophones.confirmDeleteDomophone", domophoneId), i18n("confirm"), `danger:${i18n("domophones.deleteDomophone")}`, () => {
-            modules["domophones"].doDeleteDomophone(domophoneId);
+            modules.domophones.doDeleteDomophone(domophoneId);
         });
     },
 
@@ -263,7 +263,7 @@
         done(response => {
             $("#altForm").hide();
 
-            modules["domophones"].meta = response.domophones;
+            modules.domophones.meta = response.domophones;
 
             cardTable({
                 target: "#mainForm",
@@ -271,11 +271,11 @@
                     caption: i18n("domophones.domophones"),
                     button: {
                         caption: i18n("domophones.addDomophone"),
-                        click: modules["domophones"].addDomophone,
+                        click: modules.domophones.addDomophone,
                     },
                     filter: true,
                 },
-                edit: modules["domophones"].modifyDomophone,
+                edit: modules.domophones.modifyDomophone,
                 columns: [
                     {
                         title: i18n("domophones.domophoneId"),
@@ -294,23 +294,23 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i in modules["domophones"].meta.domophones) {
+                    for (let i in modules.domophones.meta.domophones) {
                         rows.push({
-                            uid: modules["domophones"].meta.domophones[i].domophoneId,
+                            uid: modules.domophones.meta.domophones[i].domophoneId,
                             cols: [
                                 {
-                                    data: modules["domophones"].meta.domophones[i].domophoneId,
+                                    data: modules.domophones.meta.domophones[i].domophoneId,
                                 },
                                 {
-                                    data: modules["domophones"].meta.domophones[i].ip,
+                                    data: modules.domophones.meta.domophones[i].ip,
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules["domophones"].meta.domophones[i].callerId,
+                                    data: modules.domophones.meta.domophones[i].callerId,
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules["domophones"].meta.domophones[i].comment,
+                                    data: modules.domophones.meta.domophones[i].comment,
                                 },
                             ],
                             dropDown: {

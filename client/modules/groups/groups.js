@@ -22,7 +22,7 @@
         done(() => {
             message(i18n("groups.groupWasAdded"));
         }).
-        always(modules["groups"].render);
+        always(modules.groups.render);
     },
 
     doModifyGroup: function (gid, acronym, name) {
@@ -35,7 +35,7 @@
         done(() => {
             message(i18n("groups.groupWasChanged"));
         }).
-        always(modules["groups"].render);
+        always(modules.groups.render);
     },
 
     doDeleteGroup: function (gid) {
@@ -45,7 +45,7 @@
         done(() => {
             message(i18n("groups.groupWasDeleted"));
         }).
-        always(modules["groups"].render);
+        always(modules.groups.render);
     },
 
     /*
@@ -79,7 +79,7 @@
                 },
             ],
             callback: function (result) {
-                modules["groups"].doAddGroup(result.acronym, result.name);
+                modules.groups.doAddGroup(result.acronym, result.name);
             },
         }).show();
     },
@@ -124,9 +124,9 @@
                 delete: i18n("groups.delete"),
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["groups"].deleteGroup(result.gid);
+                        modules.groups.deleteGroup(result.gid);
                     } else {
-                        modules["groups"].doModifyGroup(result.gid, result.acronym, result.name);
+                        modules.groups.doModifyGroup(result.gid, result.acronym, result.name);
                     }
                 },
             }).show();
@@ -137,7 +137,7 @@
 
     deleteGroup: function (gid) {
         mConfirm(i18n("groups.confirmDelete", gid.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
-            modules["groups"].doDeleteGroup(gid);
+            modules.groups.doDeleteGroup(gid);
         });
     },
 
@@ -179,7 +179,7 @@
                         done(() => {
                             message(i18n("groups.groupWasChanged"));
                         }).
-                        always(modules["groups"].render);
+                        always(modules.groups.render);
                     },
                     cancel: () => {
                         $("#altForm").hide();
@@ -207,12 +207,12 @@
                     caption: i18n("groups.groups"),
                     button: {
                         caption: i18n("groups.addGroup"),
-                        click: modules["groups"].addGroup,
+                        click: modules.groups.addGroup,
                     },
                     filter: true,
                 },
-                edit: modules["groups"].modifyGroup,
-                startPage: modules["groups"].startPage,
+                edit: modules.groups.modifyGroup,
+                startPage: modules.groups.startPage,
                 columns: [
                     {
                         title: i18n("groups.gid"),
@@ -255,7 +255,7 @@
                                     {
                                         icon: "fas fa-users",
                                         title: i18n("groups.users"),
-                                        click: modules["groups"].modifyGroupUsers
+                                        click: modules.groups.modifyGroupUsers
                                     },
                                 ],
                             },
@@ -266,7 +266,7 @@
                 },
                 target: "#mainForm",
                 pageChange: page => {
-                    modules["groups"].startPage = page;
+                    modules.groups.startPage = page;
                 },
             });
         }).
@@ -277,6 +277,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("groups.groups");
 
-        modules["groups"].render();
+        modules.groups.render();
     }
 }).init();

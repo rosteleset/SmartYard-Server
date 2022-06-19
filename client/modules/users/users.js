@@ -24,7 +24,7 @@
         done(() => {
             message(i18n("users.userWasAdded"));
         }).
-        always(modules["users"].render);
+        always(modules.users.render);
     },
 
     doModifyUser: function (uid, realName, eMail, phone, enabled, password, defaultRoute) {
@@ -46,7 +46,7 @@
         }).
         always(() => {
             if (currentPage === "users") {
-                modules["users"].render();
+                modules.users.render();
             } else {
                 loadingDone();
             }
@@ -62,7 +62,7 @@
         }).
         always(() => {
             if (currentPage === "users") {
-                modules["users"].render();
+                modules.users.render();
             } else {
                 loadingDone();
             }
@@ -118,7 +118,7 @@
                 },
             ],
             callback: function (result) {
-                modules["users"].doAddUser(result.login, result.realName, result.eMail, result.phone);
+                modules.users.doAddUser(result.login, result.realName, result.eMail, result.phone);
             },
         }).show();
     },
@@ -234,9 +234,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["users"].deleteUser(result.uid);
+                        modules.users.deleteUser(result.uid);
                     } else {
-                        modules["users"].doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, result.defaultRoute);
+                        modules.users.doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, result.defaultRoute);
                     }
                 },
             }).show();
@@ -247,7 +247,7 @@
 
     deleteUser: function (uid) {
         mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            modules["users"].doDeleteUser(uid);
+            modules.users.doDeleteUser(uid);
         });
     },
 
@@ -266,16 +266,16 @@
                 title: {
                     button: {
                         caption: i18n("users.addUser"),
-                        click: modules["users"].addUser,
+                        click: modules.users.addUser,
                     },
                     caption: i18n("users.users"),
                     filter: true,
                 },
-                startPage: modules["users"].startPage,
+                startPage: modules.users.startPage,
                 pageChange: page => {
-                    modules["users"].startPage = page;
+                    modules.users.startPage = page;
                 },
-                edit: modules["users"].modifyUser,
+                edit: modules.users.modifyUser,
                 columns: [
                     {
                         title: i18n("users.uid"),
@@ -337,6 +337,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("users.users");
 
-        modules["users"].render();
+        modules.users.render();
     }
 }).init();

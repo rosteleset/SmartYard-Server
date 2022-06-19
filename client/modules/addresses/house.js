@@ -71,13 +71,13 @@
                                 let [ route, params, hash ] = hashParse();
                                 if (result.house.streetId) {
                                     if (route == "addresses" && params["show"] == "street" && params["streetId"] == result.house.streetId) {
-                                        modules["addresses"].renderStreet(result.house.streetId);
+                                        modules.addresses.renderStreet(result.house.streetId);
                                     } else {
                                         location.href = "#addresses&show=street&streetId=" + result.house.streetId;
                                     }
                                 } else {
                                     if (route == "addresses" && params["show"] == "settlement" && params["streetId"] == result.house.settlementId) {
-                                        modules["addresses"].renderSettlement(result.house.settlementId);
+                                        modules.addresses.renderSettlement(result.house.settlementId);
                                     } else {
                                         location.href = "#addresses&show=settlement&settlementId=" + result.house.settlementId;
                                     }

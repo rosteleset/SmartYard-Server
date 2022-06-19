@@ -18,11 +18,11 @@
             text: "нет",
         })
 
-        for (let id in modules["houses"].meta.cmses) {
-            if (domophoneId && modules["houses"].meta.models[domophoneId] && modules["houses"].meta.models[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
+        for (let id in modules.houses.meta.cmses) {
+            if (domophoneId && modules.houses.meta.models[domophoneId] && modules.houses.meta.models[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
                 c.push({
                     id: id,
-                    text: modules["houses"].meta.cmses[id].title,
+                    text: modules.houses.meta.cmses[id].title,
                     selected: selected === id,
                 })
             }
@@ -31,12 +31,11 @@
         return c;
     },
 
-    outputs: function (domophoneId, selected) {
+    outputs: function (domophoneModel, selected) {
         let o = [];
 
-/* TODO
         for (let i = 0; i < 32; i++) {
-            if (domophoneId && modules["houses"].meta.models[domophoneId] && i < parseInt(modules["houses"].meta.models[domophoneId].outputs)) {
+            if (domophoneModel && modules.houses.meta.models[domophoneModel] && i < parseInt(modules.houses.meta.models[domophoneModel].outputs)) {
                 o.push({
                     id: i,
                     text: i?i18n("houses.domophoneOutputSecondary", i):i18n("houses.domophoneOutputPrimary"),
@@ -44,17 +43,63 @@
                 });
             }
         }
-*/
-
-        for (let i = 0; i < 4; i++) {
-            o.push({
-                id: i,
-                text: i?i18n("houses.domophoneOutputSecondary", i):i18n("houses.domophoneOutputPrimary"),
-                selected: selected === i,
-            });
-        }
 
         return o;
+    },
+    
+    outputsSelect: function (el, id, prefix) {
+        if (parseInt(el.val()) > 0) {
+            $("#" + prefix + "cms").parent().parent().parent().hide();
+            $("#" + prefix + "cmsType").parent().parent().parent().hide();
+            $("#" + prefix + "shared").parent().parent().parent().hide();
+            $("#" + prefix + "prefix").parent().parent().hide();
+            $("#" + prefix + "cmsLevels").parent().parent().hide();
+            $("#" + prefix + "locksDisabled").parent().parent().parent().hide();
+        } else {
+            $("#" + prefix + "cms").parent().parent().parent().show();
+            $("#" + prefix + "shared").parent().parent().parent().show();
+            $("#" + prefix + "locksDisabled").parent().parent().parent().show();
+            if (parseInt($("#" + prefix + "cms").val()) !== 0) {
+                $("#" + prefix + "cmsType").parent().parent().parent().show();
+                $("#" + prefix + "cmsLevels").parent().parent().show();
+            } else {
+                $("#" + prefix + "cmsType").parent().parent().parent().hide();
+                $("#" + prefix + "cmsLevels").parent().parent().hide();
+            }
+            if (parseInt($("#" + prefix + "shared").val())) {
+                $("#" + prefix + "prefix").parent().parent().show();
+            } else {
+                $("#" + prefix + "prefix").parent().parent().hide();
+            }
+        }
+    },
+    
+    domophoneIdSelect: (el, id, prefix) => {
+        $(`#${prefix}cms`).html("").select2({
+            data: modules.houses.cmses(modules.houses.meta.modelsById[el.val()]),
+            language: lang["_code"],
+        });
+
+        let h = "";
+
+        let o = modules.houses.outputs(modules.houses.meta.modelsById[el.val()]);
+        for (let i in o) {
+            h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
+        }
+
+        $("#" + prefix + "domophoneOutput").html(h);
+
+        modules.houses.outputsSelect($("#" + prefix + "domophoneOutput"), "domophoneOutput", prefix)
+    },
+
+    cmsSelect: (el, id, prefix) => {
+        if (parseInt(el.val()) === 0) {
+            $("#" + prefix + "cmsType").parent().parent().parent().hide();
+            $("#" + prefix + "cmsLevels").parent().parent().hide();
+        } else {
+            $("#" + prefix + "cmsType").parent().parent().parent().show();
+            $("#" + prefix + "cmsLevels").parent().parent().show();
+        }
     },
 
     doAddEntrance: function (houseId, entranceId, prefix) {
@@ -69,7 +114,7 @@
             message(i18n("houses.entranceWasAdded"));
         }).
         always(() => {
-            modules["houses"].renderHouse(houseId);
+            modules.houses.renderHouse(houseId);
         });
     },
 
@@ -96,7 +141,7 @@
             message(i18n("houses.entranceWasCreated"));
         }).
         always(() => {
-            modules["houses"].renderHouse(houseId);
+            modules.houses.renderHouse(houseId);
         });
     },
 
@@ -120,7 +165,7 @@
             message(i18n("houses.flatWasAdded"));
         }).
         always(() => {
-            modules["houses"].renderHouse(houseId);
+            modules.houses.renderHouse(houseId);
         });
     },
 
@@ -147,7 +192,7 @@
             message(i18n("houses.entranceWasChanged"));
         }).
         always(() => {
-            modules["houses"].renderHouse(houseId);
+            modules.houses.renderHouse(houseId);
         });
     },
 
@@ -171,7 +216,7 @@
         }).
         always(() => {
             if (houseId) {
-                modules["houses"].renderHouse(houseId);
+                modules.houses.renderHouse(houseId);
             }
         });
     },
@@ -185,7 +230,7 @@
                 message(i18n("houses.entranceWasDeleted"));
             }).
             always(() => {
-                modules["houses"].renderHouse(houseId);
+                modules.houses.renderHouse(houseId);
             });
         } else {
             DELETE("houses", "entrance", entranceId, {
@@ -196,7 +241,7 @@
                 message(i18n("houses.entranceWasDeleted"));
             }).
             always(() => {
-                modules["houses"].renderHouse(houseId);
+                modules.houses.renderHouse(houseId);
             });
         }
     },
@@ -209,7 +254,7 @@
             message(i18n("houses.flatWasDeleted"));
         }).
         always(() => {
-            modules["houses"].renderHouse(houseId);
+            modules.houses.renderHouse(houseId);
         });
     },
 
@@ -218,10 +263,12 @@
             loadingStart();
             GET("domophones", "domophones").
             done(response => {
+                modules.houses.meta.domophones = response.domophones;
+                modules.houses.meta.modelsById = {};
+
                 console.log(response);
 
                 let first = false;
-                let models = {};
 
                 let domophones = [];
 
@@ -229,7 +276,7 @@
                     if (!first) {
                         first = response.domophones.domophones[i].domophoneId;
                     }
-                    models[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                    modules.houses.meta.modelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
                         text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):"") + " [" + response.domophones.domophones[i].ip + "]",
@@ -302,69 +349,23 @@
                             validate: v => {
                                 return parseInt(v) > 0;
                             },
-                            select: (el, id, prefix) => {
-                                $(`#${prefix}cms`).html("").select2({
-                                    data: modules["houses"].cmses(models[el.val()]),
-                                    language: lang["_code"],
-                                });
-/* TODO
-                                let h = "";
-                                let o = modules["houses"].outputs(models[el.val()]);
-                                for (let i in o) {
-                                    h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
-                                }
-                                $("#" + prefix + "domophoneOutput").html(h);
-*/
-                            }
+                            select: modules.houses.domophoneIdSelect,
                         },
                         {
                             id: "domophoneOutput",
                             type: "select",
                             title: i18n("houses.domophoneOutput"),
                             placeholder: i18n("houses.domophoneOutput"),
-                            options: modules["houses"].outputs(models[first]),
-                            select: (el, id, prefix) => {
-                                if (parseInt(el.val()) > 0) {
-                                    $("#" + prefix + "cms").parent().parent().parent().hide();
-                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
-                                    $("#" + prefix + "shared").parent().parent().parent().hide();
-                                    $("#" + prefix + "prefix").parent().parent().hide();
-                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
-                                    $("#" + prefix + "locksDisabled").parent().parent().parent().hide();
-                                } else {
-                                    $("#" + prefix + "cms").parent().parent().parent().show();
-                                    $("#" + prefix + "shared").parent().parent().parent().show();
-                                    $("#" + prefix + "locksDisabled").parent().parent().parent().show();
-                                    if (parseInt($("#" + prefix + "cms").val()) !== 0) {
-                                        $("#" + prefix + "cmsType").parent().parent().parent().show();
-                                        $("#" + prefix + "cmsLevels").parent().parent().show();
-                                    } else {
-                                        $("#" + prefix + "cmsType").parent().parent().parent().hide();
-                                        $("#" + prefix + "cmsLevels").parent().parent().hide();
-                                    }
-                                    if (parseInt($("#" + prefix + "shared").val())) {
-                                        $("#" + prefix + "prefix").parent().parent().show();
-                                    } else {
-                                        $("#" + prefix + "prefix").parent().parent().hide();
-                                    }
-                                }
-                            },
+                            options: modules.houses.outputs(modules.houses.meta.modelsById[first]),
+                            select: modules.houses.outputsSelect,
                         },
                         {
                             id: "cms",
                             type: "select2",
                             title: i18n("domophones.cms"),
                             placeholder: i18n("domophones.cms"),
-                            options: modules["houses"].cmses(models[first]),
-                            select: (el, id, prefix) => {
-                                if (parseInt(el.val()) === 0) {
-                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
-                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
-                                } else {
-                                    $("#" + prefix + "cmsType").parent().parent().parent().show();
-                                    $("#" + prefix + "cmsLevels").parent().parent().show();
-                                }
-                            },
+                            options: modules.houses.cmses(modules.houses.meta.modelsById[first]),
+                            select: modules.houses.cmsSelect,
                         },
                         {
                             id: "cmsType",
@@ -439,7 +440,7 @@
                         if (!result.cms) {
                             result.cmsType = 0;
                         }
-                        modules["houses"].doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
+                        modules.houses.doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
                     },
                 });
             }).
@@ -508,7 +509,7 @@
                     ],
                     callback: result => {
                         if (parseInt(result.entranceId)) {
-                            modules["houses"].doAddEntrance(houseId, result.entranceId, result.prefix);
+                            modules.houses.doAddEntrance(houseId, result.entranceId, result.prefix);
                         }
                     },
                 });
@@ -522,28 +523,28 @@
         let entrances = [];
         let prefx = md5(guid());
 
-        for (let i in modules["houses"].meta.entrances) {
-            if (parseInt(modules["houses"].meta.entrances[i].domophoneOutput) === 0) {
+        for (let i in modules.houses.meta.entrances) {
+            if (parseInt(modules.houses.meta.entrances[i].domophoneOutput) === 0) {
                 let inputs = `
-                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" style="display: none;">
+                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">
                         <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}">
                         </div>
                         <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}">
                         </div>
                     </div>
                 `;
-                console.log(modules["houses"].meta.entrances[i]);
-                if (parseInt(modules["houses"].meta.entrances[i].cms) !== 0) {
+                console.log(modules.houses.meta.entrances[i]);
+                if (parseInt(modules.houses.meta.entrances[i].cms) !== 0) {
                     entrances.push({
-                        id: modules["houses"].meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance + inputs,
+                        id: modules.houses.meta.entrances[i].entranceId,
+                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
                     });
                 } else {
                     entrances.push({
-                        id: modules["houses"].meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance,
+                        id: modules.houses.meta.entrances[i].entranceId,
+                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance,
                     });
                 }
             }
@@ -698,7 +699,7 @@
                         }
                     }
                 }
-                modules["houses"].doAddFlat(houseId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword);
+                modules.houses.doAddFlat(houseId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword);
             },
         });
 
@@ -716,10 +717,10 @@
         GET("domophones", "domophones").
         done(response => {
             let domophones = [];
-            let models = {};
+            modules.houses.meta.modelsById = {};
 
             for (let i in response.domophones.domophones) {
-                models[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                modules.houses.meta.modelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                 domophones.push({
                     id: response.domophones.domophones[i].domophoneId,
                     text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : "") + " [" + response.domophones.domophones[i].ip + "]",
@@ -728,9 +729,9 @@
 
             let entrance = false;
 
-            for (let i in modules["houses"].meta.entrances) {
-                if (modules["houses"].meta.entrances[i].entranceId == entranceId) {
-                    entrance = modules["houses"].meta.entrances[i];
+            for (let i in modules.houses.meta.entrances) {
+                if (modules.houses.meta.entrances[i].entranceId == entranceId) {
+                    entrance = modules.houses.meta.entrances[i];
                     break;
                 }
             }
@@ -813,72 +814,25 @@
                             title: i18n("houses.domophoneId"),
                             value: entrance.domophoneId,
                             options: domophones,
-                            select: (el, id, prefix) => {
-                                $(`#${prefix}cms`).html("").select2({
-                                    data: modules["houses"].cmses(models[el.val()]),
-                                    language: lang["_code"],
-                                });
-/* TODO
-                                let h = "";
-                                let o = modules["houses"].outputs(models[el.val()]);
-                                for (let i in o) {
-                                    h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
-                                }
-                                $("#" + prefix + "domophoneOutput").html(h);
-*/
-                            }
+                            select: modules.houses.domophoneIdSelect,
                         },
                         {
                             id: "domophoneOutput",
                             type: "select",
                             title: i18n("houses.domophoneOutput"),
                             placeholder: i18n("houses.domophoneOutput"),
-                            value: entrance.domophoneOutput,
-                            options: modules["houses"].outputs(),
-                            select: (el, id, prefix) => {
-                                if (parseInt(el.val()) > 0) {
-                                    $("#" + prefix + "cms").parent().parent().parent().hide();
-                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
-                                    $("#" + prefix + "shared").parent().parent().parent().hide();
-                                    $("#" + prefix + "prefix").parent().parent().hide();
-                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
-                                    $("#" + prefix + "locksDisabled").parent().parent().parent().hide();
-                                } else {
-                                    $("#" + prefix + "cms").parent().parent().parent().show();
-                                    $("#" + prefix + "shared").parent().parent().parent().show();
-                                    $("#" + prefix + "locksDisabled").parent().parent().parent().show();
-                                    if (parseInt($("#" + prefix + "cms").val()) !== 0) {
-                                        $("#" + prefix + "cmsType").parent().parent().parent().show();
-                                        $("#" + prefix + "cmsLevels").parent().parent().show();
-                                    } else {
-                                        $("#" + prefix + "cmsType").parent().parent().parent().hide();
-                                        $("#" + prefix + "cmsLevels").parent().parent().hide();
-                                    }
-                                    if (parseInt($("#" + prefix + "shared").val())) {
-                                        $("#" + prefix + "prefix").parent().parent().show();
-                                    } else {
-                                        $("#" + prefix + "prefix").parent().parent().hide();
-                                    }
-                                }
-                            },
+                            options: modules.houses.outputs(modules.houses.meta.modelsById[entrance.domophoneId], entrance.domophoneOutput),
+                            select: modules.houses.outputsSelect,
                         },
                         {
                             id: "cms",
                             type: "select2",
                             title: i18n("domophones.cms"),
                             placeholder: i18n("domophones.cms"),
-                            options: modules["houses"].cmses(models[entrance.domophoneId]),
+                            options: modules.houses.cmses(modules.houses.meta.modelsById[entrance.domophoneId]),
                             hidden: parseInt(entrance.domophoneOutput) !== 0,
                             value: entrance.cms,
-                            select: (el, id, prefix) => {
-                                if (parseInt(el.val()) === 0) {
-                                    $("#" + prefix + "cmsType").parent().parent().parent().hide();
-                                    $("#" + prefix + "cmsLevels").parent().parent().hide();
-                                } else {
-                                    $("#" + prefix + "cmsType").parent().parent().parent().show();
-                                    $("#" + prefix + "cmsLevels").parent().parent().show();
-                                }
-                            },
+                            select: modules.houses.cmsSelect,
                         },
                         {
                             id: "cmsType",
@@ -949,7 +903,7 @@
                     ],
                     callback: result => {
                         if (result.delete === "yes") {
-                            modules["houses"].deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
+                            modules.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
                         } else {
                             if (parseInt(result.domophoneOutput) > 0) {
                                 result.cms = 0;
@@ -961,7 +915,7 @@
                             if (parseInt(result.cms) === 0) {
                                 result.cmsType = 0;
                             }
-                            modules["houses"].doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
+                            modules.houses.doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
                         }
                     },
                 });
@@ -976,9 +930,9 @@
     modifyFlat: function (flatId, houseId) {
         let flat = false;
 
-        for (let i in modules["houses"].meta.flats) {
-            if (modules["houses"].meta.flats[i].flatId == flatId) {
-                flat = modules["houses"].meta.flats[i];
+        for (let i in modules.houses.meta.flats) {
+            if (modules.houses.meta.flats[i].flatId == flatId) {
+                flat = modules.houses.meta.flats[i];
                 break;
             }
         }
@@ -996,26 +950,26 @@
                 entrances_settings[flat.entrances[i].entranceId] = flat.entrances[i];
             }
 
-            for (let i in modules["houses"].meta.entrances) {
+            for (let i in modules.houses.meta.entrances) {
                 let inputs = `
-                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" style="display: none;">
+                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">
                         <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}" value="${entrances_settings[modules["houses"].meta.entrances[i].entranceId]?entrances_settings[modules["houses"].meta.entrances[i].entranceId].apartment:""}">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId]?entrances_settings[modules.houses.meta.entrances[i].entranceId].apartment:""}">
                         </div>
                         <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules["houses"].meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}" value="${entrances_settings[modules["houses"].meta.entrances[i].entranceId]?entrances_settings[modules["houses"].meta.entrances[i].entranceId].apartmentLevels:""}">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId]?entrances_settings[modules.houses.meta.entrances[i].entranceId].apartmentLevels:""}">
                         </div>
                     </div>
                 `;
-                if (parseInt(modules["houses"].meta.entrances[i].cmsType)) {
+                if (parseInt(modules.houses.meta.entrances[i].cmsType)) {
                     entrances.push({
-                        id: modules["houses"].meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance + inputs,
+                        id: modules.houses.meta.entrances[i].entranceId,
+                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
                     });
                 } else {
                     entrances.push({
-                        id: modules["houses"].meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules["houses"].meta.entrances[i].entrance,
+                        id: modules.houses.meta.entrances[i].entranceId,
+                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance,
                     });
                 }
             }
@@ -1187,9 +1141,9 @@
                         }
                     }
                     if (result.delete === "yes") {
-                        modules["houses"].deleteFlat(flatId, houseId);
+                        modules.houses.deleteFlat(flatId, houseId);
                     } else {
-                        modules["houses"].doModifyFlat(flatId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword, houseId);
+                        modules.houses.doModifyFlat(flatId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword, houseId);
                     }
                 },
 
@@ -1214,20 +1168,20 @@
     deleteEntrance: function (entranceId, shared, houseId) {
         if (shared) {
             mYesNo(i18n("houses.completelyDeleteEntrance", entranceId), i18n("houses.deleteEntrance"), () => {
-                modules["houses"].doDeleteEntrance(entranceId, true, houseId);
+                modules.houses.doDeleteEntrance(entranceId, true, houseId);
             }, () => {
-                modules["houses"].doDeleteEntrance(entranceId, false, houseId);
+                modules.houses.doDeleteEntrance(entranceId, false, houseId);
             }, i18n("houses.deleteEntranceComletely"), i18n("houses.deleteEntranceLink"));
         } else {
             mConfirm(i18n("houses.confirmDeleteEntrance", entranceId), i18n("confirm"), `danger:${i18n("houses.deleteEntrance")}`, () => {
-                modules["houses"].doDeleteEntrance(entranceId, true, houseId);
+                modules.houses.doDeleteEntrance(entranceId, true, houseId);
             });
         }
     },
 
     deleteFlat: function (flatId, houseId) {
         mConfirm(i18n("houses.confirmDeleteFlat", flatId), i18n("confirm"), `danger:${i18n("houses.deleteFlat")}`, () => {
-            modules["houses"].doDeleteFlat(flatId, houseId);
+            modules.houses.doDeleteFlat(flatId, houseId);
         });
     },
 
@@ -1241,12 +1195,12 @@
                     button: {
                         caption: i18n("houses.addFlat"),
                         click: () => {
-                            modules["houses"].addFlat(houseId);
+                            modules.houses.addFlat(houseId);
                         },
                     },
                 },
                 edit: flatId => {
-                    modules["houses"].modifyFlat(flatId, houseId);
+                    modules.houses.modifyFlat(flatId, houseId);
                 },
                 columns: [
                     {
@@ -1263,18 +1217,18 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i in modules["houses"].meta.flats) {
+                    for (let i in modules.houses.meta.flats) {
                         rows.push({
-                            uid: modules["houses"].meta.flats[i].flatId,
+                            uid: modules.houses.meta.flats[i].flatId,
                             cols: [
                                 {
-                                    data: modules["houses"].meta.flats[i].flatId,
+                                    data: modules.houses.meta.flats[i].flatId,
                                 },
                                 {
-                                    data: modules["houses"].meta.flats[i].floor?modules["houses"].meta.flats[i].floor:"-",
+                                    data: modules.houses.meta.flats[i].floor?modules.houses.meta.flats[i].floor:"-",
                                 },
                                 {
-                                    data: modules["houses"].meta.flats[i].flat,
+                                    data: modules.houses.meta.flats[i].flat,
                                     nowrap: true,
                                 },
                             ],
@@ -1309,12 +1263,12 @@
                     button: {
                         caption: i18n("houses.addEntrance"),
                         click: () => {
-                            modules["houses"].addEntrance(houseId);
+                            modules.houses.addEntrance(houseId);
                         },
                     },
                 },
                 edit: entranceId => {
-                    modules["houses"].modifyEntrance(entranceId, houseId);
+                    modules.houses.modifyEntrance(entranceId, houseId);
                 },
                 columns: [
                     {
@@ -1335,23 +1289,23 @@
                     let rows = [];
                     let entrances = {};
 
-                    for (let i in modules["houses"].meta.entrances) {
-                        entrances[modules["houses"].meta.entrances[i].entranceId] = modules["houses"].meta.entrances[i];
+                    for (let i in modules.houses.meta.entrances) {
+                        entrances[modules.houses.meta.entrances[i].entranceId] = modules.houses.meta.entrances[i];
                         rows.push({
-                            uid: modules["houses"].meta.entrances[i].entranceId,
+                            uid: modules.houses.meta.entrances[i].entranceId,
                             cols: [
                                 {
-                                    data: modules["houses"].meta.entrances[i].entranceId,
+                                    data: modules.houses.meta.entrances[i].entranceId,
                                 },
                                 {
-                                    data: i18n("houses.entranceType" + modules["houses"].meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules["houses"].meta.entrances[i].entranceType.substring(1) + "Full"),
+                                    data: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full"),
                                 },
                                 {
-                                    data: modules["houses"].meta.entrances[i].entrance,
+                                    data: modules.houses.meta.entrances[i].entrance,
                                     nowrap: true,
                                 },
                                 {
-                                    data: parseInt(modules["houses"].meta.entrances[i].shared)?i18n("yes"):i18n("no"),
+                                    data: parseInt(modules.houses.meta.entrances[i].shared)?i18n("yes"):i18n("no"),
                                 },
                             ],
                             dropDown: {
@@ -1359,7 +1313,7 @@
                                     {
                                         icon: "fas fa-door-open",
                                         title: i18n("domophones.domophone"),
-                                        disabled: ! modules["houses"].meta.entrances[i].domophoneId,
+                                        disabled: ! modules.houses.meta.entrances[i].domophoneId,
                                         click: entranceId => {
                                             location.href = "#domophones&domophoneId=" + entrances[entranceId].domophoneId;
                                         },
@@ -1367,7 +1321,7 @@
                                     {
                                         icon: "fas fa-video",
                                         title: i18n("cameras.camera"),
-                                        disabled: ! modules["houses"].meta.entrances[i].cameraId,
+                                        disabled: ! modules.houses.meta.entrances[i].cameraId,
                                         click: entranceId => {
                                             location.href = "#cameras&cameraId=" + entrances[entranceId].cameraId;
                                         },
@@ -1386,11 +1340,11 @@
             let f = false;
             for (let i in modules["addresses"].meta.houses) {
                 if (modules["addresses"].meta.houses[i].houseId == houseId) {
-                    if (!modules["houses"].meta) {
-                        modules["houses"].meta = {};
+                    if (!modules.houses.meta) {
+                        modules.houses.meta = {};
                     }
-                    modules["houses"].meta.house = modules["addresses"].meta.houses[i];
-                    subTop(modules["houses"].meta.house.houseFull);
+                    modules.houses.meta.house = modules["addresses"].meta.houses[i];
+                    subTop(modules.houses.meta.house.houseFull);
                     f = true;
                 }
             }
@@ -1404,16 +1358,16 @@
             // ?
         }).
         done(response => {
-            if (!modules["houses"].meta) {
-                modules["houses"].meta = {};
+            if (!modules.houses.meta) {
+                modules.houses.meta = {};
             }
-            modules["houses"].meta.entrances = response["house"].entrances;
-            modules["houses"].meta.flats = response["house"].flats;
-            modules["houses"].meta.models = response["house"].models;
-            modules["houses"].meta.cmses = response["house"].cmses;
+            modules.houses.meta.entrances = response["house"].entrances;
+            modules.houses.meta.flats = response["house"].flats;
+            modules.houses.meta.models = response["house"].models;
+            modules.houses.meta.cmses = response["house"].cmses;
 
-            if (modules["houses"].meta.house && modules["houses"].meta.house.houseFull) {
-                document.title = i18n("windowTitle") + " :: " + i18n("houses.house") + " :: " + modules["houses"].meta.house.houseFull;
+            if (modules.houses.meta.house && modules.houses.meta.house.houseFull) {
+                document.title = i18n("windowTitle") + " :: " + i18n("houses.house") + " :: " + modules.houses.meta.house.houseFull;
             }
 
             render();
@@ -1429,10 +1383,10 @@
                 history.back();
             }).
             done(() => {
-                modules["houses"].house(houseId);
+                modules.houses.house(houseId);
             });
         } else {
-            modules["houses"].house(houseId);
+            modules.houses.house(houseId);
         }
 
         loadingDone();
@@ -1443,6 +1397,6 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("houses.house");
 
-        modules["houses"].renderHouse(params.houseId);
+        modules.houses.renderHouse(params.houseId);
     },
 }).init();

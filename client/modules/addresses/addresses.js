@@ -12,7 +12,7 @@
     },
 
     addresses: function (addresses) {
-        modules["addresses"].meta = addresses["addresses"];
+        modules.addresses.meta = addresses["addresses"];
     },
 
     path: function (object, id) {
@@ -23,17 +23,17 @@
         }
 
         function region(id) {
-            for (let i in modules["addresses"].meta.regions) {
-                if (modules["addresses"].meta.regions[i].regionId == id) {
-                    return modules["addresses"].meta.regions[i];
+            for (let i in modules.addresses.meta.regions) {
+                if (modules.addresses.meta.regions[i].regionId == id) {
+                    return modules.addresses.meta.regions[i];
                 }
             }
         }
 
         function area(id) {
-            for (let i in modules["addresses"].meta.areas) {
-                if (modules["addresses"].meta.areas[i].areaId == id) {
-                    let a = modules["addresses"].meta.areas[i];
+            for (let i in modules.addresses.meta.areas) {
+                if (modules.addresses.meta.areas[i].areaId == id) {
+                    let a = modules.addresses.meta.areas[i];
                     let r = region(a.regionId);
                     a.parent = link("region", r.regionWithType, r.regionId);
                     return a;
@@ -42,9 +42,9 @@
         }
 
         function city(id) {
-            for (let i in modules["addresses"].meta.cities) {
-                if (modules["addresses"].meta.cities[i].cityId == id) {
-                    let c = modules["addresses"].meta.cities[i];
+            for (let i in modules.addresses.meta.cities) {
+                if (modules.addresses.meta.cities[i].cityId == id) {
+                    let c = modules.addresses.meta.cities[i];
                     if (c.regionId) {
                         let r = region(c.regionId);
                         c.parent = link("region", r.regionWithType, r.regionId);
@@ -58,9 +58,9 @@
         }
 
         function settlement(id) {
-            for (let i in modules["addresses"].meta.settlements) {
-                if (modules["addresses"].meta.settlements[i].settlementId == id) {
-                    let s = modules["addresses"].meta.settlements[i];
+            for (let i in modules.addresses.meta.settlements) {
+                if (modules.addresses.meta.settlements[i].settlementId == id) {
+                    let s = modules.addresses.meta.settlements[i];
                     if (s.areaId) {
                         let a = area(s.areaId);
                         s.parent = a.parent + sp + link("area", a.areaWithType, a.areaId);
@@ -74,9 +74,9 @@
         }
 
         function street(id) {
-            for (let i in modules["addresses"].meta.streets) {
-                if (modules["addresses"].meta.streets[i].streetId == id) {
-                    let s = modules["addresses"].meta.streets[i];
+            for (let i in modules.addresses.meta.streets) {
+                if (modules.addresses.meta.streets[i].streetId == id) {
+                    let s = modules.addresses.meta.streets[i];
                     if (s.cityId) {
                         let c = city(s.cityId);
                         s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
@@ -128,7 +128,7 @@
         done(() => {
             message(i18n("addresses.regionWasAdded"));
         }).
-        always(modules["addresses"].renderRegions);
+        always(modules.addresses.renderRegions);
     },
 
     doAddArea: function (regionId, areaUuid, areaWithType, areaType, areaTypeFull, area) {
@@ -146,7 +146,7 @@
             message(i18n("addresses.areaWasAdded"));
         }).
         always(() => {
-            modules["addresses"].renderRegion(regionId);
+            modules.addresses.renderRegion(regionId);
         });
     },
 
@@ -167,9 +167,9 @@
         }).
         always(() => {
             if (regionId) {
-                modules["addresses"].renderRegion(regionId);
+                modules.addresses.renderRegion(regionId);
             } else {
-                modules["addresses"].renderArea(areaId);
+                modules.addresses.renderArea(areaId);
             }
         });
     },
@@ -191,9 +191,9 @@
         }).
         always(() => {
             if (areaId) {
-                modules["addresses"].renderArea(areaId);
+                modules.addresses.renderArea(areaId);
             } else {
-                modules["addresses"].renderCity(cityId);
+                modules.addresses.renderCity(cityId);
             }
         });
     },
@@ -215,9 +215,9 @@
         }).
         always(() => {
             if (cityId) {
-                modules["addresses"].renderCity(cityId);
+                modules.addresses.renderCity(cityId);
             } else {
-                modules["addresses"].renderSettlement(settlementId);
+                modules.addresses.renderSettlement(settlementId);
             }
         });
     },
@@ -239,9 +239,9 @@
         }).
         always(() => {
             if (settlementId) {
-                modules["addresses"].renderSettlement(settlementId);
+                modules.addresses.renderSettlement(settlementId);
             } else {
-                modules["addresses"].renderStreet(streetId);
+                modules.addresses.renderStreet(streetId);
             }
         });
     },
@@ -260,7 +260,7 @@
         done(() => {
             message(i18n("addresses.regionWasChanged"));
         }).
-        always(modules["addresses"].renderRegions);
+        always(modules.addresses.renderRegions);
     },
 
     doModifyArea: function (areaId, regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, targetRegionId) {
@@ -279,7 +279,7 @@
         }).
         always(() => {
             if (regionId == targetRegionId) {
-                modules["addresses"].renderRegion(regionId);
+                modules.addresses.renderRegion(regionId);
             } else {
                 location.href = "#addresses&show=region&regionId=" + regionId;
             }
@@ -304,13 +304,13 @@
         always(() => {
             if (regionId) {
                 if (regionId == targetRegionId) {
-                    modules["addresses"].renderRegion(regionId);
+                    modules.addresses.renderRegion(regionId);
                 } else {
                     location.href = "#addresses&show=region&regionId=" + regionId;
                 }
             } else {
                 if (areaId == targetAreaId) {
-                    modules["addresses"].renderRegion(areaId);
+                    modules.addresses.renderRegion(areaId);
                 } else {
                     location.href = "#addresses&show=area&areaId=" + areaId;
                 }
@@ -337,13 +337,13 @@
         always(() => {
             if (areaId) {
                 if (areaId == targetAreaId) {
-                    modules["addresses"].renderArea(areaId);
+                    modules.addresses.renderArea(areaId);
                 } else {
                     location.href = "#addresses&show=area&areaId=" + areaId;
                 }
             } else {
                 if (cityId == targetCityId) {
-                    modules["addresses"].renderCity(cityId);
+                    modules.addresses.renderCity(cityId);
                 } else {
                     location.href = "#addresses&show=city&cityId=" + cityId;
                 }
@@ -370,13 +370,13 @@
         always(() => {
             if (cityId) {
                 if (cityId == targetCityId) {
-                    modules["addresses"].renderCity(cityId);
+                    modules.addresses.renderCity(cityId);
                 } else {
                     location.href = "#addresses&show=city&cityId=" + cityId;
                 }
             } else {
                 if (settlementId == targetSettlementId) {
-                    modules["addresses"].renderSettlement(settlementId);
+                    modules.addresses.renderSettlement(settlementId);
                 } else {
                     location.href = "#addresses&show=settlement&settlementId=" + settlementId;
                 }
@@ -403,13 +403,13 @@
         always(() => {
             if (settlementId) {
                 if (settlementId == targetSettlementId) {
-                    modules["addresses"].renderSettlement(settlementId);
+                    modules.addresses.renderSettlement(settlementId);
                 } else {
                     location.href = "#addresses&show=settlement&settlementId=" + settlementId;
                 }
             } else {
                 if (streetId == targetStreetId) {
-                    modules["addresses"].renderStreet(streetId);
+                    modules.addresses.renderStreet(streetId);
                 } else {
                     location.href = "#addresses&show=street&streetId=" + streetId;
                 }
@@ -424,7 +424,7 @@
         done(() => {
             message(i18n("addresses.regionWasDeleted"));
         }).
-        always(modules["addresses"].renderRegions);
+        always(modules.addresses.renderRegions);
     },
 
     doDeleteArea: function (areaId, regionId) {
@@ -435,7 +435,7 @@
             message(i18n("addresses.areaWasDeleted"));
         }).
         always(() => {
-            modules["addresses"].renderRegion(regionId);
+            modules.addresses.renderRegion(regionId);
         });
     },
 
@@ -448,9 +448,9 @@
         }).
         always(() => {
             if (regionId) {
-                modules["addresses"].renderRegion(regionId);
+                modules.addresses.renderRegion(regionId);
             } else {
-                modules["addresses"].renderArea(areaId);
+                modules.addresses.renderArea(areaId);
             }
         });
     },
@@ -464,9 +464,9 @@
         }).
         always(() => {
             if (areaId) {
-                modules["addresses"].renderArea(areaId);
+                modules.addresses.renderArea(areaId);
             } else {
-                modules["addresses"].renderCity(cityId);
+                modules.addresses.renderCity(cityId);
             }
         });
     },
@@ -480,9 +480,9 @@
         }).
         always(() => {
             if (cityId) {
-                modules["addresses"].renderCity(cityId);
+                modules.addresses.renderCity(cityId);
             } else {
-                modules["addresses"].renderSettlement(settlementId);
+                modules.addresses.renderSettlement(settlementId);
             }
         });
     },
@@ -496,55 +496,55 @@
         }).
         always(() => {
             if (settlementId) {
-                modules["addresses"].renderSettlement(settlementId);
+                modules.addresses.renderSettlement(settlementId);
             } else {
-                modules["addresses"].renderStreet(streetId);
+                modules.addresses.renderStreet(streetId);
             }
         });
     },
 
     deleteRegion: function (regionId) {
         mConfirm(i18n("addresses.confirmDeleteRegion", regionId), i18n("confirm"), `danger:${i18n("addresses.deleteRegion")}`, () => {
-            modules["addresses"].doDeleteRegion(regionId);
+            modules.addresses.doDeleteRegion(regionId);
         });
     },
 
     deleteArea: function (areaId, regionId) {
         mConfirm(i18n("addresses.confirmDeleteArea", areaId), i18n("confirm"), `danger:${i18n("addresses.deleteArea")}`, () => {
-            modules["addresses"].doDeleteArea(areaId, regionId);
+            modules.addresses.doDeleteArea(areaId, regionId);
         });
     },
 
     deleteCity: function (cityId, areaId, regionId) {
         mConfirm(i18n("addresses.confirmDeleteCity", areaId), i18n("confirm"), `danger:${i18n("addresses.deleteCity")}`, () => {
-            modules["addresses"].doDeleteCity(cityId, areaId, regionId);
+            modules.addresses.doDeleteCity(cityId, areaId, regionId);
         });
     },
 
     deleteSettlement: function (settlementId, cityId, areaId) {
         mConfirm(i18n("addresses.confirmDeleteSettlement", settlementId), i18n("confirm"), `danger:${i18n("addresses.deleteSettlement")}`, () => {
-            modules["addresses"].doDeleteSettlement(settlementId, cityId, areaId);
+            modules.addresses.doDeleteSettlement(settlementId, cityId, areaId);
         });
     },
 
     deleteStreet: function (streetId, settlementId, cityId) {
         mConfirm(i18n("addresses.confirmDeleteStreet", streetId), i18n("confirm"), `danger:${i18n("addresses.deleteStreet")}`, () => {
-            modules["addresses"].doDeleteStreet(streetId, settlementId, cityId);
+            modules.addresses.doDeleteStreet(streetId, settlementId, cityId);
         });
     },
 
     deleteHouse: function (houseId, streetId, settlementId) {
         mConfirm(i18n("addresses.confirmDeleteHouse", houseId), i18n("confirm"), `danger:${i18n("addresses.deleteHouse")}`, () => {
-            modules["addresses"].doDeleteHouse(houseId, streetId, settlementId);
+            modules.addresses.doDeleteHouse(houseId, streetId, settlementId);
         });
     },
 
     modifyRegion: function (regionId) {
         let region = false;
 
-        for (let i in modules["addresses"].meta.regions) {
-            if (modules["addresses"].meta.regions[i].regionId == regionId) {
-                region = modules["addresses"].meta.regions[i];
+        for (let i in modules.addresses.meta.regions) {
+            if (modules.addresses.meta.regions[i].regionId == regionId) {
+                region = modules.addresses.meta.regions[i];
                 break;
             }
         }
@@ -619,9 +619,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteRegion(result.regionId);
+                        modules.addresses.deleteRegion(result.regionId);
                     } else {
-                        modules["addresses"].doModifyRegion(regionId, result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+                        modules.addresses.doModifyRegion(regionId, result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
                     }
                 },
             }).show();
@@ -633,18 +633,18 @@
     modifyArea: function (areaId) {
         let area = false;
 
-        for (let i in modules["addresses"].meta.areas) {
-            if (modules["addresses"].meta.areas[i].areaId == areaId) {
-                area = modules["addresses"].meta.areas[i];
+        for (let i in modules.addresses.meta.areas) {
+            if (modules.addresses.meta.areas[i].areaId == areaId) {
+                area = modules.addresses.meta.areas[i];
                 break;
             }
         }
 
         let regions = [];
-        for (let i in modules["addresses"].meta.regions) {
+        for (let i in modules.addresses.meta.regions) {
             regions.push({
-                id: modules["addresses"].meta.regions[i].regionId,
-                text: modules["addresses"].meta.regions[i].regionWithType,
+                id: modules.addresses.meta.regions[i].regionId,
+                text: modules.addresses.meta.regions[i].regionWithType,
             });
         }
 
@@ -721,9 +721,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteArea(result.areaId, parseInt(area.regionId));
+                        modules.addresses.deleteArea(result.areaId, parseInt(area.regionId));
                     } else {
-                        modules["addresses"].doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId));
+                        modules.addresses.doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId));
                     }
                 },
             }).show();
@@ -735,9 +735,9 @@
     modifyCity: function (cityId) {
         let city = false;
 
-        for (let i in modules["addresses"].meta.cities) {
-            if (modules["addresses"].meta.cities[i].cityId == cityId) {
-                city = modules["addresses"].meta.cities[i];
+        for (let i in modules.addresses.meta.cities) {
+            if (modules.addresses.meta.cities[i].cityId == cityId) {
+                city = modules.addresses.meta.cities[i];
                 break;
             }
         }
@@ -748,10 +748,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.regions) {
+        for (let i in modules.addresses.meta.regions) {
             regions.push({
-                id: modules["addresses"].meta.regions[i].regionId,
-                text: modules["addresses"].meta.regions[i].regionWithType,
+                id: modules.addresses.meta.regions[i].regionId,
+                text: modules.addresses.meta.regions[i].regionWithType,
             });
         }
 
@@ -761,10 +761,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.areas) {
+        for (let i in modules.addresses.meta.areas) {
             areas.push({
-                id: modules["addresses"].meta.areas[i].areaId,
-                text: modules["addresses"].meta.areas[i].areaWithType,
+                id: modules.addresses.meta.areas[i].areaId,
+                text: modules.addresses.meta.areas[i].areaWithType,
             });
         }
 
@@ -857,9 +857,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteCity(result.cityId, parseInt(city.regionId), parseInt(city.areaId));
+                        modules.addresses.deleteCity(result.cityId, parseInt(city.regionId), parseInt(city.areaId));
                     } else {
-                        modules["addresses"].doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId));
+                        modules.addresses.doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId));
                     }
                 },
             }).show();
@@ -871,9 +871,9 @@
     modifySettlement: function (settlementId) {
         let settlement = false;
 
-        for (let i in modules["addresses"].meta.settlements) {
-            if (modules["addresses"].meta.settlements[i].settlementId == settlementId) {
-                settlement = modules["addresses"].meta.settlements[i];
+        for (let i in modules.addresses.meta.settlements) {
+            if (modules.addresses.meta.settlements[i].settlementId == settlementId) {
+                settlement = modules.addresses.meta.settlements[i];
                 break;
             }
         }
@@ -884,10 +884,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.areas) {
+        for (let i in modules.addresses.meta.areas) {
             areas.push({
-                id: modules["addresses"].meta.areas[i].areaId,
-                text: modules["addresses"].meta.areas[i].areaWithType,
+                id: modules.addresses.meta.areas[i].areaId,
+                text: modules.addresses.meta.areas[i].areaWithType,
             });
         }
 
@@ -897,10 +897,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.cities) {
+        for (let i in modules.addresses.meta.cities) {
             cities.push({
-                id: modules["addresses"].meta.cities[i].cityId,
-                text: modules["addresses"].meta.cities[i].cityWithType,
+                id: modules.addresses.meta.cities[i].cityId,
+                text: modules.addresses.meta.cities[i].cityWithType,
             });
         }
 
@@ -993,9 +993,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteSettlement(result.settlementId, parseInt(settlement.areaId), parseInt(settlement.cityId));
+                        modules.addresses.deleteSettlement(result.settlementId, parseInt(settlement.areaId), parseInt(settlement.cityId));
                     } else {
-                        modules["addresses"].doModifySettlement(settlementId, parseInt(result.areaId), parseInt(result.cityId), result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement, parseInt(settlement.areaId), parseInt(settlement.cityId));
+                        modules.addresses.doModifySettlement(settlementId, parseInt(result.areaId), parseInt(result.cityId), result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement, parseInt(settlement.areaId), parseInt(settlement.cityId));
                     }
                 },
             }).show();
@@ -1007,9 +1007,9 @@
     modifyStreet: function (streetId) {
         let street = false;
 
-        for (let i in modules["addresses"].meta.streets) {
-            if (modules["addresses"].meta.streets[i].streetId == streetId) {
-                street = modules["addresses"].meta.streets[i];
+        for (let i in modules.addresses.meta.streets) {
+            if (modules.addresses.meta.streets[i].streetId == streetId) {
+                street = modules.addresses.meta.streets[i];
                 break;
             }
         }
@@ -1020,10 +1020,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.cities) {
+        for (let i in modules.addresses.meta.cities) {
             cities.push({
-                id: modules["addresses"].meta.cities[i].cityId,
-                text: modules["addresses"].meta.cities[i].cityWithType,
+                id: modules.addresses.meta.cities[i].cityId,
+                text: modules.addresses.meta.cities[i].cityWithType,
             });
         }
 
@@ -1033,10 +1033,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.settlements) {
+        for (let i in modules.addresses.meta.settlements) {
             settlements.push({
-                id: modules["addresses"].meta.settlements[i].settlementId,
-                text: modules["addresses"].meta.settlements[i].settlementWithType,
+                id: modules.addresses.meta.settlements[i].settlementId,
+                text: modules.addresses.meta.settlements[i].settlementWithType,
             });
         }
 
@@ -1129,9 +1129,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteStreet(streetId, parseInt(street.cityId), parseInt(street.settlementId));
+                        modules.addresses.deleteStreet(streetId, parseInt(street.cityId), parseInt(street.settlementId));
                     } else {
-                        modules["addresses"].doModifyStreet(streetId, parseInt(result.cityId), parseInt(result.settlementId), result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street, parseInt(street.cityId), parseInt(street.settlementId));
+                        modules.addresses.doModifyStreet(streetId, parseInt(result.cityId), parseInt(result.settlementId), result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street, parseInt(street.cityId), parseInt(street.settlementId));
                     }
                 },
             }).show();
@@ -1143,9 +1143,9 @@
     modifyHouse: function (houseId) {
         let house = false;
 
-        for (let i in modules["addresses"].meta.houses) {
-            if (modules["addresses"].meta.houses[i].houseId == houseId) {
-                house = modules["addresses"].meta.houses[i];
+        for (let i in modules.addresses.meta.houses) {
+            if (modules.addresses.meta.houses[i].houseId == houseId) {
+                house = modules.addresses.meta.houses[i];
                 break;
             }
         }
@@ -1156,10 +1156,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.settlements) {
+        for (let i in modules.addresses.meta.settlements) {
             settlements.push({
-                id: modules["addresses"].meta.settlements[i].settlementId,
-                text: modules["addresses"].meta.settlements[i].settlementWithType,
+                id: modules.addresses.meta.settlements[i].settlementId,
+                text: modules.addresses.meta.settlements[i].settlementWithType,
             });
         }
 
@@ -1169,10 +1169,10 @@
             id: "0",
             text: "-",
         })
-        for (let i in modules["addresses"].meta.streets) {
+        for (let i in modules.addresses.meta.streets) {
             streets.push({
-                id: modules["addresses"].meta.streets[i].streetId,
-                text: modules["addresses"].meta.streets[i].streetWithType,
+                id: modules.addresses.meta.streets[i].streetId,
+                text: modules.addresses.meta.streets[i].streetWithType,
             });
         }
 
@@ -1265,9 +1265,9 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules["addresses"].deleteHouse(houseId, parseInt(house.settlementId), parseInt(house.streetId));
+                        modules.addresses.deleteHouse(houseId, parseInt(house.settlementId), parseInt(house.streetId));
                     } else {
-                        modules["addresses"].doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId));
+                        modules.addresses.doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId));
                     }
                 },
             }).show();
@@ -1338,7 +1338,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+                modules.addresses.doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
             },
         }).show();
     },
@@ -1399,7 +1399,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+                modules.addresses.doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
             },
         }).show();
     },
@@ -1460,7 +1460,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
+                modules.addresses.doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
             },
         }).show();
     },
@@ -1521,7 +1521,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddSettlement(areaId, cityId, result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement);
+                modules.addresses.doAddSettlement(areaId, cityId, result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement);
             },
         }).show();
     },
@@ -1582,7 +1582,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddStreet(cityId, settlementId, result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street);
+                modules.addresses.doAddStreet(cityId, settlementId, result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street);
             },
         }).show();
     },
@@ -1643,7 +1643,7 @@
                 },
             ],
             callback: function (result) {
-                modules["addresses"].doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house);
+                modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house);
             },
         }).show();
     },
@@ -1656,12 +1656,12 @@
                 button: {
                     caption: i18n("addresses.addCity"),
                     click: () => {
-                        modules["addresses"].addCity(regionId, areaId);
+                        modules.addresses.addCity(regionId, areaId);
                     },
                 },
                 filter: true,
             },
-            edit: modules["addresses"].modifyCity,
+            edit: modules.addresses.modifyCity,
             columns: [
                 {
                     title: i18n("addresses.cityId"),
@@ -1674,16 +1674,16 @@
             rows: () => {
                 let rows = [];
 
-                for (let i in modules["addresses"].meta.cities) {
-                    if ((regionId && modules["addresses"].meta.cities[i].regionId == regionId && !modules["addresses"].meta.cities[i].areaId) || (areaId && modules["addresses"].meta.cities[i].areaId == areaId && !modules["addresses"].meta.cities[i].regionId)) {
+                for (let i in modules.addresses.meta.cities) {
+                    if ((regionId && modules.addresses.meta.cities[i].regionId == regionId && !modules.addresses.meta.cities[i].areaId) || (areaId && modules.addresses.meta.cities[i].areaId == areaId && !modules.addresses.meta.cities[i].regionId)) {
                         rows.push({
-                            uid: modules["addresses"].meta.cities[i].cityId,
+                            uid: modules.addresses.meta.cities[i].cityId,
                             cols: [
                                 {
-                                    data: modules["addresses"].meta.cities[i].cityId,
+                                    data: modules.addresses.meta.cities[i].cityId,
                                 },
                                 {
-                                    data: modules["addresses"].meta.cities[i].cityWithType,
+                                    data: modules.addresses.meta.cities[i].cityWithType,
                                     nowrap: true,
                                     click: "#addresses&show=city&cityId=%s",
                                 },
@@ -1705,12 +1705,12 @@
                 button: {
                     caption: i18n("addresses.addSettlement"),
                     click: () => {
-                        modules["addresses"].addSettlement(areaId, cityId);
+                        modules.addresses.addSettlement(areaId, cityId);
                     },
                 },
                 filter: true,
             },
-            edit: modules["addresses"].modifySettlement,
+            edit: modules.addresses.modifySettlement,
             columns: [
                 {
                     title: i18n("addresses.settlementId"),
@@ -1723,16 +1723,16 @@
             rows: () => {
                 let rows = [];
 
-                for (let i in modules["addresses"].meta.settlements) {
-                    if ((areaId && modules["addresses"].meta.settlements[i].areaId == areaId && !modules["addresses"].meta.settlements[i].cityId) || (cityId && modules["addresses"].meta.settlements[i].cityId == cityId && !modules["addresses"].meta.settlements[i].areaId)) {
+                for (let i in modules.addresses.meta.settlements) {
+                    if ((areaId && modules.addresses.meta.settlements[i].areaId == areaId && !modules.addresses.meta.settlements[i].cityId) || (cityId && modules.addresses.meta.settlements[i].cityId == cityId && !modules.addresses.meta.settlements[i].areaId)) {
                         rows.push({
-                            uid: modules["addresses"].meta.settlements[i].settlementId,
+                            uid: modules.addresses.meta.settlements[i].settlementId,
                             cols: [
                                 {
-                                    data: modules["addresses"].meta.settlements[i].settlementId,
+                                    data: modules.addresses.meta.settlements[i].settlementId,
                                 },
                                 {
-                                    data: modules["addresses"].meta.settlements[i].settlementWithType,
+                                    data: modules.addresses.meta.settlements[i].settlementWithType,
                                     nowrap: true,
                                     click: "#addresses&show=settlement&settlementId=%s",
                                 },
@@ -1754,12 +1754,12 @@
                 button: {
                     caption: i18n("addresses.addStreet"),
                     click: () => {
-                        modules["addresses"].addStreet(cityId, settlementId);
+                        modules.addresses.addStreet(cityId, settlementId);
                     },
                 },
                 filter: true,
             },
-            edit: modules["addresses"].modifyStreet,
+            edit: modules.addresses.modifyStreet,
             columns: [
                 {
                     title: i18n("addresses.streetId"),
@@ -1772,16 +1772,16 @@
             rows: () => {
                 let rows = [];
 
-                for (let i in modules["addresses"].meta.streets) {
-                    if ((cityId && modules["addresses"].meta.streets[i].cityId == cityId && !modules["addresses"].meta.streets[i].settlementId) || (settlementId && modules["addresses"].meta.streets[i].settlementId == settlementId && !modules["addresses"].meta.streets[i].cityId)) {
+                for (let i in modules.addresses.meta.streets) {
+                    if ((cityId && modules.addresses.meta.streets[i].cityId == cityId && !modules.addresses.meta.streets[i].settlementId) || (settlementId && modules.addresses.meta.streets[i].settlementId == settlementId && !modules.addresses.meta.streets[i].cityId)) {
                         rows.push({
-                            uid: modules["addresses"].meta.streets[i].streetId,
+                            uid: modules.addresses.meta.streets[i].streetId,
                             cols: [
                                 {
-                                    data: modules["addresses"].meta.streets[i].streetId,
+                                    data: modules.addresses.meta.streets[i].streetId,
                                 },
                                 {
-                                    data: modules["addresses"].meta.streets[i].streetWithType,
+                                    data: modules.addresses.meta.streets[i].streetWithType,
                                     nowrap: true,
                                     click: "#addresses&show=street&streetId=%s",
                                 },
@@ -1803,12 +1803,12 @@
                 button: {
                     caption: i18n("addresses.addHouse"),
                     click: () => {
-                        modules["addresses"].addHouse(settlementId, streetId);
+                        modules.addresses.addHouse(settlementId, streetId);
                     },
                 },
                 filter: true,
             },
-            edit: modules["addresses"].modifyHouse,
+            edit: modules.addresses.modifyHouse,
             columns: [
                 {
                     title: i18n("addresses.houseId"),
@@ -1821,16 +1821,16 @@
             rows: () => {
                 let rows = [];
 
-                for (let i in modules["addresses"].meta.houses) {
-                    if ((settlementId && modules["addresses"].meta.houses[i].settlementId == settlementId && !modules["addresses"].meta.houses[i].streetId) || (streetId && modules["addresses"].meta.houses[i].streetId == streetId && !modules["addresses"].meta.houses[i].settlementId)) {
+                for (let i in modules.addresses.meta.houses) {
+                    if ((settlementId && modules.addresses.meta.houses[i].settlementId == settlementId && !modules.addresses.meta.houses[i].streetId) || (streetId && modules.addresses.meta.houses[i].streetId == streetId && !modules.addresses.meta.houses[i].settlementId)) {
                         rows.push({
-                            uid: modules["addresses"].meta.houses[i].houseId,
+                            uid: modules.addresses.meta.houses[i].houseId,
                             cols: [
                                 {
-                                    data: modules["addresses"].meta.houses[i].houseId,
+                                    data: modules.addresses.meta.houses[i].houseId,
                                 },
                                 {
-                                    data: modules["addresses"].meta.houses[i].houseFull,
+                                    data: modules.addresses.meta.houses[i].houseFull,
                                     nowrap: true,
                                     click: "#houses&houseId=%s",
                                 },
@@ -1847,18 +1847,18 @@
     renderRegions: function () {
         loadingStart();
         GET("addresses", "addresses", false, true).
-        done(modules["addresses"].addresses).
+        done(modules.addresses.addresses).
         done(() => {
             cardTable({
                 title: {
                     caption: i18n("addresses.regions"),
                     button: {
                         caption: i18n("addresses.addRegion"),
-                        click: modules["addresses"].addRegion,
+                        click: modules.addresses.addRegion,
                     },
                     filter: false,
                 },
-                edit: modules["addresses"].modifyRegion,
+                edit: modules.addresses.modifyRegion,
                 columns: [
                     {
                         title: i18n("addresses.regionId"),
@@ -1871,15 +1871,15 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i in modules["addresses"].meta.regions) {
+                    for (let i in modules.addresses.meta.regions) {
                         rows.push({
-                            uid: modules["addresses"].meta.regions[i].regionId.toString(),
+                            uid: modules.addresses.meta.regions[i].regionId.toString(),
                             cols: [
                                 {
-                                    data: modules["addresses"].meta.regions[i].regionId,
+                                    data: modules.addresses.meta.regions[i].regionId,
                                 },
                                 {
-                                    data: modules["addresses"].meta.regions[i].regionWithType,
+                                    data: modules.addresses.meta.regions[i].regionWithType,
                                     nowrap: true,
                                     click: "#addresses&show=region&regionId=%s",
                                 },
@@ -1899,13 +1899,13 @@
     renderRegion: function (regionId) {
         loadingStart();
         GET("addresses", "addresses", false, true).
-        done(modules["addresses"].addresses).
+        done(modules.addresses.addresses).
         done(() => {
             let region = false;
 
-            for (let i in modules["addresses"].meta.regions) {
-                if (modules["addresses"].meta.regions[i].regionId == regionId) {
-                    region = modules["addresses"].meta.regions[i];
+            for (let i in modules.addresses.meta.regions) {
+                if (modules.addresses.meta.regions[i].regionId == regionId) {
+                    region = modules.addresses.meta.regions[i];
                     break;
                 }
             }
@@ -1914,7 +1914,7 @@
                 return;
             }
 
-            subTop(modules["addresses"].path("region", regionId));
+            subTop(modules.addresses.path("region", regionId));
 
             cardTable({
                 target: "#mainForm",
@@ -1923,12 +1923,12 @@
                     button: {
                         caption: i18n("addresses.addArea"),
                         click: () => {
-                            modules["addresses"].addArea(regionId);
+                            modules.addresses.addArea(regionId);
                         },
                     },
                     filter: false,
                 },
-                edit: modules["addresses"].modifyArea,
+                edit: modules.addresses.modifyArea,
                 columns: [
                     {
                         title: i18n("addresses.areaId"),
@@ -1941,16 +1941,16 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i in modules["addresses"].meta.areas) {
-                        if (modules["addresses"].meta.areas[i].regionId == regionId) {
+                    for (let i in modules.addresses.meta.areas) {
+                        if (modules.addresses.meta.areas[i].regionId == regionId) {
                             rows.push({
-                                uid: modules["addresses"].meta.areas[i].areaId,
+                                uid: modules.addresses.meta.areas[i].areaId,
                                 cols: [
                                     {
-                                        data: modules["addresses"].meta.areas[i].areaId,
+                                        data: modules.addresses.meta.areas[i].areaId,
                                     },
                                     {
-                                        data: modules["addresses"].meta.areas[i].areaWithType,
+                                        data: modules.addresses.meta.areas[i].areaWithType,
                                         nowrap: true,
                                         click: "#addresses&show=area&areaId=%s",
                                     },
@@ -1962,7 +1962,7 @@
                     return rows;
                 },
             });
-            modules["addresses"].cities("#altForm", regionId, false);
+            modules.addresses.cities("#altForm", regionId, false);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -1971,13 +1971,13 @@
     renderArea: function (areaId) {
         loadingStart();
         GET("addresses", "addresses", false, true).
-        done(modules["addresses"].addresses).
+        done(modules.addresses.addresses).
         done(() => {
             let area = false;
 
-            for (let i in modules["addresses"].meta.areas) {
-                if (modules["addresses"].meta.areas[i].areaId == areaId) {
-                    area = modules["addresses"].meta.areas[i];
+            for (let i in modules.addresses.meta.areas) {
+                if (modules.addresses.meta.areas[i].areaId == areaId) {
+                    area = modules.addresses.meta.areas[i];
                     break;
                 }
             }
@@ -1987,10 +1987,10 @@
                 return;
             }
 
-            subTop(modules["addresses"].path("area", areaId));
+            subTop(modules.addresses.path("area", areaId));
 
-            modules["addresses"].cities("#mainForm", false, areaId);
-            modules["addresses"].settlements("#altForm", areaId, false);
+            modules.addresses.cities("#mainForm", false, areaId);
+            modules.addresses.settlements("#altForm", areaId, false);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -1999,12 +1999,12 @@
     renderCity: function (cityId) {
         loadingStart();
         GET("addresses", "addresses", false, true).
-        done(modules["addresses"].addresses).
+        done(modules.addresses.addresses).
         done(() => {
             let f = false;
 
-            for (let i in modules["addresses"].meta.cities) {
-                if (modules["addresses"].meta.cities[i].cityId == cityId) {
+            for (let i in modules.addresses.meta.cities) {
+                if (modules.addresses.meta.cities[i].cityId == cityId) {
                     f = true;
                     break;
                 }
@@ -2014,10 +2014,10 @@
                 return;
             }
 
-            subTop(modules["addresses"].path("city", cityId));
+            subTop(modules.addresses.path("city", cityId));
 
-            modules["addresses"].streets("#mainForm", cityId, false);
-            modules["addresses"].settlements("#altForm", false, cityId);
+            modules.addresses.streets("#mainForm", cityId, false);
+            modules.addresses.settlements("#altForm", false, cityId);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -2026,12 +2026,12 @@
     renderSettlement: function (settlementId) {
         loadingStart();
         GET("addresses", "addresses", false, true).
-        done(modules["addresses"].addresses).
+        done(modules.addresses.addresses).
         done(() => {
             let f = false;
 
-            for (let i in modules["addresses"].meta.settlements) {
-                if (modules["addresses"].meta.settlements[i].settlementId == settlementId) {
+            for (let i in modules.addresses.meta.settlements) {
+                if (modules.addresses.meta.settlements[i].settlementId == settlementId) {
                     f = true;
                     break;
                 }
@@ -2041,10 +2041,10 @@
                 return;
             }
 
-            subTop(modules["addresses"].path("settlement", settlementId));
+            subTop(modules.addresses.path("settlement", settlementId));
 
-            modules["addresses"].streets("#mainForm", false, settlementId);
-            modules["addresses"].houses("#altForm", settlementId, false);
+            modules.addresses.streets("#mainForm", false, settlementId);
+            modules.addresses.houses("#altForm", settlementId, false);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -2053,12 +2053,12 @@
     renderStreet: function (streetId) {
         loadingStart();
         GET("addresses", "addresses", false, true).
-        done(modules["addresses"].addresses).
+        done(modules.addresses.addresses).
         done(() => {
             let f = false;
 
-            for (let i in modules["addresses"].meta.streets) {
-                if (modules["addresses"].meta.streets[i].streetId == streetId) {
+            for (let i in modules.addresses.meta.streets) {
+                if (modules.addresses.meta.streets[i].streetId == streetId) {
                     f = true;
                 }
             }
@@ -2067,9 +2067,9 @@
                 return;
             }
 
-            subTop(modules["addresses"].path("street", streetId));
+            subTop(modules.addresses.path("street", streetId));
 
-            modules["addresses"].houses("#mainForm", false, streetId);
+            modules.addresses.houses("#mainForm", false, streetId);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -2097,22 +2097,22 @@
 
         switch (params.show) {
             case "region":
-                modules["addresses"].renderRegion(params.regionId);
+                modules.addresses.renderRegion(params.regionId);
                 break;
             case "area":
-                modules["addresses"].renderArea(params.areaId);
+                modules.addresses.renderArea(params.areaId);
                 break;
             case "city":
-                modules["addresses"].renderCity(params.cityId);
+                modules.addresses.renderCity(params.cityId);
                 break;
             case "settlement":
-                modules["addresses"].renderSettlement(params.settlementId);
+                modules.addresses.renderSettlement(params.settlementId);
                 break;
             case "street":
-                modules["addresses"].renderStreet(params.streetId);
+                modules.addresses.renderStreet(params.streetId);
                 break;
             case "regions":
-                modules["addresses"].renderRegions();
+                modules.addresses.renderRegions();
                 break;
             default:
                 page404();

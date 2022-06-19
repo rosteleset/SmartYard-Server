@@ -68,8 +68,8 @@
     },
 
     tt: function (tt) {
-        modules["tt"].meta = tt["meta"];
-        console.log(modules["tt"].meta);
+        modules.tt.meta = tt["meta"];
+        console.log(modules.tt.meta);
     },
 
     route: function (params) {

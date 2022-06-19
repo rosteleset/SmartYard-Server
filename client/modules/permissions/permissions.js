@@ -29,7 +29,7 @@
             deny: deny,
         }).
         fail(FAIL).
-        always(modules["permissions"].render);
+        always(modules.permissions.render);
     },
 
     doAddUserRights: function (uid, api, method, allow, deny) {
@@ -43,7 +43,7 @@
             deny: deny,
         }).
         fail(FAIL).
-        always(modules["permissions"].render);
+        always(modules.permissions.render);
     },
 
     /*
@@ -55,18 +55,18 @@
         let u = [];
 
         if (group) {
-            for (let i in modules["permissions"].groups) {
+            for (let i in modules.permissions.groups) {
                 g.push({
-                    value: modules["permissions"].groups[i].gid,
-                    text: modules["permissions"].groups[i].acronym,
+                    value: modules.permissions.groups[i].gid,
+                    text: modules.permissions.groups[i].acronym,
                 });
             }
         } else {
-            for (let i in modules["permissions"].users) {
-                if (modules["permissions"].users[i].uid > 0) {
+            for (let i in modules.permissions.users) {
+                if (modules.permissions.users[i].uid > 0) {
                     u.push({
-                        value: modules["permissions"].users[i].uid,
-                        text: modules["permissions"].users[i].login,
+                        value: modules.permissions.users[i].uid,
+                        text: modules.permissions.users[i].login,
                     });
                 }
             }
@@ -77,7 +77,7 @@
             value: "",
             text: "-",
         });
-        for (let i in modules["permissions"].methods) {
+        for (let i in modules.permissions.methods) {
             a.push({
                 value: i,
                 text: (lang.methods[i] && lang.methods[i]["_title"])?lang.methods[i]["_title"]:i,
@@ -109,7 +109,7 @@
                         ];
                         let api = el.val();
                         if (api) {
-                            for (let i in modules["permissions"].methods[api]) {
+                            for (let i in modules.permissions.methods[api]) {
                                 m.push({
                                     id: i,
                                     text: (lang.methods[api] && lang.methods[api][i])?lang.methods[api][i]["_title"]:i,
@@ -139,14 +139,14 @@
                         let api = $(`#${prefix}api`).val();
                         let method = el.val();
                         if (api && method) {
-                            for (let i in modules["permissions"].methods[api][method]) {
+                            for (let i in modules.permissions.methods[api][method]) {
                                 a.push({
-                                    id: modules["permissions"].methods[api][method][i],
+                                    id: modules.permissions.methods[api][method][i],
                                     text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i])?lang.methods[api][method][i]:i,
                                     selected: true,
                                 });
                                 d.push({
-                                    id: modules["permissions"].methods[api][method][i],
+                                    id: modules.permissions.methods[api][method][i],
                                     text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i])?lang.methods[api][method][i]:i,
                                 });
                             }
@@ -190,9 +190,9 @@
             ],
             callback: function (result) {
                 if (group) {
-                    modules["permissions"].doAddGroupRights(result.gid, result.api, result.method, result.actionAllow, result.actionDeny);
+                    modules.permissions.doAddGroupRights(result.gid, result.api, result.method, result.actionAllow, result.actionDeny);
                 } else {
-                    modules["permissions"].doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
+                    modules.permissions.doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
                 }
             },
         }).show();
@@ -259,9 +259,9 @@
             ],
             callback: function (result) {
                 if (group) {
-                    modules["permissions"].doAddGroupRights(guid, api, method, result.actionAllow, result.actionDeny);
+                    modules.permissions.doAddGroupRights(guid, api, method, result.actionAllow, result.actionDeny);
                 } else {
-                    modules["permissions"].doAddUserRights(guid, api, method, result.actionAllow, result.actionDeny);
+                    modules.permissions.doAddUserRights(guid, api, method, result.actionAllow, result.actionDeny);
                 }
             },
         }).show();
@@ -275,8 +275,8 @@
         let x = {};
 
         if (group) {
-            for (let i in modules["permissions"].rights.groups) {
-                let t = modules["permissions"].rights.groups[i];
+            for (let i in modules.permissions.rights.groups) {
+                let t = modules.permissions.rights.groups[i];
                 if (!x[t.gid]) {
                     x[t.gid] = {};
                 }
@@ -296,8 +296,8 @@
                 }
             }
         } else {
-            for (let i in modules["permissions"].rights.users) {
-                let t = modules["permissions"].rights.users[i];
+            for (let i in modules.permissions.rights.users) {
+                let t = modules.permissions.rights.users[i];
                 if (!x[t.uid]) {
                     x[t.uid] = {};
                 }
@@ -324,7 +324,7 @@
                 button: {
                     caption: i18n("permissions.addRights"),
                     click: () => {
-                        modules["permissions"].addRights(group);
+                        modules.permissions.addRights(group);
                     },
                 },
                 caption: group?i18n("permissions.groups"):i18n("permissions.users"),
@@ -340,13 +340,13 @@
                     if (x[uid[0]][uid[1]][uid[2]][i].allow) a.push(x[uid[0]][uid[1]][uid[2]][i]._aid);
                     if (!x[uid[0]][uid[1]][uid[2]][i].allow) d.push(x[uid[0]][uid[1]][uid[2]][i]._aid);
                 }
-                for (let i in modules["permissions"].methods[uid[1]][uid[2]]) {
+                for (let i in modules.permissions.methods[uid[1]][uid[2]]) {
                     o.push({
-                        value: modules["permissions"].methods[uid[1]][uid[2]][i],
+                        value: modules.permissions.methods[uid[1]][uid[2]][i],
                         text: (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]] && lang.methods[uid[1]][uid[2]][i])?lang.methods[uid[1]][uid[2]][i]:i,
                     });
                 }
-                modules["permissions"].editRights(
+                modules.permissions.editRights(
                     group,
                     group?g[uid[0]].acronym:u[uid[0]].login,
                     (lang.methods[uid[1]] && lang.methods[uid[1]]["_title"])?lang.methods[uid[1]]["_title"]:uid[1],
@@ -359,12 +359,12 @@
                     uid[2]
                 );
             },
-            startPage: group?modules["permissions"].groupsStartPage:modules["permissions"].usersStartPage,
+            startPage: group?modules.permissions.groupsStartPage:modules.permissions.usersStartPage,
             pageChange: page => {
                 if (group) {
-                    modules["permissions"].groupsStartPage = page;
+                    modules.permissions.groupsStartPage = page;
                 } else {
-                    modules["permissions"].usersStartPage = page;
+                    modules.permissions.usersStartPage = page;
                 }
             },
             columns: [
@@ -462,7 +462,7 @@
     render: function () {
         loadingStart();
         GET("authorization", "rights", false, true).done(r => {
-            modules["permissions"].rights = r.rights;
+            modules.permissions.rights = r.rights;
 
             QUERY("authorization", "methods", {
                 all: 0,
@@ -484,10 +484,10 @@
                     }
                 }
 
-                modules["permissions"].methods = _m.methods;
+                modules.permissions.methods = _m.methods;
 
                 GET("accounts", "groups").done(_g => {
-                    modules["permissions"].groups = _g.groups;
+                    modules.permissions.groups = _g.groups;
 
                     let g = {};
 
@@ -496,7 +496,7 @@
                     }
 
                     GET("accounts", "users").done(_u => {
-                        modules["permissions"].users = _u.users;
+                        modules.permissions.users = _u.users;
 
                         let u = {};
 
@@ -504,8 +504,8 @@
                             u[_u.users[i].uid] = _u.users[i];
                         }
 
-                        modules["permissions"].rightsForm(true, g, u, m);
-                        modules["permissions"].rightsForm(false, g, u, m).show();
+                        modules.permissions.rightsForm(true, g, u, m);
+                        modules.permissions.rightsForm(false, g, u, m).show();
 
                         loadingDone();
                     }).
@@ -525,6 +525,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("permissions.permissions");
 
-        modules["permissions"].render();
+        modules.permissions.render();
     }
 }).init();
