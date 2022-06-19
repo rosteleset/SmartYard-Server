@@ -24,11 +24,11 @@
                 $house = [
                     "flats" => $houses->getHouseFlats($params["_id"]),
                     "entrances" => $houses->getHouseEntrances($params["_id"]),
-                    "models" => $domophones->getModels(),
+                    "domophoneModels" => $domophones->getModels(),
                     "cmses" => $domophones->getCMSes(),
                 ];
 
-                return api::ANSWER($house, ($house !== false)?"house":"notFound");
+                return api::ANSWER($house, ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?"house":false);
             }
 
             public static function index()

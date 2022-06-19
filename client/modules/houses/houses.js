@@ -19,7 +19,7 @@
         })
 
         for (let id in modules.houses.meta.cmses) {
-            if (domophoneId && modules.houses.meta.models[domophoneId] && modules.houses.meta.models[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
+            if (domophoneId && modules.houses.meta.domophoneModels[domophoneId] && modules.houses.meta.domophoneModels[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
                 c.push({
                     id: id,
                     text: modules.houses.meta.cmses[id].title,
@@ -35,7 +35,7 @@
         let o = [];
 
         for (let i = 0; i < 32; i++) {
-            if (domophoneModel && modules.houses.meta.models[domophoneModel] && i < parseInt(modules.houses.meta.models[domophoneModel].outputs)) {
+            if (domophoneModel && modules.houses.meta.domophoneModels[domophoneModel] && i < parseInt(modules.houses.meta.domophoneModels[domophoneModel].outputs)) {
                 o.push({
                     id: i,
                     text: i?i18n("houses.domophoneOutputSecondary", i):i18n("houses.domophoneOutputPrimary"),
@@ -118,30 +118,15 @@
         });
     },
 
-    doCreateEntrance: function (houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId, cmsLevels, locksDisabled) {
+    doCreateEntrance: function (entrance) {
         loadingStart();
-        POST("houses", "entrance", false, {
-            houseId,
-            entranceType,
-            entrance,
-            lat,
-            lon,
-            shared,
-            prefix,
-            domophoneId,
-            domophoneOutput,
-            cms,
-            cmsType,
-            cameraId,
-            cmsLevels,
-            locksDisabled,
-        }).
+        POST("houses", "entrance", false, entrance).
         fail(FAIL).
         done(() => {
             message(i18n("houses.entranceWasCreated"));
         }).
         always(() => {
-            modules.houses.renderHouse(houseId);
+            modules.houses.renderHouse(entrance.houseId);
         });
     },
 
@@ -456,7 +441,8 @@
                             if (!result.cms) {
                                 result.cmsType = 0;
                             }
-                            modules.houses.doCreateEntrance(houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
+                            result.houseId = houseId;
+                            modules.houses.doCreateEntrance(result);
                         },
                     });
 
@@ -1426,7 +1412,7 @@
             }
             modules.houses.meta.entrances = response["house"].entrances;
             modules.houses.meta.flats = response["house"].flats;
-            modules.houses.meta.models = response["house"].models;
+            modules.houses.meta.domophoneModels = response["house"].domophoneModels;
             modules.houses.meta.cmses = response["house"].cmses;
 
             if (modules.houses.meta.house && modules.houses.meta.house.houseFull) {
