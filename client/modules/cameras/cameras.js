@@ -71,9 +71,9 @@
                     },
                 },
                 {
-                    id: "httpPort",
+                    id: "port",
                     type: "text",
-                    title: i18n("cameras.httpPort"),
+                    title: i18n("cameras.port"),
                     placeholder: "80",
                     value: "80",
                     validate: v => {
@@ -81,14 +81,10 @@
                     },
                 },
                 {
-                    id: "rtspPort",
+                    id: "stream",
                     type: "text",
-                    title: i18n("cameras.rtspPort"),
-                    placeholder: "554",
-                    value: "554",
-                    validate: v => {
-                        return !!parseInt(v);
-                    },
+                    title: i18n("cameras.stream"),
+                    placeholder: "rtsp://",
                 },
                 {
                     id: "credentials",
@@ -177,24 +173,21 @@
                         },
                     },
                     {
-                        id: "httpPort",
+                        id: "port",
                         type: "text",
-                        title: i18n("cameras.httpPort"),
+                        title: i18n("cameras.port"),
                         placeholder: "80",
-                        value: camera.httpPort,
+                        value: camera.port,
                         validate: v => {
                             return !!parseInt(v);
                         },
                     },
                     {
-                        id: "rtspPort",
+                        id: "stream",
                         type: "text",
-                        title: i18n("cameras.rtspPort"),
-                        placeholder: "80",
-                        value: camera.rtspPort,
-                        validate: v => {
-                            return !!parseInt(v);
-                        },
+                        title: i18n("cameras.stream"),
+                        placeholder: "rtsp://",
+                        value: camera.stream,
                     },
                     {
                         id: "credentials",

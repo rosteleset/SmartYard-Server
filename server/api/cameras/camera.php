@@ -17,7 +17,7 @@
             public static function POST($params) {
                 $cameras = loadBackend("cameras");
 
-                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["ip"], $params["httpPort"], $params["rtspPort"], $params["credentials"], $params["comment"]);
+                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["ip"], $params["port"], $params["stream"], $params["credentials"], $params["comment"]);
 
                 return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":false);
             }
@@ -25,7 +25,7 @@
             public static function PUT($params) {
                 $cameras = loadBackend("cameras");
 
-                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["ip"], $params["httpPort"], $params["rtspPort"],  $params["credentials"], $params["comment"]);
+                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["ip"], $params["port"], $params["stream"],  $params["credentials"], $params["comment"]);
 
                 return api::ANSWER($success);
             }

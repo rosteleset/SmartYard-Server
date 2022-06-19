@@ -59,18 +59,5 @@
              * @return boolean
              */
             abstract public function deleteDomophone($domophoneId);
-
-            /**
-             * @param $domophoneId
-             * @return false|array
-             */
-            abstract public function getCms($domophoneId);
-
-            /**
-             * @param $domophoneId
-             * @param $cms
-             * @return boolean
-             */
-            abstract public function setCms($domophoneId, $cms);
         }
     }

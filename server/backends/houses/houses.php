@@ -130,5 +130,18 @@
              * @return false|array
              */
             abstract function getSharedEntrances($houseId = false);
+
+            /**
+             * @param $entranceId
+             * @return false|array
+             */
+            abstract public function getCms($entranceId);
+
+            /**
+             * @param $entranceId
+             * @param $cms
+             * @return boolean
+             */
+            abstract public function setCms($entranceId, $cms);
         }
     }

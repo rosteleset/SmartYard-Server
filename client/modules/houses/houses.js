@@ -1370,6 +1370,14 @@
                                             location.href = "#cameras&cameraId=" + entrances[entranceId].cameraId;
                                         },
                                     },
+                                    {
+                                        icon: "fas fa-phone-volume",
+                                        title: i18n("domophones.cms"),
+                                        disabled: !parseInt(modules.houses.meta.entrances[i].cms),
+                                        click: entranceId => {
+                                            // ?
+                                        },
+                                    },
                                 ],
                             },
                         });
@@ -1378,6 +1386,8 @@
                     return rows;
                 },
             }).show();
+
+            loadingDone();
         }
 
         if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
@@ -1398,8 +1408,9 @@
         }
 
         GET("houses", "house", houseId, true).
-        fail(response => {
-            // ?
+        fail(FAIL).
+        fail(() => {
+            history.back();
         }).
         done(response => {
             if (!modules.houses.meta) {
@@ -1432,8 +1443,6 @@
         } else {
             modules.houses.house(houseId);
         }
-
-        loadingDone();
     },
 
     route: function (params) {

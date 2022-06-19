@@ -28,26 +28,26 @@ namespace backends\cameras
          * @param $enabled
          * @param $model
          * @param $ip
-         * @param $httpPort
-         * @param $rtspPort
+         * @param $port
+         * @param $stream
          * @param $credentials
          * @param $comment
          * @return false|integer
          */
-        abstract public function addCamera($enabled, $model, $ip, $httpPort, $rtspPort, $credentials, $comment);
+        abstract public function addCamera($enabled, $model, $ip, $port, $stream, $credentials, $comment);
 
         /**
          * @param $cameraId
          * @param $enabled
          * @param $model
          * @param $ip
-         * @param $httpPort
-         * @param $rtspPort
+         * @param $port
+         * @param $stream
          * @param $credentials
          * @param $comment
          * @return boolean
          */
-        abstract public function modifyCamera($cameraId, $enabled, $model, $ip, $httpPort, $rtspPort, $credentials, $comment);
+        abstract public function modifyCamera($cameraId, $enabled, $model, $ip, $port, $stream, $credentials, $comment);
 
         /**
          * @param $cameraId

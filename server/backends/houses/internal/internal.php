@@ -373,5 +373,21 @@
                     and
                     $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getCms($entranceId)
+            {
+                // TODO: Implement getCms() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function setCms($entranceId, $cms)
+            {
+                // TODO: Implement setCms() method.
+            }
         }
     }

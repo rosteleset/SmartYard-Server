@@ -5,8 +5,8 @@ CREATE TABLE cameras
     enabled integer not null,
     model text not null,
     ip text not null ,
-    http_port integer not null,
-    rtsp_port integer not null,
+    port integer not null,
+    rtsp_stream text,
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     comment text
 );

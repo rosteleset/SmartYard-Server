@@ -294,17 +294,6 @@
                                     data: modules.domophones.meta.domophones[i].comment,
                                 },
                             ],
-                            dropDown: {
-                                items: [
-                                    {
-                                        icon: "fas fa-phone-volume",
-                                        title: i18n("domophones.cms"),
-                                        click: domophoneId => {
-                                            // ?
-                                        },
-                                    },
-                                ]
-                            }
                         });
                     }
 

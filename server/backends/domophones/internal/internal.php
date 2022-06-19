@@ -146,22 +146,6 @@
             /**
              * @inheritDoc
              */
-            public function getCms($domophoneId)
-            {
-                // TODO: Implement getCms() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function setCms($domophoneId, $cms)
-            {
-                // TODO: Implement setCms() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function getModels()
             {
                 $files = scandir(__DIR__ . "/../../../hw/domophones/models");

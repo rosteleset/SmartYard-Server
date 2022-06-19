@@ -22,8 +22,8 @@ namespace backends\cameras
                 "enabled" => "enabled",
                 "model" => "model",
                 "ip" => "ip",
-                "http_port" => "httpPort",
-                "rtsp_port" => "rtspPort",
+                "port" => "port",
+                "rtsp_stream" => "rtspStream",
                 "credentials" => "credentials",
                 "comment" => "comment"
             ]);
@@ -32,7 +32,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function addCamera($enabled, $model, $ip, $httpPort,  $rtspPort, $credentials, $comment)
+        public function addCamera($enabled, $model, $ip, $port,  $stream, $credentials, $comment)
         {
             if (!$model) {
                 return false;
@@ -50,34 +50,24 @@ namespace backends\cameras
                 return false;
             }
 
-            $httpPort = (int)$httpPort;
+            $port = (int)$port;
 
-            if ($httpPort < 0 || $httpPort >= 65536) {
+            if ($port < 0 || $port >= 65536) {
                 return false;
             }
 
-            if (!$httpPort) {
-                $httpPort = 80;
-            }
-
-            $rtspPort = (int)$rtspPort;
-
-            if ($rtspPort < 0 || $rtspPort >= 65536) {
-                return false;
-            }
-
-            if (!$rtspPort) {
-                $rtspPort = 554;
+            if (!$port) {
+                $port = 80;
             }
 
             $ip = long2ip($ip);
 
-            return $this->db->insert("insert into cameras (enabled, model, ip, http_port, rtsp_port, credentials, comment) values (:enabled, :model, :ip, :http_port, :rtsp_port, :credentials, :comment)", [
+            return $this->db->insert("insert into cameras (enabled, model, ip, port, stream, credentials, comment) values (:enabled, :model, :ip, :port, :stream, :credentials, :comment)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "ip" => $ip,
-                "http_port" => $httpPort,
-                "rtsp_port" => $rtspPort,
+                "port" => $port,
+                "stream" => $stream,
                 "credentials" => $credentials,
                 "comment" => $comment,
             ]);
@@ -86,7 +76,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function modifyCamera($cameraId, $enabled, $model, $ip, $httpPort, $rtspPort, $credentials, $comment)
+        public function modifyCamera($cameraId, $enabled, $model, $ip, $port, $stream, $credentials, $comment)
         {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
@@ -112,34 +102,24 @@ namespace backends\cameras
                 return false;
             }
 
-            $httpPort = (int)$httpPort;
+            $port = (int)$port;
 
-            if ($httpPort < 0 || $httpPort >= 65536) {
+            if ($port < 0 || $port >= 65536) {
                 return false;
             }
 
-            if (!$httpPort) {
-                $httpPort = 80;
-            }
-
-            $rtspPort = (int)$rtspPort;
-
-            if ($rtspPort < 0 || $rtspPort >= 65536) {
-                return false;
-            }
-
-            if (!$rtspPort) {
-                $rtspPort = 554;
+            if (!$port) {
+                $port = 80;
             }
 
             $ip = long2ip($ip);
 
-            return $this->db->modify("update cameras set enabled = :enabled, model = :model, ip = :ip, http_port = :http_port, rtsp_port = :rtsp_port, credentials = :credentials, comment = :comment where camera_id = $cameraId", [
+            return $this->db->modify("update cameras set enabled = :enabled, model = :model, ip = :ip, port = :port, stream = :stream, credentials = :credentials, comment = :comment where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "ip" => $ip,
-                "http_port" => $httpPort,
-                "rtsp_port" => $rtspPort,
+                "port" => $port,
+                "stream" => $stream,
                 "credentials" => $credentials,
                 "comment" => $comment,
             ]);
