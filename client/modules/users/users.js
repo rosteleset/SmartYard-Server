@@ -209,6 +209,12 @@
                         value: response.user.defaultRoute,
                         title: i18n("users.defaultRoute"),
                         placeholder: "#route",
+                        button: {
+                            class: "fas fa-bookmark",
+                            click: prefix => {
+                                $(`#${prefix}defaultRoute`).val("#" + location.href.split("#")[1]);
+                            },
+                        },
                         validate: (v) => {
                             return $.trim(v) === "" || $.trim(v)[0] === "#";
                         }
