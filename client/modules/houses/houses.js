@@ -266,8 +266,6 @@
                 modules.houses.meta.domophones = response.domophones;
                 modules.houses.meta.modelsById = {};
 
-                console.log(response);
-
                 let first = false;
 
                 let domophones = [];
@@ -450,7 +448,6 @@
             loadingStart();
             GET("houses", "sharedEntrances", houseId, true).
             done(response => {
-                console.log(response);
 
                 let entrances = [];
 
@@ -535,7 +532,6 @@
                         </div>
                     </div>
                 `;
-                console.log(modules.houses.meta.entrances[i]);
                 if (parseInt(modules.houses.meta.entrances[i].cms) !== 0) {
                     entrances.push({
                         id: modules.houses.meta.entrances[i].entranceId,
