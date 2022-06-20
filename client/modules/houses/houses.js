@@ -1488,7 +1488,7 @@
                                 h += `<td>${i18n("houses.cmsU")}${parseInt(j)}</td>`;
                                 for (let k = 0; k < cms.cms[i][j]; k++) {
                                     h += `<td>`;
-                                    h += `<input class="cmsa form-control form-control-sm pl-1 pr-1" data-cms="${cmsi}" data-dozen="${k}" data-unit="${j}" type="text" style="width: 40px; font-size: 75%; height: calc(1.5rem + 2px);" value="0">`
+                                    h += `<input class="cmsa form-control form-control-sm pl-1 pr-1" data-cms="${cmsi}" data-dozen="${k}" data-unit="${j}" type="text" style="width: 40px; font-size: 75%; height: calc(1.5rem + 2px);" value="">`
                                     h += `</td>`;
                                 }
                                 for (let k = cms.cms[i][j]; k < maxX; k++) {
