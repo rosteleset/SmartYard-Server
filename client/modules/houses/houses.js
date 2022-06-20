@@ -541,7 +541,7 @@
                         </div>
                     </div>
                 `;
-                if (modules.houses.meta.entrances[i].cms.toString().substring() !== "0") {
+                if (modules.houses.meta.entrances[i].cms.toString() !== "0") {
                     entrances.push({
                         id: modules.houses.meta.entrances[i].entranceId,
                         text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
@@ -995,7 +995,7 @@
                         </div>
                     </div>
                 `;
-                if (modules.houses.meta.entrances[i].cms.toString().substring() !== "0") {
+                if (modules.houses.meta.entrances[i].cms.toString() !== "0") {
                     entrances.push({
                         id: modules.houses.meta.entrances[i].entranceId,
                         text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
@@ -1223,9 +1223,56 @@
         });
     },
 
-    house: function (houseId) {
+    loadHouse: function(houseId, callback) {
+        GET("addresses", "addresses").
+        done(modules["addresses"].addresses).
+        fail(FAIL).
+        fail(() => {
+            history.back();
+        }).
+        done(() => {
+            if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
+                let f = false;
+                for (let i in modules["addresses"].meta.houses) {
+                    if (modules["addresses"].meta.houses[i].houseId == houseId) {
+                        if (!modules.houses.meta) {
+                            modules.houses.meta = {};
+                        }
+                        modules.houses.meta.house = modules["addresses"].meta.houses[i];
+                        subTop(modules.houses.meta.house.houseFull);
+                        f = true;
+                    }
+                }
+                if (!f) {
+                    subTop("#" + houseId);
+                }
+            }
 
-        function render() {
+            GET("houses", "house", houseId, true).
+            fail(FAIL).
+            fail(() => {
+                history.back();
+            }).
+            done(response => {
+                    if (!modules.houses.meta) {
+                        modules.houses.meta = {};
+                    }
+                    modules.houses.meta.entrances = response["house"].entrances;
+                    modules.houses.meta.flats = response["house"].flats;
+                    modules.houses.meta.domophoneModels = response["house"].domophoneModels;
+                    modules.houses.meta.cmses = response["house"].cmses;
+
+                    if (modules.houses.meta.house && modules.houses.meta.house.houseFull) {
+                        document.title = i18n("windowTitle") + " :: " + i18n("houses.house") + " :: " + modules.houses.meta.house.houseFull;
+                    }
+
+                    callback();
+            });
+        });
+    },
+
+    renderHouse: function (houseId) {
+        modules.houses.loadHouse(houseId, () => {
             cardTable({
                 target: "#mainForm",
                 title: {
@@ -1367,9 +1414,9 @@
                                     {
                                         icon: "fas fa-phone-volume",
                                         title: i18n("houses.cms"),
-                                        disabled: modules.houses.meta.entrances[i].cms.toString().substring() !== "0",
+                                        disabled: modules.houses.meta.entrances[i].cms.toString() === "0",
                                         click: entranceId => {
-                                            // ?
+                                            location.href = "#houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].houseId;
                                         },
                                     },
                                 ],
@@ -1382,68 +1429,32 @@
             }).show();
 
             loadingDone();
-        }
+        });
+    },
 
-        if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
-            let f = false;
-            for (let i in modules["addresses"].meta.houses) {
-                if (modules["addresses"].meta.houses[i].houseId == houseId) {
-                    if (!modules.houses.meta) {
-                        modules.houses.meta = {};
-                    }
-                    modules.houses.meta.house = modules["addresses"].meta.houses[i];
-                    subTop(modules.houses.meta.house.houseFull);
-                    f = true;
-                }
-            }
-            if (!f) {
-                subTop("#" + houseId);
-            }
-        }
-
-        GET("houses", "house", houseId, true).
+    renderEntrance: function (houseId, entranceId) {
+        GET("houses", "cms", entranceId, true).
         fail(FAIL).
         fail(() => {
             history.back();
         }).
-        done(response => {
-            if (!modules.houses.meta) {
-                modules.houses.meta = {};
-            }
-            modules.houses.meta.entrances = response["house"].entrances;
-            modules.houses.meta.flats = response["house"].flats;
-            modules.houses.meta.domophoneModels = response["house"].domophoneModels;
-            modules.houses.meta.cmses = response["house"].cmses;
-
-            if (modules.houses.meta.house && modules.houses.meta.house.houseFull) {
-                document.title = i18n("windowTitle") + " :: " + i18n("houses.house") + " :: " + modules.houses.meta.house.houseFull;
-            }
-
-            render();
+        done(() => {
+            modules.houses.loadHouse(houseId, () => {
+                $("#mainForm").html("");
+                loadingDone();
+            });
         });
     },
 
-    renderHouse: function (houseId) {
-        if (AVAIL("addresses", "addresses", "GET")) {
-            GET("addresses", "addresses").
-            done(modules["addresses"].addresses).
-            fail(FAIL).
-            fail(() => {
-                history.back();
-            }).
-            done(() => {
-                modules.houses.house(houseId);
-            });
-        } else {
-            modules.houses.house(houseId);
-        }
-    },
-
     route: function (params) {
-        $("#altForm").hide();
-
         document.title = i18n("windowTitle") + " :: " + i18n("houses.house");
 
-        modules.houses.renderHouse(params.houseId);
+        if (params.show === "cms" && parseInt(params.entranceId) > 0) {
+            $("#altForm").hide();
+
+            modules.houses.renderEntrance(params.houseId, params.entranceId);
+        } else {
+            modules.houses.renderHouse(params.houseId);
+        }
     },
 }).init();
