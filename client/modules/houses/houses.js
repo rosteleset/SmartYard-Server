@@ -1367,7 +1367,7 @@
                                     {
                                         icon: "fas fa-phone-volume",
                                         title: i18n("houses.cms"),
-                                        disabled: !parseInt(modules.houses.meta.entrances[i].cms),
+                                        disabled: modules.houses.meta.entrances[i].cms.toString().substring() !== "0",
                                         click: entranceId => {
                                             // ?
                                         },
