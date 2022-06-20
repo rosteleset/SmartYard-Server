@@ -24,9 +24,7 @@ function cardForm(params) {
         h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
         h += `</div>`;
     }
-    h += `<div class="card-body table-responsive p-0">`;
-
-    h += "<div style='height: 100%; overflow-y: auto'>";
+    h += `<div class="card-body table-responsive p-0" style="overflow-y: visible; overflow-x: hidden;">`;
 
     h += '<table class="table';
     if (params.borderless) {
@@ -263,7 +261,6 @@ function cardForm(params) {
     }
 
     h += `</table>`;
-    h += `</div>`;
     h += `</div>`;
     h += `</div>`;
 

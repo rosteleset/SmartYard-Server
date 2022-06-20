@@ -29,7 +29,7 @@
 
             try {
                 foreach ($steps as $step) {
-                    echo "================= $step\n";
+                    echo "\n================= $step\n\n";
                     $sql = trim(file_get_contents("sql/$driver/$step"));
                     echo "$sql\n";
                     $db->exec($sql);
@@ -45,7 +45,7 @@
             $sth->bindParam('version', $v);
             $sth->execute();
 
-            echo "================= done\n\n";
+            echo "\n================= done\n\n";
         }
 
         $db->exec("COMMIT");
