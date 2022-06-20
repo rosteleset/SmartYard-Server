@@ -53,8 +53,10 @@ function hashChange() {
 
             $("#loginForm").hide();
             $("#forgotForm").hide();
+
             if (modules[route]) {
                 $("#page404").hide();
+                $("#pageError").hide();
                 $("#topMenuLeft").html(`<li class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
                 $("#subTop").html("");
                 $("#leftTopDynamic").html("");
@@ -99,6 +101,22 @@ function page404() {
     `).show();
 }
 
+function pageError(error) {
+    loadingDone(true);
+    document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
+    $("#pageError").html(`
+        <section class="content">
+            <div class="error-page">
+                <h2 class="headline text-danger mr-4"> Error</h2>
+                <div class="error-content">
+                    <h3><i class="fas fa-exclamation-triangle text-danger"></i>${i18n("error")}</h3>
+                    <p>${error?error:i18n("errors.unknown")}</p>
+                </div>
+            </div>
+        </section>
+    `).show();
+}
+
 function changeLanguage() {
     $.cookie("_lang", $("#loginBoxLang").val(), { expires: 3650 });
     location.reload();
@@ -106,6 +124,7 @@ function changeLanguage() {
 
 function showLoginForm() {
     $("#page404").hide();
+    $("#pageError").hide();
     $("#forgotForm").hide();
     $("#loginForm").show();
 
@@ -137,6 +156,7 @@ function showLoginForm() {
 
 function showForgotPasswordForm() {
     $("#page404").hide();
+    $("#pageError").hide();
     $("#loginForm").hide();
     $("#forgotForm").show();
 

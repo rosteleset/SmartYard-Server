@@ -78,7 +78,7 @@
             "backend": "internal",
             "asterisk_servers": [
                 {
-                    "alias": "First server",
+                    "title": "First server",
                     "ip": "127.0.0.1",
                     "sip_tcp_port": 5060,
                     "sip_udp_port": 5060,

@@ -12,5 +12,6 @@
     "comment": "Примечания",
     "deleteDomophone": "Удалить домофон",
     "modifyDomophone": "Редактирование домофона",
-    "confirmDeleteDomophone": "Удалить домофон #%s?"
+    "confirmDeleteDomophone": "Удалить домофон #%s?",
+    "server": "Сервер"
 }

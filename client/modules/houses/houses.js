@@ -1228,7 +1228,7 @@
         done(modules["addresses"].addresses).
         fail(FAIL).
         fail(() => {
-            history.back();
+            pageError();
         }).
         done(() => {
             if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
@@ -1251,7 +1251,7 @@
             GET("houses", "house", houseId, true).
             fail(FAIL).
             fail(() => {
-                history.back();
+                pageError();
             }).
             done(response => {
                     if (!modules.houses.meta) {
@@ -1436,7 +1436,7 @@
         GET("houses", "cms", entranceId, true).
         fail(FAIL).
         fail(() => {
-            history.back();
+            pageError();
         }).
         done(response => {
             modules.houses.loadHouse(houseId, () => {
@@ -1509,12 +1509,10 @@
 
                         loadingDone();
                     } else {
-                        error(i18n("houses.unknownOrInvalidCms"));
-                        history.back();
+                        pageError(i18n("houses.unknownOrInvalidCms"));
                     }
                 } else {
-                    error(i18n("houses.entranceNotFound"));
-                    history.back();
+                    pageError(i18n("houses.entranceNotFound"));
                 }
             });
         });

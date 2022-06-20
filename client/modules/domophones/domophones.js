@@ -29,15 +29,19 @@
 
     addDomophone: function () {
         let models = [];
-        let first;
+        let servers = [];
 
         for (let id in modules.domophones.meta.models) {
-            if (!first) {
-                first = id;
-            }
             models.push({
                 id,
                 text: modules.domophones.meta.models[id].title,
+            })
+        }
+
+        for (let id in modules.domophones.meta.servers) {
+            servers.push({
+                id: modules.domophones.meta.servers[id].ip,
+                text: modules.domophones.meta.servers[id].title,
             })
         }
 
@@ -60,6 +64,13 @@
                     title: i18n("domophones.model"),
                     placeholder: i18n("domophones.model"),
                     options: models,
+                },
+                {
+                    id: "server",
+                    type: "select2",
+                    title: i18n("domophones.server"),
+                    placeholder: i18n("domophones.server"),
+                    options: servers,
                 },
                 {
                     id: "ip",
@@ -114,15 +125,19 @@
 
     modifyDomophone: function (domophoneId) {
         let models = [];
-        let first;
+        let servers = [];
 
         for (let id in modules.domophones.meta.models) {
-            if (!first) {
-                first = id;
-            }
             models.push({
                 id,
                 text: modules.domophones.meta.models[id].title,
+            })
+        }
+
+        for (let id in modules.domophones.meta.servers) {
+            servers.push({
+                id: modules.domophones.meta.servers[id].ip,
+                text: modules.domophones.meta.servers[id].title,
             })
         }
 
@@ -164,6 +179,14 @@
                         placeholder: i18n("domophones.model"),
                         options: models,
                         value: domophone.model,
+                    },
+                    {
+                        id: "server",
+                        type: "select2",
+                        title: i18n("domophones.server"),
+                        placeholder: i18n("domophones.server"),
+                        options: servers,
+                        value: domophone.server,
                     },
                     {
                         id: "ip",

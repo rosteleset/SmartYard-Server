@@ -2062,6 +2062,7 @@
                     f = true;
                 }
             }
+
             if (!f) {
                 page404();
                 return;
@@ -2070,9 +2071,11 @@
             subTop(modules.addresses.path("street", streetId));
 
             modules.addresses.houses("#mainForm", false, streetId);
+
+            loadingDone();
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     route: function (params) {

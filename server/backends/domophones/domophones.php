@@ -20,6 +20,14 @@
             abstract public function getDomophones();
 
             /**
+             * @return mixed
+             */
+            public function getServers() {
+                return $this->config["backends"]["domophones"]["asterisk_servers"];
+            }
+
+
+            /**
              * @return false|array
              */
             abstract public function getModels();
@@ -32,6 +40,7 @@
             /**
              * @param $enabled
              * @param $model
+             * @param $server
              * @param $ip
              * @param $port
              * @param $credentials
@@ -39,12 +48,13 @@
              * @param $comment
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $ip, $port, $credentials, $callerId, $comment);
+            abstract public function addDomophone($enabled, $model, $server, $ip, $port, $credentials, $callerId, $comment);
 
             /**
              * @param $domophoneId
              * @param $enabled
              * @param $model
+             * @param $server
              * @param $ip
              * @param $port
              * @param $credentials
@@ -52,7 +62,7 @@
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $ip, $port, $credentials, $callerId, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $comment);
 
             /**
              * @param $domophoneId
