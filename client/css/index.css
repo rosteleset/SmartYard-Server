@@ -127,3 +127,37 @@ select {
 .no-border-top {
   border-top: none !important;
 }
+
+.hr-text {
+    line-height: 1em;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: black;
+    text-align: left;
+    height: 1.5em;
+    opacity: .5;
+    font-size: 8pt;
+}
+
+.hr-text:before {
+    content: '';
+    background: linear-gradient(to left, transparent, rgba(128, 128, 128, 0.75));
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+
+.hr-text:after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding-left: 0em;
+    padding-right: 0.5em;
+    line-height: 1.5em;
+    color: #000000;
+    background-color: #ffffff;
+}
+

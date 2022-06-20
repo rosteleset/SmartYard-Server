@@ -69,6 +69,8 @@
     "locksDisabled": "Замки открыты",
     "cmsLevels": "Уровни",
     "cms": "КМС",
+    "cmsD": "Д",
+    "cmsU": "Е",
     "errors": {
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",
         "UNIQUE constraint failed: houses_entrances.domophone_id, houses_entrances.domophone_output": "Этот выход уже занят"

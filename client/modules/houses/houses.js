@@ -1438,10 +1438,84 @@
         fail(() => {
             history.back();
         }).
-        done(() => {
+        done(response => {
             modules.houses.loadHouse(houseId, () => {
                 $("#mainForm").html("");
-                loadingDone();
+                console.log(modules.houses.meta.cmses);
+                console.log(modules.houses.meta.entrances);
+
+                let entrance = false;
+
+                for (let i in modules.houses.meta.entrances) {
+                    if (modules.houses.meta.entrances[i].entranceId == entranceId) {
+                        entrance = modules.houses.meta.entrances[i];
+                        break;
+                    }
+                }
+
+                if (entrance) {
+                    let cms = modules.houses.meta.cmses[entrance.cms];
+
+                    if (cms) {
+                        console.log(cms);
+
+                        let h = `<div class="card mt-2">`;
+
+                        h += `<div class="card-body table-responsive p-0">`;
+
+                        for (let i in cms.cms) {
+                            h += `<hr class="hr-text ml-3" data-content="${i}">`;
+                            h += `<table class="table table-hover ml-3" style="width: 0%;">`;
+
+                            let maxX = 0;
+                            for (let j in cms.cms[i]) {
+                                maxX = Math.max(maxX, cms.cms[i][j]);
+                            }
+
+                            h += `<thead>`;
+
+                            h += `<th>&nbsp;</th>`;
+
+                            for (let j = 0; j < maxX; j++) {
+                                h += `<th>${i18n("houses.cmsD")}${j + cms.dozen_start}</th>`;
+                            }
+                            h += `</thead>`;
+
+                            h += `<tbody>`;
+
+                            for (let j in cms.cms[i]) {
+                                h += `<tr>`;
+                                h += `<td>${i18n("houses.cmsU")}${parseInt(j)}</td>`;
+                                for (let k = 0; k < cms.cms[i][j]; k++) {
+                                    h += `<td>`;
+                                    h += `<input class="form-control form-control-sm pl-1 pr-1" type="text" style="width: 40px; font-size: 75%; height: calc(1.5rem + 2px);" value="0">`
+                                    h += `</td>`;
+                                }
+                                for (let k = cms.cms[i][j]; k < maxX; k++) {
+                                    h += `<td>&nbsp;</td>`;
+                                }
+                                h += `</tr>`;
+                            }
+
+                            h += `</tbody>`;
+
+                            h += `</table>`;
+                        }
+
+                        h += `</div>`;
+                        h += `</div>`;
+
+                        $("#mainForm").html(h);
+
+                        loadingDone();
+                    } else {
+                        error(i18n("houses.unknownOrInvalidCms"));
+                        history.back();
+                    }
+                } else {
+                    error(i18n("houses.entranceNotFound"));
+                    history.back();
+                }
             });
         });
     },

@@ -4,7 +4,7 @@ function cardForm(params) {
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
-        h = `<div class="card mt-0 mb-0">`;
+        h = `<div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">`;
         $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
         if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
             $("#modalBody").parent().addClass("modal-" + params.size);
@@ -26,6 +26,8 @@ function cardForm(params) {
     }
     h += `<div class="card-body table-responsive p-0">`;
 
+    h += "<div style='height: 100%; overflow-y: auto'>";
+
     h += '<table class="table';
     if (params.borderless) {
         h += " tform-borderless";
@@ -33,7 +35,7 @@ function cardForm(params) {
     if (!params.noHover) {
         h += " table-hover";
     }
-    h += '">';
+    h += ' mb-0">';
 
     h += `<tbody>`;
 
@@ -261,6 +263,7 @@ function cardForm(params) {
     }
 
     h += `</table>`;
+    h += `</div>`;
     h += `</div>`;
     h += `</div>`;
 
