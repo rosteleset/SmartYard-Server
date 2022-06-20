@@ -22,7 +22,7 @@
 
                 $cms = $houses->getCms($params["_id"]);
 
-                return api::ANSWER($cms, ($cms !== false)?"flatId":false);
+                return api::ANSWER($cms, ($cms !== false)?"cms":false);
             }
 
             public static function PUT($params)

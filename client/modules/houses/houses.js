@@ -1439,10 +1439,10 @@
             pageError();
         }).
         done(response => {
+            let cms_layout = response.cms;
+
             modules.houses.loadHouse(houseId, () => {
                 $("#mainForm").html("");
-                console.log(modules.houses.meta.cmses);
-                console.log(modules.houses.meta.entrances);
 
                 let entrance = false;
 
@@ -1457,11 +1457,11 @@
                     let cms = modules.houses.meta.cmses[entrance.cms];
 
                     if (cms) {
-                        console.log(cms);
-
                         let h = `<div class="card mt-2">`;
 
                         h += `<div class="card-body table-responsive p-0">`;
+
+                        let cmsi = 0;
 
                         for (let i in cms.cms) {
                             h += `<hr class="hr-text ml-3" data-content="${i}">`;
@@ -1488,7 +1488,7 @@
                                 h += `<td>${i18n("houses.cmsU")}${parseInt(j)}</td>`;
                                 for (let k = 0; k < cms.cms[i][j]; k++) {
                                     h += `<td>`;
-                                    h += `<input class="form-control form-control-sm pl-1 pr-1" type="text" style="width: 40px; font-size: 75%; height: calc(1.5rem + 2px);" value="0">`
+                                    h += `<input class="cmsa form-control form-control-sm pl-1 pr-1" data-cms="${cmsi}" data-dozen="${k}" data-unit="${j}" type="text" style="width: 40px; font-size: 75%; height: calc(1.5rem + 2px);" value="0">`
                                     h += `</td>`;
                                 }
                                 for (let k = cms.cms[i][j]; k < maxX; k++) {
@@ -1498,14 +1498,51 @@
                             }
 
                             h += `</tbody>`;
-
                             h += `</table>`;
+
+                            cmsi++;
                         }
+
+                        h += `<button id="entranceCmsSubmit" type="submit" class="btn btn-primary modalFormOk ml-3 mb-2 mt-2">${i18n("apply")}</button>`;
 
                         h += `</div>`;
                         h += `</div>`;
 
                         $("#mainForm").html(h);
+
+                        for (let i in cms_layout) {
+                            $(`.cmsa[data-cms='${cms_layout[i].cms}'][data-dozen='${cms_layout[i].dozen}'][data-unit='${cms_layout[i].unit}']`).val(cms_layout[i].apartment);
+                        }
+
+                        $("#entranceCmsSubmit").off("click").on("click", () => {
+                            let cmses = [];
+
+                            $(".cmsa").each(function () {
+                                let cms = $(this).attr("data-cms");
+                                let dozen = $(this).attr("data-dozen");
+                                let unit = $(this).attr("data-unit");
+                                let apartment = parseInt($(this).val());
+                                if (cms && dozen && unit && apartment) {
+                                    cmses.push({
+                                        cms,
+                                        dozen,
+                                        unit,
+                                        apartment,
+                                    });
+                                }
+                            });
+
+                            loadingStart();
+
+                            PUT("houses", "cms", entranceId, {
+                                cms: cmses,
+                            }).
+                            done(() => {
+                                modules.houses.renderEntrance(houseId, entranceId);
+                            }).
+                            fail(FAIL).
+                            fail(loadingDone);
+                        });
 
                         loadingDone();
                     } else {

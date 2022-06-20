@@ -379,7 +379,17 @@
              */
             public function getCms($entranceId)
             {
-                // TODO: Implement getCms() method.
+                if (!checkInt($entranceId)) {
+                    setLastError("noEntranceId");
+                    return false;
+                }
+
+                return $this->db->get("select * from houses_entrances_cmses where house_entrance_id = $entranceId", false, [
+                    "cms" => "cms",
+                    "dozen" => "dozen",
+                    "unit" => "unit",
+                    "apartment" => "apartment",
+                ]);
             }
 
             /**
@@ -387,7 +397,29 @@
              */
             public function setCms($entranceId, $cms)
             {
-                // TODO: Implement setCms() method.
+                if (!checkInt($entranceId)) {
+                    setLastError("noEntranceId");
+                    return false;
+                }
+
+                $result = $this->db->modify("delete from houses_entrances_cmses where house_entrance_id = $entranceId") !== false;
+
+                foreach ($cms as $e) {
+                    if (!checkInt($e["cms"]) || !checkInt($e["dozen"]) || !checkInt($e["unit"]) || !checkInt($e["apartment"])) {
+                        setLastError("cmsError");
+                        return false;
+                    }
+
+                    $result = $result && $this->db->modify("insert into houses_entrances_cmses (house_entrance_id, cms, dozen, unit, apartment) values (:house_entrance_id, :cms, :dozen, :unit, :apartment)", [
+                        "house_entrance_id" => $entranceId,
+                        "cms" => $e["cms"],
+                        "dozen" => $e["dozen"],
+                        "unit" => $e["unit"],
+                        "apartment" => $e["apartment"],
+                    ]);
+                }
+
+                return $result;
             }
         }
     }
