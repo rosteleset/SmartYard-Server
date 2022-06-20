@@ -29,7 +29,7 @@
             {
                 $houses = loadBackend("houses");
 
-                $success = $houses->getCms($params["_id"], $params["cms"]);
+                $success = $houses->setCms($params["_id"], $params["cms"]);
 
                 return api::ANSWER($success);
             }
