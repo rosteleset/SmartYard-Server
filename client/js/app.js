@@ -338,7 +338,7 @@ function initAll() {
     }
 
     if (config.logo) {
-        setFavicon("img/" + config.logo + "NoBorder.png");
+        setFavicon("img/" + config.logo + "Icon.png");
         $("#leftSideToggler").attr("src", "img/" + config.logo + ".png");
         $("#loginBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
         $("#forgotBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
