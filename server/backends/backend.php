@@ -65,5 +65,17 @@
             public function allow($params) {
                 return false;
             }
+
+
+            /**
+             * check if object is used in backend
+             * for example, usage("house", 4474)
+             *
+             * @return boolean
+             */
+
+            public function usage($object, $id) {
+                return false;
+            }
         }
     }
