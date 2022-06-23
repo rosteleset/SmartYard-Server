@@ -28,7 +28,8 @@ CREATE TABLE houses_entrances_cmses
     unit text not null,
     apartment integer not null                                                                                          -- flat number
 );
-CREATE UNIQUE INDEX houses_entrances_cmses_uniq on houses_entrances_cmses(house_entrance_id, cms, dozen, unit);
+CREATE UNIQUE INDEX houses_entrances_cmses_uniq1 on houses_entrances_cmses(house_entrance_id, cms, dozen, unit);
+CREATE UNIQUE INDEX houses_entrances_cmses_uniq2 on houses_entrances_cmses(house_entrance_id, apartment);
 
 -- houses <-> entrances
 CREATE TABLE houses_houses_entrances
@@ -38,8 +39,8 @@ CREATE TABLE houses_houses_entrances
 -- domophone's specisic entrance settings
     prefix integer not null
 );
-CREATE UNIQUE INDEX houses_houses_entrances_uniq_1 on houses_houses_entrances(address_house_id, house_entrance_id);
-CREATE UNIQUE INDEX houses_houses_entrances_uniq_2 on houses_houses_entrances(house_entrance_id, prefix);
+CREATE UNIQUE INDEX houses_houses_entrances_uniq1 on houses_houses_entrances(address_house_id, house_entrance_id);
+CREATE UNIQUE INDEX houses_houses_entrances_uniq2 on houses_houses_entrances(house_entrance_id, prefix);
 CREATE INDEX houses_houses_entrances_address_house_id on houses_houses_entrances(address_house_id);
 CREATE INDEX houses_houses_entrances_house_entrance_id on houses_houses_entrances(house_entrance_id);
 CREATE INDEX houses_houses_entrances_prefix on houses_houses_entrances(prefix);

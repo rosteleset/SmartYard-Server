@@ -421,10 +421,10 @@ extensions = {
                 })
 
                 if cmsConnected then
-                    log_debug("incoming ring from master panel #".. domophoneId .." -> " .. flat_id)
+                    log_debug("incoming ring from master panel #" .. domophoneId .. " -> " .. flat_id)
                 else
                     cmsDestination = dm("cmsDestination", flatId)
-                    log_debug("incoming ring from slave panel #".. domophoneId .." -> " .. flat_id)
+                    log_debug("incoming ring from slave panel #" .. domophoneId .. " -> " .. flat_id)
                 end
 
                 if cmsDestination then
@@ -434,38 +434,34 @@ extensions = {
                     channel.MASTER:set("1")
                 end
 
-
                 channel.CALLERID("name"):set(channel.CALLERID("name"):get() .. ", " .. flatNumber)
 
-                local hash
-                if flat_id and flat_id ~= "" then
-                        if not blacklist(flat_id) and not autoopen(flat_id, src_domophone) then
-                            -- вызов на КМС
-                            local dest = "PJSIP/"..string.format("%d@1%05d", flat, domophone)
-                            -- приложение (мобильный интерком)
-                            local mi = mobile_intercom(flat_id, src_domophone)
-                            -- стационарные SIP интеркомы
-                            local flat_ext = string.format("4%09d", flat_id)
-                            local li = ""
-                            if flat_id and tonumber(mysql_result("select count(*) from ps_auths where id="..flat_ext)) > 0 then
-                                li = channel.PJSIP_DIAL_CONTACTS(flat_ext):get()
-                            end
-                            if mi then -- если есть мобильные SIP интерком(ы)
-                                dest = dest.."&"..mi
-                            end
-                            if dest:sub(1, 1) == '&' then
-                                dest = dest:sub(2)
-                            end
+                if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
+                    local dest = false
 
-                            log_debug("dialing: "..dest)
-
-                            if hash then
-                                app.Dial(dest, 120, "b(dm^hash^1("..hash.."))")
-                            else
-                                app.Dial(dest, 120)
-                            end
-                        end
+                    if cmsDestination then
+                        dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", flatNumber, domophoneId)
                     end
+
+                    -- application(s) (mobile intercom(s))
+                    local mi = mobile_intercom(flat_id, src_domophone)
+                    if mi then -- если есть мобильные SIP интерком(ы)
+                        dest = dest .. "&" .. mi
+                    end
+
+                    -- SIP intercom(s)
+                    local li = channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get()
+                    if li then
+                        dest = dest .. "&" .. li
+                    end
+
+                    if dest:sub(1, 1) == '&' then
+                        dest = dest:sub(2)
+                    end
+
+                    log_debug("dialing: " .. dest)
+
+                    app.Dial(dest, 120)
                 end
             end
             app.Hangup()
