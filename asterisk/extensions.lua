@@ -397,7 +397,7 @@ extensions = {
             if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
                 domophoneId = tonumber(from:get():sub(2))
 
-                -- 1000049796, length == 10, first digit == 1 - it's a flat
+                -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))
                     flatNumber = tonumber(dm("flatNumberById", flatId))
@@ -407,35 +407,38 @@ extensions = {
                     flatId = dm("flatByPrefix", {
                         domophoneId = domophoneId,
                         flatNumber = flatNumber,
-                        prefix = tonumber(extension:sub(1, 4))
+                        prefix = tonumber(extension:sub(1, 4)),
                     })
                 end
             end
 
             if domophoneId and flatId and flatNumber then
---                channel.SLAVE:set("1")
+                local cmsDestination = false
 
-                local domophone
-                local flat
-                local src_domophone = tonumber(channel.CALLERID("num"):get():sub(2))
-                if extension:len() > 4 then -- несколько домов, есть префикс
-                    flat = tonumber(extension:sub(5))
-                    prefix = tonumber(extension:sub(1, 4))
-                else -- один дом (или доп. домофон), без префикса
-                    flat = tonumber(extension)
-                    prefix = 0
+                local cmsConnected = dm("cmsConnected", {
+                    domophoneId = domophoneId,
+                    flatId = flatId,
+                })
+
+                if cmsConnected then
+                    log_debug("incoming ring from master panel #".. domophoneId .." -> " .. flat_id)
+                else
+                    cmsDestination = dm("cmsDestination", flatId)
+                    log_debug("incoming ring from slave panel #".. domophoneId .." -> " .. flat_id)
                 end
-                domophone = tonumber(mysql_result("select entrance_domophone_id from dm.gates where gate_domophone_id="..src_domophone.." and prefix="..prefix.." and entrance_domophone_id in (select domophone_id from dm.flats where flat_number="..flat..")"))
 
-                log_debug("dst domophone: "..domophone)
+                if cmsDestination then
+                    channel.SLAVE:set("1")
+                    log_debug("cms destination: " .. cmsDestination)
+                else
+                    channel.MASTER:set("1")
+                end
 
-                channel.CALLERID("name"):set(channel.CALLERID("name"):get().." кв "..flat)
 
-                if domophone then -- а вдруг?
-                    local flat_id = mysql_result("select flat_id from dm.flats where flat_number="..tonumber(flat).." and domophone_id="..tonumber(domophone))
-                    local hash
-                    if flat_id and flat_id ~= "" then
-                        log_debug("incoming ring from slave panel "..domophone.." -> "..flat_id)
+                channel.CALLERID("name"):set(channel.CALLERID("name"):get() .. ", " .. flatNumber)
+
+                local hash
+                if flat_id and flat_id ~= "" then
                         if not blacklist(flat_id) and not autoopen(flat_id, src_domophone) then
                             -- вызов на КМС
                             local dest = "PJSIP/"..string.format("%d@1%05d", flat, domophone)
