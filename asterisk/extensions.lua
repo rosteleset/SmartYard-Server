@@ -50,13 +50,17 @@ function dm(action, request)
         sink = ltn12.sink.table(body)
     }
 
-    response = table.concat(body)
+    local response = table.concat(body)
+
+    result = false
 
     if response ~= "" then
-        return cjson.decode(response)
-    else
-        return false
+        pcall(function ()
+            result = cjson.decode(response)
+        end)
     end
+
+    return result
 end
 
 -- print("****************************")
