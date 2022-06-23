@@ -472,7 +472,7 @@ extensions = {
             local original_cid = channel.OCID:get()
             local src = channel.CDR("src"):get()
             if original_cid ~= nil then
-                log_debug('reverting original CID: '..original_cid)
+                log_debug('reverting original CID: ' .. original_cid)
                 channel.CALLERID("num"):set(original_cid)
                 src = original_cid
             end
@@ -483,21 +483,21 @@ extensions = {
             end
 
             if channel.MOBILE:get() == "1" then
-                log_debug("call ended: "..src.." >>> "..channel.CDR("dst"):get().." [mobile], channel status: "..status)
+                log_debug("call ended: " .. src .. " >>> "..channel.CDR("dst"):get() .. " [mobile], channel status: " .. status)
                 return
             end
 
             if channel.MASTER:get() == "1" then
-                log_debug("call ended: "..src.." >>> "..channel.CDR("dst"):get().." [master], channel status: "..status)
+                log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. " [master], channel status: " .. status)
                 return
             end
 
             if channel.SLAVE:get() == "1" then
-                log_debug("call ended: "..src.." >>> "..channel.CDR("dst"):get().." [slave], channel status: "..status)
+                log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. " [slave], channel status: " .. status)
                 return
             end
 
-            log_debug("call ended: "..src.." >>> "..channel.CDR("dst"):get().." [other], channel status: "..status)
+            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. " [other], channel status: " .. status)
         end,
     },
 }
