@@ -113,19 +113,15 @@
         }
     },
 
-    doAddEntrance: function (houseId, entranceId, prefix) {
+    doAddEntrance: function (house) {
         loadingStart();
-        POST("houses", "entrance", false, {
-            houseId,
-            entranceId,
-            prefix,
-        }).
+        POST("houses", "entrance", false, house).
         fail(FAIL).
         done(() => {
             message(i18n("houses.entranceWasAdded"));
         }).
         always(() => {
-            modules.houses.renderHouse(houseId);
+            modules.houses.renderHouse(house.houseId);
         });
     },
 
@@ -141,78 +137,40 @@
         });
     },
 
-    doAddFlat: function (houseId, floor, flat, entrances, apartmentsAndLevels, manualBlock, openCode, autoOpen, whiteRabbit, sipEnabled, sipPassword) {
+    doAddFlat: function (flat) {
         loadingStart();
-        POST("houses", "flat", false, {
-            houseId,
-            floor,
-            flat,
-            entrances,
-            apartmentsAndLevels,
-            manualBlock,
-            openCode,
-            autoOpen,
-            whiteRabbit,
-            sipEnabled,
-            sipPassword
-        }).
+        POST("houses", "flat", false, flat).
         fail(FAIL).
         done(() => {
             message(i18n("houses.flatWasAdded"));
         }).
         always(() => {
-            modules.houses.renderHouse(houseId);
+            modules.houses.renderHouse(flat.houseId);
         });
     },
 
-    doModifyEntrance: function (entranceId, houseId, entranceType, entrance, lat, lon, shared, prefix, domophoneId, domophoneOutput, cms, cmsType, cameraId, cmsLevels, locksDisabled) {
+    doModifyEntrance: function (entrance) {
         loadingStart();
-        PUT("houses", "entrance", entranceId, {
-            houseId,
-            entranceType,
-            entrance,
-            lat,
-            lon,
-            shared,
-            prefix,
-            domophoneId,
-            domophoneOutput,
-            cms,
-            cmsType,
-            cameraId,
-            cmsLevels,
-            locksDisabled,
-        }).
+        PUT("houses", "entrance", entrance.entranceId, entrance).
         fail(FAIL).
         done(() => {
             message(i18n("houses.entranceWasChanged"));
         }).
         always(() => {
-            modules.houses.renderHouse(houseId);
+            modules.houses.renderHouse(entrance.houseId);
         });
     },
 
-    doModifyFlat: function (flatId, floor, flat, entrances, apartmentsAndLevels, manualBlock, openCode, autoOpen, whiteRabbit, sipEnabled, sipPassword, houseId) {
+    doModifyFlat: function (flat) {
         loadingStart();
-        PUT("houses", "flat", flatId, {
-            floor,
-            flat,
-            entrances,
-            apartmentsAndLevels,
-            manualBlock,
-            openCode,
-            autoOpen,
-            whiteRabbit,
-            sipEnabled,
-            sipPassword
-        }).
+        PUT("houses", "flat", flat.flatId, flat).
         fail(FAIL).
         done(() => {
             message(i18n("houses.flatWasChanged"));
         }).
         always(() => {
-            if (houseId) {
-                modules.houses.renderHouse(houseId);
+            if (flat.houseId) {
+                modules.houses.renderHouse(flat.houseId);
             }
         });
     },
@@ -522,7 +480,8 @@
                     ],
                     callback: result => {
                         if (parseInt(result.entranceId)) {
-                            modules.houses.doAddEntrance(houseId, result.entranceId, result.prefix);
+                            result.houseId = houseId;
+                            modules.houses.doAddEntrance(result);
                         }
                     },
                 });
@@ -715,7 +674,9 @@
                         }
                     }
                 }
-                modules.houses.doAddFlat(houseId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword);
+                result.houseId = houseId;
+                result.apartmentsAndLevels = apartmentsAndLevels;
+                modules.houses.doAddFlat(result);
             },
         });
 
@@ -953,7 +914,9 @@
                                 if (!result.shared) {
                                     result.prefix = 0;
                                 }
-                                modules.houses.doModifyEntrance(entranceId, houseId, result.entranceType, result.entrance, result.lat, result.lon, result.shared, result.prefix, result.domophoneId, result.domophoneOutput, result.cms, result.cmsType, result.cameraId, result.cmsLevels, result.locksDisabled);
+                                result.entranceId = entranceId;
+                                result.houseId = houseId;
+                                modules.houses.doModifyEntrance(result);
                             }
                         },
                     });
@@ -1190,7 +1153,10 @@
                     if (result.delete === "yes") {
                         modules.houses.deleteFlat(flatId, houseId);
                     } else {
-                        modules.houses.doModifyFlat(flatId, result.floor, result.flat, result.entrances, apartmentsAndLevels, result.manualBlock, result.openCode, result.autoOpen, result.whiteRabbit, result.sipEnabled, result.sipPassword, houseId);
+                        result.flatId = flatId;
+                        result.apartmentsAndLevels = apartmentsAndLevels;
+                        result.houseId = houseId;
+                        modules.houses.doModifyFlat(result);
                     }
                 },
 
