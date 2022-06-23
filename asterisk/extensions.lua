@@ -50,7 +50,7 @@ function dm(action, request)
         sink = ltn12.sink.table(body)
     }
 
-    local response = table.concat(body)
+    response = table.concat(body)
 
     result = false
 
