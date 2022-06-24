@@ -1,6 +1,6 @@
 package.path = "/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;" .. package.path
 
-dm_server = "http://127.0.0.1:8000/server/asterisk/extensions.php"
+dm_server = "http://127.0.0.1:8000/server/asterisk.php/extensions"
 log_file = "/tmp/pbx_lua.log"
 redis_server = {
     host = "127.0.0.1",
