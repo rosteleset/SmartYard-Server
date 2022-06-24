@@ -497,27 +497,29 @@
 
         for (let i in modules.houses.meta.entrances) {
             if (parseInt(modules.houses.meta.entrances[i].domophoneOutput) === 0) {
-                let inputs = `
-                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">
-                        <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}">
-                        </div>
-                        <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}">
-                        </div>
+                let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">`;
+                inputs += `
+                    <div class="col">
+                        <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}">
                     </div>
                 `;
                 if (modules.houses.meta.entrances[i].cms.toString() !== "0") {
-                    entrances.push({
-                        id: modules.houses.meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
-                    });
-                } else {
-                    entrances.push({
-                        id: modules.houses.meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance,
-                    });
+                    inputs += `                        
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}">
+                        </div>
+                    `;
                 }
+                inputs += `</div`;
+                entrances.push({
+                    id: modules.houses.meta.entrances[i].entranceId,
+                    text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
+                });
+            } else {
+                entrances.push({
+                    id: modules.houses.meta.entrances[i].entranceId,
+                    text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance,
+                });
             }
         }
 
@@ -957,17 +959,21 @@
             }
 
             for (let i in modules.houses.meta.entrances) {
-                let inputs = `
-                    <div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">
-                        <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId]?entrances_settings[modules.houses.meta.entrances[i].entranceId].apartment:""}">
+                if (parseInt(modules.houses.meta.entrances[i].domophoneOutput) === 0) {
+                    let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">`;
+                    inputs += `
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.houses.meta.entrances[i].entranceId].apartment : ""}">
                         </div>
-                        <div class="col-6">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId]?entrances_settings[modules.houses.meta.entrances[i].entranceId].apartmentLevels:""}">
-                        </div>
-                    </div>
-                `;
-                if (modules.houses.meta.entrances[i].cms.toString() !== "0") {
+                    `;
+                    if (modules.houses.meta.entrances[i].cms.toString() !== "0") {
+                        inputs += `
+                            <div class="col">
+                                <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.houses.meta.entrances[i].entranceId].apartmentLevels : ""}">
+                            </div>
+                        `;
+                    }
+                    inputs += `</div>`;
                     entrances.push({
                         id: modules.houses.meta.entrances[i].entranceId,
                         text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,

@@ -154,12 +154,10 @@
                 case "autoopen":
                     break;
 
-                case "blacklist":
+                case "flat":
                     $houses = loadBackend("houses");
 
-                    $flat = $houses->getFlat((int)$_RAW);
-
-                    echo json_encode((int)$flat["autoBlock"] || (int)$flat["manualBlock"]);
+                    echo json_encode($houses->getFlat((int)$_RAW));
                     break;
             }
             break;

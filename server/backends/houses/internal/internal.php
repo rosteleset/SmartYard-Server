@@ -431,28 +431,53 @@
                     return false;
                 }
 
-                $flats = $this->db->get("select house_flat_id, floor, flat, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password from houses_flats where house_flat_id = $flatId",
-                    false,
-                    [
-                        "house_flat_id" => "flatId",
-                        "floor" => "floor",
-                        "flat" => "flat",
-                        "auto_block" => "autoBlock",
-                        "manual_block" => "manualBlock",
-                        "open_code" => "openCode",
-                        "auto_open" => "autoOpen",
-                        "white_rabbit" => "whiteRabbit",
-                        "sip_enabled" => "sipEnabled",
-                        "sip_password" => "sipPassword",
-                    ]
-                );
+                $flats = $this->db->get("
+                    select
+                        house_flat_id,
+                        floor, 
+                        flat,
+                        coalesce(auto_block, 0) auto_block, 
+                        manual_block, 
+                        open_code, 
+                        auto_open, 
+                        white_rabbit, 
+                        sip_enabled, 
+                        sip_password
+                    from
+                        houses_flats
+                    where house_flat_id = $flatId
+                ", false, [
+                    "house_flat_id" => "flatId",
+                    "floor" => "floor",
+                    "flat" => "flat",
+                    "auto_block" => "autoBlock",
+                    "manual_block" => "manualBlock",
+                    "open_code" => "openCode",
+                    "auto_open" => "autoOpen",
+                    "white_rabbit" => "whiteRabbit",
+                    "sip_enabled" => "sipEnabled",
+                    "sip_password" => "sipPassword",
+                ]);
 
                 if ($flats) {
                     foreach ($flats as &$flat) {
-                        $entrances = $this->db->get("select house_entrance_id, apartment, cms_levels from houses_entrances_flats where house_flat_id = {$flat["flatId"]}", false, [
+                        $entrances = $this->db->get("
+                            select
+                                house_entrance_id,
+                                domophone_id, 
+                                apartment, 
+                                coalesce(houses_entrances_flats.cms_levels, houses_entrances.cms_levels) cms_levels,
+                                (select count(*) from houses_entrances_cmses where houses_entrances_cmses.house_entrance_id = houses_entrances_flats.house_entrance_id and houses_entrances_cmses.apartment = houses_entrances_flats.apartment) matrix
+                            from 
+                                houses_entrances_flats
+                                    left join houses_entrances using (house_entrance_id)
+                            where house_flat_id = {$flat["flatId"]}
+                        ", false, [
                             "house_entrance_id" => "entranceId",
                             "apartment" => "apartment",
                             "cms_levels" => "apartmentLevels",
+                            "domophone_id" => "domophoneId",
+                            "matrix" => "matrix"
                         ]);
                         $flat["entrances"] = [];
                         foreach ($entrances as $e) {

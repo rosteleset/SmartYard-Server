@@ -139,10 +139,11 @@ function autoopen(flat_id, domophone_id)
     return false
 end
 
+log_debug(dm("flat", 1))
+
 function blacklist(flatId)
-    -- TODO get blacklist (block) status from dm
-    local blacklist = dm("blocked", flatId)
-    if blacklist then
+    local flat = dm("flat", flatId)
+    if flat.autoBlock > 0 or flat.manualBlock > 0 then
         log_debug("blacklist: yes")
         app.Answer()
         app.Wait(2)
@@ -260,7 +261,6 @@ extensions = {
 
             log_debug("starting loop for: "..extension)
 
-            channel.MOBILE:set("1")
             local timeout = os.time() + 35
             local crutch = 1
             local intercom = mysql_query("select * from dm.voip_crutch where id='"..extension.."'")
@@ -291,44 +291,57 @@ extensions = {
             app.Hangup()
         end,
 
-        -- вызов на трубки домофонов
+        -- call to CMS intercom
         [ "_3XXXXXXXXX" ] = function (context, extension)
             checkin()
 
             log_debug("flat intercom call")
 
-            local flat_id = tonumber(extension:sub(2))
-            local flat = mysql_query("select * from dm.flats where flat_id="..flat_id)
+            local flatId = tonumber(extension:sub(2))
+            local flat = dm("flat", flatId)
 
             if flat then
-                log_debug(channel.CALLERID("num"):get().." >>> "..flat['flat_number'].."@"..string.format("1%05d", flat['domophone_id']))
-                app.Dial("PJSIP/"..flat['flat_number'].."@"..string.format("1%05d", flat['domophone_id']), 120)
+                local dest = ""
+                for i, e in ipairs(flat.entrances) do
+                    if e.apartment > 0 and e.domophoneId > 0 and e.matrix > 0 then
+                        dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", e.apartment, e.domophoneId)
+                        log_debug(channel.CALLERID("num"):get() .. " >>> " .. string.format("%d@1%05d", e.apartment, e.domophoneId))
+                    end
+                end
+                if dest ~= "" then
+                    dest = dest:sub(2)
+                    app.Dial(dest, 120)
+                end
             end
 
             app.Hangup()
         end,
 
-        -- вызов на стационарные IP интеркомы
+        -- call to IP intercom
         [ "_4XXXXXXXXX" ] = function (context, extension)
             checkin()
 
             log_debug("sip intercom call")
 
-            local hash = channel.SHARED("HASH", "PJSIP/"..channel.CALLERID("num"):get()):get()
+            local callerId = channel.CALLERID("num"):get()
+            local hash = camshow(callerId)
 
             app.Wait(2)
-            channel.OCID:set(channel.CALLERID("num"):get())
+            channel.OCID:set(callerId)
+
+            -- for web preview (akuvox)
             channel.CALLERID("all"):set('123456')
-            log_debug("dialing: "..extension)
+
+            log_debug("dialing: " .. extension)
 
             if hash then
-                app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120, "b(dm^hash^1("..hash.."))")
+                app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120, "b(dm^hash^1(" .. hash .. "))")
             else
                 app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120)
             end
         end,
 
-        -- "фиктивный" вызов на мобильные интеркомы (приложение)
+        -- from PSTN to mobile application call (for testing)
         [ "_5XXXXXXXXX" ] = function (context, extension)
             checkin()
 
@@ -343,13 +356,13 @@ extensions = {
         [ "_6XXXXXXXXX" ] = function (context, extension)
             checkin()
 
-            log_debug("intercom test call "..string.format("1%05d", tonumber(extension:sub(2))))
+            log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
 
             app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120)
             app.Hangup()
         end,
 
-        -- 112
+        -- SOS
         [ "112" ] = function ()
             checkin()
 
@@ -360,7 +373,7 @@ extensions = {
             app.Wait(900)
         end,
 
-        -- консъерж
+        -- consierge
         [ "9999" ] = function ()
             checkin()
 
@@ -404,7 +417,10 @@ extensions = {
                 -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))
-                    flatNumber = tonumber(dm("flatNumberById", flatId))
+                    flatNumber = tonumber(dm("flatNumberById", {
+                        flatId = flatId,
+                        domophoneId = domophoneId,
+                    }))
                 else
                     -- more than one house, has prefix
                     flatNumber = tonumber(extension:sub(5))
@@ -417,46 +433,31 @@ extensions = {
             end
 
             if domophoneId and flatId and flatNumber then
-                local cmsDestination = false
-
-                local cmsConnected = dm("cmsConnected", {
-                    domophoneId = domophoneId,
-                    flatId = flatId,
-                })
-
-                if cmsConnected then
-                    log_debug("incoming ring from master panel #" .. domophoneId .. " -> " .. flat_id)
-                else
-                    cmsDestination = dm("cmsDestination", flatId)
-                    log_debug("incoming ring from slave panel #" .. domophoneId .. " -> " .. flat_id)
-                end
-
-                if cmsDestination then
-                    channel.SLAVE:set("1")
-                    log_debug("cms destination: " .. cmsDestination)
-                else
-                    channel.MASTER:set("1")
-                end
+                log_debug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
 
                 channel.CALLERID("name"):set(channel.CALLERID("name"):get() .. ", " .. flatNumber)
 
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
-                    local dest = false
+                    local dest = ""
 
-                    if cmsDestination then
-                        dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", flatNumber, domophoneId)
+                    local cmsConnected = dm("cmsConnected", {
+                        domophoneId = domophoneId,
+                        flatId = flatId,
+                    })
+
+                    if not cmsConnected then
+                        dest = dest .. "&Local/" .. string.format("3%09d", flatId)
                     end
 
                     -- application(s) (mobile intercom(s))
                     local mi = mobile_intercom(flat_id, src_domophone)
-                    if mi then -- если есть мобильные SIP интерком(ы)
+                    if mi then
                         dest = dest .. "&" .. mi
                     end
 
                     -- SIP intercom(s)
-                    local li = channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get()
-                    if li then
-                        dest = dest .. "&" .. li
+                    if channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get() then
+                        dest = dest .. "&Local/" .. string.format("4%09d", flatId)
                     end
 
                     if dest:sub(1, 1) == '&' then
@@ -468,6 +469,7 @@ extensions = {
                     app.Dial(dest, 120)
                 end
             end
+
             app.Hangup()
         end,
 
@@ -475,33 +477,18 @@ extensions = {
         [ "h" ] = function (context, extension)
             local original_cid = channel.OCID:get()
             local src = channel.CDR("src"):get()
+            local status = channel.DIALSTATUS:get()
+
             if original_cid ~= nil then
                 log_debug('reverting original CID: ' .. original_cid)
-                channel.CALLERID("num"):set(original_cid)
                 src = original_cid
             end
 
-            local status = channel.DIALSTATUS:get()
             if status == nil then
                 status = "UNKNOWN"
             end
 
-            if channel.MOBILE:get() == "1" then
-                log_debug("call ended: " .. src .. " >>> "..channel.CDR("dst"):get() .. " [mobile], channel status: " .. status)
-                return
-            end
-
-            if channel.MASTER:get() == "1" then
-                log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. " [master], channel status: " .. status)
-                return
-            end
-
-            if channel.SLAVE:get() == "1" then
-                log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. " [slave], channel status: " .. status)
-                return
-            end
-
-            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. " [other], channel status: " .. status)
+            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status)
         end,
     },
 }
