@@ -421,5 +421,48 @@
 
                 return $result;
             }
+
+            /**
+             * @inheritDoc
+             */
+            function getFlat($flatId)
+            {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                $flats = $this->db->get("select house_flat_id, floor, flat, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password from houses_flats where house_flat_id = $flatId",
+                    false,
+                    [
+                        "house_flat_id" => "flatId",
+                        "floor" => "floor",
+                        "flat" => "flat",
+                        "auto_block" => "autoBlock",
+                        "manual_block" => "manualBlock",
+                        "open_code" => "openCode",
+                        "auto_open" => "autoOpen",
+                        "white_rabbit" => "whiteRabbit",
+                        "sip_enabled" => "sipEnabled",
+                        "sip_password" => "sipPassword",
+                    ]
+                );
+
+                if ($flats) {
+                    foreach ($flats as &$flat) {
+                        $entrances = $this->db->get("select house_entrance_id, apartment, cms_levels from houses_entrances_flats where house_flat_id = {$flat["flatId"]}", false, [
+                            "house_entrance_id" => "entranceId",
+                            "apartment" => "apartment",
+                            "cms_levels" => "apartmentLevels",
+                        ]);
+                        $flat["entrances"] = [];
+                        foreach ($entrances as $e) {
+                            $flat["entrances"][] = $e;
+                        }
+                    }
+                    return $flats[0];
+                }
+
+                return false;
+            }
         }
     }

@@ -139,9 +139,9 @@ function autoopen(flat_id, domophone_id)
     return false
 end
 
-function blacklist(flat_id)
+function blacklist(flatId)
     -- TODO get blacklist (block) status from dm
-    local blacklist = false
+    local blacklist = dm("blocked", flatId)
     if blacklist then
         log_debug("blacklist: yes")
         app.Answer()

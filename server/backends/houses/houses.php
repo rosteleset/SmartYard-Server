@@ -88,6 +88,12 @@
             abstract function destroyEntrance($entranceId);
 
             /**
+             * @param $flatId
+             * @return boolean|array
+             */
+            abstract function getFlat($flatId);
+
+            /**
              * @param $houseId
              * @param $floor
              * @param $flat
