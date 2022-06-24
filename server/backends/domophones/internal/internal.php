@@ -26,6 +26,7 @@
                     "port" => "port",
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
+                    "dtmf" => "dtmf",
                     "comment" => "comment"
                 ]);
             }
@@ -33,7 +34,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $server, $ip, $port,  $credentials, $callerId, $comment)
+            public function addDomophone($enabled, $model, $server, $ip, $port,  $credentials, $callerId, $dtmf, $comment)
             {
                 if (!$model) {
                     setLastError("moModel");
@@ -70,7 +71,12 @@
 
                 $ip = long2ip($ip);
 
-                return $this->db->insert("insert into domophones (enabled, model, server, ip, port, credentials, caller_id, comment) values (:enabled, :model, :server, :ip, :port, :credentials, :caller_id, :comment)", [
+                if (in_array(trim($dtmf), [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]) === false) {
+                    setLastError("dtmf");
+                    return false;
+                }
+
+                return $this->db->insert("insert into domophones (enabled, model, server, ip, port, credentials, caller_id, dtmf, comment) values (:enabled, :model, :server, :ip, :port, :credentials, :caller_id, :dtmf, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -78,6 +84,7 @@
                     "port" => $port,
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
+                    "dtmf" => $dtmf,
                     "comment" => $comment,
                 ]);
             }
@@ -85,7 +92,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -129,7 +136,12 @@
 
                 $ip = long2ip($ip);
 
-                return $this->db->modify("update domophones set enabled = :enabled, model = :model, server = :server, ip = :ip, port = :port, credentials = :credentials, caller_id = :caller_id, comment = :comment where domophone_id = $domophoneId", [
+                if (in_array(trim($dtmf), [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]) === false) {
+                    setLastError("dtmf");
+                    return false;
+                }
+
+                return $this->db->modify("update domophones set enabled = :enabled, model = :model, server = :server, ip = :ip, port = :port, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, comment = :comment where domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -137,6 +149,7 @@
                     "port" => $port,
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
+                    "dtmf" => $dtmf,
                     "comment" => $comment,
                 ]);
             }

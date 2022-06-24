@@ -9,6 +9,7 @@ CREATE TABLE domophones
     port integer not null,
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     caller_id text not null,
+    dtmf text not null,
     comment text
 );
 CREATE INDEX domophones_ip on domophones(ip);

@@ -13,5 +13,6 @@
     "deleteDomophone": "Удалить домофон",
     "modifyDomophone": "Редактирование домофона",
     "confirmDeleteDomophone": "Удалить домофон #%s?",
-    "server": "Сервер"
+    "server": "Сервер",
+    "dtmf": "DTMF код открытия двери"
 }

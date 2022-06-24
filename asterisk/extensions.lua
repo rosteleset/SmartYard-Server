@@ -156,10 +156,7 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, type, platform, extension, hash, caller_id, flat_id, dtmf, phone)
-    -- TODO get flat_number by flat_id from dm
-    local flat_number = "1"
-
+function push(token, type, platform, extension, hash, caller_id, flat_id, dtmf, phone, flat_number)
     if phone then
         log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
     else
@@ -229,9 +226,16 @@ function mobile_intercom(flat_id, domophone_id)
         mysql_query("insert into ps_aors (id, max_contacts, remove_existing, synchronized, expire) values ('"..extension.."', 1, 'yes', true, addtime(now(), '00:03:00'))")
         mysql_query("insert ignore into ps_auths (id, auth_type, password, username, synchronized) values ('"..extension.."', 'userpass', '"..hash.."', '"..extension.."', true)")
         mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'opus,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
-        mysql_query("delete from dm.voip_crutch where phone='"..intercoms['phone'].."'")
         if tonumber(intercoms['type']) == 3 then
-            mysql_query("insert ignore into dm.voip_crutch (id, token, hash, platform, flat_id, dtmf, phone, expire) values ('"..extension.."', '"..intercoms['token'].."', '"..hash.."', '"..intercoms['platform'].."', '"..flat_id.."', '"..dtmf.."', '"..intercoms['phone'].."', addtime(now(), '00:01:00'))")
+            redis.setex("voip_crutch_" .. extension, 1 * 60, json_encode({
+                id = extension,
+                token = intercoms['token'],
+                hash = hash,
+                platform = intercoms['platform'],
+                flat_id = flat_id,
+                dtmf = dtmf,
+                phone = intercoms['phone'],
+            }))
             intercoms['type'] = 0
         end
         push(intercoms['token'], intercoms['type'], intercoms['platform'], extension, hash, caller_id, flat_id, dtmf, intercoms['phone'])
@@ -271,7 +275,7 @@ extensions = {
                 pjsip_extension = channel.PJSIP_DIAL_CONTACTS(extension):get()
                 if pjsip_extension ~= "" then
                     if not skip then
-                        log_debug("has registration: "..extension)
+                        log_debug("has registration: " .. extension)
                         skip = true
                     end
                     app.Dial(pjsip_extension, 35, "g")

@@ -45,10 +45,11 @@
              * @param $port
              * @param $credentials
              * @param $callerId
+             * @param $dtmf
              * @param $comment
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $server, $ip, $port, $credentials, $callerId, $comment);
+            abstract public function addDomophone($enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment);
 
             /**
              * @param $domophoneId
@@ -59,10 +60,11 @@
              * @param $port
              * @param $credentials
              * @param $callerId
+             * @param $dtmf
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment);
 
             /**
              * @param $domophoneId

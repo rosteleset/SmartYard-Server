@@ -110,6 +110,16 @@
                     },
                 },
                 {
+                    id: "dtmf",
+                    type: "text",
+                    title: i18n("domophones.dtmf"),
+                    placeholder: i18n("domophones.dtmf"),
+                    value: "1",
+                    validate: v => {
+                        return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
+                    },
+                },
+                {
                     id: "comment",
                     type: "text",
                     title: i18n("domophones.comment"),
@@ -226,6 +236,16 @@
                         value: domophone.callerId,
                         validate: v => {
                             return $.trim(v) !== "" && $.trim(v).length <= 32;
+                        },
+                    },
+                    {
+                        id: "dtmf",
+                        type: "text",
+                        title: i18n("domophones.dtmf"),
+                        placeholder: i18n("domophones.dtmf"),
+                        value: domophone.dtmf,
+                        validate: v => {
+                            return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
                         },
                     },
                     {
