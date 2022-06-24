@@ -39,10 +39,20 @@
 
                 if ($flats) {
                     foreach ($flats as &$flat) {
-                        $entrances = $this->db->get("select house_entrance_id, apartment, cms_levels from houses_entrances_flats where house_flat_id = {$flat["flatId"]}", false, [
+                        $entrances = $this->db->get("
+                            select
+                                house_entrance_id,
+                                apartment,
+                                cms_levels,
+                                (select count(*) from houses_entrances_cmses where houses_entrances_cmses.house_entrance_id = houses_entrances_flats.house_entrance_id and houses_entrances_cmses.apartment = houses_entrances_flats.apartment) matrix
+                            from
+                                houses_entrances_flats
+                            where house_flat_id = {$flat["flatId"]}
+                        ", false, [
                             "house_entrance_id" => "entranceId",
                             "apartment" => "apartment",
                             "cms_levels" => "apartmentLevels",
+                            "matrix" => "matrix",
                         ]);
                         $flat["entrances"] = [];
                         foreach ($entrances as $e) {

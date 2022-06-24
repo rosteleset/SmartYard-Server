@@ -403,13 +403,18 @@ extensions = {
             app.Hangup()
         end,
 
+        [ "10001" ] = function (context, extension)
+            app.Dial("PJSIP/10001", 60, "tT")
+        end,
+
         -- all others
         [ "_X." ] = function (context, extension)
             checkin()
 
-            log_debug("incomig ring "..channel.CALLERID("num"):get().." >>> "..extension)
+            log_debug("incoming ring " .. channel.CALLERID("num"):get() .. " >>> " .. extension)
 
-            local from = channel.CALLERID("num")
+            local from = channel.CALLERID("num"):get()
+
             local domophoneId = false
             local flatId = false
             local flatNumber = false

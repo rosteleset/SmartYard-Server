@@ -129,17 +129,17 @@
 
     switch ($path[1]) {
         case "aors":
-            error_log("\n\n***** AORS:" . print_r($_POST, true) . "\n");
+            error_log("\n\n***** AORS: " . print_r($_POST, true) . "\n");
             $clients = $aors;
             break;
 
         case "auths":
-            error_log("\n\n***** AUTHS:" . print_r($_POST, true) . "\n");
+            error_log("\n\n***** AUTHS: " . print_r($_POST, true) . "\n");
             $clients = $auths;
             break;
 
         case "endpoints":
-            error_log("\n\n***** ENDPOINTS:" . print_r($_POST, true) . "\n");
+            error_log("\n\n***** ENDPOINTS: " . print_r($_POST, true) . "\n");
             $clients = $endpoints;
             break;
 
