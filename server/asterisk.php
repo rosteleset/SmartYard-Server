@@ -39,7 +39,6 @@
         if (@$config["redis"]["password"]) {
             $redis->auth($config["redis"]["password"]);
         }
-        $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
         echo "can't connect to redis server\n";
         exit(1);
@@ -87,8 +86,6 @@
                     $domophones = loadBackend("domophones");
 
                     $panel = $domophones->getDomophone((int)substr($extension, 1));
-
-                    error_log(print_r($panel, true));
 
                     if ($panel) {
                         return [
