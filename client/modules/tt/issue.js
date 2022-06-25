@@ -197,6 +197,7 @@
 
     route: function (params) {
         $("#altForm").hide();
+        $("#subTop").html("");
 
         GET("tt", "tt").
         fail(FAIL).

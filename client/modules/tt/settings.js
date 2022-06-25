@@ -1623,6 +1623,7 @@
 
     route: function (params) {
         $("#altForm").hide();
+        $("#subTop").html("");
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.settings");
 

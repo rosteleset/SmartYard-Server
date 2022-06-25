@@ -73,6 +73,7 @@
     },
 
     route: function (params) {
+        $("#subTop").html("");
         $("#altForm").hide();
 
         $("#leftTopDynamic").html(`

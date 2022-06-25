@@ -5,6 +5,7 @@
     },
 
     route: function (params) {
+        $("#subTop").html("");
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("about.about");

@@ -263,6 +263,7 @@
 
     render: function () {
         $("#altForm").hide();
+        $("#subTop").html("");
 
         loadingStart();
 

@@ -230,14 +230,13 @@
     },
 
     route: function (params) {
+        $("#subTop").html("");
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("cameras.cameras");
 
         GET("cameras", "cameras", false, true).
         done(response => {
-            $("#altForm").hide();
-
             modules.cameras.meta = response.cameras;
 
             cardTable({

@@ -279,14 +279,13 @@
     },
 
     route: function (params) {
+        $("#subTop").html("");
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("domophones.domophones");
 
         GET("domophones", "domophones", false, true).
         done(response => {
-            $("#altForm").hide();
-
             modules.domophones.meta = response.domophones;
 
             cardTable({

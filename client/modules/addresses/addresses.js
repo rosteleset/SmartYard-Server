@@ -2082,7 +2082,6 @@
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
-        $("#mainForm").html(i18n("addresses.addresses"));
 
         if (!params.show) {
             params.show = "regions";

@@ -1,12 +1,5 @@
 ({
     init: function () {
-        leftSide("fas fa-fw fa-home", i18n("houses.houses"), "#houses", false, true);
-
-        $(".sidebar .nav-item a[href='#houses']").on("click", function (event) {
-            event.stopPropagation();
-            return false;
-        });
-
         moduleLoaded("houses", this);
     },
 
@@ -1423,8 +1416,6 @@
             let cms_layout = response.cms;
 
             modules.houses.loadHouse(houseId, () => {
-                $("#mainForm").html("");
-
                 let entrance = false;
 
                 for (let i in modules.houses.meta.entrances) {
@@ -1537,10 +1528,13 @@
     },
 
     route: function (params) {
+        $(".sidebar .nav-item a[href='#addresses']").addClass('active');
+
         document.title = i18n("windowTitle") + " :: " + i18n("houses.house");
 
         if (params.show === "cms" && parseInt(params.entranceId) > 0) {
             $("#altForm").hide();
+            $("#subTop").html("");
 
             modules.houses.renderEntrance(params.houseId, params.entranceId);
         } else {

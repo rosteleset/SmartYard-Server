@@ -58,7 +58,6 @@ function hashChange() {
                 $("#page404").hide();
                 $("#pageError").hide();
                 $("#topMenuLeft").html(`<li class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
-                $("#subTop").html("");
                 $("#leftTopDynamic").html("");
                 $("#rightTopDynamic").html("");
                 if (modules[route].search) {
@@ -86,6 +85,8 @@ function hashChange() {
 }
 
 function page404() {
+    $("#mainForm").html("");
+    $("#altForm").hide();
     loadingDone(true);
     document.title = `${i18n("windowTitle")} :: 404`;
     $("#page404").html(`
@@ -102,6 +103,8 @@ function page404() {
 }
 
 function pageError(error) {
+    $("#mainForm").html("");
+    $("#altForm").hide();
     loadingDone(true);
     document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
     $("#pageError").html(`
@@ -123,6 +126,8 @@ function changeLanguage() {
 }
 
 function showLoginForm() {
+    $("#mainForm").html("");
+    $("#altForm").hide();
     $("#page404").hide();
     $("#pageError").hide();
     $("#forgotForm").hide();
@@ -155,6 +160,8 @@ function showLoginForm() {
 }
 
 function showForgotPasswordForm() {
+    $("#mainForm").html("");
+    $("#altForm").hide();
     $("#page404").hide();
     $("#pageError").hide();
     $("#loginForm").hide();
