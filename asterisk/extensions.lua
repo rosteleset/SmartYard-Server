@@ -403,8 +403,8 @@ extensions = {
             app.Hangup()
         end,
 
-        [ "10001" ] = function (context, extension)
-            app.Dial("PJSIP/10001", 60, "tT")
+        [ "10002" ] = function (context, extension)
+            app.Dial("PJSIP/10002", 60, "tT")
         end,
 
         -- all others

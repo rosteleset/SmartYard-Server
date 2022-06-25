@@ -55,92 +55,85 @@
         return $r;
     }
 
-    $aors = [
-        "10001" => [
-            "id" => "10001",
-            "max_contacts" => "1",
-            "remove_existing" => "yes"
-        ],
-        "10002" => [
-            "id" => "10002",
-            "max_contacts" => "1",
-            "remove_existing" => "yes"
-        ],
-    ];
+    function getExtension($extension, $section) {
 
-    $auths = [
-        "10001" => [
-            "id" => "10001",
-            "username" => "10001",
-            "auth_type" => "userpass",
-            "password" => "123456",
-        ],
-        "10002" => [
-            "id" => "10002",
-            "username" => "10002",
-            "auth_type" => "userpass",
-            "password" => "123456",
-        ],
-    ];
+        // domophone panel
+        if ($extension[0] === "1" && strlen($extension) === 5) {
+            switch ($section) {
+                case "aors":
+                    return [
+                        "id" => $extension,
+                        "max_contacts" => "1",
+                        "remove_existing" => "yes"
+                    ];
 
-    $endpoints = [
-        "10001" => [
-            "id" => "10001",
-            "auth" => "10001",
-            "outbound_auth" => "10001",
-            "aors" => "10001",
-            "callerid" => "10001",
-            "context" => "default",
-            "disallow" => "all",
-            "allow" => "alaw,h264",
-    //                "allow" => "opus,h264",
-    //                "allow" => "opus",
-    //                "webrtc" => "yes",
-            "rtp_symmetric" => "no",
-            "force_rport" => "no",
-            "rewrite_contact" => "yes",
-            "timers" => "no",
-            "direct_media" => "no",
-            "allow_subscribe" => "yes",
-            "dtmf_mode" => "rfc4733",
-            "ice_support" => "no",
-        ],
-        "10002" => [
-            "id" => "10002",
-            "auth" => "10002",
-            "outbound_auth" => "10002",
-            "aors" => "10002",
-            "callerid" => "10002",
-            "context" => "default",
-            "disallow" => "all",
-            "allow" => "alaw,h264",
-            "rtp_symmetric" => "no",
-            "force_rport" => "no",
-            "rewrite_contact" => "yes",
-            "timers" => "no",
-            "direct_media" => "no",
-            "allow_subscribe" => "yes",
-            "dtmf_mode" => "rfc4733",
-            "ice_support" => "no",
-        ]
-    ];
+                case "auths":
+                    $domophones = loadBackend("domophones");
+
+                    $panel = $domophones->getDomophone((int)substr($extension, 1));
+
+                    if ($panel) {
+                        return [
+                            "id" => $extension,
+                            "username" => $extension,
+                            "auth_type" => "userpass",
+                            "password" => $panel["credentials"],
+                        ];
+                    }
+
+                    break;
+
+                case "endpoints":
+                    $domophones = loadBackend("domophones");
+
+                    $panel = $domophones->getDomophone((int)substr($extension, 1));
+
+                    error_log(print_r($panel, true));
+
+                    if ($panel) {
+                        return [
+                            "id" => $extension,
+                            "auth" => $extension,
+                            "outbound_auth" => $extension,
+                            "aors" => $extension,
+                            "callerid" => $panel["callerId"],
+                            "context" => "default",
+                            "disallow" => "all",
+                            "allow" => "alaw,h264",
+                            "rtp_symmetric" => "no",
+                            "force_rport" => "no",
+                            "rewrite_contact" => "yes",
+                            "timers" => "no",
+                            "direct_media" => "no",
+                            "allow_subscribe" => "yes",
+                            "dtmf_mode" => "rfc4733",
+                            "ice_support" => "no",
+                        ];
+                    }
+
+                    break;
+            }
+        }
+
+        // mobile extension
+        if ($extension[0] === "2" && strlen($extension) === 10) {
+
+        }
+    }
+
+/*
+        mysql_query("insert into ps_aors (id, max_contacts, remove_existing, synchronized, expire) values ('"..extension.."', 1, 'yes', true, addtime(now(), '00:03:00'))")
+        mysql_query("insert ignore into ps_auths (id, auth_type, password, username, synchronized) values ('"..extension.."', 'userpass', '"..hash.."', '"..extension.."', true)")
+        mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'opus,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
+*/
 
     $path = explode("/", @$_SERVER["PATH_INFO"]);
 
     switch ($path[1]) {
         case "aors":
-            error_log("\n\n***** AORS: " . print_r($_POST, true) . "\n");
-            $clients = $aors;
-            break;
-
         case "auths":
-            error_log("\n\n***** AUTHS: " . print_r($_POST, true) . "\n");
-            $clients = $auths;
-            break;
-
         case "endpoints":
-            error_log("\n\n***** ENDPOINTS: " . print_r($_POST, true) . "\n");
-            $clients = $endpoints;
+            echo paramsToResponse(getExtension($_POST["id"], $path[1]));
             break;
 
         case "extensions":
@@ -161,25 +154,5 @@
                     break;
             }
             break;
-    }
-
-    switch ($path[1]) {
-        case "aors":
-        case "auths":
-        case "endpoints":
-        switch (@$_POST["id_LIKE"]) {
-            case "%":
-                echo paramsToResponse($clients["10001"]) . "\r\n";
-                echo paramsToResponse($clients["10002"]) . "\r\n";
-                break;
-        }
-
-        switch (@$_POST["id"]) {
-            case "10001":
-            case "10002":
-                echo paramsToResponse($clients[$_POST["id"]]);
-            break;
-        }
-        break;
     }
 

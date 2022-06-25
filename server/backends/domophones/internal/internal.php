@@ -205,5 +205,30 @@
 
                 return $cmses;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getDomophone($domophoneId)
+            {
+                if (!checkInt($domophoneId)) {
+                    return false;
+                }
+
+                return $this->db->get("select * from domophones where domophone_id = $domophoneId", false, [
+                    "domophone_id" => "domophoneId",
+                    "enabled" => "enabled",
+                    "model" => "model",
+                    "server" => "server",
+                    "ip" => "ip",
+                    "port" => "port",
+                    "credentials" => "credentials",
+                    "caller_id" => "callerId",
+                    "dtmf" => "dtmf",
+                    "comment" => "comment"
+                ], [
+                    "singlify"
+                ]);
+            }
         }
     }

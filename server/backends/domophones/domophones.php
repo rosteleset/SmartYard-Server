@@ -71,5 +71,11 @@
              * @return boolean
              */
             abstract public function deleteDomophone($domophoneId);
+
+            /**
+             * @param $domophoneId
+             * @return false|array
+             */
+            abstract public function getDomophone($domophoneId);
         }
     }
