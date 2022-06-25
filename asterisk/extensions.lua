@@ -200,46 +200,39 @@ end
 
 function mobile_intercom(flat_id, domophone_id)
     local extension, res, caller_id
+
     local dtmf = mysql_result("select dtmf from dm.domophones where domophone_id="..domophone_id)
+    local intercoms, qr = mysql_query("select token, type, platform, phone from dm.intercoms where flat_id="..flat_id)
+
     if not dtmf or dtmf == '' then
         dtmf = ''
     end
     local hash = camshow(domophone_id)
     caller_id = channel.CALLERID("name"):get()
-    local intercoms, qr = mysql_query("select token, type, platform, phone from dm.intercoms where flat_id="..flat_id)
-    while intercoms do
-        intercoms['phone'] = replace_char(intercoms['phone'], 1, '7')
-        extension = tonumber(mysql_result("select dm.autoextension()")) + 2000000000
-        --[[
-            Redis database for user authentication and peer permissions
-            has the following schema:
 
-            1) For the long-term credentials there must be keys
-            "turn/realm/<realm-name>/user/<username>/key" and the values must be
-            the hmackeys which is an md5 hash of "<username>:<realm-name>:<password>"
-            (See STUN RFC: https://tools.ietf.org/html/rfc5389#page-35).
-            For example, for the user "gorst", realm "north.gov"
-            and password "hero", there must be key "turn/realm/north.gov/user/gorst/key"
-            and the value should be md5 hash of "gorst:north.gov:hero"
-            which will result in "7da2270ccfa49786e0115366d3a3d14d".
-        --]]
-        mysql_query("insert into dm.turnusers_lt (realm, name, hmackey, expire) values ('dm.lanta.me', '"..extension.."', md5(concat('"..extension.."', ':', 'dm.lanta.me', ':', '"..hash.."')), addtime(now(), '00:03:00'))")
-        mysql_query("insert into ps_aors (id, max_contacts, remove_existing, synchronized, expire) values ('"..extension.."', 1, 'yes', true, addtime(now(), '00:03:00'))")
-        mysql_query("insert ignore into ps_auths (id, auth_type, password, username, synchronized) values ('"..extension.."', 'userpass', '"..hash.."', '"..extension.."', true)")
-        mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'opus,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
+    while intercoms do
+        redis:incr("autoextension")
+        extension = tonumber(redis:get("autoextension"))
+        if extension > 999999 then
+            redis:set("autoextension", "1")
+        end
+        extension = extension + 2000000000
+        redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", md5(extension .. ":" .. realm .. ":" .. hash))
+        redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         if tonumber(intercoms['type']) == 3 then
             redis.setex("voip_crutch_" .. extension, 1 * 60, json_encode({
                 id = extension,
                 token = intercoms['token'],
                 hash = hash,
                 platform = intercoms['platform'],
-                flat_id = flat_id,
+                flatId = flat_id,
                 dtmf = dtmf,
                 phone = intercoms['phone'],
+                flatNumber = flatNumberl,
             }))
             intercoms['type'] = 0
         end
-        push(intercoms['token'], intercoms['type'], intercoms['platform'], extension, hash, caller_id, flat_id, dtmf, intercoms['phone'])
+        push(intercoms['token'], intercoms['type'], intercoms['platform'], extension, hash, caller_id, flat_id, dtmf, intercoms['phone'], flatNumber)
         if not res then
             res = ""
         end
@@ -249,6 +242,7 @@ function mobile_intercom(flat_id, domophone_id)
             res = res.."&"
         end
     end
+
     return res
 end
 
