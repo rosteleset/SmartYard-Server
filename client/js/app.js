@@ -305,6 +305,7 @@ function moduleLoaded(module, object) {
 function whoAmI(force) {
     return GET("accounts", "whoAmI", false, force).done(_me => {
         if (_me && _me.user) {
+            $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
             myself.uid = _me.user.uid;
             myself.realName = _me.user.realName;
             myself.eMail = _me.user.eMail;
@@ -402,6 +403,8 @@ function initAll() {
 
     $("#brandTitle").text(i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
+
+    $('.rs232-scanner').attr('title', i18n("connectScanner"));
 
     $("#searchInput").attr("placeholder", i18n("search")).off("keypress").on("keypress", e => {
         if (e.charCode === 13) {
