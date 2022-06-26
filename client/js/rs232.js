@@ -56,10 +56,10 @@ function desktop_nfc_scanner() {
             mifare_port = port;
             port.open({ baudRate: 9600, baudrate: 9600 }).then(() => {
                 port.readable.pipeThrough(new TextDecoderStream()).pipeTo(appendStream);
-                $('.rs232-scanner').off('click').removeClass('text-dark text-info text-danger text-success text-warning pointer').addClass('text-success').attr('title', i18n("scannerConnected")).show();
+                $('.rs232-scanner').off('click').removeClass('bg-dark bg-danger bg-success bg-warning pointer').addClass('bg-success').attr('title', i18n("scannerConnected")).show();
             });
             navigator.serial.ondisconnect = () => {
-                $('.rs232-scanner').off('click').removeClass('text-dark text-info text-danger text-success text-warning pointer').addClass('text-danger').attr('title', i18n("scannerDisConnected")).show();
+                $('.rs232-scanner').off('click').removeClass('bg-dark bg-danger bg-success bg-warning pointer').addClass('bg-danger').attr('title', i18n("scannerDisConnected")).show();
             };
         }).catch(() => {
             mifare_port = null;
@@ -127,6 +127,6 @@ try {
 
 setTimeout(() => {
     if (!('serial' in navigator) && !NFC) {
-        $('.rs232-scanner').off('click').removeClass('text-dark text-info text-danger text-success text-warning pointer').addClass('text-warning').attr('title', i18n("scannerUnavailable")).show();
+        $('.rs232-scanner').off('click').removeClass('bg-dark bg-danger bg-success bg-warning pointer').addClass('bg-warning').attr('title', i18n("scannerUnavailable")).show();
     }
 }, 500);
