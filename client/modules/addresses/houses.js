@@ -484,13 +484,11 @@
                                 result.cms = 0;
                                 result.shared = 0;
                             }
-                            if (parseInt(result.cms) === 0) {
-                                result.cmsType = 0;
-                            } else {
+                            if (parseInt(result.cms) !== 0) {
                                 result.shared = 0;
                             }
-                            if (parseInt(result.shared) === 0) {
-                                result.prefix = 0;
+                            if (parseInt(result.shared) !== 0) {
+                                result.cms = 0;
                             }
                             result.houseId = houseId;
                             modules.addresses.houses.doCreateEntrance(result);
@@ -994,13 +992,11 @@
                                     result.cms = 0;
                                     result.shared = 0;
                                 }
-                                if (parseInt(result.cms) === 0) {
-                                    result.cmsType = 0;
-                                } else {
+                                if (parseInt(result.cms) !== 0) {
                                     result.shared = 0;
                                 }
-                                if (parseInt(result.shared) === 0) {
-                                    result.prefix = 0;
+                                if (parseInt(result.shared) !== 0) {
+                                    result.cms = 0;
                                 }
                                 result.entranceId = entranceId;
                                 result.houseId = houseId;
@@ -1485,7 +1481,7 @@
                                         title: i18n("addresses.cms"),
                                         disabled: modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
                                         click: entranceId => {
-                                            location.href = "#houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].houseId;
+                                            location.href = "#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].houseId;
                                         },
                                     },
                                     {
