@@ -484,12 +484,12 @@
                                 result.cms = 0;
                                 result.shared = 0;
                             }
-                            if (result.cms) {
-                                result.shared = 0;
-                            } else {
+                            if (parseInt(result.cms) === 0) {
                                 result.cmsType = 0;
+                            } else {
+                                result.shared = 0;
                             }
-                            if (!result.shared) {
+                            if (parseInt(result.shared) === 0) {
                                 result.prefix = 0;
                             }
                             result.houseId = houseId;
@@ -582,7 +582,7 @@
         let prefx = md5(guid());
 
         for (let i in modules.addresses.houses.meta.entrances) {
-            if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0) {
+            if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0 && parseInt(modules.addresses.houses.meta.entrances[i].shared) === 0) {
                 let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none;">`;
                 inputs += `
                     <div class="col">
@@ -994,12 +994,12 @@
                                     result.cms = 0;
                                     result.shared = 0;
                                 }
-                                if (result.cms) {
-                                    result.shared = 0;
-                                } else {
+                                if (parseInt(result.cms) === 0) {
                                     result.cmsType = 0;
+                                } else {
+                                    result.shared = 0;
                                 }
-                                if (!result.shared) {
+                                if (parseInt(result.shared) === 0) {
                                     result.prefix = 0;
                                 }
                                 result.entranceId = entranceId;
@@ -1011,7 +1011,6 @@
                 } else {
                     error(i18n("addresses.entranceNotFound"));
                 }
-
                 loadingDone();
             }).
             fail(FAIL).
@@ -1045,7 +1044,7 @@
             }
 
             for (let i in modules.addresses.houses.meta.entrances) {
-                if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0) {
+                if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0 && parseInt(modules.addresses.houses.meta.entrances[i].shared) === 0) {
                     let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none;">`;
                     inputs += `
                         <div class="col">
