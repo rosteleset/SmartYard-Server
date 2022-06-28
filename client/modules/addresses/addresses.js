@@ -5,7 +5,6 @@
         }
 
         loadSubModules("addresses", [
-            "house",
             "houses",
             "subscribers",
         ], this);
@@ -2093,9 +2092,8 @@
                     <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
                 </li>
             `);
+            $(".addHouseMagick").off("click").on("click", modules.addresses.houses.houseMagick);
         }
-
-        $(".addHouseMagick").off("click").on("click", modules["addresses.house"].houseMagick);
 
         switch (params.show) {
             case "region":

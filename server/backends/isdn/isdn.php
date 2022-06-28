@@ -16,14 +16,14 @@
         {
             /**
              *
-             * send authentication code to device $id
+             * send authentication (via call) code to device $id
              *
              * return code if successfull and false if not
              *
              * @param $id
              * @return false|string
              */
-            abstract function sendCode($id);
+            abstract function flashCall($id);
 
             /**
              * @param $id
@@ -31,5 +31,12 @@
              * @return boolean
              */
             abstract function checkCode($id, $code);
+
+            /**
+             * @param $id
+             * @param $text
+             * @return mixed
+             */
+            abstract function sendSMS($id, $text);
         }
     }
