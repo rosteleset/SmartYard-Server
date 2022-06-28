@@ -250,7 +250,7 @@
                                     if (!$ap || $ap <= 0 || $ap > 9999) {
                                         $ap = $flat;
                                     }
-                                    $lv = $apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
+                                    $lv = @$apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
                                 }
                                 if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
                                         ":house_entrance_id" => $entrances[$i],

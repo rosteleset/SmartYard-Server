@@ -284,6 +284,12 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("domophones.domophones");
 
+        let domophoneId = false;
+
+        if (params.domophoneId) {
+            domophoneId = parseInt(params.domophoneId);
+        }
+
         GET("domophones", "domophones", false, true).
         done(response => {
             modules.domophones.meta = response.domophones;
@@ -318,6 +324,9 @@
                     let rows = [];
 
                     for (let i in modules.domophones.meta.domophones) {
+
+                        if (domophoneId && domophoneId !== parseInt(modules.domophones.meta.domophones[i].domophoneId)) continue;
+
                         rows.push({
                             uid: modules.domophones.meta.domophones[i].domophoneId,
                             cols: [

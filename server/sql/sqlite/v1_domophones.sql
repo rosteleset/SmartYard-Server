@@ -13,3 +13,4 @@ CREATE TABLE domophones
     comment text
 );
 CREATE INDEX domophones_ip on domophones(ip);
+CREATE UNIQUE INDEX domophones_ip_port on domophones(ip, port);
