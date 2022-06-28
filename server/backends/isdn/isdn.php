@@ -24,5 +24,12 @@
              * @return false|string
              */
             abstract function sendCode($id);
+
+            /**
+             * @param $id
+             * @param $code
+             * @return boolean
+             */
+            abstract function checkCode($id, $code);
         }
     }
