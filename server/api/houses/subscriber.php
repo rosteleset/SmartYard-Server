@@ -20,9 +20,36 @@ namespace api\houses
         {
             $houses = loadBackend("houses");
 
-            $entrances = $houses->getSharedEntrances(@$params["_id"]);
+            $subscriber = $houses->getSubscribers("id", @$params["_id"]);
 
-            return api::ANSWER($entrances, ($entrances !== false)?"entrances":"notAcceptable");
+            return api::ANSWER($subscriber, ($subscriber !== false)?"subscriber":false);
+        }
+
+        public static function POST($params)
+        {
+            $houses = loadBackend("houses");
+
+            $subscriberId = $houses->addSubscriber(@$params["mobile"]);
+
+            return api::ANSWER($subscriberId, ($subscriberId !== false)?"subscriber":false);
+        }
+
+        public static function PUT($params)
+        {
+            $houses = loadBackend("houses");
+
+            $success = $houses->modifySubscriber(@$params["_id"], $params);
+
+            return api::ANSWER($success);
+        }
+
+        public static function DELETE($params)
+        {
+            $houses = loadBackend("houses");
+
+            $success = $houses->deleteSubscriber(@$params["_id"]);
+
+            return api::ANSWER($success);
         }
 
         public static function index()

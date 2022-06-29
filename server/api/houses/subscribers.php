@@ -20,9 +20,9 @@ namespace api\houses
         {
             $houses = loadBackend("houses");
 
-            $entrances = $houses->getSharedEntrances(@$params["_id"]);
+            $subscriber = $houses->getSubscribers(@$params["by"], @$params["query"]);
 
-            return api::ANSWER($entrances, ($entrances !== false)?"entrances":"notAcceptable");
+            return api::ANSWER($subscriber, ($subscriber !== false)?"subscriber":false);
         }
 
         public static function index()
