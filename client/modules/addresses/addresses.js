@@ -2092,13 +2092,13 @@
         if (AVAIL("geo", "suggestions")) {
             top += `
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                    <a href="javascript:void(0)" class="addHouseMagick nav-link nav-item-back-hover text-dark">${i18n("addresses.addHouse")}</a>
                 </li>
             `;
         }
 
         top += `<li class="nav-item d-none d-sm-inline-block">`;
-        top += `<a href="#addresses.domophones" class="nav-link"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
+        top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark">${i18n("addresses.domophones")}</a>`;
         top += `</li>`;
 
         $("#leftTopDynamic").html(top);

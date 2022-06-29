@@ -4,7 +4,7 @@
         moduleLoaded("addresses.subscribers", this);
     },
 
-    renderSubscribers: function (target, targetId, formTarget) {
+    renderSubscribers: function (list, formTarget) {
         loadingStart();
 
     },
@@ -12,6 +12,8 @@
     route: function (params) {
         subTop(params.house + ", " + params.flat);
 
+        $("#altForm").hide();
+        $("#mainForm").html("");
 
         loadingDone();
     }

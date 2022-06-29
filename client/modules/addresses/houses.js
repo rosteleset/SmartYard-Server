@@ -1392,17 +1392,6 @@
                                             }
                                         },
                                     },
-                                    {
-                                        icon: "fas fa-key",
-                                        title: i18n("addresses.keys"),
-                                        click: flatId => {
-                                            for (let i in modules.addresses.houses.meta.flats) {
-                                                if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
-                                                    location.href = "#addresses.keys&mode=byFlat&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
-                                                }
-                                            }
-                                        },
-                                    },
                                 ],
                             },
                         });
@@ -1650,13 +1639,13 @@
             if (AVAIL("geo", "suggestions")) {
                 top += `
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                    <a href="javascript:void(0)" class="addHouseMagick nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
                 </li>
             `;
             }
 
             top += `<li class="nav-item d-none d-sm-inline-block">`;
-            top += `<a href="#addresses.domophones" class="nav-link"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
+            top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
             top += `</li>`;
 
             $("#leftTopDynamic").html(top);
