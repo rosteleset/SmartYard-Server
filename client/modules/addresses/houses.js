@@ -1385,14 +1385,22 @@
                                         icon: "fas fa-mobile-alt",
                                         title: i18n("subscribers.subscribers"),
                                         click: flatId => {
-                                            // ?
+                                            for (let i in modules.addresses.houses.meta.flats) {
+                                                if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
+                                                    location.href = "#addresses.subscribers&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
+                                                }
+                                            }
                                         },
                                     },
                                     {
                                         icon: "fas fa-key",
                                         title: i18n("keys.keys"),
                                         click: flatId => {
-                                            // ?
+                                            for (let i in modules.addresses.houses.meta.flats) {
+                                                if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
+                                                    location.href = "#addresses.keys&mode=byFlat&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
+                                                }
+                                            }
                                         },
                                     },
                                 ],
@@ -1639,10 +1647,10 @@
         } else {
             if (AVAIL("geo", "suggestions")) {
                 $("#leftTopDynamic").html(`
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
-                </li>
-            `);
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                    </li>
+                `);
                 $(".addHouseMagick").off("click").on("click", modules.addresses.houses.houseMagick);
             }
 

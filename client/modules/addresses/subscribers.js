@@ -5,6 +5,11 @@
     },
 
     route: function (params) {
+        $("#altForm").hide();
+        subTop(params.house + ", " + params.flat);
 
+        $("#mainForm").html("");
+
+        loadingDone();
     }
 }).init();
