@@ -1383,7 +1383,7 @@
                                 items: [
                                     {
                                         icon: "fas fa-mobile-alt",
-                                        title: i18n("subscribers.subscribers"),
+                                        title: i18n("addresses.subscribers"),
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {
                                                 if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
@@ -1394,7 +1394,7 @@
                                     },
                                     {
                                         icon: "fas fa-key",
-                                        title: i18n("keys.keys"),
+                                        title: i18n("addresses.keys"),
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {
                                                 if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
@@ -1650,7 +1650,7 @@
             if (AVAIL("geo", "suggestions")) {
                 top += `
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                    <a href="javascript:void(0)" class="nav-link addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
                 </li>
             `;
             }

@@ -25,7 +25,7 @@ function cardTable(params) {
         }
         if (params.title.filter) {
             filterInput = md5(guid());
-            h += `<div class="card-tools d-none d-md-block col-4">`;
+            h += `<div class="card-tools d-none d-md-block">`;
             h += `<div class="input-group input-group-sm">`;
             h += `<input id="${filterInput}" type="text" class="form-control float-right table-search-input" placeholder="${i18n("filter")}">`;
             h += `<div class="input-group-append">`;

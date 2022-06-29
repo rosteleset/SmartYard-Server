@@ -278,7 +278,16 @@
     },
 
     route: function (params) {
-        $("#subTop").html("");
+        let top = '';
+
+        if (location.href.split("#")[1] !== "addresses.domophones") {
+            top += `<li class="nav-item d-none d-sm-inline-block">`;
+            top += `<a href="#addresses.domophones" class="nav-link"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
+            top += `</li>`;
+        }
+
+        $("#leftTopDynamic").html(top);
+
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");

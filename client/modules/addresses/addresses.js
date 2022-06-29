@@ -2092,7 +2092,7 @@
         if (AVAIL("geo", "suggestions")) {
             top += `
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                    <a href="javascript:void(0)" class="nav-link addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
                 </li>
             `;
         }
