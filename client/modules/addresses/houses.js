@@ -319,7 +319,7 @@
                     })
                 }
 
-                GET("domophones", "domophones").
+                GET("houses", "domophones").
                 done(response => {
                     modules.addresses.houses.meta.domophones = response.domophones;
                     modules.addresses.houses.meta.domophoneModelsById = {};
@@ -400,7 +400,7 @@
                             {
                                 id: "domophoneId",
                                 type: "select2",
-                                title: i18n("addresses.domophoneId"),
+                                title: i18n("addresses.domophone"),
                                 options: domophones,
                                 validate: v => {
                                     return parseInt(v) > 0;
@@ -795,7 +795,7 @@
                 })
             }
 
-            GET("domophones", "domophones").
+            GET("houses", "domophones").
             done(response => {
                 modules.addresses.houses.meta.domophones = response.domophones;
                 modules.addresses.houses.meta.domophoneModelsById = {};
@@ -894,7 +894,7 @@
                             {
                                 id: "domophoneId",
                                 type: "select2",
-                                title: i18n("addresses.domophoneId"),
+                                title: i18n("addresses.domophone"),
                                 value: entrance.domophoneId,
                                 options: domophones,
                                 select: modules.addresses.houses.domophoneIdSelect,
@@ -1467,10 +1467,10 @@
                                 items: [
                                     {
                                         icon: "fas fa-door-open",
-                                        title: i18n("domophones.domophone"),
+                                        title: i18n("addresses.domophone"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].domophoneId,
                                         click: entranceId => {
-                                            location.href = "#domophones&domophoneId=" + entrances[entranceId].domophoneId;
+                                            location.href = "#addresses.domophones&domophoneId=" + entrances[entranceId].domophoneId;
                                         },
                                     },
                                     {
@@ -1497,7 +1497,7 @@
                                     },
                                     {
                                         icon: "fas fa-key",
-                                        title: i18n("keys.keys"),
+                                        title: i18n("addresses.keys"),
                                         click: entranceId => {
                                             // ?
                                         },
@@ -1645,14 +1645,22 @@
 
             modules.addresses.houses.renderEntrance(params.houseId, params.entranceId);
         } else {
+            let top = '';
+
             if (AVAIL("geo", "suggestions")) {
-                $("#leftTopDynamic").html(`
-                    <li class="nav-item d-none d-sm-inline-block">
-                        <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
-                    </li>
-                `);
-                $(".addHouseMagick").off("click").on("click", modules.addresses.houses.houseMagick);
+                top += `
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                </li>
+            `;
             }
+
+            top += `<li class="nav-item d-none d-sm-inline-block">`;
+            top += `<a href="#addresses.domophones" class="nav-link"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
+            top += `</li>`;
+
+            $("#leftTopDynamic").html(top);
+            $(".addHouseMagick").off("click").on("click", modules.addresses.houses.houseMagick);
 
             modules.addresses.houses.renderHouse(params.houseId);
         }

@@ -208,7 +208,7 @@
         done(() => {
             switch (params.action) {
                 case "create":
-                    modules["tt.issue"].createIssueForm(params.project, params.workflow);
+                    modules.tt.issue.createIssueForm(params.project, params.workflow);
                     break;
                 default:
                     loadingDone();

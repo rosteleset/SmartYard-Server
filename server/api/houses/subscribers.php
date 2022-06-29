@@ -13,7 +13,7 @@ namespace api\houses
      * house method
      */
 
-    class subscriber extends api
+    class subscribers extends api
     {
 
         public static function GET($params)

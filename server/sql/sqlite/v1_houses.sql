@@ -1,3 +1,20 @@
+-- panels
+CREATE TABLE houses_domophones
+(
+    house_domophone_id integer not null primary key autoincrement,
+    enabled integer not null,
+    model text not null,
+    server text not null,
+    ip text not null,
+    port integer not null,
+    credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
+    caller_id text not null,
+    dtmf text not null,
+    comment text
+);
+CREATE INDEX domophones_ip on houses_domophones(ip);
+CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(ip, port);
+
 -- entrances
 CREATE TABLE houses_entrances
 (
@@ -9,14 +26,14 @@ CREATE TABLE houses_entrances
     shared integer,
 -- domophone's specisic entrance settings
     camera_id integer,
-    domophone_id integer not null,
+    house_domophone_id integer not null,
     domophone_output integer,
     cms text,                                                                                                           -- for visualization only
     cms_type integer,
     cms_levels text,
     locks_disabled integer
 );
-CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(domophone_id, domophone_output);
+CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(house_domophone_id, domophone_output);
 CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);
 
 -- domophones apartments -> cms

@@ -8,9 +8,7 @@
         loadSubModules("tt", [
             "issue",
             "settings",
-        ], () => {
-            moduleLoaded("tt", this);
-        });
+        ], this);
     },
 
     issueField2FormField: function (issue, field) {
@@ -90,7 +88,7 @@
             </li>
         `);
 
-        $(".createIssue").off("click").on("click", modules["tt.issue"].createIssue);
+        $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
         $("#mainForm").html(i18n("tt.tt"));
