@@ -1,17 +1,15 @@
 ({
     init: function () {
         // submodule - module<dot>submodule
-        moduleLoaded("addresses.subscribers", this);
+        moduleLoaded("addresses.keys", this);
     },
 
-    renderSubscribers: function (target, targetId, formTarget) {
-        loadingStart();
-
+    renderKeys: function (target, targetId, formTarget) {
+        $(formTarget).html("").show();
     },
 
     route: function (params) {
         subTop(params.house + ", " + params.flat);
-
 
         loadingDone();
     }
