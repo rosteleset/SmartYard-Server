@@ -2,16 +2,59 @@
 
 mb_internal_encoding("UTF-8");
 require_once "backends/backend.php";
+require_once "utils/loader.php";
 require_once "utils/guidv4.php";
+require_once "utils/db_ext.php";
+require_once "utils/checkint.php";
 
 $bearer = [];
 $cache = [];
-$required_backends = [
-    "authentication",
-    "authorization",
-    "accounting",
-    "users",
-];
+$config = false;
+
+$offsetForCityId = 1000000;
+
+try {
+    $config = @json_decode(file_get_contents("config/config.json"), true);
+} catch (Exception $e) {
+    error_log(print_r($e, true));
+    response(555, [
+        "error" => "config",
+    ]);
+}
+
+if (!$config) {
+    response(555, [
+        "error" => "noConfig",
+    ]);
+}
+
+$backends = [];
+
+$redis_cache_ttl = $config["redis"]["cache_ttl"] ? : 3600;
+
+try {
+    $redis = new Redis();
+    $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
+    if (@$config["redis"]["password"]) {
+        $redis->auth($config["redis"]["password"]);
+    }
+    $redis->setex("iAmOk", 1, "1");
+} catch (Exception $e) {
+    error_log(print_r($e, true));
+    response(555, [
+        "error" => "redis",
+    ]);
+}
+
+try {
+    $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (Exception $e) {
+    error_log(print_r($e, true));
+    response(555, [
+        "error" => "PDO",
+    ]);
+}
 
 function response($code = 204, $data = false, $name = false, $message = false) {
     global $response_data_source, $response_cahce_req, $response_cache_ttl;
@@ -114,7 +157,6 @@ function auth($_response_cache_ttl = -1) {
         $response_cache_ttl = $_response_cache_ttl;
     }
     $ip = long2ip(ip2long($_SERVER['REMOTE_ADDR']));
-    var_dump($_GET);
     if ($ip == '127.0.0.1' && !@$_SERVER['HTTP_AUTHORIZATION'] && $_GET['phone']) {
 //        $p = pg_escape_string(trim($_GET['phone']));
         // TODO: добавить проверку валидности токена.
