@@ -231,16 +231,16 @@
 
             /**
              * @param $subscriberId
-             * @return boolean
-             */
-            abstract public function deleteSubscriber($subscriberId);
-
-            /**
-             * @param $subscriberId
              * @param $params
              * @return boolean
              */
             abstract public function modifySubscriber($subscriberId, $params);
+
+            /**
+             * @param $subscriberId
+             * @return boolean
+             */
+            abstract public function deleteSubscriber($subscriberId);
 
             /**
              * @param $subscriberId
@@ -249,24 +249,35 @@
              */
             abstract public function setSubscriberFlats($subscriberId, $flats);
 
+            /**
+             * @param $by
+             * @param $query
+             * @return mixed
+             */
             abstract public function getKeys($by, $query);
 
             /**
-             * @return boolean|integer
+             * @param $rfId
+             * @param $accessType
+             * @param $accessTo
+             * @param $comments
+             * @return false|integer
              */
-            abstract public function addKey($rfId, $flatId);
+            abstract public function addKey($rfId, $accessType, $accessTo, $comments);
 
             /**
-             * @param $subscriberId
+             * @param $keyId
+             * @param $accessType
+             * @param $accessTo
+             * @param $comments
              * @return boolean
              */
-            abstract public function deleteKey($subscriberId);
+            abstract public function modifyKey($keyId, $accessType, $accessTo, $comments);
 
             /**
-             * @param $subscriberId
-             * @param $params
+             * @param $keyId
              * @return boolean
              */
-            abstract public function modifyKey($subscriberId, $params);
+            abstract public function deleteKey($keyId);
         }
     }

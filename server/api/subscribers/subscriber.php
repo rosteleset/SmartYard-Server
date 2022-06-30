@@ -16,15 +16,6 @@ namespace api\subscribers
     class subscriber extends api
     {
 
-        public static function GET($params)
-        {
-            $houses = loadBackend("houses");
-
-            $subscriber = $houses->getSubscribers("id", $params["_id"]);
-
-            return api::ANSWER($subscriber, ($subscriber !== false)?"subscriber":false);
-        }
-
         public static function POST($params)
         {
             $houses = loadBackend("houses");

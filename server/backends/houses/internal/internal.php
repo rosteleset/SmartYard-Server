@@ -853,5 +853,37 @@
             {
                 // TODO: Implement setSubscriberFlats() method.
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getKeys($by, $query)
+            {
+                // TODO: Implement getKeys() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addKey($rfId, $accessType, $accessTo, $comments)
+            {
+                // TODO: Implement addKey() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteKey($keyId)
+            {
+                // TODO: Implement deleteKey() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyKey($keyId, $accessType, $accessTo, $comments)
+            {
+                // TODO: Implement modifyKey() method.
+            }
         }
     }

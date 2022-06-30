@@ -16,20 +16,11 @@ namespace api\subscribers
     class key extends api
     {
 
-        public static function GET($params)
-        {
-            $houses = loadBackend("houses");
-
-            $key = $houses->geKeys("id", $params["_id"]);
-
-            return api::ANSWER($key, ($key !== false)?"key":false);
-        }
-
         public static function POST($params)
         {
             $houses = loadBackend("houses");
 
-            $keyId = $houses->addKey($params["rfId"], $params["flatId"]);
+            $keyId = $houses->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"]);
 
             return api::ANSWER($keyId, ($keyId !== false)?"key":false);
         }
@@ -38,7 +29,7 @@ namespace api\subscribers
         {
             $houses = loadBackend("houses");
 
-            $success = $houses->modifyKey($params["_id"], $params);
+            $success = $houses->modifyKey($params["_id"], $params["accessType"], $params["accessTo"], $params["comments"]);
 
             return api::ANSWER($success);
         }
