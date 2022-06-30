@@ -721,7 +721,29 @@
              */
             public function getSubscribers($by, $query)
             {
-                // TODO: Implement getSubscribers() method.
+                $q = "";
+                switch ($by) {
+                    case "flat":
+                        if (!checkInt($query)) {
+                            setLastError("wrongFlat");
+                            return false;
+                        }
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id = $query)";
+                        break;
+                }
+
+                return $this->db->get($q, false, [
+                    "house_subscriber_id" => "subscriberId",
+                    "id" => "mobile",
+                    "auth_token" => "authToken",
+                    "platform" => "platform",
+                    "push_token" => "pushToken",
+                    "push_token_type" => "tokenType",
+                    "registered" => "registered",
+                    "last_seen" => "lastSeen",
+                    "subscriber_name" => "subscriberName",
+                    "subscriber_patronymic" => "subscriberPatronymic",
+                ]);
             }
 
             /**
@@ -729,7 +751,13 @@
              */
             public function addSubscriber($mobile)
             {
-                // TODO: Implement addSubscriber() method.
+                if (strlen($mobile) > 32) {
+                    setLastError("invalidMobile");
+                }
+
+                return $this->db->insert("insert into houses_subscribers_mobile (id) values (:mobile)", [
+                    "id" => $mobile,
+                ]);
             }
 
             /**

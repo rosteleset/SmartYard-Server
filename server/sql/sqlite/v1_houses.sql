@@ -107,7 +107,7 @@ CREATE TABLE houses_rfids
 CREATE UNIQUE INDEX houses_rfids_uniq on houses_rfids(rfid, access_type, access_to);
 
 -- mobile subscribers
-CREATE TABLE subscribers_mobile
+CREATE TABLE houses_subscribers_mobile
 (
     house_subscriber_id integer not null primary key autoincrement,
     id text,                                                                                                            -- phone
@@ -117,10 +117,10 @@ CREATE TABLE subscribers_mobile
     push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - huawei
     registered text,                                                                                                    -- "YYYY-MM-DD HH:MM:SS.SSS"
     last_seen text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
-    subscriber_name text not null,
+    subscriber_name text,
     subscriber_patronymic text
 );
-CREATE UNIQUE INDEX subscribers_mobile_id on subscribers_mobile(id);
+CREATE UNIQUE INDEX subscribers_mobile_id on houses_subscribers_mobile(id);
 
 -- flats <-> subscribers
 CREATE TABLE houses_flats_subscribers
