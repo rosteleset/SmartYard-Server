@@ -1,8 +1,17 @@
 <?php
 
 mb_internal_encoding("UTF-8");
+require_once "backends/backend.php";
+require_once "utils/guidv4.php";
+
 $bearer = [];
 $cache = [];
+$required_backends = [
+    "authentication",
+    "authorization",
+    "accounting",
+    "users",
+];
 
 function response($code = 204, $data = false, $name = false, $message = false) {
     global $response_data_source, $response_cahce_req, $response_cache_ttl;
@@ -87,51 +96,6 @@ function response($code = 204, $data = false, $name = false, $message = false) {
     exit;
 }
 
-function GUIDv4($trim = true) {
-    // Windows
-    if (function_exists('com_create_guid') === true) {
-        if ($trim === true)
-            return trim(com_create_guid(), '{}');
-        else
-            return com_create_guid();
-    }
-    // OSX/Linux
-    if (function_exists('openssl_random_pseudo_bytes') === true) {
-        $data = openssl_random_pseudo_bytes(16);
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);    // set version to 0100
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);    // set bits 6-7 to 10
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-    }
-    // Fallback (PHP 4.2+)
-    mt_srand((double)microtime() * 10000);
-    $charid = strtolower(md5(uniqid(rand(), true)));
-    $hyphen = chr(45);                  // "-"
-    $lbrace = $trim ? "" : chr(123);    // "{"
-    $rbrace = $trim ? "" : chr(125);    // "}"
-    $guidv4 = $lbrace.
-        substr($charid,  0,  8).$hyphen.
-        substr($charid,  8,  4).$hyphen.
-        substr($charid, 12,  4).$hyphen.
-        substr($charid, 16,  4).$hyphen.
-        substr($charid, 20, 12).
-        $rbrace;
-    return $guidv4;
-}
-
-function ver2int($version) {
-    $r = 0;
-    $mul = 1;
-    $version = explode('.', $version);
-    for ($i = count($version) - 1; $i >= 0; $i--) {
-        $r += $version[$i] * $mul;
-        $mul *= 100;
-    }
-    return $r;
-}
-function perc($rate, $match, $fail) {
-    return (rand(0, 99) < $rate)?$match:$fail;
-}
-
 function mkdir_r($dirName, $rights = 0777) {
     $dirs = explode('/', $dirName);
     $dir = '';
@@ -150,8 +114,9 @@ function auth($_response_cache_ttl = -1) {
         $response_cache_ttl = $_response_cache_ttl;
     }
     $ip = long2ip(ip2long($_SERVER['REMOTE_ADDR']));
+    var_dump($_GET);
     if ($ip == '127.0.0.1' && !@$_SERVER['HTTP_AUTHORIZATION'] && $_GET['phone']) {
-        $p = pg_escape_string(trim($_GET['phone']));
+//        $p = pg_escape_string(trim($_GET['phone']));
         // TODO: добавить проверку валидности токена.
         $bearer = true;
 //        $bearer = @pg_fetch_assoc(pg_query("select * from domophones.bearers where id = '$p'"));
@@ -166,7 +131,7 @@ function auth($_response_cache_ttl = -1) {
         if (!$bearer) {
             response(422, false, "Отсутствует токен авторизации", "Отсутствует токен авторизации");
         }
-        $t_ = $bearer;
+//        $t_ = $bearer;
         // TODO: добавить проверку валидности токена пользователя.
         $bearer = true;
 //        $bearer = pg_fetch_assoc(pg_query("select * from domophones.bearers where token = '$t_'"));
@@ -187,10 +152,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (count($m) == 5 && !$m[0] && $m[2] == 'mobile.php') {
         $module = $m[3];
         $method = $m[4];
-        echo "{$module}/{$method}\n";
+        echo "$module/$method\n";
         if (file_exists("mobile/{$module}/{$method}.php")) {
-            echo "I'm here!\n";
-//            $redis = new Redis();
+              $redis = new Redis();
 //            $redis->connect('127.0.0.1');
             $b = @explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
             if ($b) {
@@ -212,11 +176,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 } else {
                     // $redis->incr('cache-miss');
                 }
-                echo "I'm here!\n";
                 $response_data_source = 'db';
                 $response_cache_ttl = 60;
                 header("X-Dm-Api-Data-Source: $response_data_source");
-                require_once "{mobile/{$module}/{$method}.php";
+                require_once "mobile/{$module}/{$method}.php";
             }
         }
     }
