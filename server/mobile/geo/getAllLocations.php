@@ -27,84 +27,84 @@ $regions = $addresses->getRegions();
 $areas = [];
 $cities = [];
 $locations = [];
-var_dump($regions);
 
 foreach ($regions as $region) {
     $regionId = $region["regionId"];
-    var_dump($regionId);
     $areas_ = $addresses->getAreas($regionId);
     $cities_ = $addresses->getCities($regionId, false);
 
-    var_dump($areas_);
-    var_dump($cities_);
-    foreach ($areas_ as $area) {
-        $areaId = $area["areaId"];
-        $cities_ = $addresses->getCities($regionId, $areaId);
-        $settlements_ = $addresses->getSettlements($areaId, false);
-
-        // Города районного подчинения
-        foreach ($cities_ as $city) {
-            $cityId = $city["cityId"];
-            $location_ = array(
-                "locationId" => $city["cityId"],
-                "locationUuid" => $city["cityUuid"],
-                "areaName" => $area["areaWithType"],
-                "location" => $city["cityWithType"],
-                "locationName" => $city["city"]
-            );
-            $locations[] = $location_;
-
-            // Населенные пункты городского подчинения
-            $settlements_ = $addresses->getSettlements($areaId, $cityId);
-            foreach ($settlements_ as $settlement) {
-                $location_ = array(
-                    "locationId" => $settlement["settlementId"],
-                    "locationUuid" => $settlement["settlementUuid"],
-                    "areaName" => $city["cityWithType"],
-                    "location" => $settlement["settlementWithType"],
-                    "locationName" => $settlement["settlement"]
-                );
-                $locations[] = $location_;
-            }
-        }
-
-        // Населенные пункты районного подчинения
-        foreach ($settlements_ as $settlement) {
-            $location_ = Array(
-                "locationId" => $settlement["settlementId"],
-                "locationUuid" => $settlement["settlementUuid"],
-                "areaName" => $area["areaWithType"],
-                "location" => $settlement["settlementWithType"],
-                "locationName" => $settlement["settlement"]
-            );
-            $locations[] = $location_;
-        }
-    }
+    $areas_ = $areas_ ?: [];
+    $cities_ = $cities_ ?: [];
 
     // Города областного подчинения
     foreach ($cities_ as $city) {
         $cityId = $city["cityId"];
-        $location_ = array(
-            "locationId" => $city["cityId"],
+        $locations[] = array(
+            "locationId" => $city["cityId"] + $offsetForCityId,
             "locationUuid" => $city["cityUuid"],
             "location" => $city["cityWithType"],
             "locationName" => $city["city"]
         );
-        $locations[] = $location_;
 
         // Населенные пункты городского подчинения
         $settlements_ = $addresses->getSettlements(false, $cityId);
+        $settlements_ = $settlements_?: [];
         foreach ($settlements_ as $settlement) {
-            $location_ = array(
+            $locations[] = array(
                 "locationId" => $settlement["settlementId"],
                 "locationUuid" => $settlement["settlementUuid"],
                 "areaName" => $city["cityWithType"],
                 "location" => $settlement["settlementWithType"],
                 "locationName" => $settlement["settlement"]
             );
-            $locations[] = $location_;
+        }
+    }
+
+    foreach ($areas_ as $area) {
+        $areaId = $area["areaId"];
+        $cities_ = $addresses->getCities($regionId, $areaId);
+        $settlements_ = $addresses->getSettlements($areaId, false);
+
+        $cities_ = $cities_ ?: [];
+        $settlements_ = $settlements_ ?:[];
+
+        // Населенные пункты районного подчинения
+        foreach ($settlements_ as $settlement) {
+            $locations[] = array(
+                "locationId" => $settlement["settlementId"],
+                "locationUuid" => $settlement["settlementUuid"],
+                "areaName" => $area["areaWithType"],
+                "location" => $settlement["settlementWithType"],
+                "locationName" => $settlement["settlement"]
+            );
+        }
+
+        // Города районного подчинения
+        foreach ($cities_ as $city) {
+            $cityId = $city["cityId"];
+            $locations[] = array(
+                "locationId" => $city["cityId"] + $offsetForCityId,
+                "locationUuid" => $city["cityUuid"],
+                "areaName" => $area["areaWithType"],
+                "location" => $city["cityWithType"],
+                "locationName" => $city["city"]
+            );
+
+
+            // Населенные пункты городского подчинения
+            $settlements_ = $addresses->getSettlements($areaId, $cityId);
+            $settlements_ = $settlements_ ?:[];
+            foreach ($settlements_ as $settlement) {
+                $locations[] = array(
+                    "locationId" => $settlement["settlementId"],
+                    "locationUuid" => $settlement["settlementUuid"],
+                    "areaName" => $city["cityWithType"],
+                    "location" => $settlement["settlementWithType"],
+                    "locationName" => $settlement["settlement"]
+                );
+            }
         }
     }
 }
-
+array_multisort(array_column($locations, 'locationId'), SORT_ASC, $locations);
 response(200, $locations);

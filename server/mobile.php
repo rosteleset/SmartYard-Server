@@ -194,7 +194,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (count($m) == 5 && !$m[0] && $m[2] == 'mobile.php') {
         $module = $m[3];
         $method = $m[4];
-        echo "$module/$method\n";
         if (file_exists("mobile/{$module}/{$method}.php")) {
               $redis = new Redis();
 //            $redis->connect('127.0.0.1');
