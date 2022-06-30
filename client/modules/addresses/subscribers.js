@@ -173,9 +173,7 @@
                 caption: i18n("addresses.subscribers"),
                 button: {
                     caption: i18n("addresses.addSubscribers"),
-                    click: () => {
-                        modules.addresses.subscribers.addSubscriber();
-                    },
+                    click: modules.addresses.subscribers.addSubscriber,
                 },
             },
             edit: subscriberId => {
@@ -215,6 +213,55 @@
         loadingDone();
     },
 
+    renderKeys: function (list, formTarget) {
+        loadingStart();
+
+        cardTable({
+            target: formTarget,
+            title: {
+                caption: i18n("addresses.keys"),
+                button: {
+                    caption: i18n("addresses.addSubscribers"),
+                    click: modules.addresses.subscribers.addKey,
+                },
+            },
+            edit: keyId => {
+                modules.addresses.subscribers.modifyKey(keyId, list);
+            },
+            columns: [
+                {
+                    title: i18n("addresses.keyId"),
+                },
+                {
+                    title: i18n("addresses.rfId"),
+                    nowrap: true,
+                    fullWidth: true,
+                },
+            ],
+            rows: () => {
+                let rows = [];
+
+                for (let i in list) {
+                    rows.push({
+                        uid: list[i].rfId,
+                        cols: [
+                            {
+                                data: list[i].rfId,
+                            },
+                            {
+                                data: list[i].keyId,
+                            },
+                        ],
+                    });
+                }
+
+                return rows;
+            },
+        }).show();
+
+        loadingDone();
+    },
+
     route: function (params) {
         if (params.flat) {
             subTop(params.house + ", " + params.flat);
@@ -222,8 +269,19 @@
             QUERY("subscribers", "subscribers", {
                 by: "flat",
                 query: params.flatId,
-            }).done(response => {
-                modules.addresses.subscribers.renderSubscribers(response.subscribers, "#mainForm");
+            }).done(responseSubscribers => {
+                QUERY("subscribers", "keys", {
+                    by: "flat",
+                    query: params.flatId,
+                }).done(responseKeys => {
+                    modules.addresses.subscribers.renderSubscribers(responseSubscribers.subscribers, "#mainForm");
+                    modules.addresses.subscribers.renderKeys(responseKeys.subscribers, "#altForm");
+                }).
+                fail(FAIL).
+                fail(() => {
+                    pageError();
+                }).
+                fail(loadingDone);
             }).
             fail(FAIL).
             fail(() => {
