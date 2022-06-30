@@ -1,10 +1,10 @@
 <?php
 
     /**
-     * domophones api
+     * houses api
      */
 
-    namespace api\domophones {
+    namespace api\houses {
 
         use api\api;
 
@@ -15,7 +15,7 @@
         class domophone extends api {
 
             public static function POST($params) {
-                $domophones = loadBackend("domophones");
+                $domophones = loadBackend("houses");
 
                 $domophoneId = $domophones->addDomophone($params["enabled"], $params["model"], $params["server"], $params["ip"], $params["port"],  $params["credentials"], $params["callerId"], $params["dtmf"], $params["comment"]);
 
@@ -23,7 +23,7 @@
             }
 
             public static function PUT($params) {
-                $domophones = loadBackend("domophones");
+                $domophones = loadBackend("houses");
 
                 $success = $domophones->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["ip"], $params["port"],  $params["credentials"], $params["callerId"], $params["dtmf"], $params["comment"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function DELETE($params) {
-                $domophones = loadBackend("domophones");
+                $domophones = loadBackend("houses");
 
                 $success = $domophones->deleteDomophone($params["_id"]);
 

@@ -1,10 +1,10 @@
 <?php
 
     /**
-     * domophones api
+     * houses api
      */
 
-    namespace api\domophones {
+    namespace api\houses {
 
         use api\api;
 
@@ -15,12 +15,12 @@
         class domophones extends api {
 
             public static function GET($params) {
-                $domophones = loadBackend("domophones");
+                $houses = loadBackend("houses");
 
                 $response = [
-                    "domophones" => $domophones->getDomophones(),
-                    "models" => $domophones->getModels(),
-                    "servers" => $domophones->getServers(),
+                    "domophones" => $houses->getDomophones(),
+                    "models" => $houses->getModels(),
+                    "servers" => $houses->getAsteriskServers(),
                 ];
 
                 return api::ANSWER($response, "domophones");

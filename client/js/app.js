@@ -46,27 +46,40 @@ function hashChange() {
         setTimeout(() => {
             currentPage = route;
 
-            $(".sidebar .withibleOnlyWhenActive[target!='#" + route.split('.')[0] + "']").hide();
-            $(".sidebar .withibleOnlyWhenActive[target='#" + route.split('.')[0] + "']").show();
-            $(".sidebar .nav-item a[href!='#" + route.split('.')[0] + "']").removeClass('active');
-            $(".sidebar .nav-item a[href='#" + route.split('.')[0] + "']").addClass('active');
+            let r = route.split(".");
+
+            $(".sidebar .withibleOnlyWhenActive[target!='#" + r[0] + "']").hide();
+            $(".sidebar .withibleOnlyWhenActive[target='#" + r[0] + "']").show();
+            $(".sidebar .nav-item a[href!='#" + r[0] + "']").removeClass('active');
+            $(".sidebar .nav-item a[href='#" + r[0] + "']").addClass('active');
 
             $("#loginForm").hide();
             $("#forgotForm").hide();
 
-            if (modules[route]) {
+            let module = modules;
+
+            for (let i = 0; i < r.length; i++) {
+                if (module[r[i]]) {
+                    module = module[r[i]];
+                } else {
+                    module = false;
+                    break;
+                }
+            }
+
+            if (module) {
                 $("#page404").hide();
                 $("#pageError").hide();
                 $("#topMenuLeft").html(`<li class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
                 $("#leftTopDynamic").html("");
                 $("#rightTopDynamic").html("");
-                if (modules[route].search) {
+                if (typeof module.search === "function") {
                     $("#searchForm").show();
                 } else {
                     $("#searchForm").hide();
                 }
-                if (typeof modules[route].route === "function") {
-                    modules[route].route(params);
+                if (typeof module.route === "function") {
+                    module.route(params);
                 } else {
                     page404();
                 }
@@ -260,45 +273,6 @@ function forgot() {
         $.get(server + "/accounts/forgot?eMail=" + email);
         message(i18n("forgotMessage"));
         showLoginForm();
-    }
-}
-
-function loadModule() {
-    let module = moduleLoadQueue.shift();
-    if (!module) {
-        hashChange();
-        onhashchange = hashChange;
-        $("#app").show();
-    } else {
-        let l = $.cookie("_lang");
-        if (!l) {
-            l = config.defaultLanguage;
-        }
-        if (!l) {
-            l = "ru";
-        }
-        $.get("modules/" + module + "/i18n/" + l + ".json", i18n => {
-            if (i18n.errors) {
-                if (!lang.errors) {
-                    lang.errors = {};
-                }
-                lang.errors = {...lang.errors, ...i18n.errors};
-                delete i18n.errors;
-            }
-            lang[module] = i18n;
-        }).always(() => {
-            $.getScript("modules/" + module + "/" + module + ".js");
-        });
-    }
-}
-
-function moduleLoaded(module, object) {
-    let m = module.split(".");
-
-    modules[module] = object;
-
-    if (m.length === 1) {
-        loadModule();
     }
 }
 

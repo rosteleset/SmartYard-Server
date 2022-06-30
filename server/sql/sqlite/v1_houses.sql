@@ -1,3 +1,20 @@
+-- panels
+CREATE TABLE houses_domophones
+(
+    house_domophone_id integer not null primary key autoincrement,
+    enabled integer not null,
+    model text not null,
+    server text not null,
+    ip text not null,
+    port integer not null,
+    credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
+    caller_id text not null,
+    dtmf text not null,
+    comment text
+);
+CREATE INDEX domophones_ip on houses_domophones(ip);
+CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(ip, port);
+
 -- entrances
 CREATE TABLE houses_entrances
 (
@@ -9,14 +26,14 @@ CREATE TABLE houses_entrances
     shared integer,
 -- domophone's specisic entrance settings
     camera_id integer,
-    domophone_id integer not null,
+    house_domophone_id integer not null,
     domophone_output integer,
     cms text,                                                                                                           -- for visualization only
     cms_type integer,
     cms_levels text,
     locks_disabled integer
 );
-CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(domophone_id, domophone_output);
+CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(house_domophone_id, domophone_output);
 CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);
 
 -- domophones apartments -> cms
@@ -89,11 +106,27 @@ CREATE TABLE houses_rfids
 );
 CREATE UNIQUE INDEX houses_rfids_uniq on houses_rfids(rfid, access_type, access_to);
 
+-- mobile subscribers
+CREATE TABLE houses_subscribers_mobile
+(
+    house_subscriber_id integer not null primary key autoincrement,
+    id text,                                                                                                            -- phone
+    auth_token text,
+    platform integer,                                                                                                   -- 0 - android, 1 - ios
+    push_token text,
+    push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - huawei
+    registered text,                                                                                                    -- "YYYY-MM-DD HH:MM:SS.SSS"
+    last_seen text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
+    subscriber_name text,
+    subscriber_patronymic text
+);
+CREATE UNIQUE INDEX subscribers_mobile_id on houses_subscribers_mobile(id);
+
 -- flats <-> subscribers
 CREATE TABLE houses_flats_subscribers
 (
     house_flat_id integer not null,
-    subscriber_mobile_id integer not null,
+    house_subscriber_id integer not null,
     role integer                                                                                                        -- ?
 );
-CREATE UNIQUE INDEX houses_flats_subscribers_uniq on houses_flats_subscribers(house_flat_id, subscriber_mobile_id);
+CREATE UNIQUE INDEX houses_flats_subscribers_uniq on houses_flats_subscribers(house_flat_id, house_subscriber_id);

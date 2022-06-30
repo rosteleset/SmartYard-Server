@@ -318,14 +318,67 @@ function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
     mainSidebarFirst = false;
 }
 
-function loadSubModules(parent, modules, done) {
-    let module = modules.shift();
+function loadModule() {
+    let module = moduleLoadQueue.shift();
     if (!module) {
-        done();
+        hashChange();
+        onhashchange = hashChange;
+        $("#app").show();
+    } else {
+        let l = $.cookie("_lang");
+        if (!l) {
+            l = config.defaultLanguage;
+        }
+        if (!l) {
+            l = "ru";
+        }
+        $.get("modules/" + module + "/i18n/" + l + ".json", i18n => {
+            if (i18n.errors) {
+                if (!lang.errors) {
+                    lang.errors = {};
+                }
+                lang.errors = {...lang.errors, ...i18n.errors};
+                delete i18n.errors;
+            }
+            lang[module] = i18n;
+        }).always(() => {
+            $.getScript("modules/" + module + "/" + module + ".js");
+        });
+    }
+}
+
+function moduleLoaded(module, object) {
+    let m = module.split(".");
+
+    if (!modules[module] && m.length === 1 && object) {
+        modules[module] = object;
+    }
+
+    if (m.length === 2 && modules[m[0]] && object) {
+        modules[m[0]][m[1]] = object;
+    }
+
+    if (m.length === 1) {
+        loadModule();
+    }
+}
+
+function loadSubModules(parent, subModules, doneOrParentObject) {
+    if (!modules[parent] && typeof doneOrParentObject === "object") {
+        modules[parent] = doneOrParentObject;
+    }
+    let module = subModules.shift();
+    if (!module) {
+        if (typeof doneOrParentObject === "function") {
+            doneOrParentObject();
+        }
+        if (typeof doneOrParentObject === "object") {
+            moduleLoaded(parent, doneOrParentObject);
+        }
     } else{
         $.getScript("modules/" + parent + "/" + module + ".js").
         done(() => {
-            loadSubModules(parent, modules, done);
+            loadSubModules(parent, subModules, doneOrParentObject);
         }).
         fail(FAIL);
     }

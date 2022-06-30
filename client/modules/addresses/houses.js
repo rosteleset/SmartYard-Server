@@ -1,6 +1,99 @@
 ({
     init: function () {
-        moduleLoaded("houses", this);
+        moduleLoaded("addresses.houses", this);
+    },
+
+    houseMagick: function () {
+        cardForm({
+            title: i18n("addresses.address"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            size: "lg",
+            apply: i18n("add"),
+            fields: [
+                {
+                    id: "address",
+                    type: "select2",
+                    title: i18n("addresses.address"),
+                    placeholder: i18n("addresses.address"),
+                    ajax: {
+                        delay: 1000,
+                        transport: function (params, success, failure) {
+                            loadingStart();
+                            QUERY("geo", "suggestions", {
+                                search: params.data.term,
+                            }).
+                            then(response => {
+                                loadingDone();
+                                success(response);
+                            }).
+                            fail(response => {
+                                FAIL(response);
+                                loadingDone();
+                                failure(response);
+                            }).
+                            fail(FAIL).
+                            always(loadingDone);
+                        },
+                        processResults: function (data, params) {
+                            let suggestions = [];
+                            for (let i in data.suggestions) {
+                                if (parseInt(data.suggestions[i].data.fias_level) === 8) {
+                                    suggestions.push({
+                                        id: data.suggestions[i].data.house_fias_id,
+                                        text: data.suggestions[i].value,
+                                    });
+                                }
+                            }
+                            return {
+                                results: suggestions,
+                            };
+                        },
+                    },
+                    validate: v => {
+                        return !!v;
+                    }
+                },
+            ],
+            callback: function (result) {
+                if (result && result.address) {
+                    loadingStart();
+                    POST("addresses", "house", false, {
+                        magick: result.address,
+                    }).
+                    done(result => {
+                        GET("addresses", "house", result.houseId).
+                        done(result => {
+                            message(i18n("addresses.houseWasAdded"));
+                            if (result && result.house && (result.house.streetId || result.house.settlementId)) {
+                                let [ route, params, hash ] = hashParse();
+                                if (result.house.streetId) {
+                                    if (route == "addresses" && params["show"] == "street" && params["streetId"] == result.house.streetId) {
+                                        modules.addresses.renderStreet(result.house.streetId);
+                                    } else {
+                                        location.href = "#addresses&show=street&streetId=" + result.house.streetId;
+                                    }
+                                } else {
+                                    if (route == "addresses" && params["show"] == "settlement" && params["streetId"] == result.house.settlementId) {
+                                        modules.addresses.renderSettlement(result.house.settlementId);
+                                    } else {
+                                        location.href = "#addresses&show=settlement&settlementId=" + result.house.settlementId;
+                                    }
+                                }
+                            } else {
+                                error(i18n("errors.unknown"));
+                                loadingDone();
+                            }
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
+            },
+        }).show();
     },
 
     cmses: function (domophoneId, selected) {
@@ -11,11 +104,11 @@
             text: i18n("no"),
         });
 
-        for (let id in modules.houses.meta.cmses) {
-            if (domophoneId && modules.houses.meta.domophoneModels[domophoneId] && modules.houses.meta.domophoneModels[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
+        for (let id in modules.addresses.houses.meta.cmses) {
+            if (domophoneId && modules.addresses.houses.meta.domophoneModels[domophoneId] && modules.addresses.houses.meta.domophoneModels[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
                 c.push({
                     id: id,
-                    text: modules.houses.meta.cmses[id].title,
+                    text: modules.addresses.houses.meta.cmses[id].title,
                     selected: selected === id,
                 })
             }
@@ -28,10 +121,10 @@
         let o = [];
 
         for (let i = 0; i < 32; i++) {
-            if (domophoneModel && modules.houses.meta.domophoneModels[domophoneModel] && i < parseInt(modules.houses.meta.domophoneModels[domophoneModel].outputs)) {
+            if (domophoneModel && modules.addresses.houses.meta.domophoneModels[domophoneModel] && i < parseInt(modules.addresses.houses.meta.domophoneModels[domophoneModel].outputs)) {
                 o.push({
                     id: i.toString(),
-                    text: i?i18n("houses.domophoneOutputSecondary", i):i18n("houses.domophoneOutputPrimary"),
+                    text: i?i18n("addresses.domophoneOutputSecondary", i):i18n("addresses.domophoneOutputPrimary"),
                     selected: selected === i,
                 });
             }
@@ -42,20 +135,20 @@
 
     domophoneIdSelect: (el, id, prefix) => {
         $(`#${prefix}cms`).html("").select2({
-            data: modules.houses.cmses(modules.houses.meta.domophoneModelsById[el.val()]),
+            data: modules.addresses.houses.cmses(modules.addresses.houses.meta.domophoneModelsById[el.val()]),
             language: lang["_code"],
         });
 
         let h = "";
 
-        let o = modules.houses.outputs(modules.houses.meta.domophoneModelsById[el.val()]);
+        let o = modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[el.val()]);
         for (let i in o) {
             h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
         }
 
         $("#" + prefix + "domophoneOutput").html(h);
 
-        modules.houses.outputsSelect(el, id, prefix);
+        modules.addresses.houses.outputsSelect(el, id, prefix);
     },
 
     outputsSelect: function (el, id, prefix) {
@@ -67,7 +160,7 @@
             $("#" + prefix + "locksDisabled").parent().parent().parent().show();
         }
 
-        modules.houses.cmsSelect(el, id, prefix);
+        modules.addresses.houses.cmsSelect(el, id, prefix);
     },
     
     cmsSelect: (el, id, prefix) => {
@@ -85,7 +178,7 @@
             }
         }
 
-        modules.houses.sharedSelect(el, id, prefix, true);
+        modules.addresses.houses.sharedSelect(el, id, prefix, true);
     },
 
     sharedSelect: (el, id, prefix, cascade) => {
@@ -102,7 +195,7 @@
         }
 
         if (!cascade) {
-            modules.houses.cmsSelect(el, id, prefix);
+            modules.addresses.houses.cmsSelect(el, id, prefix);
         }
     },
 
@@ -111,10 +204,10 @@
         POST("houses", "entrance", false, house).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.entranceWasAdded"));
+            message(i18n("addresses.entranceWasAdded"));
         }).
         always(() => {
-            modules.houses.renderHouse(house.houseId);
+            modules.addresses.houses.renderHouse(house.houseId);
         });
     },
 
@@ -123,10 +216,10 @@
         POST("houses", "entrance", false, entrance).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.entranceWasCreated"));
+            message(i18n("addresses.entranceWasCreated"));
         }).
         always(() => {
-            modules.houses.renderHouse(entrance.houseId);
+            modules.addresses.houses.renderHouse(entrance.houseId);
         });
     },
 
@@ -135,10 +228,10 @@
         POST("houses", "flat", false, flat).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.flatWasAdded"));
+            message(i18n("addresses.flatWasAdded"));
         }).
         always(() => {
-            modules.houses.renderHouse(flat.houseId);
+            modules.addresses.houses.renderHouse(flat.houseId);
         });
     },
 
@@ -147,10 +240,10 @@
         PUT("houses", "entrance", entrance.entranceId, entrance).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.entranceWasChanged"));
+            message(i18n("addresses.entranceWasChanged"));
         }).
         always(() => {
-            modules.houses.renderHouse(entrance.houseId);
+            modules.addresses.houses.renderHouse(entrance.houseId);
         });
     },
 
@@ -159,11 +252,11 @@
         PUT("houses", "flat", flat.flatId, flat).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.flatWasChanged"));
+            message(i18n("addresses.flatWasChanged"));
         }).
         always(() => {
             if (flat.houseId) {
-                modules.houses.renderHouse(flat.houseId);
+                modules.addresses.houses.renderHouse(flat.houseId);
             }
         });
     },
@@ -174,10 +267,10 @@
             DELETE("houses", "entrance", entranceId).
             fail(FAIL).
             done(() => {
-                message(i18n("houses.entranceWasDeleted"));
+                message(i18n("addresses.entranceWasDeleted"));
             }).
             always(() => {
-                modules.houses.renderHouse(houseId);
+                modules.addresses.houses.renderHouse(houseId);
             });
         } else {
             DELETE("houses", "entrance", entranceId, {
@@ -185,10 +278,10 @@
             }).
             fail(FAIL).
             done(() => {
-                message(i18n("houses.entranceWasDeleted"));
+                message(i18n("addresses.entranceWasDeleted"));
             }).
             always(() => {
-                modules.houses.renderHouse(houseId);
+                modules.addresses.houses.renderHouse(houseId);
             });
         }
     },
@@ -198,19 +291,19 @@
         DELETE("houses", "flat", flatId).
         fail(FAIL).
         done(() => {
-            message(i18n("houses.flatWasDeleted"));
+            message(i18n("addresses.flatWasDeleted"));
         }).
         always(() => {
-            modules.houses.renderHouse(houseId);
+            modules.addresses.houses.renderHouse(houseId);
         });
     },
 
     addEntrance: function (houseId) {
-        mYesNo(i18n("houses.useExistingEntranceQuestion"), i18n("houses.addEntrance"), () => {
+        mYesNo(i18n("addresses.useExistingEntranceQuestion"), i18n("addresses.addEntrance"), () => {
             loadingStart();
             GET("cameras", "cameras").
             done(response => {
-                modules.houses.meta.cameras = response.cameras;
+                modules.addresses.houses.meta.cameras = response.cameras;
 
                 let cameras = [];
 
@@ -226,10 +319,10 @@
                     })
                 }
 
-                GET("domophones", "domophones").
+                GET("houses", "domophones").
                 done(response => {
-                    modules.houses.meta.domophones = response.domophones;
-                    modules.houses.meta.domophoneModelsById = {};
+                    modules.addresses.houses.meta.domophones = response.domophones;
+                    modules.addresses.houses.meta.domophoneModelsById = {};
 
                     let domophones = [];
 
@@ -239,7 +332,7 @@
                         if (!first) {
                             first = response.domophones.domophones[i].domophoneId;
                         }
-                        modules.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                        modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
                             text:  response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):""),
@@ -247,7 +340,7 @@
                     }
 
                     cardForm({
-                        title: i18n("houses.addEntrance"),
+                        title: i18n("addresses.addEntrance"),
                         footer: true,
                         borderless: true,
                         topApply: true,
@@ -257,31 +350,31 @@
                             {
                                 id: "entranceType",
                                 type: "select",
-                                title: i18n("houses.entranceType"),
+                                title: i18n("addresses.entranceType"),
                                 options: [
                                     {
                                         id: "entrance",
-                                        text: i18n("houses.entranceTypeEntranceFull"),
+                                        text: i18n("addresses.entranceTypeEntranceFull"),
                                     },
                                     {
                                         id: "wicket",
-                                        text: i18n("houses.entranceTypeWicketFull"),
+                                        text: i18n("addresses.entranceTypeWicketFull"),
                                     },
                                     {
                                         id: "gate",
-                                        text: i18n("houses.entranceTypeGateFull"),
+                                        text: i18n("addresses.entranceTypeGateFull"),
                                     },
                                     {
                                         id: "barrier",
-                                        text: i18n("houses.entranceTypeBarrierFull"),
+                                        text: i18n("addresses.entranceTypeBarrierFull"),
                                     }
                                 ]
                             },
                             {
                                 id: "entrance",
                                 type: "text",
-                                title: i18n("houses.entrance"),
-                                placeholder: i18n("houses.entrance"),
+                                title: i18n("addresses.entrance"),
+                                placeholder: i18n("addresses.entrance"),
                                 validate: (v) => {
                                     return $.trim(v) !== "";
                                 }
@@ -289,80 +382,80 @@
                             {
                                 id: "lon",
                                 type: "text",
-                                title: i18n("houses.lon"),
-                                placeholder: i18n("houses.lon"),
+                                title: i18n("addresses.lon"),
+                                placeholder: i18n("addresses.lon"),
                             },
                             {
                                 id: "lat",
                                 type: "text",
-                                title: i18n("houses.lat"),
-                                placeholder: i18n("houses.lat"),
+                                title: i18n("addresses.lat"),
+                                placeholder: i18n("addresses.lat"),
                             },
                             {
                                 id: "cameraId",
                                 type: "select2",
-                                title: i18n("houses.cameraId"),
+                                title: i18n("addresses.cameraId"),
                                 options: cameras,
                             },
                             {
                                 id: "domophoneId",
                                 type: "select2",
-                                title: i18n("houses.domophoneId"),
+                                title: i18n("addresses.domophone"),
                                 options: domophones,
                                 validate: v => {
                                     return parseInt(v) > 0;
                                 },
-                                select: modules.houses.domophoneIdSelect,
+                                select: modules.addresses.houses.domophoneIdSelect,
                             },
                             {
                                 id: "domophoneOutput",
                                 type: "select",
-                                title: i18n("houses.domophoneOutput"),
-                                placeholder: i18n("houses.domophoneOutput"),
-                                options: modules.houses.outputs(modules.houses.meta.domophoneModelsById[first]),
-                                select: modules.houses.outputsSelect,
+                                title: i18n("addresses.domophoneOutput"),
+                                placeholder: i18n("addresses.domophoneOutput"),
+                                options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[first]),
+                                select: modules.addresses.houses.outputsSelect,
                             },
                             {
                                 id: "locksDisabled",
                                 type: "yesno",
-                                title: i18n("houses.locksDisabled"),
+                                title: i18n("addresses.locksDisabled"),
                                 value: 0,
                             },
                             {
                                 id: "cms",
                                 type: "select2",
-                                title: i18n("houses.cms"),
-                                placeholder: i18n("houses.cms"),
-                                options: modules.houses.cmses(modules.houses.meta.domophoneModelsById[first]),
-                                select: modules.houses.cmsSelect,
+                                title: i18n("addresses.cms"),
+                                placeholder: i18n("addresses.cms"),
+                                options: modules.addresses.houses.cmses(modules.addresses.houses.meta.domophoneModelsById[first]),
+                                select: modules.addresses.houses.cmsSelect,
                             },
                             {
                                 id: "cmsType",
                                 type: "select",
-                                title: i18n("houses.cmsType"),
+                                title: i18n("addresses.cmsType"),
                                 hidden: true,
                                 options: [
                                     {
                                         id: "1",
-                                        text: i18n("houses.cmsA"),
+                                        text: i18n("addresses.cmsA"),
                                     },
                                     {
                                         id: "2",
-                                        text: i18n("houses.cmsAV"),
+                                        text: i18n("addresses.cmsAV"),
                                     },
                                 ]
                             },
                             {
                                 id: "cmsLevels",
                                 type: "text",
-                                title: i18n("houses.cmsLevels"),
+                                title: i18n("addresses.cmsLevels"),
                                 hidden: true,
                             },
                             {
                                 id: "shared",
                                 type: "select",
-                                title: i18n("houses.shared"),
-                                select: modules.houses.sharedSelect,
+                                title: i18n("addresses.shared"),
+                                select: modules.addresses.houses.sharedSelect,
                                 options: [
                                     {
                                         id: "0",
@@ -377,8 +470,8 @@
                             {
                                 id: "prefix",
                                 type: "text",
-                                title: i18n("houses.prefix"),
-                                placeholder: i18n("houses.prefix"),
+                                title: i18n("addresses.prefix"),
+                                placeholder: i18n("addresses.prefix"),
                                 value: "0",
                                 hidden: true,
                                 validate: (v, prefix) => {
@@ -391,16 +484,14 @@
                                 result.cms = 0;
                                 result.shared = 0;
                             }
-                            if (result.cms) {
+                            if (parseInt(result.cms) !== 0) {
                                 result.shared = 0;
-                            } else {
-                                result.cmsType = 0;
                             }
-                            if (!result.shared) {
-                                result.prefix = 0;
+                            if (parseInt(result.shared) !== 0) {
+                                result.cms = 0;
                             }
                             result.houseId = houseId;
-                            modules.houses.doCreateEntrance(result);
+                            modules.addresses.houses.doCreateEntrance(result);
                         },
                     });
 
@@ -440,12 +531,12 @@
 
                     entrances.push({
                         id: response.entrances[j].entranceId,
-                        text: house + ", " + i18n("houses.entranceType" + response.entrances[j].entranceType.substring(0, 1).toUpperCase() + response.entrances[j].entranceType.substring(1) + "Full").toLowerCase() + " " + response.entrances[j].entrance,
+                        text: house + ", " + i18n("addresses.entranceType" + response.entrances[j].entranceType.substring(0, 1).toUpperCase() + response.entrances[j].entranceType.substring(1) + "Full").toLowerCase() + " " + response.entrances[j].entrance,
                     });
                 }
 
                 cardForm({
-                    title: i18n("houses.addEntrance"),
+                    title: i18n("addresses.addEntrance"),
                     footer: true,
                     borderless: true,
                     topApply: true,
@@ -454,7 +545,7 @@
                         {
                             id: "entranceId",
                             type: "select2",
-                            title: i18n("houses.entrance"),
+                            title: i18n("addresses.entrance"),
                             options: entrances,
                             validate: v => {
                                 return parseInt(v) > 0;
@@ -463,8 +554,8 @@
                         {
                             id: "prefix",
                             type: "text",
-                            title: i18n("houses.prefix"),
-                            placeholder: i18n("houses.prefix"),
+                            title: i18n("addresses.prefix"),
+                            placeholder: i18n("addresses.prefix"),
                             value: "0",
                             validate: v => {
                                 return parseInt(v) > 0;
@@ -474,50 +565,50 @@
                     callback: result => {
                         if (parseInt(result.entranceId)) {
                             result.houseId = houseId;
-                            modules.houses.doAddEntrance(result);
+                            modules.addresses.houses.doAddEntrance(result);
                         }
                     },
                 });
             }).
             fail(FAIL).
             always(loadingDone);
-        }, i18n("houses.addNewEntrance"), i18n("houses.useExistingEntrance"));
+        }, i18n("addresses.addNewEntrance"), i18n("addresses.useExistingEntrance"));
     },
 
     addFlat: function (houseId) {
         let entrances = [];
         let prefx = md5(guid());
 
-        for (let i in modules.houses.meta.entrances) {
-            if (parseInt(modules.houses.meta.entrances[i].domophoneOutput) === 0) {
-                let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">`;
+        for (let i in modules.addresses.houses.meta.entrances) {
+            if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0 && parseInt(modules.addresses.houses.meta.entrances[i].shared) === 0) {
+                let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none;">`;
                 inputs += `
                     <div class="col">
-                        <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}">
+                        <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartment")}">
                     </div>
                 `;
-                if (modules.houses.meta.entrances[i].cms.toString() !== "0") {
+                if (modules.addresses.houses.meta.entrances[i].cms.toString() !== "0") {
                     inputs += `                        
                         <div class="col">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartmentLevels")}">
                         </div>
                     `;
                 }
                 inputs += `</div`;
                 entrances.push({
-                    id: modules.houses.meta.entrances[i].entranceId,
-                    text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
+                    id: modules.addresses.houses.meta.entrances[i].entranceId,
+                    text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance + inputs,
                 });
             } else {
                 entrances.push({
-                    id: modules.houses.meta.entrances[i].entranceId,
-                    text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance,
+                    id: modules.addresses.houses.meta.entrances[i].entranceId,
+                    text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance,
                 });
             }
         }
 
         cardForm({
-            title: i18n("houses.addFlat"),
+            title: i18n("addresses.addFlat"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -527,14 +618,14 @@
                 {
                     id: "floor",
                     type: "text",
-                    title: i18n("houses.floor"),
-                    placeholder: i18n("houses.floor"),
+                    title: i18n("addresses.floor"),
+                    placeholder: i18n("addresses.floor"),
                 },
                 {
                     id: "flat",
                     type: "text",
-                    title: i18n("houses.flat"),
-                    placeholder: i18n("houses.flat"),
+                    title: i18n("addresses.flat"),
+                    placeholder: i18n("addresses.flat"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
@@ -542,15 +633,15 @@
                 {
                     id: "entrances",
                     type: "multiselect",
-                    title: i18n("houses.entrances"),
+                    title: i18n("addresses.entrances"),
                     hidden: entrances.length <= 0,
                     options: entrances,
                 },
                 {
                     id: "manualBlock",
                     type: "select",
-                    title: i18n("houses.manualBlock"),
-                    placeholder: i18n("houses.manualBlock"),
+                    title: i18n("addresses.manualBlock"),
+                    placeholder: i18n("addresses.manualBlock"),
                     options: [
                         {
                             id: "0",
@@ -565,20 +656,20 @@
                 {
                     id: "openCode",
                     type: "text",
-                    title: i18n("houses.openCode"),
-                    placeholder: i18n("houses.openCode"),
+                    title: i18n("addresses.openCode"),
+                    placeholder: i18n("addresses.openCode"),
                 },
                 {
                     id: "autoOpen",
                     type: "text",
-                    title: i18n("houses.autoOpen"),
+                    title: i18n("addresses.autoOpen"),
                     placeholder: date("Y-m-d H:i"),
                 },
                 {
                     id: "whiteRabbit",
                     type: "select",
-                    title: i18n("houses.whiteRabbit"),
-                    placeholder: i18n("houses.whiteRabbit"),
+                    title: i18n("addresses.whiteRabbit"),
+                    placeholder: i18n("addresses.whiteRabbit"),
                     options: [
                         {
                             id: "0",
@@ -586,35 +677,35 @@
                         },
                         {
                             id: "1",
-                            text: i18n("houses.1m"),
+                            text: i18n("addresses.1m"),
                         },
                         {
                             id: "2",
-                            text: i18n("houses.2m"),
+                            text: i18n("addresses.2m"),
                         },
                         {
                             id: "3",
-                            text: i18n("houses.3m"),
+                            text: i18n("addresses.3m"),
                         },
                         {
                             id: "5",
-                            text: i18n("houses.5m"),
+                            text: i18n("addresses.5m"),
                         },
                         {
                             id: "7",
-                            text: i18n("houses.7m"),
+                            text: i18n("addresses.7m"),
                         },
                         {
                             id: "10",
-                            text: i18n("houses.10m"),
+                            text: i18n("addresses.10m"),
                         },
                     ]
                 },
                 {
                     id: "sipEnabled",
                     type: "select",
-                    title: i18n("houses.sipEnabled"),
-                    placeholder: i18n("houses.sipEnabled"),
+                    title: i18n("addresses.sipEnabled"),
+                    placeholder: i18n("addresses.sipEnabled"),
                     options: [
                         {
                             id: "0",
@@ -622,11 +713,11 @@
                         },
                         {
                             id: "1",
-                            text: i18n("houses.sip"),
+                            text: i18n("addresses.sip"),
                         },
                         {
                             id: "2",
-                            text: i18n("houses.webRtc"),
+                            text: i18n("addresses.webRtc"),
                         },
                     ],
                     select: (el, id, prefix) => {
@@ -640,8 +731,8 @@
                 {
                     id: "sipPassword",
                     type: "text",
-                    title: i18n("houses.sipPassword"),
-                    placeholder: i18n("houses.sipPassword"),
+                    title: i18n("addresses.sipPassword"),
+                    placeholder: i18n("addresses.sipPassword"),
                     hidden: true,
                     validate: (v, prefix) => {
                         if (parseInt($("#" + prefix + "sipEnabled").val())) {
@@ -671,7 +762,7 @@
                 }
                 result.houseId = houseId;
                 result.apartmentsAndLevels = apartmentsAndLevels;
-                modules.houses.doAddFlat(result);
+                modules.addresses.houses.doAddFlat(result);
             },
         });
 
@@ -688,7 +779,7 @@
         loadingStart();
         GET("cameras", "cameras").
         done(response => {
-            modules.houses.meta.cameras = response.cameras;
+            modules.addresses.houses.meta.cameras = response.cameras;
 
             let cameras = [];
 
@@ -704,15 +795,15 @@
                 })
             }
 
-            GET("domophones", "domophones").
+            GET("houses", "domophones").
             done(response => {
-                modules.houses.meta.domophones = response.domophones;
-                modules.houses.meta.domophoneModelsById = {};
+                modules.addresses.houses.meta.domophones = response.domophones;
+                modules.addresses.houses.meta.domophoneModelsById = {};
 
                 let domophones = [];
 
                 for (let i in response.domophones.domophones) {
-                    modules.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                    modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
                         text: response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : ""),
@@ -721,50 +812,50 @@
 
                 let entrance = false;
 
-                for (let i in modules.houses.meta.entrances) {
-                    if (modules.houses.meta.entrances[i].entranceId == entranceId) {
-                        entrance = modules.houses.meta.entrances[i];
+                for (let i in modules.addresses.houses.meta.entrances) {
+                    if (modules.addresses.houses.meta.entrances[i].entranceId == entranceId) {
+                        entrance = modules.addresses.houses.meta.entrances[i];
                         break;
                     }
                 }
 
                 if (entrance) {
                     cardForm({
-                        title: i18n("houses.editEntrance"),
+                        title: i18n("addresses.editEntrance"),
                         footer: true,
                         borderless: true,
                         topApply: true,
                         apply: i18n("edit"),
-                        delete: i18n("houses.deleteEntrance"),
+                        delete: i18n("addresses.deleteEntrance"),
                         size: "lg",
                         fields: [
                             {
                                 id: "entranceId",
                                 type: "text",
-                                title: i18n("houses.entranceId"),
+                                title: i18n("addresses.entranceId"),
                                 value: entranceId,
                                 readonly: true,
                             },
                             {
                                 id: "entranceType",
                                 type: "select",
-                                title: i18n("houses.entranceType"),
+                                title: i18n("addresses.entranceType"),
                                 options: [
                                     {
                                         id: "entrance",
-                                        text: i18n("houses.entranceTypeEntranceFull"),
+                                        text: i18n("addresses.entranceTypeEntranceFull"),
                                     },
                                     {
                                         id: "wicket",
-                                        text: i18n("houses.entranceTypeWicketFull"),
+                                        text: i18n("addresses.entranceTypeWicketFull"),
                                     },
                                     {
                                         id: "gate",
-                                        text: i18n("houses.entranceTypeGateFull"),
+                                        text: i18n("addresses.entranceTypeGateFull"),
                                     },
                                     {
                                         id: "barrier",
-                                        text: i18n("houses.entranceTypeBarrierFull"),
+                                        text: i18n("addresses.entranceTypeBarrierFull"),
                                     }
                                 ],
                                 value: entrance.entranceType,
@@ -772,8 +863,8 @@
                             {
                                 id: "entrance",
                                 type: "text",
-                                title: i18n("houses.entrance"),
-                                placeholder: i18n("houses.entrance"),
+                                title: i18n("addresses.entrance"),
+                                placeholder: i18n("addresses.entrance"),
                                 validate: (v) => {
                                     return $.trim(v) !== "";
                                 },
@@ -782,85 +873,85 @@
                             {
                                 id: "lon",
                                 type: "text",
-                                title: i18n("houses.lon"),
-                                placeholder: i18n("houses.lon"),
+                                title: i18n("addresses.lon"),
+                                placeholder: i18n("addresses.lon"),
                                 value: entrance.lon,
                             },
                             {
                                 id: "lat",
                                 type: "text",
-                                title: i18n("houses.lat"),
-                                placeholder: i18n("houses.lat"),
+                                title: i18n("addresses.lat"),
+                                placeholder: i18n("addresses.lat"),
                                 value: entrance.lat,
                             },
                             {
                                 id: "cameraId",
                                 type: "select2",
-                                title: i18n("houses.cameraId"),
+                                title: i18n("addresses.cameraId"),
                                 value: entrance.cameraId,
                                 options: cameras,
                             },
                             {
                                 id: "domophoneId",
                                 type: "select2",
-                                title: i18n("houses.domophoneId"),
+                                title: i18n("addresses.domophone"),
                                 value: entrance.domophoneId,
                                 options: domophones,
-                                select: modules.houses.domophoneIdSelect,
+                                select: modules.addresses.houses.domophoneIdSelect,
                             },
                             {
                                 id: "domophoneOutput",
                                 type: "select",
-                                title: i18n("houses.domophoneOutput"),
-                                placeholder: i18n("houses.domophoneOutput"),
-                                options: modules.houses.outputs(modules.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
-                                select: modules.houses.outputsSelect,
+                                title: i18n("addresses.domophoneOutput"),
+                                placeholder: i18n("addresses.domophoneOutput"),
+                                options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
+                                select: modules.addresses.houses.outputsSelect,
                             },
                             {
                                 id: "locksDisabled",
                                 type: "yesno",
-                                title: i18n("houses.locksDisabled"),
+                                title: i18n("addresses.locksDisabled"),
                                 value: entrance.locksDisabled,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                             },
                             {
                                 id: "cms",
                                 type: "select2",
-                                title: i18n("houses.cms"),
-                                placeholder: i18n("houses.cms"),
-                                options: modules.houses.cmses(modules.houses.meta.domophoneModelsById[entrance.domophoneId]),
+                                title: i18n("addresses.cms"),
+                                placeholder: i18n("addresses.cms"),
+                                options: modules.addresses.houses.cmses(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId]),
                                 hidden: parseInt(entrance.domophoneOutput) > 0,
                                 value: entrance.cms,
-                                select: modules.houses.cmsSelect,
+                                select: modules.addresses.houses.cmsSelect,
                             },
                             {
                                 id: "cmsType",
                                 type: "select",
-                                title: i18n("houses.cmsType"),
+                                title: i18n("addresses.cmsType"),
                                 value: entrance.cmsType,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                                 options: [
                                     {
                                         id: "1",
-                                        text: i18n("houses.cmsA"),
+                                        text: i18n("addresses.cmsA"),
                                     },
                                     {
                                         id: "2",
-                                        text: i18n("houses.cmsAV"),
+                                        text: i18n("addresses.cmsAV"),
                                     },
                                 ]
                             },
                             {
                                 id: "cmsLevels",
                                 type: "text",
-                                title: i18n("houses.cmsLevels"),
+                                title: i18n("addresses.cmsLevels"),
                                 value: entrance.cmsLevels,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                             },
                             {
                                 id: "shared",
                                 type: "select",
-                                title: i18n("houses.shared"),
+                                title: i18n("addresses.shared"),
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) !== 0,
                                 value: entrance.shared.toString(),
                                 options: [
@@ -884,8 +975,8 @@
                             {
                                 id: "prefix",
                                 type: "text",
-                                title: i18n("houses.prefix"),
-                                placeholder: i18n("houses.prefix"),
+                                title: i18n("addresses.prefix"),
+                                placeholder: i18n("addresses.prefix"),
                                 value: entrance.prefix?entrance.prefix.toString():"0",
                                 hidden: !parseInt(entrance.shared) || parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) !== 0,
                                 validate: (v, prefix) => {
@@ -895,30 +986,27 @@
                         ],
                         callback: result => {
                             if (result.delete === "yes") {
-                                modules.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
+                                modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
                             } else {
                                 if (parseInt(result.domophoneOutput) > 0) {
                                     result.cms = 0;
                                     result.shared = 0;
                                 }
-                                if (result.cms) {
+                                if (parseInt(result.cms) !== 0) {
                                     result.shared = 0;
-                                } else {
-                                    result.cmsType = 0;
                                 }
-                                if (!result.shared) {
-                                    result.prefix = 0;
+                                if (parseInt(result.shared) !== 0) {
+                                    result.cms = 0;
                                 }
                                 result.entranceId = entranceId;
                                 result.houseId = houseId;
-                                modules.houses.doModifyEntrance(result);
+                                modules.addresses.houses.doModifyEntrance(result);
                             }
                         },
                     });
                 } else {
-                    error(i18n("houses.entranceNotFound"));
+                    error(i18n("addresses.entranceNotFound"));
                 }
-
                 loadingDone();
             }).
             fail(FAIL).
@@ -931,9 +1019,9 @@
     modifyFlat: function (flatId, houseId) {
         let flat = false;
 
-        for (let i in modules.houses.meta.flats) {
-            if (modules.houses.meta.flats[i].flatId == flatId) {
-                flat = modules.houses.meta.flats[i];
+        for (let i in modules.addresses.houses.meta.flats) {
+            if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
+                flat = modules.addresses.houses.meta.flats[i];
                 break;
             }
         }
@@ -951,62 +1039,62 @@
                 entrances_settings[flat.entrances[i].entranceId] = flat.entrances[i];
             }
 
-            for (let i in modules.houses.meta.entrances) {
-                if (parseInt(modules.houses.meta.entrances[i].domophoneOutput) === 0) {
-                    let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" style="display: none;">`;
+            for (let i in modules.addresses.houses.meta.entrances) {
+                if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0 && parseInt(modules.addresses.houses.meta.entrances[i].shared) === 0) {
+                    let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none;">`;
                     inputs += `
                         <div class="col">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartment")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.houses.meta.entrances[i].entranceId].apartment : ""}">
+                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartment")}" value="${entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId].apartment : ""}">
                         </div>
                     `;
-                    if (modules.houses.meta.entrances[i].cms.toString() !== "0") {
+                    if (modules.addresses.houses.meta.entrances[i].cms.toString() !== "0") {
                         inputs += `
                             <div class="col">
-                                <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.houses.meta.entrances[i].entranceId}" placeholder="${i18n("houses.apartmentLevels")}" value="${entrances_settings[modules.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.houses.meta.entrances[i].entranceId].apartmentLevels : ""}">
+                                <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartmentLevels")}" value="${entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId].apartmentLevels : ""}">
                             </div>
                         `;
                     }
                     inputs += `</div>`;
                     entrances.push({
-                        id: modules.houses.meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance + inputs,
+                        id: modules.addresses.houses.meta.entrances[i].entranceId,
+                        text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance + inputs,
                     });
                 } else {
                     entrances.push({
-                        id: modules.houses.meta.entrances[i].entranceId,
-                        text: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.houses.meta.entrances[i].entrance,
+                        id: modules.addresses.houses.meta.entrances[i].entranceId,
+                        text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance,
                     });
                 }
             }
 
             cardForm({
-                title: i18n("houses.editFlat"),
+                title: i18n("addresses.editFlat"),
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: houseId?i18n("houses.deleteFlat"):false,
+                delete: houseId?i18n("addresses.deleteFlat"):false,
                 apply: i18n("edit"),
                 size: "lg",
                 fields: [
                     {
                         id: "flatId",
                         type: "text",
-                        title: i18n("houses.flatId"),
+                        title: i18n("addresses.flatId"),
                         value: flatId,
                         readonly: true,
                     },
                     {
                         id: "floor",
                         type: "text",
-                        title: i18n("houses.floor"),
-                        placeholder: i18n("houses.floor"),
+                        title: i18n("addresses.floor"),
+                        placeholder: i18n("addresses.floor"),
                         value: flat.floor,
                     },
                     {
                         id: "flat",
                         type: "text",
-                        title: i18n("houses.flat"),
-                        placeholder: i18n("houses.flat"),
+                        title: i18n("addresses.flat"),
+                        placeholder: i18n("addresses.flat"),
                         value: flat.flat,
                         validate: (v) => {
                             return $.trim(v) !== "";
@@ -1015,7 +1103,7 @@
                     {
                         id: "entrances",
                         type: "multiselect",
-                        title: i18n("houses.entrances"),
+                        title: i18n("addresses.entrances"),
                         hidden: entrances.length <= 0,
                         options: entrances,
                         value: entrances_selected,
@@ -1023,8 +1111,8 @@
                     {
                         id: "manualBlock",
                         type: "select",
-                        title: i18n("houses.manualBlock"),
-                        placeholder: i18n("houses.manualBlock"),
+                        title: i18n("addresses.manualBlock"),
+                        placeholder: i18n("addresses.manualBlock"),
                         value: flat.manualBlock,
                         options: [
                             {
@@ -1040,22 +1128,22 @@
                     {
                         id: "openCode",
                         type: "text",
-                        title: i18n("houses.openCode"),
-                        placeholder: i18n("houses.openCode"),
+                        title: i18n("addresses.openCode"),
+                        placeholder: i18n("addresses.openCode"),
                         value: flat.openCode,
                     },
                     {
                         id: "autoOpen",
                         type: "text",
-                        title: i18n("houses.autoOpen"),
+                        title: i18n("addresses.autoOpen"),
                         placeholder: date("Y-m-d H:i"),
                         value: date("Y-m-d H:i", strtotime(flat.autoOpen)),
                     },
                     {
                         id: "whiteRabbit",
                         type: "select",
-                        title: i18n("houses.whiteRabbit"),
-                        placeholder: i18n("houses.whiteRabbit"),
+                        title: i18n("addresses.whiteRabbit"),
+                        placeholder: i18n("addresses.whiteRabbit"),
                         value: flat.whiteRabbit,
                         options: [
                             {
@@ -1064,35 +1152,35 @@
                             },
                             {
                                 id: "1",
-                                text: i18n("houses.1m"),
+                                text: i18n("addresses.1m"),
                             },
                             {
                                 id: "2",
-                                text: i18n("houses.2m"),
+                                text: i18n("addresses.2m"),
                             },
                             {
                                 id: "3",
-                                text: i18n("houses.3m"),
+                                text: i18n("addresses.3m"),
                             },
                             {
                                 id: "5",
-                                text: i18n("houses.5m"),
+                                text: i18n("addresses.5m"),
                             },
                             {
                                 id: "7",
-                                text: i18n("houses.7m"),
+                                text: i18n("addresses.7m"),
                             },
                             {
                                 id: "10",
-                                text: i18n("houses.10m"),
+                                text: i18n("addresses.10m"),
                             },
                         ]
                     },
                     {
                         id: "sipEnabled",
                         type: "select",
-                        title: i18n("houses.sipEnabled"),
-                        placeholder: i18n("houses.sipEnabled"),
+                        title: i18n("addresses.sipEnabled"),
+                        placeholder: i18n("addresses.sipEnabled"),
                         value: flat.sipEnabled,
                         options: [
                             {
@@ -1101,11 +1189,11 @@
                             },
                             {
                                 id: "1",
-                                text: i18n("houses.sip"),
+                                text: i18n("addresses.sip"),
                             },
                             {
                                 id: "2",
-                                text: i18n("houses.webRtc"),
+                                text: i18n("addresses.webRtc"),
                             },
                         ],
                         select: (el, id, prefix) => {
@@ -1119,8 +1207,8 @@
                     {
                         id: "sipPassword",
                         type: "text",
-                        title: i18n("houses.sipPassword"),
-                        placeholder: i18n("houses.sipPassword"),
+                        title: i18n("addresses.sipPassword"),
+                        placeholder: i18n("addresses.sipPassword"),
                         value: flat.sipPassword,
                         hidden: !parseInt(flat.sipEnabled),
                         validate: (v, prefix) => {
@@ -1150,12 +1238,12 @@
                         }
                     }
                     if (result.delete === "yes") {
-                        modules.houses.deleteFlat(flatId, houseId);
+                        modules.addresses.houses.deleteFlat(flatId, houseId);
                     } else {
                         result.flatId = flatId;
                         result.apartmentsAndLevels = apartmentsAndLevels;
                         result.houseId = houseId;
-                        modules.houses.doModifyFlat(result);
+                        modules.addresses.houses.doModifyFlat(result);
                     }
                 },
 
@@ -1173,27 +1261,27 @@
                 }
             });
         } else {
-            error(i18n("houses.flatNotFound"));
+            error(i18n("addresses.flatNotFound"));
         }
     },
 
     deleteEntrance: function (entranceId, shared, houseId) {
         if (shared) {
-            mYesNo(i18n("houses.completelyDeleteEntrance", entranceId), i18n("houses.deleteEntrance"), () => {
-                modules.houses.doDeleteEntrance(entranceId, true, houseId);
+            mYesNo(i18n("addresses.completelyDeleteEntrance", entranceId), i18n("addresses.deleteEntrance"), () => {
+                modules.addresses.houses.doDeleteEntrance(entranceId, true, houseId);
             }, () => {
-                modules.houses.doDeleteEntrance(entranceId, false, houseId);
-            }, i18n("houses.deleteEntranceComletely"), i18n("houses.deleteEntranceLink"));
+                modules.addresses.houses.doDeleteEntrance(entranceId, false, houseId);
+            }, i18n("addresses.deleteEntranceComletely"), i18n("addresses.deleteEntranceLink"));
         } else {
-            mConfirm(i18n("houses.confirmDeleteEntrance", entranceId), i18n("confirm"), `danger:${i18n("houses.deleteEntrance")}`, () => {
-                modules.houses.doDeleteEntrance(entranceId, true, houseId);
+            mConfirm(i18n("addresses.confirmDeleteEntrance", entranceId), i18n("confirm"), `danger:${i18n("addresses.deleteEntrance")}`, () => {
+                modules.addresses.houses.doDeleteEntrance(entranceId, true, houseId);
             });
         }
     },
 
     deleteFlat: function (flatId, houseId) {
-        mConfirm(i18n("houses.confirmDeleteFlat", flatId), i18n("confirm"), `danger:${i18n("houses.deleteFlat")}`, () => {
-            modules.houses.doDeleteFlat(flatId, houseId);
+        mConfirm(i18n("addresses.confirmDeleteFlat", flatId), i18n("confirm"), `danger:${i18n("addresses.deleteFlat")}`, () => {
+            modules.addresses.houses.doDeleteFlat(flatId, houseId);
         });
     },
 
@@ -1209,11 +1297,11 @@
                 let f = false;
                 for (let i in modules["addresses"].meta.houses) {
                     if (modules["addresses"].meta.houses[i].houseId == houseId) {
-                        if (!modules.houses.meta) {
-                            modules.houses.meta = {};
+                        if (!modules.addresses.houses.meta) {
+                            modules.addresses.houses.meta = {};
                         }
-                        modules.houses.meta.house = modules["addresses"].meta.houses[i];
-                        subTop(modules.houses.meta.house.houseFull);
+                        modules.addresses.houses.meta.house = modules["addresses"].meta.houses[i];
+                        subTop(modules.addresses.houses.meta.house.houseFull);
                         f = true;
                     }
                 }
@@ -1228,16 +1316,16 @@
                 pageError();
             }).
             done(response => {
-                    if (!modules.houses.meta) {
-                        modules.houses.meta = {};
+                    if (!modules.addresses.houses.meta) {
+                        modules.addresses.houses.meta = {};
                     }
-                    modules.houses.meta.entrances = response["house"].entrances;
-                    modules.houses.meta.flats = response["house"].flats;
-                    modules.houses.meta.domophoneModels = response["house"].domophoneModels;
-                    modules.houses.meta.cmses = response["house"].cmses;
+                    modules.addresses.houses.meta.entrances = response["house"].entrances;
+                    modules.addresses.houses.meta.flats = response["house"].flats;
+                    modules.addresses.houses.meta.domophoneModels = response["house"].domophoneModels;
+                    modules.addresses.houses.meta.cmses = response["house"].cmses;
 
-                    if (modules.houses.meta.house && modules.houses.meta.house.houseFull) {
-                        document.title = i18n("windowTitle") + " :: " + i18n("houses.house") + " :: " + modules.houses.meta.house.houseFull;
+                    if (modules.addresses.houses.meta.house && modules.addresses.houses.meta.house.houseFull) {
+                        document.title = i18n("windowTitle") + " :: " + i18n("addresses.house") + " :: " + modules.addresses.houses.meta.house.houseFull;
                     }
 
                     callback();
@@ -1246,48 +1334,48 @@
     },
 
     renderHouse: function (houseId) {
-        modules.houses.loadHouse(houseId, () => {
+        modules.addresses.houses.loadHouse(houseId, () => {
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("houses.flats"),
+                    caption: i18n("addresses.flats"),
                     button: {
-                        caption: i18n("houses.addFlat"),
+                        caption: i18n("addresses.addFlat"),
                         click: () => {
-                            modules.houses.addFlat(houseId);
+                            modules.addresses.houses.addFlat(houseId);
                         },
                     },
                 },
                 edit: flatId => {
-                    modules.houses.modifyFlat(flatId, houseId);
+                    modules.addresses.houses.modifyFlat(flatId, houseId);
                 },
                 columns: [
                     {
-                        title: i18n("houses.flatId"),
+                        title: i18n("addresses.flatId"),
                     },
                     {
-                        title: i18n("houses.floor"),
+                        title: i18n("addresses.floor"),
                     },
                     {
-                        title: i18n("houses.flat"),
+                        title: i18n("addresses.flat"),
                         fullWidth: true,
                     },
                 ],
                 rows: () => {
                     let rows = [];
 
-                    for (let i in modules.houses.meta.flats) {
+                    for (let i in modules.addresses.houses.meta.flats) {
                         rows.push({
-                            uid: modules.houses.meta.flats[i].flatId,
+                            uid: modules.addresses.houses.meta.flats[i].flatId,
                             cols: [
                                 {
-                                    data: modules.houses.meta.flats[i].flatId,
+                                    data: modules.addresses.houses.meta.flats[i].flatId,
                                 },
                                 {
-                                    data: modules.houses.meta.flats[i].floor?modules.houses.meta.flats[i].floor:"-",
+                                    data: modules.addresses.houses.meta.flats[i].floor?modules.addresses.houses.meta.flats[i].floor:"-",
                                 },
                                 {
-                                    data: modules.houses.meta.flats[i].flat,
+                                    data: modules.addresses.houses.meta.flats[i].flat,
                                     nowrap: true,
                                 },
                             ],
@@ -1295,16 +1383,13 @@
                                 items: [
                                     {
                                         icon: "fas fa-mobile-alt",
-                                        title: i18n("subscribers.subscribers"),
+                                        title: i18n("addresses.subscribers"),
                                         click: flatId => {
-                                            // ?
-                                        },
-                                    },
-                                    {
-                                        icon: "fas fa-key",
-                                        title: i18n("keys.keys"),
-                                        click: flatId => {
-                                            // ?
+                                            for (let i in modules.addresses.houses.meta.flats) {
+                                                if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
+                                                    location.href = "#addresses.subscribers&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
+                                                }
+                                            }
                                         },
                                     },
                                 ],
@@ -1318,29 +1403,29 @@
             cardTable({
                 target: "#altForm",
                 title: {
-                    caption: i18n("houses.entrances"),
+                    caption: i18n("addresses.entrances"),
                     button: {
-                        caption: i18n("houses.addEntrance"),
+                        caption: i18n("addresses.addEntrance"),
                         click: () => {
-                            modules.houses.addEntrance(houseId);
+                            modules.addresses.houses.addEntrance(houseId);
                         },
                     },
                 },
                 edit: entranceId => {
-                    modules.houses.modifyEntrance(entranceId, houseId);
+                    modules.addresses.houses.modifyEntrance(entranceId, houseId);
                 },
                 columns: [
                     {
-                        title: i18n("houses.entranceId"),
+                        title: i18n("addresses.entranceId"),
                     },
                     {
-                        title: i18n("houses.entranceType"),
+                        title: i18n("addresses.entranceType"),
                     },
                     {
-                        title: i18n("houses.entrance"),
+                        title: i18n("addresses.entrance"),
                     },
                     {
-                        title: i18n("houses.shared"),
+                        title: i18n("addresses.shared"),
                         fullWidth: true,
                     },
                 ],
@@ -1348,49 +1433,62 @@
                     let rows = [];
                     let entrances = {};
 
-                    for (let i in modules.houses.meta.entrances) {
-                        entrances[modules.houses.meta.entrances[i].entranceId] = modules.houses.meta.entrances[i];
+                    for (let i in modules.addresses.houses.meta.entrances) {
+                        entrances[modules.addresses.houses.meta.entrances[i].entranceId] = modules.addresses.houses.meta.entrances[i];
                         rows.push({
-                            uid: modules.houses.meta.entrances[i].entranceId,
+                            uid: modules.addresses.houses.meta.entrances[i].entranceId,
                             cols: [
                                 {
-                                    data: modules.houses.meta.entrances[i].entranceId,
+                                    data: modules.addresses.houses.meta.entrances[i].entranceId,
                                 },
                                 {
-                                    data: i18n("houses.entranceType" + modules.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.houses.meta.entrances[i].entranceType.substring(1) + "Full"),
+                                    data: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full"),
                                 },
                                 {
-                                    data: modules.houses.meta.entrances[i].entrance,
+                                    data: modules.addresses.houses.meta.entrances[i].entrance,
                                     nowrap: true,
                                 },
                                 {
-                                    data: parseInt(modules.houses.meta.entrances[i].shared)?i18n("yes"):i18n("no"),
+                                    data: parseInt(modules.addresses.houses.meta.entrances[i].shared)?i18n("yes"):i18n("no"),
                                 },
                             ],
                             dropDown: {
                                 items: [
                                     {
                                         icon: "fas fa-door-open",
-                                        title: i18n("domophones.domophone"),
-                                        disabled: ! modules.houses.meta.entrances[i].domophoneId,
+                                        title: i18n("addresses.domophone"),
+                                        disabled: ! modules.addresses.houses.meta.entrances[i].domophoneId,
                                         click: entranceId => {
-                                            location.href = "#domophones&domophoneId=" + entrances[entranceId].domophoneId;
+                                            location.href = "#addresses.domophones&domophoneId=" + entrances[entranceId].domophoneId;
                                         },
                                     },
                                     {
                                         icon: "fas fa-video",
                                         title: i18n("cameras.camera"),
-                                        disabled: ! modules.houses.meta.entrances[i].cameraId,
+                                        disabled: ! modules.addresses.houses.meta.entrances[i].cameraId,
                                         click: entranceId => {
                                             location.href = "#cameras&cameraId=" + entrances[entranceId].cameraId;
                                         },
                                     },
                                     {
+                                        title: "-",
+                                    },
+                                    {
                                         icon: "fas fa-phone-volume",
-                                        title: i18n("houses.cms"),
-                                        disabled: modules.houses.meta.entrances[i].cms.toString() === "0",
+                                        title: i18n("addresses.cms"),
+                                        disabled: modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
                                         click: entranceId => {
-                                            location.href = "#houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].houseId;
+                                            location.href = "#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].houseId;
+                                        },
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-key",
+                                        title: i18n("addresses.keys"),
+                                        click: entranceId => {
+                                            // ?
                                         },
                                     },
                                 ],
@@ -1415,18 +1513,18 @@
         done(response => {
             let cms_layout = response.cms;
 
-            modules.houses.loadHouse(houseId, () => {
+            modules.addresses.houses.loadHouse(houseId, () => {
                 let entrance = false;
 
-                for (let i in modules.houses.meta.entrances) {
-                    if (modules.houses.meta.entrances[i].entranceId == entranceId) {
-                        entrance = modules.houses.meta.entrances[i];
+                for (let i in modules.addresses.houses.meta.entrances) {
+                    if (modules.addresses.houses.meta.entrances[i].entranceId == entranceId) {
+                        entrance = modules.addresses.houses.meta.entrances[i];
                         break;
                     }
                 }
 
                 if (entrance) {
-                    let cms = modules.houses.meta.cmses[entrance.cms];
+                    let cms = modules.addresses.houses.meta.cmses[entrance.cms];
 
                     if (cms) {
                         let h = `<div class="card mt-2">`;
@@ -1449,7 +1547,7 @@
                             h += `<th>&nbsp;</th>`;
 
                             for (let j = 0; j < maxX; j++) {
-                                h += `<th>${i18n("houses.cmsD")}${j + cms.dozen_start}</th>`;
+                                h += `<th>${i18n("addresses.cmsD")}${j + cms.dozen_start}</th>`;
                             }
                             h += `</thead>`;
 
@@ -1457,7 +1555,7 @@
 
                             for (let j in cms.cms[i]) {
                                 h += `<tr>`;
-                                h += `<td>${i18n("houses.cmsU")}${parseInt(j)}</td>`;
+                                h += `<td>${i18n("addresses.cmsU")}${parseInt(j)}</td>`;
                                 for (let k = 0; k < cms.cms[i][j]; k++) {
                                     h += `<td>`;
                                     h += `<input class="cmsa form-control form-control-sm pl-1 pr-1" data-cms="${cmsi}" data-dozen="${k}" data-unit="${j}" type="text" style="width: 40px; font-size: 75%; height: calc(1.5rem + 2px);" value="">`
@@ -1510,7 +1608,7 @@
                                 cms: cmses,
                             }).
                             done(() => {
-                                modules.houses.renderEntrance(houseId, entranceId);
+                                modules.addresses.houses.renderEntrance(houseId, entranceId);
                             }).
                             fail(FAIL).
                             fail(loadingDone);
@@ -1518,27 +1616,42 @@
 
                         loadingDone();
                     } else {
-                        pageError(i18n("houses.unknownOrInvalidCms"));
+                        pageError(i18n("addresses.unknownOrInvalidCms"));
                     }
                 } else {
-                    pageError(i18n("houses.entranceNotFound"));
+                    pageError(i18n("addresses.entranceNotFound"));
                 }
             });
         });
     },
 
     route: function (params) {
-        $(".sidebar .nav-item a[href='#addresses']").addClass('active');
-
-        document.title = i18n("windowTitle") + " :: " + i18n("houses.house");
+        document.title = i18n("windowTitle") + " :: " + i18n("addresses.house");
 
         if (params.show === "cms" && parseInt(params.entranceId) > 0) {
             $("#altForm").hide();
             $("#subTop").html("");
 
-            modules.houses.renderEntrance(params.houseId, params.entranceId);
+            modules.addresses.houses.renderEntrance(params.houseId, params.entranceId);
         } else {
-            modules.houses.renderHouse(params.houseId);
+            let top = '';
+
+            if (AVAIL("geo", "suggestions")) {
+                top += `
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="javascript:void(0)" class="addHouseMagick nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                </li>
+            `;
+            }
+
+            top += `<li class="nav-item d-none d-sm-inline-block">`;
+            top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
+            top += `</li>`;
+
+            $("#leftTopDynamic").html(top);
+            $(".addHouseMagick").off("click").on("click", modules.addresses.houses.houseMagick);
+
+            modules.addresses.houses.renderHouse(params.houseId);
         }
     },
 }).init();

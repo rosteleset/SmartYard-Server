@@ -5,10 +5,10 @@
         }
 
         loadSubModules("addresses", [
-            "house",
-        ], () => {
-            moduleLoaded("addresses", this);
-        });
+            "houses",
+            "domophones",
+            "subscribers",
+        ], this);
     },
 
     addresses: function (addresses) {
@@ -1648,7 +1648,7 @@
         }).show();
     },
 
-    cities: function (target, regionId, areaId) {
+    renderCities: function (target, regionId, areaId) {
         cardTable({
             target,
             title: {
@@ -1697,7 +1697,7 @@
         }).show();
     },
 
-    settlements: function (target, areaId, cityId) {
+    renderSettlements: function (target, areaId, cityId) {
         cardTable({
             target,
             title: {
@@ -1746,7 +1746,7 @@
         }).show();
     },
 
-    streets: function (target, cityId, settlementId) {
+    renderStreets: function (target, cityId, settlementId) {
         cardTable({
             target,
             title: {
@@ -1795,7 +1795,7 @@
         }).show();
     },
 
-    houses: function (target, settlementId, streetId) {
+    renderHouses: function (target, settlementId, streetId) {
         cardTable({
             target,
             title: {
@@ -1832,7 +1832,7 @@
                                 {
                                     data: modules.addresses.meta.houses[i].houseFull,
                                     nowrap: true,
-                                    click: "#houses&houseId=%s",
+                                    click: "#addresses.houses&houseId=%s",
                                 },
                             ],
                         });
@@ -1962,7 +1962,7 @@
                     return rows;
                 },
             });
-            modules.addresses.cities("#altForm", regionId, false);
+            modules.addresses.renderCities("#altForm", regionId, false);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -1989,8 +1989,8 @@
 
             subTop(modules.addresses.path("area", areaId));
 
-            modules.addresses.cities("#mainForm", false, areaId);
-            modules.addresses.settlements("#altForm", areaId, false);
+            modules.addresses.renderCities("#mainForm", false, areaId);
+            modules.addresses.renderSettlements("#altForm", areaId, false);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -2016,8 +2016,8 @@
 
             subTop(modules.addresses.path("city", cityId));
 
-            modules.addresses.streets("#mainForm", cityId, false);
-            modules.addresses.settlements("#altForm", false, cityId);
+            modules.addresses.renderStreets("#mainForm", cityId, false);
+            modules.addresses.renderSettlements("#altForm", false, cityId);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -2043,8 +2043,8 @@
 
             subTop(modules.addresses.path("settlement", settlementId));
 
-            modules.addresses.streets("#mainForm", false, settlementId);
-            modules.addresses.houses("#altForm", settlementId, false);
+            modules.addresses.renderStreets("#mainForm", false, settlementId);
+            modules.addresses.renderHouses("#altForm", settlementId, false);
         }).
         fail(FAIL).
         always(loadingDone);
@@ -2070,7 +2070,7 @@
 
             subTop(modules.addresses.path("street", streetId));
 
-            modules.addresses.houses("#mainForm", false, streetId);
+            modules.addresses.renderHouses("#mainForm", false, streetId);
 
             loadingDone();
         }).
@@ -2087,15 +2087,22 @@
             params.show = "regions";
         }
 
+        let top = '';
+
         if (AVAIL("geo", "suggestions")) {
-            $("#leftTopDynamic").html(`
+            top += `
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link text-success text-bold addHouseMagick"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
+                    <a href="javascript:void(0)" class="addHouseMagick nav-link nav-item-back-hover text-dark">${i18n("addresses.addHouse")}</a>
                 </li>
-            `);
+            `;
         }
 
-        $(".addHouseMagick").off("click").on("click", modules["addresses.house"].houseMagick);
+        top += `<li class="nav-item d-none d-sm-inline-block">`;
+        top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark">${i18n("addresses.domophones")}</a>`;
+        top += `</li>`;
+
+        $("#leftTopDynamic").html(top);
+        $(".addHouseMagick").off("click").on("click", modules.addresses.houses.houseMagick);
 
         switch (params.show) {
             case "region":
@@ -2114,6 +2121,7 @@
                 modules.addresses.renderStreet(params.streetId);
                 break;
             case "regions":
+                $("#subTop").html("");
                 modules.addresses.renderRegions();
                 break;
             default:
