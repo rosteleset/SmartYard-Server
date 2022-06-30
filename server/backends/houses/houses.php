@@ -222,17 +222,12 @@
 
             /**
              * @param $mobile
-             * @param $houseId
-             * @param $type
+             * @param $name
+             * @param $patronymic
+             * @param $flatId
              * @return boolean|integer
              */
-            abstract public function addSubscriber($mobile);
-
-            /**
-             * @param $subscriberId
-             * @return boolean
-             */
-            abstract public function deteleSubscriber($subscriberId);
+            abstract public function addSubscriber($mobile, $name, $patronymic, $flatId);
 
             /**
              * @param $subscriberId
@@ -243,9 +238,46 @@
 
             /**
              * @param $subscriberId
+             * @return boolean
+             */
+            abstract public function deleteSubscriber($subscriberId);
+
+            /**
+             * @param $subscriberId
              * @param $flats
              * @return boolean
              */
             abstract public function setSubscriberFlats($subscriberId, $flats);
+
+            /**
+             * @param $by
+             * @param $query
+             * @return mixed
+             */
+            abstract public function getKeys($by, $query);
+
+            /**
+             * @param $rfId
+             * @param $accessType
+             * @param $accessTo
+             * @param $comments
+             * @return false|integer
+             */
+            abstract public function addKey($rfId, $accessType, $accessTo, $comments);
+
+            /**
+             * @param $keyId
+             * @param $accessType
+             * @param $accessTo
+             * @param $comments
+             * @return boolean
+             */
+            abstract public function modifyKey($keyId, $accessType, $accessTo, $comments);
+
+            /**
+             * @param $keyId
+             * @return boolean
+             */
+            abstract public function deleteKey($keyId);
         }
     }

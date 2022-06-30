@@ -161,7 +161,7 @@
 
         if (domophone) {
             cardForm({
-                title: i18n("addresses.modifyDomophone"),
+                title: i18n("addresses.editDomophone"),
                 footer: true,
                 borderless: true,
                 topApply: true,

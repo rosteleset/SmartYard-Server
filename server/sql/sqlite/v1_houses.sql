@@ -100,7 +100,7 @@ CREATE TABLE houses_rfids
     house_rfid_id integer not null primary key autoincrement,
     rfid text not null,
     access_type integer not null,                                                                                       -- 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house
-    access_to integer not null,                                                                                         -- 0 - universal, > 0 - subscribers_id, flat_id, ...
+    access_to integer not null,                                                                                         -- 0 - universal, > 0 - subscriber_id, flat_id, ...
     last_seen text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     comments text
 );

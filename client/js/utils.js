@@ -393,3 +393,27 @@ function formatBytes(bytes) {
 function subTop(html) {
     $("#subTop").html(`<div class="info-box mt-2 mb-1" style="min-height: 0px;"><div class="info-box-content"><span class="info-box-text">${html}</span></div></div>`);
 }
+
+function hashParse() {
+    let hash = location.href.split('#')[1];
+    hash = hash?('#' + hash):'';
+
+    $('.dropdownMenu').collapse('hide');
+    $('.modal').modal('hide');
+
+    let params = {};
+    let route;
+
+    try {
+        hash = hash.split('#')[1].split('&');
+        route = hash[0]?hash[0]:"default";
+        for (let i = 1; i < hash.length; i++) {
+            let sp = hash[i].split('=');
+            params[sp[0]] = sp[1]?decodeURIComponent(sp[1]):true;
+        }
+    } catch (e) {
+        route = "default";
+    }
+
+    return [ route, params, hash ];
+}

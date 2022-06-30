@@ -11,30 +11,6 @@ var myself = false;
 var available = false;
 var badge = false;
 
-function hashParse() {
-    let hash = location.href.split('#')[1];
-    hash = hash?('#' + hash):'';
-
-    $('.dropdownMenu').collapse('hide');
-    $('.modal').modal('hide');
-
-    let params = {};
-    let route;
-
-    try {
-        hash = hash.split('#')[1].split('&');
-        route = hash[0]?hash[0]:"default";
-        for (let i = 1; i < hash.length; i++) {
-            let sp = hash[i].split('=');
-            params[sp[0]] = sp[1]?decodeURIComponent(sp[1]):true;
-        }
-    } catch (e) {
-        route = "default";
-    }
-
-    return [ route, params, hash ];
-}
-
 function hashChange() {
     let [ route, params, hash ] = hashParse();
 
@@ -117,6 +93,7 @@ function page404() {
 
 function pageError(error) {
     $("#mainForm").html("");
+    $("#subTop").html("");
     $("#altForm").hide();
     loadingDone(true);
     document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
@@ -338,7 +315,7 @@ function initAll() {
 
     loadingStart();
 
-    $("#leftSideToggler").on("click", () => {
+    $("#leftSideToggler").parent().parent().on("click", () => {
         setTimeout(() => {
             $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 36500 });
         }, 100);

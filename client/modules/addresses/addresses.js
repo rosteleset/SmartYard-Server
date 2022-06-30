@@ -7,7 +7,7 @@
         loadSubModules("addresses", [
             "houses",
             "domophones",
-            "subscribers",
+            "subscribers", // and keys
         ], this);
     },
 
