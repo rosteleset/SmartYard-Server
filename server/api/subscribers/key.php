@@ -10,35 +10,35 @@ namespace api\subscribers
     use api\api;
 
     /**
-     * subscriber method
+     * key method
      */
 
-    class subscriber extends api
+    class key extends api
     {
 
         public static function GET($params)
         {
             $houses = loadBackend("houses");
 
-            $subscriber = $houses->getSubscribers("id", $params["_id"]);
+            $key = $houses->geKeys("id", $params["_id"]);
 
-            return api::ANSWER($subscriber, ($subscriber !== false)?"subscriber":false);
+            return api::ANSWER($key, ($key !== false)?"key":false);
         }
 
         public static function POST($params)
         {
             $houses = loadBackend("houses");
 
-            $subscriberId = $houses->addSubscriber($params["mobile"], $params["subscriberName"], $params["subscriberPatronymic"], $params["flatId"]);
+            $keyId = $houses->addKey($params["rfId"], $params["flatId"]);
 
-            return api::ANSWER($subscriberId, ($subscriberId !== false)?"subscriber":false);
+            return api::ANSWER($keyId, ($keyId !== false)?"key":false);
         }
 
         public static function PUT($params)
         {
             $houses = loadBackend("houses");
 
-            $success = $houses->modifySubscriber($params["_id"], $params);
+            $success = $houses->modifyKey($params["_id"], $params);
 
             return api::ANSWER($success);
         }
@@ -47,7 +47,7 @@ namespace api\subscribers
         {
             $houses = loadBackend("houses");
 
-            $success = $houses->deleteSubscriber($params["_id"]);
+            $success = $houses->deleteKey($params["_id"]);
 
             return api::ANSWER($success);
         }

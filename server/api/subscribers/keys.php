@@ -10,25 +10,25 @@ namespace api\subscribers
     use api\api;
 
     /**
-     * subscribers method
+     * keys method
      */
 
-    class subscribers extends api
+    class keys extends api
     {
 
         public static function GET($params)
         {
             $houses = loadBackend("houses");
 
-            $subscribers = $houses->getSubscribers(@$params["by"], @$params["query"]);
+            $keys = $houses->getKeys(@$params["by"], @$params["query"]);
 
-            return api::ANSWER($subscribers, ($subscribers !== false)?"subscribers":false);
+            return api::ANSWER($keys, ($keys !== false)?"keys":false);
         }
 
         public static function index()
         {
             return [
-                "GET" => "#same(subscribers,subscriber,GET)",
+                "GET" => "#same(subscribers,key,GET)",
             ];
         }
     }

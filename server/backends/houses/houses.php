@@ -248,5 +248,25 @@
              * @return boolean
              */
             abstract public function setSubscriberFlats($subscriberId, $flats);
+
+            abstract public function getKeys($by, $query);
+
+            /**
+             * @return boolean|integer
+             */
+            abstract public function addKey($rfId, $flatId);
+
+            /**
+             * @param $subscriberId
+             * @return boolean
+             */
+            abstract public function deleteKey($subscriberId);
+
+            /**
+             * @param $subscriberId
+             * @param $params
+             * @return boolean
+             */
+            abstract public function modifyKey($subscriberId, $params);
         }
     }
