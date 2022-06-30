@@ -7,6 +7,17 @@ require_once "utils/guidv4.php";
 require_once "utils/db_ext.php";
 require_once "utils/checkint.php";
 
+$LanTa_services = [
+    'internet' => [ "icon" => "internet", "title" => "Интернет", "description" => "Высокоскоростной доступ в интернет", "canChange" => "t" ],
+    'iptv' => [ "icon" => "iptv", "title" => "Телевидение", "description" => "Более 200 каналов", "canChange" => "t" ],
+    'ctv' => [ "icon" => "ctv", "title" => "Телевидение", "description" => "Менее 200 каналов", "canChange" => "t" ],
+    'phone' => [ "icon" => "phone", "title" => "Телефония", "description" => "Местная и прочая телефония", "canChange" => "t" ],
+    'cctv' => [ "icon" => "cctv", "title" => "Видеонаблюдение", "description" => "Всё под контролем", "canChange" => "f" ],
+    'domophone' => [ "icon" => "domophone", "title" => "Умный домофон", "description" => "Смотри кто пришёл", "canChange" => "f" ],
+    'gsm' => [ "icon" => "gsm", "title" => "Мобильная связь", "description" => "Бла-бла-бла 2", "canChange" => "t" ],
+    'faceid' => [ "icon" => "faceid", "title" => "Распознование лица", "description" => "Бла-бла-бла 3", "canChange" => "t" ],
+];
+
 $bearer = [];
 $cache = [];
 $config = false;
