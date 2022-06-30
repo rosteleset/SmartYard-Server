@@ -204,7 +204,7 @@
                                     aid not in (select aid from core_users_rights where allow = 0 and uid = :uid)
                                 union
                                     select aid from core_api_methods where aid in (select aid from core_users_rights where allow = 1 and uid = :uid)
-                            ) and permissions_same is null"
+                            ) and coalesce(permissions_same, '') = ''"
                         );
 
                         if ($sth->execute([

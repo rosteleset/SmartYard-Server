@@ -35,7 +35,7 @@
                             where
                                 aid not in (select aid from core_api_methods_common) and 
                                 aid not in (select aid from core_api_methods_by_backend) and
-                                permissions_same is null
+                                coalesce(permissions_same, '') = ''
                         ", \PDO::FETCH_ASSOC)->fetchAll();
                     }
                     foreach ($all as $a) {
