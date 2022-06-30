@@ -1,10 +1,10 @@
 <?php
 
 /**
- * houses api
+ * subscribers api
  */
 
-namespace api\houses
+namespace api\subscribers
 {
 
     use api\api;
@@ -20,7 +20,7 @@ namespace api\houses
         {
             $houses = loadBackend("houses");
 
-            $subscriber = $houses->getSubscribers("id", @$params["_id"]);
+            $subscriber = $houses->getSubscribers("id", $params["_id"]);
 
             return api::ANSWER($subscriber, ($subscriber !== false)?"subscriber":false);
         }
@@ -29,7 +29,7 @@ namespace api\houses
         {
             $houses = loadBackend("houses");
 
-            $subscriberId = $houses->addSubscriber(@$params["mobile"]);
+            $subscriberId = $houses->addSubscriber($params["mobile"], $params["subscriberName"], $params["subscriberPatronymic"], $params["flatId"]);
 
             return api::ANSWER($subscriberId, ($subscriberId !== false)?"subscriber":false);
         }
@@ -38,7 +38,7 @@ namespace api\houses
         {
             $houses = loadBackend("houses");
 
-            $success = $houses->modifySubscriber(@$params["_id"], $params);
+            $success = $houses->modifySubscriber($params["_id"], $params);
 
             return api::ANSWER($success);
         }
@@ -47,7 +47,7 @@ namespace api\houses
         {
             $houses = loadBackend("houses");
 
-            $success = $houses->deleteSubscriber(@$params["_id"]);
+            $success = $houses->deleteSubscriber($params["_id"]);
 
             return api::ANSWER($success);
         }

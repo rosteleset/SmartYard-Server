@@ -222,17 +222,18 @@
 
             /**
              * @param $mobile
-             * @param $houseId
-             * @param $type
+             * @param $name
+             * @param $patronymic
+             * @param $flatId
              * @return boolean|integer
              */
-            abstract public function addSubscriber($mobile);
+            abstract public function addSubscriber($mobile, $name, $patronymic, $flatId);
 
             /**
              * @param $subscriberId
              * @return boolean
              */
-            abstract public function deteleSubscriber($subscriberId);
+            abstract public function deleteSubscriber($subscriberId);
 
             /**
              * @param $subscriberId

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * houses api
+ * subscribers api
  */
 
-namespace api\houses
+namespace api\subscribers
 {
 
     use api\api;
@@ -20,15 +20,15 @@ namespace api\houses
         {
             $houses = loadBackend("houses");
 
-            $subscriber = $houses->getSubscribers(@$params["by"], @$params["query"]);
+            $subscribers = $houses->getSubscribers(@$params["by"], @$params["query"]);
 
-            return api::ANSWER($subscriber, ($subscriber !== false)?"subscriber":false);
+            return api::ANSWER($subscribers, ($subscribers !== false)?"subscribers":false);
         }
 
         public static function index()
         {
             return [
-                "GET" => "#same(houses,subscriber,GET)",
+                "GET" => "#same(subscribers,subscriber,GET)",
             ];
         }
     }

@@ -749,23 +749,54 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile)
+            public function addSubscriber($mobile, $name, $patronymic, $flatId)
             {
-                if (strlen($mobile) > 32) {
-                    setLastError("invalidMobile");
+                $mobile = trim($mobile);
+
+                if (strlen($mobile) > 32 || strlen($mobile) < 6 || strlen($name) > 32 || strlen($patronymic) > 32) {
+                    setLastError("invalidParams");
+                    return false;
                 }
 
-                return $this->db->insert("insert into houses_subscribers_mobile (id) values (:mobile)", [
-                    "id" => $mobile,
+                $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic) values (:mobile, :subscriber_name, :subscriber_patronymic)", [
+                    "mobile" => $mobile,
+                    "subscriber_name" => $name,
+                    "subscriber_patronymic" => $patronymic,
                 ]);
+
+                if ($subscriberId && $flatId) {
+                    if (!checkInt($flatId)) {
+                        setLastError("invalidFlat");
+                        return false;
+                    }
+
+                    if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id) values (:house_subscriber_id, :house_flat_id)", [
+                        "house_subscriber_id" => $subscriberId,
+                        "house_flat_id" => $flatId,
+                    ])) {
+                        return false;
+                    }
+                }
+
+                return $subscriberId;
             }
 
             /**
              * @inheritDoc
              */
-            public function deteleSubscriber($subscriberId)
+            public function deleteSubscriber($subscriberId)
             {
-                // TODO: Implement deteleSubscriber() method.
+                if (!checkInt($subscriberId)) {
+                    return false;
+                }
+
+                $result = $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id = $subscriberId");
+
+                if ($result === false) {
+                    return false;
+                } else {
+                    return $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id not in (select house_subscriber_id from houses_subscribers_mobile)");
+                }
             }
 
             /**
@@ -773,7 +804,46 @@
              */
             public function modifySubscriber($subscriberId, $params)
             {
-                // TODO: Implement modifySubscriber() method.
+                if (!checkInt($subscriberId)) {
+                    return false;
+                }
+
+                if (@$params["mobile"]) {
+                    $mobile = trim($params["mobile"]);
+
+                    if (strlen($mobile) > 32 || strlen($mobile) < 6) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set id = :id where house_subscriber_id = $subscriberId", [ "id" => $mobile ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["subscriberName"]) {
+                    if (strlen($params["subscriberName"]) > 32) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set subscriber_name = :subscriber_name where house_subscriber_id = $subscriberId", [ "subscriber_name" => $params["subscriberName"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["subscriberPatronymic"]) {
+                    if (strlen($params["subscriberPatronymic"]) > 32) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set subscriber_patronymic = :subscriber_patronymic where house_subscriber_id = $subscriberId", [ "subscriber_patronymic" => $params["subscriberPatronymic"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
             /**
