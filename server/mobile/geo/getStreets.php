@@ -9,10 +9,11 @@
  *
  * @apiHeader {String} authorization токен авторизации
  *
- * @apiParam {Number} locationId локация
+ * @apiParam {String} locationId локация
  *
  * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {Number} -.streetId идентификатор улицы
+ * @apiSuccess {String} -.streetId идентификатор улицы
+ * @apiSuccess {String} -.streetUuid идентификатор улицы
  * @apiSuccess {String} -.name наименование улицы
  * @apiSuccess {String} -.type тип улицы
  */
@@ -20,5 +21,24 @@
 auth();
 
 $location_id = (int)@$postdata['locationId'];
+$addresses = loadBackend("addresses");
 
-response(200, pg_fetch_all(pg_query("select street_id as \"streetId\", streets.name as name, street_types.name as type from address.streets left join address.street_types using (street_type_id) where location_id=$location_id")));
+if ($location_id > $offsetForCityId) {
+    $cityId = $location_id - $offsetForCityId;
+    $streets = $addresses->getStreets($cityId, false);
+} else {
+    $settlementId = $location_id;
+    $streets = $addresses->getStreets(false, $settlementId);
+}
+
+$streets_ = [];
+
+foreach ($streets as $street) {
+    $streets_[] = array(
+        "streetId" => $street["streetId"],
+        "streetUUid" => $street["streetUuid"],
+        "name" => $street["street"],
+        "type" => $street["streetType"]
+    );
+}
+response(200, $streets_);

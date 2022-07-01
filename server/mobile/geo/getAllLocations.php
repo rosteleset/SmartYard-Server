@@ -10,7 +10,7 @@
  * @apiHeader {String} authorization токен авторизации
  *
  * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {Number} [-.locationId] идентификатор населенного пункта
+ * @apiSuccess {String} [-.locationId] идентификатор населенного пункта
  * @apiSuccess {String} [-.locationUuid] идентификатор населенного пункта
  * @apiSuccess {String} [-.areaName] наименование района
  * @apiSuccess {String} -.locationName наименование населенного пункта
@@ -18,8 +18,6 @@
  */
 
 auth();
-
-$json = '[{"locationId": 1, "locationName": "Test location", "name": "Test name"}, {"locationId": 2, "locationName": "Test location 2", "name": "Test name 2"}]';
 
 $addresses = loadBackend("addresses");
 
@@ -40,7 +38,7 @@ foreach ($regions as $region) {
     foreach ($cities_ as $city) {
         $cityId = $city["cityId"];
         $locations[] = array(
-            "locationId" => $city["cityId"] + $offsetForCityId,
+            "locationId" => strval($city["cityId"] + $offsetForCityId),
             "locationUuid" => $city["cityUuid"],
             "location" => $city["cityWithType"],
             "locationName" => $city["city"]
@@ -51,7 +49,7 @@ foreach ($regions as $region) {
         $settlements_ = $settlements_?: [];
         foreach ($settlements_ as $settlement) {
             $locations[] = array(
-                "locationId" => $settlement["settlementId"],
+                "locationId" => strval($settlement["settlementId"]),
                 "locationUuid" => $settlement["settlementUuid"],
                 "areaName" => $city["cityWithType"],
                 "location" => $settlement["settlementWithType"],
@@ -71,7 +69,7 @@ foreach ($regions as $region) {
         // Населенные пункты районного подчинения
         foreach ($settlements_ as $settlement) {
             $locations[] = array(
-                "locationId" => $settlement["settlementId"],
+                "locationId" => strval($settlement["settlementId"]),
                 "locationUuid" => $settlement["settlementUuid"],
                 "areaName" => $area["areaWithType"],
                 "location" => $settlement["settlementWithType"],
@@ -83,7 +81,7 @@ foreach ($regions as $region) {
         foreach ($cities_ as $city) {
             $cityId = $city["cityId"];
             $locations[] = array(
-                "locationId" => $city["cityId"] + $offsetForCityId,
+                "locationId" => strval($city["cityId"] + $offsetForCityId),
                 "locationUuid" => $city["cityUuid"],
                 "areaName" => $area["areaWithType"],
                 "location" => $city["cityWithType"],
@@ -96,7 +94,7 @@ foreach ($regions as $region) {
             $settlements_ = $settlements_ ?:[];
             foreach ($settlements_ as $settlement) {
                 $locations[] = array(
-                    "locationId" => $settlement["settlementId"],
+                    "locationId" => strval($settlement["settlementId"]),
                     "locationUuid" => $settlement["settlementUuid"],
                     "areaName" => $city["cityWithType"],
                     "location" => $settlement["settlementWithType"],
