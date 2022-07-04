@@ -23,6 +23,7 @@ $cache = [];
 $config = false;
 
 $offsetForCityId = 1000000;
+$emptyStreetIdOffset = 1000000;
 
 try {
     $config = @json_decode(file_get_contents("config/config.json"), true);
