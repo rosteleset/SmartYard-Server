@@ -881,7 +881,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyKey($keyId, $accessType, $accessTo, $comments)
+            public function modifyKey($keyId, $comments)
             {
                 // TODO: Implement modifyKey() method.
             }

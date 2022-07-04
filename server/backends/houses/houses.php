@@ -267,12 +267,10 @@
 
             /**
              * @param $keyId
-             * @param $accessType
-             * @param $accessTo
              * @param $comments
              * @return boolean
              */
-            abstract public function modifyKey($keyId, $accessType, $accessTo, $comments);
+            abstract public function modifyKey($keyId, $comments);
 
             /**
              * @param $keyId

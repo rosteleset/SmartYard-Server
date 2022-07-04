@@ -841,10 +841,12 @@
                     $house = json_decode($house, true);
 
                     $regionId = null;
+
                     if ($house["data"]["region_fias_id"]) {
-                        $regionId = $this->db->get("select address_region_id from addresses_regions where region_uuid = :region_uuid",
+                        $regionId = $this->db->get("select address_region_id from addresses_regions where region_uuid = :region_uuid or region = :region",
                             [
-                                ":region_uuid" => $house["data"]["region_fias_id"],
+                                "region_uuid" => $house["data"]["region_fias_id"],
+                                "region" => $house["data"]["region"],
                             ],
                             false,
                             [
@@ -863,9 +865,11 @@
 
                     $areaId = null;
                     if ($house["data"]["area_fias_id"]) {
-                        $areaId = $this->db->get("select address_area_id from addresses_areas where area_uuid = :area_uuid",
+                        $areaId = $this->db->get("select address_area_id from addresses_areas where area_uuid = :area_uuid or (address_region_id = :address_region_id and area = :area)",
                             [
-                                ":area_uuid" => $house["data"]["area_fias_id"],
+                                "area_uuid" => $house["data"]["area_fias_id"],
+                                "address_region_id" => $regionId,
+                                "area" => $house["data"]["area"],
                             ],
                             false,
                             [
@@ -883,9 +887,12 @@
 
                     $cityId = null;
                     if ($house["data"]["city_fias_id"]) {
-                        $cityId = $this->db->get("select address_city_id from addresses_cities where city_uuid = :city_uuid",
+                        $cityId = $this->db->get("select address_city_id from addresses_cities where city_uuid = :city_uuid or (address_region_id = :address_region_id and city = :city) or (address_area_id = :address_area_id and city = :city)",
                             [
-                                ":city_uuid" => $house["data"]["city_fias_id"],
+                                "city_uuid" => $house["data"]["city_fias_id"],
+                                "address_region_id" => $regionId,
+                                "address_area_id" => $areaId,
+                                "city" => $house["data"]["city"],
                             ],
                             false,
                             [
@@ -908,9 +915,12 @@
 
                     $settlementId = null;
                     if ($house["data"]["settlement_fias_id"]) {
-                        $settlementId = $this->db->get("select address_settlement_id from addresses_settlements where settlement_uuid = :settlement_uuid",
+                        $settlementId = $this->db->get("select address_settlement_id from addresses_settlements where settlement_uuid = :settlement_uuid or (address_area_id = :address_area_id and settlement = :settlement) or (address_city_id = :address_city_id and settlement = :settlement)",
                             [
-                                ":settlement_uuid" => $house["data"]["settlement_fias_id"],
+                                "settlement_uuid" => $house["data"]["settlement_fias_id"],
+                                "address_area_id" => $areaId,
+                                "address_city_id" => $cityId,
+                                "settlement" => $house["data"]["settlement"],
                             ],
                             false,
                             [
@@ -933,9 +943,12 @@
 
                     $streetId = null;
                     if ($house["data"]["street_fias_id"]) {
-                        $streetId = $this->db->get("select address_street_id from addresses_streets where street_uuid = :street_uuid",
+                        $streetId = $this->db->get("select address_street_id from addresses_streets where street_uuid = :street_uuid or (address_city_id = :address_city_id and street = :street) or (address_settlement_id = :address_settlement_id and street = :street)",
                             [
-                                ":street_uuid" => $house["data"]["street_fias_id"],
+                                "street_uuid" => $house["data"]["street_fias_id"],
+                                "address_city_id" => $cityId,
+                                "address_settlement_id" => $settlementId,
+                                "street" => $house["data"]["street"],
                             ],
                             false,
                             [
@@ -958,9 +971,12 @@
 
                     $houseId = null;
                     if ($house["data"]["house_fias_id"]) {
-                        $houseId = $this->db->get("select address_house_id from addresses_houses where house_uuid = :house_uuid",
+                        $houseId = $this->db->get("select address_house_id from addresses_houses where house_uuid = :house_uuid or (address_settlement_id = :address_settlement_id and house = :house) or (address_street_id = :address_street_id and house = :house)",
                             [
-                                ":house_uuid" => $house["data"]["house_fias_id"],
+                                "house_uuid" => $house["data"]["house_fias_id"],
+                                "address_settlement_id" => $settlementId,
+                                "address_street_id" => $streetId,
+                                "house" => $house["data"]["house"],
                             ],
                             false,
                             [
