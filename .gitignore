@@ -25,7 +25,4 @@ __pycache__
 /api/
 /doc/
 /.stylelintrc.json
-RBT/RBT.xcodeproj/project.pbxproj
-RBT/RBT.xcodeproj/project.xcworkspace/contents.xcworkspacedata
-RBT/RBT.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
-RBT/RBT.xcodeproj/project.xcworkspace/xcuserdata/sbca.xcuserdatad/UserInterfaceState.xcuserstate
+RBT/RBT.xcodeproj/
