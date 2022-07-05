@@ -289,6 +289,7 @@
         $("#leftTopDynamic").html(top);
 
         $("#altForm").hide();
+        $("#subTop").html("");
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
 
