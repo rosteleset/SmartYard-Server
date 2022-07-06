@@ -910,7 +910,7 @@
                     }
                 }
 
-                if ($this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => $this->db-now() ]) === false) {
+                if ($this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => $this->db->now() ]) === false) {
                     return false;
                 }
 
