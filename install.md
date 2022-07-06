@@ -2,7 +2,7 @@ download server libs
 
 ```
 cd server/lib
-git clone https://github.com/PHPMailer/PHPMailer 
+git clone https://github.com/PHPMailer/PHPMailer
 git clone https://github.com/ezyang/htmlpurifier
 ```
 

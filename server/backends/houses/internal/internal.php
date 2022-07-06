@@ -722,17 +722,39 @@
             public function getSubscribers($by, $query)
             {
                 $q = "";
+                $p = false;
+
                 switch ($by) {
                     case "flat":
-                        if (!checkInt($query)) {
-                            setLastError("wrongFlat");
-                            return false;
-                        }
-                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id = $query)";
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id = :house_flat_id)";
+                        $p = [
+                            "house_flat_id" => $query,
+                        ];
+                        break;
+
+                    case "mobile":
+                        $q = "select * from houses_subscribers_mobile where id = :id";
+                        $p = [
+                            "id" => $query,
+                        ];
+                        break;
+
+                    case "id":
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id";
+                        $p = [
+                            "house_subscriber_id" => $query,
+                        ];
+                        break;
+
+                    case "authToken":
+                        $q = "select * from houses_subscribers_mobile where auth_token = :auth_token";
+                        $p = [
+                            "auth_token" => $query,
+                        ];
                         break;
                 }
 
-                return $this->db->get($q, false, [
+                return $this->db->get($q, $p, [
                     "house_subscriber_id" => "subscriberId",
                     "id" => "mobile",
                     "auth_token" => "authToken",
@@ -749,19 +771,22 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $flatId)
+            public function addSubscriber($mobile, $name, $patronymic, $flatId = false)
             {
-                $mobile = trim($mobile);
-
-                if (strlen($mobile) > 32 || strlen($mobile) < 6 || strlen($name) > 32 || strlen($patronymic) > 32) {
+                if (
+                    !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32 ]) ||
+                    !checkStr($name, [ "maxLength" => 32 ]) ||
+                    !checkStr($patronymic, [ "maxLength" => 32 ])
+                ) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic) values (:mobile, :subscriber_name, :subscriber_patronymic)", [
+                $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered)", [
                     "mobile" => $mobile,
                     "subscriber_name" => $name,
                     "subscriber_patronymic" => $patronymic,
+                    "registered" => $this->db->now(),
                 ]);
 
                 if ($subscriberId && $flatId) {
@@ -802,27 +827,25 @@
             /**
              * @inheritDoc
              */
-            public function modifySubscriber($subscriberId, $params)
+            public function modifySubscriber($subscriberId, $params = [])
             {
                 if (!checkInt($subscriberId)) {
                     return false;
                 }
 
                 if (@$params["mobile"]) {
-                    $mobile = trim($params["mobile"]);
-
-                    if (strlen($mobile) > 32 || strlen($mobile) < 6) {
+                    if (!checkStr($params["mobile"], [ "minLength" => 6, "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
                     }
 
-                    if ($this->db->modify("update houses_subscribers_mobile set id = :id where house_subscriber_id = $subscriberId", [ "id" => $mobile ]) === false) {
+                    if ($this->db->modify("update houses_subscribers_mobile set id = :id where house_subscriber_id = $subscriberId", [ "id" => $params["mobile"] ]) === false) {
                         return false;
                     }
                 }
 
                 if (@$params["subscriberName"]) {
-                    if (strlen($params["subscriberName"]) > 32) {
+                    if (!checkStr($params["subscriberName"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
                     }
@@ -833,7 +856,7 @@
                 }
 
                 if (@$params["subscriberPatronymic"]) {
-                    if (strlen($params["subscriberPatronymic"]) > 32) {
+                    if (!checkStr($params["subscriberPatronymic"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
                     }
@@ -841,6 +864,54 @@
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_patronymic = :subscriber_patronymic where house_subscriber_id = $subscriberId", [ "subscriber_patronymic" => $params["subscriberPatronymic"] ]) === false) {
                         return false;
                     }
+                }
+
+                if (@$params["authToken"]) {
+                    if (!checkStr($params["authToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set auth_token = :auth_token where house_subscriber_id = $subscriberId", [ "auth_token" => $params["authToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("platform", $params)) {
+                    if (!checkInt($params["platform"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set platform = :platform where house_subscriber_id = $subscriberId", [ "platform" => $params["platform"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["pushToken"]) {
+                    if (!checkStr($params["pushToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set push_token = :push_token where house_subscriber_id = $subscriberId", [ "push_token" => $params["pushToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("tokenType", $params)) {
+                    if (!checkInt($params["tokenType"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set push_token_type = :push_token_type where house_subscriber_id = $subscriberId", [ "push_token_type" => $params["tokenType"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if ($this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => $this->db-now() ]) === false) {
+                    return false;
                 }
 
                 return true;
