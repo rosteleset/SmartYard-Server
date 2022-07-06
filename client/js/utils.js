@@ -307,7 +307,7 @@ function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
     let [ route ] = hashParse();
 
     $("#leftside-menu").append(`
-        <li class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${title}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+        <li class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
             <a href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
@@ -416,4 +416,34 @@ function hashParse() {
     }
 
     return [ route, params, hash ];
+}
+
+function escapeHTML(str) {
+    let escapeChars = {
+        '¢': 'cent',
+        '£': 'pound',
+        '¥': 'yen',
+        '€': 'euro',
+        '©':'copy',
+        '®': 'reg',
+        '<': 'lt',
+        '>': 'gt',
+        '"': 'quot',
+        '&': 'amp',
+        '\'': '#39'
+    };
+
+    let regexString = '[';
+
+    for(let key in escapeChars) {
+        regexString += key;
+    }
+
+    regexString += ']';
+
+    let regex = new RegExp(regexString, 'g');
+
+    return str.replace(regex, function(m) {
+        return '&' + escapeChars[m] + ';';
+    });
 }
