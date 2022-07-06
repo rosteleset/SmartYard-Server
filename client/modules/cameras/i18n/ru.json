@@ -12,5 +12,8 @@
     "comment": "Примечания",
     "deleteCamera": "Удалить камеру",
     "modifyCamera": "Редактирование камеры",
-    "confirmDeleteCamera": "Удалить камеру #%s?"
+    "confirmDeleteCamera": "Удалить камеру #%s?",
+    "cameraWasAdded": "Камера добавлена",
+    "cameraWasDeleted": "Камера удалена",
+    "cameraWasChanged": "Камера изменена"
 }

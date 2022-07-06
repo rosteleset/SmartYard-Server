@@ -10,6 +10,9 @@
         loadingStart();
         POST("cameras", "camera", false, camera).
         fail(FAIL).
+        done(() => {
+            message(i18n("cameras.cameraWasAdded"))
+        }).
         always(modules.cameras.route);
     },
 
@@ -17,6 +20,9 @@
         loadingStart();
         PUT("cameras", "camera", camera.cameraId, camera).
         fail(FAIL).
+        done(() => {
+            message(i18n("cameras.cameraWasChanged"))
+        }).
         always(modules.cameras.route);
     },
 
@@ -24,6 +30,9 @@
         loadingStart();
         DELETE("cameras", "camera", cameraId).
         fail(FAIL).
+        done(() => {
+            message(i18n("cameras.cameraWasDeleted"))
+        }).
         always(modules.cameras.route);
     },
 
