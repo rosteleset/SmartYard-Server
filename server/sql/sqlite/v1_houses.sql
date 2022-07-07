@@ -24,7 +24,7 @@ CREATE TABLE houses_entrances
     lat real,
     lon real,
     shared integer,
--- domophone's specisic entrance settings
+-- domophone's specific entrance settings
     camera_id integer,
     house_domophone_id integer not null,
     domophone_output integer,
@@ -53,7 +53,7 @@ CREATE TABLE houses_houses_entrances
 (
     address_house_id integer not null,
     house_entrance_id integer not null,
--- domophone's specisic entrance settings
+-- domophone's specific entrance settings
     prefix integer not null
 );
 CREATE UNIQUE INDEX houses_houses_entrances_uniq1 on houses_houses_entrances(address_house_id, house_entrance_id);

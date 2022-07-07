@@ -2092,7 +2092,7 @@
         if (AVAIL("geo", "suggestions")) {
             top += `
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="addHouseMagick nav-link nav-item-back-hover text-dark">${i18n("addresses.addHouse")}</a>
+                    <a href="javascript:void(0)" class="addHouseMagic nav-link nav-item-back-hover text-dark">${i18n("addresses.addHouse")}</a>
                 </li>
             `;
         }
@@ -2102,7 +2102,7 @@
         top += `</li>`;
 
         $("#leftTopDynamic").html(top);
-        $(".addHouseMagick").off("click").on("click", modules.addresses.houses.houseMagick);
+        $(".addHouseMagic").off("click").on("click", modules.addresses.houses.houseMagic);
 
         switch (params.show) {
             case "region":
