@@ -276,6 +276,6 @@
              * @param $houseUuid
              * @return false|integer
              */
-            abstract function addHouseByMagick($houseUuid);
+            abstract function addHouseByMagic($houseUuid);
         }
     }

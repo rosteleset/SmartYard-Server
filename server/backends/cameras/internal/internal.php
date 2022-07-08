@@ -23,7 +23,7 @@ namespace backends\cameras
                 "model" => "model",
                 "ip" => "ip",
                 "port" => "port",
-                "rtsp_stream" => "rtspStream",
+                "stream" => "stream",
                 "credentials" => "credentials",
                 "comment" => "comment"
             ]);

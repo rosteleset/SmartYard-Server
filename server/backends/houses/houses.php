@@ -227,14 +227,14 @@
              * @param $flatId
              * @return boolean|integer
              */
-            abstract public function addSubscriber($mobile, $name, $patronymic, $flatId);
+            abstract public function addSubscriber($mobile, $name, $patronymic, $flatId = false);
 
             /**
              * @param $subscriberId
              * @param $params
              * @return boolean
              */
-            abstract public function modifySubscriber($subscriberId, $params);
+            abstract public function modifySubscriber($subscriberId, $params = []);
 
             /**
              * @param $subscriberId

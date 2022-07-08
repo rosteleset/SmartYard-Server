@@ -33,8 +33,8 @@
             public static function POST($params) {
                 $addresses = loadBackend("addresses");
 
-                if (@$params["magick"]) {
-                    $houseId = $addresses->addHouseByMagick($params["magick"]);
+                if (@$params["magic"]) {
+                    $houseId = $addresses->addHouseByMagic($params["magic"]);
                 } else {
                     $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
                 }

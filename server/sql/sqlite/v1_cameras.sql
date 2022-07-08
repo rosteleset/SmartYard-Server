@@ -6,7 +6,7 @@ CREATE TABLE cameras
     model text not null,
     ip text not null ,
     port integer not null,
-    rtsp_stream text,
+    stream text,
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     comment text
 );

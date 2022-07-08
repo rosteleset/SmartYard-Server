@@ -833,7 +833,7 @@
             /**
              * @inheritDoc
              */
-            function addHouseByMagick($houseUuid)
+            function addHouseByMagic($houseUuid)
             {
                 $house = $this->redis->get("house_" . $houseUuid);
 
