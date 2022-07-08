@@ -38,5 +38,22 @@
              * @return mixed
              */
             abstract function sendSMS($id, $text);
+
+            /**
+             * @return false|array
+             */
+            abstract function getConfirmNumbers();
+
+            /**
+             * @param $mobile
+             * @return boolean
+             */
+            abstract function registerToConfirm($mobile);
+
+            /**
+             * @param $mobile
+             * @return boolean
+             */
+            abstract function isConfirmed($mobile);
         }
     }

@@ -103,5 +103,29 @@
             {
                 // TODO: Implement sendSMS() method.
             }
+
+            /**
+             * @inheritDoc
+             */
+            function getConfirmNumbers()
+            {
+                // TODO: Implement getConfirmNumbers() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function registerToConfirm($mobile)
+            {
+                // TODO: Implement registerToConfirm() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function isConfirmed($mobile)
+            {
+                // TODO: Implement isConfirmed() method.
+            }
         }
     }
