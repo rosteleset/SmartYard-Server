@@ -99,5 +99,4 @@
                 return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query);
             }
         }
-
     }
