@@ -8,7 +8,7 @@
     {
 
         /**
-         * internal.db subscribers class
+         * smssending variant of flash calls and sms sending
          */
         class smssending extends isdn
         {
