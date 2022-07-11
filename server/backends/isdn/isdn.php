@@ -21,39 +21,31 @@
              * return code if successfull and false if not
              *
              * @param $id
-             * @return false|string
+             * @return string
              */
             abstract function flashCall($id);
 
             /**
              * @param $id
-             * @param $code
-             * @return boolean
+             * @return string
              */
-            abstract function checkCode($id, $code);
+            abstract function getCode($id);
 
             /**
              * @param $id
-             * @param $text
-             * @return mixed
+             * @return string
              */
-            abstract function sendSMS($id, $text);
+            abstract function sendCode($id);
 
             /**
-             * @return false|array
+             * @return array
              */
             abstract function getConfirmNumbers();
 
             /**
-             * @param $mobile
-             * @return boolean
+             * @param $id
+             * @return string
              */
-            abstract function registerToConfirm($mobile);
-
-            /**
-             * @param $mobile
-             * @return boolean
-             */
-            abstract function isConfirmed($mobile);
+            abstract function checkIncomng($id);
         }
     }

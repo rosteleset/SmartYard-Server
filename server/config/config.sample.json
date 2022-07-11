@@ -93,6 +93,11 @@
 
         "cameras": {
             "backend": "internal"
+        },
+
+        "isdn": {
+            "backend": "smssending",
+            "secret": "<-- your secret here -->"
         }
     },
 
