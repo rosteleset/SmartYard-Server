@@ -40,7 +40,7 @@
             /**
              * @inheritDoc
              */
-            function getConfirmNumbers()
+            function confirmNumbers()
             {
                 return [
                     "84752429949"

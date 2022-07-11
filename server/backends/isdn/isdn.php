@@ -35,7 +35,7 @@
             /**
              * @return array
              */
-            abstract function getConfirmNumbers();
+            abstract function confirmNumbers();
 
             /**
              * @param $id
