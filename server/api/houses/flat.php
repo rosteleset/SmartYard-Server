@@ -18,27 +18,27 @@
 
             public static function POST($params)
             {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
-                $flatId = $houses->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["openCode"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
+                $flatId = $households->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["openCode"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
 
                 return api::ANSWER($flatId, ($flatId !== false)?"flatId":"notAcceptable");
             }
 
             public static function PUT($params)
             {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
-                $success = $houses->modifyFlat($params["_id"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["openCode"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
+                $success = $households->modifyFlat($params["_id"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["openCode"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params)
             {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
-                $success = $houses->deleteFlat($params["_id"]);
+                $success = $households->deleteFlat($params["_id"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

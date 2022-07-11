@@ -18,18 +18,18 @@
 
             public static function GET($params)
             {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
-                $cms = $houses->getCms($params["_id"]);
+                $cms = $households->getCms($params["_id"]);
 
                 return api::ANSWER($cms, ($cms !== false)?"cms":false);
             }
 
             public static function PUT($params)
             {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
-                $success = $houses->setCms($params["_id"], $params["cms"]);
+                $success = $households->setCms($params["_id"], $params["cms"]);
 
                 return api::ANSWER($success);
             }

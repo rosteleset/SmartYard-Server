@@ -18,13 +18,13 @@
 
             public static function GET($params)
             {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
                 $house = [
-                    "flats" => $houses->getHouseFlats($params["_id"]),
-                    "entrances" => $houses->getHouseEntrances($params["_id"]),
-                    "domophoneModels" => $houses->getModels(),
-                    "cmses" => $houses->getCMSes(),
+                    "flats" => $households->getHouseFlats($params["_id"]),
+                    "entrances" => $households->getHouseEntrances($params["_id"]),
+                    "domophoneModels" => $households->getModels(),
+                    "cmses" => $households->getCMSes(),
                 ];
 
                 return api::ANSWER($house, ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?"house":false);

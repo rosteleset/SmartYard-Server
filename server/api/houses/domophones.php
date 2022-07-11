@@ -15,12 +15,12 @@
         class domophones extends api {
 
             public static function GET($params) {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
                 $response = [
-                    "domophones" => $houses->getDomophones(),
-                    "models" => $houses->getModels(),
-                    "servers" => $houses->getAsteriskServers(),
+                    "domophones" => $households->getDomophones(),
+                    "models" => $households->getModels(),
+                    "servers" => $households->getAsteriskServers(),
                 ];
 
                 return api::ANSWER($response, "domophones");

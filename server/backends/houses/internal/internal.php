@@ -10,7 +10,7 @@
          * internal.db houses class
          */
 
-        class internal extends houses {
+        class internal extends households {
 
             /**
              * @inheritDoc

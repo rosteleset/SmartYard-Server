@@ -145,9 +145,9 @@
                     break;
 
                 case "flat":
-                    $houses = loadBackend("houses");
+                    $households = loadBackend("households");
 
-                    echo json_encode($houses->getFlat((int)$_RAW));
+                    echo json_encode($households->getFlat((int)$_RAW));
                     break;
             }
             break;

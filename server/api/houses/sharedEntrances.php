@@ -18,9 +18,9 @@
 
             public static function GET($params)
             {
-                $houses = loadBackend("houses");
+                $households = loadBackend("households");
 
-                $entrances = $houses->getSharedEntrances(@$params["_id"]);
+                $entrances = $households->getSharedEntrances(@$params["_id"]);
 
                 return api::ANSWER($entrances, ($entrances !== false)?"entrances":"notAcceptable");
             }

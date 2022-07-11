@@ -12,7 +12,7 @@
         /**
          * base addresses class
          */
-        abstract class houses extends backend
+        abstract class households extends backend
         {
 
             /**
