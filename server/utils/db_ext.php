@@ -6,7 +6,11 @@
             $remap = [];
 
             foreach ($map as $key => $value) {
-                $remap[$key] = trim($value);
+                if (is_null($value)) {
+                    $remap[$key] = $value;
+                } else {
+                    $remap[$key] = trim($value);
+                }
             }
 
             return $remap;
