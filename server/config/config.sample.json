@@ -75,20 +75,7 @@
         },
 
         "domophones": {
-            "backend": "internal",
-            "asterisk_servers": [
-                {
-                    "title": "First server",
-                    "ip": "127.0.0.1",
-                    "sip_tcp_port": 5060,
-                    "sip_udp_port": 5060,
-                    "ami_port": 5038,
-                    "ami_password": "b47c9917fd1eed2b450483282faea0cf",
-                    "http_port": 8088,
-                    "ari_username": "domophone",
-                    "ari_password": "b47c9917fd1eed2b450483282faea0cf"
-                }
-            ]
+            "backend": "internal"
         },
 
         "cameras": {
@@ -100,6 +87,20 @@
             "secret": "<-- your secret here -->"
         }
     },
+
+    "asterisk_servers": [
+        {
+            "title": "First server",
+            "ip": "127.0.0.1",
+            "sip_tcp_port": 5060,
+            "sip_udp_port": 5060,
+            "ami_port": 5038,
+            "ami_password": "b47c9917fd1eed2b450483282faea0cf",
+            "http_port": 8088,
+            "ari_username": "domophone",
+            "ari_password": "b47c9917fd1eed2b450483282faea0cf"
+        }
+    ],
 
     "real_ip_header": [
         "HTTP_X_FORWARDED_FOR",
