@@ -761,6 +761,7 @@
                     "platform" => "platform",
                     "push_token" => "pushToken",
                     "push_token_type" => "tokenType",
+                    "voip_token" => "voipToken",
                     "registered" => "registered",
                     "last_seen" => "lastSeen",
                     "subscriber_name" => "subscriberName",
@@ -906,6 +907,17 @@
                     }
 
                     if ($this->db->modify("update houses_subscribers_mobile set push_token_type = :push_token_type where house_subscriber_id = $subscriberId", [ "push_token_type" => $params["tokenType"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["voipToken"]) {
+                    if (!checkStr($params["voipToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set voip_token = :voip_token where house_subscriber_id = $subscriberId", [ "voip_token" => $params["voipToken"] ]) === false) {
                         return false;
                     }
                 }

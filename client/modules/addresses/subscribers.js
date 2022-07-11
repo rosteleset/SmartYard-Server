@@ -138,6 +138,20 @@
                         placeholder: i18n("addresses.subscriberPatronymic"),
                         value: subscriber.subscriberPatronymic,
                     },
+                    {
+                        id: "authToken",
+                        type: "text",
+                        title: i18n("addresses.authToken"),
+                        value: subscriber.authToken,
+                        readonly: true,
+                    },
+                    {
+                        id: "pushToken",
+                        type: "text",
+                        title: i18n("addresses.pushToken"),
+                        value: subscriber.pushToken,
+                        readonly: true,
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {

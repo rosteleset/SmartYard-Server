@@ -186,6 +186,8 @@
     "subscriberWasDeleted": "Абонент удален",
     "keyId": "#",
     "rfId": "Метка",
+    "authToken": "Токен авторизации",
+    "pushToken": "Push токен",
     "errors": {
         "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "Такой дом уже существует",
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",
