@@ -15,11 +15,6 @@
         abstract class isdn extends backend
         {
             /**
-             *
-             * send authentication (via call) code to device $id
-             *
-             * return code if successfull and false if not
-             *
              * @param $id
              * @return string
              */
