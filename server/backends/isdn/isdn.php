@@ -47,5 +47,11 @@
              * @return string
              */
             abstract function checkIncomng($id);
+
+            /**
+             * @param $push
+             * @return mixed
+             */
+            abstract function push($push);
         }
     }

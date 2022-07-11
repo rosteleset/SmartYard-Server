@@ -96,7 +96,7 @@
         },
 
         "isdn": {
-            "backend": "smssending",
+            "backend": "easysms",
             "secret": "<-- your secret here -->"
         }
     },
