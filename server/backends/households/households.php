@@ -1,10 +1,10 @@
 <?php
 
     /**
-    * backends houses namespace
+    * backends households namespace
     */
 
-    namespace backends\houses
+    namespace backends\households
     {
 
         use backends\backend;
