@@ -754,7 +754,7 @@
                         break;
                 }
 
-                return $this->db->get($q, $p, [
+                $subscribers = $this->db->get($q, $p, [
                     "house_subscriber_id" => "subscriberId",
                     "id" => "mobile",
                     "auth_token" => "authToken",
@@ -767,6 +767,27 @@
                     "subscriber_name" => "subscriberName",
                     "subscriber_patronymic" => "subscriberPatronymic",
                 ]);
+
+                foreach ($subscribers as &$subscriber) {
+                    $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                        [
+                            "house_subscriber_id" => $subscriber["subscriberId"]
+                        ],
+                        [
+                            "house_flat_id" => "flatId",
+                            "role" => "role",
+                            "flat" => "flat",
+                            "address_house_id" => "addressHouseId",
+                        ]
+                    );
+                    $addresses = loadBackend("addresses");
+                    foreach ($flats as &$flat) {
+                        $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+                    }
+                    $subscriber["flats"] = $flats;
+                }
+
+                return $subscribers;
             }
 
             /**
@@ -783,12 +804,27 @@
                     return false;
                 }
 
-                $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered)", [
+                $subscriberId = $this->db->get("select house_subscriber_id from houses_subscribers_mobile where id = :mobile", [
                     "mobile" => $mobile,
-                    "subscriber_name" => $name,
-                    "subscriber_patronymic" => $patronymic,
-                    "registered" => $this->db->now(),
+                ], [
+                    "house_subscriber_id" => "subscriberId"
+                ], [
+                    "fieldlify",
                 ]);
+
+                if (!$subscriberId) {
+                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered)", [
+                        "mobile" => $mobile,
+                        "subscriber_name" => $name,
+                        "subscriber_patronymic" => $patronymic,
+                        "registered" => $this->db->now(),
+                    ]);
+                } else {
+                    $this->modifySubscriber($subscriberId, [
+                        "subscriberName" => $name,
+                        "subscriberPatronymic" => $patronymic,
+                    ]);
+                }
 
                 if ($subscriberId && $flatId) {
                     if (!checkInt($flatId)) {

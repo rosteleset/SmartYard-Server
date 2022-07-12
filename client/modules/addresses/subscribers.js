@@ -98,7 +98,20 @@
             }
         }
 
+        console.log(subscriber);
+
         if (subscriber) {
+
+            let flats = [];
+
+            for (let i in subscriber.flats) {
+                flats.push({
+                    "id": subscriber.flats[i].flatId,
+                    "text": subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + ` <a href='#addresses.subscribers&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-sm fa-link'></i></a>`,
+                    "checked": true,
+                });
+            }
+
             cardForm({
                 title: i18n("addresses.editSubscriber"),
                 footer: true,
@@ -106,6 +119,7 @@
                 topApply: true,
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteSubscriber"),
+                size: "lg",
                 fields: [
                     {
                         id: "subscriberId",
@@ -137,6 +151,12 @@
                         title: i18n("addresses.subscriberPatronymic"),
                         placeholder: i18n("addresses.subscriberPatronymic"),
                         value: subscriber.subscriberPatronymic,
+                    },
+                    {
+                        id: "flats",
+                        type: "multiselect",
+                        title: i18n("addresses.subscriberFlats"),
+                        options: flats,
                     },
                     {
                         id: "authToken",
