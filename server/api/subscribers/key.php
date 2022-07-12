@@ -29,7 +29,7 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            $success = $households->modifyKey($params["_id"], $params["accessType"], $params["accessTo"], $params["comments"]);
+            $success = $households->modifyKey($params["_id"], $params["comments"]);
 
             return api::ANSWER($success);
         }

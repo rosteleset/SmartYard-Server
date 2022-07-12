@@ -997,7 +997,26 @@
              */
             public function getKeys($by, $query)
             {
-                // TODO: Implement getKeys() method.
+                $q = "";
+                $p = false;
+
+                switch ($by) {
+                    case "flat":
+                        $q = "select * from houses_rfids where access_to = :flat_id and access_type = 2";
+                        $p = [
+                            "flat_id" => $query,
+                        ];
+                        break;
+                }
+
+                return $this->db->get($q, $p, [
+                    "house_rfid_id" => "keyId",
+                    "rfid" => "rfId",
+                    "access_type" => "accessType",
+                    "access_to" => "accessTo",
+                    "last_seen" => "lastSeen",
+                    "comments" => "comments",
+                ]);
             }
 
             /**
@@ -1005,7 +1024,17 @@
              */
             public function addKey($rfId, $accessType, $accessTo, $comments)
             {
-                // TODO: Implement addKey() method.
+                if (!checkInt($accessTo) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                return $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments)", [
+                    "rfid" => $rfId,
+                    "access_type" => $accessType,
+                    "access_to" => $accessTo,
+                    "comments" => $comments,
+                ]);
             }
 
             /**
@@ -1013,7 +1042,12 @@
              */
             public function deleteKey($keyId)
             {
-                // TODO: Implement deleteKey() method.
+                if (!checkInt($keyId)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                return $this->db->modify("delete from houses_rfids where house_rfid_id = $keyId");
             }
 
             /**
@@ -1021,7 +1055,14 @@
              */
             public function modifyKey($keyId, $comments)
             {
-                // TODO: Implement modifyKey() method.
+                if (!checkInt($keyId)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                return $this->db->modify("update houses_rfids set comments = :comments where house_rfid_id = $keyId", [
+                    "comments" => $comments,
+                ]);
             }
         }
     }
