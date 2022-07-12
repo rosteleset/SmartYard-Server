@@ -1288,10 +1288,7 @@
     loadHouse: function(houseId, callback) {
         GET("addresses", "addresses").
         done(modules["addresses"].addresses).
-        fail(FAIL).
-        fail(() => {
-            pageError();
-        }).
+        fail(FAILPAGE).
         done(() => {
             if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
                 let f = false;
@@ -1311,10 +1308,7 @@
             }
 
             GET("houses", "house", houseId, true).
-            fail(FAIL).
-            fail(() => {
-                pageError();
-            }).
+            fail(FAILPAGE).
             done(response => {
                     if (!modules.addresses.houses.meta) {
                         modules.addresses.houses.meta = {};

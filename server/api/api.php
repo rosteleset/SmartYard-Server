@@ -124,7 +124,7 @@
              * @return array
              */
 
-            public static function ERROR($error) {
+            public static function ERROR($error = "") {
 
                 if (!$error) {
                     $error = getLastError();

@@ -17,13 +17,17 @@
             public static function GET($params) {
                 $households = loadBackend("households");
 
-                $response = [
-                    "domophones" => $households->getDomophones(),
-                    "models" => $households->getModels(),
-                    "servers" => $households->getAsteriskServers(),
-                ];
+                if (!$households) {
+                    return api::ERROR();
+                } else {
+                    $response = [
+                        "domophones" => $households->getDomophones(),
+                        "models" => $households->getModels(),
+                        "servers" => $households->getAsteriskServers(),
+                    ];
 
-                return api::ANSWER($response, "domophones");
+                    return api::ANSWER($response, "domophones");
+                }
             }
 
             public static function index() {

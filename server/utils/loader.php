@@ -22,9 +22,11 @@
                     $backends[$backend] = new ("backends\\$backend\\" . $config["backends"][$backend]["backend"])($config, $db, $redis);
                     return $backends[$backend];
                 } catch (Exception $e) {
+                    setLastError("cantLoadBackend");
                     return false;
                 }
             } else {
+                setLastError("backendNotFound");
                 return false;
             }
         }

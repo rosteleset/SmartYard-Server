@@ -76,7 +76,7 @@ function hashChange() {
 function page404() {
     $("#mainForm").html("");
     $("#altForm").hide();
-    loadingDone(true);
+    loadingDone();
     document.title = `${i18n("windowTitle")} :: 404`;
     $("#page404").html(`
         <section class="content">
@@ -95,7 +95,7 @@ function pageError(error) {
     $("#mainForm").html("");
     $("#subTop").html("");
     $("#altForm").hide();
-    loadingDone(true);
+    loadingDone();
     document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
     $("#pageError").html(`
         <section class="content">

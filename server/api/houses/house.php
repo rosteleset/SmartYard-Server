@@ -20,14 +20,18 @@
             {
                 $households = loadBackend("households");
 
-                $house = [
-                    "flats" => $households->getHouseFlats($params["_id"]),
-                    "entrances" => $households->getHouseEntrances($params["_id"]),
-                    "domophoneModels" => $households->getModels(),
-                    "cmses" => $households->getCMSes(),
-                ];
+                if (!$households) {
+                    return api::ERROR();
+                } else {
+                    $house = [
+                        "flats" => $households->getHouseFlats($params["_id"]),
+                        "entrances" => $households->getHouseEntrances($params["_id"]),
+                        "domophoneModels" => $households->getModels(),
+                        "cmses" => $households->getCMSes(),
+                    ];
 
-                return api::ANSWER($house, ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?"house":false);
+                    return api::ANSWER($house, ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?"house":false);
+                }
             }
 
             public static function index()
