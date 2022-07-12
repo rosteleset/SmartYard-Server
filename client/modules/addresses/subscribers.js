@@ -223,6 +223,8 @@
     renderSubscribers: function (list, formTarget) {
         loadingStart();
 
+        let [ route, params, hash ] = hashParse();
+
         cardTable({
             target: formTarget,
             title: {
@@ -244,11 +246,26 @@
                     nowrap: true,
                     fullWidth: true,
                 },
+                {
+                    title: i18n("addresses.subscriberFlatOwner"),
+                },
             ],
             rows: () => {
                 let rows = [];
 
                 for (let i in list) {
+                    let owner;
+
+                    for (let j in list[i].flats) {
+                        if (list[i].flats[j].flatId == params.flatId) {
+                            try {
+                                owner = list[i].flats[j].role.toString() !== "1";
+                            } catch (e) {
+                                owner = true;
+                            }
+                        }
+                    }
+
                     rows.push({
                         uid: list[i].subscriberId,
                         cols: [
@@ -257,6 +274,9 @@
                             },
                             {
                                 data: list[i].mobile,
+                            },
+                            {
+                                data: owner?i18n("yes"):i18n("no"),
                             },
                         ],
                     });
