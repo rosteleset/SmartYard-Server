@@ -228,7 +228,7 @@
             title: {
                 caption: i18n("addresses.subscribers"),
                 button: {
-                    caption: i18n("addresses.addSubscribers"),
+                    caption: i18n("addresses.addSubscriber"),
                     click: modules.addresses.subscribers.addSubscriber,
                 },
             },
