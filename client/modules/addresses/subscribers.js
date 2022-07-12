@@ -205,6 +205,8 @@
 
                         result.flats = f;
 
+                        result.forceNames = true;
+
                         modules.addresses.subscribers.doModifySubscriber(result);
                     }
                 },

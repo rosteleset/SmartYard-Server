@@ -881,7 +881,7 @@
                     }
                 }
 
-                if (@$params["subscriberName"]) {
+                if (@$params["subscriberName"] || @$params["forceNames"]) {
                     if (!checkStr($params["subscriberName"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
@@ -892,7 +892,7 @@
                     }
                 }
 
-                if (@$params["subscriberPatronymic"]) {
+                if (@$params["subscriberPatronymic"] || @$params["forceNames"]) {
                     if (!checkStr($params["subscriberPatronymic"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
