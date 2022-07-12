@@ -1382,7 +1382,7 @@
                             dropDown: {
                                 items: [
                                     {
-                                        icon: "fas fa-mobile-alt",
+                                        icon: "fas fa-house-user",
                                         title: i18n("addresses.subscribers"),
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {
