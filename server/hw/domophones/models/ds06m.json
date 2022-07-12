@@ -1,0 +1,11 @@
+{
+    "title": "BEWARD DS06M",
+    "vendor": "BEWARD",
+    "model": "DS06M",
+    "class": "ds06m",
+    "outputs": 3,
+    "camera": "beward",
+    "cmses": [
+        
+    ]
+}

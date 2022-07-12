@@ -1,8 +1,8 @@
 {
-    "title": "BEWARD DKS15103",
+    "title": "BEWARD DKS15122",
     "vendor": "BEWARD",
-    "model": "DKS15103",
-    "class": "dks15103",
+    "model": "DKS15122",
+    "class": "dks15122",
     "outputs": 3,
     "camera": "beward",
     "cmses": [
