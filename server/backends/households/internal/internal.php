@@ -832,7 +832,7 @@
                         return false;
                     }
 
-                    if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id) values (:house_subscriber_id, :house_flat_id)", [
+                    if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, 1)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
                     ])) {
@@ -970,7 +970,26 @@
              */
             public function setSubscriberFlats($subscriberId, $flats)
             {
-                // TODO: Implement setSubscriberFlats() method.
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                if (!$this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = $subscriberId")) {
+                    return false;
+                }
+
+                foreach ($flats as $flatId => $owner) {
+                    if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
+                        "house_subscriber_id" => $subscriberId,
+                        "house_flat_id" => $flatId,
+                        "role" => $owner?0:1,
+                    ])) {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
             /**

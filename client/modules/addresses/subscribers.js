@@ -98,17 +98,31 @@
             }
         }
 
-        console.log(subscriber);
-
         if (subscriber) {
 
             let flats = [];
 
             for (let i in subscriber.flats) {
+                let owner;
+
+                try {
+                    owner = subscriber.flats[i].role.toString() !== "1";
+                } catch (e) {
+                    owner = true;
+                }
+
+                let link = `<a href='#addresses.subscribers&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                let role = `
+                    <div class="custom-control custom-checkbox mb-0">
+                        <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner?" checked":""}>
+                        <label class="custom-control-label form-check-label" for="subscriber-role-flat-${subscriber.flats[i].flatId}">${i18n("addresses.subscriberFlatOwner")}</label>
+                    </div>
+                `;
                 flats.push({
                     "id": subscriber.flats[i].flatId,
-                    "text": subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + ` <a href='#addresses.subscribers&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-sm fa-link'></i></a>`,
+                    "text": subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + " " + link,
                     "checked": true,
+                    "append": role,
                 });
             }
 
@@ -182,6 +196,14 @@
                         if (params.flatId) {
                             result.flatId = params.flatId;
                         }
+
+                        let f = {};
+
+                        for (let i in result.flats) {
+                            f[result.flats[i]] = $("#subscriber-role-flat-" + result.flats[i]).prop("checked");
+                        }
+
+                        result.flats = f;
 
                         modules.addresses.subscribers.doModifySubscriber(result);
                     }
