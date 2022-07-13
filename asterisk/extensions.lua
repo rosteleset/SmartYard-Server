@@ -123,16 +123,12 @@ function checkin()
 end
 
 function autoopen(flatId, domophoneId)
-    -- TODO get autoopen status from dm
-    local autoopen = dm("autoopen", flatId)
-    -- TODO get dtmf for domophone from dm
-    local dtmf = dm("domophone", domophoneId).dtmf
-    if autoopen then
+    if dm("autoopen", flatId) then
         log_debug("autoopen: yes")
         app.Wait(2)
         app.Answer()
         app.Wait(1)
-        app.SendDTMF(dtmf, 25, 500)
+        app.SendDTMF(dm("domophone", domophoneId).dtmf, 25, 500)
         app.Wait(1)
         return true
     end
