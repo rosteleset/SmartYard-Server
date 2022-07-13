@@ -50,6 +50,7 @@
             borderless: true,
             topApply: true,
             apply: i18n("add"),
+            size: "lg",
             fields: [
                 {
                     id: "enabled",
@@ -167,6 +168,7 @@
                 topApply: true,
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteDomophone"),
+                size: "lg",
                 fields: [
                     {
                         id: "domophoneId",
