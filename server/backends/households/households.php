@@ -132,6 +132,12 @@
             abstract function deleteFlat($flatId);
 
             /**
+             * @param $flatId
+             * @return boolean
+             */
+            abstract function doorOpened($flatId);
+
+            /**
              * @param $houseId
              * @return false|array
              */

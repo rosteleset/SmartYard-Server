@@ -452,7 +452,8 @@
                         auto_open, 
                         white_rabbit, 
                         sip_enabled, 
-                        sip_password
+                        sip_password,
+                        last_opened
                     from
                         houses_flats
                     where house_flat_id = $flatId
@@ -467,6 +468,7 @@
                     "white_rabbit" => "whiteRabbit",
                     "sip_enabled" => "sipEnabled",
                     "sip_password" => "sipPassword",
+                    "last_opened" => "lastOpened",
                 ]);
 
                 if ($flats) {
@@ -1062,6 +1064,21 @@
 
                 return $this->db->modify("update houses_rfids set comments = :comments where house_rfid_id = $keyId", [
                     "comments" => $comments,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function doorOpened($flatId)
+            {
+                if (!checkInt($flatId)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                return $this->db->modify("update houses_flats set last_opened = :now where house_flat_id = $flatId", [
+                    "now" => $this->db->now(),
                 ]);
             }
         }

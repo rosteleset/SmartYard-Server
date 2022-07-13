@@ -36,7 +36,7 @@
                             fail(FAIL).
                             always(loadingDone);
                         },
-                        processResults: function (data, params) {
+                        processResults: function (data) {
                             let suggestions = [];
                             for (let i in data.suggestions) {
                                 if (parseInt(data.suggestions[i].data.fias_level) === 8) {

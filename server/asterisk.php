@@ -1,5 +1,7 @@
 <?php
 
+    // asterisk support
+
     require_once "utils/error.php";
     require_once "utils/guidv4.php";
     require_once "utils/loader.php";
@@ -142,12 +144,25 @@
                     break;
 
                 case "autoopen":
+                    $households = loadBackend("households");
+
+                    $flat = $households->getFlat((int)$_RAW);
+
+                    $rabbit = (int)$flat["whiteRabbit"];
+
+                    echo json_encode(strtotime($flat["autoOpen"]) > time() || ($rabbit && strtotime($flat["lastOpened"]) + $rabbit * 60 > time()));
                     break;
 
                 case "flat":
                     $households = loadBackend("households");
 
                     echo json_encode($households->getFlat((int)$_RAW));
+                    break;
+
+                case "domophone":
+                    $households = loadBackend("households");
+
+                    echo json_encode($households->getDomophone((int)$_RAW));
                     break;
             }
             break;
