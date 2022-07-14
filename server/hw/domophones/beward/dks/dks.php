@@ -1,6 +1,6 @@
 <?php
 
-    require_once '../../../domophone.php';
+    require_once 'hw/domophone.php';
 
     abstract class dks extends domophone {
 

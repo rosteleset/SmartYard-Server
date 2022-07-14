@@ -164,6 +164,20 @@
 
                     echo json_encode($households->getDomophone((int)$_RAW));
                     break;
+
+                case "openDoor":
+                    $households = loadBackend("households");
+                    $domophone = $households->getDomophone($_GET["id"]);
+
+                    require_once "hw/domophones/beward/dks/dks15374.php";
+
+                    $model = new dks15374($domophone["ip"], $domophone["credentials"], $domophone["port"]);
+
+                    $model->open_door();
+
+                    print_r($domophone);
+
+                    break;
             }
             break;
     }
