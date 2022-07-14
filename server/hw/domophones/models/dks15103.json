@@ -2,10 +2,12 @@
     "title": "BEWARD DKS15103",
     "vendor": "BEWARD",
     "model": "DKS15103",
-    "class": "dks03",
+    "class": "dks15103",
     "outputs": 3,
     "camera": "beward",
     "cmses": [
-        "kkm-100s2"
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105"
     ]
 }

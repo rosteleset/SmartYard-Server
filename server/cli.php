@@ -1,5 +1,7 @@
 <?php
 
+    // command line client
+
     try {
         mb_internal_encoding("UTF-8");
     } catch (Exception $e) {

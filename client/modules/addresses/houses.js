@@ -36,7 +36,7 @@
                             fail(FAIL).
                             always(loadingDone);
                         },
-                        processResults: function (data, params) {
+                        processResults: function (data) {
                             let suggestions = [];
                             for (let i in data.suggestions) {
                                 if (parseInt(data.suggestions[i].data.fias_level) === 8) {
@@ -1288,10 +1288,7 @@
     loadHouse: function(houseId, callback) {
         GET("addresses", "addresses").
         done(modules["addresses"].addresses).
-        fail(FAIL).
-        fail(() => {
-            pageError();
-        }).
+        fail(FAILPAGE).
         done(() => {
             if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
                 let f = false;
@@ -1311,10 +1308,7 @@
             }
 
             GET("houses", "house", houseId, true).
-            fail(FAIL).
-            fail(() => {
-                pageError();
-            }).
+            fail(FAILPAGE).
             done(response => {
                     if (!modules.addresses.houses.meta) {
                         modules.addresses.houses.meta = {};
@@ -1382,7 +1376,7 @@
                             dropDown: {
                                 items: [
                                     {
-                                        icon: "fas fa-mobile-alt",
+                                        icon: "fas fa-house-user",
                                         title: i18n("addresses.subscribers"),
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {

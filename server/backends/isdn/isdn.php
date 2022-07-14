@@ -15,45 +15,38 @@
         abstract class isdn extends backend
         {
             /**
-             *
-             * send authentication (via call) code to device $id
-             *
-             * return code if successfull and false if not
-             *
              * @param $id
-             * @return false|string
+             * @return string
              */
             abstract function flashCall($id);
 
             /**
              * @param $id
-             * @param $code
-             * @return boolean
+             * @return string
              */
-            abstract function checkCode($id, $code);
+            abstract function getCode($id);
 
             /**
              * @param $id
-             * @param $text
+             * @return string
+             */
+            abstract function sendCode($id);
+
+            /**
+             * @return array
+             */
+            abstract function confirmNumbers();
+
+            /**
+             * @param $id
+             * @return string
+             */
+            abstract function checkIncomng($id);
+
+            /**
+             * @param $push
              * @return mixed
              */
-            abstract function sendSMS($id, $text);
-
-            /**
-             * @return false|array
-             */
-            abstract function getConfirmNumbers();
-
-            /**
-             * @param $mobile
-             * @return boolean
-             */
-            abstract function registerToConfirm($mobile);
-
-            /**
-             * @param $mobile
-             * @return boolean
-             */
-            abstract function isConfirmed($mobile);
+            abstract function push($push);
         }
     }

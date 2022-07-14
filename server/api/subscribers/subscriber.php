@@ -18,27 +18,27 @@ namespace api\subscribers
 
         public static function POST($params)
         {
-            $houses = loadBackend("houses");
+            $households = loadBackend("households");
 
-            $subscriberId = $houses->addSubscriber($params["mobile"], $params["subscriberName"], $params["subscriberPatronymic"], $params["flatId"]);
+            $subscriberId = $households->addSubscriber($params["mobile"], $params["subscriberName"], $params["subscriberPatronymic"], $params["flatId"]);
 
             return api::ANSWER($subscriberId, ($subscriberId !== false)?"subscriber":false);
         }
 
         public static function PUT($params)
         {
-            $houses = loadBackend("houses");
+            $households = loadBackend("households");
 
-            $success = $houses->modifySubscriber($params["_id"], $params);
+            $success = $households->modifySubscriber($params["_id"], $params) && $households->setSubscriberFlats($params["_id"], $params["flats"]);
 
             return api::ANSWER($success);
         }
 
         public static function DELETE($params)
         {
-            $houses = loadBackend("houses");
+            $households = loadBackend("households");
 
-            $success = $houses->deleteSubscriber($params["_id"]);
+            $success = $households->deleteSubscriber($params["_id"]);
 
             return api::ANSWER($success);
         }

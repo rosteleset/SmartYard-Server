@@ -182,6 +182,11 @@ function cardForm(params) {
                         <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1)?" mb-3":""}">
                             <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}/>
                             <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
+                        `;
+                    if (params.fields[i].options[j].append) {
+                        h += params.fields[i].options[j].append;
+                    }
+                    h += `
                         </div>
                     `;
                 }

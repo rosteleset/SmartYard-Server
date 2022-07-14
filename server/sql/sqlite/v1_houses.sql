@@ -76,7 +76,8 @@ CREATE TABLE houses_flats
     auto_open text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     white_rabbit integer,                                                                                               -- 1/0
     sip_enabled integer,                                                                                                -- 0 - disabled, 1 - classic sip, 2 - webrtc
-    sip_password text                                                                                                   -- sip password
+    sip_password text,                                                                                                  -- sip password
+    last_opened text                                                                                                    -- "YYYY-MM-DD HH:MM:SS.SSS"
 );
 CREATE UNIQUE INDEX houses_flats_uniq on houses_flats(address_house_id, flat);
 CREATE INDEX houses_flats_address_house_id on houses_flats(address_house_id);
@@ -115,6 +116,7 @@ CREATE TABLE houses_subscribers_mobile
     platform integer,                                                                                                   -- 0 - android, 1 - ios
     push_token text,
     push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - huawei
+    voip_token text,                                                                                                    -- iOs only
     registered text,                                                                                                    -- "YYYY-MM-DD HH:MM:SS.SSS"
     last_seen text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     subscriber_name text,

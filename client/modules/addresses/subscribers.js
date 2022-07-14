@@ -12,9 +12,19 @@
             message(i18n("addresses.subscriberWasAdded"));
         }).
         always(() => {
-            let [ route, params, hash ] = hashParse();
+            modules.addresses.subscribers.route(hashParse()[1]);
+        });
+    },
 
-            modules.addresses.subscribers.route(params);
+    doAddKey: function (key) {
+        loadingStart();
+        POST("subscribers", "key", false, key).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.keyWasAdded"));
+        }).
+        always(() => {
+            modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
@@ -26,9 +36,19 @@
             message(i18n("addresses.subscriberWasChanged"));
         }).
         always(() => {
-            let [ route, params, hash ] = hashParse();
+            modules.addresses.subscribers.route(hashParse()[1]);
+        });
+    },
 
-            modules.addresses.subscribers.route(params);
+    doModifyKey: function (key) {
+        loadingStart();
+        PUT("subscribers", "key", key.keyId, key).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.keyWasChanged"));
+        }).
+        always(() => {
+            modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
@@ -40,9 +60,19 @@
             message(i18n("addresses.subscriberWasDeleted"));
         }).
         always(() => {
-            let [ route, params, hash ] = hashParse();
+            modules.addresses.subscribers.route(hashParse()[1]);
+        });
+    },
 
-            modules.addresses.subscribers.route(params);
+    doDeleteKey: function (keyId) {
+        loadingStart();
+        DELETE("subscribers", "key", keyId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.keyWasDeleted"));
+        }).
+        always(() => {
+            modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
@@ -77,13 +107,50 @@
                 },
             ],
             callback: function (result) {
-                let [ route, params, hash ] = hashParse();
+                let params = hashParse()[1];
 
                 if (params.flatId) {
                     result.flatId = params.flatId;
                 }
 
                 modules.addresses.subscribers.doAddSubscriber(result);
+            },
+        }).show();
+    },
+
+    addKey: function () {
+        cardForm({
+            title: i18n("addresses.addKey"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            fields: [
+                {
+                    id: "rfId",
+                    type: "text",
+                    title: i18n("addresses.key"),
+                    placeholder: i18n("addresses.key"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "comments",
+                    type: "text",
+                    title: i18n("addresses.comments"),
+                    placeholder: i18n("addresses.comments"),
+                },
+            ],
+            callback: function (result) {
+                let params = hashParse()[1];
+
+                if (params.flatId) {
+                    result.accessType = 2;
+                    result.accessTo = params.flatId;
+                }
+
+                modules.addresses.subscribers.doAddKey(result);
             },
         }).show();
     },
@@ -99,6 +166,33 @@
         }
 
         if (subscriber) {
+
+            let flats = [];
+
+            for (let i in subscriber.flats) {
+                let owner;
+
+                try {
+                    owner = subscriber.flats[i].role.toString() !== "1";
+                } catch (e) {
+                    owner = true;
+                }
+
+                let link = `<a href='#addresses.subscribers&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                let role = `
+                    <div class="custom-control custom-checkbox mb-0">
+                        <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner?" checked":""}>
+                        <label class="custom-control-label form-check-label" for="subscriber-role-flat-${subscriber.flats[i].flatId}">${i18n("addresses.subscriberFlatOwner")}</label>
+                    </div>
+                `;
+                flats.push({
+                    "id": subscriber.flats[i].flatId,
+                    "text": subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + " " + link,
+                    "checked": true,
+                    "append": role,
+                });
+            }
+
             cardForm({
                 title: i18n("addresses.editSubscriber"),
                 footer: true,
@@ -106,6 +200,7 @@
                 topApply: true,
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteSubscriber"),
+                size: "lg",
                 fields: [
                     {
                         id: "subscriberId",
@@ -138,16 +233,46 @@
                         placeholder: i18n("addresses.subscriberPatronymic"),
                         value: subscriber.subscriberPatronymic,
                     },
+                    {
+                        id: "flats",
+                        type: "multiselect",
+                        title: i18n("addresses.subscriberFlats"),
+                        options: flats,
+                    },
+                    {
+                        id: "authToken",
+                        type: "text",
+                        title: i18n("addresses.authToken"),
+                        value: subscriber.authToken,
+                        readonly: true,
+                    },
+                    {
+                        id: "pushToken",
+                        type: "text",
+                        title: i18n("addresses.pushToken"),
+                        value: subscriber.pushToken,
+                        readonly: true,
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules.addresses.subscribers.deleteSubscriber(subscriberId);
                     } else {
-                        let [ route, params, hash ] = hashParse();
+                        let params = hashParse()[1];
 
                         if (params.flatId) {
                             result.flatId = params.flatId;
                         }
+
+                        let f = {};
+
+                        for (let i in result.flats) {
+                            f[result.flats[i]] = $("#subscriber-role-flat-" + result.flats[i]).prop("checked");
+                        }
+
+                        result.flats = f;
+
+                        result.forceNames = true;
 
                         modules.addresses.subscribers.doModifySubscriber(result);
                     }
@@ -158,21 +283,76 @@
         }
     },
 
+    modifyKey: function (keyId, list) {
+        let key = false;
+
+        for (let i in list) {
+            if (list[i].keyId == keyId) {
+                key = list[i];
+                break;
+            }
+        }
+
+        if (key) {
+            cardForm({
+                title: i18n("addresses.editKey"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("edit"),
+                delete: i18n("addresses.deleteKey"),
+                fields: [
+                    {
+                        id: "keyId",
+                        type: "text",
+                        title: i18n("addresses.keyId"),
+                        readonly: true,
+                        value: key.keyId,
+                    },
+                    {
+                        id: "comments",
+                        type: "text",
+                        title: i18n("addresses.comments"),
+                        placeholder: i18n("addresses.comments"),
+                        value: key.comments,
+                    },
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        modules.addresses.subscribers.deleteKey(keyId);
+                    } else {
+                        modules.addresses.subscribers.doModifyKey(result);
+                    }
+                },
+            }).show();
+        } else {
+            error(i18n("addresses.keyNotFound"));
+        }
+    },
+
     deleteSubscriber: function (subscriberId) {
         mConfirm(i18n("addresses.confirmDeleteSubscriber", subscriberId.toString()), i18n("confirm"), `danger:${i18n("addresses.deleteSubscriber")}`, () => {
             modules.addresses.subscribers.doDeleteSubscriber(subscriberId);
         });
     },
 
+    deleteKey: function (keyId) {
+        mConfirm(i18n("addresses.confirmDeleteKey", keyId.toString()), i18n("confirm"), `danger:${i18n("addresses.deleteKey")}`, () => {
+            modules.addresses.subscribers.doDeleteKey(keyId);
+        });
+    },
+
     renderSubscribers: function (list, formTarget) {
         loadingStart();
+
+        let params = hashParse()[1];
 
         cardTable({
             target: formTarget,
             title: {
                 caption: i18n("addresses.subscribers"),
                 button: {
-                    caption: i18n("addresses.addSubscribers"),
+                    caption: i18n("addresses.addSubscriber"),
                     click: modules.addresses.subscribers.addSubscriber,
                 },
             },
@@ -188,11 +368,26 @@
                     nowrap: true,
                     fullWidth: true,
                 },
+                {
+                    title: i18n("addresses.subscriberFlatOwner"),
+                },
             ],
             rows: () => {
                 let rows = [];
 
                 for (let i in list) {
+                    let owner;
+
+                    for (let j in list[i].flats) {
+                        if (list[i].flats[j].flatId == params.flatId) {
+                            try {
+                                owner = list[i].flats[j].role.toString() !== "1";
+                            } catch (e) {
+                                owner = true;
+                            }
+                        }
+                    }
+
                     rows.push({
                         uid: list[i].subscriberId,
                         cols: [
@@ -201,6 +396,9 @@
                             },
                             {
                                 data: list[i].mobile,
+                            },
+                            {
+                                data: owner?i18n("yes"):i18n("no"),
                             },
                         ],
                     });
@@ -216,14 +414,16 @@
     renderKeys: function (list, formTarget) {
         loadingStart();
 
+        let params = hashParse()[1];
+
         cardTable({
             target: formTarget,
             title: {
                 caption: i18n("addresses.keys"),
-                button: {
+                button: params.flatId?{
                     caption: i18n("addresses.addSubscribers"),
                     click: modules.addresses.subscribers.addKey,
-                },
+                }:false,
             },
             edit: keyId => {
                 modules.addresses.subscribers.modifyKey(keyId, list);
@@ -235,6 +435,10 @@
                 {
                     title: i18n("addresses.rfId"),
                     nowrap: true,
+                },
+                {
+                    title: i18n("addresses.comments"),
+                    nowrap: true,
                     fullWidth: true,
                 },
             ],
@@ -243,13 +447,16 @@
 
                 for (let i in list) {
                     rows.push({
-                        uid: list[i].rfId,
+                        uid: list[i].keyId,
                         cols: [
+                            {
+                                data: list[i].keyId,
+                            },
                             {
                                 data: list[i].rfId,
                             },
                             {
-                                data: list[i].keyId,
+                                data: list[i].comments,
                             },
                         ],
                     });
@@ -275,7 +482,7 @@
                     query: params.flatId,
                 }).done(responseKeys => {
                     modules.addresses.subscribers.renderSubscribers(responseSubscribers.subscribers, "#mainForm");
-                    modules.addresses.subscribers.renderKeys(responseKeys.subscribers, "#altForm");
+                    modules.addresses.subscribers.renderKeys(responseKeys.keys, "#altForm");
                 }).
                 fail(FAIL).
                 fail(() => {
