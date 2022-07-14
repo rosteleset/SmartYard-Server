@@ -173,9 +173,9 @@
 
                     $model = new dks15374($domophone["ip"], $domophone["credentials"], $domophone["port"]);
 
-                    $model->open_door();
+                    header("Content-Type: image/jpeg");
 
-                    print_r($domophone);
+                    echo $model->camshot();
 
                     break;
             }

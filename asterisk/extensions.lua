@@ -154,11 +154,7 @@ function blacklist(flatId)
 end
 
 function push(token, type, platform, extension, hash, caller_id, flat_id, dtmf, phone, flat_number)
-    if phone then
-        log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
-    else
-        log_debug("sending push for: "..extension.." ("..type..", "..platform..")")
-    end
+    log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
 
     dm("push", {
         token = token,
