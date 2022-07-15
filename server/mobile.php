@@ -207,8 +207,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $module = $m[3];
         $method = $m[4];
         if (file_exists("mobile/{$module}/{$method}.php")) {
-              $redis = new Redis();
-//            $redis->connect('127.0.0.1');
             $b = @explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
             if ($b) {
                 $response_cahce_req = strtolower($module . '-' . $method . '-' . $b . '-' . md5(serialize($postdata)));
