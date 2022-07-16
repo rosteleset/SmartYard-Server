@@ -23,6 +23,7 @@ $LanTa_services = [
 $bearer = [];
 $cache = [];
 $config = false;
+$subscriber = false;
 
 $offsetForCityId = 1000000;
 $emptyStreetIdOffset = 1000000;
@@ -166,16 +167,21 @@ function mkdir_r($dirName, $rights = 0777) {
 }
 
 function auth($_response_cache_ttl = -1) {
-    global $_SERVER, $bearer, $response_cache_ttl;
+    global $_SERVER, $bearer, $response_cache_ttl, $subscriber;
+    $households = loadBackend("households");
+
     if ($_response_cache_ttl >= 0) {
         $response_cache_ttl = $_response_cache_ttl;
     }
     $ip = long2ip(ip2long($_SERVER['REMOTE_ADDR']));
     if ($ip == '127.0.0.1' && !@$_SERVER['HTTP_AUTHORIZATION'] && $_GET['phone']) {
-//        $p = pg_escape_string(trim($_GET['phone']));
-        // TODO: добавить проверку валидности токена.
-        $bearer = true;
-//        $bearer = @pg_fetch_assoc(pg_query("select * from domophones.bearers where id = '$p'"));
+        $p = pg_escape_string(trim($_GET['phone']));
+        $bearer = false;
+        $subscribers = $households->getSubscribers("mobile", $p);
+        if ($subscribers) {
+            $subscriber = $subscribers[0];
+            $bearer = $subscriber["authToken"];
+        }
         if (!$bearer) {
             response(403, false, "Ошибка авторизации", "Ошибка авторизации");
         }
@@ -187,17 +193,17 @@ function auth($_response_cache_ttl = -1) {
         if (!$bearer) {
             response(422, false, "Отсутствует токен авторизации", "Отсутствует токен авторизации");
         }
-//        $t_ = $bearer;
-        // TODO: добавить проверку валидности токена пользователя.
-        $bearer = true;
-//        $bearer = pg_fetch_assoc(pg_query("select * from domophones.bearers where token = '$t_'"));
-        if (!$bearer) {
+        $t_ = $bearer;
+        $bearer = false;
+        $subscribers = $households->getSubscribers("authToken", $t_);
+        if ($subscribers) {
+            $subscriber = $subscribers[0];
+            $bearer = $subscriber["authToken"];
+        } else {
             response(401, false, "Не авторизован", "Не авторизован");
         }
-        // TODO: добавить обновление последнего использования токена пользователем
-//        pg_query("update domophones.bearers set last_seen = now() where token = '$t_'");
-//        $action = mysqli_escape_string($mysql, $_SERVER['REQUEST_URI']);
-//        mysql("insert into dm.applog (date, id, action, ip) values (now(), '{$bearer['id']}', '$action', inet_aton('$ip'))");
+        // обновление последнего использования токена пользователем
+        $households->modifySubscriber($subscriber["subscriberId"]);
     }
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

@@ -20,7 +20,9 @@
  * @apiSuccess {String} names.name имя
  * @apiSuccess {String} names.patronymic отчество
  */
-
+    // TODO: remove this!
+    error_reporting(E_ALL ^ E_WARNING);
+    
     $user_phone = @$postdata['userPhone'];
     $user_phone[0] = '8';
     $pin = @$postdata['smsCode'];
@@ -52,12 +54,12 @@
                 if ($subscribers) {
                     $subscriber = $subscribers[0];
                     // Пользователь найден
-                    $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token, "voipToken" => null ]);
+                    $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
                     $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
                 } else {
                     // Пользователь не найден - создаём
                     $id = $households->addSubscriber($user_phone, "", "");
-                    $households->modifySubscriber($id, [ "authToken" => $token, "voipToken" => null ]);
+                    $households->modifySubscriber($id, [ "authToken" => $token ]);
                 }
                 response(200, [ 'accessToken' => $token, 'names' => $names ]);
             }

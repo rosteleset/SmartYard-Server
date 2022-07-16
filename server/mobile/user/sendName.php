@@ -24,18 +24,23 @@
 
 auth();
 
-$name = pg_escape_string(htmlspecialchars(trim(@$postdata['name'])));
-$patronymic = pg_escape_string(htmlspecialchars(trim(@$postdata['patronymic'])));
+$name = htmlspecialchars(trim(@$postdata['name']));
+$patronymic = htmlspecialchars(trim(@$postdata['patronymic']));
+
+$households = loadBackend("households");
 
 if (!$name) {
     response(400);
 }
 
-@pg_query("insert into client_phone_names (phone) values ('{$bearer['id']}')");
-if ($patronymic) {
-    pg_query("update client_phone_names set name='$name', mname='$patronymic' where phone='{$bearer['id']}'");
+if ($subscriber) {
+    if ($patronymic) { 
+        $households->modifySubscriber($subscriber["subscriberId"], [ "subscriberName" => $name, "subscriberPatronymic" => $patronymic ]);
+    } else {
+        $households->modifySubscriber($subscriber["subscriberId"], [ "subscriberName" => $name ]);
+    }
+    response();
 } else {
-    pg_query("update client_phone_names set name='$name', mname=null where phone='{$bearer['id']}'");
+    response(400);
 }
 
-response();
