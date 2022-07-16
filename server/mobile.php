@@ -6,6 +6,8 @@ require_once "utils/loader.php";
 require_once "utils/guidv4.php";
 require_once "utils/db_ext.php";
 require_once "utils/checkint.php";
+require_once "utils/checkstr.php";
+require_once "utils/purifier.php";
 
 $LanTa_services = [
     'internet' => [ "icon" => "internet", "title" => "Интернет", "description" => "Высокоскоростной доступ в интернет", "canChange" => "t" ],

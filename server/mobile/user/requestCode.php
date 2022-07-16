@@ -31,8 +31,8 @@
                 $pin = '1002';
             } else {
                 $pin = explode(":", $isdn->sendCode($user_phone))[0];
-                $redis->setex("userpin_".$user_phone, 60, $pin);
             }
+            $redis->setex("userpin_".$user_phone, 60, $pin);
             // TODO: добавить в ответ способ подтверждения телефона, указанный в конфиге. (по умолчанию - по смс)
             response(); 
         }
