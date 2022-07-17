@@ -115,7 +115,7 @@ CREATE TABLE houses_subscribers_mobile
     auth_token character varying,
     platform integer,                                                                                                   -- 0 - android, 1 - ios
     push_token character varying,
-    push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - huawei
+    push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - apple (dev), 3 - huawei
     voip_token character varying,                                                                                       -- iOs only
     registered timestamp,                                                                                               -- "YYYY-MM-DD HH:MM:SS.SSS"
     last_seen timestamp,                                                                                                -- "YYYY-MM-DD HH:MM:SS.SSS"
