@@ -182,6 +182,12 @@
                     // $params["flatId"]
                     break;
 
+                case "subscribers":
+                    $households = loadBackend("households");
+
+                    echo json_encode($households->getSubscribers("flat", (int)$params));
+                    break;
+
                 case "domophone":
                     $households = loadBackend("households");
 
@@ -189,11 +195,11 @@
                     break;
 
                 case "camshot":
-                    if (!@$params["domophone_id"]) $params["domophone_id"] = $_GET["id"];
+                    if (!@$params["domophoneId"]) $params["domophoneId"] = (int)@$_GET["id"];
                     if (!@$params["hash"]) $params["hash"] = md5(GUIDv4());
 
                     $households = loadBackend("households");
-                    $domophone = $households->getDomophone($params["domophone_id"]);
+                    $domophone = $households->getDomophone($params["domophoneId"]);
 
                     require_once "hw/domophones/beward/dks/dks15374.php";
 

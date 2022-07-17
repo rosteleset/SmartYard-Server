@@ -1089,9 +1089,9 @@
             /**
              * @inheritDoc
              */
-            function searchFlat($query)
+            function getFlats($by, $params)
             {
-                switch ($query["by"]) {
+                switch ($by) {
                     case "domophoneAndNumber":
                         $flatId = $this->db->get("
                             select
@@ -1107,9 +1107,9 @@
                               and 
                                 apartment = :apartment
                         ", [
-                            "house_domophone_id" => $query["domophoneId"],
-                            "prefix" => $query["prefix"],
-                            "apartment" => $query["flatNumber"],
+                            "house_domophone_id" => $params["domophoneId"],
+                            "prefix" => $params["prefix"],
+                            "apartment" => $params["flatNumber"],
                         ]);
 
                         if ($flatId) {

@@ -92,8 +92,6 @@ function log_debug(v)
     --dm("log", m)
 end
 
-log_debug("init...")
-
 function round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)
     return math.floor(num * mult + 0.5) / mult
@@ -152,7 +150,7 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, type, platform, extension, hash, caller_id, flat_id, dtmf, phone, flat_number)
+function push(token, type, platform, extension, hash, caller_id, flatId, dtmf, phone, flat_number)
     log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
 
     dm("push", {
@@ -162,7 +160,7 @@ function push(token, type, platform, extension, hash, caller_id, flat_id, dtmf, 
         extension = extension,
         hash = hash,
         caller_id = caller_id,
-        flat_id = flat_id,
+        flatId = flatId,
         dtmf = dtmf,
         phone = phone,
         uniq = channel.CDR("uniqueid"):get(),
@@ -170,74 +168,76 @@ function push(token, type, platform, extension, hash, caller_id, flat_id, dtmf, 
     })
 end
 
-function camshow(domophone_id)
+function camshow(domophoneId)
     local hash = channel.HASH:get()
 
     if hash == nil then
-        hash = md5(domophone_id .. os.time())
+        hash = md5(domophoneId .. os.time())
 
         channel.HASH:set(hash)
 
         dm("camshot", {
-            domophone_id = domophone_id,
+            domophoneId = domophoneId,
             hash = hash,
         })
---        https.request{ url = "https://dm.lanta.me:443/sapi?key="..key.."&action=camshot&domophone_id="..domophone_id.."&hash="..hash }
---        mysql_query("insert into dm.live (token, domophone_id, expire) values ('"..hash.."', '"..domophone_id.."', addtime(now(), '00:03:00'))")
     end
 
     return hash
 end
 
-function mobile_intercom(flat_id, domophoneId)
-    local extension, res, caller_id
+function mobile_intercom(flatId, flatNumber, domophoneId)
+    local extension, res = "", caller_id
+
+    local subscribers = dm("subscribers", flatId)
+
+    log_debug(intercoms)
 
     local dtmf = dm("domophone", domophoneId).dtmf
-    local intercoms, qr = mysql_query("select token, type, platform, phone from dm.intercoms where flat_id="..flat_id)
 
     if not dtmf or dtmf == '' then
         dtmf = ''
     end
+
     local hash = camshow(domophoneId)
+
     caller_id = channel.CALLERID("name"):get()
 
-    while intercoms do
+    log_debug(subscribers)
+
+    for i, e in ipairs(subscribers) do
         redis:incr("autoextension")
         extension = tonumber(redis:get("autoextension"))
         if extension > 999999 then
             redis:set("autoextension", "1")
         end
         extension = extension + 2000000000
-        redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", md5(extension .. ":" .. realm .. ":" .. hash))
+        redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
-        if tonumber(intercoms['type']) == 3 then
-            redis.setex("voip_crutch_" .. extension, 1 * 60, json_encode({
+        if tonumber(subscribers[i].type) == 3 then
+            redis.setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
-                token = intercoms['token'],
+                token = subscribers[i],
                 hash = hash,
-                platform = intercoms['platform'],
-                flatId = flat_id,
+                platform = subscribers[i].platform,
+                flatId = flatId,
                 dtmf = dtmf,
-                phone = intercoms['phone'],
-                flatNumber = flatNumberl,
+                phone = subscribers[i].phone,
+                flatNumber = flatNumber,
             }))
             intercoms['type'] = 0
         end
-        push(intercoms['token'], intercoms['type'], intercoms['platform'], extension, hash, caller_id, flat_id, dtmf, intercoms['phone'], flatNumber)
-        if not res then
-            res = ""
-        end
-        res = res.."Local/"..extension
-        intercoms = qr:fetch({}, "a")
-        if intercoms then
-            res = res.."&"
-        end
+        push(subscribers[i].token, subscribers[i].type, subscribers[i].platform, extension, hash, caller_id, flatId, dtmf, subscribers[i].phone, flatNumber)
+        res = res .. "&Local/" .. extension
     end
 
-    return res
+    if res ~= "" then
+        return res:sub(2)
+    else
+        return false
+    end
 end
 
-function flat_call(flat_id)
+function flat_call(flatId)
     --
 end
 
@@ -273,7 +273,7 @@ extensions = {
                 else
                     app.Wait(0.5)
                     if crutch % 10 == 0 and intercom then
-                        push(intercom['token'], '0', intercom['platform'], extension, intercom['hash'], channel.CALLERID("name"):get(), intercom['flat_id'], intercom['dtmf'], intercom['phone']..'*')
+                        push(intercom['token'], '0', intercom['platform'], extension, intercom['hash'], channel.CALLERID("name"):get(), intercom['flatId'], intercom['dtmf'], intercom['phone']..'*')
                     end
                     crutch = crutch + 1
                 end
@@ -337,9 +337,9 @@ extensions = {
 
             log_debug("mobile intercom test call")
 
-            local flat_id = tonumber(extension:sub(2))
+            local flatId = tonumber(extension:sub(2))
 
-            mobile_intercom(flat_id, -1)
+            mobile_intercom(flatId, -1)
         end,
 
         -- вызов на панель
@@ -380,11 +380,11 @@ extensions = {
 
             log_debug("call2open: "..channel.CALLERID("num"):get().." >>> "..extension)
 
-            local o = mysql_query("select domophone_id, door, ip from dm.openmap left join dm.domophones using (domophone_id) where src='"..channel.CALLERID("num"):get().."' and dst='"..extension.."'")
+            local o = mysql_query("select domophoneId, door, ip from dm.openmap left join dm.domophones using (domophoneId) where src='"..channel.CALLERID("num"):get().."' and dst='"..extension.."'")
             if o then -- если это "телефон" открытия чего-либо
                 log_debug("openmap: has match")
                 mysql_query("insert into dm.door_open (date, ip, event, door, detail) values (now(), '"..o['ip'].."', 7, '"..o['door'].."', '"..channel.CALLERID("num"):get()..":"..extension.."')")
-                https.request{ url = "https://dm.lanta.me:443/sapi?key="..key.."&action=open&domophone_id="..o['domophone_id'].."&door="..o['door'] }
+                https.request{ url = "https://dm.lanta.me:443/sapi?key="..key.."&action=open&domophoneId="..o['domophoneId'].."&door="..o['door'] }
             end
             app.Hangup()
         end,
@@ -450,7 +450,7 @@ extensions = {
                     end
 
                     -- application(s) (mobile intercom(s))
-                    local mi = mobile_intercom(flat_id, src_domophone)
+                    local mi = mobile_intercom(flatId, flatNumber, domophoneId)
                     if mi then
                         dest = dest .. "&" .. mi
                     end
