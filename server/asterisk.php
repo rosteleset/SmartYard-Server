@@ -136,17 +136,17 @@
             break;
 
         case "extensions":
-            $_RAW = json_decode(file_get_contents("php://input"), true);
+            $params = json_decode(file_get_contents("php://input"), true);
 
             switch ($path[2]) {
                 case "log":
-                    error_log($_RAW);
+                    error_log($params);
                     break;
 
                 case "autoopen":
                     $households = loadBackend("households");
 
-                    $flat = $households->getFlat((int)$_RAW);
+                    $flat = $households->getFlat((int)$params);
 
                     $rabbit = (int)$flat["whiteRabbit"];
 
@@ -156,26 +156,34 @@
                 case "flat":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getFlat((int)$_RAW));
+                    echo json_encode($households->getFlat((int)$params));
                     break;
 
                 case "domophone":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getDomophone((int)$_RAW));
+                    echo json_encode($households->getDomophone((int)$params));
                     break;
 
-                case "openDoor":
+                case "camshot":
                     $households = loadBackend("households");
                     $domophone = $households->getDomophone($_GET["id"]);
+
+                    print_r($domophone);
+
+                    break;
 
                     require_once "hw/domophones/beward/dks/dks15374.php";
 
                     $model = new dks15374($domophone["ip"], $domophone["credentials"], $domophone["port"]);
 
-                    header("Content-Type: image/jpeg");
-
-                    echo $model->camshot();
+                    $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
+                    $redis->setex("live_" . $params["hash"], 3 * 60, [
+                        "class" => $domophone[""],
+                        "ip" => $domophone["ip"],
+                        "credentials" => $domophone["credentials"],
+                        "port" => $domophone["port"],
+                    ]);
 
                     break;
             }

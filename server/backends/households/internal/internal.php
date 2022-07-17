@@ -702,7 +702,7 @@
                     return false;
                 }
 
-                return $this->db->get("select * from houses_domophones where house_domophone_id = $domophoneId", false, [
+                $domophone = $this->db->get("select * from houses_domophones where house_domophone_id = $domophoneId", false, [
                     "house_domophone_id" => "domophoneId",
                     "enabled" => "enabled",
                     "model" => "model",
@@ -716,6 +716,10 @@
                 ], [
                     "singlify"
                 ]);
+
+                $domophone["json"] = json_decode(file_get_contents("hw/domophones/models/" . $domophone["model"]), true);
+
+                return $domophone;
             }
 
             /**
