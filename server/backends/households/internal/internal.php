@@ -335,7 +335,7 @@
                                     if (!$ap || $ap <= 0 || $ap > 9999) {
                                         $ap = $flat;
                                     }
-                                    $lv = $apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
+                                    $lv = @$apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
                                 }
                                 if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
                                     ":house_entrance_id" => $entrances[$i],
@@ -732,7 +732,7 @@
                     return false;
                 }
 
-                return $this->db->get("select * from houses_domophones where house_domophone_id = $domophoneId", false, [
+                $domophone = $this->db->get("select * from houses_domophones where house_domophone_id = $domophoneId", false, [
                     "house_domophone_id" => "domophoneId",
                     "enabled" => "enabled",
                     "model" => "model",
@@ -746,6 +746,10 @@
                 ], [
                     "singlify"
                 ]);
+
+                $domophone["json"] = json_decode(file_get_contents("hw/domophones/models/" . $domophone["model"]), true);
+
+                return $domophone;
             }
 
             /**
@@ -1110,6 +1114,40 @@
                 return $this->db->modify("update houses_flats set last_opened = :now where house_flat_id = $flatId", [
                     "now" => $this->db->now(),
                 ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getFlats($by, $params)
+            {
+                switch ($by) {
+                    case "domophoneAndNumber":
+                        $flatId = $this->db->get("
+                            select
+                                house_flat_id
+                            from
+                                houses_entrances_flats
+                                    left join houses_entrances using (house_entrance_id)
+                                    left join houses_houses_entrances using (house_entrance_id)
+                            where
+                                house_domophone_id = :house_domophone_id
+                              and 
+                                prefix = :prefix 
+                              and 
+                                apartment = :apartment
+                        ", [
+                            "house_domophone_id" => $params["domophoneId"],
+                            "prefix" => $params["prefix"],
+                            "apartment" => $params["flatNumber"],
+                        ]);
+
+                        if ($flatId) {
+                            return [ $this->getFlat($flatId) ];
+                        } else {
+                            return false;
+                        }
+                }
             }
         }
     }

@@ -49,8 +49,10 @@
     function paramsToResponse($params) {
         $r = "";
 
-        foreach ($params as $param => $value) {
-            $r .= urlencode($param) . "=" . urlencode($value) . "&";
+        if ($params) {
+            foreach ($params as $param => $value) {
+                $r .= urlencode($param) . "=" . urlencode($value) . "&";
+            }
         }
 
         return $r;
@@ -59,7 +61,7 @@
     function getExtension($extension, $section) {
 
         // domophone panel
-        if ($extension[0] === "1" && strlen($extension) === 5) {
+        if ($extension[0] === "1" && strlen($extension) === 6) {
             switch ($section) {
                 case "aors":
                     return [
@@ -69,7 +71,7 @@
                     ];
 
                 case "auths":
-                    $domophones = loadBackend("domophones");
+                    $domophones = loadBackend("households");
 
                     $panel = $domophones->getDomophone((int)substr($extension, 1));
 
@@ -85,7 +87,7 @@
                     break;
 
                 case "endpoints":
-                    $domophones = loadBackend("domophones");
+                    $domophones = loadBackend("households");
 
                     $panel = $domophones->getDomophone((int)substr($extension, 1));
 
@@ -132,21 +134,21 @@
         case "aors":
         case "auths":
         case "endpoints":
-            echo paramsToResponse(getExtension($_POST["id"], $path[1]));
+            if (@$_POST["id"]) echo paramsToResponse(getExtension($_POST["id"], $path[1]));
             break;
 
         case "extensions":
-            $_RAW = json_decode(file_get_contents("php://input"), true);
+            $params = json_decode(file_get_contents("php://input"), true);
 
             switch ($path[2]) {
                 case "log":
-                    error_log($_RAW);
+                    error_log($params);
                     break;
 
                 case "autoopen":
                     $households = loadBackend("households");
 
-                    $flat = $households->getFlat((int)$_RAW);
+                    $flat = $households->getFlat((int)$params);
 
                     $rabbit = (int)$flat["whiteRabbit"];
 
@@ -154,15 +156,64 @@
                     break;
 
                 case "flat":
+                    if (!$params) $params = (int)$_GET["id"];
+
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getFlat((int)$_RAW));
+                    echo json_encode($households->getFlat((int)$params));
+                    break;
+
+                case "flatNumberById":
+                    //TODO
+                    // $params["flatId"]
+                    // $params["domophoneId"]
+                    break;
+
+                case "flatIdByPrefix":
+                    //TODO
+                    // $params["domophoneId"]
+                    // $params["flatNumber"]
+                    // $params["prefix"]
+                    break;
+
+                case "cmsConnected":
+                    //TODO
+                    // $params["domophoneId"]
+                    // $params["flatId"]
+                    break;
+
+                case "subscribers":
+                    $households = loadBackend("households");
+
+                    echo json_encode($households->getSubscribers("flat", (int)$params));
                     break;
 
                 case "domophone":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getDomophone((int)$_RAW));
+                    echo json_encode($households->getDomophone((int)$params));
+                    break;
+
+                case "camshot":
+                    if (!@$params["domophoneId"]) $params["domophoneId"] = (int)@$_GET["id"];
+                    if (!@$params["hash"]) $params["hash"] = md5(GUIDv4());
+
+                    $households = loadBackend("households");
+                    $domophone = $households->getDomophone($params["domophoneId"]);
+
+                    require_once "hw/domophones/beward/dks/dks15374.php";
+
+                    $model = new ($domophone["json"]["class"])($domophone["ip"], $domophone["credentials"], $domophone["port"]);
+
+                    $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
+                    $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                        "class" => $domophone["json"]["class"],
+                        "ip" => $domophone["ip"],
+                        "credentials" => $domophone["credentials"],
+                        "port" => $domophone["port"],
+                    ]));
+
+                    echo $params["hash"];
                     break;
             }
             break;

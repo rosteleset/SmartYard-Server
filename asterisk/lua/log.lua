@@ -62,7 +62,7 @@ for i, x in ipairs(modes) do
     end
 
     local msg = tostring(...)
-    local info = debug.getinfo(2, "Sl")
+    local info = debug.getinfo(3, "Sl")
     local lineinfo = info.short_src .. ":" .. info.currentline
 
     -- Output to console

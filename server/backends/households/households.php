@@ -100,6 +100,13 @@
             abstract function getFlat($flatId);
 
             /**
+             * @param $by
+             * @param $params
+             * @return boolean|array
+             */
+            abstract function getFlats($by, $params);
+
+            /**
              * @param $houseId
              * @param $floor
              * @param $flat

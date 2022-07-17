@@ -1,7 +1,7 @@
 -- vars
 CREATE TABLE core_vars
 (
-    var_id serial not null primary key,
+    var_id serial primary key,
     var_name character varying not null,
     var_value character varying
 );
@@ -12,7 +12,7 @@ INSERT INTO core_vars (var_name, var_value) values ('dbVersion', '0');
 -- users
 CREATE TABLE core_users
 (
-    uid serial not null primary key,
+    uid serial primary key,
     login character varying not null,
     password character varying not null,
     enabled integer,
@@ -33,7 +33,7 @@ INSERT INTO core_users (login, password, enabled) values ('user', '$2y$10$hA0uXz
 -- groups
 CREATE TABLE core_groups
 (
-    gid serial not null primary key,
+    gid serial primary key,
     acronym character varying not null,
     name character varying not null
 );
@@ -49,9 +49,9 @@ CREATE TABLE core_users_groups
     uid integer,
     gid integer
 );
+CREATE UNIQUE INDEX core_users_groups_uniq on core_users_groups(uid, gid);
 CREATE INDEX core_users_groups_uid on core_users_groups(uid);
 CREATE INDEX core_users_groups_gid on core_users_groups(gid);
-CREATE UNIQUE INDEX core_users_groups_uid_gid on core_users_groups(uid, gid);
 
 -- user to users group
 INSERT INTO core_users_groups (uid, gid) values (1, 1);
@@ -62,7 +62,8 @@ CREATE TABLE core_api_methods
     aid character varying not null primary key,
     api character varying not null,
     method character varying not null,
-    request_method character varying not null
+    request_method character varying not null,
+    permissions_same character varying
 );
 CREATE UNIQUE INDEX core_api_methods_uniq on core_api_methods(api, method, request_method);
 
@@ -100,6 +101,5 @@ CREATE TABLE core_api_methods_personal
 CREATE TABLE core_api_methods_by_backend
 (
     aid character varying not null primary key,
-    backend text
+    backend character varying
 );
-
