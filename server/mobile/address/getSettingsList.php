@@ -37,7 +37,8 @@
  */
 
     auth(3600);
-
+    response();
+    /*
     $all = all_clients();
 
     $c = implode(',', $all);
@@ -206,3 +207,4 @@
         response();
     }
 
+*/

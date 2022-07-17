@@ -34,7 +34,7 @@ $push = trim(@$postdata['pushToken']);
 $voip = trim(@$postdata['voipToken'] ?: "");
 $production = trim(@$postdata['production']);
 
-if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android')) {
+if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android' && $postdata['platform'] != 'huawei')) {
     response(422);
 }
 
@@ -47,16 +47,21 @@ if ($voip && (strlen($voip) < 16 || strlen($voip) >= 1024)) {
 }
 
 if ($postdata['platform'] == 'ios') {
+    $platform = 1;
     if ($voip) {
         $type = ($production == 'f')?2:1; // apn:apn.dev
     } else {
-        $type = 3; // fcm (resend)
+        $type = 0; // fcm (resend)
     }
+} elseif ($postdata['platform'] == 'huawei') {
+    $platform = 0;
+    $type = 3; // huawei
 } else {
+    $platform = 0;
     $type = 0; // fcm
 }
 
-$households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $postdata['platform'] ]);
+$households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform ]);
 
 if (!$push) {
     $households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => "off" ]);   
@@ -71,7 +76,6 @@ if (!$push) {
             "pushAction" => "logout"
         ];
         $isdn->push($payload);
-        // file_get_contents("http://127.0.0.1:8082/push?token=".urlencode($old_push)."&message_id=$md5&msg=".urlencode("Произведена авторизация на другом устройстве")."&badge=1&action=logout&phone={$bearer['id']}");
     }
 }
 

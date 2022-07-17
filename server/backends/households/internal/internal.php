@@ -98,6 +98,36 @@
             /**
              * @inheritDoc
              */
+            function getEntrance($entranceId)
+            {
+                if (!checkInt($entranceId)) {
+                    return false;
+                }
+
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                    false,
+                    [
+                        "house_entrance_id" => "entranceId",
+                        "entrance_type" => "entranceType",
+                        "entrance" => "entrance",
+                        "lat" => "lat",
+                        "lon" => "lon",
+                        "shared" => "shared",
+                        "house_domophone_id" => "domophoneId",
+                        "domophone_output" => "domophoneOutput",
+                        "cms" => "cms",
+                        "cms_type" => "cmsType",
+                        "camera_id" => "cameraId",
+                        "cms_levels" => "cmsLevels",
+                        "locks_disabled" => "locksDisabled",
+                    ],
+                    [ "singlify" ]
+                );
+            }
+
+            /**
+             * @inheritDoc
+             */
             function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
