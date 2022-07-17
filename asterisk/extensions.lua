@@ -190,7 +190,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
 
     local subscribers = dm("subscribers", flatId)
 
-    log_debug(intercoms)
+    log_debug(subscribers)
 
     local dtmf = dm("domophone", domophoneId).dtmf
 
@@ -402,6 +402,8 @@ extensions = {
 
             log_debug("incoming ring from " .. from .. " >>> " .. extension)
 
+            local flat
+
             local domophoneId = false
             local flatId = false
             local flatNumber = false
@@ -413,23 +415,29 @@ extensions = {
                 -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))
-                    flat = dm("flat", flatId)
 
-                    log_debug(flat)
+                    if flatId ~= nil then
+                        flat = dm("flat", flatId)
 
-                    for i, e in ipairs(flat.entrances) do
-                        if flat.entrances[i].domophoneId == domophoneId then
-                            flatNumber = flat.entrances[i].apartment
+                        log_debug(flatId)
+                        log_debug(flat)
+
+                        for i, e in ipairs(flat.entrances) do
+                            if flat.entrances[i].domophoneId == domophoneId then
+                                flatNumber = flat.entrances[i].apartment
+                            end
                         end
                     end
                 else
                     -- more than one house, has prefix
                     flatNumber = tonumber(extension:sub(5))
-                    flatId = dm("flatIdByPrefix", {
-                        domophoneId = domophoneId,
-                        flatNumber = flatNumber,
-                        prefix = tonumber(extension:sub(1, 4)),
-                    })
+                    if flatNumber ~= nil then
+                        flatId = dm("flatIdByPrefix", {
+                            domophoneId = domophoneId,
+                            flatNumber = flatNumber,
+                            prefix = tonumber(extension:sub(1, 4)),
+                        })
+                    end
                 end
             end
 
