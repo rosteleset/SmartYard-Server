@@ -26,3 +26,4 @@ __pycache__
 /doc/
 /.stylelintrc.json
 RBT/RBT.xcodeproj/
+/server/services/nodejs
