@@ -38,133 +38,8 @@
 
     auth(3600);
     $households = loadBackend("households");
-    // var_dump($subscriber);
-    // response(200, $subscriber);
     $houses = [];
-    /*
-    subscriber
-    {
-		"subscriberId": 1,
-		"mobile": "79123456781",
-		"authToken": "40fa3237-8019-4bea-80fd-c648713ed577",
-		"platform": 1,
-		"pushToken": "f8aDao989UwXkP02HEU3ef:APA91bGLTedrYrigeDkgrDl8QbsDSXNC5xsW11_WYiTDcwl6y99knrBWXzbX9HTgz0J6CvuIY0jHzb9tM4AJlHN118qc4jBJjoVz6IyvfSN2CUyAOP8f4uiv5Po3K64JHfLsKAseE6dI",
-		"tokenType": 0,
-		"voipToken": "off",
-		"registered": "2022-07-16 07:37:41.000",
-		"lastSeen": "2022-07-17 09:51:22.000",
-		"subscriberName": "Иван",
-		"subscriberPatronymic": "Иванович",
-		"flats": [
-			{
-				"flatId": 1,
-				"role": 0,
-				"flat": "69",
-				"addressHouseId": 1,
-				"house": {
-					"houseId": 1,
-					"settlementId": null,
-					"streetId": 1,
-					"houseUuid": "633d34b5-7c77-4138-862a-f7a135fda080",
-					"houseType": "д",
-					"houseTypeFull": "дом",
-					"houseFull": "г Тамбов, ул Пионерская, д 5б",
-					"house": "5б"
-				}
-			}
-		]
-	}
-
-    getFlat
-    {
-		"flatId": 1,
-		"floor": 10,
-		"flat": "69",
-		"autoBlock": 0,
-		"manualBlock": 0,
-		"openCode": "23456",
-		"autoOpen": "1970-01-01 00:00:00",
-		"whiteRabbit": 0,
-		"sipEnabled": 0,
-		"sipPassword": "",
-		"lastOpened": null,
-		"entrances": [
-			{
-				"entranceId": 1,
-				"apartment": 69,
-				"apartmentLevels": "123",
-				"domophoneId": 1,
-				"matrix": 1
-			},
-			{
-				"entranceId": 2,
-				"apartment": 69,
-				"apartmentLevels": "",
-				"domophoneId": 2,
-				"matrix": 0
-			}
-		]
-	}
-
-    responseExample:
-    [
-		{
-			"houseId": "6694",
-			"address": "Тамбов, ул. Пионерская, дом 5\"б\"",
-			"hasPlog": "t",
-			"doors": [
-				{
-					"domophoneId": "74",
-					"doorId": 0,
-					"entrance": "1",
-					"icon": "entrance",
-					"name": "Подъезд"
-				},
-				{
-					"domophoneId": "75",
-					"doorId": 0,
-					"icon": "wicket",
-					"name": "Калитка"
-				},
-				{
-					"domophoneId": "297",
-					"doorId": 0,
-					"icon": "wicket",
-					"name": "Калитка доп"
-				},
-				{
-					"domophoneId": "131",
-					"doorId": 0,
-					"icon": "gate",
-					"name": "Ворота"
-				}
-			],
-			"cctv": 14
-		},
-		{
-			"houseId": "6440",
-			"address": "Тамбов, ул. Рылеева, дом 59 \"а\" корп.5",
-			"hasPlog": "t",
-			"doors": [
-				{
-					"domophoneId": "216",
-					"doorId": 0,
-					"entrance": "1",
-					"icon": "entrance",
-					"name": "Подъезд 1"
-				}
-			],
-			"cctv": 5
-		},
-		{
-			"houseId": "8283",
-			"address": "Тамбов, ул. Советская, дом 190\"б\", корп.2",
-			"hasPlog": "f",
-			"cctv": 6
-		}
-	]
-
-    */
+    
     foreach($subscriber['flats'] as $flat) {
         $houseId = $flat['addressHouseId'];
         if (array_key_exists($houseId, $houses)) {
@@ -212,7 +87,8 @@
     }
     response(200,$result);
 
-    /*
+    // TODO: удалить исходники старой реализации
+    /* 
     $ret = [];
 
     $houses = implode(',', all_houses()); // тут-же будет дернут all_cctv и с-но будет получен список камер ($cams)
