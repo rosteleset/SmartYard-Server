@@ -49,8 +49,10 @@
     function paramsToResponse($params) {
         $r = "";
 
-        foreach ($params as $param => $value) {
-            $r .= urlencode($param) . "=" . urlencode($value) . "&";
+        if ($params) {
+            foreach ($params as $param => $value) {
+                $r .= urlencode($param) . "=" . urlencode($value) . "&";
+            }
         }
 
         return $r;
@@ -59,7 +61,7 @@
     function getExtension($extension, $section) {
 
         // domophone panel
-        if ($extension[0] === "1" && strlen($extension) === 5) {
+        if ($extension[0] === "1" && strlen($extension) === 6) {
             switch ($section) {
                 case "aors":
                     return [
@@ -69,7 +71,7 @@
                     ];
 
                 case "auths":
-                    $domophones = loadBackend("domophones");
+                    $domophones = loadBackend("households");
 
                     $panel = $domophones->getDomophone((int)substr($extension, 1));
 
@@ -85,7 +87,7 @@
                     break;
 
                 case "endpoints":
-                    $domophones = loadBackend("domophones");
+                    $domophones = loadBackend("households");
 
                     $panel = $domophones->getDomophone((int)substr($extension, 1));
 
@@ -132,7 +134,7 @@
         case "aors":
         case "auths":
         case "endpoints":
-            echo paramsToResponse(getExtension($_POST["id"], $path[1]));
+            if (@$_POST["id"]) echo paramsToResponse(getExtension($_POST["id"], $path[1]));
             break;
 
         case "extensions":
@@ -154,6 +156,8 @@
                     break;
 
                 case "flat":
+                    if (!$params) $params = (int)$_GET["id"];
+
                     $households = loadBackend("households");
 
                     echo json_encode($households->getFlat((int)$params));

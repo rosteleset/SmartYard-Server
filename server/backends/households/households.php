@@ -94,6 +94,12 @@
             abstract function getFlat($flatId);
 
             /**
+             * @param $query
+             * @return boolean|array
+             */
+            abstract function searchFlat($query);
+
+            /**
              * @param $houseId
              * @param $floor
              * @param $flat

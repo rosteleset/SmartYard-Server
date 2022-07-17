@@ -1,4 +1,5 @@
 package.path = "/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;" .. package.path
+package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
 
 realm = "rbt"
 dm_server = "http://127.0.0.1:8000/server/asterisk.php/extensions"
@@ -88,7 +89,7 @@ function log_debug(v)
     m = m .. inspect(v)
 
     log.debug(m)
-    dm("log", m)
+    --dm("log", m)
 end
 
 log_debug("init...")
@@ -135,8 +136,6 @@ function autoopen(flatId, domophoneId)
     log_debug("autoopen: no")
     return false
 end
-
-log_debug(dm("flat", 1))
 
 function blacklist(flatId)
     local flat = dm("flat", flatId)
@@ -190,16 +189,16 @@ function camshow(domophone_id)
     return hash
 end
 
-function mobile_intercom(flat_id, domophone_id)
+function mobile_intercom(flat_id, domophoneId)
     local extension, res, caller_id
 
-    local dtmf = mysql_result("select dtmf from dm.domophones where domophone_id="..domophone_id)
+    local dtmf = dm("domophone", domophoneId).dtmf
     local intercoms, qr = mysql_query("select token, type, platform, phone from dm.intercoms where flat_id="..flat_id)
 
     if not dtmf or dtmf == '' then
         dtmf = ''
     end
-    local hash = camshow(domophone_id)
+    local hash = camshow(domophoneId)
     caller_id = channel.CALLERID("name"):get()
 
     while intercoms do
@@ -398,9 +397,9 @@ extensions = {
         [ "_X." ] = function (context, extension)
             checkin()
 
-            log_debug("incoming ring " .. channel.CALLERID("num"):get() .. " >>> " .. extension)
-
             local from = channel.CALLERID("num"):get()
+
+            log_debug("incoming ring from " .. from .. " >>> " .. extension)
 
             local domophoneId = false
             local flatId = false
@@ -408,15 +407,20 @@ extensions = {
 
             -- is it domophone "1XXXXX"?
             if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
-                domophoneId = tonumber(from:get():sub(2))
+                domophoneId = tonumber(from:sub(2))
 
                 -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))
-                    flatNumber = tonumber(dm("flatNumberById", {
-                        flatId = flatId,
-                        domophoneId = domophoneId,
-                    }))
+                    flat = dm("flat", flatId)
+
+                    log_debug(flat)
+
+                    for i, e in ipairs(flat.entrances) do
+                        if flat.entrances[i].domophoneId == domophoneId then
+                            flatNumber = flat.entrances[i].apartment
+                        end
+                    end
                 else
                     -- more than one house, has prefix
                     flatNumber = tonumber(extension:sub(5))

@@ -1085,5 +1085,39 @@
                     "now" => $this->db->now(),
                 ]);
             }
+
+            /**
+             * @inheritDoc
+             */
+            function searchFlat($query)
+            {
+                switch ($query["by"]) {
+                    case "domophoneAndNumber":
+                        $flatId = $this->db->get("
+                            select
+                                house_flat_id
+                            from
+                                houses_entrances_flats
+                                    left join houses_entrances using (house_entrance_id)
+                                    left join houses_houses_entrances using (house_entrance_id)
+                            where
+                                house_domophone_id = :house_domophone_id
+                              and 
+                                prefix = :prefix 
+                              and 
+                                apartment = :apartment
+                        ", [
+                            "house_domophone_id" => $query["domophoneId"],
+                            "prefix" => $query["prefix"],
+                            "apartment" => $query["flatNumber"],
+                        ]);
+
+                        if ($flatId) {
+                            return $this->getFlat($flatId);
+                        } else {
+                            return false;
+                        }
+                }
+            }
         }
     }
