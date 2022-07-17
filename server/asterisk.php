@@ -166,25 +166,25 @@
                     break;
 
                 case "camshot":
+                    if (!@$params["domophone_id"]) $params["domophone_id"] = $_GET["id"];
+                    if (!@$params["hash"]) $params["hash"] = md5(GUIDv4());
+
                     $households = loadBackend("households");
-                    $domophone = $households->getDomophone($_GET["id"]);
-
-                    print_r($domophone);
-
-                    break;
+                    $domophone = $households->getDomophone($params["domophone_id"]);
 
                     require_once "hw/domophones/beward/dks/dks15374.php";
 
                     $model = new dks15374($domophone["ip"], $domophone["credentials"], $domophone["port"]);
 
                     $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
-                    $redis->setex("live_" . $params["hash"], 3 * 60, [
-                        "class" => $domophone[""],
+                    $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                        "class" => $domophone["json"]["class"],
                         "ip" => $domophone["ip"],
                         "credentials" => $domophone["credentials"],
                         "port" => $domophone["port"],
-                    ]);
+                    ]));
 
+                    echo $params["hash"];
                     break;
             }
             break;
