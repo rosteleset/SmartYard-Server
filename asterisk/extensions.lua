@@ -420,7 +420,7 @@ extensions = {
                 else
                     -- more than one house, has prefix
                     flatNumber = tonumber(extension:sub(5))
-                    flatId = dm("flatByPrefix", {
+                    flatId = dm("flatIdByPrefix", {
                         domophoneId = domophoneId,
                         flatNumber = flatNumber,
                         prefix = tonumber(extension:sub(1, 4)),

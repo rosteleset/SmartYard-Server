@@ -159,6 +159,25 @@
                     echo json_encode($households->getFlat((int)$params));
                     break;
 
+                case "flatNumberById":
+                    //TODO
+                    // $params["flatId"]
+                    // $params["domophoneId"]
+                    break;
+
+                case "flatIdByPrefix":
+                    //TODO
+                    // $params["domophoneId"]
+                    // $params["flatNumber"]
+                    // $params["prefix"]
+                    break;
+
+                case "cmsConnected":
+                    //TODO
+                    // $params["domophoneId"]
+                    // $params["flatId"]
+                    break;
+
                 case "domophone":
                     $households = loadBackend("households");
 
@@ -174,7 +193,7 @@
 
                     require_once "hw/domophones/beward/dks/dks15374.php";
 
-                    $model = new dks15374($domophone["ip"], $domophone["credentials"], $domophone["port"]);
+                    $model = new ($domophone["json"]["class"])($domophone["ip"], $domophone["credentials"], $domophone["port"]);
 
                     $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                     $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
