@@ -1110,9 +1110,8 @@
                             "house_domophone_id" => $params["domophoneId"],
                             "prefix" => $params["prefix"],
                             "apartment" => $params["flatNumber"],
-                        ]);
-
-                        if ($flatId) {
+                        ], false, [ "fieldlify" ]);
+                        if ($flatId !== false) {
                             return [ $this->getFlat($flatId) ];
                         } else {
                             return false;

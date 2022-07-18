@@ -415,13 +415,9 @@ extensions = {
                 -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))
-
                     if flatId ~= nil then
+                        log_debug("ordinal call")
                         flat = dm("flat", flatId)
-
-                        log_debug(flatId)
-                        log_debug(flat)
-
                         for i, e in ipairs(flat.entrances) do
                             if flat.entrances[i].domophoneId == domophoneId then
                                 flatNumber = flat.entrances[i].apartment
@@ -429,14 +425,18 @@ extensions = {
                         end
                     end
                 else
-                    -- more than one house, has prefix
+                    log_debug("more than one house, has prefix")
                     flatNumber = tonumber(extension:sub(5))
                     if flatNumber ~= nil then
-                        flatId = dm("flatIdByPrefix", {
+                        local flats = dm("flatIdByPrefix", {
                             domophoneId = domophoneId,
                             flatNumber = flatNumber,
                             prefix = tonumber(extension:sub(1, 4)),
                         })
+                        if #flats == 1 then
+                            flat = flats[1]
+                            flatId = flat.flatId
+                        end
                     end
                 end
             end
@@ -477,6 +477,8 @@ extensions = {
 
                     app.Dial(dest, 120)
                 end
+            else
+                log_debug("something wrong, going out")
             end
 
             app.Hangup()

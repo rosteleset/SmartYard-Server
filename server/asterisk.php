@@ -156,30 +156,19 @@
                     break;
 
                 case "flat":
-                    if (!$params) $params = (int)$_GET["id"];
-
                     $households = loadBackend("households");
 
                     echo json_encode($households->getFlat((int)$params));
                     break;
 
-                case "flatNumberById":
-                    //TODO
-                    // $params["flatId"]
-                    // $params["domophoneId"]
-                    break;
-
                 case "flatIdByPrefix":
+                    $households = loadBackend("households");
                     //TODO
                     // $params["domophoneId"]
                     // $params["flatNumber"]
                     // $params["prefix"]
-                    break;
 
-                case "cmsConnected":
-                    //TODO
-                    // $params["domophoneId"]
-                    // $params["flatId"]
+                    echo json_encode($households->getFlats("domophoneAndNumber", $params));
                     break;
 
                 case "subscribers":
@@ -195,9 +184,6 @@
                     break;
 
                 case "camshot":
-                    if (!@$params["domophoneId"]) $params["domophoneId"] = (int)@$_GET["id"];
-                    if (!@$params["hash"]) $params["hash"] = md5(GUIDv4());
-
                     $households = loadBackend("households");
                     $domophone = $households->getDomophone($params["domophoneId"]);
 
