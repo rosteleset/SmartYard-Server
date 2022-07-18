@@ -186,25 +186,27 @@ function camshow(domophoneId)
 end
 
 function mobile_intercom(flatId, flatNumber, domophoneId)
-    local extension, res = "", caller_id
+    local extension
+    local res = ""
+    local caller_id
 
     local subscribers = dm("subscribers", flatId)
-
-    log_debug(subscribers)
 
     local dtmf = dm("domophone", domophoneId).dtmf
 
     if not dtmf or dtmf == '' then
-        dtmf = ''
+        dtmf = '1'
     end
 
     local hash = camshow(domophoneId)
 
     caller_id = channel.CALLERID("name"):get()
 
-    log_debug(subscribers)
-
-    for i, e in ipairs(subscribers) do
+    for i, s in ipairs(subscribers) do
+        log_debug(s)
+        if s.platform == cjson.null or s.type == cjson.null then
+            goto continue
+        end
         redis:incr("autoextension")
         extension = tonumber(redis:get("autoextension"))
         if extension > 999999 then
@@ -214,21 +216,22 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         -- ios over fcm (with repeat)
-        if tonumber(subscribers[i].platform) == 1 and tonumber(subscribers[i].type) == 0 then
+        if tonumber(s.platform) == 1 and tonumber(s.type) == 0 then
             redis.setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
-                token = subscribers[i],
+                token = s.token,
                 hash = hash,
-                platform = subscribers[i].platform,
+                platform = s.platform,
                 flatId = flatId,
                 dtmf = dtmf,
-                phone = subscribers[i].phone,
+                phone = s.phone,
                 flatNumber = flatNumber,
             }))
             intercoms['type'] = 0
         end
-        push(subscribers[i].token, subscribers[i].type, subscribers[i].platform, extension, hash, caller_id, flatId, dtmf, subscribers[i].phone, flatNumber)
+        push(s.token, s.type, s.platform, extension, hash, caller_id, flatId, dtmf, s.phone, flatNumber)
         res = res .. "&Local/" .. extension
+        ::continue::
     end
 
     if res ~= "" then
@@ -449,10 +452,14 @@ extensions = {
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
                     local dest = ""
 
-                    local cmsConnected = dm("cmsConnected", {
-                        domophoneId = domophoneId,
-                        flatId = flatId,
-                    })
+                    local cmsConnected = false
+
+                    for i, e in ipairs(flat.entrances) do
+                        if e.domophoneId == domophoneId and e.matrix >= 1 then
+                            cmsConnected = true
+                            break
+                        end
+                    end
 
                     if not cmsConnected then
                         dest = dest .. "&Local/" .. string.format("3%09d", flatId)
@@ -473,9 +480,12 @@ extensions = {
                         dest = dest:sub(2)
                     end
 
-                    log_debug("dialing: " .. dest)
-
-                    app.Dial(dest, 120)
+                    if dest ~= "" then
+                        log_debug("dialing: " .. dest)
+                        app.Dial(dest, 120)
+                    else
+                        log_debug("nothing to dial")
+                    end
                 end
             else
                 log_debug("something wrong, going out")
