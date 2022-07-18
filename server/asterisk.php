@@ -59,6 +59,7 @@
     }
 
     function getExtension($extension, $section) {
+        global $redis;
 
         // domophone panel
         if ($extension[0] === "1" && strlen($extension) === 6) {
@@ -119,6 +120,61 @@
         // mobile extension
         if ($extension[0] === "2" && strlen($extension) === 10) {
 
+        }
+
+        // webrtc extension
+        if ($extension[0] === "7" && strlen($extension) === 10) {
+            switch ($section) {
+                case "aors":
+                    return [
+                        "id" => $extension,
+                        "max_contacts" => "1",
+                        "remove_existing" => "yes"
+                    ];
+
+                case "auths":
+                    $cred = $redis->get("webrtc_" . md5($extension));
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "username" => $extension,
+                            "auth_type" => "userpass",
+                            "password" => $cred,
+                        ];
+                    }
+
+                    break;
+
+                case "endpoints":
+                    $users = loadBackend("users");
+
+                    $user = $users->getUser((int)substr($extension, 1));
+
+                    if ($user) {
+                        return [
+                            "id" => $extension,
+                            "auth" => $extension,
+                            "outbound_auth" => $extension,
+                            "aors" => $extension,
+                            "callerid" => $user["realName"],
+                            "context" => "default",
+                            "disallow" => "all",
+                            "allow" => "alaw,h264",
+                            "rtp_symmetric" => "no",
+                            "force_rport" => "no",
+                            "rewrite_contact" => "yes",
+                            "timers" => "no",
+                            "direct_media" => "no",
+                            "allow_subscribe" => "yes",
+                            "dtmf_mode" => "rfc4733",
+                            "ice_support" => "no",
+                            "webrtc" => "yes",
+                        ];
+                    }
+
+                    break;
+            }
         }
     }
 
