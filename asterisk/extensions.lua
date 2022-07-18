@@ -352,7 +352,7 @@ extensions = {
 
             log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
 
-            app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120)
+            app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
         end,
 
         -- call to webrtc account
@@ -361,7 +361,7 @@ extensions = {
 
             log_debug("call to webrtc account " .. extension)
 
-            app.Dial("PJSIP/" .. extension, 120)
+            app.Dial("PJSIP/" .. extension, 120, "m")
         end,
 
         -- SOS

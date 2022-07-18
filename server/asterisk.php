@@ -126,11 +126,17 @@
         if ($extension[0] === "7" && strlen($extension) === 10) {
             switch ($section) {
                 case "aors":
-                    return [
-                        "id" => $extension,
-                        "max_contacts" => "1",
-                        "remove_existing" => "yes"
-                    ];
+                    $cred = $redis->get("webrtc_" . md5($extension));
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "max_contacts" => "1",
+                            "remove_existing" => "yes"
+                        ];
+                    }
+
+                    break;
 
                 case "auths":
                     $cred = $redis->get("webrtc_" . md5($extension));
@@ -147,11 +153,12 @@
                     break;
 
                 case "endpoints":
-                    $users = loadBackend("users");
+                    $cred = $redis->get("webrtc_" . md5($extension));
 
+                    $users = loadBackend("users");
                     $user = $users->getUser((int)substr($extension, 1));
 
-                    if ($user) {
+                    if ($user && $cred) {
                         return [
                             "id" => $extension,
                             "auth" => $extension,
@@ -160,15 +167,15 @@
                             "callerid" => $user["realName"],
                             "context" => "default",
                             "disallow" => "all",
-                            "allow" => "alaw,h264",
-                            "rtp_symmetric" => "no",
-                            "force_rport" => "no",
-                            "rewrite_contact" => "yes",
-                            "timers" => "no",
-                            "direct_media" => "no",
-                            "allow_subscribe" => "yes",
+                            "allow" => "opus,h264",
+//                            "rtp_symmetric" => "no",
+//                            "force_rport" => "no",
+//                            "rewrite_contact" => "yes",
+//                            "timers" => "no",
+//                            "direct_media" => "no",
+//                            "allow_subscribe" => "yes",
                             "dtmf_mode" => "rfc4733",
-                            "ice_support" => "no",
+//                            "ice_support" => "no",
                             "webrtc" => "yes",
                         ];
                     }
@@ -219,10 +226,6 @@
 
                 case "flatIdByPrefix":
                     $households = loadBackend("households");
-                    //TODO
-                    // $params["domophoneId"]
-                    // $params["flatNumber"]
-                    // $params["prefix"]
 
                     echo json_encode($households->getFlats("domophoneAndNumber", $params));
                     break;
