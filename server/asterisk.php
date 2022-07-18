@@ -216,6 +216,9 @@
                 case "autoopen":
                     $households = loadBackend("households");
 
+                    //TODO
+                    // add checking for false, if object doesn't exists
+
                     $flat = $households->getFlat((int)$params);
 
                     $rabbit = (int)$flat["whiteRabbit"];
