@@ -257,6 +257,8 @@ extensions = {
 
             local timeout = os.time() + 35
             local crutch = 1
+            -- TODO
+            -- rewrite to use REDIS
             local intercom = mysql_query("select * from dm.voip_crutch where id='"..extension.."'")
             local status = ''
             local pjsip_extension = ''
@@ -344,6 +346,9 @@ extensions = {
             local flatId = tonumber(extension:sub(2))
 
             mobile_intercom(flatId, -1)
+
+            -- TODO
+            -- add local dial to 2xxxx...
         end,
 
         -- вызов на панель
@@ -384,25 +389,6 @@ extensions = {
             app.Answer()
             app.StartMusicOnHold()
             app.Wait(900)
-        end,
-
-        -- открытие ворот по звонку
-        [ "_x4752xxxxxx" ] = function (context, extension)
-            checkin()
-
-            log_debug("call2open: "..channel.CALLERID("num"):get().." >>> "..extension)
-
-            local o = mysql_query("select domophoneId, door, ip from dm.openmap left join dm.domophones using (domophoneId) where src='"..channel.CALLERID("num"):get().."' and dst='"..extension.."'")
-            if o then -- если это "телефон" открытия чего-либо
-                log_debug("openmap: has match")
-                mysql_query("insert into dm.door_open (date, ip, event, door, detail) values (now(), '"..o['ip'].."', 7, '"..o['door'].."', '"..channel.CALLERID("num"):get()..":"..extension.."')")
-                https.request{ url = "https://dm.lanta.me:443/sapi?key="..key.."&action=open&domophoneId="..o['domophoneId'].."&door="..o['door'] }
-            end
-            app.Hangup()
-        end,
-
-        [ "10002" ] = function (context, extension)
-            app.Dial("PJSIP/10002", 60, "tT")
         end,
 
         -- all others
@@ -461,15 +447,18 @@ extensions = {
                     local dest = ""
 
                     local cmsConnected = false
+                    local hasCms = false
 
                     for i, e in ipairs(flat.entrances) do
                         if e.domophoneId == domophoneId and e.matrix >= 1 then
                             cmsConnected = true
-                            break
+                        end
+                        if e.matrix >= 1 then
+                            hasCms = true
                         end
                     end
 
-                    if not cmsConnected then
+                    if not cmsConnected and hasCms then
                         dest = dest .. "&Local/" .. string.format("3%09d", flatId)
                     end
 

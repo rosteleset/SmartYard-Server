@@ -60,8 +60,8 @@
                 $cred = $params["_redis"]->get("webrtc_" . md5($extension));
                 if (!$cred) {
                     $cred = md5(GUIDv4());
-                    $params["_redis"]->setex("webrtc_" . md5($extension), 24 * 60 * 60, $cred);
                 }
+                $params["_redis"]->setex("webrtc_" . md5($extension), 24 * 60 * 60, $cred);
 
                 $user["webRtcExtension"] = $extension;
                 $user["webRtcPassword"] = $cred;

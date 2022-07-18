@@ -122,6 +122,11 @@
 
         }
 
+        // sip extension
+        if ($extension[0] === "4" && strlen($extension) === 10) {
+
+        }
+
         // webrtc extension
         if ($extension[0] === "7" && strlen($extension) === 10) {
             switch ($section) {
