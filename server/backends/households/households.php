@@ -47,6 +47,12 @@
             abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
 
             /**
+             * @param $entranceId
+             * @return false|array
+             */
+            abstract function getEntrance($entranceId);
+
+            /**
              * @param $houseId
              * @param $entranceId
              * @param $prefix
