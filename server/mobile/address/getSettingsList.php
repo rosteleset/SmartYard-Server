@@ -48,12 +48,20 @@
         $f['flatId'] = strval($flat['flatId']);
         $f['flatNumber'] = strval($flat['flat']);
         $f['flatOwner'] = (int)$flat['role']==0?'t':'f';
-        $f['contractOwner'] = (int)$flat['role']==0?'t':'f';
+        
         
         // TODO : сделать временный доступ к воротам. пока он отключен, и в приложении этот раздел просто не будет отображаться.
         $f['hasGates'] = 'f';
+
         $f['hasPlog'] = 'f';
-        $f['services'] = ["domophone"];
+
+        // TODO: сделать работу с заявками на изменение услуг. пока блок выбора услуг - "тарелочки" отключены.
+        // в услугах должна быть услуга domophone, чтобы было доступно управление доступом.
+        // contractOwner = 'f' отключает отображение тарелочек.
+        $f['services'] = ['domophone'];
+        $f['contractOwner'] = 'f';
+        // $f['contractOwner'] = (int)$flat['role']==0?'t':'f';
+
         // $f['contractName'] = '-';
         // $f['clientId'] = '0';
         

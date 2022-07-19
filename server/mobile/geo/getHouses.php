@@ -12,7 +12,7 @@
  * @apiParam {Number} streetId улица
  *
  * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {Number} -.houseId идентификатор дома
+ * @apiSuccess {String} -.houseId идентификатор дома
  * @apiSuccess {String} -.number номер дома
  */
 
@@ -32,7 +32,7 @@ $houses_ = [];
 
 foreach ($houses as $house) {
     $houses_[] = array(
-        "houseId" => $house["houseId"],
+        "houseId" => strval($house["houseId"]),
         "number" => $house["house"]
     );
 }

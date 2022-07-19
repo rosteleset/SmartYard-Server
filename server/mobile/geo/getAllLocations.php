@@ -40,7 +40,8 @@ foreach ($regions as $region) {
         $locations[] = array(
             "locationId" => strval($city["cityId"] + $offsetForCityId),
             "locationUuid" => $city["cityUuid"],
-            "location" => $city["cityWithType"],
+            // "areaName" => $city["cityWithType"],
+            "name" => $city["cityWithType"],
             "locationName" => $city["city"]
         );
 
@@ -52,7 +53,7 @@ foreach ($regions as $region) {
                 "locationId" => strval($settlement["settlementId"]),
                 "locationUuid" => $settlement["settlementUuid"],
                 "areaName" => $city["cityWithType"],
-                "location" => $settlement["settlementWithType"],
+                "name" => $settlement["settlementWithType"],
                 "locationName" => $settlement["settlement"]
             );
         }
@@ -72,7 +73,7 @@ foreach ($regions as $region) {
                 "locationId" => strval($settlement["settlementId"]),
                 "locationUuid" => $settlement["settlementUuid"],
                 "areaName" => $area["areaWithType"],
-                "location" => $settlement["settlementWithType"],
+                "name" => $settlement["settlementWithType"],
                 "locationName" => $settlement["settlement"]
             );
         }
@@ -84,7 +85,7 @@ foreach ($regions as $region) {
                 "locationId" => strval($city["cityId"] + $offsetForCityId),
                 "locationUuid" => $city["cityUuid"],
                 "areaName" => $area["areaWithType"],
-                "location" => $city["cityWithType"],
+                "name" => $city["cityWithType"],
                 "locationName" => $city["city"]
             );
 
@@ -97,7 +98,7 @@ foreach ($regions as $region) {
                     "locationId" => strval($settlement["settlementId"]),
                     "locationUuid" => $settlement["settlementUuid"],
                     "areaName" => $city["cityWithType"],
-                    "location" => $settlement["settlementWithType"],
+                    "name" => $settlement["settlementWithType"],
                     "locationName" => $settlement["settlement"]
                 );
             }

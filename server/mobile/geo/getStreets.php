@@ -32,7 +32,7 @@ if ($location_id > $offsetForCityId) {
     
     if ($addresses->getHouses($settlementId, false)) {
         $streets[] = array(
-                           "streetId" => $emptyStreetIdOffset + $settlementId,
+                           "streetId" => strval($emptyStreetIdOffset + $settlementId),
                            "streetUuid" => "", // TODO: сделать генерацию UUID
                            "street" => "(отсутствует)",
                            "streetType" => "улица"
@@ -45,7 +45,7 @@ $streets_ = [];
 
 foreach ($streets as $street) {
     $streets_[] = array(
-        "streetId" => $street["streetId"],
+        "streetId" => strval($street["streetId"]),
         "streetUUid" => $street["streetUuid"],
         "name" => $street["street"],
         "type" => $street["streetType"]
