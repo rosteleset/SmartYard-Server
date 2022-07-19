@@ -28,12 +28,6 @@
             abstract function getHouseEntrances($houseId);
 
             /**
-             * @param $entranceId
-             * @return false|array
-             */
-            abstract function getEntrance($entranceId);
-
-            /**
              * @param $houseId
              * @param $entranceType
              * @param $entrance
