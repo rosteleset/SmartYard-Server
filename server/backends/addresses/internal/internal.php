@@ -532,7 +532,7 @@
              */
             function getStreets($cityId = false, $settlementId = false)
             {
-                if ($cityId && $cityId) {
+                if ($cityId && $settlementId) {
                     return false;
                 }
 
@@ -552,7 +552,6 @@
                 } else {
                     $query = "select address_street_id, address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street from addresses_streets order by street";
                 }
-
                 return $this->db->get($query, false, [
                     "address_street_id" => "streetId",
                     "address_city_id" => "cityId",

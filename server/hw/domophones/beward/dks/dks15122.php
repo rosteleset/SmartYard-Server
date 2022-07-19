@@ -1,13 +1,17 @@
 <?php
 
-    require_once 'dks.php';
+    namespace hw\domophones {
 
-    class dks15122 extends dks {
+        require_once 'dks.php';
 
-        protected $cms_models = [
-            'KKM-100S2' => 0,
-            'KKM-105' => 1,
-            'KAD2501' => 2,
-        ];
+        class dks15122 extends dks {
+
+            protected $cms_models = [
+                'KKM-100S2' => 0,
+                'KKM-105' => 1,
+                'KAD2501' => 2,
+            ];
+
+        }
 
     }

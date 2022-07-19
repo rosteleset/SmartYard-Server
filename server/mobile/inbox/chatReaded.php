@@ -12,9 +12,6 @@
 
 auth();
 
-$id = $bearer['id'];
-$id[0] = '7';
-
-mysql("update dm.tokens set chat=0 where id='$id'");
+// TODO: добавить обработку прочтения чата.
 
 response();

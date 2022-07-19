@@ -14,6 +14,7 @@
  * @apiParam {String="t","f"} [production="t"] использовать боевой сервер для voip пушей (ios only)
  * @apiParam {String="ios","android"} platform тип устройства: ios, android
  *
+ *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
  * 422 неверный формат данных
@@ -25,14 +26,15 @@
  */
 
 auth();
+$households = loadBackend("households");
+$isdn = loadBackend("isdn");
 
-$old_push = pg_fetch_result(pg_query("select push from domophones.bearers where id='{$bearer['id']}'"), 0);
+$old_push = $subscriber["pushToken"];
+$push = trim(@$postdata['pushToken']);
+$voip = trim(@$postdata['voipToken'] ?: "");
+$production = trim(@$postdata['production']);
 
-$push = pg_escape_string(trim(@$postdata['pushToken']));
-$voip = pg_escape_string(trim(@$postdata['voipToken']));
-$production = pg_escape_string(trim(@$postdata['production']));
-
-if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android')) {
+if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android' && $postdata['platform'] != 'huawei')) {
     response(422);
 }
 
@@ -45,28 +47,40 @@ if ($voip && (strlen($voip) < 16 || strlen($voip) >= 1024)) {
 }
 
 if ($postdata['platform'] == 'ios') {
+    $platform = 1;
     if ($voip) {
         $type = ($production == 'f')?2:1; // apn:apn.dev
     } else {
-        $type = 3; // fcm (resend)
+        $type = 0; // fcm (resend)
     }
+} elseif ($postdata['platform'] == 'huawei') {
+    $platform = 0;
+    $type = 3; // huawei
 } else {
+    $platform = 0;
     $type = 0; // fcm
 }
 
-pg_query("update domophones.bearers set push='$push', voip='$voip', push_type='$type', device_type='{$postdata['platform']}' where id='{$bearer['id']}'");
+$households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform ]);
 
 if (!$push) {
-    pg_query("update domophones.bearers set push='off' where id='{$bearer['id']}'");
+    $households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => "off" ]);   
 } else {
     if ($old_push && $old_push != $push) {
         $md5 = md5($push.$old_push);
-        file_get_contents("http://127.0.0.1:8082/push?token=".urlencode($old_push)."&message_id=$md5&msg=".urlencode("Произведена авторизация на другом устройстве")."&badge=1&action=logout&phone={$bearer['id']}");
+        $payload = [
+            "token" => $old_push,
+            "messageId" => $md5,
+            "msg" => urlencode("Произведена авторизация на другом устройстве"),
+            "badge" => "1",
+            "pushAction" => "logout"
+        ];
+        $isdn->push($payload);
     }
 }
 
 if (!$voip) {
-    pg_query("update domophones.bearers set voip='off' where id='{$bearer['id']}'");
+    $households->modifySubscriber($subscriber["subscriberId"], [ "voipToken" => "off" ]);   
 }
 
 response();

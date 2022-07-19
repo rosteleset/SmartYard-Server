@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>inbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!--
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="styles.css">
+    -->
+    <style type="text/css">
+        @font-face {
+            font-family: "SourceSansPro";
+            src: url("static/fonts/sourcesanspro/sourcesanspro.ttf");
+        }
+
+        @font-face {
+            font-family: "SourceSansProBold";
+            src: url("static/fonts/sourcesanspro/sourcesansprobold.ttf");
+        }
+
+        @font-face {
+            font-family: "SourceSansProItalic";
+            src: url("static/fonts/sourcesanspro/sourcesansproitalic.ttf");
+        }
+
+        @font-face {
+            font-family: "SourceSansProLight";
+            src: url("static/fonts/sourcesanspro/sourcesansprolight.ttf");
+        }
+
+        @font-face {
+            font-family: "SourceSansProSemiBold";
+            src: url("static/fonts/sourcesanspro/sourcesansprosemibold.ttf");
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: SourceSansPro, sans-serif;
+            font-size: 14px;
+            background: #f3f4fa;
+            overflow-x: hidden;
+        }
+
+        h1, .h1,
+        h2, .h2,
+        h3, .h3,
+        h4, .h4,
+        h5, .h5,
+        h6, .h6 {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-family: SourceSansProBold, sans-serif;
+            font-weight: normal;
+            color: #28323e;
+        }
+
+        h1, .h1 {
+            font-size: 32px;
+            line-height: 120%;
+        }
+
+        h2, .h2 {
+            font-size: 28px;
+            line-height: 120%;
+        }
+
+        h3, .h3 {
+            font-size: 24px;
+            line-height: 24px;
+        }
+
+        h4, .h4 {
+            font-size: 20px;
+            line-height: 24px;
+        }
+
+        h5, .h5 {
+            font-size: 18px;
+            line-height: 24px;
+        }
+
+        h6, .h6 {
+            font-size: 16px;
+            line-height: 24px;
+        }
+
+        .text-1,
+        .text-2,
+        .text-3,
+        .text-4,
+        .text-5 {
+            font-family: SourceSansPro, sans-serif;
+            line-height: 100%;
+        }
+
+        .text-1 {
+            font-family: SourceSansProSemiBold, sans-serif;
+            font-size: 18px;
+        }
+
+        .text-2 {
+            font-size: 16px;
+        }
+
+        .text-3 {
+            font-size: 14px;
+        }
+
+        .text-4 {
+            font-size: 13px;
+        }
+
+        .text-5 {
+            font-size: 12px;
+        }
+
+        .inbox-block {
+            padding: 20px 16px;
+        }
+
+        .inbox-date,
+        .inbox-message-time {
+            display: block;
+            font-size: 14px;
+            line-height: 18px;
+            color: #6d7a8a;
+            opacity: .5;
+        }
+
+        .inbox-date {
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .inbox-message-time {
+            margin-top: 6px;
+            font-size: 10px;
+            text-align: right;
+        }
+
+        .inbox-message-primary,
+        .inbox-message-secondary {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .inbox-message-content {
+            margin-left: 16px;
+            padding: 20px 12px;
+            padding-bottom: 8px;
+            width: 100%;
+            background: #fff;
+            border-radius: 20px;
+            border-top-left-radius: 0;
+            word-break: break-word;
+        }
+
+        .inbox-message-secondary .inbox-message-content {
+            margin-left: 50px;
+        }
+
+        .inbox-message-content a {
+            margin-bottom: 10px;
+            line-height: 18px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .inbox-message-content p {
+            margin-bottom: 10px;
+            line-height: 18px;
+            color: #6d7a8a;
+        }
+
+        .inbox-message-primary .inbox-message-content p:first-child {
+            margin-bottom: 16px;
+            font-family: SourceSansProSemiBold;
+            font-size: 18px;
+            line-height: 22px;
+            color: #28323e;
+        }
+
+        .inbox-message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .inbox-message-icon {
+            display: inline-block;
+            width: 36px;
+            height: 37px;
+        }
+
+        .inbox-message-icon.icon-avatar {
+            background: url('static/icon/avatar.png') 0 0 no-repeat;
+            background-size: 100%;
+        }
+
+        .clearfix:before,
+        .clearfix:after {
+            content: " ";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+<div class="inbox-block">%c</div>
+<script type="application/javascript">
+//    scrollingElement = (document.scrollingElement || document.body)
+//    scrollingElement.scrollTop = scrollingElement.scrollHeight;
+</script>
+</body>
+</html>

@@ -1,17 +1,21 @@
 <?php
 
-    require_once 'dks.php';
+    namespace hw\domophones {
 
-    class dks977969 extends dks {
+        require_once 'dks.php';
 
-        function configure_user_account(string $password) {
-            parent::configure_user_account($password);
+        class dks977969 extends dks {
 
-            $this->api_call('cgi-bin/pwdgrp_cgi', [
-                'action' => 'update',
-                'username' => 'user1',
-                'password' => $password,
-            ]);
+            function configure_user_account(string $password) {
+                parent::configure_user_account($password);
+
+                $this->api_call('cgi-bin/pwdgrp_cgi', [
+                    'action' => 'update',
+                    'username' => 'user1',
+                    'password' => $password,
+                ]);
+            }
+
         }
 
     }

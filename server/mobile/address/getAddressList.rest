@@ -1,8 +1,0 @@
-### vars
-@bearer = bd59100f-eaee-4515-8d41-92fe64fc7947
-
-### request
-POST https://dm.lanta.me/api/address/getAddressList HTTP/1.1
-Host: dm.lanta.me
-Authorization: Bearer {{bearer}}
-Content-Type: application/json

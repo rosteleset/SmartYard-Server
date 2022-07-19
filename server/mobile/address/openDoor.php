@@ -23,7 +23,9 @@
     auth(15);
 
     $domophone_id = (int)@$postdata['domophoneId'];
-
+    // TODO: добавить управление дверями
+    
+/*
     if (!$domophone_id) {
         response(422);
     }
@@ -52,5 +54,5 @@
     } catch (Exception $ex) {
         response(503, false, $ex->getCode(), $ex->getMessage());
     }
-
+*/
     response();

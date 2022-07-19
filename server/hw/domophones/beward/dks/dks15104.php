@@ -1,17 +1,21 @@
 <?php
 
-    require_once 'dks.php';
-    require_once 'separated_rfids.php';
+    namespace hw\domophones {
 
-    class dks15104 extends dks {
+        require_once 'dks.php';
+        require_once 'separated_rfids.php';
 
-        use separated_rfids;
+        class dks15104 extends dks {
 
-        protected $cms_models = [
-            'KKM-100S2' => 0,
-            'KKM-105' => 1,
-            'KAD2501' => 2,
-            'KKM-108' => 3,
-        ];
+            use separated_rfids;
+
+            protected $cms_models = [
+                'KKM-100S2' => 0,
+                'KKM-105' => 1,
+                'KAD2501' => 2,
+                'KKM-108' => 3,
+            ];
+
+        }
 
     }

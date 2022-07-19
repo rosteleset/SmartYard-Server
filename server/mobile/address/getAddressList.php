@@ -37,7 +37,63 @@
  */
 
     auth(3600);
+    $households = loadBackend("households");
+    $houses = [];
+    
+    foreach($subscriber['flats'] as $flat) {
+        $houseId = $flat['addressHouseId'];
+        if (array_key_exists($houseId, $houses)) {
+            $house = &$houses[$houseId];
+        } else {
+            $houses[$houseId] = [];
+            $house = &$houses[$houseId];
+            $house['houseId'] = strval($houseId);
+            $house['address'] = $flat['house']['houseFull'];
+            // TODO: добавить журнал событий.
+            $house['hasPlog'] = 'f';
+            // TODO: добавить камеры.
+            $house['cctv'] = 0;
+            $house['doors'] = [];
+        }
+        
+        $flatDetail = $households->getFlat($flat['flatId']);
+        foreach ($flatDetail['entrances'] as $entrance) {
+            if (array_key_exists($entrance['entranceId'], $house['doors'])) {
+                continue;
+            }
+            
+            $e = $households->getEntrance($entrance['entranceId']);
+            $door = [];
+            $door['domophoneId'] = strval($entrance['domophoneId']);
+            $door['doorId'] = $entrance['entranceId'];
+            $door['icon'] = $e['entranceType'];
+            $door['name'] = $e['entrance'];
+            // TODO: добавить обработку блокировки
+            // $door['blocked'] = "Услуга домофонии заблокирована";
+            $house['doors'][$door['doorId']] = $door;
+            
+        }
+        
+    }
+    $result = [];
+    foreach($houses as $h) {
+        $doors = $h['doors']; 
+        $doors_ = [];
+        foreach($doors as $dk => $d) {
+            $doors_[] = $d;
+        }
+        $h['doors'] = $doors_;
+        $result[] = $h;
+    }
 
+    if (count($result)) {
+        response(200, $result);
+    } else {
+        response();
+    }
+    
+    // TODO: удалить исходники старой реализации
+    /* 
     $ret = [];
 
     $houses = implode(',', all_houses()); // тут-же будет дернут all_cctv и с-но будет получен список камер ($cams)
@@ -198,3 +254,4 @@
     } else {
         response();
     }
+*/
