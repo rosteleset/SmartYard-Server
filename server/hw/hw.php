@@ -1,20 +1,24 @@
 <?php
 
-    abstract class hw {
+    namespace hw {
 
-        public $url;
+        abstract class hw {
 
-        public function __construct(string $url) {
-            $this->url = $url;
+            public $url;
+
+            public function __construct(string $url) {
+                $this->url = $url;
+            }
+
+            /** Проверить доступность устройства */
+            abstract public function ping(): bool;
+
+            /** Перезагрузить устройство */
+            abstract public function reboot();
+
+            /** Сбросить устройство к заводским настройкам */
+            abstract public function reset();
+
         }
-
-        /** Проверить доступность устройства */
-        abstract public function ping(): bool;
-
-        /** Перезагрузить устройство */
-        abstract public function reboot();
-
-        /** Сбросить устройство к заводским настройкам */
-        abstract public function reset();
 
     }
