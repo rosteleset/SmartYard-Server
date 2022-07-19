@@ -85,8 +85,13 @@
         $h['doors'] = $doors_;
         $result[] = $h;
     }
-    response(200,$result);
 
+    if (count($result)) {
+        response(200, $result);
+    } else {
+        response();
+    }
+    
     // TODO: удалить исходники старой реализации
     /* 
     $ret = [];

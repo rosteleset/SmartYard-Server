@@ -14,16 +14,12 @@
 
 auth();
 
-$id = mysqli_escape_string($mysql, @$postdata['messageId']);
+$id = @$postdata['messageId'];
 
 if (!$id) {
-    $id = $bearer['id'];
-    $id[0] = '7';
-    mysql("update dm.inbox set readed=true, code='app' where id='$id' and code is null");
-    mysql("update dm.inbox set readed=true where id='$id'");
+    // TODO: отметить все сообщения как прочитанные
 } else {
-    mysql("update dm.inbox set readed=true, code='app' where ext_id='$id' and code is null");
-    mysql("update dm.inbox set readed=true where ext_id='$id'");
+    // TODO: отметить сообщение как прочитанное
 }
 
 response();

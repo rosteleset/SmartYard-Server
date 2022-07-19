@@ -20,9 +20,6 @@
  * @apiSuccess {String} names.name имя
  * @apiSuccess {String} names.patronymic отчество
  */
-    // TODO: remove this!
-    error_reporting(E_ALL ^ E_WARNING);
-    
     $user_phone = @$postdata['userPhone'];
     $user_phone[0] = '8';
     $pin = @$postdata['smsCode'];
