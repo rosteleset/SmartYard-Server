@@ -335,7 +335,7 @@
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
-                            text:  response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):""),
+                            text:  response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):""),
                         })
                     }
 
@@ -806,7 +806,7 @@
                     modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
-                        text: response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : ""),
+                        text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : ""),
                     })
                 }
 
