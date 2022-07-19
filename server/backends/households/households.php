@@ -186,30 +186,28 @@
              * @param $enabled
              * @param $model
              * @param $server
-             * @param $ip
-             * @param $port
+             * @param $url
              * @param $credentials
              * @param $callerId
              * @param $dtmf
              * @param $comment
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $comment);
 
             /**
              * @param $domophoneId
              * @param $enabled
              * @param $model
              * @param $server
-             * @param $ip
-             * @param $port
+             * @param $url
              * @param $credentials
              * @param $callerId
              * @param $dtmf
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $comment);
 
             /**
              * @param $domophoneId

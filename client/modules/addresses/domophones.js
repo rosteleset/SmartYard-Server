@@ -73,22 +73,17 @@
                     options: servers,
                 },
                 {
-                    id: "ip",
+                    id: "url",
                     type: "text",
-                    title: i18n("addresses.ip"),
-                    placeholder: "IP",
+                    title: i18n("addresses.url"),
+                    placeholder: "http://",
                     validate: v => {
-                        return !!ip2long(v);
-                    },
-                },
-                {
-                    id: "port",
-                    type: "text",
-                    title: i18n("addresses.port"),
-                    placeholder: "80",
-                    value: "80",
-                    validate: v => {
-                        return !!parseInt(v);
+                        try {
+                            new URL(v);
+                            return true;
+                        } catch (_) {
+                            return false;
+                        }
                     },
                 },
                 {
@@ -200,23 +195,18 @@
                         value: domophone.server,
                     },
                     {
-                        id: "ip",
+                        id: "url",
                         type: "text",
-                        title: i18n("addresses.ip"),
-                        placeholder: "IP",
-                        value: domophone.ip,
+                        title: i18n("addresses.url"),
+                        placeholder: "http://",
+                        value: domophone.url,
                         validate: v => {
-                            return !!ip2long(v);
-                        },
-                    },
-                    {
-                        id: "port",
-                        type: "text",
-                        title: i18n("addresses.port"),
-                        placeholder: "80",
-                        value: domophone.port,
-                        validate: v => {
-                            return !!parseInt(v);
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
                         },
                     },
                     {
@@ -321,7 +311,7 @@
                         title: i18n("addresses.domophoneId"),
                     },
                     {
-                        title: i18n("addresses.ip"),
+                        title: i18n("addresses.url"),
                     },
                     {
                         title: i18n("addresses.callerId"),
@@ -345,7 +335,7 @@
                                     data: modules.addresses.domophones.meta.domophones[i].domophoneId,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].ip,
+                                    data: modules.addresses.domophones.meta.domophones[i].url,
                                     nowrap: true,
                                 },
                                 {

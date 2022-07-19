@@ -5,15 +5,13 @@ CREATE TABLE houses_domophones
     enabled integer not null,
     model character varying not null,
     server character varying not null,
-    ip character varying not null,
-    port integer not null,
+    url character varying not null,
     credentials character varying not null,                                                                             -- plaintext:login:password, token:token, or something else
     caller_id character varying not null,
     dtmf character varying not null,
     comment character varying
 );
-CREATE INDEX domophones_ip on houses_domophones(ip);
-CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(ip, port);
+CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(url);
 
 -- entrances
 CREATE TABLE houses_entrances

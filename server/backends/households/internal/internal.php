@@ -534,8 +534,7 @@
                     "enabled" => "enabled",
                     "model" => "model",
                     "server" => "server",
-                    "ip" => "ip",
-                    "port" => "port",
+                    "url" => "url",
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
@@ -546,7 +545,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $server, $ip, $port,  $credentials, $callerId, $dtmf, $comment)
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $callerId, $dtmf, $comment)
             {
                 if (!$model) {
                     setLastError("moModel");
@@ -565,35 +564,20 @@
                     return false;
                 }
 
-                $ip = ip2long($ip);
-
-                if (!$ip) {
+                if (!trim($url)) {
                     return false;
                 }
-
-                $port = (int)$port;
-
-                if ($port < 0 || $port >= 65536) {
-                    return false;
-                }
-
-                if (!$port) {
-                    $port = 80;
-                }
-
-                $ip = long2ip($ip);
 
                 if (in_array(trim($dtmf), [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]) === false) {
                     setLastError("dtmf");
                     return false;
                 }
 
-                return $this->db->insert("insert into houses_domophones (enabled, model, server, ip, port, credentials, caller_id, dtmf, comment) values (:enabled, :model, :server, :ip, :port, :credentials, :caller_id, :dtmf, :comment)", [
+                return $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
-                    "ip" => $ip,
-                    "port" => $port,
+                    "url" => $url,
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
@@ -604,7 +588,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -628,37 +612,21 @@
                     return false;
                 }
 
-                $ip = ip2long($ip);
-
-                if (!$ip) {
-                    setLastError("noIp");
+                if (!trim($url)) {
+                    setLastError("noUrl");
                     return false;
                 }
-
-                $port = (int)$port;
-
-                if ($port < 0 || $port >= 65536) {
-                    setLastError("invalidPort");
-                    return false;
-                }
-
-                if (!$port) {
-                    $port = 80;
-                }
-
-                $ip = long2ip($ip);
 
                 if (in_array(trim($dtmf), [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]) === false) {
                     setLastError("dtmf");
                     return false;
                 }
 
-                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, ip = :ip, port = :port, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, comment = :comment where house_domophone_id = $domophoneId", [
+                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
-                    "ip" => $ip,
-                    "port" => $port,
+                    "url" => $url,
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
@@ -729,8 +697,7 @@
                     "enabled" => "enabled",
                     "model" => "model",
                     "server" => "server",
-                    "ip" => "ip",
-                    "port" => "port",
+                    "url" => "url",
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
