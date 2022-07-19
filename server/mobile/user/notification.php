@@ -25,29 +25,27 @@
 
 auth();
 
-$phone = $bearer['id'];
-$phone[0] = '8';
+$money = true;
+$enable = true;
 
-$money = (int)pg_fetch_result(pg_query("select count(*) from domophones.money_disable where id='$phone'"), 0) == 0;
-$enable = (int)pg_fetch_result(pg_query("select count(*) from domophones.push_disable where id='$phone'"), 0) == 0;
-
+// TODO: сделать управление уведомлениями
 if (@$postdata['money'] == 't' && !$money) {
-    pg_query("delete from domophones.money_disable where id='$phone'");
+    // pg_query("delete from domophones.money_disable where id='$phone'");
     $money = 1;
 }
 
 if (@$postdata['money'] == 'f' && $money) {
-    pg_query("insert into domophones.money_disable (id) values ('$phone')");
+    // pg_query("insert into domophones.money_disable (id) values ('$phone')");
     $money = 0;
 }
 
 if (@$postdata['enable'] == 't' && !$enable) {
-    pg_query("delete from domophones.push_disable where id='$phone'");
+    // pg_query("delete from domophones.push_disable where id='$phone'");
     $enable = 1;
 }
 
 if (@$postdata['enable'] == 'f' && $enable) {
-    pg_query("insert into domophones.push_disable (id) values ('$phone')");
+    // pg_query("insert into domophones.push_disable (id) values ('$phone')");
     $enable = 0;
 }
 

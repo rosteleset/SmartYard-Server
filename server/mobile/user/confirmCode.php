@@ -20,31 +20,45 @@
  * @apiSuccess {String} names.name имя
  * @apiSuccess {String} names.patronymic отчество
  */
-
     $user_phone = @$postdata['userPhone'];
     $user_phone[0] = '8';
     $pin = @$postdata['smsCode'];
+    $isdn = loadBackend("isdn");
+    $households = loadBackend("households");
 
     if (strlen($user_phone) == 11 && strlen($pin) == 4) {
-        $user_phone = pg_escape_string($user_phone);
-        $pinreq = pg_fetch_result(pg_query("select pin from domophones.pinreq where phone='$user_phone'"), 0);
-
-        pg_query("update domophones.pinreq set attempts=attempts+1 where phone='$user_phone'");
+        $pinreq = $redis->get("userpin_".$user_phone);
+        $redis->incr("userpin.attempts_".$user_phone);
 
         if (!$pinreq) {
             response(404);
         } else {
             if ($pinreq != $pin) {
-                pg_query("delete from domophones.pinreq where attempts>5");
-                response(403, false, "Пин-код введен неверно", "Пин-код введен неверно");
-            } else {
-                pg_query("delete from domophones.pinreq where phone='$user_phone'");
-                $token = GUIDv4();
-                if (!(int)pg_fetch_result(pg_query("select count(*) from domophones.bearers where id='$user_phone'"), 0)) {
-                    pg_query("insert into domophones.bearers (id) values ('$user_phone')");
+                $attempts = $redis->get("userpin.attempts_".$user_phone);
+                if ($attempts > 5) {
+                    $redis->del("userpin_".$user_phone);
+                    $redis->del("userpin.attempts_".$user_phone);
+                    response(403, false, "Превышено максимальное число попыток ввода", "Превышено максимальное число попыток ввода");
+                } else {
+                    response(403, false, "Пин-код введен неверно", "Пин-код введен неверно");
                 }
-                pg_query("update domophones.bearers set token='$token' where id='$user_phone'");
-                response(200, [ 'accessToken' => $token, 'names' => pg_fetch_assoc(pg_query("select name, mname as patronymic from client_phone_names where phone='$user_phone'")) ]);
+            } else {
+                $redis->del("userpin_".$user_phone);
+                $redis->del("userpin.attempts_".$user_phone);
+                $token = GUIDv4();
+                $subscribers = $households->getSubscribers("mobile", $user_phone);
+                $names = [ "name" => "", "patronymic" => "" ];
+                if ($subscribers) {
+                    $subscriber = $subscribers[0];
+                    // Пользователь найден
+                    $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
+                    $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
+                } else {
+                    // Пользователь не найден - создаём
+                    $id = $households->addSubscriber($user_phone, "", "");
+                    $households->modifySubscriber($id, [ "authToken" => $token ]);
+                }
+                response(200, [ 'accessToken' => $token, 'names' => $names ]);
             }
         }
     } else {

@@ -21,7 +21,9 @@ __pycache__
 /server/lib/htmlpurifier/
 /server/db/internal.db
 /server/config/config.json
+/server/vendor
 /api/
 /doc/
 /.stylelintrc.json
+RBT/RBT.xcodeproj/
 /server/services/nodejs

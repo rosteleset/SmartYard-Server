@@ -37,7 +37,68 @@
  */
 
     auth(3600);
+    $households = loadBackend("households");
+    $flats = [];
+    // response(200, $subscriber);
 
+    foreach($subscriber['flats'] as $flat) {
+        $f = [];
+        
+        $f['address'] = $flat['house']['houseFull'].', кв. '.strval($flat['flat']);
+        $f['flatId'] = strval($flat['flatId']);
+        $f['flatNumber'] = strval($flat['flat']);
+        $f['flatOwner'] = (int)$flat['role']==0?'t':'f';
+        
+        
+        // TODO : сделать временный доступ к воротам. пока он отключен, и в приложении этот раздел просто не будет отображаться.
+        $f['hasGates'] = 'f';
+
+        $f['hasPlog'] = 'f';
+
+        // TODO: сделать работу с заявками на изменение услуг. пока блок выбора услуг - "тарелочки" отключены.
+        // в услугах должна быть услуга domophone, чтобы было доступно управление доступом.
+        // contractOwner = 'f' отключает отображение тарелочек.
+        $f['services'] = ['domophone'];
+        $f['contractOwner'] = 'f';
+        // $f['contractOwner'] = (int)$flat['role']==0?'t':'f';
+
+        // $f['contractName'] = '-';
+        // $f['clientId'] = '0';
+        
+        $subscribers = $households->getSubscribers('flat',  $f['flatId']);
+        $rms = [];
+        foreach($subscribers as $s) {
+            if ($subscriber['subscriberId'] == $s['subscriberId']) {
+                continue;
+            }
+            $rm = [];
+            $rm['phone'] = $s['mobile'];
+            $rm['phone'][0] = '7';
+            $rm['expire'] = '3001-01-01 00:00:00';
+            
+            foreach ($s['flats'] as $sf) {
+                if ($sf['flatId'] == $flat['flatId']) {
+                    $rm['type'] = $sf['role'] == 0 ? 'owner' : 'inner';
+                }
+            }
+            $rms[] = $rm;
+        }
+        $f['roommates'] = $rms;
+
+        $flats[] = $f;
+    }
+    
+    $result = $flats;
+
+    if (count($result)) {
+        response(200, $result);
+    } else {
+        response();
+    }
+    
+    // TODO: убрать старую реализацию
+
+    /*
     $all = all_clients();
 
     $c = implode(',', $all);
@@ -206,3 +267,4 @@
         response();
     }
 
+*/

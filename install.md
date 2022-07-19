@@ -4,6 +4,7 @@ download server libs
 cd server/lib
 git clone https://github.com/PHPMailer/PHPMailer
 git clone https://github.com/ezyang/htmlpurifier
+git clone -b 1.7.x https://github.com/erusev/parsedown
 ```
 
 download client libs

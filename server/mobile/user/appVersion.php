@@ -25,7 +25,10 @@
  */
 
 auth();
+// TODO: сделать управление обновлением приложения и сбор статистики о версии.
+response();
 
+/*
 $version = (int)@$postdata['version'];
 
 if (!$version) {
@@ -53,3 +56,4 @@ if ($version < $v['upgrade']) {
 }
 
 response();
+*/

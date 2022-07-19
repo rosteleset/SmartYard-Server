@@ -24,7 +24,8 @@
  */
 
     auth();
-
+    response();
+    /*
     $user_phone = substr($bearer['id'], 1);
 
     jira_require();
@@ -78,3 +79,4 @@
     }
 
     response($r?200:204, $r);
+*/

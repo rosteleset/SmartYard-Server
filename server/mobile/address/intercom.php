@@ -27,7 +27,7 @@
  * @apiSuccess {string="t","f"} -.CMS КМС разрешено
  * @apiSuccess {string="t","f"} -.VoIP VoIP разрешен
  * @apiSuccess {string="Y-m-d H:i:s"} -.autoOpen дата до которой работает автооткрытие двери
- * @apiSuccess {integer=0,1,2,3,5,7,10} -.whiteRabbit автооткрытие двери
+ * @apiSuccess {string="0","1","2","3","5","7","10"} -.whiteRabbit автооткрытие двери
  * @apiSuccess {string="t","f"} [_.paperBill] печатать бумажные платежки
  * @apiSuccess {string="t","f"} _.disablePlog="f" прекратить "следить" за квартирой
  * @apiSuccess {string="t","f"} _.hiddenPlog="f" показывать журнал только владельцу
@@ -35,19 +35,39 @@
  */
 
     auth();
-
+    $households = loadBackend("households");
+    
     $flat_id = (int)@$postdata['flatId'];
 
     if (!$flat_id) {
         response(422);
     }
-
-    $f = in_array($flat_id, all_flats());
+    $flatIds = array_map( function($item) { return $item['flatId']; }, $subscriber['flats']);
+    $f = in_array($flat_id, $flatIds);
 
     if (!$f) {
         response(404);
     }
 
+    $flat = $households->getFlat($flat_id);
+
+    $ret = [];
+    // $ret['FRSDisabled'] = 't';
+    $ret['allowDoorCode'] = 't';
+    $ret['doorCode'] = $flat['openCode'];
+    $ret['CMS'] = 't';
+    $ret['VoIP'] = 't';
+    $ret['autoOpen'] = '2021-01-01 00:00:00';
+    $ret['whiteRabbit'] = "5";
+    
+    if ($ret) {
+        response(200, $ret);
+    } else {
+        response();
+    }
+
+    response(200, $flatIds);
+/*
     $es = pg_fetch_assoc(pg_query("select * from address.entrances left join address.flats using (entrance_id) where flat_id=$flat_id"));
 
     $voip = !(int)pg_fetch_result(pg_query("select count(*) from domophones.voip_disable where flat_id=$flat_id and id='{$bearer['id']}'"), 0);
@@ -223,3 +243,4 @@
     } else {
         response();
     }
+*/

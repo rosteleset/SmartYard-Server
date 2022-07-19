@@ -12,12 +12,28 @@
  * @apiParam {Number} streetId улица
  *
  * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {Number} -.houseId идентификатор дома
+ * @apiSuccess {String} -.houseId идентификатор дома
  * @apiSuccess {String} -.number номер дома
  */
 
 auth();
 
 $street_id = (int)@$postdata['streetId'];
+$addresses = loadBackend("addresses");
 
-response(200, pg_fetch_all(pg_query("select house_id as \"houseId\", number from address.houses where street_id=$street_id")));
+
+if ($street_id > $emptyStreetIdOffset) {
+    $houses = $addresses->getHouses($street_id - $emptyStreetIdOffset, false);
+} else {
+    $houses = $addresses->getHouses(false, $street_id);
+}
+
+$houses_ = [];
+
+foreach ($houses as $house) {
+    $houses_[] = array(
+        "houseId" => strval($house["houseId"]),
+        "number" => $house["house"]
+    );
+}
+response(200, $houses_);

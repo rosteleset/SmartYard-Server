@@ -16,11 +16,9 @@
 
 auth();
 
-$id = $bearer['id'];
-$id[0] = '7';
-
-$unreaded = @(int)mysqli_fetch_assoc(mysql("select count(*) as c from dm.inbox where id='$id' and not readed"))['c'];
-$chat = @(int)mysqli_fetch_assoc(mysql("select chat as c from dm.tokens where id='$id'"))['c'];
+// TODO: получить число непрочитанных сообщений в чате и в сообщениях
+$unreaded = 0;
+$chat = 0;
 
 response(200, [
     'count' => $unreaded,
