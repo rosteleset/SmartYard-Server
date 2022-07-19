@@ -77,7 +77,8 @@ CREATE TABLE houses_flats
     white_rabbit integer,                                                                                               -- 1/0
     sip_enabled integer,                                                                                                -- 0 - disabled, 1 - classic sip, 2 - webrtc
     sip_password character varying,                                                                                     -- sip password
-    last_opened timestamp                                                                                               -- "YYYY-MM-DD HH:MM:SS.SSS"
+    last_opened timestamp,                                                                                              -- "YYYY-MM-DD HH:MM:SS.SSS"
+    cms_enabled integer
 );
 CREATE UNIQUE INDEX houses_flats_uniq on houses_flats(address_house_id, flat);
 CREATE INDEX houses_flats_address_house_id on houses_flats(address_house_id);
@@ -120,7 +121,8 @@ CREATE TABLE houses_subscribers_mobile
     registered timestamp,                                                                                               -- "YYYY-MM-DD HH:MM:SS.SSS"
     last_seen timestamp,                                                                                                -- "YYYY-MM-DD HH:MM:SS.SSS"
     subscriber_name character varying,
-    subscriber_patronymic character varying
+    subscriber_patronymic character varying,
+    voip_enabled integer
 );
 CREATE UNIQUE INDEX subscribers_mobile_id on houses_subscribers_mobile(id);
 

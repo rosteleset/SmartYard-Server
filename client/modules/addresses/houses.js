@@ -594,7 +594,7 @@
                         </div>
                     `;
                 }
-                inputs += `</div`;
+                inputs += `</div>`;
                 entrances.push({
                     id: modules.addresses.houses.meta.entrances[i].entranceId,
                     text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance + inputs,
@@ -1177,6 +1177,23 @@
                         ]
                     },
                     {
+                        id: "cmsEnabled",
+                        type: "select",
+                        title: i18n("addresses.cmsEnabled"),
+                        placeholder: i18n("addresses.cmsEnabled"),
+                        value: flat.cmsEnabled,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ],
+                    },
+                    {
                         id: "sipEnabled",
                         type: "select",
                         title: i18n("addresses.sipEnabled"),
@@ -1240,6 +1257,7 @@
                     if (result.delete === "yes") {
                         modules.addresses.houses.deleteFlat(flatId, houseId);
                     } else {
+                        console.log(result);
                         result.flatId = flatId;
                         result.apartmentsAndLevels = apartmentsAndLevels;
                         result.houseId = houseId;

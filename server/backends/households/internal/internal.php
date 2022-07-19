@@ -21,7 +21,7 @@
                     return false;
                 }
 
-                $flats = $this->db->get("select house_flat_id, floor, flat, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password from houses_flats where address_house_id = $houseId order by flat",
+                $flats = $this->db->get("select house_flat_id, floor, flat, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, last_opened, cms_enabled from houses_flats where address_house_id = $houseId order by flat",
                     false,
                     [
                         "house_flat_id" => "flatId",
@@ -34,6 +34,8 @@
                         "white_rabbit" => "whiteRabbit",
                         "sip_enabled" => "sipEnabled",
                         "sip_password" => "sipPassword",
+                        "last_opened" => "lastOpened",
+                        "cms_enabled" => "cmsEnabled",
                     ]
                 );
 
@@ -221,12 +223,12 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
+            function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
                 if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
                     $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
 
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password) values (:address_house_id, :floor, :flat, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password)", [
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
@@ -245,12 +247,12 @@
                             } else {
                                 $ap = $flat;
                                 $lv = "";
-                                if ($apartmentsAndFlats && @$apartmentsAndFlats[$entrances[$i]]) {
-                                    $ap = (int)$apartmentsAndFlats[$entrances[$i]]["apartment"];
+                                if ($apartmentsAndLevels && @$apartmentsAndLevels[$entrances[$i]]) {
+                                    $ap = (int)$apartmentsAndLevels[$entrances[$i]]["apartment"];
                                     if (!$ap || $ap <= 0 || $ap > 9999) {
                                         $ap = $flat;
                                     }
-                                    $lv = @$apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
+                                    $lv = @$apartmentsAndLevels[$entrances[$i]]["apartmentLevels"];
                                 }
                                 if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
                                         ":house_entrance_id" => $entrances[$i],
@@ -274,23 +276,43 @@
             /**
              * @inheritDoc
              */
-            function modifyFlat($flatId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
+            function modifyFlat($flatId, $params)
             {
-                if (checkInt($flatId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
-                    $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
+                if (checkInt($flatId)) {
+                    if (array_key_exists("manualBlock", $params) && !checkInt($params["manualBlock"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
 
-                    $mod = $this->db->modify("update houses_flats set floor = :floor, flat = :flat, manual_block = :manual_block, open_code = :open_code, auto_open = :auto_open, white_rabbit = :white_rabbit, sip_enabled = :sip_enabled, sip_password = :sip_password where house_flat_id = $flatId", [
-                        ":floor" => (int)$floor,
-                        ":flat" => $flat,
-                        ":manual_block" => $manualBlock,
-                        ":open_code" => $openCode,
-                        ":auto_open" => $autoOpen,
-                        ":white_rabbit" => $whiteRabbit,
-                        ":sip_enabled" => $sipEnabled,
-                        ":sip_password" => $sipPassword,
-                    ]);
+                    if (array_key_exists("whiteRabbit", $params) && !checkInt($params["whiteRabbit"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
 
-                    if ($mod !== false) {
+                    if (array_key_exists("sipEnabled", $params) && !checkInt($params["sipEnabled"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if (array_key_exists("autoOpen", $params)) {
+                        $params["autoOpen"] = date('Y-m-d H:i:s', strtotime($params["autoOpen"]));
+                    }
+
+                    $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
+                        "floor" => "floor",
+                        "flat" => "flat",
+                        "manual_block" => "manualBlock",
+                        "open_code" => "openCode",
+                        "auto_open" => "autoOpen",
+                        "white_rabbit" => "whiteRabbit",
+                        "sip_enabled" => "sipEnabled",
+                        "sip_password" => "sipPassword",
+                        "cms_enabled" => "cmsEnabled"
+                    ], $params);
+
+                    if ($mod !== false && array_key_exists("flat", $params) && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {
+                        $entrances = $params["entrances"];
+                        $apartmentsAndLevels = $params["apartmentsAndLevels"];
                         if ($this->db->modify("delete from houses_entrances_flats where house_flat_id = $flatId") === false) {
                             return false;
                         }
@@ -298,14 +320,14 @@
                             if (!checkInt($entrances[$i])) {
                                 return false;
                             } else {
-                                $ap = $flat;
+                                $ap = $params["flat"];
                                 $lv = "";
-                                if ($apartmentsAndFlats && @$apartmentsAndFlats[$entrances[$i]]) {
-                                    $ap = (int)$apartmentsAndFlats[$entrances[$i]]["apartment"];
+                                if ($apartmentsAndLevels && @$apartmentsAndLevels[$entrances[$i]]) {
+                                    $ap = (int)$apartmentsAndLevels[$entrances[$i]]["apartment"];
                                     if (!$ap || $ap <= 0 || $ap > 9999) {
-                                        $ap = $flat;
+                                        $ap = $params["flat"];
                                     }
-                                    $lv = @$apartmentsAndFlats[$entrances[$i]]["apartmentLevels"];
+                                    $lv = @$apartmentsAndLevels[$entrances[$i]]["apartmentLevels"];
                                 }
                                 if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
                                     ":house_entrance_id" => $entrances[$i],
@@ -318,8 +340,6 @@
                             }
                         }
                         return true;
-                    } else {
-                        return false;
                     }
                 } else {
                     return false;
@@ -453,7 +473,8 @@
                         white_rabbit, 
                         sip_enabled, 
                         sip_password,
-                        last_opened
+                        last_opened,
+                        cms_enabled
                     from
                         houses_flats
                     where house_flat_id = $flatId
@@ -469,6 +490,7 @@
                     "sip_enabled" => "sipEnabled",
                     "sip_password" => "sipPassword",
                     "last_opened" => "lastOpened",
+                    "cms_enabled" => "cmsEnabled",
                 ]);
 
                 if ($flats) {
@@ -772,6 +794,7 @@
                     "last_seen" => "lastSeen",
                     "subscriber_name" => "subscriberName",
                     "subscriber_patronymic" => "subscriberPatronymic",
+                    "voip_enabled" => "voipEnabled",
                 ]);
 
                 foreach ($subscribers as &$subscriber) {
@@ -819,7 +842,7 @@
                 ]);
 
                 if (!$subscriberId) {
-                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered)", [
+                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered, voip_enabled) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered, 1)", [
                         "mobile" => $mobile,
                         "subscriber_name" => $name,
                         "subscriber_patronymic" => $patronymic,
@@ -960,6 +983,17 @@
                     }
 
                     if ($this->db->modify("update houses_subscribers_mobile set voip_token = :voip_token where house_subscriber_id = $subscriberId", [ "voip_token" => $params["voipToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("voipEnabled", $params)) {
+                    if (!checkInt($params["voipEnabled"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set voip_enabled = :voip_enabled where house_subscriber_id = $subscriberId", [ "voip_enabled" => $params["voipEnabled"] ]) === false) {
                         return false;
                     }
                 }
