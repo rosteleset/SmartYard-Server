@@ -1,7 +1,11 @@
 <?php
 
-    require_once 'qdb.php';
+    namespace hw\domophones {
 
-    class qdb27ch extends qdb {
+        require_once 'qdb.php';
+
+        class qdb27ch extends qdb {
+
+        }
 
     }

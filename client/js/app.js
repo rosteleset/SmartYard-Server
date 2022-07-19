@@ -254,13 +254,15 @@ function forgot() {
 }
 
 function whoAmI(force) {
-    return GET("accounts", "whoAmI", false, force).done(_me => {
+    return GET("authentication", "whoAmI", false, force).done(_me => {
         if (_me && _me.user) {
             $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
             myself.uid = _me.user.uid;
             myself.realName = _me.user.realName;
             myself.eMail = _me.user.eMail;
             myself.phone = _me.user.phone;
+            myself.webRtcExtension = _me.user.webRtcExtension;
+            myself.webRtcPassword = _me.user.webRtcPassword;
             if (_me.user.defaultRoute) {
                 config.defaultRoute = _me.user.defaultRoute;
             }

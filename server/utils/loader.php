@@ -31,3 +31,34 @@
             }
         }
     }
+
+    /**
+     * loads domophone class, returns false if .json or class not found
+     *
+     * @param string $model .json
+     * @param string $url
+     * @param string $password
+     * @param boolean $first_time
+     * @return false|object
+     */
+
+    function loadDomophone($model, $url, $password, $first_time = false) {
+        $path_to_model = __DIR__ . "/../hw/domophones/models/$model";
+
+        if (file_exists($path_to_model)) {
+            $class = @json_decode(file_get_contents($path_to_model), true)['class'];
+
+            $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/domophones/");
+            $iterator = new RecursiveIteratorIterator($directory);
+
+            foreach($iterator as $file) {
+                if ($file->getFilename() == "$class.php") {
+                    $path_to_class = $file->getPath() . "/" . $class . ".php";
+                    require_once $path_to_class;
+                    return new ("hw\\domophones\\$class")($url, $password, $first_time);
+                }
+            }
+        }
+
+        return false;
+    }

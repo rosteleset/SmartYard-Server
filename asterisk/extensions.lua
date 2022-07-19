@@ -186,25 +186,27 @@ function camshow(domophoneId)
 end
 
 function mobile_intercom(flatId, flatNumber, domophoneId)
-    local extension, res = "", caller_id
+    local extension
+    local res = ""
+    local caller_id
 
     local subscribers = dm("subscribers", flatId)
-
-    log_debug(subscribers)
 
     local dtmf = dm("domophone", domophoneId).dtmf
 
     if not dtmf or dtmf == '' then
-        dtmf = ''
+        dtmf = '1'
     end
 
     local hash = camshow(domophoneId)
 
     caller_id = channel.CALLERID("name"):get()
 
-    log_debug(subscribers)
-
-    for i, e in ipairs(subscribers) do
+    for i, s in ipairs(subscribers) do
+        log_debug(s)
+        if s.platform == cjson.null or s.type == cjson.null then
+            goto continue
+        end
         redis:incr("autoextension")
         extension = tonumber(redis:get("autoextension"))
         if extension > 999999 then
@@ -214,21 +216,22 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         -- ios over fcm (with repeat)
-        if tonumber(subscribers[i].platform) == 1 and tonumber(subscribers[i].type) == 0 then
+        if tonumber(s.platform) == 1 and tonumber(s.type) == 0 then
             redis.setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
-                token = subscribers[i],
+                token = s.token,
                 hash = hash,
-                platform = subscribers[i].platform,
+                platform = s.platform,
                 flatId = flatId,
                 dtmf = dtmf,
-                phone = subscribers[i].phone,
+                phone = s.phone,
                 flatNumber = flatNumber,
             }))
             intercoms['type'] = 0
         end
-        push(subscribers[i].token, subscribers[i].type, subscribers[i].platform, extension, hash, caller_id, flatId, dtmf, subscribers[i].phone, flatNumber)
+        push(s.token, s.type, s.platform, extension, hash, caller_id, flatId, dtmf, s.phone, flatNumber)
         res = res .. "&Local/" .. extension
+        ::continue::
     end
 
     if res ~= "" then
@@ -254,6 +257,8 @@ extensions = {
 
             local timeout = os.time() + 35
             local crutch = 1
+            -- TODO
+            -- rewrite to use REDIS
             local intercom = mysql_query("select * from dm.voip_crutch where id='"..extension.."'")
             local status = ''
             local pjsip_extension = ''
@@ -341,6 +346,9 @@ extensions = {
             local flatId = tonumber(extension:sub(2))
 
             mobile_intercom(flatId, -1)
+
+            -- TODO
+            -- add local dial to 2xxxx...
         end,
 
         -- вызов на панель
@@ -349,8 +357,16 @@ extensions = {
 
             log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
 
-            app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120)
-            app.Hangup()
+            app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
+        end,
+
+        -- call to webrtc account
+        [ "_7XXXXXXXXX" ] = function (context, extension)
+            checkin()
+
+            log_debug("call to webrtc account " .. extension)
+
+            app.Dial("PJSIP/" .. extension, 120, "m")
         end,
 
         -- SOS
@@ -375,25 +391,6 @@ extensions = {
             app.Wait(900)
         end,
 
-        -- открытие ворот по звонку
-        [ "_x4752xxxxxx" ] = function (context, extension)
-            checkin()
-
-            log_debug("call2open: "..channel.CALLERID("num"):get().." >>> "..extension)
-
-            local o = mysql_query("select domophoneId, door, ip from dm.openmap left join dm.domophones using (domophoneId) where src='"..channel.CALLERID("num"):get().."' and dst='"..extension.."'")
-            if o then -- если это "телефон" открытия чего-либо
-                log_debug("openmap: has match")
-                mysql_query("insert into dm.door_open (date, ip, event, door, detail) values (now(), '"..o['ip'].."', 7, '"..o['door'].."', '"..channel.CALLERID("num"):get()..":"..extension.."')")
-                https.request{ url = "https://dm.lanta.me:443/sapi?key="..key.."&action=open&domophoneId="..o['domophoneId'].."&door="..o['door'] }
-            end
-            app.Hangup()
-        end,
-
-        [ "10002" ] = function (context, extension)
-            app.Dial("PJSIP/10002", 60, "tT")
-        end,
-
         -- all others
         [ "_X." ] = function (context, extension)
             checkin()
@@ -415,13 +412,9 @@ extensions = {
                 -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))
-
                     if flatId ~= nil then
+                        log_debug("ordinal call")
                         flat = dm("flat", flatId)
-
-                        log_debug(flatId)
-                        log_debug(flat)
-
                         for i, e in ipairs(flat.entrances) do
                             if flat.entrances[i].domophoneId == domophoneId then
                                 flatNumber = flat.entrances[i].apartment
@@ -429,14 +422,18 @@ extensions = {
                         end
                     end
                 else
-                    -- more than one house, has prefix
+                    log_debug("more than one house, has prefix")
                     flatNumber = tonumber(extension:sub(5))
                     if flatNumber ~= nil then
-                        flatId = dm("flatIdByPrefix", {
+                        local flats = dm("flatIdByPrefix", {
                             domophoneId = domophoneId,
                             flatNumber = flatNumber,
                             prefix = tonumber(extension:sub(1, 4)),
                         })
+                        if #flats == 1 then
+                            flat = flats[1]
+                            flatId = flat.flatId
+                        end
                     end
                 end
             end
@@ -449,12 +446,19 @@ extensions = {
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
                     local dest = ""
 
-                    local cmsConnected = dm("cmsConnected", {
-                        domophoneId = domophoneId,
-                        flatId = flatId,
-                    })
+                    local cmsConnected = false
+                    local hasCms = false
 
-                    if not cmsConnected then
+                    for i, e in ipairs(flat.entrances) do
+                        if e.domophoneId == domophoneId and e.matrix >= 1 then
+                            cmsConnected = true
+                        end
+                        if e.matrix >= 1 then
+                            hasCms = true
+                        end
+                    end
+
+                    if not cmsConnected and hasCms then
                         dest = dest .. "&Local/" .. string.format("3%09d", flatId)
                     end
 
@@ -473,10 +477,15 @@ extensions = {
                         dest = dest:sub(2)
                     end
 
-                    log_debug("dialing: " .. dest)
-
-                    app.Dial(dest, 120)
+                    if dest ~= "" then
+                        log_debug("dialing: " .. dest)
+                        app.Dial(dest, 120)
+                    else
+                        log_debug("nothing to dial")
+                    end
                 end
+            else
+                log_debug("something wrong, going out")
             end
 
             app.Hangup()

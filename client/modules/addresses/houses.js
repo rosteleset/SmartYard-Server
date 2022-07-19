@@ -1420,6 +1420,9 @@
                     },
                     {
                         title: i18n("addresses.shared"),
+                    },
+                    {
+                        title: i18n("addresses.prefix"),
                         fullWidth: true,
                     },
                 ],
@@ -1444,6 +1447,9 @@
                                 },
                                 {
                                     data: parseInt(modules.addresses.houses.meta.entrances[i].shared)?i18n("yes"):i18n("no"),
+                                },
+                                {
+                                    data: parseInt(modules.addresses.houses.meta.entrances[i].shared)?modules.addresses.houses.meta.entrances[i].prefix:"-",
                                 },
                             ],
                             dropDown: {
@@ -1472,7 +1478,7 @@
                                         title: i18n("addresses.cms"),
                                         disabled: modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
                                         click: entranceId => {
-                                            location.href = "#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].houseId;
+                                            location.href = "#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].entranceId;
                                         },
                                     },
                                     {

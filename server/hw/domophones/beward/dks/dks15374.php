@@ -1,7 +1,11 @@
 <?php
 
-    require_once 'dks.php';
+    namespace hw\domophones {
 
-    class dks15374 extends dks {
+        require_once 'dks.php';
+
+        class dks15374 extends dks {
+
+        }
 
     }

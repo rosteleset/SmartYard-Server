@@ -59,6 +59,7 @@
     }
 
     function getExtension($extension, $section) {
+        global $redis;
 
         // domophone panel
         if ($extension[0] === "1" && strlen($extension) === 6) {
@@ -120,6 +121,73 @@
         if ($extension[0] === "2" && strlen($extension) === 10) {
 
         }
+
+        // sip extension
+        if ($extension[0] === "4" && strlen($extension) === 10) {
+
+        }
+
+        // webrtc extension
+        if ($extension[0] === "7" && strlen($extension) === 10) {
+            switch ($section) {
+                case "aors":
+                    $cred = $redis->get("webrtc_" . md5($extension));
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "max_contacts" => "1",
+                            "remove_existing" => "yes"
+                        ];
+                    }
+
+                    break;
+
+                case "auths":
+                    $cred = $redis->get("webrtc_" . md5($extension));
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "username" => $extension,
+                            "auth_type" => "userpass",
+                            "password" => $cred,
+                        ];
+                    }
+
+                    break;
+
+                case "endpoints":
+                    $cred = $redis->get("webrtc_" . md5($extension));
+
+                    $users = loadBackend("users");
+                    $user = $users->getUser((int)substr($extension, 1));
+
+                    if ($user && $cred) {
+                        return [
+                            "id" => $extension,
+                            "auth" => $extension,
+                            "outbound_auth" => $extension,
+                            "aors" => $extension,
+                            "callerid" => $user["realName"],
+                            "context" => "default",
+                            "disallow" => "all",
+                            "allow" => "opus,h264",
+//                            "rtp_symmetric" => "no",
+//                            "force_rport" => "no",
+//                            "rewrite_contact" => "yes",
+//                            "timers" => "no",
+//                            "direct_media" => "no",
+//                            "allow_subscribe" => "yes",
+                            "dtmf_mode" => "rfc4733",
+//                            "ice_support" => "no",
+                            "webrtc" => "yes",
+                        ];
+                    }
+
+                    break;
+            }
+        }
     }
 
 /*
@@ -148,6 +216,9 @@
                 case "autoopen":
                     $households = loadBackend("households");
 
+                    //TODO
+                    // add checking for false, if object doesn't exists
+
                     $flat = $households->getFlat((int)$params);
 
                     $rabbit = (int)$flat["whiteRabbit"];
@@ -156,30 +227,15 @@
                     break;
 
                 case "flat":
-                    if (!$params) $params = (int)$_GET["id"];
-
                     $households = loadBackend("households");
 
                     echo json_encode($households->getFlat((int)$params));
                     break;
 
-                case "flatNumberById":
-                    //TODO
-                    // $params["flatId"]
-                    // $params["domophoneId"]
-                    break;
-
                 case "flatIdByPrefix":
-                    //TODO
-                    // $params["domophoneId"]
-                    // $params["flatNumber"]
-                    // $params["prefix"]
-                    break;
+                    $households = loadBackend("households");
 
-                case "cmsConnected":
-                    //TODO
-                    // $params["domophoneId"]
-                    // $params["flatId"]
+                    echo json_encode($households->getFlats("domophoneAndNumber", $params));
                     break;
 
                 case "subscribers":
@@ -195,9 +251,6 @@
                     break;
 
                 case "camshot":
-                    if (!@$params["domophoneId"]) $params["domophoneId"] = (int)@$_GET["id"];
-                    if (!@$params["hash"]) $params["hash"] = md5(GUIDv4());
-
                     $households = loadBackend("households");
                     $domophone = $households->getDomophone($params["domophoneId"]);
 

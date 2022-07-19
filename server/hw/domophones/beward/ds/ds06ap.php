@@ -1,7 +1,11 @@
 <?php
 
-    require_once 'ds.php';
+    namespace hw\domophones {
 
-    class ds06ap extends ds {
+        require_once 'ds.php';
+
+        class ds06ap extends ds {
+
+        }
 
     }
