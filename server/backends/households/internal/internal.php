@@ -644,7 +644,17 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from houses_domophones where house_domophone_id = $domophoneId") !== false;
+                return
+                    $this->db->modify("delete from houses_domophones where house_domophone_id = $domophoneId") !== false
+                    &&
+                    $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)") !== false
+                    &&
+                    $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
+                    &&
+                    $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
+                    &&
+                    $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
+                ;
             }
 
             /**

@@ -270,15 +270,7 @@
     },
 
     route: function (params) {
-        let top = '';
-
-        if (location.href.split("#")[1] !== "addresses.domophones") {
-            top += `<li class="nav-item d-none d-sm-inline-block">`;
-            top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
-            top += `</li>`;
-        }
-
-        $("#leftTopDynamic").html(top);
+        modules.addresses.topMenu();
 
         $("#altForm").hide();
         $("#subTop").html("");

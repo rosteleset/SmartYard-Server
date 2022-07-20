@@ -2078,15 +2078,7 @@
         fail(loadingDone);
     },
 
-    route: function (params) {
-        $("#altForm").hide();
-
-        document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
-
-        if (!params.show) {
-            params.show = "regions";
-        }
-
+    topMenu: function () {
         let top = '';
 
         if (AVAIL("geo", "suggestions")) {
@@ -2103,6 +2095,18 @@
 
         $("#leftTopDynamic").html(top);
         $(".addHouseMagic").off("click").on("click", modules.addresses.houses.houseMagic);
+    },
+
+    route: function (params) {
+        $("#altForm").hide();
+
+        document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
+
+        if (!params.show) {
+            params.show = "regions";
+        }
+
+        modules.addresses.topMenu();
 
         switch (params.show) {
             case "region":

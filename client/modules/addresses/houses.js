@@ -1646,29 +1646,14 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.house");
 
+        modules.addresses.topMenu();
+
         if (params.show === "cms" && parseInt(params.entranceId) > 0) {
             $("#altForm").hide();
             $("#subTop").html("");
 
             modules.addresses.houses.renderEntrance(params.houseId, params.entranceId);
         } else {
-            let top = '';
-
-            if (AVAIL("geo", "suggestions")) {
-                top += `
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="addHouseMagic nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
-                </li>
-            `;
-            }
-
-            top += `<li class="nav-item d-none d-sm-inline-block">`;
-            top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
-            top += `</li>`;
-
-            $("#leftTopDynamic").html(top);
-            $(".addHouseMagic").off("click").on("click", modules.addresses.houses.houseMagic);
-
             modules.addresses.houses.renderHouse(params.houseId);
         }
     },

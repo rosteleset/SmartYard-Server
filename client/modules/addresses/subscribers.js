@@ -487,6 +487,8 @@
     },
 
     route: function (params) {
+        modules.addresses.topMenu();
+
         if (params.flat) {
             subTop(params.house + ", " + params.flat);
 
