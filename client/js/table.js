@@ -39,8 +39,7 @@ function cardTable(params) {
 
     let pageLength = params.itemsPerPage?params.itemsPerPage:Number.MAX_VALUE;
     let pagerItemsCount = params.pagerItemsCount?params.pagerItemsCount:10;
-    let currentPage = 1;
-    let startPage = params.startPage?params.startPage:1;
+    let currentPage = params.startPage?params.startPage:1;
 
     h += `<div class="card-body table-responsive p-0">`;
     if (params.title.filter) {
@@ -51,9 +50,16 @@ function cardTable(params) {
     h += `<thead>`;
 
     let rows = [];
+    let allRows = [];
 
     if (typeof params.rows === "function") {
-        rows = params.rows();
+        allRows = params.rows();
+    }
+
+    doFilter(params.title.filter);
+
+    while (currentPage > Math.ceil(rows.length / pageLength)) {
+        currentPage--;
     }
 
     let hasDropDowns = false;
@@ -211,7 +217,7 @@ function cardTable(params) {
         return h;
     }
 
-    h += tbody((startPage - 1) * pageLength, pageLength)
+    h += tbody((currentPage - 1) * pageLength, pageLength)
 
     h += `</tbody>`;
 
@@ -250,58 +256,91 @@ function cardTable(params) {
         return h;
     }
 
-    if (Math.ceil(rows.length / pageLength) > 1) {
-        h += `<tfoot>`;
-        h += `<tr>`;
+    let tfoot = md5(guid());
+    h += `<tfoot id="${tfoot}">`;
+    h += `<tr>`;
 
-        let colCount = params.columns.length;
-        if (hasDropDowns) {
-            colCount++;
-        }
-        if (typeof params.edit === "function") {
-            colCount++;
-        }
-        h += `<td colspan="${colCount}">`;
-
-        h += `<nav>`;
-        h += `<ul class="pagination mb-0 ml-0" id="${tableClass}-pager">`;
-
-        h += pager(currentPage);
-
-        h += `</ul>`;
-        h += `</nav>`;
-        h += `</td>`;
-        h += `</tr>`;
-        h += `</tfoot>`;
+    let colCount = params.columns.length;
+    if (hasDropDowns) {
+        colCount++;
     }
+    if (typeof params.edit === "function") {
+        colCount++;
+    }
+    h += `<td colspan="${colCount}">`;
+
+    h += `<nav>`;
+    h += `<ul class="pagination mb-0 ml-0" id="${tableClass}-pager">`;
+
+    h += pager(currentPage);
+
+    h += `</ul>`;
+    h += `</nav>`;
+    h += `</td>`;
+    h += `</tr>`;
+    h += `</tfoot>`;
 
     h += `</table>`;
     h += `</div>`;
     h += `</div>`;
 
-    function doPager() {
+    function doPager(_page) {
         let page = $(this).attr("page");
+        if (typeof _page === "number") {
+            page = _page;
+        }
         $("#" + tableClass + "-pager").html(pager(page));
         $(`.${tableClass}-navButton`).off("click").on("click", doPager);
-
         $("#" + tableClass).html(tbody((currentPage - 1) * pageLength, pageLength));
-
+        addHandlers();
         if (typeof params.pageChange === "function") {
             params.pageChange(page);
         }
+        if (Math.ceil(rows.length / pageLength) > 1) {
+            $("#" + tfoot).show();
+        } else {
+            $("#" + tfoot).hide();
+        }
     }
 
-    if (params.target) {
-        $(params.target).html(h);
+    function doFilter(text, apply) {
 
-        if (titleButton && params.title.button && typeof params.title.button.click === "function") {
-            $("#" + titleButton).off("click").on("click", params.title.button.click);
+        function match(row, words) {
+            let str = "";
+            for (let i in row.cols) {
+                str += " " + row.cols[i].data;
+            }
+            str = $.trim(str.toLowerCase());
+            let match = true;
+            for (let i in words) {
+                if (str.indexOf(words[i]) < 0) {
+                    match = false;
+                    break;
+                }
+            }
+            return match;
         }
 
-        if (altButton && params.title.altButton && typeof params.title.altButton.click === "function") {
-            $("#" + altButton).off("click").on("click", params.title.altButton.click);
+        if (typeof text !== "function" && text && text !== true) {
+            rows = [];
+            let words = text.toString().toLowerCase().split(/\W+/);
+            for (let i in allRows) {
+                if (match(allRows[i], words)) {
+                    rows.push(allRows[i]);
+                }
+            }
+        } else {
+            rows = allRows;
         }
 
+        if (apply) {
+            doPager(1);
+        }
+    }
+
+    let filterTimeout = false;
+
+    function addHandlers() {
         $(".menuItem-" + tableClass).off("click").on("click", function () {
             rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"), $(this).attr("action"));
         });
@@ -313,16 +352,51 @@ function cardTable(params) {
         $("." + editClass).off("click").on("click", function () {
             params.edit($(this).attr("uid"))
         });
+    }
+
+    if (params.target) {
+        $(params.target).html(h);
+
+        if (Math.ceil(rows.length / pageLength) > 1) {
+            $("#" + tfoot).show();
+        } else {
+            $("#" + tfoot).hide();
+        }
+
+        if (titleButton && params.title.button && typeof params.title.button.click === "function") {
+            $("#" + titleButton).off("click").on("click", params.title.button.click);
+        }
+
+        if (altButton && params.title.altButton && typeof params.title.altButton.click === "function") {
+            $("#" + altButton).off("click").on("click", params.title.altButton.click);
+        }
+
+        addHandlers();
 
         if (params.title.filter) {
             $("#" + filterInput).off("keyup").on("keyup", e => {
-                let f = $(e.currentTarget).val();
-                $.uiTableFilter($("." + filterInput + "-search-table"), f);
+                if (filterTimeout) {
+                    clearTimeout(filterTimeout);
+                }
+                filterTimeout = setTimeout(() => {
+                    let f = $(e.currentTarget).val();
+                    doFilter(f, true);
+                    if (typeof params.filterChange === "function") {
+                        params.filterChange(f);
+                    }
+                }, 500);
             });
             $("#" + filterInput + "-search-button").off("click").on("click", e => {
                 let f = $(e.currentTarget).parent().parent().children().first().val();
-                $.uiTableFilter($("." + filterInput + "-search-table"), f);
+                doFilter(f, true);
+                if (typeof params.filterChange === "function") {
+                    params.filterChange(f);
+                }
             });
+            if (params.title.filter && params.title.filter !== true) {
+                $("#" + filterInput).val(params.title.filter);
+                doFilter(params.title.filter, true);
+            }
         }
 
         $(`.${tableClass}-navButton`).off("click").on("click", doPager);

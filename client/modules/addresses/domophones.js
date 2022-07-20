@@ -4,18 +4,29 @@
     },
 
     meta: false,
+    startPage: 1,
+    flter: "",
 
     doAddDomophone: function (domophone) {
         loadingStart();
         POST("houses", "domophone", false, domophone).
         fail(FAIL).
-        always(modules.addresses.domophones.route);
+        done(() => {
+            message(i18n("addresses.domophoneWasAdded"))
+            modules.addresses.domophones.route({
+                flter: domophone.url
+            });
+        }).
+        fail(modules.addresses.domophones.route);
     },
 
     doModifyDomophone: function (domophone) {
         loadingStart();
         PUT("houses", "domophone", domophone.domophoneId, domophone).
         fail(FAIL).
+        done(() => {
+            message(i18n("addresses.domophoneWasChanged"))
+        }).
         always(modules.addresses.domophones.route);
     },
 
@@ -23,6 +34,9 @@
         loadingStart();
         DELETE("houses", "domophone", domophoneId).
         fail(FAIL).
+        done(() => {
+            message(i18n("addresses.domophoneWasDeleted"))
+        }).
         always(modules.addresses.domophones.route);
     },
 
@@ -277,12 +291,6 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
 
-        let domophoneId = false;
-
-        if (params.domophoneId) {
-            domophoneId = parseInt(params.domophoneId);
-        }
-
         GET("houses", "domophones", false, true).
         done(response => {
             modules.addresses.domophones.meta = response.domophones;
@@ -295,9 +303,16 @@
                         caption: i18n("addresses.addDomophone"),
                         click: modules.addresses.domophones.addDomophone,
                     },
-                    filter: true,
+                    filter: params.flter?params.flter:(modules.addresses.domophones.flter?modules.addresses.domophones.flter:true),
                 },
                 edit: modules.addresses.domophones.modifyDomophone,
+                startPage: modules.addresses.domophones.startPage,
+                pageChange: p => {
+                    modules.addresses.domophones.startPage = p;
+                },
+                filterChange: f => {
+                    modules.addresses.domophones.flter = f;
+                },
                 columns: [
                     {
                         title: i18n("addresses.domophoneId"),
@@ -317,9 +332,6 @@
                     let rows = [];
 
                     for (let i in modules.addresses.domophones.meta.domophones) {
-
-                        if (domophoneId && domophoneId !== parseInt(modules.addresses.domophones.meta.domophones[i].domophoneId)) continue;
-
                         rows.push({
                             uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
                             cols: [
