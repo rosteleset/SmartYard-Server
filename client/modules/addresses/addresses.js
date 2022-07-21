@@ -1856,7 +1856,7 @@
                         caption: i18n("addresses.addRegion"),
                         click: modules.addresses.addRegion,
                     },
-                    filter: false,
+                    filter: true,
                 },
                 edit: modules.addresses.modifyRegion,
                 columns: [
@@ -1926,7 +1926,7 @@
                             modules.addresses.addArea(regionId);
                         },
                     },
-                    filter: false,
+                    filter: true,
                 },
                 edit: modules.addresses.modifyArea,
                 columns: [

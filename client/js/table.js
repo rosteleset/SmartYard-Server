@@ -42,11 +42,7 @@ function cardTable(params) {
     let currentPage = params.startPage?params.startPage:1;
 
     h += `<div class="card-body table-responsive p-0">`;
-    if (params.title.filter) {
-        h += `<table class="table table-hover ${filterInput}-search-table">`;
-    } else {
-        h += `<table class="table table-hover">`;
-    }
+    h += `<table class="table table-hover">`;
     h += `<thead>`;
 
     let rows = [];
