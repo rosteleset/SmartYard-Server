@@ -8,9 +8,9 @@
     {
 
         /**
-         * easysms variant of flash calls and sms sending
+         * LanTa's variant of flash calls and sms sending
          */
-        class easysms extends isdn
+        class lanta extends isdn
         {
 
             /**
@@ -64,19 +64,18 @@
                  * hash ([sip] password)
                  * server (sip server)
                  * port (sip port)
-                 * transport,
+                 * transport (tcp|udp)
                  * extension
                  * dtmf
-                 * image
-                 * live
+                 * image (url of first camshot)
+                 * live (url of "live" jpeg stream)
                  * callerId
-                 * platform
+                 * platform (ios|android)
                  * flatId
                  * flatNumber
                  * turn (turn:server:port)
-                 * turnTransport
+                 * turnTransport (tcp|udp)
                  * stun (stun:server:port)
-                 * title
                  * type
                  * token
                  * msg

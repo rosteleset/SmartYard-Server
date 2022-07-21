@@ -438,6 +438,10 @@ extensions = {
                 end
             end
 
+            log_debug("domophoneId: " .. inspect(domophoneId))
+            log_debug("flatId: " .. inspect(flatId))
+            log_debug("flatNumber: " .. inspect(flatNumber))
+
             if domophoneId and flatId and flatNumber then
                 log_debug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
 
