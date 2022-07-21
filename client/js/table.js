@@ -58,7 +58,7 @@ function cardTable(params) {
 
     doFilter(params.title.filter);
 
-    while (currentPage > Math.ceil(rows.length / pageLength)) {
+    while (currentPage > Math.ceil(rows.length / pageLength) && currentPage > 1) {
         currentPage--;
     }
 
