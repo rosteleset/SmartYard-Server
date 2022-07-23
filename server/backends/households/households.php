@@ -285,5 +285,11 @@
              * @return boolean
              */
             abstract public function deleteKey($keyId);
+
+            /**
+             * @param $token
+             * @return boolean
+             */
+            abstract public function dismissToken($token);
         }
     }

@@ -95,7 +95,13 @@
                     $query = substr($query, 0, -1);
                 }
 
-                return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query);
+                $result = file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query);
+
+                if (strtolower(trim($result)) !== "ok") {
+                    $households = loadBackend("households");
+                    $households->dismissToken($push["token"]);
+                }
+                return $result;
             }
         }
     }
