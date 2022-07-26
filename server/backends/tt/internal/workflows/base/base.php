@@ -69,5 +69,13 @@
             {
                 // TODO: Implement searchIssues() method.
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function availableFilters($projectId)
+            {
+                // TODO: Implement availableFilters() method.
+            }
         }
     }
