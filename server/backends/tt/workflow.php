@@ -47,14 +47,14 @@
 
             /**
              * @param $issueId
-             * @return mixed
+             * @return false|array
              */
             abstract public function availableActions($issueId);
 
             /**
              * @param $issueId
              * @param $action
-             * @return mixed
+             * @return false|array
              */
             abstract public function actionTemplate($issueId, $action);
 
@@ -62,21 +62,27 @@
              * @param $issueId
              * @param $action
              * @param $fields
-             * @return mixed
+             * @return boolean
              */
             abstract public function progressAction($issueId, $action, $fields);
 
             /**
              * @param $filter
-             * @return mixed
+             * @return false|array
              */
             abstract public function getIssues($filter);
 
             /**
              * @param $by
              * @param $query
-             * @return mixed
+             * @return false|array
              */
             abstract public function searchIssues($by, $query);
+
+            /**
+             * @param $projectId
+             * @return false|array
+             */
+            abstract public function availableFilters($projectId);
         }
     }
