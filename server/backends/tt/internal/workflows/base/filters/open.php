@@ -2,7 +2,7 @@
 
     namespace tt\workflow {
 
-        class all extends filter {
+        class open extends filter {
 
             /**
              * @inheritDoc

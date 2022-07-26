@@ -54,6 +54,33 @@
             }
         }
 
+        function modifyEx($query, $map, $params) {
+            $mod = false;
+            try {
+                foreach ($map as $db => $param) {
+                    if (array_key_exists($param, $params)) {
+                        $sth = $this->prepare(sprintf($query, $db, $db));
+                        if ($sth->execute($this->trimParams([
+                            $db => $params[$param],
+                        ]))) {
+                            if ($sth->rowCount()) {
+                                $mod = true;
+                            }
+                        }
+                    }
+                }
+                return $mod;
+            } catch (\PDOException $e) {
+                setLastError($e->errorInfo[2]?:$e->getMessage());
+                error_log(print_r($e, true));
+                return false;
+            } catch (\Exception $e) {
+                setLastError($e->getMessage());
+                error_log(print_r($e, true));
+                return false;
+            }
+        }
+
         function get($query, $params = [], $map = [], $options = []) {
             try {
                 if ($params) {

@@ -44,7 +44,7 @@ namespace backends\geocoder {
                 if ($result_code >= 200 && $result_code < 400) {
                     for ($i = 0; $i < count($result["suggestions"]); $i++) {
                         if ((int)$result["suggestions"][$i]["data"]["fias_level"] === 8) {
-                            $this->redis->set("house_" . $result["suggestions"][$i]["data"]["house_fias_id"], json_encode($result["suggestions"][$i]));
+                            $this->redis->setex("house_" . $result["suggestions"][$i]["data"]["house_fias_id"], 7 * 24 * 60 * 60, json_encode($result["suggestions"][$i]));
                         }
                     }
                     return $result["suggestions"];

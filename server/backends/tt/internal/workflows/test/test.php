@@ -39,19 +39,52 @@
                 ];
             }
 
+            /**
+             * @inheritDoc
+             */
             public function availableActions($issueId)
             {
                 // TODO: Implement availableActions() method.
             }
 
+            /**
+             * @inheritDoc
+             */
             public function actionTemplate($issueId, $action)
             {
                 // TODO: Implement actionTemplate() method.
             }
 
+            /**
+             * @inheritDoc
+             */
             public function progressAction($issueId, $action, $fields)
             {
                 // TODO: Implement progressAction() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getIssues($filter)
+            {
+                // TODO: Implement getIssues() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function searchIssues($by, $query)
+            {
+                // TODO: Implement searchIssues() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function availableFilters($projectId)
+            {
+                // TODO: Implement availableFilters() method.
             }
         }
     }

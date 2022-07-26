@@ -5,15 +5,13 @@ CREATE TABLE houses_domophones
     enabled integer not null,
     model text not null,
     server text not null,
-    ip text not null,
-    port integer not null,
+    url text not null,
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     caller_id text not null,
     dtmf text not null,
     comment text
 );
-CREATE INDEX domophones_ip on houses_domophones(ip);
-CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(ip, port);
+CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(url);
 
 -- entrances
 CREATE TABLE houses_entrances
@@ -77,7 +75,8 @@ CREATE TABLE houses_flats
     white_rabbit integer,                                                                                               -- 1/0
     sip_enabled integer,                                                                                                -- 0 - disabled, 1 - classic sip, 2 - webrtc
     sip_password text,                                                                                                  -- sip password
-    last_opened text                                                                                                    -- "YYYY-MM-DD HH:MM:SS.SSS"
+    last_opened text,                                                                                                   -- "YYYY-MM-DD HH:MM:SS.SSS"
+    cms_enabled integer
 );
 CREATE UNIQUE INDEX houses_flats_uniq on houses_flats(address_house_id, flat);
 CREATE INDEX houses_flats_address_house_id on houses_flats(address_house_id);
@@ -120,7 +119,8 @@ CREATE TABLE houses_subscribers_mobile
     registered text,                                                                                                    -- "YYYY-MM-DD HH:MM:SS.SSS"
     last_seen text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     subscriber_name text,
-    subscriber_patronymic text
+    subscriber_patronymic text,
+    voip_enabled integer
 );
 CREATE UNIQUE INDEX subscribers_mobile_id on houses_subscribers_mobile(id);
 

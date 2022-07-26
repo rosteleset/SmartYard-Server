@@ -253,6 +253,23 @@
                         value: subscriber.pushToken,
                         readonly: true,
                     },
+                    {
+                        id: "voipEnabled",
+                        type: "select",
+                        title: i18n("addresses.voipEnabled"),
+                        placeholder: i18n("addresses.voipEnabled"),
+                        value: subscriber.voipEnabled,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ],
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
@@ -470,6 +487,8 @@
     },
 
     route: function (params) {
+        modules.addresses.topMenu();
+
         if (params.flat) {
             subTop(params.house + ", " + params.flat);
 

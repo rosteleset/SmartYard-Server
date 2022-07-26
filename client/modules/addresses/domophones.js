@@ -4,18 +4,29 @@
     },
 
     meta: false,
+    startPage: 1,
+    flter: "",
 
     doAddDomophone: function (domophone) {
         loadingStart();
         POST("houses", "domophone", false, domophone).
         fail(FAIL).
-        always(modules.addresses.domophones.route);
+        done(() => {
+            message(i18n("addresses.domophoneWasAdded"))
+            modules.addresses.domophones.route({
+                flter: domophone.url
+            });
+        }).
+        fail(modules.addresses.domophones.route);
     },
 
     doModifyDomophone: function (domophone) {
         loadingStart();
         PUT("houses", "domophone", domophone.domophoneId, domophone).
         fail(FAIL).
+        done(() => {
+            message(i18n("addresses.domophoneWasChanged"))
+        }).
         always(modules.addresses.domophones.route);
     },
 
@@ -23,6 +34,9 @@
         loadingStart();
         DELETE("houses", "domophone", domophoneId).
         fail(FAIL).
+        done(() => {
+            message(i18n("addresses.domophoneWasDeleted"))
+        }).
         always(modules.addresses.domophones.route);
     },
 
@@ -73,22 +87,17 @@
                     options: servers,
                 },
                 {
-                    id: "ip",
+                    id: "url",
                     type: "text",
-                    title: i18n("addresses.ip"),
-                    placeholder: "IP",
+                    title: i18n("addresses.url"),
+                    placeholder: "http://",
                     validate: v => {
-                        return !!ip2long(v);
-                    },
-                },
-                {
-                    id: "port",
-                    type: "text",
-                    title: i18n("addresses.port"),
-                    placeholder: "80",
-                    value: "80",
-                    validate: v => {
-                        return !!parseInt(v);
+                        try {
+                            new URL(v);
+                            return true;
+                        } catch (_) {
+                            return false;
+                        }
                     },
                 },
                 {
@@ -200,23 +209,18 @@
                         value: domophone.server,
                     },
                     {
-                        id: "ip",
+                        id: "url",
                         type: "text",
-                        title: i18n("addresses.ip"),
-                        placeholder: "IP",
-                        value: domophone.ip,
+                        title: i18n("addresses.url"),
+                        placeholder: "http://",
+                        value: domophone.url,
                         validate: v => {
-                            return !!ip2long(v);
-                        },
-                    },
-                    {
-                        id: "port",
-                        type: "text",
-                        title: i18n("addresses.port"),
-                        placeholder: "80",
-                        value: domophone.port,
-                        validate: v => {
-                            return !!parseInt(v);
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
                         },
                     },
                     {
@@ -280,26 +284,12 @@
     },
 
     route: function (params) {
-        let top = '';
-
-        if (location.href.split("#")[1] !== "addresses.domophones") {
-            top += `<li class="nav-item d-none d-sm-inline-block">`;
-            top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
-            top += `</li>`;
-        }
-
-        $("#leftTopDynamic").html(top);
+        modules.addresses.topMenu();
 
         $("#altForm").hide();
         $("#subTop").html("");
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
-
-        let domophoneId = false;
-
-        if (params.domophoneId) {
-            domophoneId = parseInt(params.domophoneId);
-        }
 
         GET("houses", "domophones", false, true).
         done(response => {
@@ -313,15 +303,22 @@
                         caption: i18n("addresses.addDomophone"),
                         click: modules.addresses.domophones.addDomophone,
                     },
-                    filter: true,
+                    filter: params.flter?params.flter:(modules.addresses.domophones.flter?modules.addresses.domophones.flter:true),
                 },
                 edit: modules.addresses.domophones.modifyDomophone,
+                startPage: modules.addresses.domophones.startPage,
+                pageChange: p => {
+                    modules.addresses.domophones.startPage = p;
+                },
+                filterChange: f => {
+                    modules.addresses.domophones.flter = f;
+                },
                 columns: [
                     {
                         title: i18n("addresses.domophoneId"),
                     },
                     {
-                        title: i18n("addresses.ip"),
+                        title: i18n("addresses.url"),
                     },
                     {
                         title: i18n("addresses.callerId"),
@@ -335,9 +332,6 @@
                     let rows = [];
 
                     for (let i in modules.addresses.domophones.meta.domophones) {
-
-                        if (domophoneId && domophoneId !== parseInt(modules.addresses.domophones.meta.domophones[i].domophoneId)) continue;
-
                         rows.push({
                             uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
                             cols: [
@@ -345,7 +339,7 @@
                                     data: modules.addresses.domophones.meta.domophones[i].domophoneId,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].ip,
+                                    data: modules.addresses.domophones.meta.domophones[i].url,
                                     nowrap: true,
                                 },
                                 {

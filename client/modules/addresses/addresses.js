@@ -1856,7 +1856,7 @@
                         caption: i18n("addresses.addRegion"),
                         click: modules.addresses.addRegion,
                     },
-                    filter: false,
+                    filter: true,
                 },
                 edit: modules.addresses.modifyRegion,
                 columns: [
@@ -1926,7 +1926,7 @@
                             modules.addresses.addArea(regionId);
                         },
                     },
-                    filter: false,
+                    filter: true,
                 },
                 edit: modules.addresses.modifyArea,
                 columns: [
@@ -2078,15 +2078,7 @@
         fail(loadingDone);
     },
 
-    route: function (params) {
-        $("#altForm").hide();
-
-        document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
-
-        if (!params.show) {
-            params.show = "regions";
-        }
-
+    topMenu: function () {
         let top = '';
 
         if (AVAIL("geo", "suggestions")) {
@@ -2103,6 +2095,18 @@
 
         $("#leftTopDynamic").html(top);
         $(".addHouseMagic").off("click").on("click", modules.addresses.houses.houseMagic);
+    },
+
+    route: function (params) {
+        $("#altForm").hide();
+
+        document.title = i18n("windowTitle") + " :: " + i18n("addresses.addresses");
+
+        if (!params.show) {
+            params.show = "regions";
+        }
+
+        modules.addresses.topMenu();
 
         switch (params.show) {
             case "region":

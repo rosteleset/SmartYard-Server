@@ -335,7 +335,7 @@
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
-                            text:  response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):""),
+                            text:  response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):""),
                         })
                     }
 
@@ -594,7 +594,7 @@
                         </div>
                     `;
                 }
-                inputs += `</div`;
+                inputs += `</div>`;
                 entrances.push({
                     id: modules.addresses.houses.meta.entrances[i].entranceId,
                     text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance + inputs,
@@ -806,7 +806,7 @@
                     modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
-                        text: response.domophones.domophones[i].ip + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : ""),
+                        text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : ""),
                     })
                 }
 
@@ -1177,6 +1177,23 @@
                         ]
                     },
                     {
+                        id: "cmsEnabled",
+                        type: "select",
+                        title: i18n("addresses.cmsEnabled"),
+                        placeholder: i18n("addresses.cmsEnabled"),
+                        value: flat.cmsEnabled,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ],
+                    },
+                    {
                         id: "sipEnabled",
                         type: "select",
                         title: i18n("addresses.sipEnabled"),
@@ -1240,6 +1257,7 @@
                     if (result.delete === "yes") {
                         modules.addresses.houses.deleteFlat(flatId, houseId);
                     } else {
+                        console.log(result);
                         result.flatId = flatId;
                         result.apartmentsAndLevels = apartmentsAndLevels;
                         result.houseId = houseId;
@@ -1628,29 +1646,14 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.house");
 
+        modules.addresses.topMenu();
+
         if (params.show === "cms" && parseInt(params.entranceId) > 0) {
             $("#altForm").hide();
             $("#subTop").html("");
 
             modules.addresses.houses.renderEntrance(params.houseId, params.entranceId);
         } else {
-            let top = '';
-
-            if (AVAIL("geo", "suggestions")) {
-                top += `
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="addHouseMagic nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-magic mr-2"></i>${i18n("addresses.addHouse")}</a>
-                </li>
-            `;
-            }
-
-            top += `<li class="nav-item d-none d-sm-inline-block">`;
-            top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark"><i class="fa-fw fa-xs fas fa-door-open mr-2"></i>${i18n("addresses.domophones")}</a>`;
-            top += `</li>`;
-
-            $("#leftTopDynamic").html(top);
-            $(".addHouseMagic").off("click").on("click", modules.addresses.houses.houseMagic);
-
             modules.addresses.houses.renderHouse(params.houseId);
         }
     },

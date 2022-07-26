@@ -29,7 +29,7 @@
             {
                 $households = loadBackend("households");
 
-                $success = $households->modifyFlat($params["_id"], $params["floor"], $params["flat"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["openCode"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
+                $success = $households->modifyFlat($params["_id"], $params);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

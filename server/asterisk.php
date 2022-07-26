@@ -254,16 +254,13 @@
                     $households = loadBackend("households");
                     $domophone = $households->getDomophone($params["domophoneId"]);
 
-                    require_once "hw/domophones/beward/dks/dks15374.php";
-
-                    $model = new ($domophone["json"]["class"])($domophone["ip"], $domophone["credentials"], $domophone["port"]);
+                    $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
 
                     $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                     $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                        "class" => $domophone["json"]["class"],
-                        "ip" => $domophone["ip"],
+                        "model" => $domophone["model"],
+                        "url" => $domophone["url"],
                         "credentials" => $domophone["credentials"],
-                        "port" => $domophone["port"],
                     ]));
 
                     echo $params["hash"];

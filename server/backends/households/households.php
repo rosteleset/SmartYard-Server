@@ -28,12 +28,6 @@
             abstract function getHouseEntrances($houseId);
 
             /**
-             * @param $entranceId
-             * @return false|array
-             */
-            abstract function getEntrance($entranceId);
-
-            /**
              * @param $houseId
              * @param $entranceType
              * @param $entrance
@@ -51,6 +45,12 @@
              * @return boolean|integer
              */
             abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
+
+            /**
+             * @param $entranceId
+             * @return false|array
+             */
+            abstract function getEntrance($entranceId);
 
             /**
              * @param $houseId
@@ -111,7 +111,7 @@
              * @param $floor
              * @param $flat
              * @param $entrances
-             * @param $apartmentsAndFlats
+             * @param $apartmentsAndLevels
              * @param $manualBlock
              * @param $openCode
              * @param $autoOpen
@@ -120,23 +120,14 @@
              * @param $sipPassword
              * @return boolean|integer
              */
-            abstract function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword);
+            abstract function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword);
 
             /**
              * @param $flatId
-             * @param $floor
-             * @param $flat
-             * @param $entrances
-             * @param $apartmentsAndFlats
-             * @param $manualBlock
-             * @param $openCode
-             * @param $autoOpen
-             * @param $whiteRabbit
-             * @param $sipEnabled
-             * @param $sipPassword
+             * @param $params
              * @return boolean
              */
-            abstract function modifyFlat($flatId, $floor, $flat, $entrances, $apartmentsAndFlats, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword);
+            abstract function modifyFlat($flatId, $params);
 
             /**
              * @param $flatId
@@ -195,30 +186,28 @@
              * @param $enabled
              * @param $model
              * @param $server
-             * @param $ip
-             * @param $port
+             * @param $url
              * @param $credentials
              * @param $callerId
              * @param $dtmf
              * @param $comment
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $comment);
 
             /**
              * @param $domophoneId
              * @param $enabled
              * @param $model
              * @param $server
-             * @param $ip
-             * @param $port
+             * @param $url
              * @param $credentials
              * @param $callerId
              * @param $dtmf
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $ip, $port, $credentials, $callerId, $dtmf, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $comment);
 
             /**
              * @param $domophoneId
@@ -296,5 +285,11 @@
              * @return boolean
              */
             abstract public function deleteKey($keyId);
+
+            /**
+             * @param $token
+             * @return boolean
+             */
+            abstract public function dismissToken($token);
         }
     }

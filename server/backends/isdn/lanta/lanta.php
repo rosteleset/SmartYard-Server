@@ -8,9 +8,9 @@
     {
 
         /**
-         * easysms variant of flash calls and sms sending
+         * LanTa's variant of flash calls and sms sending
          */
-        class easysms extends isdn
+        class lanta extends isdn
         {
 
             /**
@@ -64,19 +64,18 @@
                  * hash ([sip] password)
                  * server (sip server)
                  * port (sip port)
-                 * transport,
+                 * transport (tcp|udp)
                  * extension
                  * dtmf
-                 * image
-                 * live
+                 * image (url of first camshot)
+                 * live (url of "live" jpeg stream)
                  * callerId
-                 * platform
+                 * platform (ios|android)
                  * flatId
                  * flatNumber
                  * turn (turn:server:port)
-                 * turnTransport
+                 * turnTransport (tcp|udp)
                  * stun (stun:server:port)
-                 * title
                  * type
                  * token
                  * msg
@@ -96,7 +95,13 @@
                     $query = substr($query, 0, -1);
                 }
 
-                return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query);
+                $result = file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query);
+
+                if (strtolower(trim($result)) !== "ok") {
+                    $households = loadBackend("households");
+                    $households->dismissToken($push["token"]);
+                }
+                return $result;
             }
         }
     }
