@@ -77,6 +77,6 @@
              * @param $query
              * @return mixed
              */
-            abstract public function searchIssues($by, $query)
+            abstract public function searchIssues($by, $query);
         }
     }
