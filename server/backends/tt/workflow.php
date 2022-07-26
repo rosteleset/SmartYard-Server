@@ -45,10 +45,38 @@
              */
             abstract public function createIssueTemplate();
 
+            /**
+             * @param $issueId
+             * @return mixed
+             */
             abstract public function availableActions($issueId);
 
+            /**
+             * @param $issueId
+             * @param $action
+             * @return mixed
+             */
             abstract public function actionTemplate($issueId, $action);
 
+            /**
+             * @param $issueId
+             * @param $action
+             * @param $fields
+             * @return mixed
+             */
             abstract public function progressAction($issueId, $action, $fields);
+
+            /**
+             * @param $filter
+             * @return mixed
+             */
+            abstract public function getIssues($filter);
+
+            /**
+             * @param $by
+             * @param $query
+             * @return mixed
+             */
+            abstract public function searchIssues($by, $query)
         }
     }
