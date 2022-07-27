@@ -14,6 +14,7 @@ cd client/lib
 git clone https://github.com/ColorlibHQ/AdminLTE
 git clone https://github.com/davidshimjs/qrcodejs
 git clone https://github.com/loadingio/loading-bar
+git clone https://github.com/ajaxorg/ace-builds/
 ```
 
 edit db, redis and email settings (email - optional)

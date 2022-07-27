@@ -175,3 +175,12 @@ select {
   cursor: default;
   color: #0056b3 !important;
 }
+
+.ace-editor {
+  margin: 0;
+  position: relative;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
