@@ -858,5 +858,29 @@
                     }
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getTags()
+            {
+                // TODO: Implement getTags() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function searchIssues($by, $query)
+            {
+                // TODO: Implement searchIssues() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function availableFilters($projectId)
+            {
+                // TODO: Implement availableFilters() method.
+            }
         }
     }
