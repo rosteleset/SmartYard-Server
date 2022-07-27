@@ -26,6 +26,7 @@
                         "resolutions" => $tt->getResolutions(),
                         "customFields" => $tt->getCustomFields(),
                         "roles" => $tt->getRoles(),
+                        "tags" => $tt->getTags(),
                     ];
 
                     return api::ANSWER($meta, "meta");

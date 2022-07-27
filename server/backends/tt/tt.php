@@ -277,5 +277,16 @@
              * @return boolean
              */
             abstract public function deleteCustomField($customFieldId);
+
+            /**
+             * @return false|array
+             */
+            abstract public function getTags();
+
+            /**
+             * @param $issue
+             * @return false|string
+             */
+            abstract public function createIssue($issue);
         }
     }
