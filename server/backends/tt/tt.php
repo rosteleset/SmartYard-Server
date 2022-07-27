@@ -282,11 +282,5 @@
              * @return false|array
              */
             abstract public function getTags();
-
-            /**
-             * @param $issue
-             * @return false|string
-             */
-            abstract public function createIssue($issue);
         }
     }

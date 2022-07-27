@@ -86,5 +86,13 @@
             {
                 // TODO: Implement availableFilters() method.
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function createIssue($issue)
+            {
+                // TODO: Implement createIssue() method.
+            }
         }
     }
