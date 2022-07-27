@@ -211,6 +211,14 @@ function cardForm(params) {
                 h += `></textarea>`;
                 break;
 
+            case "code":
+                let height = params.fields[i].height?params.fields[i].height:400;
+                h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
+                h += `<pre class="ace-editor" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
+                h += `</pre>`;
+                h += `</div>`;
+                break;
+
             case "text":
             case "email":
             case "tel":
@@ -298,6 +306,9 @@ function cardForm(params) {
                 } else {
                     return "";
                 }
+
+            case "code":
+                return params.fields[i].editor.getValue();
         }
     }
 
@@ -482,6 +493,20 @@ function cardForm(params) {
             if (params.fields[i].value) {
                 $(`#${_prefix}${params.fields[i].id}`).summernote("code", params.fields[i].value);
             }
+        }
+
+        if (params.fields[i].type === "code") {
+            let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
+            editor.setTheme("ace/theme/chrome");
+            if (params.fields[i].language) {
+                editor.session.setMode("ace/mode/" + params.fields[i].language);
+            }
+            params.fields[i].editor = editor;
+            if (params.fields[i].value) {
+                editor.setValue(params.fields[i].value, -1);
+                editor.clearSelection();
+            }
+            editor.setFontSize(14);
         }
     }
 
