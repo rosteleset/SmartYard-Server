@@ -117,7 +117,7 @@
 
             document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
-            let projectName = "";
+            let projectName = project;
             for (let i in modules.tt.meta.projects) {
                 if (modules.tt.meta.projects[i].projectId == project) {
                     projectName = modules.tt.meta.projects[i].project?$.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"):modules.tt.meta.projects[i].acronym;
