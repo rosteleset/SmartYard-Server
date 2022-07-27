@@ -120,14 +120,14 @@
             let projectName = "";
             for (let i in modules.tt.meta.projects) {
                 if (modules.tt.meta.projects[i].projectId == project) {
-                    projectName = $.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]");
+                    projectName = modules.tt.meta.projects[i].project?$.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"):modules.tt.meta.projects[i].acronym;
                 }
             }
 
-            let workflowName = "[" + workflow + "]";
+            let workflowName = workflow;
             for (let i in modules.tt.meta.workflowAliases) {
                 if (modules.tt.meta.workflowAliases[i].workflow == workflow) {
-                    workflowName = $.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]");
+                    workflowName = modules.tt.meta.workflowAliases[i].alias?$.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]"):workflow;
                 }
             }
 
