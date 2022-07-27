@@ -21,6 +21,7 @@
         }
 
         if (isNaN(fieldId)) {
+            console.log(fieldId);
             // regular issue fields
             switch (fieldId) {
                 case "subject":
@@ -34,7 +35,6 @@
                             return $.trim(v) !== "";
                         },
                     };
-                    break;
                 case "description":
                     return {
                         id: "description",
@@ -46,11 +46,28 @@
                             return $.trim(v) !== "";
                         },
                     };
-                    break;
                 case "resolution":
                     break;
                 case "tags":
-                    break;
+                    return {
+                        id: "tags",
+                        type: "select2",
+                        tags: true,
+                        createTags: false,
+                        multiple: true,
+                        title: i18n("tt.tags"),
+                        placeholder: i18n("tt.tags"),
+                        options: [
+                            {
+                                id: 1,
+                                text: "one",
+                            },
+                            {
+                                id: 2,
+                                text: "two",
+                            }
+                        ]
+                    };
                 case "assigned":
                     break;
                 case "watchers":

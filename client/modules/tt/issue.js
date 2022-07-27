@@ -60,7 +60,6 @@
 
             let project = $.cookie("lastIssueProject")?$.cookie("lastIssueProject"):"";
 
-            modules.tt.meta.projects
             cardForm({
                 title: i18n("tt.createIssue"),
                 footer: true,
@@ -148,29 +147,14 @@
                     value: workflowName,
                 },
             ];
-/*
-                [
-                    {
-                        id: "tags",
-                        type: "select2",
-                        tags: true,
-                        createTags: false,
-                        multiple: true,
-                        title: i18n("tt.tags"),
-                        placeholder: i18n("tt.tags"),
-                        options: [
-                            {
-                                id: 1,
-                                text: "one",
-                            },
-                            {
-                                id: 2,
-                                text: "two",
-                            }
-                        ]
-                    }
-                ],
- */
+
+            for (let i in response.template.fields) {
+                let f = modules.tt.issueField2FormField(false, response.template.fields[i]);
+                console.log(f);
+                if (f) fields.push(f);
+            }
+
+            console.log(fields);
 
             cardForm({
                 title: i18n("tt.createIssueTitle"),
