@@ -64,26 +64,7 @@
              * @param $fields
              * @return boolean
              */
-            abstract public function progressAction($issueId, $action, $fields);
-
-            /**
-             * @param $filter
-             * @return false|array
-             */
-            abstract public function getIssues($filter);
-
-            /**
-             * @param $by
-             * @param $query
-             * @return false|array
-             */
-            abstract public function searchIssues($by, $query);
-
-            /**
-             * @param $projectId
-             * @return false|array
-             */
-            abstract public function availableFilters($projectId);
+            abstract public function doAction($issueId, $action, $fields);
 
             /**
              * @param $issue

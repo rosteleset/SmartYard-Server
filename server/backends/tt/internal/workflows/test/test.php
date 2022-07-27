@@ -58,33 +58,9 @@
             /**
              * @inheritDoc
              */
-            public function progressAction($issueId, $action, $fields)
+            public function doAction($issueId, $action, $fields)
             {
-                // TODO: Implement progressAction() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getIssues($filter)
-            {
-                // TODO: Implement getIssues() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function searchIssues($by, $query)
-            {
-                // TODO: Implement searchIssues() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function availableFilters($projectId)
-            {
-                // TODO: Implement availableFilters() method.
+                // TODO: Implement doAction() method.
             }
 
             /**

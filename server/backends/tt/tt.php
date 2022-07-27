@@ -282,5 +282,19 @@
              * @return false|array
              */
             abstract public function getTags();
+
+            /**
+             * @param $by
+             * @param $query
+             * @return false|array
+             */
+            abstract public function searchIssues($by, $query);
+
+            /**
+             * @param $projectId
+             * @return false|array
+             */
+            abstract public function availableFilters($projectId);
+
         }
     }
