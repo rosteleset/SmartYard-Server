@@ -132,8 +132,6 @@
 
     $m = explode('/', $path);
 
-    print_r($m);
-
     $api = @$m[0];
     $method = @$m[1];
 
