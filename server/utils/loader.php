@@ -16,7 +16,7 @@
             if (@$config["backends"][$backend]) {
                 try {
                     if (file_exists("backends/$backend/$backend.php") && !class_exists("backends\\$backend\\$backend")) {
-                        require_once "backends/$backend/$backend.php";
+                        require_once __DIR__ . "backends/$backend/$backend.php";
                     }
                     require_once __DIR__ . "/backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
                     $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
