@@ -19,7 +19,8 @@
                         require_once "backends/$backend/$backend.php";
                     }
                     require_once "backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
-                    $backends[$backend] = new ("backends\\$backend\\" . $config["backends"][$backend]["backend"])($config, $db, $redis);
+                    $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
+                    $backends[$backend] = new $className($config, $db, $redis);
                     return $backends[$backend];
                 } catch (Exception $e) {
                     setLastError("cantLoadBackend");
