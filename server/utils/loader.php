@@ -56,7 +56,8 @@
                 if ($file->getFilename() == "$class.php") {
                     $path_to_class = $file->getPath() . "/" . $class . ".php";
                     require_once $path_to_class;
-                    return new ("hw\\domophones\\$class")($url, $password, $first_time);
+                    $className = "hw\\domophones\\$class";
+                    return new $className($url, $password, $first_time);
                 }
             }
         }
