@@ -67,7 +67,6 @@
     }
 
     if (!$config) {
-        echo __DIR__ . "/config/config.json";
         response(555, [
             "error" => "noConfig",
         ]);
