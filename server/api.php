@@ -58,7 +58,7 @@
     }
 
     try {
-        $config = @json_decode(file_get_contents("config/config.json"), true);
+        $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
     } catch (Exception $e) {
         error_log(print_r($e, true));
         response(555, [
