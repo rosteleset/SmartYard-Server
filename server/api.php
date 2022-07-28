@@ -263,7 +263,7 @@
     if ($api == "accounts" && $method == "forgot") {
         forgot($params);
     } else
-    if (file_exists("api/$api/$method.php")) {
+    if (file_exists(__DIR__ . "/api/$api/$method.php")) {
         if ($backends["authorization"]->allow($params)) {
             $cache = false;
             if ($params["_request_method"] === "GET") {
@@ -282,7 +282,7 @@
                 if ($clearCache) {
                     clearCache($auth["uid"]);
                 }
-                require_once "api/$api/$method.php";
+                require_once __DIR__ . "/api/$api/$method.php";
                 if (class_exists("\\api\\$api\\$method")) {
                     try {
                         $result = hook_pre($params);
