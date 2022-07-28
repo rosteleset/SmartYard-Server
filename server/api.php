@@ -132,6 +132,8 @@
 
     $m = explode('/', $path);
 
+    print_r($m);
+
     $api = @$m[0];
     $method = @$m[1];
 
@@ -235,7 +237,6 @@
                 ]);
             }
         } else {
-            echo $ip;
             $params["_ip"] = $ip;
             $params["_login"] = '-';
             response(403, [
