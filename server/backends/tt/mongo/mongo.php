@@ -6,8 +6,6 @@
 
     namespace backends\tt {
 
-        use api\accounts\password;
-
         /**
          * internal.db + mongoDB tt class
          */
