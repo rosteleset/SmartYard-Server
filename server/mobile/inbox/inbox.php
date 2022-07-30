@@ -16,24 +16,14 @@
 
     auth(10);
 
-    require_once __DIR__ . "/../lib/parsedown/Parsedown.php";
+    require_once __DIR__ . "/../../lib/parsedown/Parsedown.php";
 
     $parsedown = new Parsedown();
 
     $msgs = [
         ['date' => '01-01-2022T10:10:10', 'msg' => 'Сообщения пока находятся в стадии разработки.']
     ];
-/*
-    $qr = clickhouse("select date, msg from inbox where id='$id'");
-    while ($row = mysqli_fetch_assoc($qr)) {
-        $msgs[] = $row;
-    }
 
-    $qr = mysql("select date, msg from dm.inbox where id='$id'");
-    while ($row = mysqli_fetch_assoc($qr)) {
-        $msgs[] = $row;
-    }
-*/
     usort($msgs, function ($a, $b) {
         if (strtotime($a['date']) > strtotime($b['date'])) {
             return -1;
@@ -76,7 +66,7 @@
     //        $h .= "<script type=\"application/javascript\">scrollingElement = (document.scrollingElement || document.body);scrollingElement.scrollTop = scrollingElement.scrollHeight;</script>";
     }
 
-    $html = str_replace("%c", $h, file_get_contents("templates/inbox.html"));
+    $html = str_replace("%c", $h, file_get_contents(__DIR__ . "/../../templates/inbox.html"));
 
     // mysql("update dm.inbox set readed=true, code='app' where id='$id' and code is null");
     // mysql("update dm.inbox set readed=true where id='$id'");
