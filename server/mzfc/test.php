@@ -55,7 +55,6 @@
 
 //    print_r($collection->distinct("attachments", [ "_id" => [ '$ne' => new MongoDB\BSON\ObjectID("62e261802600caa2f90f3ac2") ] ]));
 
-
 // put file to database
 /*
     $bucket = (new MongoDB\Client)->tt->selectGridFSBucket();
@@ -69,7 +68,6 @@
     $id = $bucket->getFileIdForStream($stream);
 
     fclose($stream);
-
 
     echo "$id\n";
 */
