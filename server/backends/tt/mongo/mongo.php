@@ -14,6 +14,25 @@
 
         class mongo extends tt {
 
+            protected $mongo, $collection;
+
+            /**
+             * @inheritDoc
+             */
+            public function __construct($config, $db, $redis) {
+                parent::__construct($config, $db, $redis);
+
+                require_once __DIR__ . '/../../../utils/mongodb.php';
+
+                if ($config["backends"]["tt"]["mongo"]) {
+                    $this->mongo = new \MongoDB\Client($config["backends"]["tt"]["mongo"]);
+                } else {
+                    $this->mongo = new \MongoDB\Client();
+                }
+
+                $this->collection = $this->mongo->tt->issues;
+            }
+
             /**
              * @inheritDoc
              */
