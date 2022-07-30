@@ -9,7 +9,7 @@
         use api\accounts\password;
 
         /**
-         * internal.db tt class
+         * internal.db + mongoDB tt class
          */
 
         class mongo extends tt {
