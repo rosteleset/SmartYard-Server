@@ -60,7 +60,6 @@
 
             let project = $.cookie("lastIssueProject")?$.cookie("lastIssueProject"):"";
 
-            modules.tt.meta.projects
             cardForm({
                 title: i18n("tt.createIssue"),
                 footer: true,
@@ -118,17 +117,17 @@
 
             document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
-            let projectName = "";
+            let projectName = project;
             for (let i in modules.tt.meta.projects) {
                 if (modules.tt.meta.projects[i].projectId == project) {
-                    projectName = $.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]");
+                    projectName = modules.tt.meta.projects[i].project?$.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"):modules.tt.meta.projects[i].acronym;
                 }
             }
 
-            let workflowName = "[" + workflow + "]";
+            let workflowName = workflow;
             for (let i in modules.tt.meta.workflowAliases) {
                 if (modules.tt.meta.workflowAliases[i].workflow == workflow) {
-                    workflowName = $.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]");
+                    workflowName = modules.tt.meta.workflowAliases[i].alias?$.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]"):workflow;
                 }
             }
 
@@ -148,29 +147,14 @@
                     value: workflowName,
                 },
             ];
-/*
-                [
-                    {
-                        id: "tags",
-                        type: "select2",
-                        tags: true,
-                        createTags: false,
-                        multiple: true,
-                        title: i18n("tt.tags"),
-                        placeholder: i18n("tt.tags"),
-                        options: [
-                            {
-                                id: 1,
-                                text: "one",
-                            },
-                            {
-                                id: 2,
-                                text: "two",
-                            }
-                        ]
-                    }
-                ],
- */
+
+            for (let i in response.template.fields) {
+                let f = modules.tt.issueField2FormField(false, response.template.fields[i]);
+                console.log(f);
+                if (f) fields.push(f);
+            }
+
+            console.log(fields);
 
             cardForm({
                 title: i18n("tt.createIssueTitle"),

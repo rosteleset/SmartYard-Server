@@ -81,7 +81,10 @@
     }
 
     try {
-        $version = (int)$db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC)->fetch()["var_value"];
+        $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
+        if ($query) {
+            $version = (int)($query->fetch()["var_value"]);
+        }
     } catch (Exception $e) {
         $version = 0;
     }
