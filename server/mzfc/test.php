@@ -1,7 +1,7 @@
 #!/usr/bin/php -q
 <?php
 
-    require_once __DIR__ . '/mongodb/vendor/autoload.php';
+    require_once __DIR__ . '/mongodb/autoload.php';
 
     $collection = (new MongoDB\Client)->tt->issues;
 
