@@ -10,7 +10,7 @@
          * authenticate by local database
          */
 
-        class mongo extends attachments {
+        class internal extends attachments {
 
             /**
              * @inheritDoc
@@ -92,7 +92,7 @@
                 $destination = '/tmp/' . $file_name;
 
                 // save file to destination
-                if (move_uploaded_file($_FILES['file']['tmp_name'], $destination) === TRUE)
+                if(move_uploaded_file($_FILES['file']['tmp_name'], $destination) === TRUE)
                     echo "File uploaded successfully {$file_name}";
                 else
                     echo 'Error: Uploaded file failed to be saved';
