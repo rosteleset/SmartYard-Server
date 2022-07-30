@@ -16,7 +16,7 @@
 
     auth(10);
 
-    require_once "lib/parsedown/Parsedown.php";
+    require_once __DIR__ . "/../lib/parsedown/Parsedown.php";
 
     $parsedown = new Parsedown();
 
