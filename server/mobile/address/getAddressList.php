@@ -65,7 +65,7 @@
             $e = $households->getEntrance($entrance['entranceId']);
             $door = [];
             $door['domophoneId'] = strval($entrance['domophoneId']);
-            $door['doorId'] = $entrance['entranceId'];
+            $door['doorId'] = intval($entrance['entranceId']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
             // TODO: добавить обработку блокировки
