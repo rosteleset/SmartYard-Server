@@ -24,7 +24,7 @@
 
                 require_once __DIR__ . '/../../../utils/mongodb.php';
 
-                if ($config["backends"]["tt"]["mongo"]) {
+                if (@$config["backends"]["tt"]["mongo"]) {
                     $this->mongo = new \MongoDB\Client($config["backends"]["tt"]["mongo"]);
                 } else {
                     $this->mongo = new \MongoDB\Client();
