@@ -7,8 +7,8 @@ namespace Composer\Autoload;
 class ComposerStaticInit844c78dded60e2246a8b4ad78746ac39
 {
     public static $files = array (
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        '3a37ebac017bc098e9a86b35401e7a68' => __DIR__ . '/..' . '/mongodb/mongodb/src/functions.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/bootstrap.php',
+        '3a37ebac017bc098e9a86b35401e7a68' => __DIR__ . '/..' . '/mongodb/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -29,25 +29,25 @@ class ComposerStaticInit844c78dded60e2246a8b4ad78746ac39
     public static $prefixDirsPsr4 = array (
         'Symfony\\Polyfill\\Php80\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
+            0 => __DIR__ . '/..' . '/symfony',
         ),
         'MongoDB\\' => 
         array (
-            0 => __DIR__ . '/..' . '/mongodb/mongodb/src',
+            0 => __DIR__ . '/..' . '/mongodb',
         ),
         'Jean85\\' => 
         array (
-            0 => __DIR__ . '/..' . '/jean85/pretty-package-versions/src',
+            0 => __DIR__ . '/..' . '/jean85',
         ),
     );
 
     public static $classMap = array (
-        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
+        'Attribute' => __DIR__ . '/..' . '/symfony/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
-        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
-        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
-        'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
+        'PhpToken' => __DIR__ . '/..' . '/symfony/Resources/stubs/PhpToken.php',
+        'Stringable' => __DIR__ . '/..' . '/symfony/esources/stubs/Stringable.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/Resources/stubs/UnhandledMatchError.php',
+        'ValueError' => __DIR__ . '/..' . '/symfony/Resources/stubs/ValueError.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
