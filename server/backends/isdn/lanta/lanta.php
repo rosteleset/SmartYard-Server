@@ -50,7 +50,7 @@
             /**
              * @inheritDoc
              */
-            function checkIncomng($id)
+            function checkIncoming($id)
             {
                 return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkIncoming&mobile=$id&secret=" . $this->config["backends"]["isdn"]["secret"]);
             }
