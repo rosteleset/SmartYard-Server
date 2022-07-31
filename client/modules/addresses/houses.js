@@ -125,7 +125,7 @@
                 o.push({
                     id: i.toString(),
                     text: i?i18n("addresses.domophoneOutputSecondary", i):i18n("addresses.domophoneOutputPrimary"),
-                    selected: selected === i,
+                    selected: parseInt(selected) === i,
                 });
             }
         }
@@ -875,14 +875,14 @@
                                 type: "text",
                                 title: i18n("addresses.lon"),
                                 placeholder: i18n("addresses.lon"),
-                                value: entrance.lon,
+                                value: parseFloat(entrance.lon)?entrance.lon:"",
                             },
                             {
                                 id: "lat",
                                 type: "text",
                                 title: i18n("addresses.lat"),
                                 placeholder: i18n("addresses.lat"),
-                                value: entrance.lat,
+                                value: parseFloat(entrance.lat)?entrance.lat:"",
                             },
                             {
                                 id: "cameraId",
