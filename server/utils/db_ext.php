@@ -17,6 +17,7 @@
         }
 
         function insert($query, $params = []) {
+            error_log($query);
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -36,6 +37,7 @@
         }
 
         function modify($query, $params = []) {
+            error_log($query);
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -55,6 +57,7 @@
         }
 
         function modifyEx($query, $map, $params) {
+            error_log($query);
             $mod = false;
             try {
                 foreach ($map as $db => $param) {
@@ -82,6 +85,7 @@
         }
 
         function get($query, $params = [], $map = [], $options = []) {
+            error_log($query);
             try {
                 if ($params) {
                     $sth = $this->prepare($query);

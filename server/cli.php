@@ -163,6 +163,7 @@
     }
 
     if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
+        $db = null;
         if (is_executable_pathenv(PHP_BINARY)) {
             echo "open in your browser:\n\n";
             echo "http://localhost:8000/client/index.html\n\n";
