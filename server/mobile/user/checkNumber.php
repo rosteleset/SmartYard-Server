@@ -26,14 +26,14 @@
     
     $isdn = loadBackend("isdn");
     
-    if (strlen($user_phone) == 11)  {
+    if (strlen($user_phone) == 10)  {
         
         $result = $isdn->checkIncoming('8'. $user_phone);
         $result2 = $isdn->checkIncoming('+7'. $user_phone);
         $result3 = $isdn->checkIncoming('7'. $user_phone);
 
         if ($result || $result2 || $result3) {
-            response(200, $result2);
+            response(204);
         } else {
             response(401);
         }
