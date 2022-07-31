@@ -23,7 +23,8 @@
     $user_phone = @$postdata['userPhone'];
     // $user_phone[0] = '8';
     $user_phone = substr($user_phone,1);
-    
+    $households = loadBackend("households");
+
     $isdn = loadBackend("isdn");
     
     if (strlen($user_phone) == 10)  {
@@ -33,7 +34,20 @@
         $result3 = $isdn->checkIncoming('7'. $user_phone);
 
         if ($result || $result2 || $result3) {
-            response(204);
+            $user_phone = '8' . $user_phone;
+            $subscribers = $households->getSubscribers("mobile", $user_phone);
+                $names = [ "name" => "", "patronymic" => "" ];
+                if ($subscribers) {
+                    $subscriber = $subscribers[0];
+                    // Пользователь найден
+                    $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
+                    $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
+                } else {
+                    // Пользователь не найден - создаём
+                    $id = $households->addSubscriber($user_phone, "", "");
+                    $households->modifySubscriber($id, [ "authToken" => $token ]);
+                }
+                response(200, [ 'accessToken' => $token, 'names' => $names ]);
         } else {
             response(401);
         }
