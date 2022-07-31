@@ -21,16 +21,19 @@
  * @apiSuccess {String} names.patronymic отчество
  */
     $user_phone = @$postdata['userPhone'];
-    $user_phone[0] = '8';
+    // $user_phone[0] = '8';
+    $user_phone = substr($user_phone,1);
     
     $isdn = loadBackend("isdn");
     
     if (strlen($user_phone) == 11)  {
         
-        $result = $isdn->checkIncoming($user_phone);
+        $result = $isdn->checkIncoming('8'. $user_phone);
+        $result2 = $isdn->checkIncoming('+7'. $user_phone);
+        $result3 = $isdn->checkIncoming('7'. $user_phone);
 
-        if ($result) {
-            response(200, $result);
+        if ($result || $result2 || $result3) {
+            response(200, $result2);
         } else {
             response(401);
         }
