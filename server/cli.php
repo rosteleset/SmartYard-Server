@@ -1,12 +1,6 @@
 <?php
 
-    // command line client
-
-    try {
-        mb_internal_encoding("UTF-8");
-    } catch (Exception $e) {
-        die("mbstring extension is not available\n");
-    }
+// command line client
 
     chdir(dirname(__FILE__));
 
@@ -22,6 +16,32 @@
     require_once "backends/backend.php";
 
     require_once "api/api.php";
+
+    $args = [];
+
+    for ($i = 1; $i < count($argv); $i++) {
+        $a = explode("=", $argv[$i]);
+        $args[$a[0]] = @$a[1];
+    }
+
+    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
+        $db = null;
+        if (is_executable_pathenv(PHP_BINARY)) {
+            echo "open in your browser:\n\n";
+            echo "http://localhost:8000/client/index.html\n\n";
+            chdir(dirname(__FILE__) . "/..");
+            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
+        } else {
+            echo "no php interpreter found in path\n";
+        }
+        exit(0);
+    }
+
+    try {
+        mb_internal_encoding("UTF-8");
+    } catch (Exception $e) {
+        die("mbstring extension is not available\n");
+    }
 
     if (!function_exists("curl_init")) {
         die("curl extension is not installed\n");
@@ -98,13 +118,6 @@
         }
     }
 
-    $args = [];
-
-    for ($i = 1; $i < count($argv); $i++) {
-        $a = explode("=", $argv[$i]);
-        $args[$a[0]] = @$a[1];
-    }
-
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
         require_once "sql/install.php";
         require_once "utils/clear_cache.php";
@@ -160,19 +173,6 @@
         if ($r === false) {
             echo "no email config found\n";
             exit(0);
-        }
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
-        $db = null;
-        if (is_executable_pathenv(PHP_BINARY)) {
-            echo "open in your browser:\n\n";
-            echo "http://localhost:8000/client/index.html\n\n";
-            chdir(dirname(__FILE__) . "/..");
-            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
-        } else {
-            echo "no php interpreter found in path\n";
         }
         exit(0);
     }
