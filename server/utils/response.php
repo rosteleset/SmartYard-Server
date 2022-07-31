@@ -9,7 +9,9 @@
      */
 
     function response($code = 204, $data = false) {
-        global $params, $backends;
+        global $params, $backends, $db;
+
+        $db = null;
 
         header('Content-Type: application/json');
         http_response_code($code);

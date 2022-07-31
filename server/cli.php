@@ -89,6 +89,8 @@
         $version = 0;
     }
 
+    echo "dbVersion; $version\n";
+
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
