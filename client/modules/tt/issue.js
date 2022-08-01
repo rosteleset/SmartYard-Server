@@ -150,7 +150,7 @@
 
             if (response.template && response.template.fields) {
                 for (let i in response.template.fields) {
-                    let f = modules.tt.issueField2FormField(false, response.template.fields[i]);
+                    let f = modules.tt.issueField2FormField(false, response.template.fields[i], project);
                     console.log(f);
                     if (f) fields.push(f);
                 }

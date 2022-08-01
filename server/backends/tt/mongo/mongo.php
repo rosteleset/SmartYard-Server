@@ -866,7 +866,6 @@
                 } else {
                     try {
                         $this->db->exec("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId");
-                        $this->db->exec("delete from tt_issue_custom_fields_values where issue_custom_field_id = $customFieldId");
                         $this->db->exec("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId");
                         return true;
                     } catch (\Exception $e) {
@@ -881,7 +880,11 @@
              */
             public function getTags()
             {
-                // TODO: Implement getTags() method.
+                return $this->db->get("select * from tt_tags order by tag", false, [
+                    "tag_id" => "tagId",
+                    "project_id" => "projectId",
+                    "tag" => "tag",
+                ]);
             }
 
             /**
@@ -898,6 +901,72 @@
             public function availableFilters($projectId)
             {
                 // TODO: Implement availableFilters() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addTag($projectId, $tag)
+            {
+                if (!checkInt($projectId) || !checkStr($tag)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag) values (:project_id, :tag)");
+                    if (!$sth->execute([
+                        "project_id" => $projectId,
+                        "tag" => $tag,
+                    ])) {
+                        return false;
+                    }
+
+                    return $this->db->lastInsertId();
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyTag($tagId, $tag)
+            {
+                if (!checkInt($tagId) || !checkStr($tag)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("update tt_tags set tag = :tag where tag_id = $tagId");
+                    $sth->execute([
+                        "tag" => $tag,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteTag($tagId)
+            {
+                if (!checkInt($tagId)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_tags where tag_id = $tagId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
             }
         }
     }

@@ -285,6 +285,21 @@
             abstract public function getTags();
 
             /**
+             * @return false|integer
+             */
+            abstract public function addTag($projectId, $tag);
+
+            /**
+             * @return boolean
+             */
+            abstract public function modifyTag($tagId, $tag);
+
+            /**
+             * @return boolean
+             */
+            abstract public function deleteTag($tagId);
+
+            /**
              * @param $by
              * @param $query
              * @return false|array

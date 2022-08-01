@@ -125,3 +125,12 @@ CREATE INDEX tt_projects_roles_project_id on tt_projects_roles(project_id);
 CREATE INDEX tt_projects_roles_role_id on tt_projects_roles(role_id);
 CREATE INDEX tt_projects_roles_uid on tt_projects_roles(uid);
 CREATE INDEX tt_projects_roles_gid on tt_projects_roles(gid);
+
+-- tags
+CREATE TABLE tt_tags
+(
+    tag_id integer not null primary key autoincrement,
+    project_id integer not null,
+    tag text
+);
+CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);

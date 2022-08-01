@@ -11,13 +11,23 @@
         ], this);
     },
 
-    issueField2FormField: function (issue, field) {
+    issueField2FormField: function (issue, field, projectId) {
         let fieldId;
 
         if (typeof field == "object") {
             fieldId = field.field;
         } else{
             fieldId = field;
+        }
+
+        let tags = [];
+        for (let i in modules.tt.meta.tags) {
+            if (modules.tt.meta.tags[i].projectId == projectId) {
+                tags.push({
+                    id: modules.tt.meta.tags[i].tagId,
+                    text: modules.tt.meta.tags[i].tag,
+                });
+            }
         }
 
         if (isNaN(fieldId)) {
@@ -57,16 +67,7 @@
                         multiple: true,
                         title: i18n("tt.tags"),
                         placeholder: i18n("tt.tags"),
-                        options: [
-                            {
-                                id: 1,
-                                text: "one",
-                            },
-                            {
-                                id: 2,
-                                text: "two",
-                            }
-                        ]
+                        options: tags,
                     };
                 case "assigned":
                     break;
