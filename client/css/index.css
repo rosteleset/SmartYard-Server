@@ -124,6 +124,10 @@ select {
   border-color: #dc3435 !important;
 }
 
+.border-color-invalid {
+  border-color: #dc3435 !important;
+}
+
 .no-border-top {
   border-top: none !important;
 }

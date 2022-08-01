@@ -301,19 +301,23 @@ function cardForm(params) {
                 return o;
 
             case "rich":
-                if (!$(`#${_prefix}${params.fields[i].id}`).summernote("isEmpty")) {
-                    return $(`#${_prefix}${params.fields[i].id}`).summernote("code");
-                } else {
+                let rich = $.trim($(`#${_prefix}${params.fields[i].id}`).summernote("code"));
+                if ($(`#${_prefix}${params.fields[i].id}`).summernote("isEmpty") || $.trim($(rich).text()) === "") {
                     return "";
+                } else {
+                    return rich;
                 }
 
             case "code":
-                return params.fields[i].editor.getValue();
+                let code = $.trim(params.fields[i].editor.getValue());
+                return code;
         }
     }
 
     function ok() {
-        $(".modalFormField").removeClass("is-invalid select2-invalid");
+        $(".modalFormField").removeClass("is-invalid");
+        $(".select2-invalid").removeClass("select2-invalid");
+        $(".summernote-invalid").removeClass("border-color-invalid");
         let invalid = [];
         if (!params.delete || $(`#${_prefix}delete`).val() !== "yes") {
             for (let i in params.fields) {
@@ -339,10 +343,19 @@ function cardForm(params) {
             }
         } else {
             for (let i in invalid) {
-                if (params.fields[invalid[i]].type == "select2") {
-                    $(`#${_prefix}${params.fields[invalid[i]].id}`).parent().addClass("select2-invalid");
-                } else {
-                    $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("is-invalid");
+                switch (params.fields[invalid[i]].type) {
+                    case "select2":
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).parent().addClass("select2-invalid");
+                        break;
+                    case "rich":
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).next().addClass("border-color-invalid");
+                        break;
+                    case "code":
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
+                        break;
+                    default:
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("is-invalid");
+                        break;
                 }
             }
         }
