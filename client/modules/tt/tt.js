@@ -113,6 +113,7 @@
                     break;
             }
         } else {
+            // custom field
             fieldId = fieldId.substring(4);
 
             let cf = false;
