@@ -30,8 +30,15 @@
             }
         }
 
+        let project;
+
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
+            }
+        }
+
         if (isNaN(fieldId)) {
-            console.log(fieldId);
             // regular issue fields
             switch (fieldId) {
                 case "subject":
@@ -45,6 +52,7 @@
                             return $.trim(v) !== "";
                         },
                     };
+
                 case "description":
                     return {
                         id: "description",
@@ -56,8 +64,30 @@
                             return $.trim(v) !== "";
                         },
                     };
+
                 case "resolution":
-                    break;
+                    let resolutions = [];
+
+                    for (let i in modules.tt.meta.resolutions) {
+                        if (project.resolutions.indexOf(modules.tt.meta.resolutions[i].resolutionId) >= 0) {
+                            resolutions.push({
+                                id: modules.tt.meta.resolutions[i].resolutionId,
+                                text: modules.tt.meta.resolutions[i].resolution,
+                            });
+                        }
+                    }
+
+                    return {
+                        id: "resoluton",
+                        type: "select2",
+                        title: i18n("tt.resolution"),
+                        options: resolutions,
+                        value: (issue && issue.resolution)?issue.resolution:-1,
+                        validate: v => {
+                            return !!v;
+                        },
+                    };
+
                 case "tags":
                     return {
                         id: "tags",
@@ -69,12 +99,16 @@
                         placeholder: i18n("tt.tags"),
                         options: tags,
                     };
+
                 case "assigned":
                     break;
+
                 case "watchers":
                     break;
+
                 case "plans":
                     break;
+
                 case "checklist":
                     break;
             }
@@ -85,7 +119,6 @@
 
     tt: function (tt) {
         modules.tt.meta = tt["meta"];
-        console.log(modules.tt.meta);
     },
 
     route: function (params) {

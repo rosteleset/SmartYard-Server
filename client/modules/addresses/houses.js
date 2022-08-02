@@ -1257,7 +1257,6 @@
                     if (result.delete === "yes") {
                         modules.addresses.houses.deleteFlat(flatId, houseId);
                     } else {
-                        console.log(result);
                         result.flatId = flatId;
                         result.apartmentsAndLevels = apartmentsAndLevels;
                         result.houseId = houseId;

@@ -68,6 +68,11 @@ function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
             return;
         }
 
+        if (document.querySelector('#fileInput').files.length > 1) {
+            error(i18n("multiuploadNotSupported"));
+            return;
+        }
+
         let file = document.querySelector('#fileInput').files[0];
 
         if (mimeTypes && mimeTypes.indexOf(file.type) === -1) {

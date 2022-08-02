@@ -113,8 +113,6 @@
             workflow: workflow,
         }).
         done(response => {
-            console.log(response);
-
             document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
             let projectName = project;
@@ -151,12 +149,9 @@
             if (response.template && response.template.fields) {
                 for (let i in response.template.fields) {
                     let f = modules.tt.issueField2FormField(false, response.template.fields[i], project);
-                    console.log(f);
                     if (f) fields.push(f);
                 }
             }
-
-            console.log(fields);
 
             cardForm({
                 title: i18n("tt.createIssueTitle"),

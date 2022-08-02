@@ -31,6 +31,7 @@
                     "fields" => [
                         "subject",
                         "description",
+                        "resolution",
                         "tags"
                     ],
                     "customFields" => [
