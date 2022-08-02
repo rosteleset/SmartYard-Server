@@ -93,13 +93,12 @@
                 case "tags":
                     return {
                         id: "tags",
-                        type: "datetime",
+                        type: "select2",
                         tags: true,
                         createTags: false,
                         multiple: true,
                         title: i18n("tt.tags"),
                         placeholder: i18n("tt.tags"),
-                        value: (new Date()).getTime(),
                         options: tags,
                     };
 
