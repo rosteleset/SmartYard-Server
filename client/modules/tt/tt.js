@@ -38,6 +38,8 @@
             }
         }
 
+        console.log(project);
+
         if (isNaN(fieldId)) {
             // regular issue fields
             switch (fieldId) {

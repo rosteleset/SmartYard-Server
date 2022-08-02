@@ -85,6 +85,16 @@
                             $f[] = $customField["issue_custom_field_id"];
                         }
 
+                        $groups = $this->db->query("select project_role_id, gid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and gid is not null");
+                        $g = [];
+                        foreach ($groups as $group) {
+                            $g[] = [
+                                "projectRoleId" => $group["project_role_id"],
+                                "gid" => $group["gid"],
+                                "roleId" => $group["role_id"],
+                            ];
+                        }
+
                         $users = $this->db->query("select project_role_id, uid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and uid is not null");
                         $u = [];
                         foreach ($users as $user) {
@@ -95,14 +105,25 @@
                             ];
                         }
 
-                        $groups = $this->db->query("select project_role_id, gid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and gid is not null");
-                        $g = [];
-                        foreach ($groups as $group) {
-                            $g[] = [
-                                "projectRoleId" => $group["project_role_id"],
-                                "gid" => $group["gid"],
-                                "roleId" => $group["role_id"],
-                            ];
+                        foreach ($g as $_g) {
+                            $users = $this->db->query("select uid from core_users_groups where gid = {$_g["gid"]}");
+                            $f = false;
+                            foreach ($users as $user) {
+                                foreach ($u as &$_u) {
+                                    if ($_u["uid"] == $user["uid"]) {
+                                        $_u["projectRoleId"] = $_g["projectRoleId"];
+                                        $_u["roleId"] = $_g["roleId"];
+                                        $f = true;
+                                    }
+                                }
+                                if (!$f) {
+                                    $u[] = [
+                                        "projectRoleId" => $_g["project_role_id"],
+                                        "uid" => $user["uid"],
+                                        "roleId" => $_g["role_id"],
+                                    ];
+                                }
+                            }
                         }
 
                         $_projects[] = [
