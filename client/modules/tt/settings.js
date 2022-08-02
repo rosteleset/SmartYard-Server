@@ -444,13 +444,13 @@
                 {
                     id: "uid",
                     type: "select2",
-                    title: i18n("tt.user"),
+                    title: i18n("tt.projectUser"),
                     options: u,
                 },
                 {
                     id: "roleId",
                     type: "select2",
-                    title: i18n("tt.role"),
+                    title: i18n("tt.projectRole"),
                     options: r,
                 },
             ],
@@ -468,6 +468,7 @@
                 text: groups[i],
             })
         }
+
         let r = [];
         for (let i in roles) {
             r.push({
@@ -484,13 +485,13 @@
                 {
                     id: "gid",
                     type: "select2",
-                    title: i18n("tt.group"),
+                    title: i18n("tt.projectGroup"),
                     options: g,
                 },
                 {
                     id: "roleId",
                     type: "select2",
-                    title: i18n("tt.role"),
+                    title: i18n("tt.projectRole"),
                     options: r,
                 },
             ],
@@ -1109,7 +1110,7 @@
 
                 let roles = {};
                 for (let i in modules.tt.meta.roles) {
-                    roles[modules.tt.meta.roles[i].roleId] = $.trim(i18n("tt." + modules.tt.meta.roles[i].name) + " [" + modules.tt.meta.roles[i].level + "]");
+                    roles[modules.tt.meta.roles[i].roleId] = $.trim((modules.tt.meta.roles[i].nameDisplay?modules.tt.meta.roles[i].nameDisplay:i18n("tt." + modules.tt.meta.roles[i].name)) + " [" + modules.tt.meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1213,7 +1214,7 @@
 
                 let roles = {};
                 for (let i in modules.tt.meta.roles) {
-                    roles[modules.tt.meta.roles[i].roleId] = $.trim(i18n("tt." + modules.tt.meta.roles[i].name) + " [" + modules.tt.meta.roles[i].level + "]");
+                    roles[modules.tt.meta.roles[i].roleId] = $.trim((modules.tt.meta.roles[i].nameDisplay?modules.tt.meta.roles[i].nameDisplay:i18n("tt." + modules.tt.meta.roles[i].name)) + " [" + modules.tt.meta.roles[i].level + "]");
                 }
 
                 cardTable({

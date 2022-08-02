@@ -62,5 +62,12 @@
     "customFieldDelete": "Удалить поле",
     "confirmCustomFieldDelete": "Удалить настраиваемое поле #%s?",
     "removeUserFromProject": "Удалить пользователя из проекта",
-    "removeGroupFromProject": "Удалить группу из проекта"
+    "removeGroupFromProject": "Удалить группу из проекта",
+    "projectGroups": "Группы проекта",
+    "projectGroup": "Группа",
+    "projectRole": "Роль",
+    "addProjectGroup": "Добавить группу в проект",
+    "projectUsers": "Учатники проекта",
+    "projectUser": "Пользователь",
+    "addProjectUser": "Добавить участника в проект"
 }
