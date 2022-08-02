@@ -85,44 +85,62 @@
                             $f[] = $customField["issue_custom_field_id"];
                         }
 
-                        $groups = $this->db->query("select project_role_id, gid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and gid is not null");
+                        $u = [];
                         $g = [];
+
+                        $groups = $this->db->query("select project_role_id, gid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and gid is not null");
                         foreach ($groups as $group) {
                             $g[] = [
                                 "projectRoleId" => $group["project_role_id"],
                                 "gid" => $group["gid"],
                                 "roleId" => $group["role_id"],
                             ];
-                        }
-
-                        $users = $this->db->query("select project_role_id, uid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and uid is not null");
-                        $u = [];
-                        foreach ($users as $user) {
-                            $u[] = [
-                                "projectRoleId" => $user["project_role_id"],
-                                "uid" => $user["uid"],
-                                "roleId" => $user["role_id"],
-                            ];
-                        }
-
-                        foreach ($g as $_g) {
-                            $users = $this->db->query("select uid from core_users_groups where gid = {$_g["gid"]}");
-                            $f = false;
+                            $users = $this->db->query("select uid from core_users_groups where gid = {$group["gid"]}");
                             foreach ($users as $user) {
+                                $f = false;
                                 foreach ($u as &$_u) {
                                     if ($_u["uid"] == $user["uid"]) {
-                                        $_u["projectRoleId"] = $_g["projectRoleId"];
-                                        $_u["roleId"] = $_g["roleId"];
+                                        if ($_u["roleId"] < $group["role_id"]) {
+                                            $_u["projectRoleId"] = $group["project_role_id"];
+                                            $_u["roleId"] = $group["role_id"];
+                                            $_u["byGroup"] = true;
+                                            $_u["from"] = 4;
+                                        }
                                         $f = true;
                                     }
                                 }
                                 if (!$f) {
                                     $u[] = [
-                                        "projectRoleId" => $_g["project_role_id"],
+                                        "projectRoleId" => $group["project_role_id"],
                                         "uid" => $user["uid"],
-                                        "roleId" => $_g["role_id"],
+                                        "roleId" => $group["role_id"],
+                                        "byGroup" => true,
+                                        "from" => 3,
                                     ];
                                 }
+                            }
+                        }
+
+                        $users = $this->db->query("select project_role_id, uid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and uid is not null");
+                        foreach ($users as $user) {
+                            $f = false;
+                            foreach ($u as &$_u) {
+                                if ($_u["uid"] == $user["uid"]) {
+                                    $_u["projectRoleId"] = $user["project_role_id"];
+                                    $_u["roleId"] = $user["role_id"];
+                                    $_u["byGroup"] = false;
+                                    $_u["from"] = 2;
+                                    $f = true;
+                                }
+                            }
+                            if (!$f) {
+                                $u[] = [
+                                    "projectRoleId" => $user["project_role_id"],
+                                    "uid" => $user["uid"],
+                                    "roleId" => $user["role_id"],
+                                    "byGroup" => false,
+                                    "from" => 1,
+                                ];
                             }
                         }
 

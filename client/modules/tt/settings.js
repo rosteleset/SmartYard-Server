@@ -1147,33 +1147,35 @@
                         let rows = [];
 
                         for (let i in project.users) {
-                            rows.push({
-                                uid: project.users[i].projectRoleId,
-                                cols: [
-                                    {
-                                        data: project.users[i].projectRoleId,
-                                    },
-                                    {
-                                        data: users[project.users[i].uid],
-                                    },
-                                    {
-                                        data: roles[project.users[i].roleId],
-                                        nowrap: true,
-                                    },
-                                ],
-                                dropDown: {
-                                    items: [
+                            if (!project.users[i].byGroup) {
+                                rows.push({
+                                    uid: project.users[i].projectRoleId,
+                                    cols: [
                                         {
-                                            icon: "fas fa-trash-alt",
-                                            title: i18n("users.delete"),
-                                            class: "text-warning",
-                                            click: projectRoleId => {
-                                                modules.tt.settings.projectDeleteUser(projectRoleId, projectId);
-                                            },
+                                            data: project.users[i].projectRoleId,
+                                        },
+                                        {
+                                            data: users[project.users[i].uid],
+                                        },
+                                        {
+                                            data: roles[project.users[i].roleId],
+                                            nowrap: true,
                                         },
                                     ],
-                                },
-                            });
+                                    dropDown: {
+                                        items: [
+                                            {
+                                                icon: "fas fa-trash-alt",
+                                                title: i18n("users.delete"),
+                                                class: "text-warning",
+                                                click: projectRoleId => {
+                                                    modules.tt.settings.projectDeleteUser(projectRoleId, projectId);
+                                                },
+                                            },
+                                        ],
+                                    },
+                                });
+                            }
                         }
 
                         return rows;
