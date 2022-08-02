@@ -224,8 +224,12 @@ function cardForm(params) {
             case "tel":
             case "date":
             case "time":
+            case "datetime":
             case "datetime-local":
             case "password":
+                if (params.fields[i].type === "datetime") {
+                    params.fields[i].type = "datetime-local"
+                }
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
@@ -285,11 +289,13 @@ function cardForm(params) {
             case "tel":
             case "date":
             case "time":
-            case "datetime-local":
             case "password":
             case "text":
             case "area":
                 return $(`#${_prefix}${params.fields[i].id}`).val();
+
+            case "datetime-local":
+                return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
 
             case "multiselect":
                 let o = [];
@@ -317,7 +323,7 @@ function cardForm(params) {
     function ok() {
         $(".modalFormField").removeClass("is-invalid");
         $(".select2-invalid").removeClass("select2-invalid");
-        $(".summernote-invalid").removeClass("border-color-invalid");
+        $(".border-color-invalid").removeClass("border-color-invalid");
         let invalid = [];
         if (!params.delete || $(`#${_prefix}delete`).val() !== "yes") {
             for (let i in params.fields) {
@@ -422,11 +428,14 @@ function cardForm(params) {
                 case "tel":
                 case "date":
                 case "time":
-                case "datetime-local":
                 case "password":
                 case "text":
                 case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
+                    break;
+
+                case "datetime-local":
+                    $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value / 1000) + 'T' + date('H:i', params.fields[i].value / 1000));
                     break;
 
                 case "multiselect":
