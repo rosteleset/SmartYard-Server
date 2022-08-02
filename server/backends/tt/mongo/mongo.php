@@ -80,9 +80,9 @@
                         }
 
                         $customFields = $this->db->query("select issue_custom_field_id from tt_projects_custom_fields where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
-                        $f = [];
+                        $cf = [];
                         foreach ($customFields as $customField) {
-                            $f[] = $customField["issue_custom_field_id"];
+                            $cf[] = $customField["issue_custom_field_id"];
                         }
 
                         $u = [];
@@ -150,7 +150,7 @@
                             "project" => $project["project"],
                             "workflows" => $w,
                             "resolutions" => $r,
-                            "customFields" => $f,
+                            "customFields" => $cf,
                             "users" => $u,
                             "groups" => $g,
                         ];

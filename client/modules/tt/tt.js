@@ -11,10 +11,10 @@
         ], this);
     },
 
-    issueField2FormField: function (issue, field, projectId) {
+    issueField2FormFieldEditor: function (issue, field, projectId) {
         let fieldId;
 
-        if (typeof field == "object") {
+        if (typeof field === "object") {
             fieldId = field.field;
         } else{
             fieldId = field;
@@ -38,9 +38,7 @@
             }
         }
 
-        console.log(project);
-
-        if (isNaN(fieldId)) {
+        if (fieldId.substring(0, 4) !== "[cf]") {
             // regular issue fields
             switch (fieldId) {
                 case "subject":
@@ -115,7 +113,19 @@
                     break;
             }
         } else {
-            // custom fields
+            fieldId = fieldId.substring(4);
+
+            let cf = false;
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].field === fieldId) {
+                    cf = modules.tt.meta.customFields[i];
+                    break;
+                }
+            }
+
+            if (cf) {
+                console.log(cf);
+            }
         }
     },
 

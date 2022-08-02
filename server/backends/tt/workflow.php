@@ -35,12 +35,6 @@
             abstract public function initProject($projectId);
 
             /**
-             * @param $issueId
-             * @return boolean
-             */
-            abstract public function initIssue($issueId);
-
-            /**
              * @return false|array
              */
             abstract public function createIssueTemplate();

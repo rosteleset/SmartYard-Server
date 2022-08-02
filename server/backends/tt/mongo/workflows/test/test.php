@@ -32,11 +32,9 @@
                         "subject",
                         "description",
                         "resolution",
-                        "tags"
+                        "tags",
+//                        "[cf]test",
                     ],
-                    "customFields" => [
-
-                    ]
                 ];
             }
 

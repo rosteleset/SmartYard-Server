@@ -107,7 +107,7 @@
 
     },
 
-    createIssueForm(project, workflow) {
+    createIssueForm(projectId, workflow) {
         loadingStart();
         QUERY("tt", "workflowCreateIssueTemplate", {
             workflow: workflow,
@@ -115,9 +115,11 @@
         done(response => {
             document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
-            let projectName = project;
+            let projectName = projectId;
+            let project = false;
             for (let i in modules.tt.meta.projects) {
-                if (modules.tt.meta.projects[i].projectId == project) {
+                if (modules.tt.meta.projects[i].projectId == projectId) {
+                    project = modules.tt.meta.projects[i];
                     projectName = modules.tt.meta.projects[i].project?$.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"):modules.tt.meta.projects[i].acronym;
                 }
             }
@@ -146,10 +148,30 @@
                 },
             ];
 
+            let af = [];
             if (response.template && response.template.fields) {
                 for (let i in response.template.fields) {
-                    let f = modules.tt.issueField2FormField(false, response.template.fields[i], project);
-                    if (f) fields.push(f);
+                    if (af.indexOf(response.template.fields[i]) < 0) {
+                        let f = modules.tt.issueField2FormFieldEditor(false, response.template.fields[i], projectId);
+                        if (f) {
+                            fields.push(f);
+                            af.push(response.template.fields[i]);
+                        }
+                    }
+                }
+            }
+
+            for (let i in project.customFields) {
+                for (let j in modules.tt.meta.customFields) {
+                    if (modules.tt.meta.customFields[j].customFieldId === project.customFields[i]) {
+                        if (af.indexOf("[cf]" + modules.tt.meta.customFields[j].field) < 0) {
+                            let f = modules.tt.issueField2FormFieldEditor(false, "[cf]" + modules.tt.meta.customFields[j].field, projectId);
+                            if (f) {
+                                fields.push(f);
+                                af.push("[cf]" + modules.tt.meta.customFields[j].field);
+                            }
+                        }
+                    }
                 }
             }
 
