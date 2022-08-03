@@ -118,9 +118,6 @@
                         title: i18n("tt.resolution"),
                         options: resolutions,
                         value: (issue && issue.resolution)?issue.resolution:-1,
-                        validate: v => {
-                            return !!v;
-                        },
                     };
 
                 case "tags":
@@ -139,14 +136,21 @@
                     return {
                         id: "assigned",
                         type: "select2",
-                        multiple: false,
+                        multiple: true,
                         title: i18n("tt.assigned"),
                         placeholder: i18n("tt.assigned"),
-                        options: peoples(project, false),
+                        options: peoples(project, true),
                     };
 
                 case "watchers":
-                    break;
+                    return {
+                        id: "watchers",
+                        type: "select2",
+                        multiple: true,
+                        title: i18n("tt.watchers"),
+                        placeholder: i18n("tt.watchers"),
+                        options: peoples(project, false),
+                    };
 
                 case "plans":
                     break;

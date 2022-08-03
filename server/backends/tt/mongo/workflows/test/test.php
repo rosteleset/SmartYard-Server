@@ -33,6 +33,7 @@
                         "description",
                         "resolution",
                         "assigned",
+                        "watchers",
                         "tags",
 //                        "[cf]test",
                     ],
