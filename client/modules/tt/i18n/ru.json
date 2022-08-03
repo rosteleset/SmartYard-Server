@@ -72,5 +72,7 @@
     "projectUser": "Пользователь",
     "addProjectUser": "Добавить участника в проект",
     "assigned": "Назначенные",
-    "watchers": "Наблюдатели"
+    "watchers": "Наблюдатели",
+    "usersMultiple": "Несколько пользователей",
+    "usersWithGroups": "Включая группы"
 }
