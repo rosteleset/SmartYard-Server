@@ -30,7 +30,7 @@
             if ($user_phone == '89123456782') { // фейковый аккаунт №2
                 $pin = '1002';
             } else {
-                $pin = explode(":", $isdn->sendCode($user_phone))[0];
+                // $pin = explode(":", $isdn->sendCode($user_phone))[0];
             }
             $redis->setex("userpin_".$user_phone, 60, $pin);
             
