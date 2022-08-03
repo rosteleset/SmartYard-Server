@@ -36,7 +36,7 @@
             
             // TODO: добавить в ответ способ подтверждения телефона, указанный в конфиге. (по умолчанию - по смс)
             // response();
-            response(200, [ "method" => "incomingCall", "confirmationNumbers" => $isdn->confirmNumbers()]); 
+            response(200, [ "method" => "outgoingCall", "confirmationNumbers" => $isdn->confirmNumbers()]); 
         }
     } else {
         response(422);
