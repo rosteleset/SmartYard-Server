@@ -1,6 +1,6 @@
 ({
     startPage: 1,
-    meta: false,
+    meta: [],
 
     init: function () {
         if (AVAIL("accounts", "user")) {

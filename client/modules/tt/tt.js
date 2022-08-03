@@ -22,12 +22,26 @@
 
             if (withGroups) {
                 for (let i in project.groups) {
-
+                    for (let j in modules.groups.meta) {
+                        if (modules.groups.meta[j].gid == project.groups[i].gid) {
+                            p.push({
+                                id: project.groups[i].gid + 1000000000,
+                                text: modules.groups.meta[j].name + " [" + i18n("groups.group") + "]",
+                            });
+                        }
+                    }
                 }
             }
 
             for (let i in project.users) {
-
+                for (let j in modules.users.meta) {
+                    if (modules.users.meta[j].uid == project.users[i].uid && !project.users[i].byGroup) {
+                        p.push({
+                            id: project.users[i].uid,
+                            text: modules.users.meta[j].realName,
+                        });
+                    }
+                }
             }
 
             return p;
@@ -125,10 +139,10 @@
                     return {
                         id: "assigned",
                         type: "select2",
-                        multiple: true,
+                        multiple: false,
                         title: i18n("tt.assigned"),
                         placeholder: i18n("tt.assigned"),
-                        options: peoples(project, true),
+                        options: peoples(project, false),
                     };
 
                 case "watchers":

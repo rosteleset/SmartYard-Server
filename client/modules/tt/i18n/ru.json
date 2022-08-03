@@ -69,5 +69,6 @@
     "addProjectGroup": "Добавить группу в проект",
     "projectUsers": "Учатники проекта",
     "projectUser": "Пользователь",
-    "addProjectUser": "Добавить участника в проект"
+    "addProjectUser": "Добавить участника в проект",
+    "assigned": "Назначенный"
 }
