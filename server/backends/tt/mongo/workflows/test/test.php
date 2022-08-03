@@ -32,6 +32,7 @@
                         "subject",
                         "description",
                         "resolution",
+                        "assigned",
                         "tags",
 //                        "[cf]test",
                     ],

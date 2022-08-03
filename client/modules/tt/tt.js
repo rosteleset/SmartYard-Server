@@ -12,6 +12,27 @@
     },
 
     issueField2FormFieldEditor: function (issue, field, projectId) {
+
+        function peoples(project, withGroups) {
+            let p = [];
+
+            console.log(project);
+            console.log(modules.users.meta);
+            console.log(modules.groups.meta);
+
+            if (withGroups) {
+                for (let i in project.groups) {
+
+                }
+            }
+
+            for (let i in project.users) {
+
+            }
+
+            return p;
+        }
+
         let fieldId;
 
         if (typeof field === "object") {
@@ -101,7 +122,14 @@
                     };
 
                 case "assigned":
-                    break;
+                    return {
+                        id: "assigned",
+                        type: "select2",
+                        multiple: true,
+                        title: i18n("tt.assigned"),
+                        placeholder: i18n("tt.assigned"),
+                        options: peoples(project, true),
+                    };
 
                 case "watchers":
                     break;

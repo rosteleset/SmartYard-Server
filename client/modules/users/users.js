@@ -1,11 +1,22 @@
 ({
     startPage: 1,
+    meta: false,
 
     init: function () {
         if (AVAIL("accounts", "user")) {
             leftSide("fas fa-fw fa-user", i18n("users.users"), "#users", true);
         }
         moduleLoaded("users", this);
+    },
+
+    loadUsers: function (callback) {
+        GET("accounts", "users").
+        done(users => {
+            modules.users.meta = users.users;
+        }).
+        always(() => {
+            if (typeof callback) callback();
+        });
     },
 
     /*
