@@ -328,6 +328,7 @@ function cardForm(params) {
         if (!params.delete || $(`#${_prefix}delete`).val() !== "yes") {
             for (let i in params.fields) {
                 if (params.fields[i].id === "-") continue;
+                if (params.fields[i].hidden) continue;
                 if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
                     if (!params.fields[i].validate(getVal(i), _prefix)) {
                         invalid.push(i);

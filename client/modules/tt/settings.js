@@ -402,6 +402,10 @@
                             id: "MultiSelect",
                             text: i18n("tt.customFieldTypeMultiSelect"),
                         },
+                        {
+                            id: "Users",
+                            text: i18n("tt.customFieldTypeUsers"),
+                        },
                     ]
                 },
                 {
@@ -840,7 +844,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "Select" || cf.type === "MultiSelect",
+                            hidden: cf.type === "Select" || cf.type === "MultiSelect" || cf.type === "Users",
                         },
                         {
                             id: "format",
@@ -849,7 +853,7 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type === "Text" || cf.type === "MultiSelect",
+                            hidden: cf.type === "Text" || cf.type === "MultiSelect" || cf.type === "Users",
                         },
                         {
                             id: "link",
@@ -870,12 +874,56 @@
                                 return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                             }
                         },
+                        {
+                            id: "usersMultiple",
+                            type: "select",
+                            title: i18n("tt.usersMultiple"),
+                            value: (cf.format && cf.format.indexOf("usersMultiple") >= 0)?"1":"0",
+                            options: [
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                            ],
+                            hidden: cf.type !== "Users",
+                        },
+                        {
+                            id: "usersWithGroups",
+                            type: "select",
+                            title: i18n("tt.usersWithGroups"),
+                            value: (cf.format && cf.format.indexOf("usersWithGroups") >= 0)?"1":"0",
+                            options: [
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                            ],
+                            hidden: cf.type !== "Users",
+                        },
                     ],
                     delete: i18n("tt.customFieldDelete"),
                     callback: function (result) {
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
+                            if (cf.type === "Users") {
+                                result.format = "";
+                                if (result.usersMultiple === "1") {
+                                    result.format += " usersMultiple";
+                                }
+                                if (result.usersWithGroups === "1") {
+                                    result.format += " usersWithGroups";
+                                }
+                                result.format = $.trim(result.format);
+                            }
                             modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options);
                         }
                     },

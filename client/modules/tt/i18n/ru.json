@@ -55,6 +55,7 @@
     "customFieldTypeReal": "Число",
     "customFieldTypeSelect": "Выбор",
     "customFieldTypeMultiSelect": "Множественный выбор",
+    "customFieldTypeUsers": "Пользователи и группы",
     "customFieldRegex": "Регулярное выражение",
     "customFieldLink": "Ссылка для URL",
     "customFieldDisplayFormat": "Форматирование",
