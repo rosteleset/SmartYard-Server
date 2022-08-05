@@ -530,7 +530,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, indexes from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -555,6 +555,7 @@
                             "regex" => $customField["regex"],
                             "link" => $customField["link"],
                             "format" => $customField["format"],
+                            "indexes" => $customField["indexes"],
                             "options" => $_options,
                         ];
                     }
@@ -753,9 +754,13 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes)
             {
                 if (!checkInt($customFieldId)) {
+                    return false;
+                }
+
+                if (!checkInt($indexes)) {
                     return false;
                 }
 
@@ -803,7 +808,8 @@
                                 field_description = :field_description,
                                 regex = :regex,
                                 link = :link,
-                                format = :format
+                                format = :format,
+                                indexes = :indexes
                             where
                                 issue_custom_field_id = $customFieldId
                         ");
@@ -814,7 +820,10 @@
                             ":regex" => $regex,
                             ":link" => $link,
                             ":format" => $format,
+                            ":indexes" => $indexes,
                         ]);
+
+                        // TODO: create and remove indexes
 
                         if ($cf["type"] === "Select" || $cf["type"] === "MultiSelect") {
                             $t = explode("\n", trim($options));
