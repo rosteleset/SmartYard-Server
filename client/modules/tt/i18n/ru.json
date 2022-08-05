@@ -74,5 +74,8 @@
     "assigned": "Назначенные",
     "watchers": "Наблюдатели",
     "usersMultiple": "Несколько пользователей",
-    "usersWithGroups": "Включая группы"
+    "usersWithGroups": "Включая группы",
+    "index": "Индекс",
+    "indexes": "Индексирование",
+    "fullText": "Полнотекстовый поиск"
 }

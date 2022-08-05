@@ -261,7 +261,7 @@
         done(modules.tt.settings.renderRoles);
     },
 
-    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options) {
+    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options, indexes) {
         loadingStart();
         PUT("tt", "customField", customFieldId, {
             fieldDisplay: fieldDisplay,
@@ -270,6 +270,7 @@
             format: format,
             link: link,
             options: options,
+            indexes: indexes,
         }).
         fail(FAIL).
         done(() => {
@@ -908,6 +909,26 @@
                             ],
                             hidden: cf.type !== "Users",
                         },
+                        {
+                            id: "indexes",
+                            type: "select",
+                            title: i18n("tt.indexes"),
+                            value: cf.indexes,
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("tt.index"),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("tt.fullText"),
+                                },
+                            ],
+                        },
                     ],
                     delete: i18n("tt.customFieldDelete"),
                     callback: function (result) {
@@ -924,7 +945,7 @@
                                 }
                                 result.format = $.trim(result.format);
                             }
-                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options);
+                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes);
                         }
                     },
                     cancel: function () {
