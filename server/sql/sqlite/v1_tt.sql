@@ -69,7 +69,8 @@ CREATE TABLE tt_issue_custom_fields
     regex text,
     link text,
     format text,
-    indexes integer                                                                                                     -- 0 - none, 1 - field index, 2 - full text search index
+    indexes integer,                                                                                                    -- 0 - none, 1 - field index, 2 - full text search index
+    required integer
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(field);
 

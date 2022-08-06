@@ -261,7 +261,7 @@
         done(modules.tt.settings.renderRoles);
     },
 
-    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options, indexes) {
+    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options, indexes, required) {
         loadingStart();
         PUT("tt", "customField", customFieldId, {
             fieldDisplay: fieldDisplay,
@@ -271,6 +271,7 @@
             link: link,
             options: options,
             indexes: indexes,
+            required: required,
         }).
         fail(FAIL).
         done(() => {
@@ -929,6 +930,22 @@
                                 },
                             ],
                         },
+                        {
+                            id: "required",
+                            type: "select",
+                            title: i18n("tt.required"),
+                            value: cf.required,
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                            ],
+                        },
                     ],
                     delete: i18n("tt.customFieldDelete"),
                     callback: function (result) {
@@ -945,7 +962,7 @@
                                 }
                                 result.format = $.trim(result.format);
                             }
-                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes);
+                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes, result.required);
                         }
                     },
                     cancel: function () {

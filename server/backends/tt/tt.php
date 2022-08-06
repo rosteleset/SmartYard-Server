@@ -269,9 +269,11 @@
              * @param $format
              * @param $link
              * @param $options
+             * @param $indexes
+             * @param $required
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required);
 
             /**
              * @param $customFieldId

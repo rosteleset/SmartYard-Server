@@ -530,7 +530,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, indexes from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -556,6 +556,7 @@
                             "link" => $customField["link"],
                             "format" => $customField["format"],
                             "indexes" => $customField["indexes"],
+                            "required" => $customField["required"],
                             "options" => $_options,
                         ];
                     }
@@ -754,13 +755,17 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required)
             {
                 if (!checkInt($customFieldId)) {
                     return false;
                 }
 
                 if (!checkInt($indexes)) {
+                    return false;
+                }
+
+                if (!checkInt($required)) {
                     return false;
                 }
 
@@ -809,7 +814,8 @@
                                 regex = :regex,
                                 link = :link,
                                 format = :format,
-                                indexes = :indexes
+                                indexes = :indexes,
+                                required = :required
                             where
                                 issue_custom_field_id = $customFieldId
                         ");
@@ -821,6 +827,7 @@
                             ":link" => $link,
                             ":format" => $format,
                             ":indexes" => $indexes,
+                            ":required" => $required,
                         ]);
 
                         // TODO: create and remove indexes
