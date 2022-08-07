@@ -3,7 +3,9 @@
 
     require_once __DIR__ . '/mongodb/autoload.php';
 
-    $collection = (new MongoDB\Client)->tt->issues;
+    $mongo = new MongoDB\Client();
+    $db = $mongo->tt;
+    $collection = $db->issues;
 
 /*
     $insertOneResult = $collection->insertOne([
@@ -116,4 +118,22 @@
     $collection = (new MongoDB\Client)->tt->$fsFiles;
 
     $collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "email" => "mmikel@mail.ru" ] ]);
+*/
+
+// drop index
+/*
+    $collection->dropIndex("fullText");
+*/
+
+// create full-text search index for username and name fields
+/*
+    $collection->createIndex([ "username" => "text", "name" => "text" ], [ "default_language" => "russian", "name" => "fullText" ]);
+*/
+
+// list indexes
+/*
+    print_r(array_map(function ($indexInfo) {
+            print_r($indexInfo);
+         return ['v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace()];
+     }, iterator_to_array($collection->listIndexes())));
 */
