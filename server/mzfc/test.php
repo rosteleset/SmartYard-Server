@@ -140,7 +140,7 @@
 
 // fullText search
 /*
-    $cursor = $collection->find([ '$text' => [ '$search' => "ADMIN" ] ]);
+    $cursor = $collection->find([ '$text' => [ '$search' => "ADMIN -user" ] ]);
 
     foreach ($cursor as $document) {
         print_r(json_decode(json_encode($document), true));
