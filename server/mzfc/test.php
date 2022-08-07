@@ -137,3 +137,12 @@
          return ['v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace()];
      }, iterator_to_array($collection->listIndexes())));
 */
+
+// fullText search
+/*
+    $cursor = $collection->find([ '$text' => [ '$search' => "ADMIN" ] ]);
+
+    foreach ($cursor as $document) {
+        print_r(json_decode(json_encode($document), true));
+    }
+*/
