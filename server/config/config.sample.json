@@ -86,8 +86,8 @@
             "backend": "easysms",
             "secret": "<-- your secret here -->",
             "mobile": "https://rbt.lanta.me/lanta/mobile",
-            "shot": "https://rbt.lanta.me/shot/%hash%.jpg",
-            "live": "https://rbt.lanta.me/live/%hash%.jpg"
+            "shot": "https://rbt.lanta.me/shot/%s.jpg",
+            "live": "https://rbt.lanta.me/live/%s.jpg"
         }
     },
 
