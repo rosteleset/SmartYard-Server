@@ -31,9 +31,9 @@
                     "fields" => [
                         "subject",
                         "description",
-                        "resolution",
+//                        "resolution",
                         "assigned",
-                        "watchers",
+//                        "watchers",
                         "tags",
 //                        "[cf]test",
                     ],
