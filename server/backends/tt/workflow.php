@@ -69,26 +69,34 @@
             /**
              * @return false|array
              */
-            abstract public function getFilters();
+            public function getFilters() {
+
+            }
 
             /**
              * @param $name
              * @param $filter
              * @return boolean
              */
-            abstract public function addFilter($name, $filter);
+            public function addFilter($name, $filter) {
+
+            }
 
             /**
              * @param $name
              * @param $filter
              * @return boolean
              */
-            abstract public function modifyFilter($name, $filter);
+            public function modifyFilter($name, $filter) {
+
+            }
 
             /**
              * @param $name
              * @return boolean
              */
-            abstract public function deleteFilter($name);
+            public function deleteFilter($name) {
+
+            }
         }
     }
