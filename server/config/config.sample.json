@@ -105,6 +105,10 @@
         }
     ],
 
+    "telegram": {
+        "token": "your_bot_token_here"
+    },
+
     "stun_servers": [
         "stun:37.235.209.140:3478"
     ],

@@ -1170,5 +1170,45 @@
                     or
                     $this->db->modify("update houses_subscribers_mobile set voip_token = null where voip_token = :voip_token", [ "voip_token" => $token ]);
             }
+
+            /**
+             * @inheritDoc
+             */
+            function getEntrances($by, $query)
+            {
+                $where = '';
+                $p = [];
+
+                switch ($by) {
+                    case "domophoneId":
+                        $where = "house_domophone_id = :house_domophone_id and domophone_output = :domophone_output";
+                        $p = [
+                            "house_domophone_id" => $query["domophoneId"],
+                            "domophone_output" => $query["output"],
+                        ];
+                        break;
+                }
+
+                $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
+
+                return $this->db->get($q,
+                    $p,
+                    [
+                        "house_entrance_id" => "entranceId",
+                        "entrance_type" => "entranceType",
+                        "entrance" => "entrance",
+                        "lat" => "lat",
+                        "lon" => "lon",
+                        "shared" => "shared",
+                        "house_domophone_id" => "domophoneId",
+                        "domophone_output" => "domophoneOutput",
+                        "cms" => "cms",
+                        "cms_type" => "cmsType",
+                        "camera_id" => "cameraId",
+                        "cms_levels" => "cmsLevels",
+                        "locks_disabled" => "locksDisabled",
+                    ]
+                );
+            }
         }
     }
