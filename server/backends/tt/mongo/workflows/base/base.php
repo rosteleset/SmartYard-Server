@@ -27,7 +27,14 @@
              */
             public function createIssueTemplate()
             {
-                // TODO: Implement createIssueTemplate() method.
+                return [
+                    "fields" => [
+                        "subject",
+//                        "description",
+                        "resolution",
+                        "tags"
+                    ],
+                ];
             }
 
             /**
