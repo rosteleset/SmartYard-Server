@@ -83,10 +83,6 @@
                 // не используется
             }
 
-            public function camshot(): string {
-                return $this->api_call('cgi-bin/images_cgi', [ 'channel' => 0 ]);
-            }
-
             public function clear_apartment(int $apartment = -1) {
                 // не используется
             }
