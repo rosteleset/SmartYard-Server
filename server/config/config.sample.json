@@ -105,6 +105,10 @@
         }
     ],
 
+    "stun_servers": [
+        "stun:37.235.209.140:3478"
+    ],
+
     "real_ip_header": [
         "HTTP_X_FORWARDED_FOR",
         "REMOTE_ADDR"
