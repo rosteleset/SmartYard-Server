@@ -65,5 +65,30 @@
              * @return false|string
              */
             abstract public function createIssue($issue);
+
+            /**
+             * @return false|array
+             */
+            abstract public function getFilters();
+
+            /**
+             * @param $name
+             * @param $filter
+             * @return boolean
+             */
+            abstract public function addFilter($name, $filter);
+
+            /**
+             * @param $name
+             * @param $filter
+             * @return boolean
+             */
+            abstract public function modifyFilter($name, $filter);
+
+            /**
+             * @param $name
+             * @return boolean
+             */
+            abstract public function deleteFilter($name);
         }
     }

@@ -22,6 +22,7 @@ __pycache__
 /server/lib/htmlpurifier/
 /server/db/internal.db
 /server/db/mongo/
+/server/storage/
 /server/config/config.json
 /server/vendor
 /api/

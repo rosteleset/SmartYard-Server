@@ -16,15 +16,6 @@
             /**
              * @inheritDoc
              */
-            public function initIssue($issueId)
-            {
-                error_log("------- TEST -------------" . $issueId . "++++++++++++++++++++++");
-                return true;
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function createIssueTemplate()
             {
                 return [
