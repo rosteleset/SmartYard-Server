@@ -252,6 +252,7 @@
 
                 case "camshot":
                     $households = loadBackend("households");
+/*
                     $domophone = $households->getDomophone($params["domophoneId"]);
 
                     $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
@@ -264,6 +265,24 @@
                     ]));
 
                     echo $params["hash"];
+*/
+
+                    $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
+
+                    if ($entrances && $entrances[0]) {
+                        $camera = $households->getCamera($entrances[0]["cameraId"]);
+                        $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
+
+                        $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
+                        $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                            "model" => $camera["model"],
+                            "url" => $camera["url"],
+                            "credentials" => $camera["credentials"],
+                        ]));
+
+                        echo $params["hash"];
+                    }
+
                     break;
             }
             break;

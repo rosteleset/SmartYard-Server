@@ -20,6 +20,12 @@ namespace backends\cameras
         abstract public function getCameras();
 
         /**
+         * @param $cameraId
+         * @return false|array
+         */
+        abstract public function getCamera($cameraId);
+
+        /**
          * @return false|array
          */
         abstract public function getModels();
@@ -27,27 +33,25 @@ namespace backends\cameras
         /**
          * @param $enabled
          * @param $model
-         * @param $ip
-         * @param $port
+         * @param $url
          * @param $stream
          * @param $credentials
          * @param $comment
          * @return false|integer
          */
-        abstract public function addCamera($enabled, $model, $ip, $port, $stream, $credentials, $comment);
+        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $comment);
 
         /**
          * @param $cameraId
          * @param $enabled
          * @param $model
-         * @param $ip
-         * @param $port
+         * @param $url
          * @param $stream
          * @param $credentials
          * @param $comment
          * @return boolean
          */
-        abstract public function modifyCamera($cameraId, $enabled, $model, $ip, $port, $stream, $credentials, $comment);
+        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $comment);
 
         /**
          * @param $cameraId

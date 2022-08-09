@@ -71,22 +71,17 @@
                     options: models,
                 },
                 {
-                    id: "ip",
+                    id: "url",
                     type: "text",
-                    title: i18n("cameras.ip"),
-                    placeholder: "IP",
+                    title: i18n("cameras.url"),
+                    placeholder: "http://",
                     validate: v => {
-                        return !!ip2long(v);
-                    },
-                },
-                {
-                    id: "port",
-                    type: "text",
-                    title: i18n("cameras.port"),
-                    placeholder: "80",
-                    value: "80",
-                    validate: v => {
-                        return !!parseInt(v);
+                        try {
+                            new URL(v);
+                            return true;
+                        } catch (_) {
+                            return false;
+                        }
                     },
                 },
                 {
@@ -94,6 +89,14 @@
                     type: "text",
                     title: i18n("cameras.stream"),
                     placeholder: "rtsp://",
+                    validate: v => {
+                        try {
+                            new URL(v);
+                            return true;
+                        } catch (_) {
+                            return false;
+                        }
+                    },
                 },
                 {
                     id: "credentials",
@@ -172,23 +175,18 @@
                         value: camera.model,
                     },
                     {
-                        id: "ip",
+                        id: "url",
                         type: "text",
-                        title: i18n("cameras.ip"),
-                        placeholder: "IP",
-                        value: camera.ip,
+                        title: i18n("cameras.url"),
+                        placeholder: "http://",
+                        value: camera.url,
                         validate: v => {
-                            return !!ip2long(v);
-                        },
-                    },
-                    {
-                        id: "port",
-                        type: "text",
-                        title: i18n("cameras.port"),
-                        placeholder: "80",
-                        value: camera.port,
-                        validate: v => {
-                            return !!parseInt(v);
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
                         },
                     },
                     {
@@ -197,6 +195,14 @@
                         title: i18n("cameras.stream"),
                         placeholder: "rtsp://",
                         value: camera.stream,
+                        validate: v => {
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
+                        },
                     },
                     {
                         id: "credentials",
@@ -264,7 +270,7 @@
                         title: i18n("cameras.cameraId"),
                     },
                     {
-                        title: i18n("cameras.ip"),
+                        title: i18n("cameras.url"),
                     },
                     {
                         title: i18n("cameras.comment"),
@@ -282,7 +288,7 @@
                                     data: modules.cameras.meta.cameras[i].cameraId,
                                 },
                                 {
-                                    data: modules.cameras.meta.cameras[i].ip,
+                                    data: modules.cameras.meta.cameras[i].url,
                                     nowrap: true,
                                 },
                                 {
