@@ -981,7 +981,7 @@
     },
 
     deleteCustomField: function (customFieldId) {
-        mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDeleteDelete")}`, () => {
+        mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDelete")}`, () => {
             modules.tt.settings.doDeleteCustomField(customFieldId);
         });
     },

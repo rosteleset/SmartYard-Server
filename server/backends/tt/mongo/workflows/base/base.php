@@ -30,7 +30,7 @@
                 return [
                     "fields" => [
                         "subject",
-//                        "description",
+                        "description",
                         "resolution",
                         "tags"
                     ],

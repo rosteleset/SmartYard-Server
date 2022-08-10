@@ -82,5 +82,15 @@
     "index": "Индекс",
     "indexes": "Индексирование",
     "fullText": "Полнотекстовый поиск",
-    "required": "Обязательное поле"
+    "required": "Обязательное поле",
+    "resolutionDelete": "Удалить резолюцию",
+    "confirmResolutionDelete": "Удалить резолюцию #%s?",
+    "resolutionWasDeleted": "Резолюция удалена",
+    "resolutionWasAdded": "Резолюция добавлена",
+    "roleDisplay": "Отображать как",
+    "addCustomField": "Добавить настраиваемое поле",
+    "customFieldWasAdded": "Настраиваемое поле добавлено",
+    "customFieldDelete": "Удалить поле",
+    "customFieldWasDeleted": "Поле удалено",
+    "customFieldWasChanged": "Поле изменено"
 }

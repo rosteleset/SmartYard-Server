@@ -25,11 +25,7 @@ function cardForm(params) {
         h += `</div>`;
     }
 
-    if (params.target) {
-        h += `<div class="card-body table-responsive p-0">`;
-    } else {
-        h += `<div class="card-body table-responsive p-0" style="overflow-y: visible; overflow-x: hidden;">`;
-    }
+    h += `<div class="card-body table-responsive p-0">`;
 
     h += '<table class="table';
     if (params.borderless) {
