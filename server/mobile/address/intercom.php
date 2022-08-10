@@ -50,15 +50,32 @@
     }
 
     $flat = $households->getFlat($flat_id);
-
+    /*
+     "flatId": "1",
+		"floor": "10",
+		"flat": "69",
+		"autoBlock": "0",
+		"manualBlock": "0",
+		"openCode": "12345",
+		"autoOpen": "1970-01-01 03:00:00",
+		"whiteRabbit": "0",
+		"sipEnabled": "0",
+		"sipPassword": "",
+		"lastOpened": null,
+		"cmsEnabled": "1",
+		"entrances": []
+    */
+    
+    response(200, $flat);
     $ret = [];
     // $ret['FRSDisabled'] = 't';
     $ret['allowDoorCode'] = 't';
-    $ret['doorCode'] = $flat['openCode'];
-    $ret['CMS'] = 't';
-    $ret['VoIP'] = 't';
-    $ret['autoOpen'] = '2021-01-01 00:00:00';
-    $ret['whiteRabbit'] = "5";
+    $ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
+    $ret['CMS'] = @$flat['cmsEnabled']?'t':'f';
+    $ret['VoIP'] = 't'; // TODO: разобраться как отключить voip для конкретного пользователя
+    $ret['autoOpen'] = $flat['autoOpen'];
+    $ret['whiteRabbit'] = intval($flat['whiteRabbit']);
+    
     
     if ($ret) {
         response(200, $ret);
