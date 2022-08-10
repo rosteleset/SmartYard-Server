@@ -10,7 +10,7 @@
              * @var object $redis link to redis object
              */
 
-            protected $config, $db, $redis;
+            protected $config, $db, $redis, $filterType;
 
             /**
              * default constructor
@@ -33,12 +33,6 @@
              * @return boolean
              */
             abstract public function initProject($projectId);
-
-            /**
-             * @param $issueId
-             * @return boolean
-             */
-            abstract public function initIssue($issueId);
 
             /**
              * @return false|array
@@ -71,5 +65,38 @@
              * @return false|string
              */
             abstract public function createIssue($issue);
+
+            /**
+             * @return false|array
+             */
+            public function getFilters() {
+
+            }
+
+            /**
+             * @param $name
+             * @param $filter
+             * @return boolean
+             */
+            public function addFilter($name, $filter) {
+
+            }
+
+            /**
+             * @param $name
+             * @param $filter
+             * @return boolean
+             */
+            public function modifyFilter($name, $filter) {
+
+            }
+
+            /**
+             * @param $name
+             * @return boolean
+             */
+            public function deleteFilter($name) {
+
+            }
         }
     }

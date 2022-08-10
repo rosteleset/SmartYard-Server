@@ -9,25 +9,25 @@
         use api\api;
 
         /**
-         * customField method
+         * resolution method
          */
 
-        class customField extends api {
+        class tag extends api {
 
             public static function POST($params) {
-                $customFieldId = loadBackend("tt")->addCustomField($params["type"], $params["field"], $params["fieldDisplay"]);
+                $tagId = loadBackend("tt")->addTag($params["projectId"], $params["tag"]);
 
-                return api::ANSWER($customFieldId, ($customFieldId !== false)?"customFieldId":"notAcceptable");
+                return api::ANSWER($tagId, ($tagId !== false)?"tagId":"notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indexes"], $params["required"]);
+                $success = loadBackend("tt")->modifyTag($params["_id"], $params["tag"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
-                $success = loadBackend("tt")->deleteCustomField($params["_id"]);
+                $success = loadBackend("tt")->deleteTag($params["_id"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

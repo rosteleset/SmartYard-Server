@@ -80,29 +80,68 @@
                         }
 
                         $customFields = $this->db->query("select issue_custom_field_id from tt_projects_custom_fields where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
-                        $f = [];
+                        $cf = [];
                         foreach ($customFields as $customField) {
-                            $f[] = $customField["issue_custom_field_id"];
+                            $cf[] = $customField["issue_custom_field_id"];
                         }
 
-                        $users = $this->db->query("select project_role_id, uid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and uid is not null");
                         $u = [];
-                        foreach ($users as $user) {
-                            $u[] = [
-                                "projectRoleId" => $user["project_role_id"],
-                                "uid" => $user["uid"],
-                                "roleId" => $user["role_id"],
-                            ];
-                        }
+                        $g = [];
 
                         $groups = $this->db->query("select project_role_id, gid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and gid is not null");
-                        $g = [];
                         foreach ($groups as $group) {
                             $g[] = [
                                 "projectRoleId" => $group["project_role_id"],
                                 "gid" => $group["gid"],
                                 "roleId" => $group["role_id"],
                             ];
+                            $users = $this->db->query("select uid from core_users_groups where gid = {$group["gid"]}");
+                            foreach ($users as $user) {
+                                $f = false;
+                                foreach ($u as &$_u) {
+                                    if ($_u["uid"] == $user["uid"]) {
+                                        if ($_u["roleId"] < $group["role_id"]) {
+                                            $_u["projectRoleId"] = $group["project_role_id"];
+                                            $_u["roleId"] = $group["role_id"];
+                                            $_u["byGroup"] = true;
+                                            $_u["from"] = 4;
+                                        }
+                                        $f = true;
+                                    }
+                                }
+                                if (!$f) {
+                                    $u[] = [
+                                        "projectRoleId" => $group["project_role_id"],
+                                        "uid" => $user["uid"],
+                                        "roleId" => $group["role_id"],
+                                        "byGroup" => true,
+                                        "from" => 3,
+                                    ];
+                                }
+                            }
+                        }
+
+                        $users = $this->db->query("select project_role_id, uid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and uid is not null");
+                        foreach ($users as $user) {
+                            $f = false;
+                            foreach ($u as &$_u) {
+                                if ($_u["uid"] == $user["uid"]) {
+                                    $_u["projectRoleId"] = $user["project_role_id"];
+                                    $_u["roleId"] = $user["role_id"];
+                                    $_u["byGroup"] = false;
+                                    $_u["from"] = 2;
+                                    $f = true;
+                                }
+                            }
+                            if (!$f) {
+                                $u[] = [
+                                    "projectRoleId" => $user["project_role_id"],
+                                    "uid" => $user["uid"],
+                                    "roleId" => $user["role_id"],
+                                    "byGroup" => false,
+                                    "from" => 1,
+                                ];
+                            }
                         }
 
                         $_projects[] = [
@@ -111,7 +150,7 @@
                             "project" => $project["project"],
                             "workflows" => $w,
                             "resolutions" => $r,
-                            "customFields" => $f,
+                            "customFields" => $cf,
                             "users" => $u,
                             "groups" => $g,
                         ];
@@ -491,7 +530,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -516,6 +555,8 @@
                             "regex" => $customField["regex"],
                             "link" => $customField["link"],
                             "format" => $customField["format"],
+                            "indexes" => $customField["indexes"],
+                            "required" => $customField["required"],
                             "options" => $_options,
                         ];
                     }
@@ -714,9 +755,17 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required)
             {
                 if (!checkInt($customFieldId)) {
+                    return false;
+                }
+
+                if (!checkInt($indexes)) {
+                    return false;
+                }
+
+                if (!checkInt($required)) {
                     return false;
                 }
 
@@ -764,7 +813,9 @@
                                 field_description = :field_description,
                                 regex = :regex,
                                 link = :link,
-                                format = :format
+                                format = :format,
+                                indexes = :indexes,
+                                required = :required
                             where
                                 issue_custom_field_id = $customFieldId
                         ");
@@ -775,7 +826,11 @@
                             ":regex" => $regex,
                             ":link" => $link,
                             ":format" => $format,
+                            ":indexes" => $indexes,
+                            ":required" => $required,
                         ]);
+
+                        // TODO: create and remove indexes
 
                         if ($cf["type"] === "Select" || $cf["type"] === "MultiSelect") {
                             $t = explode("\n", trim($options));
@@ -866,7 +921,6 @@
                 } else {
                     try {
                         $this->db->exec("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId");
-                        $this->db->exec("delete from tt_issue_custom_fields_values where issue_custom_field_id = $customFieldId");
                         $this->db->exec("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId");
                         return true;
                     } catch (\Exception $e) {
@@ -881,7 +935,11 @@
              */
             public function getTags()
             {
-                // TODO: Implement getTags() method.
+                return $this->db->get("select * from tt_tags order by tag", false, [
+                    "tag_id" => "tagId",
+                    "project_id" => "projectId",
+                    "tag" => "tag",
+                ]);
             }
 
             /**
@@ -898,6 +956,72 @@
             public function availableFilters($projectId)
             {
                 // TODO: Implement availableFilters() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addTag($projectId, $tag)
+            {
+                if (!checkInt($projectId) || !checkStr($tag)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag) values (:project_id, :tag)");
+                    if (!$sth->execute([
+                        "project_id" => $projectId,
+                        "tag" => $tag,
+                    ])) {
+                        return false;
+                    }
+
+                    return $this->db->lastInsertId();
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyTag($tagId, $tag)
+            {
+                if (!checkInt($tagId) || !checkStr($tag)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("update tt_tags set tag = :tag where tag_id = $tagId");
+                    $sth->execute([
+                        "tag" => $tag,
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteTag($tagId)
+            {
+                if (!checkInt($tagId)) {
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_tags where tag_id = $tagId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
             }
         }
     }

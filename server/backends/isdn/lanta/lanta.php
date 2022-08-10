@@ -85,10 +85,77 @@
                  * pushAction (action)
                  */
 
+                /*
+                    if (req.query.hash) {
+                        let data = {
+                            server: 'dm.lanta.me',
+                            port: '54675',
+                            transport: 'tcp',
+                            extension: req.query.extension.toString(),
+                            pass: req.query.hash,
+                            dtmf: req.query.dtmf?req.query.dtmf:'1',
+                            image: (req.query.caller_id == 'LanTa')?'https://wdm.lanta.me/img/LanTa_1024.jpg':`https://dm.lanta.me/shot/${req.query.hash}.jpg`,
+                            live: (req.query.caller_id == 'LanTa')?'https://wdm.lanta.me/img/LanTa_1024.jpg':`https://dm.lanta.me/live/${req.query.hash}.jpg`,
+                            timestamp: Math.round((new Date()).getTime()/1000).toString(),
+                            ttl: '30',
+                            callerId: req.query.caller_id,
+                            platform: req.query.platform,
+                            flatId: req.query.flat_id,
+                            flatNumber: req.query.flat_number,
+                        };
+                        if (false) {
+                            data.turn = 'turn:37.235.209.140:3478';
+                            data.turnTransport = 'udp';
+                            data.turnUsername = req.query.extension.toString();
+                            data.turnPassword = req.query.hash;
+                        }
+                        if (true) {
+                            data.stun = 'stun:37.235.209.140:3478';
+                            data.stun_transport = 'udp';
+                            data.stunTransport = 'udp';
+                        }
+                        if (req.query.platform == 'ios') {
+                            realPush({
+                                title: "Входящий вызов",
+                                body: req.query.caller_id,
+                                tag: "voip",
+                            }, data, {
+                                priority: 'high',
+                                mutableContent: true,
+                                collapseKey: 'voip',
+                            }, req.query.token, req.query.type, res);
+                            pushed = true;
+                        }
+                        if (req.query.platform == 'android') {
+                            realPush({}, data, {
+                                priority: 'high',
+                                mutableContent: false,
+                            }, req.query.token, req.query.type, res);
+                            pushed = true;
+                        }
+                    }
+                    if (req.query.msg) {
+                        realPush({
+                            title: "LanTa",
+                            body: req.query.msg,
+                            badge: req.query.badge?req.query.badge:'1',
+                            sound: "default",
+                        }, {
+                            messageId: req.query.message_id?req.query.message_id:'',
+                            badge: req.query.badge?req.query.badge:'1',
+                            action: req.query.action?req.query.action:'inbox',
+                        }, {
+                            priority: 'high',
+                            mutableContent: false,
+                        }, req.query.token, 0, res);
+                        pushed = true;
+                    }
+                 */
+
                 $query = "";
                 foreach ($push as $param => $value) {
                     if ($param != "action" && $param != "secret") {
-                        $query = $param . "=" . htmlentities($value) . "&";
+                        $query = $param . "=" . urlencode($value) . "&";
                     }
                 }
                 if ($query) {
