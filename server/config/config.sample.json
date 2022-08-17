@@ -83,8 +83,13 @@
         },
 
         "isdn": {
-            "backend": "easysms",
+            "backend": "lanta",
             "secret": "<-- your secret here -->"
+        },
+
+        "providers": {
+            "backend": "lanta",
+            "providers.json": "/path/to/providers.json"
         }
     },
 
