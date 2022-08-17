@@ -67,8 +67,6 @@
                  * transport (tcp|udp)
                  * extension
                  * dtmf
-                 * image (url of first camshot)
-                 * live (url of "live" jpeg stream)
                  * callerId
                  * platform (ios|android)
                  * flatId
@@ -76,6 +74,7 @@
                  * turn (turn:server:port)
                  * turnTransport (tcp|udp)
                  * stun (stun:server:port)
+                 * stunTransport (tcp|udp)
                  * type
                  * token
                  * msg
