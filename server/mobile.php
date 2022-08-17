@@ -250,11 +250,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $m = explode('/', $_SERVER["REQUEST_URI"]);
-    if (count($m) == 5 && !$m[0] && $m[1] == 'mobile')
-    $module = $m[2];
-    $method = $m[3];
-    $param = $m[4];    
-    require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+    if (count($m) == 5 && !$m[0] && $m[1] == 'mobile') {
+        $module = $m[2];
+        $method = $m[3];
+        $param = $m[4];    
+        require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+    }
+    
 }
 
 response(404);
