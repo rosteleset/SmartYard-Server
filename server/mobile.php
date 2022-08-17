@@ -247,4 +247,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     response(405);
 }
+
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    echo $_SERVER["REQUEST_URI"];
+}
+
 response(404);
