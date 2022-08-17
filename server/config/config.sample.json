@@ -85,11 +85,16 @@
         },
 
         "isdn": {
-            "backend": "easysms",
+            "backend": "lanta",
             "secret": "<-- your secret here -->",
             "mobile": "https://rbt.lanta.me/lanta/mobile",
             "shot": "https://rbt.lanta.me/shot/%s.jpg",
             "live": "https://rbt.lanta.me/live/%s.jpg"
+        },
+
+        "providers": {
+            "backend": "lanta",
+            "providers.json": "/path/to/providers.json"
         }
     },
 
