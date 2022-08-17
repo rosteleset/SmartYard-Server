@@ -1,7 +1,7 @@
 <?php
 
     function htmlPurifier($dirtyHtml) {
-        require_once 'lib/htmlpurifier/library/HTMLPurifier.auto.php';
+        require_once __DIR__ . '/../lib/htmlpurifier/library/HTMLPurifier.auto.php';
 
         $config = HTMLPurifier_Config::createDefault();
         $config->set('Core.Encoding', 'UTF-8');

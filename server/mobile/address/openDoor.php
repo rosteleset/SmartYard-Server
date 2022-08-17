@@ -23,8 +23,16 @@
     auth(15);
 
     $domophone_id = (int)@$postdata['domophoneId'];
-    // TODO: добавить управление дверями
+    $door_id = (int)@$postdata['doorId'];
     
+    // TODO: добавить проверку на блокировку домофона
+    
+    $households = loadBackend("households");
+    $domophone = $households->getDomophone($domophone_id);
+
+    $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
+    $model->open_door($door_id);
+
 /*
     if (!$domophone_id) {
         response(422);

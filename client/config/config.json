@@ -1,12 +1,11 @@
 {
-    "defaultServer": "http://localhost:8000/server/api.php",
+    "defaultServer": "https://isdn.lanta.me/api",
     "defaultLanguage": "ru",
     "languages": {
         "ru": "Русский",
         "en": "English"
     },
     "modules": [
-        "tt",
         "asterisk",
         "addresses",
         "cameras",

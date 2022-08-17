@@ -41,7 +41,7 @@
              * @param $id
              * @return string
              */
-            abstract function checkIncomng($id);
+            abstract function checkIncoming($id);
 
             /**
              * @param $push

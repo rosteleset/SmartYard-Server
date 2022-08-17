@@ -9,6 +9,8 @@ require_once "utils/checkint.php";
 require_once "utils/checkstr.php";
 require_once "utils/purifier.php";
 require_once "utils/error.php";
+require_once "utils/apache_request_headers.php";
+
 
 $LanTa_services = [
     'internet' => [ "icon" => "internet", "title" => "Интернет", "description" => "Высокоскоростной доступ в интернет", "canChange" => "t" ],
@@ -30,7 +32,7 @@ $offsetForCityId = 1000000;
 $emptyStreetIdOffset = 1000000;
 
 try {
-    $config = @json_decode(file_get_contents("config/config.json"), true);
+    $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
 } catch (Exception $e) {
     error_log(print_r($e, true));
     response(555, [
@@ -176,7 +178,7 @@ function auth($_response_cache_ttl = -1) {
     }
     $ip = long2ip(ip2long($_SERVER['REMOTE_ADDR']));
     if ($ip == '127.0.0.1' && !@$_SERVER['HTTP_AUTHORIZATION'] && $_GET['phone']) {
-        $p = pg_escape_string(trim($_GET['phone']));
+        $p = trim($_GET['phone']);
         $bearer = false;
         $subscribers = $households->getSubscribers("mobile", $p);
         if ($subscribers) {
@@ -190,7 +192,7 @@ function auth($_response_cache_ttl = -1) {
         if (!@$_SERVER['HTTP_AUTHORIZATION']) {
             response(403, false, "Ошибка авторизации", "Ошибка авторизации");
         }
-        $bearer = @pg_escape_string(trim(explode('Bearer', $_SERVER['HTTP_AUTHORIZATION'])[1]));
+        $bearer = @trim(explode('Bearer', $_SERVER['HTTP_AUTHORIZATION'])[1]);
         if (!$bearer) {
             response(422, false, "Отсутствует токен авторизации", "Отсутствует токен авторизации");
         }
@@ -212,10 +214,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $postdata = json_decode($raw_postdata, true);
     $m = explode('/', $_SERVER["REQUEST_URI"]);
 
-    if (count($m) == 5 && !$m[0] && $m[2] == 'mobile.php') {
-        $module = $m[3];
-        $method = $m[4];
-        if (file_exists("mobile/{$module}/{$method}.php")) {
+    if (count($m) == 4 && !$m[0] && $m[1] == 'mobile') {
+        $module = $m[2];
+        $method = $m[3];
+        if (file_exists(__DIR__ . "/mobile/{$module}/{$method}.php")) {
             $b = @explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
             if ($b) {
                 $response_cahce_req = strtolower($module . '-' . $method . '-' . $b . '-' . md5(serialize($postdata)));
@@ -239,7 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $response_data_source = 'db';
                 $response_cache_ttl = 60;
                 header("X-Dm-Api-Data-Source: $response_data_source");
-                require_once "mobile/{$module}/{$method}.php";
+                require_once __DIR__ . "/mobile/{$module}/{$method}.php";
             }
         }
     }
