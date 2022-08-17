@@ -21,7 +21,6 @@
     require_once "utils/checkstr.php";
     require_once "utils/email.php";
     require_once "utils/forgot.php";
-    require_once "utils/vars.php";
     require_once "utils/apache_request_headers.php";
     require_once "utils/array_key_first.php";
     require_once "utils/generate_password.php";
@@ -58,7 +57,7 @@
     }
 
     try {
-        $config = @json_decode(file_get_contents("config/config.json"), true);
+        $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
     } catch (Exception $e) {
         error_log(print_r($e, true));
         response(555, [
@@ -263,7 +262,7 @@
     if ($api == "accounts" && $method == "forgot") {
         forgot($params);
     } else
-    if (file_exists("api/$api/$method.php")) {
+    if (file_exists(__DIR__ . "/api/$api/$method.php")) {
         if ($backends["authorization"]->allow($params)) {
             $cache = false;
             if ($params["_request_method"] === "GET") {
@@ -282,7 +281,7 @@
                 if ($clearCache) {
                     clearCache($auth["uid"]);
                 }
-                require_once "api/$api/$method.php";
+                require_once __DIR__ . "/api/$api/$method.php";
                 if (class_exists("\\api\\$api\\$method")) {
                     try {
                         $result = hook_pre($params);

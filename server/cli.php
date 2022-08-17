@@ -1,12 +1,6 @@
 <?php
 
-    // command line client
-
-    try {
-        mb_internal_encoding("UTF-8");
-    } catch (Exception $e) {
-        die("mbstring extension is not available\n");
-    }
+// command line client
 
     chdir(dirname(__FILE__));
 
@@ -18,10 +12,37 @@
     require_once "utils/checkint.php";
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
+    require_once "utils/db_ext.php";
 
     require_once "backends/backend.php";
 
     require_once "api/api.php";
+
+    $args = [];
+
+    for ($i = 1; $i < count($argv); $i++) {
+        $a = explode("=", $argv[$i]);
+        $args[$a[0]] = @$a[1];
+    }
+
+    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
+        $db = null;
+        if (is_executable_pathenv(PHP_BINARY)) {
+            echo "open in your browser:\n\n";
+            echo "http://localhost:8000/client/index.html\n\n";
+            chdir(dirname(__FILE__) . "/..");
+            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
+        } else {
+            echo "no php interpreter found in path\n";
+        }
+        exit(0);
+    }
+
+    try {
+        mb_internal_encoding("UTF-8");
+    } catch (Exception $e) {
+        die("mbstring extension is not available\n");
+    }
 
     if (!function_exists("curl_init")) {
         die("curl extension is not installed\n");
@@ -62,7 +83,7 @@
     }
 
     try {
-        $db = new PDO(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         echo "can't open database " . $config["db"]["dsn"] . "\n";
         exit(1);
@@ -81,23 +102,21 @@
     }
 
     try {
-        $version = (int)$db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC)->fetch()["var_value"];
+        $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
+        if ($query) {
+            $version = (int)($query->fetch()["var_value"]);
+        }
     } catch (Exception $e) {
         $version = 0;
     }
 
+    echo "dbVersion; $version\n";
+
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
-            die("can't load required backend [$backend]");
+            die("can't load required backend [$backend]\n");
         }
-    }
-
-    $args = [];
-
-    for ($i = 1; $i < count($argv); $i++) {
-        $a = explode("=", $argv[$i]);
-        $args[$a[0]] = @$a[1];
     }
 
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
@@ -159,16 +178,18 @@
         exit(0);
     }
 
-    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
-        if (is_executable_pathenv(PHP_BINARY)) {
-            echo "open in your browser:\n\n";
-            echo "http://localhost:8000/client/index.html\n\n";
-            chdir(dirname(__FILE__) . "/..");
-            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
-        } else {
-            echo "no php interpreter found in path\n";
+    if (count($args) == 1 || count($args) == 2
+        && array_key_exists("--autoconfigure-domophone", $args)
+        && isset($args["--autoconfigure-domophone"]))
+    {
+        $domophone_id = $args["--autoconfigure-domophone"];
+        $first_time = array_key_exists("--first-time", $args);
+
+        if (checkInt($domophone_id)) {
+            require_once "utils/autoconfigure_domophone.php";
+            autoconfigure_domophone($args["--autoconfigure-domophone"], $first_time);
+            exit(0);
         }
-        exit(0);
     }
 
     echo "usage: {$argv[0]}
@@ -179,4 +200,5 @@
         [--cleanup]
         [--check-mail=<your email address>]
         [--run-demo-server]
+        [--autoconfigure-domophone=<domophone_id> [--first-time]]
     \n";

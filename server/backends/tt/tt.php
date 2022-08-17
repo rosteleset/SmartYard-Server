@@ -77,7 +77,8 @@
                 if (file_exists($file)) {
                     require_once $file;
                     if (class_exists("tt\\workflow\\" . $workflow)) {
-                        $w = new ("tt\\workflow\\" . $workflow)($this->config, $this->db, $this->redis);
+                        $className = "tt\\workflow\\" . $workflow;
+                        $w = new $className($this->config, $this->db, $this->redis);
                         $this->workflows[$workflow] = $w;
                         return $w;
                     } else {
@@ -268,9 +269,11 @@
              * @param $format
              * @param $link
              * @param $options
+             * @param $indexes
+             * @param $required
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required);
 
             /**
              * @param $customFieldId
@@ -282,6 +285,21 @@
              * @return false|array
              */
             abstract public function getTags();
+
+            /**
+             * @return false|integer
+             */
+            abstract public function addTag($projectId, $tag);
+
+            /**
+             * @return boolean
+             */
+            abstract public function modifyTag($tagId, $tag);
+
+            /**
+             * @return boolean
+             */
+            abstract public function deleteTag($tagId);
 
             /**
              * @param $by

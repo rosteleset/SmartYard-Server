@@ -24,7 +24,8 @@ function cardForm(params) {
         h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
         h += `</div>`;
     }
-    h += `<div class="card-body table-responsive p-0" style="overflow-y: visible; overflow-x: hidden;">`;
+
+    h += `<div class="card-body table-responsive p-0">`;
 
     h += '<table class="table';
     if (params.borderless) {
@@ -224,8 +225,12 @@ function cardForm(params) {
             case "tel":
             case "date":
             case "time":
+            case "datetime":
             case "datetime-local":
             case "password":
+                if (params.fields[i].type === "datetime") {
+                    params.fields[i].type = "datetime-local"
+                }
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
@@ -285,11 +290,13 @@ function cardForm(params) {
             case "tel":
             case "date":
             case "time":
-            case "datetime-local":
             case "password":
             case "text":
             case "area":
                 return $(`#${_prefix}${params.fields[i].id}`).val();
+
+            case "datetime-local":
+                return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
 
             case "multiselect":
                 let o = [];
@@ -301,23 +308,28 @@ function cardForm(params) {
                 return o;
 
             case "rich":
-                if (!$(`#${_prefix}${params.fields[i].id}`).summernote("isEmpty")) {
-                    return $(`#${_prefix}${params.fields[i].id}`).summernote("code");
-                } else {
+                let rich = $.trim($(`#${_prefix}${params.fields[i].id}`).summernote("code"));
+                if ($(`#${_prefix}${params.fields[i].id}`).summernote("isEmpty") || $.trim($(rich).text()) === "") {
                     return "";
+                } else {
+                    return rich;
                 }
 
             case "code":
-                return params.fields[i].editor.getValue();
+                let code = $.trim(params.fields[i].editor.getValue());
+                return code;
         }
     }
 
     function ok() {
-        $(".modalFormField").removeClass("is-invalid select2-invalid");
+        $(".modalFormField").removeClass("is-invalid");
+        $(".select2-invalid").removeClass("select2-invalid");
+        $(".border-color-invalid").removeClass("border-color-invalid");
         let invalid = [];
         if (!params.delete || $(`#${_prefix}delete`).val() !== "yes") {
             for (let i in params.fields) {
                 if (params.fields[i].id === "-") continue;
+                if (params.fields[i].hidden) continue;
                 if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
                     if (!params.fields[i].validate(getVal(i), _prefix)) {
                         invalid.push(i);
@@ -339,10 +351,19 @@ function cardForm(params) {
             }
         } else {
             for (let i in invalid) {
-                if (params.fields[invalid[i]].type == "select2") {
-                    $(`#${_prefix}${params.fields[invalid[i]].id}`).parent().addClass("select2-invalid");
-                } else {
-                    $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("is-invalid");
+                switch (params.fields[invalid[i]].type) {
+                    case "select2":
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).parent().addClass("select2-invalid");
+                        break;
+                    case "rich":
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).next().addClass("border-color-invalid");
+                        break;
+                    case "code":
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
+                        break;
+                    default:
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("is-invalid");
+                        break;
                 }
             }
         }
@@ -409,11 +430,14 @@ function cardForm(params) {
                 case "tel":
                 case "date":
                 case "time":
-                case "datetime-local":
                 case "password":
                 case "text":
                 case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
+                    break;
+
+                case "datetime-local":
+                    $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value / 1000) + 'T' + date('H:i', params.fields[i].value / 1000));
                     break;
 
                 case "multiselect":

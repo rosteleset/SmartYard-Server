@@ -59,9 +59,6 @@
             /** Добавить RFID-ключ */
             abstract public function add_rfid(string $code);
 
-            /** Сделать снимок */
-            abstract public function camshot(): string;
-
             /** Очистка квартиры */
             abstract public function clear_apartment(int $apartment = -1);
 

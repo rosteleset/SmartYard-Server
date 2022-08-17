@@ -15,12 +15,17 @@
         } else {
             if (@$config["backends"][$backend]) {
                 try {
-                    if (file_exists("backends/$backend/$backend.php") && !class_exists("backends\\$backend\\$backend")) {
-                        require_once "backends/$backend/$backend.php";
+                    if (file_exists(__DIR__ . "/../backends/$backend/$backend.php") && !class_exists("backends\\$backend\\$backend")) {
+                        require_once __DIR__ . "/../backends/$backend/$backend.php";
                     }
-                    require_once "backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
-                    $backends[$backend] = new ("backends\\$backend\\" . $config["backends"][$backend]["backend"])($config, $db, $redis);
-                    return $backends[$backend];
+                    if (file_exists(__DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php")) {
+                        require_once __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
+                        $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
+                        $backends[$backend] = new $className($config, $db, $redis);
+                        return $backends[$backend];
+                    } else {
+                        return false;
+                    }
                 } catch (Exception $e) {
                     setLastError("cantLoadBackend");
                     return false;
@@ -55,10 +60,43 @@
                 if ($file->getFilename() == "$class.php") {
                     $path_to_class = $file->getPath() . "/" . $class . ".php";
                     require_once $path_to_class;
-                    return new ("hw\\domophones\\$class")($url, $password, $first_time);
+                    $className = "hw\\domophones\\$class";
+                    return new $className($url, $password, $first_time);
                 }
             }
         }
 
         return false;
     }
+
+/**
+ * loads camera class, returns false if .json or class not found
+ *
+ * @param string $model .json
+ * @param string $url
+ * @param string $password
+ * @param boolean $first_time
+ * @return false|object
+ */
+
+function loadCamera($model, $url, $password, $first_time = false) {
+    $path_to_model = __DIR__ . "/../hw/cameras/models/$model";
+
+    if (file_exists($path_to_model)) {
+        $class = @json_decode(file_get_contents($path_to_model), true)['class'];
+
+        $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/cameras/");
+        $iterator = new RecursiveIteratorIterator($directory);
+
+        foreach($iterator as $file) {
+            if ($file->getFilename() == "$class.php") {
+                $path_to_class = $file->getPath() . "/" . $class . ".php";
+                require_once $path_to_class;
+                $className = "hw\\cameras\\$class";
+                return new $className($url, $password, $first_time);
+            }
+        }
+    }
+
+    return false;
+}

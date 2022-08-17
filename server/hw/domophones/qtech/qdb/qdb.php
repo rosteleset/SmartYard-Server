@@ -312,14 +312,6 @@
                 $this->api_call('rfkey', 'add', $data);
             }
 
-            public function camshot(): string {
-                $filename = uniqid('qtech_');
-                system("ffmpeg -y -i http://$this->url:8080/streamvideo.cgi -vframes 1 /tmp/$filename.jpg 1>/dev/null 2>/dev/null");
-                $shot = file_get_contents("/tmp/$filename.jpg");
-                system("rm /tmp/$filename.jpg");
-                return $shot;
-            }
-
             public function clear_apartment(int $apartment = -1) {
                 $this->remove_private_code($apartment);
                 $this->remove_dialplan($apartment);
