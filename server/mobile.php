@@ -255,8 +255,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $method = $m[3];
     $param = $m[4];    
     require_once __DIR__ . "/mobile/{$module}/{$method}.php";
-
-    echo $_SERVER["REQUEST_URI"];
 }
 
 response(404);
