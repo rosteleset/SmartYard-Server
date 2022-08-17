@@ -92,10 +92,8 @@
                             port: '54675',
                             transport: 'tcp',
                             extension: req.query.extension.toString(),
-                            pass: req.query.hash,
+                            hash: req.query.hash,
                             dtmf: req.query.dtmf?req.query.dtmf:'1',
-                            image: (req.query.caller_id == 'LanTa')?'https://wdm.lanta.me/img/LanTa_1024.jpg':`https://dm.lanta.me/shot/${req.query.hash}.jpg`,
-                            live: (req.query.caller_id == 'LanTa')?'https://wdm.lanta.me/img/LanTa_1024.jpg':`https://dm.lanta.me/live/${req.query.hash}.jpg`,
                             timestamp: Math.round((new Date()).getTime()/1000).toString(),
                             ttl: '30',
                             callerId: req.query.caller_id,
@@ -106,8 +104,6 @@
                         if (false) {
                             data.turn = 'turn:37.235.209.140:3478';
                             data.turnTransport = 'udp';
-                            data.turnUsername = req.query.extension.toString();
-                            data.turnPassword = req.query.hash;
                         }
                         if (true) {
                             data.stun = 'stun:37.235.209.140:3478';
