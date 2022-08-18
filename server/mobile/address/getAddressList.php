@@ -71,7 +71,7 @@
             
             // TODO: проверить обработку блокировки
             // 
-            if ($flatDetail('manualBlock')) {
+            if ($flatDetail['manualBlock']) {
                 $door['blocked'] = "Услуга домофонии заблокирована";
             }
 
