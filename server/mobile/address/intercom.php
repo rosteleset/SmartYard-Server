@@ -51,7 +51,7 @@
 
     $flat = $households->getFlat($flat_id);
     /*
-     "flatId": "1",
+        "flatId": "1",
 		"floor": "10",
 		"flat": "69",
 		"autoBlock": "0",
