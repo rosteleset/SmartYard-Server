@@ -150,7 +150,7 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, type, platform, extension, hash, caller_id, flatId, dtmf, phone, flat_number)
+function push(token, type, platform, extension, hash, callerId, flatId, dtmf, phone, flatNumber)
     log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
 
     dm("push", {
@@ -159,12 +159,12 @@ function push(token, type, platform, extension, hash, caller_id, flatId, dtmf, p
         platform = platform,
         extension = extension,
         hash = hash,
-        caller_id = caller_id,
+        callerId = callerId,
         flatId = flatId,
         dtmf = dtmf,
         phone = phone,
         uniq = channel.CDR("uniqueid"):get(),
-        flat_number = flat_number,
+        flatNumber = flatNumber,
     })
 end
 
