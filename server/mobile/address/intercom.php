@@ -74,7 +74,7 @@
     $ret['CMS'] = @$flat['cmsEnabled']?'t':'f';
     $ret['VoIP'] = 't'; // TODO: разобраться как отключить voip для конкретного пользователя
     $ret['autoOpen'] = $flat['autoOpen'];
-    $ret['whiteRabbit'] = intval($flat['whiteRabbit']);
+    $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
     
     
     if ($ret) {
