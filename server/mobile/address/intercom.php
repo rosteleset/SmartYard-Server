@@ -66,7 +66,7 @@
 		"entrances": []
     */
     
-    response(200, $flat);
+    // response(200, $flat);
     $ret = [];
     // $ret['FRSDisabled'] = 't';
     $ret['allowDoorCode'] = 't';
@@ -83,7 +83,7 @@
         response();
     }
 
-    response(200, $flatIds);
+    // response(200, $flatIds);
 /*
     $es = pg_fetch_assoc(pg_query("select * from address.entrances left join address.flats using (entrance_id) where flat_id=$flat_id"));
 
