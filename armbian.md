@@ -25,3 +25,63 @@ luarocks-5.4 install luasocket
 wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-18-current.tar.gz -O - | gzip -dc | tar -xvf -
 cd asterisk-18-...
 ./configure --with-jansson-bundled
+
+
+nginx
+```
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        server_name rbt.mmikel.ru;
+
+        location / {
+                root /opt/rbt/client;
+                try_files $uri $uri/ =404;
+        }
+
+        location /api {
+                rewrite ^.*$ /api.php last;
+        }
+
+        location = /api.php {
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /asterisk {
+                rewrite ^.*$ /asterisk.php last;
+        }
+
+        location = /asterisk.php {
+                allow 127.0.0.1;
+                deny all;
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /internal {
+                rewrite ^.*$ /internal.php last;
+        }
+
+        location = /internal.php {
+                allow 127.0.0.1;
+                deny all;
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /mobile {
+                rewrite ^.*$ /mobile.php last;
+        }
+
+        location = /mobile.php {
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+}
+```
