@@ -16,7 +16,11 @@ cd mongodb-src-r6.0.0
 python3 -m pip install -r etc/pip/compile-requirements.txt
 python3 buildscripts/scons.py DESTDIR=/opt/mongo install-mongod --disable-warnings-as-errors
 
-apt-get install libedit-dev libxml2-dev xmlstarlet liblua5.4-dev libcurl4-openssl-dev libxslt1-dev libssl-dev libsrtp2-dev lua-cjson luarocks patch uuid-dev libldap2-dev libsqlite3-dev
+apt-get install lua5.4 libedit-dev libxml2-dev xmlstarlet liblua5.4-dev libcurl4-openssl-dev libxslt1-dev libssl-dev libsrtp2-dev lua-cjson luarocks patch uuid-dev libldap2-dev libsqlite3-dev
+
+luarocks-5.4 install luasec
+luarocks-5.4 install inspect
+luarocks-5.4 install luasocket
 
 wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-18-current.tar.gz -O - | gzip -dc | tar -xvf -
 cd asterisk-18-...
