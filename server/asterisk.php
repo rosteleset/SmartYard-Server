@@ -172,7 +172,7 @@
                             "callerid" => $user["realName"],
                             "context" => "default",
                             "disallow" => "all",
-                            "allow" => "opus,h264",
+                            "allow" => "alaw,h264",
 //                            "rtp_symmetric" => "no",
 //                            "force_rport" => "no",
 //                            "rewrite_contact" => "yes",
@@ -193,10 +193,11 @@
 /*
         mysql_query("insert into ps_aors (id, max_contacts, remove_existing, synchronized, expire) values ('"..extension.."', 1, 'yes', true, addtime(now(), '00:03:00'))")
         mysql_query("insert ignore into ps_auths (id, auth_type, password, username, synchronized) values ('"..extension.."', 'userpass', '"..hash.."', '"..extension.."', true)")
-        mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'opus,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
+        mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'alaw,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
 */
 
-    $path = explode("/", @$_SERVER["PATH_INFO"]);
+    $path = explode("/", @$_SERVER["REQUEST_URI"]);
+    array_shift($path);
 
     switch ($path[1]) {
         case "aors":
