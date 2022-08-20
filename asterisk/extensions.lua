@@ -2,8 +2,8 @@ package.path = "/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;" .. packa
 package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
 
 realm = "rbt"
-dm_server = "http://127.0.0.1:8000/server/asterisk.php/extensions"
-log_file = "/tmp/pbx_lua.log"
+dm_server = "http://127.0.0.1/asterisk/extensions"
+log_file = "/var/log/asterisk/pbx_lua.log"
 redis_server = {
     host = "127.0.0.1",
     port = 6379,
@@ -25,12 +25,6 @@ redis = redis.connect(redis_server)
 if redis_server.auth ~= nil then
     redis:auth(redis_server.auth)
 end
-
--- client:select(15) -- for testing purposes
---
--- redis:setex('foo', 10, 'bar')
--- local value = redis:get('foo')
--- print(value)
 
 function dm(action, request)
     local body = {}
@@ -217,7 +211,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         -- ios over fcm (with repeat)
         if tonumber(s.platform) == 1 and tonumber(s.type) == 0 then
-            redis.setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
+            redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
                 token = s.token,
                 hash = hash,
@@ -227,7 +221,6 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
                 phone = s.phone,
                 flatNumber = flatNumber,
             }))
-            intercoms['type'] = 0
         end
         push(s.token, s.type, s.platform, extension, hash, caller_id, flatId, dtmf, s.phone, flatNumber)
         res = res .. "&Local/" .. extension
@@ -259,7 +252,7 @@ extensions = {
             local crutch = 1
             -- TODO
             -- rewrite to use REDIS
-            local intercom = mysql_query("select * from dm.voip_crutch where id='"..extension.."'")
+            local voip_crutch = redisl:get("voip_crutch_" .. extension)
             local status = ''
             local pjsip_extension = ''
             local skip = false
@@ -273,13 +266,13 @@ extensions = {
                     app.Dial(pjsip_extension, 35, "g")
                     status = channel.DIALSTATUS:get()
                     if status == "CHANUNAVAIL" then
-                        log_debug(extension..': sleeping')
+                        log_debug(extension .. ': sleeping')
                         app.Wait(35)
                     end
                 else
                     app.Wait(0.5)
                     if crutch % 10 == 0 and intercom then
-                        push(intercom['token'], '0', intercom['platform'], extension, intercom['hash'], channel.CALLERID("name"):get(), intercom['flatId'], intercom['dtmf'], intercom['phone']..'*')
+                        push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['phone']..'*')
                     end
                     crutch = crutch + 1
                 end
