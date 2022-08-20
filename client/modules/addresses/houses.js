@@ -325,8 +325,10 @@
                     modules.addresses.houses.meta.domophoneModelsById = {};
 
                     let domophones = [];
+                    let first = false;
 
                     for (let i in response.domophones.domophones) {
+                        if (first === false) first = i;
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,

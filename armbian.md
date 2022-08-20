@@ -8,16 +8,6 @@ apt-get install python-dev-is-python3 libssl-dev
 
 apt-get install liblzma-dev libcurl4-openssl-dev
 
-wget https://www.openssl.org/source/openssl-1.1.1o.tar.gz
-
-cd openssl-1.1.1o
-
-./config
-
-make
-
-make install
-
 wget https://fastdl.mongodb.org/src/mongodb-src-r6.0.0.tar.gz
 
 cd mongodb-src-r6.0.0
@@ -33,6 +23,8 @@ luarocks-5.4 install luasec
 luarocks-5.4 install inspect
 
 luarocks-5.4 install luasocket
+
+luarocks-5.4 install lua-cjson 2.1.0-1
 
 wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-18-current.tar.gz -O - | gzip -dc | tar -xvf -
 
