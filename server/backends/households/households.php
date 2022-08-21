@@ -229,6 +229,12 @@
             abstract public function getDomophone($domophoneId);
 
             /**
+             * @param $cameraId
+             * @return false|array
+             */
+            abstract public function getCamera($cameraId);
+
+            /**
              * @param $by - "id", "mobile", "flat", "...?"
              * @param $query
              * @return false|array

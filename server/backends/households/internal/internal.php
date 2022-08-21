@@ -1210,5 +1210,30 @@
                     ]
                 );
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getCamera($cameraId)
+            {
+                if (!checkInt($cameraId)) {
+                    return false;
+                }
+
+                $domophone = $this->db->get("select * from cameras where camera_id = $cameraIdId", false, [
+                    "camera_id" => "domophoneId",
+                    "enabled" => "enabled",
+                    "model" => "model",
+                    "url" => "url",
+                    "credentials" => "credentials",
+                    "comment" => "comment"
+                ], [
+                    "singlify"
+                ]);
+
+                $domophone["json"] = json_decode(file_get_contents("hw/domophones/models/" . $domophone["model"]), true);
+
+                return $domophone;
+            }
         }
     }
