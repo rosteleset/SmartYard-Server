@@ -249,7 +249,7 @@ extensions = {
             log_debug("starting loop for: "..extension)
 
             local timeout = os.time() + 35
-            local voip_crutch = redis:get("voip_crutch_" .. extension)
+            local voip_crutch = cjson:decode(redis:get("voip_crutch_" .. extension))
             if voip_crutch then
                 voip_crutch['cycle'] = 1
             end
