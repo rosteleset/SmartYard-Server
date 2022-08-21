@@ -249,9 +249,12 @@ extensions = {
             log_debug("starting loop for: "..extension)
 
             local timeout = os.time() + 35
-            local voip_crutch = cjson.decode(redis:get("voip_crutch_" .. extension))
-            if voip_crutch then
+            local voip_crutch = redis:get("voip_crutch_" .. extension)
+            if voip_crutch ~= nil then
+                voip_crutch = cjson.decode()
                 voip_crutch['cycle'] = 1
+            else
+                voip_crutch = false
             end
             local status = ''
             local pjsip_extension = ''
