@@ -1220,7 +1220,7 @@
                     return false;
                 }
 
-                $domophone = $this->db->get("select * from cameras where camera_id = $cameraIdId", false, [
+                $domophone = $this->db->get("select * from cameras where camera_id = $cameraId", false, [
                     "camera_id" => "domophoneId",
                     "enabled" => "enabled",
                     "model" => "model",
