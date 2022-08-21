@@ -1231,9 +1231,13 @@
                     "singlify"
                 ]);
 
-                $camera["json"] = json_decode(file_get_contents("hw/cameras/models/" . $camera["model"]), true);
+                if ($camera) {
+                    $camera["json"] = json_decode(file_get_contents("hw/cameras/models/" . $camera["model"]), true);
 
-                return $camera;
+                    return $camera;
+                } else {
+                    return false;
+                }
             }
         }
     }
