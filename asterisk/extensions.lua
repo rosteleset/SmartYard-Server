@@ -258,9 +258,6 @@ extensions = {
             local skip = false
             while os.time() < timeout do
                 pjsip_extension = channel.PJSIP_DIAL_CONTACTS(extension):get()
-
-                log_debug(pjsip_extension)
-
                 if pjsip_extension ~= "" and pjsip_extension ~= nil then
                     if not skip then
                         log_debug("has registration: " .. extension)
@@ -274,6 +271,7 @@ extensions = {
                     end
                 else
                     app.Wait(0.5)
+                    log_debug(voip_crutch['cycle'])
                     if voip_crutch then
                         if voip_crutch['cycle'] % 10 == 0 then
                             push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*')
