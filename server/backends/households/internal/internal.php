@@ -1220,7 +1220,7 @@
                     return false;
                 }
 
-                $domophone = $this->db->get("select * from cameras where camera_id = $cameraId", false, [
+                $camera = $this->db->get("select * from cameras where camera_id = $cameraId", false, [
                     "camera_id" => "domophoneId",
                     "enabled" => "enabled",
                     "model" => "model",
@@ -1231,9 +1231,9 @@
                     "singlify"
                 ]);
 
-                $domophone["json"] = json_decode(file_get_contents("hw/domophones/models/" . $domophone["model"]), true);
+                $camera["json"] = json_decode(file_get_contents("hw/cameras/models/" . $camera["model"]), true);
 
-                return $domophone;
+                return $camera;
             }
         }
     }
