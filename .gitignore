@@ -21,6 +21,7 @@ __pycache__
 /client/config/config.json
 /server/lib/PHPMailer/
 /server/lib/htmlpurifier/
+/server/lib/parsedown/
 /server/db/internal.db
 /server/db/mongo/
 /server/storage/
