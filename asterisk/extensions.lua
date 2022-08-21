@@ -251,7 +251,7 @@ extensions = {
             local timeout = os.time() + 35
             local voip_crutch = redis:get("voip_crutch_" .. extension)
             if voip_crutch ~= nil then
-                voip_crutch = cjson.decode()
+                voip_crutch = cjson.decode(voip_crutch)
                 voip_crutch['cycle'] = 1
             else
                 voip_crutch = false
