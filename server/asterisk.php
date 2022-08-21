@@ -272,16 +272,19 @@
 
                     if ($entrances && $entrances[0]) {
                         $camera = $households->getCamera($entrances[0]["cameraId"]);
-                        $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
 
-                        $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
-                        $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                            "model" => $camera["model"],
-                            "url" => $camera["url"],
-                            "credentials" => $camera["credentials"],
-                        ]));
+                        if ($camera) {
+                            $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
 
-                        echo $params["hash"];
+                            $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
+                            $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                                "model" => $camera["model"],
+                                "url" => $camera["url"],
+                                "credentials" => $camera["credentials"],
+                            ]));
+
+                            echo $params["hash"];
+                        }
                     }
 
                     break;
