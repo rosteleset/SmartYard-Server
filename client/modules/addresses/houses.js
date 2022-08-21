@@ -315,7 +315,7 @@
                 for (let i in response.cameras.cameras) {
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
-                        text:  response.cameras.cameras[i].ip + (response.cameras.cameras[i].comment?(" (" + response.cameras.cameras[i].comment + ")"):""),
+                        text:  response.cameras.cameras[i].url + (response.cameras.cameras[i].comment?(" (" + response.cameras.cameras[i].comment + ")"):""),
                     })
                 }
 
