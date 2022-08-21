@@ -20,7 +20,7 @@
 
     if (strlen($user_phone) == 11 && ctype_digit($user_phone)) {
 
-        $confirmMethod = @$config["isdn"]["confirmMethod"] ?: "smsCode";
+        $confirmMethod = @$config["backends"]["isdn"]["confirmMethod"] ?: "smsCode";
         
         switch ($confirmMethod) {
             case 'outgoingCall':
@@ -34,7 +34,7 @@
                 response(200, [ "method" => "flashCall" ]);
                 break;
             
-                default:
+            default:
                 // smsCode - default
                 $already = $redis->get("userpin_".$user_phone);
                 if ($already){
