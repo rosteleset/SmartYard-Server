@@ -352,7 +352,7 @@
 
                     file_put_contents("/tmp/test_php_push", print_r($params, true));
 
-                    $isdn->push($data);
+//                    $isdn->push($data);
 
                     break;
             }
