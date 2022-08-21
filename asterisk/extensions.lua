@@ -182,7 +182,7 @@ end
 function mobile_intercom(flatId, flatNumber, domophoneId)
     local extension
     local res = ""
-    local caller_id
+    local callerId
 
     local subscribers = dm("subscribers", flatId)
 
@@ -194,7 +194,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
 
     local hash = camshow(domophoneId)
 
-    caller_id = channel.CALLERID("name"):get()
+    callerId = channel.CALLERID("name"):get()
 
     for i, s in ipairs(subscribers) do
         log_debug(s)
@@ -210,7 +210,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         -- ios over fcm (with repeat)
-        if tonumber(s.platform) == 1 and tonumber(s.type) == 0 then
+        if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
             redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
                 token = s.token,
@@ -222,7 +222,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
                 flatNumber = flatNumber,
             }))
         end
-        push(s.token, s.type, s.platform, extension, hash, caller_id, flatId, dtmf, s.phone, flatNumber)
+        push(s.token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.phone, flatNumber)
         res = res .. "&Local/" .. extension
         ::continue::
     end
