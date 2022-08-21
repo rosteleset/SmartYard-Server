@@ -250,14 +250,15 @@ extensions = {
 
             local timeout = os.time() + 35
             local crutch = 1
-            -- TODO
-            -- rewrite to use REDIS
             local voip_crutch = redis:get("voip_crutch_" .. extension)
             local status = ''
             local pjsip_extension = ''
             local skip = false
             while os.time() < timeout do
                 pjsip_extension = channel.PJSIP_DIAL_CONTACTS(extension):get()
+
+                log_debug(pjsip_extension)
+
                 if pjsip_extension ~= "" then
                     if not skip then
                         log_debug("has registration: " .. extension)
