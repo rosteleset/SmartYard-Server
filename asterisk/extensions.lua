@@ -3,7 +3,7 @@ package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
 
 realm = "rbt"
 dm_server = "http://127.0.0.1/asterisk/extensions"
-log_file = "/var/log/asterisk/pbx_lua.log"
+log_file = "/var/log/asterisk/pbx_lua_debug.log"
 redis_server = {
     host = "127.0.0.1",
     port = 6379,
@@ -210,7 +210,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         -- ios over fcm (with repeat)
-        if tonumber(s.platform) == 11 and tonumber(s.tokenType) == 0 then
+        if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
             redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
                 token = s.token,
