@@ -20,23 +20,36 @@
 
     if (strlen($user_phone) == 11 && ctype_digit($user_phone)) {
 
-        $already = $redis->get("userpin_".$user_phone);
-        if ($already){
-            response(429);
-        } else {
-            if ($user_phone == '89123456781') { // фейковый аккаунт №1
-                $pin = '1001';
-            } else
-            if ($user_phone == '89123456782') { // фейковый аккаунт №2
-                $pin = '1002';
-            } else {
-                $pin = explode(":", $isdn->sendCode($user_phone))[0];
-            }
-            $redis->setex("userpin_".$user_phone, 60, $pin);
+        $confirmMethod = @$config["isdn"]["confirmMethod"] ?: "smsCode";
+        
+        switch ($confirmMethod) {
+            case 'outgoingCall':
+                response(200, [ "method" => "outgoingCall", "confirmationNumbers" => $isdn->confirmNumbers()]);
+                break;
+
+            case 'flashCall':
+                // TODO: пока не реализован.
+                response(404);
+                break;
             
-            // TODO: добавить в ответ способ подтверждения телефона, указанный в конфиге. (по умолчанию - по смс)
-            response();
-            // response(200, [ "method" => "outgoingCall", "confirmationNumbers" => $isdn->confirmNumbers()]);
+                default:
+                // smsCode - default
+                $already = $redis->get("userpin_".$user_phone);
+                if ($already){
+                    response(429);
+                } else {
+                    if ($user_phone == '89123456781') { // фейковый аккаунт №1
+                        $pin = '1001';
+                    } else
+                    if ($user_phone == '89123456782') { // фейковый аккаунт №2
+                        $pin = '1002';
+                    } else {
+                        $pin = explode(":", $isdn->sendCode($user_phone))[0];
+                    }
+                    $redis->setex("userpin_".$user_phone, 60, $pin);
+                    response();
+                }
+                break;
         }
     } else {
         response(422);
