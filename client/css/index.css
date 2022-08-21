@@ -81,11 +81,6 @@ select {
   z-index: 9999999 !important;
 }
 
-.select2-container {
-  width: 100% !important;
-  padding: 0;
-}
-
 .tdform-right > .note-editor {
   margin-bottom: 0;
   box-shadow: none;
