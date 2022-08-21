@@ -259,7 +259,7 @@ extensions = {
 
                 log_debug(pjsip_extension)
 
-                if pjsip_extension ~= "" then
+                if pjsip_extension ~= "" and pjsip_extension ~= nil then
                     if not skip then
                         log_debug("has registration: " .. extension)
                         skip = true
@@ -324,11 +324,7 @@ extensions = {
 
             log_debug("dialing: " .. extension)
 
-            if hash then
-                app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120, "b(dm^hash^1(" .. hash .. "))")
-            else
-                app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120)
-            end
+            app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120)
         end,
 
         -- from PSTN to mobile application call (for testing)
@@ -467,7 +463,8 @@ extensions = {
                     end
 
                     -- SIP intercom(s)
-                    if channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get() then
+                    local sip_intercom = channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get()
+                    if sip_intercom ~= "" and sip_intercom ~= nil then
                         dest = dest .. "&Local/" .. string.format("4%09d", flatId)
                     end
 
