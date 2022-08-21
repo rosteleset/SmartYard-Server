@@ -218,11 +218,11 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
                 platform = s.platform,
                 flatId = flatId,
                 dtmf = dtmf,
-                phone = s.phone,
+                phone = s.mobile,
                 flatNumber = flatNumber,
             }))
         end
-        push(s.token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.phone, flatNumber)
+        push(s.token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
         res = res .. "&Local/" .. extension
         ::continue::
     end
