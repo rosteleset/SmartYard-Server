@@ -210,7 +210,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         -- ios over fcm (with repeat)
-        if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
+        if tonumber(s.platform) == 11 and tonumber(s.tokenType) == 0 then
             redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
                 token = s.token,
@@ -271,7 +271,6 @@ extensions = {
                     end
                 else
                     app.Wait(0.5)
-                    log_debug(voip_crutch['cycle'])
                     if voip_crutch then
                         if voip_crutch['cycle'] % 10 == 0 then
                             push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*')
