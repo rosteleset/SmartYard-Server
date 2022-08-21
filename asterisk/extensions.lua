@@ -249,8 +249,10 @@ extensions = {
             log_debug("starting loop for: "..extension)
 
             local timeout = os.time() + 35
-            local crutch = 1
             local voip_crutch = redis:get("voip_crutch_" .. extension)
+            if voip_crutch then
+                voip_crutch['cycle'] = 1
+            end
             local status = ''
             local pjsip_extension = ''
             local skip = false
@@ -272,10 +274,12 @@ extensions = {
                     end
                 else
                     app.Wait(0.5)
-                    if crutch % 10 == 0 and intercom then
-                        push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*')
+                    if voip_crutch then
+                        if voip_crutch['cycle'] % 10 == 0 then
+                            push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*')
+                        end
+                        voip_crutch['cycle'] = voip_crutch['cycle'] + 1
                     end
-                    crutch = crutch + 1
                 end
             end
             app.Hangup()
