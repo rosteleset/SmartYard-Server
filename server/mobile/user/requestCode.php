@@ -28,8 +28,10 @@
                 break;
 
             case 'flashCall':
-                // TODO: пока не реализован.
-                response(404);
+                $isdn->flashCall($user_phone);
+                $redis->del("userpin_".$user_phone);
+                $redis->del("userpin.attempts_".$user_phone);
+                response(200, [ "method" => "flashCall" ]);
                 break;
             
                 default:

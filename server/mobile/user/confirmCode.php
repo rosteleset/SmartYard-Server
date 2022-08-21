@@ -25,9 +25,17 @@
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");
     $households = loadBackend("households");
+    $confirmMethod = @$config["isdn"]["confirmMethod"] ?: "smsCode";
 
     if (strlen($user_phone) == 11 && strlen($pin) == 4) {
         $pinreq = $redis->get("userpin_".$user_phone);
+
+        if ($confirmMethod == 'flashCall' && !$pinreq) {
+            $pinreq = $isdn->getCode($user_phone);
+            if ($pinreq) {
+                $redis->setex("userpin_".$user_phone, 60, $pinreq);
+            }
+        } 
         $redis->incr("userpin.attempts_".$user_phone);
 
         if (!$pinreq) {
