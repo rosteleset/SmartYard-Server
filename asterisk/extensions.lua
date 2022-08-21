@@ -218,7 +218,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
                 platform = s.platform,
                 flatId = flatId,
                 dtmf = dtmf,
-                phone = s.mobile,
+                mobile = s.mobile,
                 flatNumber = flatNumber,
             }))
         end
@@ -252,7 +252,7 @@ extensions = {
             local crutch = 1
             -- TODO
             -- rewrite to use REDIS
-            local voip_crutch = redisl:get("voip_crutch_" .. extension)
+            local voip_crutch = redis:get("voip_crutch_" .. extension)
             local status = ''
             local pjsip_extension = ''
             local skip = false
@@ -272,7 +272,7 @@ extensions = {
                 else
                     app.Wait(0.5)
                     if crutch % 10 == 0 and intercom then
-                        push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['phone']..'*')
+                        push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*')
                     end
                     crutch = crutch + 1
                 end
