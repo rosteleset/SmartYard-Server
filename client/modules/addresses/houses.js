@@ -451,7 +451,7 @@
                             {
                                 id: "description",
                                 type: "text",
-                                title: i18n("addresses.description"),
+                                title: i18n("addresses.callerId"),
                             },
                             {
                                 id: "shared",
@@ -955,7 +955,7 @@
                             {
                                 id: "description",
                                 type: "text",
-                                title: i18n("addresses.description"),
+                                title: i18n("addresses.callerId"),
                                 value: entrance.description,
                             },
                             {
