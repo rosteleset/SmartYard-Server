@@ -60,11 +60,10 @@
              */
             function push($push)
             {
-                file_put_contents("/tmp/test_php_push", print_r($push, true));
                 $query = "";
                 foreach ($push as $param => $value) {
                     if ($param != "action" && $param != "secret") {
-                        $query = $param . "=" . urlencode($value) . "&";
+                        $query = $query . "=" . urlencode($value) . "&";
                     }
                 }
                 if ($query) {
