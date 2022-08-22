@@ -1,14 +1,13 @@
 <?php
 
 /**
- * @api {post} /user/checkPhone подтвердить телефон по входящему звонку
+ * @api {post} /user/checkPhone подтвердить телефон по исходящему звонку из приложения
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *
  * @apiGroup User
  *
  * @apiParam {String{11}} userPhone номер телефона
- * @apiParam {String{4}} smsCode код подтверждения
  *
  * @apiErrorExample Ошибки
  * 401 неверный код подтверждения
