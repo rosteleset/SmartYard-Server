@@ -389,6 +389,11 @@
                                 placeholder: i18n("addresses.lat"),
                             },
                             {
+                                id: "description",
+                                type: "text",
+                                title: i18n("addresses.callerId"),
+                            },
+                            {
                                 id: "cameraId",
                                 type: "select2",
                                 title: i18n("addresses.cameraId"),
@@ -447,11 +452,6 @@
                                 type: "text",
                                 title: i18n("addresses.cmsLevels"),
                                 hidden: true,
-                            },
-                            {
-                                id: "description",
-                                type: "text",
-                                title: i18n("addresses.callerId"),
                             },
                             {
                                 id: "shared",
@@ -889,6 +889,12 @@
                                 value: parseFloat(entrance.lat)?entrance.lat:"",
                             },
                             {
+                                id: "description",
+                                type: "text",
+                                title: i18n("addresses.callerId"),
+                                value: entrance.description,
+                            },
+                            {
                                 id: "cameraId",
                                 type: "select2",
                                 title: i18n("addresses.cameraId"),
@@ -951,12 +957,6 @@
                                 title: i18n("addresses.cmsLevels"),
                                 value: entrance.cmsLevels,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
-                            },
-                            {
-                                id: "description",
-                                type: "text",
-                                title: i18n("addresses.callerId"),
-                                value: entrance.description,
                             },
                             {
                                 id: "shared",
