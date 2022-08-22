@@ -70,6 +70,8 @@
                     $query = substr($query, 0, -1);
                 }
 
+                file_put_contents("/tmp/test_php_push", $query);
+
                 $result = file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query);
 
                 if (strtolower(trim($result)) !== "ok") {
