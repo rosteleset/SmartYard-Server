@@ -269,9 +269,11 @@
              * @param $format
              * @param $link
              * @param $options
+             * @param $indexes
+             * @param $required
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required);
 
             /**
              * @param $customFieldId
@@ -283,6 +285,21 @@
              * @return false|array
              */
             abstract public function getTags();
+
+            /**
+             * @return false|integer
+             */
+            abstract public function addTag($projectId, $tag);
+
+            /**
+             * @return boolean
+             */
+            abstract public function modifyTag($tagId, $tag);
+
+            /**
+             * @return boolean
+             */
+            abstract public function deleteTag($tagId);
 
             /**
              * @param $by

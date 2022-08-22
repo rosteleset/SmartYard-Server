@@ -53,6 +53,13 @@
             abstract function getEntrance($entranceId);
 
             /**
+             * @param $by
+             * @param $query
+             * @return false|array
+             */
+            abstract function getEntrances($by, $query);
+
+            /**
              * @param $houseId
              * @param $entranceId
              * @param $prefix

@@ -21,8 +21,7 @@ namespace backends\cameras
                 "camera_id" => "cameraId",
                 "enabled" => "enabled",
                 "model" => "model",
-                "ip" => "ip",
-                "port" => "port",
+                "url" => "url",
                 "stream" => "stream",
                 "credentials" => "credentials",
                 "comment" => "comment"
@@ -32,7 +31,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function addCamera($enabled, $model, $ip, $port,  $stream, $credentials, $comment)
+        public function addCamera($enabled, $model, $url,  $stream, $credentials, $comment)
         {
             if (!$model) {
                 return false;
@@ -44,29 +43,14 @@ namespace backends\cameras
                 return false;
             }
 
-            $ip = ip2long($ip);
-
-            if (!$ip) {
+            if (!checkStr($url)) {
                 return false;
             }
 
-            $port = (int)$port;
-
-            if ($port < 0 || $port >= 65536) {
-                return false;
-            }
-
-            if (!$port) {
-                $port = 80;
-            }
-
-            $ip = long2ip($ip);
-
-            return $this->db->insert("insert into cameras (enabled, model, ip, port, stream, credentials, comment) values (:enabled, :model, :ip, :port, :stream, :credentials, :comment)", [
+            return $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, comment) values (:enabled, :model, :url, :stream, :credentials, :comment)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
-                "ip" => $ip,
-                "port" => $port,
+                "url" => $url,
                 "stream" => $stream,
                 "credentials" => $credentials,
                 "comment" => $comment,
@@ -76,7 +60,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function modifyCamera($cameraId, $enabled, $model, $ip, $port, $stream, $credentials, $comment)
+        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $comment)
         {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
@@ -95,30 +79,14 @@ namespace backends\cameras
                 return false;
             }
 
-            $ip = ip2long($ip);
-
-            if (!$ip) {
-                setLastError("noIp");
+            if (!checkStr($url)) {
                 return false;
             }
 
-            $port = (int)$port;
-
-            if ($port < 0 || $port >= 65536) {
-                return false;
-            }
-
-            if (!$port) {
-                $port = 80;
-            }
-
-            $ip = long2ip($ip);
-
-            return $this->db->modify("update cameras set enabled = :enabled, model = :model, ip = :ip, port = :port, stream = :stream, credentials = :credentials, comment = :comment where camera_id = $cameraId", [
+            return $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, comment = :comment where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
-                "ip" => $ip,
-                "port" => $port,
+                "url" => $url,
                 "stream" => $stream,
                 "credentials" => $credentials,
                 "comment" => $comment,
@@ -154,6 +122,26 @@ namespace backends\cameras
             }
 
             return $models;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function getCamera($cameraId)
+        {
+            if (!checkInt($cameraId)) {
+                return false;
+            }
+
+            return $this->db->get("select * from cameras where camera_id = $cameraId", false, [
+                "camera_id" => "cameraId",
+                "enabled" => "enabled",
+                "model" => "model",
+                "url" => "url",
+                "stream" => "stream",
+                "credentials" => "credentials",
+                "comment" => "comment"
+            ]);
         }
     }
 }

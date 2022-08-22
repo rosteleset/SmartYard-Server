@@ -1,11 +1,22 @@
 ({
     startPage: 1,
+    meta: [],
 
     init: function () {
         if (AVAIL("accounts", "group")) {
             leftSide("fas fa-fw fa-users", i18n("groups.groups"), "#groups");
         }
         moduleLoaded("groups", this);
+    },
+
+    loadGroups: function (callback) {
+        GET("accounts", "groups").
+        done(groups => {
+            modules.groups.meta = groups.groups;
+        }).
+        always(() => {
+            if (typeof callback) callback();
+        });
     },
 
     /*

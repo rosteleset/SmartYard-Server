@@ -16,6 +16,7 @@
 
             public static function GET($params) {
                 $workflow = @$params["workflow"];
+
                 if ($workflow) {
                     $w = loadBackend("tt")->loadWorkflow($workflow);
                     if ($w) {
@@ -24,6 +25,7 @@
                         return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
                     }
                 }
+
                 return api::ERROR("notAcceptable");
             }
 

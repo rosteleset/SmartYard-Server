@@ -15,8 +15,6 @@
     },
 
     asteriskMenuRight: function () {
-        console.log('initializing');
-
         let current_session, holded_session, ready, registered;
         let beep_beep = 0;
         let beep_amplify = 500;

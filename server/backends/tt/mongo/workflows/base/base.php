@@ -7,6 +7,15 @@
             /**
              * @inheritDoc
              */
+            public function __construct($config, $db, $redis) {
+                parent::__construct($config, $db, $redis);
+
+                $this->filterType = "json";
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function initProject($projectId)
             {
                 error_log("******* BASE *************" . $projectId . "######################");
@@ -16,18 +25,16 @@
             /**
              * @inheritDoc
              */
-            public function initIssue($issueId)
-            {
-                error_log("------- BASE -------------" . $issueId . "++++++++++++++++++++++");
-                return true;
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function createIssueTemplate()
             {
-                // TODO: Implement createIssueTemplate() method.
+                return [
+                    "fields" => [
+                        "subject",
+                        "description",
+                        "resolution",
+                        "tags"
+                    ],
+                ];
             }
 
             /**

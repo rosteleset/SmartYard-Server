@@ -81,6 +81,22 @@
         });
     },
 
+    doAddTag: function (projectId, tag) {
+        loadingStart();
+        POST("tt", "tag", false, {
+            projectId: projectId,
+            tag: tag,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            modules.tt.settings.projectTags(projectId);
+        });
+    },
+
     doModifyProject: function (projectId, acronym, project) {
         loadingStart();
         PUT("tt", "project", projectId, {
@@ -190,6 +206,21 @@
         always(modules.tt.settings.renderResolutions);
     },
 
+    doModifyTag: function (tagId, tag, projectId) {
+        loadingStart();
+        PUT("tt", "tag", tagId, {
+            tag: tag,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            modules.tt.settings.projectTags(projectId);
+        });
+    },
+
     doDeleteResolution: function (resolutionId) {
         loadingStart();
         DELETE("tt", "resolution", resolutionId).
@@ -230,7 +261,7 @@
         done(modules.tt.settings.renderRoles);
     },
 
-    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options) {
+    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options, indexes, required) {
         loadingStart();
         PUT("tt", "customField", customFieldId, {
             fieldDisplay: fieldDisplay,
@@ -239,6 +270,8 @@
             format: format,
             link: link,
             options: options,
+            indexes: indexes,
+            required: required,
         }).
         fail(FAIL).
         done(() => {
@@ -248,6 +281,19 @@
             $("#altForm").hide();
         }).
         always(modules.tt.settings.renderCustomFields);
+    },
+
+    doDeleteTag: function (tagId, projectId) {
+        loadingStart();
+        DELETE("tt", "tag", tagId).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            modules.tt.settings.projectTags(projectId);
+        });
     },
 
     /*
@@ -358,6 +404,10 @@
                             id: "MultiSelect",
                             text: i18n("tt.customFieldTypeMultiSelect"),
                         },
+                        {
+                            id: "Users",
+                            text: i18n("tt.customFieldTypeUsers"),
+                        },
                     ]
                 },
                 {
@@ -400,13 +450,13 @@
                 {
                     id: "uid",
                     type: "select2",
-                    title: i18n("tt.user"),
+                    title: i18n("tt.projectUser"),
                     options: u,
                 },
                 {
                     id: "roleId",
                     type: "select2",
-                    title: i18n("tt.role"),
+                    title: i18n("tt.projectRole"),
                     options: r,
                 },
             ],
@@ -424,6 +474,7 @@
                 text: groups[i],
             })
         }
+
         let r = [];
         for (let i in roles) {
             r.push({
@@ -440,13 +491,13 @@
                 {
                     id: "gid",
                     type: "select2",
-                    title: i18n("tt.group"),
+                    title: i18n("tt.projectGroup"),
                     options: g,
                 },
                 {
                     id: "roleId",
                     type: "select2",
-                    title: i18n("tt.role"),
+                    title: i18n("tt.projectRole"),
                     options: r,
                 },
             ],
@@ -795,7 +846,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "Select" || cf.type === "MultiSelect",
+                            hidden: cf.type === "Select" || cf.type === "MultiSelect" || cf.type === "Users",
                         },
                         {
                             id: "format",
@@ -804,7 +855,7 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type === "Text" || cf.type === "MultiSelect",
+                            hidden: cf.type === "Text" || cf.type === "MultiSelect" || cf.type === "Users",
                         },
                         {
                             id: "link",
@@ -825,13 +876,93 @@
                                 return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                             }
                         },
+                        {
+                            id: "usersMultiple",
+                            type: "select",
+                            title: i18n("tt.usersMultiple"),
+                            value: (cf.format && cf.format.indexOf("usersMultiple") >= 0)?"1":"0",
+                            options: [
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                            ],
+                            hidden: cf.type !== "Users",
+                        },
+                        {
+                            id: "usersWithGroups",
+                            type: "select",
+                            title: i18n("tt.usersWithGroups"),
+                            value: (cf.format && cf.format.indexOf("usersWithGroups") >= 0)?"1":"0",
+                            options: [
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                            ],
+                            hidden: cf.type !== "Users",
+                        },
+                        {
+                            id: "indexes",
+                            type: "select",
+                            title: i18n("tt.indexes"),
+                            value: cf.indexes,
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("tt.index"),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("tt.fullText"),
+                                },
+                            ],
+                        },
+                        {
+                            id: "required",
+                            type: "select",
+                            title: i18n("tt.required"),
+                            value: cf.required,
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                            ],
+                        },
                     ],
                     delete: i18n("tt.customFieldDelete"),
                     callback: function (result) {
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
-                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options);
+                            if (cf.type === "Users") {
+                                result.format = "";
+                                if (result.usersMultiple === "1") {
+                                    result.format += " usersMultiple";
+                                }
+                                if (result.usersWithGroups === "1") {
+                                    result.format += " usersWithGroups";
+                                }
+                                result.format = $.trim(result.format);
+                            }
+                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes, result.required);
                         }
                     },
                     cancel: function () {
@@ -850,7 +981,7 @@
     },
 
     deleteCustomField: function (customFieldId) {
-        mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDeleteDelete")}`, () => {
+        mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDelete")}`, () => {
             modules.tt.settings.doDeleteCustomField(customFieldId);
         });
     },
@@ -1065,7 +1196,7 @@
 
                 let roles = {};
                 for (let i in modules.tt.meta.roles) {
-                    roles[modules.tt.meta.roles[i].roleId] = $.trim(i18n("tt." + modules.tt.meta.roles[i].name) + " [" + modules.tt.meta.roles[i].level + "]");
+                    roles[modules.tt.meta.roles[i].roleId] = $.trim((modules.tt.meta.roles[i].nameDisplay?modules.tt.meta.roles[i].nameDisplay:i18n("tt." + modules.tt.meta.roles[i].name)) + " [" + modules.tt.meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1103,33 +1234,35 @@
                         let rows = [];
 
                         for (let i in project.users) {
-                            rows.push({
-                                uid: project.users[i].projectRoleId,
-                                cols: [
-                                    {
-                                        data: project.users[i].projectRoleId,
-                                    },
-                                    {
-                                        data: users[project.users[i].uid],
-                                    },
-                                    {
-                                        data: roles[project.users[i].roleId],
-                                        nowrap: true,
-                                    },
-                                ],
-                                dropDown: {
-                                    items: [
+                            if (!project.users[i].byGroup) {
+                                rows.push({
+                                    uid: project.users[i].projectRoleId,
+                                    cols: [
                                         {
-                                            icon: "fas fa-trash-alt",
-                                            title: i18n("users.delete"),
-                                            class: "text-warning",
-                                            click: projectRoleId => {
-                                                modules.tt.settings.projectDeleteUser(projectRoleId, projectId);
-                                            },
+                                            data: project.users[i].projectRoleId,
+                                        },
+                                        {
+                                            data: users[project.users[i].uid],
+                                        },
+                                        {
+                                            data: roles[project.users[i].roleId],
+                                            nowrap: true,
                                         },
                                     ],
-                                },
-                            });
+                                    dropDown: {
+                                        items: [
+                                            {
+                                                icon: "fas fa-trash-alt",
+                                                title: i18n("users.delete"),
+                                                class: "text-warning",
+                                                click: projectRoleId => {
+                                                    modules.tt.settings.projectDeleteUser(projectRoleId, projectId);
+                                                },
+                                            },
+                                        ],
+                                    },
+                                });
+                            }
                         }
 
                         return rows;
@@ -1167,7 +1300,7 @@
 
                 let roles = {};
                 for (let i in modules.tt.meta.roles) {
-                    roles[modules.tt.meta.roles[i].roleId] = $.trim(i18n("tt." + modules.tt.meta.roles[i].name) + " [" + modules.tt.meta.roles[i].level + "]");
+                    roles[modules.tt.meta.roles[i].roleId] = $.trim((modules.tt.meta.roles[i].nameDisplay?modules.tt.meta.roles[i].nameDisplay:i18n("tt." + modules.tt.meta.roles[i].name)) + " [" + modules.tt.meta.roles[i].level + "]");
                 }
 
                 cardTable({
@@ -1245,6 +1378,124 @@
         fail(loadingDone);
     },
 
+    projectTags: function (projectId) {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            cardTable({
+                target: "#altForm",
+                title: {
+                    caption: i18n("tt.tags") + " " + i18n("tt.projectId") + projectId,
+                    button: {
+                        caption: i18n("tt.addProjectTag"),
+                        click: () => {
+                            cardForm({
+                                title: i18n("tt.addTag"),
+                                footer: true,
+                                borderless: true,
+                                topApply: true,
+                                apply: i18n("add"),
+                                fields: [
+                                    {
+                                        id: "tag",
+                                        type: "text",
+                                        title: i18n("tt.tag"),
+                                        placeholder: i18n("tt.tag"),
+                                    },
+                                ],
+                                callback: fields => {
+                                    modules.tt.settings.doAddTag(projectId, fields.tag);
+                                },
+                            });
+                        },
+                    },
+                    altButton: {
+                        caption: i18n("close"),
+                        click: () => {
+                            $("#altForm").hide();
+                        },
+                    },
+                },
+                edit: tagId => {
+                    let tag = "";
+                    for (let i in modules.tt.meta.tags) {
+                        if (modules.tt.meta.tags[i].projectId == projectId && modules.tt.meta.tags[i].tagId == tagId) {
+                            tag = modules.tt.meta.tags[i].tag;
+                        }
+                    }
+                    cardForm({
+                        title: i18n("tt.addTag"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        apply: i18n("add"),
+                        delete: i18n("tt.deleteTag"),
+                        fields: [
+                            {
+                                id: "tagId",
+                                type: "text",
+                                title: i18n("tt.tagId"),
+                                readonly: true,
+                                value: tagId,
+                            },
+                            {
+                                id: "tag",
+                                type: "text",
+                                title: i18n("tt.tag"),
+                                placeholder: i18n("tt.tag"),
+                                value: tag,
+                            },
+                        ],
+                        callback: result => {
+                            if (result.delete === "yes") {
+                                mConfirm(i18n("tt.confirmDeleteTag", tagId), i18n("confirm"), `danger:${i18n("tt.deleteTag")}`, () => {
+                                    modules.tt.settings.doDeleteTag(tagId, projectId);
+                                });
+                            } else {
+                                modules.tt.settings.doModifyTag(tagId, fields.tag, projectId);
+                            }
+                        },
+                    });
+                },
+                columns: [
+                    {
+                        title: i18n("tt.tagId"),
+                    },
+                    {
+                        title: i18n("tt.tag"),
+                        nowrap: true,
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules.tt.meta.tags) {
+                        if (modules.tt.meta.tags[i].projectId == projectId) {
+                            rows.push({
+                                uid: modules.tt.meta.tags[i].tagId,
+                                cols: [
+                                    {
+                                        data: modules.tt.meta.tags[i].tagId,
+                                    },
+                                    {
+                                        data: modules.tt.meta.tags[i].tag,
+                                    },
+                                ],
+                            });
+                        }
+                    }
+
+                    return rows;
+                },
+            }).show();
+            loadingDone();
+        }).
+        fail(FAIL).
+        fail(loadingDone);
+    },
+
     renderProjects: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -1311,6 +1562,11 @@
                                         icon: "fas fa-edit",
                                         title: i18n("tt.customFields"),
                                         click: modules.tt.settings.projectCustomFields,
+                                    },
+                                    {
+                                        icon: "fas fa-tags",
+                                        title: i18n("tt.tags"),
+                                        click: modules.tt.settings.projectTags,
                                     },
                                     {
                                         title: "-",

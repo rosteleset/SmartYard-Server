@@ -125,7 +125,7 @@
                 o.push({
                     id: i.toString(),
                     text: i?i18n("addresses.domophoneOutputSecondary", i):i18n("addresses.domophoneOutputPrimary"),
-                    selected: selected === i,
+                    selected: parseInt(selected) === i,
                 });
             }
         }
@@ -307,12 +307,12 @@
 
                 let cameras = [];
 
-                let first = false;
+                cameras.push({
+                    id: "0",
+                    text: i18n("no"),
+                })
 
                 for (let i in response.cameras.cameras) {
-                    if (!first) {
-                        first = response.cameras.cameras[i].cameraId;
-                    }
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
                         text:  response.cameras.cameras[i].ip + (response.cameras.cameras[i].comment?(" (" + response.cameras.cameras[i].comment + ")"):""),
@@ -326,12 +326,7 @@
 
                     let domophones = [];
 
-                    let first = false;
-
                     for (let i in response.domophones.domophones) {
-                        if (!first) {
-                            first = response.domophones.domophones[i].domophoneId;
-                        }
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
@@ -783,12 +778,12 @@
 
             let cameras = [];
 
-            let first = false;
+            cameras.push({
+                id: "0",
+                text: i18n("no"),
+            })
 
             for (let i in response.cameras.cameras) {
-                if (!first) {
-                    first = response.cameras.cameras[i].cameraId;
-                }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
                     text: response.cameras.cameras[i].ip + (response.cameras.cameras[i].comment ? (" (" + response.cameras.cameras[i].comment + ")") : ""),
@@ -875,14 +870,14 @@
                                 type: "text",
                                 title: i18n("addresses.lon"),
                                 placeholder: i18n("addresses.lon"),
-                                value: entrance.lon,
+                                value: parseFloat(entrance.lon)?entrance.lon:"",
                             },
                             {
                                 id: "lat",
                                 type: "text",
                                 title: i18n("addresses.lat"),
                                 placeholder: i18n("addresses.lat"),
-                                value: entrance.lat,
+                                value: parseFloat(entrance.lat)?entrance.lat:"",
                             },
                             {
                                 id: "cameraId",
@@ -1257,7 +1252,6 @@
                     if (result.delete === "yes") {
                         modules.addresses.houses.deleteFlat(flatId, houseId);
                     } else {
-                        console.log(result);
                         result.flatId = flatId;
                         result.apartmentsAndLevels = apartmentsAndLevels;
                         result.houseId = houseId;
