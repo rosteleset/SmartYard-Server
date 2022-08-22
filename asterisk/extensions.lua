@@ -213,7 +213,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         if tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2 then
             token = s.voipToken
         else
-            token = s.token
+            token = s.pushToken
         end
         -- ios over fcm (with repeat)
         if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
