@@ -107,17 +107,15 @@
             "ami_password": "b47c9917fd1eed2b450483282faea0cf",
             "http_port": 8088,
             "ari_username": "domophone",
-            "ari_password": "b47c9917fd1eed2b450483282faea0cf"
+            "ari_password": "b47c9917fd1eed2b450483282faea0cf",
+            "stun_server": "stun:37.235.209.140:3478",
+            "push_title": "Входящий вызов"
         }
     ],
 
     "telegram": {
         "token": "your_bot_token_here"
     },
-
-    "stun_servers": [
-        "stun:37.235.209.140:3478"
-    ],
 
     "real_ip_header": [
         "HTTP_X_FORWARDED_FOR",

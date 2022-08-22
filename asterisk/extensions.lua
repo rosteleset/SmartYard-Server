@@ -144,19 +144,19 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, type, platform, extension, hash, callerId, flatId, dtmf, phone, flatNumber)
+function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber)
     log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
 
     dm("push", {
         token = token,
-        type = type,
+        tokenType = tokenType,
         platform = platform,
         extension = extension,
         hash = hash,
         callerId = callerId,
         flatId = flatId,
         dtmf = dtmf,
-        phone = phone,
+        mobile = mobile,
         uniq = channel.CDR("uniqueid"):get(),
         flatNumber = flatNumber,
     })
@@ -209,11 +209,17 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         extension = extension + 2000000000
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
+        local token = ""
+        if tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2 then
+            token = s.voipToken
+        else
+            token = s.token
+        end
         -- ios over fcm (with repeat)
         if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
             redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
-                token = s.token,
+                token = token,
                 hash = hash,
                 platform = s.platform,
                 flatId = flatId,
@@ -222,7 +228,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
                 flatNumber = flatNumber,
             }))
         end
-        push(s.token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
+        push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
         res = res .. "&Local/" .. extension
         ::continue::
     end

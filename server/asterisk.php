@@ -253,21 +253,6 @@
 
                 case "camshot":
                     $households = loadBackend("households");
-/*
-                    $domophone = $households->getDomophone($params["domophoneId"]);
-
-                    $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
-
-                    $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
-                    $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                        "model" => $domophone["model"],
-                        "url" => $domophone["url"],
-                        "credentials" => $domophone["credentials"],
-                    ]));
-
-                    echo $params["hash"];
-*/
-
                     $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
                     if ($entrances && $entrances[0]) {
@@ -290,72 +275,26 @@
                     break;
 
                 case "push":
-/*
-        token = token,
-        type = type,
-        platform = platform,
-        extension = extension,
-        hash = hash,
-        callerId = callerId,
-        flatId = flatId,
-        dtmf = dtmf,
-        phone = phone,
-        uniq = channel.CDR("uniqueid"):get(),
-        flatNumber = flatNumber,
- */
-
-/*
-                    if (req.query.hash) {
-                        let data = {
-                            server: 'dm.lanta.me',
-                            port: '54675',
-                            transport: 'tcp',
-                            extension: req.query.extension.toString(),
-                            hash: req.query.hash,
-                            dtmf: req.query.dtmf?req.query.dtmf:'1',
-                            timestamp: Math.round((new Date()).getTime()/1000).toString(),
-                            ttl: '30',
-                            callerId: req.query.caller_id,
-                            platform: req.query.platform,
-                            flatId: req.query.flat_id,
-                            flatNumber: req.query.flat_number,
-                        };
-                        if (false) {
-                            data.turn = 'turn:37.235.209.140:3478';
-                            data.turnTransport = 'udp';
-                        }
-                        if (true) {
-                            data.stun = 'stun:37.235.209.140:3478';
-                            data.stun_transport = 'udp';
-                            data.stunTransport = 'udp';
-                        }
-                        if (req.query.platform == 'ios') {
-                            realPush({
-                                title: "Входящий вызов",
-                                body: req.query.caller_id,
-                                tag: "voip",
-                            }, data, {
-                                priority: 'high',
-                                mutableContent: true,
-                                collapseKey: 'voip',
-                            }, req.query.token, req.query.type, res);
-                            pushed = true;
-                        }
-                        if (req.query.platform == 'android') {
-                            realPush({}, data, {
-                                priority: 'high',
-                                mutableContent: false,
-                            }, req.query.token, req.query.type, res);
-                            pushed = true;
-                        }
-                    }
- */
-
                     $isdn = loadBackend("isdn");
 
-                    file_put_contents("/tmp/test_php_push", print_r($params, true));
-
-//                    $isdn->push($data);
+                    $isdn->push([
+                        "token" => $params["token"],
+                        "type" => $params["tokenType"],
+                        "hash" => $params["hash"],
+                        "extension" => $params["extension"],
+                        "server" => $config["asterisk_servers"][0]["ip"],
+                        "port" => $config["asterisk_servers"][0]["sip_tcp_port"],
+                        "transport" => 'tcp',
+                        "dtmf" => $params["dtmf"],
+                        "timestamp" => time(),
+                        "ttl" => 30,
+                        "platform" => (int)$params["platform"]?"ios":"android",
+                        "callerId" => $params["callerId"],
+                        "flatId" => $params["flatId"],
+                        "flatNumber" => $params["flatNumber"],
+                        "stun" => $config["asterisk_servers"][0]["stun_server"],
+                        "stunTransport" => "udp",
+                    ]);
 
                     break;
             }
