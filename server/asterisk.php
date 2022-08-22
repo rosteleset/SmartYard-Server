@@ -282,8 +282,12 @@
 
                 case "flat":
                     $households = loadBackend("households");
+                    $addresses = loadBackend("addresses");
 
-                    echo json_encode($households->getFlat((int)$params));
+                    $flat = $households->getFlat((int)$params);
+                    $flat["house"] = $addresses->getHouse((int)$flat("houseId"))["houseFull"];
+
+                    echo json_encode($flat);
                     break;
 
                 case "flatIdByPrefix":

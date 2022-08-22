@@ -477,7 +477,8 @@
                         cms_enabled
                     from
                         houses_flats
-                    where house_flat_id = $flatId
+                    where
+                        house_flat_id = $flatId
                 ", false, [
                     "house_flat_id" => "flatId",
                     "floor" => "floor",
