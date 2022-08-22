@@ -75,7 +75,7 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
+                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
                     false,
                     [
                         "address_house_id" => "houseId",
@@ -85,7 +85,7 @@
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
-                        "description" => "description",
+                        "caller_id" => "callerId",
                         "prefix" => "prefix",
                         "house_domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
@@ -101,7 +101,7 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $description, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
@@ -115,17 +115,17 @@
                     $prefix = 0;
                 }
 
-                if (!checkStr($description)) {
+                if (!checkStr($callerId)) {
                     return false;
                 }
 
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, locks_disabled, cms_levels) values (:entrance_type, :entrance, :lat, :lon, :shared, :description, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :locks_disabled, :cms_levels)", [
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, locks_disabled, cms_levels) values (:entrance_type, :entrance, :lat, :lon, :shared, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :locks_disabled, :cms_levels)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
                     ":lon" => (float)$lon,
                     ":shared" => (int)$shared,
-                    ":description" => $description,
+                    ":caller_id" => $callerId,
                     ":house_domophone_id" => (int)$domophoneId,
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
@@ -165,7 +165,7 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $description, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
@@ -182,6 +182,10 @@
                     $prefix = 0;
                 }
 
+                if (!checkStr($callerId)) {
+                    return false;
+                }
+
                 if ($shared) {
                     $r1 = $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
                         ":prefix" => $prefix,
@@ -193,13 +197,13 @@
                 return
                     $r1
                     and
-                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, description = :description, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, locks_disabled = :locks_disabled, cms_levels = :cms_levels where house_entrance_id = $entranceId", [
+                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, locks_disabled = :locks_disabled, cms_levels = :cms_levels where house_entrance_id = $entranceId", [
                         ":entrance_type" => $entranceType,
                         ":entrance" => $entrance,
                         ":lat" => (float)$lat,
                         ":lon" => (float)$lon,
                         ":shared" => $shared,
-                        ":description" => $description,
+                        ":caller_id" => $callerId,
                         ":house_domophone_id" => (int)$domophoneId,
                         ":domophone_output" => (int)$domophoneOutput,
                         ":cms" => $cms,
@@ -1147,7 +1151,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -1156,7 +1160,7 @@
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
-                        "description" => "description",
+                        "caller_id" => "callerId",
                         "house_domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
                         "cms" => "cms",
@@ -1198,7 +1202,7 @@
                         break;
                 }
 
-                $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
+                $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
 
                 return $this->db->get($q,
                     $p,
@@ -1209,7 +1213,7 @@
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
-                        "description" => "description",
+                        "caller_id" => "callerId",
                         "house_domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
                         "cms" => "cms",
