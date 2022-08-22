@@ -409,6 +409,10 @@ extensions = {
             if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
                 domophoneId = tonumber(from:sub(2))
 
+                local domophone = dm("domophone", domophoneId)
+
+                log_debug(domophone)
+
                 -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))
