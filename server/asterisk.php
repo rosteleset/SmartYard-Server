@@ -119,7 +119,60 @@
 
         // mobile extension
         if ($extension[0] === "2" && strlen($extension) === 10) {
+            switch ($section) {
+                case "aors":
+                    $cred = $redis->get("mobile_extension_" . $extension);
 
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "max_contacts" => "1",
+                            "remove_existing" => "yes"
+                        ];
+                    }
+
+                    break;
+
+                case "auths":
+                    $cred = $redis->get("mobile_extension_" . $extension);
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "username" => $extension,
+                            "auth_type" => "userpass",
+                            "password" => $cred,
+                        ];
+                    }
+
+                    break;
+
+                case "endpoints":
+                    $cred = $redis->get("mobile_extension_" . $extension);
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "auth" => $extension,
+                            "outbound_auth" => $extension,
+                            "aors" => $extension,
+                            "callerid" => $extension,
+                            "context" => "default",
+                            "disallow" => "all",
+                            "allow" => "alaw,h264",
+                            "rtp_symmetric" => "yes",
+                            "force_rport" => "yes",
+                            "rewrite_contact" => "yes",
+                            "timers" => "no",
+                            "direct_media" => "no",
+                            "allow_subscribe" => "yes",
+                            "dtmf_mode" => "rfc4733",
+                            "ice_support" => "no",
+                        ];
+                    }
+
+                    break;
+            }
         }
 
         // sip extension
@@ -172,7 +225,7 @@
                             "callerid" => $user["realName"],
                             "context" => "default",
                             "disallow" => "all",
-                            "allow" => "opus,h264",
+                            "allow" => "alaw,h264",
 //                            "rtp_symmetric" => "no",
 //                            "force_rport" => "no",
 //                            "rewrite_contact" => "yes",
@@ -193,10 +246,11 @@
 /*
         mysql_query("insert into ps_aors (id, max_contacts, remove_existing, synchronized, expire) values ('"..extension.."', 1, 'yes', true, addtime(now(), '00:03:00'))")
         mysql_query("insert ignore into ps_auths (id, auth_type, password, username, synchronized) values ('"..extension.."', 'userpass', '"..hash.."', '"..extension.."', true)")
-        mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'opus,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
+        mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'alaw,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
 */
 
-    $path = explode("/", @$_SERVER["PATH_INFO"]);
+    $path = explode("/", @$_SERVER["REQUEST_URI"]);
+    array_shift($path);
 
     switch ($path[1]) {
         case "aors":
@@ -252,36 +306,49 @@
 
                 case "camshot":
                     $households = loadBackend("households");
-/*
-                    $domophone = $households->getDomophone($params["domophoneId"]);
-
-                    $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
-
-                    $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
-                    $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                        "model" => $domophone["model"],
-                        "url" => $domophone["url"],
-                        "credentials" => $domophone["credentials"],
-                    ]));
-
-                    echo $params["hash"];
-*/
-
                     $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
                     if ($entrances && $entrances[0]) {
                         $camera = $households->getCamera($entrances[0]["cameraId"]);
-                        $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
 
-                        $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
-                        $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                            "model" => $camera["model"],
-                            "url" => $camera["url"],
-                            "credentials" => $camera["credentials"],
-                        ]));
+                        if ($camera) {
+                            $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
 
-                        echo $params["hash"];
+                            $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
+                            $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                                "model" => $camera["model"],
+                                "url" => $camera["url"],
+                                "credentials" => $camera["credentials"],
+                            ]));
+
+                            echo $params["hash"];
+                        }
                     }
+
+                    break;
+
+                case "push":
+                    $isdn = loadBackend("isdn");
+
+                    $isdn->push([
+                        "token" => $params["token"],
+                        "type" => $params["tokenType"],
+                        "hash" => $params["hash"],
+                        "extension" => $params["extension"],
+                        "server" => $config["asterisk_servers"][0]["ip"],
+                        "port" => $config["asterisk_servers"][0]["sip_tcp_port"],
+                        "transport" => 'tcp',
+                        "dtmf" => $params["dtmf"],
+                        "timestamp" => time(),
+                        "ttl" => 30,
+                        "platform" => (int)$params["platform"]?"ios":"android",
+                        "callerId" => $params["callerId"],
+                        "flatId" => $params["flatId"],
+                        "flatNumber" => $params["flatNumber"],
+                        "stun" => $config["asterisk_servers"][0]["stun_server"],
+                        "stunTransport" => "udp",
+                        "title" => $config["asterisk_servers"][0]["push_title"],
+                    ]);
 
                     break;
             }

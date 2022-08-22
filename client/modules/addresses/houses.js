@@ -315,7 +315,7 @@
                 for (let i in response.cameras.cameras) {
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
-                        text:  response.cameras.cameras[i].ip + (response.cameras.cameras[i].comment?(" (" + response.cameras.cameras[i].comment + ")"):""),
+                        text:  response.cameras.cameras[i].url + (response.cameras.cameras[i].comment?(" (" + response.cameras.cameras[i].comment + ")"):""),
                     })
                 }
 
@@ -325,8 +325,10 @@
                     modules.addresses.houses.meta.domophoneModelsById = {};
 
                     let domophones = [];
+                    let first = false;
 
                     for (let i in response.domophones.domophones) {
+                        if (first === false) first = response.domophones.domophones[i].domophoneId;
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
@@ -781,12 +783,12 @@
             cameras.push({
                 id: "0",
                 text: i18n("no"),
-            })
+            });
 
             for (let i in response.cameras.cameras) {
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text: response.cameras.cameras[i].ip + (response.cameras.cameras[i].comment ? (" (" + response.cameras.cameras[i].comment + ")") : ""),
+                    text: response.cameras.cameras[i].url + (response.cameras.cameras[i].comment ? (" (" + response.cameras.cameras[i].comment + ")") : ""),
                 })
             }
 

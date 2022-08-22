@@ -68,8 +68,13 @@
             $door['doorId'] = intval($entrance['entranceId']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
-            // TODO: добавить обработку блокировки
-            // $door['blocked'] = "Услуга домофонии заблокирована";
+            
+            // TODO: проверить обработку блокировки
+            // 
+            if ($flatDetail['manualBlock']) {
+                $door['blocked'] = "Услуга домофонии заблокирована";
+            }
+
             $house['doors'][$door['doorId']] = $door;
             
         }

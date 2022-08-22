@@ -51,7 +51,7 @@
 
     $flat = $households->getFlat($flat_id);
     /*
-     "flatId": "1",
+        "flatId": "1",
 		"floor": "10",
 		"flat": "69",
 		"autoBlock": "0",
@@ -66,7 +66,7 @@
 		"entrances": []
     */
     
-    response(200, $flat);
+    // response(200, $flat);
     $ret = [];
     // $ret['FRSDisabled'] = 't';
     $ret['allowDoorCode'] = 't';
@@ -74,7 +74,7 @@
     $ret['CMS'] = @$flat['cmsEnabled']?'t':'f';
     $ret['VoIP'] = 't'; // TODO: разобраться как отключить voip для конкретного пользователя
     $ret['autoOpen'] = $flat['autoOpen'];
-    $ret['whiteRabbit'] = intval($flat['whiteRabbit']);
+    $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
     
     
     if ($ret) {
@@ -83,7 +83,7 @@
         response();
     }
 
-    response(200, $flatIds);
+    // response(200, $flatIds);
 /*
     $es = pg_fetch_assoc(pg_query("select * from address.entrances left join address.flats using (entrance_id) where flat_id=$flat_id"));
 

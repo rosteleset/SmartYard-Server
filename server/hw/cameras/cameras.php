@@ -40,8 +40,22 @@
             public function ping(): bool {
                 $errno = false;
                 $errstr = '';
-                $socket = @explode('://', $this->url)[1];
-                $fp = @stream_socket_client($socket, $errno, $errstr, 1);
+
+                $url = parse_url($this->url);
+                if (!@$url['port']) {
+                    switch (@strtolower($url['scheme'])) {
+                        case 'http':
+                            $url['port'] = 80;
+                            break;
+                        case 'https':
+                            $url['port'] = 443;
+                            break;
+                        default:
+                            $url['port'] = 22;
+                            break;
+                    }
+                }
+                $fp = @stream_socket_client($url['host'] . ":" . $url['port'], $errno, $errstr, 1);
 
                 if ($fp) {
                     fclose($fp);

@@ -18,8 +18,10 @@ __pycache__
 /client/lib/qrcodejs/
 /client/lib/loading-bar/
 /client/lib/ace-builds/
+/client/config/config.json
 /server/lib/PHPMailer/
 /server/lib/htmlpurifier/
+/server/lib/parsedown/
 /server/db/internal.db
 /server/db/mongo/
 /server/storage/

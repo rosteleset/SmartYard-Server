@@ -2,8 +2,8 @@ package.path = "/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;" .. packa
 package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
 
 realm = "rbt"
-dm_server = "http://127.0.0.1:8000/server/asterisk.php/extensions"
-log_file = "/tmp/pbx_lua.log"
+dm_server = "http://127.0.0.1/asterisk/extensions"
+log_file = "/var/log/asterisk/pbx_lua_debug.log"
 redis_server = {
     host = "127.0.0.1",
     port = 6379,
@@ -25,12 +25,6 @@ redis = redis.connect(redis_server)
 if redis_server.auth ~= nil then
     redis:auth(redis_server.auth)
 end
-
--- client:select(15) -- for testing purposes
---
--- redis:setex('foo', 10, 'bar')
--- local value = redis:get('foo')
--- print(value)
 
 function dm(action, request)
     local body = {}
@@ -150,21 +144,21 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, type, platform, extension, hash, caller_id, flatId, dtmf, phone, flat_number)
-    log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
+function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber)
+    log_debug("sending push for: "..extension.." ["..mobile.."] ("..tokenType..", "..platform..")")
 
     dm("push", {
         token = token,
-        type = type,
+        tokenType = tokenType,
         platform = platform,
         extension = extension,
         hash = hash,
-        caller_id = caller_id,
+        callerId = callerId,
         flatId = flatId,
         dtmf = dtmf,
-        phone = phone,
+        mobile = mobile,
         uniq = channel.CDR("uniqueid"):get(),
-        flat_number = flat_number,
+        flatNumber = flatNumber,
     })
 end
 
@@ -188,7 +182,7 @@ end
 function mobile_intercom(flatId, flatNumber, domophoneId)
     local extension
     local res = ""
-    local caller_id
+    local callerId
 
     local subscribers = dm("subscribers", flatId)
 
@@ -200,7 +194,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
 
     local hash = camshow(domophoneId)
 
-    caller_id = channel.CALLERID("name"):get()
+    callerId = channel.CALLERID("name"):get()
 
     for i, s in ipairs(subscribers) do
         log_debug(s)
@@ -215,21 +209,26 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         extension = extension + 2000000000
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
+        local token = ""
+        if tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2 then
+            token = s.voipToken
+        else
+            token = s.pushToken
+        end
         -- ios over fcm (with repeat)
-        if tonumber(s.platform) == 1 and tonumber(s.type) == 0 then
-            redis.setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
+        if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
+            redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                 id = extension,
-                token = s.token,
+                token = token,
                 hash = hash,
                 platform = s.platform,
                 flatId = flatId,
                 dtmf = dtmf,
-                phone = s.phone,
+                mobile = s.mobile,
                 flatNumber = flatNumber,
             }))
-            intercoms['type'] = 0
         end
-        push(s.token, s.type, s.platform, extension, hash, caller_id, flatId, dtmf, s.phone, flatNumber)
+        push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
         res = res .. "&Local/" .. extension
         ::continue::
     end
@@ -256,16 +255,19 @@ extensions = {
             log_debug("starting loop for: "..extension)
 
             local timeout = os.time() + 35
-            local crutch = 1
-            -- TODO
-            -- rewrite to use REDIS
-            local intercom = mysql_query("select * from dm.voip_crutch where id='"..extension.."'")
+            local voip_crutch = redis:get("voip_crutch_" .. extension)
+            if voip_crutch ~= nil then
+                voip_crutch = cjson.decode(voip_crutch)
+                voip_crutch['cycle'] = 1
+            else
+                voip_crutch = false
+            end
             local status = ''
             local pjsip_extension = ''
             local skip = false
             while os.time() < timeout do
                 pjsip_extension = channel.PJSIP_DIAL_CONTACTS(extension):get()
-                if pjsip_extension ~= "" then
+                if pjsip_extension ~= "" and pjsip_extension ~= nil then
                     if not skip then
                         log_debug("has registration: " .. extension)
                         skip = true
@@ -273,15 +275,17 @@ extensions = {
                     app.Dial(pjsip_extension, 35, "g")
                     status = channel.DIALSTATUS:get()
                     if status == "CHANUNAVAIL" then
-                        log_debug(extension..': sleeping')
+                        log_debug(extension .. ': sleeping')
                         app.Wait(35)
                     end
                 else
                     app.Wait(0.5)
-                    if crutch % 10 == 0 and intercom then
-                        push(intercom['token'], '0', intercom['platform'], extension, intercom['hash'], channel.CALLERID("name"):get(), intercom['flatId'], intercom['dtmf'], intercom['phone']..'*')
+                    if voip_crutch then
+                        if voip_crutch['cycle'] % 10 == 0 then
+                            push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'])
+                        end
+                        voip_crutch['cycle'] = voip_crutch['cycle'] + 1
                     end
-                    crutch = crutch + 1
                 end
             end
             app.Hangup()
@@ -330,11 +334,7 @@ extensions = {
 
             log_debug("dialing: " .. extension)
 
-            if hash then
-                app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120, "b(dm^hash^1(" .. hash .. "))")
-            else
-                app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120)
-            end
+            app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120)
         end,
 
         -- from PSTN to mobile application call (for testing)
@@ -473,7 +473,8 @@ extensions = {
                     end
 
                     -- SIP intercom(s)
-                    if channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get() then
+                    local sip_intercom = channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get()
+                    if sip_intercom ~= "" and sip_intercom ~= nil then
                         dest = dest .. "&Local/" .. string.format("4%09d", flatId)
                     end
 
