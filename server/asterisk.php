@@ -285,7 +285,7 @@
                     $addresses = loadBackend("addresses");
 
                     $flat = $households->getFlat((int)$params);
-                    $flat["house"] = $addresses->getHouse((int)$flat("houseId"))["houseFull"];
+                    $flat["house"] = $addresses->getHouse((int)$flat["houseId"])["houseFull"];
 
                     echo json_encode($flat);
                     break;
