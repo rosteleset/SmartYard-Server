@@ -294,6 +294,7 @@
                         "flatNumber" => $params["flatNumber"],
                         "stun" => $config["asterisk_servers"][0]["stun_server"],
                         "stunTransport" => "udp",
+                        "title" => $config["asterisk_servers"][0]["push_title"],
                     ]);
 
                     break;
