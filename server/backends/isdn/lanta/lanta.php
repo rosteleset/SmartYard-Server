@@ -63,7 +63,7 @@
                 $query = "";
                 foreach ($push as $param => $value) {
                     if ($param != "action" && $param != "secret") {
-                        $query = $query . "=" . urlencode($value) . "&";
+                        $query = $query . $param . "=" . urlencode($value) . "&";
                     }
                 }
                 if ($query) {
