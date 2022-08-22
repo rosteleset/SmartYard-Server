@@ -1142,7 +1142,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -1193,7 +1193,7 @@
                         break;
                 }
 
-                $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
+                $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
 
                 return $this->db->get($q,
                     $p,
