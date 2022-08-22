@@ -145,7 +145,7 @@ function blacklist(flatId)
 end
 
 function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber)
-    log_debug("sending push for: "..extension.." ["..phone.."] ("..type..", "..platform..")")
+    log_debug("sending push for: "..extension.." ["..phone.."] ("..tokenType..", "..platform..")")
 
     dm("push", {
         token = token,
