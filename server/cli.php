@@ -12,6 +12,7 @@
     require_once "utils/checkint.php";
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
+    require_once "utils/db_ext.php";
 
     require_once "backends/backend.php";
 
@@ -82,7 +83,7 @@
     }
 
     try {
-        $db = new PDO(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         echo "can't open database " . $config["db"]["dsn"] . "\n";
         exit(1);
@@ -114,7 +115,7 @@
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
-            die("can't load required backend [$backend]");
+            die("can't load required backend [$backend]\n");
         }
     }
 
@@ -177,6 +178,20 @@
         exit(0);
     }
 
+    if (count($args) == 1 || count($args) == 2
+        && array_key_exists("--autoconfigure-domophone", $args)
+        && isset($args["--autoconfigure-domophone"]))
+    {
+        $domophone_id = $args["--autoconfigure-domophone"];
+        $first_time = array_key_exists("--first-time", $args);
+
+        if (checkInt($domophone_id)) {
+            require_once "utils/autoconfigure_domophone.php";
+            autoconfigure_domophone($args["--autoconfigure-domophone"], $first_time);
+            exit(0);
+        }
+    }
+
     echo "usage: {$argv[0]}
         [--init-db]
         [--admin-password=<password>]
@@ -185,4 +200,5 @@
         [--cleanup]
         [--check-mail=<your email address>]
         [--run-demo-server]
+        [--autoconfigure-domophone=<domophone_id> [--first-time]]
     \n";

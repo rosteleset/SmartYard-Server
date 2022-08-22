@@ -126,7 +126,7 @@
     "lat": "Долгота",
     "lon": "Широта",
     "completelyDeleteEntrance": "Удалить вход #%s полностью или только для этого дома?",
-    "deleteEntranceComletely": "Удалить полностью",
+    "deleteEntranceCompletely": "Удалить полностью",
     "deleteEntranceLink": "Только для этого дома",
     "apartment": "Домофонный номер",
     "apartmentLevels": "Уровни домофона",
