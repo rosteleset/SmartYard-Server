@@ -1151,6 +1151,7 @@
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
+                        "description" => "description",
                         "house_domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
                         "cms" => "cms",
