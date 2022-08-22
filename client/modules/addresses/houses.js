@@ -389,7 +389,7 @@
                                 placeholder: i18n("addresses.lat"),
                             },
                             {
-                                id: "description",
+                                id: "callerId",
                                 type: "text",
                                 title: i18n("addresses.callerId"),
                             },
@@ -821,8 +821,6 @@
                     }
                 }
 
-                console.log(entrance);
-
                 if (entrance) {
                     cardForm({
                         title: i18n("addresses.editEntrance"),
@@ -889,10 +887,10 @@
                                 value: parseFloat(entrance.lat)?entrance.lat:"",
                             },
                             {
-                                id: "description",
+                                id: "callerId",
                                 type: "text",
                                 title: i18n("addresses.callerId"),
-                                value: entrance.description,
+                                value: entrance.callerId,
                             },
                             {
                                 id: "cameraId",
