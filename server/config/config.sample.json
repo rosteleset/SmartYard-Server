@@ -87,9 +87,6 @@
         "isdn": {
             "backend": "lanta",
             "secret": "<-- your secret here -->",
-            "mobile": "https://rbt.lanta.me/lanta/mobile",
-            "shot": "https://rbt.lanta.me/shot/%s.jpg",
-            "live": "https://rbt.lanta.me/live/%s.jpg",
             "_comment": "supported subscriber's phone confirm methods: smsCode, outgoingCall or flashCall",
             "confirmMethod": "outgoingCall"
         },
