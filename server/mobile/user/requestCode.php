@@ -35,8 +35,8 @@
             $redis->setex("userpin_".$user_phone, 60, $pin);
             
             // TODO: добавить в ответ способ подтверждения телефона, указанный в конфиге. (по умолчанию - по смс)
-            // response();
-            response(200, [ "method" => "outgoingCall", "confirmationNumbers" => $isdn->confirmNumbers()]); 
+            //response();
+            response(200, [ "method" => "outgoingCall", "confirmationNumbers" => $isdn->confirmNumbers()]);
         }
     } else {
         response(422);
