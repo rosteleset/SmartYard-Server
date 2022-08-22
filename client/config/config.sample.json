@@ -1,5 +1,5 @@
 {
-    "defaultServer": "https://192.168.13.39:9091/api",
+    "defaultServer": "https://isdn.lanta.me/api",
     "defaultLanguage": "ru",
     "languages": {
         "ru": "Русский",
