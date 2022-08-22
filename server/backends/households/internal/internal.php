@@ -75,7 +75,7 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
+                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
                     false,
                     [
                         "address_house_id" => "houseId",
@@ -85,6 +85,7 @@
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
+                        "description" => "description",
                         "prefix" => "prefix",
                         "house_domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
@@ -112,6 +113,10 @@
 
                 if (!(int)$shared) {
                     $prefix = 0;
+                }
+
+                if (!checkStr($description)) {
+                    return false;
                 }
 
                 $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, description, house_domophone_id, domophone_output, cms, cms_type, camera_id, locks_disabled, cms_levels) values (:entrance_type, :entrance, :lat, :lon, :shared, :description, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :locks_disabled, :cms_levels)", [
@@ -160,7 +165,7 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $description, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $description, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;

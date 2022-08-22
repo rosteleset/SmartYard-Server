@@ -821,6 +821,8 @@
                     }
                 }
 
+                console.log(entrance);
+
                 if (entrance) {
                     cardForm({
                         title: i18n("addresses.editEntrance"),
