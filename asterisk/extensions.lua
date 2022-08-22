@@ -445,7 +445,8 @@ extensions = {
             if domophoneId and flatId and flatNumber then
                 log_debug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
 
-                log_debug(flat)
+                local entrance = dm("entrance", domophoneId)
+                log_debug(entrance)
 
                 channel.CALLERID("name"):set(channel.CALLERID("name"):get() .. ", " .. flatNumber)
 

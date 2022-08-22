@@ -449,6 +449,11 @@
                                 hidden: true,
                             },
                             {
+                                id: "description",
+                                type: "text",
+                                title: i18n("addresses.description"),
+                            },
+                            {
                                 id: "shared",
                                 type: "select",
                                 title: i18n("addresses.shared"),
@@ -944,6 +949,12 @@
                                 title: i18n("addresses.cmsLevels"),
                                 value: entrance.cmsLevels,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
+                            },
+                            {
+                                id: "description",
+                                type: "text",
+                                title: i18n("addresses.description"),
+                                value: entrance.description,
                             },
                             {
                                 id: "shared",

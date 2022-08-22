@@ -35,6 +35,7 @@
              * @param $lon
              * @param $shared
              * @param $prefix
+             * @param $description
              * @param $domophoneId
              * @param $domophoneOutput
              * @param $cms
@@ -44,7 +45,7 @@
              * @param $cmsLevels
              * @return boolean|integer
              */
-            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
+            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $description, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
 
             /**
              * @param $entranceId
@@ -75,6 +76,7 @@
              * @param $lat
              * @param $lon
              * @param $shared
+             * @param $description
              * @param $prefix
              * @param $domophoneId
              * @param $domophoneOutput
@@ -85,7 +87,7 @@
              * @param $cmsLevels
              * @return boolean
              */
-            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
+            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $description, $prefix, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
 
             /**
              * @param $entranceId
