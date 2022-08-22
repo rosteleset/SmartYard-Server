@@ -119,7 +119,60 @@
 
         // mobile extension
         if ($extension[0] === "2" && strlen($extension) === 10) {
+            switch ($section) {
+                case "aors":
+                    $cred = $redis->get("mobile_extension_" . $extension);
 
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "max_contacts" => "1",
+                            "remove_existing" => "yes"
+                        ];
+                    }
+
+                    break;
+
+                case "auths":
+                    $cred = $redis->get("mobile_extension_" . $extension);
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "username" => $extension,
+                            "auth_type" => "userpass",
+                            "password" => $cred,
+                        ];
+                    }
+
+                    break;
+
+                case "endpoints":
+                    $cred = $redis->get("mobile_extension_" . $extension);
+
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "auth" => $extension,
+                            "outbound_auth" => $extension,
+                            "aors" => $extension,
+                            "callerid" => $extension,
+                            "context" => "default",
+                            "disallow" => "all",
+                            "allow" => "alaw,h264",
+                            "rtp_symmetric" => "yes",
+                            "force_rport" => "yes",
+                            "rewrite_contact" => "yes",
+                            "timers" => "no",
+                            "direct_media" => "no",
+                            "allow_subscribe" => "yes",
+                            "dtmf_mode" => "rfc4733",
+                            "ice_support" => "no",
+                        ];
+                    }
+
+                    break;
+            }
         }
 
         // sip extension
