@@ -447,7 +447,7 @@ extensions = {
 
                 local domophone = dm("domophone", domophoneId)
 
-                channel.CALLERID("name"):set(domophone.callerId .. ", " .. flatNumber)
+                channel.CALLERID("name"):set(domophone.callerId .. ", " .. tostring(flatNumber))
 
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
                     local dest = ""
