@@ -38,4 +38,3 @@
         "paymentsUrl" => "https://your.url.of.payments.page", 
         "supportPhone" => "+7(4752)429999"
     ]);
-    

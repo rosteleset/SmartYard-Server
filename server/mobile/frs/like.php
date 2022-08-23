@@ -17,7 +17,9 @@
  */
 
     auth(5);
+    response();
 
+/*
     $uuid = mysqli_escape_string($mysql, @$postdata['event']);
 
     if (!$uuid) {
@@ -125,25 +127,26 @@
      * dm.faceflats - списки поквартирных лайков в разрезе жильцов, специально для посетителей публичных домов (судя по тех. заданию [обосраться со смеху] у нас таких больше 99% от жилого фонда)
      */
 
-    mysql("update dm.face2face set external_face_id = $faceId where face_id = $face_id");
+    /*mysql("update dm.face2face set external_face_id = $faceId where face_id = $face_id");
     mysql("insert ignore into dm.faces (external_face_id) values ($faceId)");
-    mysql("update dm.faces set image = '$faceUUID' where external_face_id = $faceId");
+    mysql("update dm.faces set image = '$faceUUID' where external_face_id = $faceId");*/
 
     /*
      * Жуткое, нахуй не нужное уебище!
      */
 
-    $comment = mysqli_escape_string($mysql, @$postdata['comment']);
+    /*$comment = mysqli_escape_string($mysql, @$postdata['comment']);
     mysql("insert ignore into dm.faceflats (flat_id, external_face_id, owner) values ($flat_id, $faceId, '{$bearer['id']}')");
-    mysql("update dm.faceflats set comment = '$comment' where flat_id = $flat_id and external_face_id = $faceId and owner = '{$bearer['id']}'");
+    mysql("update dm.faceflats set comment = '$comment' where flat_id = $flat_id and external_face_id = $faceId and owner = '{$bearer['id']}'");*/
 
     /*
      * Еще более жуткое и нахуй не нужное уебище!
      */
 
-    mysql("insert ignore into dm.likes (event, owner) values ('$uuid', '{$bearer['id']}')");
+    /*mysql("insert ignore into dm.likes (event, owner) values ('$uuid', '{$bearer['id']}')");
     mysql("update dm.likes set flat_id = $flat_id, external_face_id = $faceId where event = '$uuid' and owner = '{$bearer['id']}'");
 
     response(200, [
         'faceId' => $faceId,
     ]);
+*/

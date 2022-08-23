@@ -16,6 +16,7 @@
  */
 
     auth(3600);
+    response();
 
     /*
      * Disclaimer: использование "иерархии" владелец\не владелец считаю в данном случае избыточным и вредоносным,
@@ -23,6 +24,7 @@
      * (общий список свой\чужой проще в реализации и не так убивает производительность)
      */
 
+/*
     $flat_id = @(int)$postdata['flatId'];
 
     if (!in_array($flat_id, all_flats())) {
@@ -42,9 +44,9 @@
     while ($row = mysqli_fetch_assoc($qr)) {
         $u = $row['image'];
 
-        /*
-         * !!!! переделать !!!!
-         */
+        //
+        // !!!! переделать !!!!
+        //
 
         if ($my_relation_to_this_flat == 'owner' || in_array($bearer['id'], $likes_by_external_id[$row['external_face_id']])) {
             $resp[] = [
@@ -62,3 +64,4 @@
     } else {
         response();
     }
+*/
