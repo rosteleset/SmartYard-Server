@@ -23,9 +23,6 @@
  */
 
 auth();
-
-$households = loadBackend("households");
-
 response(200, [
     "pushToken" => $subscriber['pushToken'],
     "voipToken" => $subscriber['voipToken'],
