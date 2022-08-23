@@ -27,7 +27,9 @@
  */
 
     auth();
+    response();
 
+/*
     jira_require();
 
     $issue = @$postdata['issue'];
@@ -76,3 +78,4 @@
     mysql("insert into dm.inbox (date, id, msg, ext_id, push_only, action) values (now(), '$id', '$msg', md5(now() + rand()), true, '')");
 
     response(200, $issue->key);
+*/
