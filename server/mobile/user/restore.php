@@ -29,7 +29,9 @@
  */
 
     auth();
+    response();
 
+/*
     $contract = trim(@$postdata['contract']);
 
     if ($contract[0] == 'f') {
@@ -147,3 +149,4 @@
     }
 
     response();
+*/

@@ -24,4 +24,9 @@
 
 auth();
 
-response(200, pg_fetch_assoc(pg_query("select push \"pushToken\", voip \"voipToken\" from domophones.bearers where id='{$bearer['id']}'")));
+$households = loadBackend("households");
+
+response(200, [
+    "pushToken" => $subscriber['pushToken'],
+    "voipToken" => $subscriber['voipToken'],
+    ]);
