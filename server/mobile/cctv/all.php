@@ -22,7 +22,9 @@
  */
 
 auth();
+response();
 
+/*
 all_cctv();
 
 $ret = [];
@@ -48,3 +50,4 @@ if (count($ret)) {
 } else {
     response();
 }
+*/

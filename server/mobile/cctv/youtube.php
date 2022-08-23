@@ -24,7 +24,9 @@
  */
 
 auth();
+response();
 
+/*
 $id = (int)@$postdata['id'];
 
 if ($id) {
@@ -55,3 +57,4 @@ if (count($vidos)) {
 } else {
     response();
 }
+*/

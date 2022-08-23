@@ -15,7 +15,9 @@
  */
 
 auth();
+response();
 
+/*
 $id = (int)@$postdata['id'];
 
 $url = demo('downloadUrl', [ 'phone' => $bearer['id'], 'downloadId' => $id ], true);
@@ -25,3 +27,4 @@ if ($url) {
 } else {
     response();
 }
+*/

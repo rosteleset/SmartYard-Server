@@ -17,7 +17,9 @@
  */
 
 auth();
+response();
 
+/*
 $server_map = [
     '193.203.61.11' => 'https://fl2.lanta.me:8443/',
     '193.203.61.5' => 'https://fl3.lanta.me:8443/',
@@ -44,3 +46,4 @@ if (count($r)) {
 } else {
     response();
 }
+*/
