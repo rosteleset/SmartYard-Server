@@ -22,7 +22,9 @@
  */
 
     auth();
+    response(200, ["code" => "12345"]);
 
+/*
     $flat_id = (int)@$postdata['flatId'];
 
     if (!$flat_id) {
@@ -50,3 +52,4 @@
     @pg_query("insert into domophones.queue (object_type, object_id) values ('flat', $flat_id)");
 
     response(200, [ "code" => $c ]);
+*/

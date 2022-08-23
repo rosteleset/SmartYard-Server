@@ -26,6 +26,9 @@
  */
 
     auth();
+    response(200);
+
+/*
 
     $flat_id = @(int)$postdata['flatId'];
 
@@ -77,3 +80,4 @@
     } else {
         response();
     }
+*/
