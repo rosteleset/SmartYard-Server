@@ -23,12 +23,6 @@
 
             /**
              * @param $houseId
-             * @return false|array
-             */
-            abstract function getHouseEntrances($houseId);
-
-            /**
-             * @param $houseId
              * @param $entranceType
              * @param $entrance
              * @param $lat

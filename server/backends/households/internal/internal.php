@@ -69,38 +69,6 @@
             /**
              * @inheritDoc
              */
-            function getHouseEntrances($houseId)
-            {
-                if (!checkInt($houseId)) {
-                    return false;
-                }
-
-                return $this->db->get("select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $houseId order by entrance_type, entrance",
-                    false,
-                    [
-                        "address_house_id" => "houseId",
-                        "house_entrance_id" => "entranceId",
-                        "entrance_type" => "entranceType",
-                        "entrance" => "entrance",
-                        "lat" => "lat",
-                        "lon" => "lon",
-                        "shared" => "shared",
-                        "caller_id" => "callerId",
-                        "prefix" => "prefix",
-                        "house_domophone_id" => "domophoneId",
-                        "domophone_output" => "domophoneOutput",
-                        "cms" => "cms",
-                        "cms_type" => "cmsType",
-                        "camera_id" => "cameraId",
-                        "cms_levels" => "cmsLevels",
-                        "locks_disabled" => "locksDisabled",
-                    ]
-                );
-            }
-
-            /**
-             * @inheritDoc
-             */
             function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
@@ -1191,6 +1159,7 @@
             {
                 $where = '';
                 $p = [];
+                $q = '';
 
                 switch ($by) {
                     case "domophoneId":
@@ -1200,19 +1169,30 @@
                             "domophone_output" => $query["output"],
                         ];
                         break;
+
+                    case "house":
+                        if (!checkInt($query)) {
+                            return false;
+                        }
+                        $q = "select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        break;
                 }
 
-                $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
+                if (!$q) {
+                    $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
+                }
 
                 return $this->db->get($q,
                     $p,
                     [
+                        "address_house_id" => "houseId",
                         "house_entrance_id" => "entranceId",
                         "entrance_type" => "entranceType",
                         "entrance" => "entrance",
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
+                        "prefix" => "prefix",
                         "caller_id" => "callerId",
                         "house_domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
