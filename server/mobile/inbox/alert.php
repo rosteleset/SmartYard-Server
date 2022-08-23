@@ -15,7 +15,9 @@
  */
 
 auth();
+response();
 
+/*
 $msg = trim(mysqli_escape_string($mysql, @$postdata['msg']));
 $action = trim(mysqli_escape_string($mysql, @$postdata['action']));
 $id = $bearer['id'];
@@ -34,3 +36,4 @@ $p = (@$postdata['pushOnly'] == 'f')?'false':'true';
 mysql("insert into dm.inbox (date, id, msg, ext_id, push_only, action) values (now(), '$id', '$msg', md5(now()+rand()), $p, '$action')");
 
 response();
+*/

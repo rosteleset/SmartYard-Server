@@ -13,7 +13,9 @@
  */
 
 auth();
+response();
 
+/*
 $id = mysqli_escape_string($mysql, @$postdata['messageId']);
 
 if (!$id) {
@@ -22,3 +24,4 @@ if (!$id) {
 
 mysql("update dm.inbox set delivered=true where ext_id='$id'");
 response();
+*/
