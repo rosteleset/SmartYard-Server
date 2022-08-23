@@ -389,6 +389,11 @@
                                 placeholder: i18n("addresses.lat"),
                             },
                             {
+                                id: "callerId",
+                                type: "text",
+                                title: i18n("addresses.callerId"),
+                            },
+                            {
                                 id: "cameraId",
                                 type: "select2",
                                 title: i18n("addresses.cameraId"),
@@ -880,6 +885,12 @@
                                 title: i18n("addresses.lat"),
                                 placeholder: i18n("addresses.lat"),
                                 value: parseFloat(entrance.lat)?entrance.lat:"",
+                            },
+                            {
+                                id: "callerId",
+                                type: "text",
+                                title: i18n("addresses.callerId"),
+                                value: entrance.callerId,
                             },
                             {
                                 id: "cameraId",

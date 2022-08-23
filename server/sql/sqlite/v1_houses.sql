@@ -22,6 +22,7 @@ CREATE TABLE houses_entrances
     lat real,
     lon real,
     shared integer,
+    caller_id text,                                                                                                   -- callerId
 -- domophone's specific entrance settings
     camera_id integer,
     house_domophone_id integer not null,

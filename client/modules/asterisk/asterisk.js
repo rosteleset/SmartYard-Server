@@ -11,7 +11,7 @@
 
         moduleLoaded("asterisk", this);
 
-        $("#asteriskMenuRight").off("click").on("click", modules.asterisk.asteriskMenuRight)
+        $("#asteriskMenuRight").off("click").on("click", modules.asterisk.asteriskMenuRight);
     },
 
     asteriskMenuRight: function () {

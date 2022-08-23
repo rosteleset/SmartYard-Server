@@ -1,5 +1,5 @@
 {
-    "defaultServer": "https://isdn.lanta.me/api",
+    "defaultServer": "<!-- your api server here -->",
     "defaultLanguage": "ru",
     "languages": {
         "ru": "Русский",
@@ -15,5 +15,11 @@
         "about"
     ],
     "defaultRoute": "#about",
-    "logo": "rbt"
+    "logo": "rbt",
+    "wss": "<!-- your wss server here -->",
+    "ice": [
+        {
+            "urls": [ "stun:stun.l.google.com:19302" ]
+        }
+    ]
 }

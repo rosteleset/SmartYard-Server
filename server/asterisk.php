@@ -304,8 +304,15 @@
                     echo json_encode($households->getDomophone((int)$params));
                     break;
 
+                case "entrance":
+                    $households = loadBackend("households");
+
+                    echo json_encode($households->getEntrances("domophoneId", [ "domophoneId" => (int)$params, "output" => "0" ]));
+                    break;
+
                 case "camshot":
                     $households = loadBackend("households");
+
                     $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
                     if ($entrances && $entrances[0]) {

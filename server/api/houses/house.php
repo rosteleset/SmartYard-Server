@@ -25,7 +25,7 @@
                 } else {
                     $house = [
                         "flats" => $households->getHouseFlats($params["_id"]),
-                        "entrances" => $households->getHouseEntrances($params["_id"]),
+                        "entrances" => $households->getEntrances("house", $params["_id"]),
                         "domophoneModels" => $households->getModels(),
                         "cmses" => $households->getCMSes(),
                     ];
