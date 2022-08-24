@@ -62,19 +62,19 @@
     },
 
     onProgress: function (e) {
-
+        console.log("progress");
     },
 
     onFailed: function (e) {
-
+        console.log("failed");
     },
 
     onEnded: function (e) {
-
+        console.log("ended");
     },
 
     onConfirmed: function (e) {
-
+        console.log("confirmed");
     },
 
     newRTCSession: function (e) {
@@ -117,20 +117,13 @@
 
             let s = this;
             if (modules.asterisk.currentSession == s) {
-                if (typeof modules.asterisk.currentSession.subject == 'undefined' && modules.asterisk.currentSession.answered === true) {
-//                        pin_call2();
-                }
                 modules.asterisk.currentSession = false;
             }
             if (modules.asterisk.holdedSession == s) {
-                if (typeof modules.asterisk.holdedSession.subject == 'undefined' && modules.asterisk.holdedSession.answered === true) {
-//                        pin_call2(false);
-                }
                 modules.asterisk.holdedSession = false;
             }
             s.data = 'bye';
-//                update_bar();
-//                notify_close('phone');
+            modules.asterisk.updateButton();
             if (parseInt(new Date().getTime()/1000) - modules.asterisk.beepBeep >= 2) {
                 modules.asterisk.beepBeep = parseInt(new Date().getTime()/1000);
                 new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], function () {
@@ -145,8 +138,6 @@
             console.log('session.failed');
 
             let s = this;
-//                stop_audio('audio-ringtone');
-//                $('#sip-ua').dialog('close');
             if (modules.asterisk.currentSession == s) {
                 modules.asterisk.currentSession = false;
             }
@@ -154,8 +145,7 @@
                 modules.asterisk.holdedSession = false;
             }
             s.data = 'bye';
-//                update_bar();
-//                notify_close('phone');
+            modules.asterisk.updateButton();
             if (parseInt(new Date().getTime()/1000) - modules.asterisk.beepBeep >= 2) {
                 modules.asterisk.beepBeep = parseInt(new Date().getTime()/1000);
                 new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], function () {
@@ -171,11 +161,10 @@
 
             this.data = 'accepted';
             this.answered = true;
-//                update_bar();
-//                notify_close('phone');
+            modules.asterisk.updateButton();
         });
 
-//            update_bar();
+        modules.asterisk.updateButton();
     },
 
     onConnected: function (e) {
@@ -186,7 +175,7 @@
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
-//            update_bar();
+        modules.asterisk.updateButton();
     },
 
     onDisconnected: function (e) {
@@ -197,8 +186,8 @@
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
-//            update_bar();
         modules.asterisk.registered = false;
+        modules.asterisk.updateButton();
     },
 
     onRegistered: function (e) {
@@ -216,7 +205,7 @@
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
         modules.asterisk.registered = false;
-//            update_bar();
+        modules.asterisk.updateButton();
     },
 
     onRegistrationFailed: function (e) {
@@ -228,8 +217,8 @@
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
         modules.asterisk.registered = false;
-//            update_bar();
         setTimeout('ua.register()', 5000);
+        modules.asterisk.updateButton();
     },
 
 
@@ -253,7 +242,6 @@
                 hmodules.asterisk.angup();
             } else {
                 if (!modules.asterisk.currentSession) {
-//                        notify(number, "Исходящий вызов", "/images/phone.png", [], 'phone');
                     modules.asterisk.ua.call(number, modules.asterisk.options);
                 } else {
                     if (!modules.asterisk.holdedSession) {
@@ -263,10 +251,7 @@
                     }
                 }
             }
-//                update_bar();
-//                if (document.visibilityState != 'visible') {
-//                    play_audio('audio-chordo');
-//                }
+            modules.asterisk.updateButton();
         } else {
             new Beep(22050).play(2000, 0.1, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ]);
         }
@@ -276,7 +261,6 @@
         if (ua) {
             ua.stop();
         }
-//            notify_close('phone');
         if (typeof callback == "function") {
             callback();
         }
@@ -296,7 +280,7 @@
                 }
             }, 100);
         }
-//            update_bar();
+        modules.asterisk.updateButton();
     },
 
     hold: function(dial_after_hold) {
@@ -307,7 +291,7 @@
             if (dial_after_hold) {
                 ua.call(dial_after_hold, options);
             }
-//                update_bar();
+            modules.asterisk.updateButton();
         }
     },
 
@@ -317,7 +301,7 @@
             modules.asterisk.audio.srcObject = modules.asterisk.holdedSession.remote_stream;
             modules.asterisk.currentSession = modules.asterisk.holdedSession;
             modules.asterisk.holdedSession = false;
-//                update_bar();
+            modules.asterisk.updateButton();
         }
     },
 
@@ -325,7 +309,7 @@
         if (modules.asterisk.currentSession) {
             modules.asterisk.currentSession.terminate();
         }
-//            notify_close('phone');
+        modules.asterisk.updateButton();
     },
 
     addStream: function (e) {
@@ -339,12 +323,14 @@
         if (modules.asterisk.currentSession && modules.asterisk.currentSession.data == 'incoming') {
             modules.asterisk.currentSession.data = 'accepted';
             modules.asterisk.currentSession.answered = true;
-//                stop_audio('audio-ringtone');
-//                notify_close('phone');
             modules.asterisk.currentSession.answer(options);
             modules.asterisk.currentSession.connection.addEventListener('addstream', modules.asterisk.addStream);
         }
-//            update_bar();
+        modules.asterisk.updateButton();
+    },
+
+    updateButton: function () {
+
     },
 
     asteriskMenuRight: function () {

@@ -358,7 +358,7 @@ extensions = {
             end
         end,
 
-        -- вызов на панель
+        -- panel's call
         [ "_6XXXXXXXXX" ] = function (context, extension)
             checkin()
 
