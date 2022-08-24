@@ -1,7 +1,7 @@
 ({
     init: function () {
-        leftSide("fas fa-fw fa-video", i18n("cameras.cameras"), "#cameras");
-        moduleLoaded("cameras", this);
+        leftSide("fas fa-fw fa-video", i18n("addresses.cameras"), "#addresses.cameras");
+        moduleLoaded("addresses.cameras", this);
     },
 
     meta: false,
@@ -11,9 +11,9 @@
         POST("cameras", "camera", false, camera).
         fail(FAIL).
         done(() => {
-            message(i18n("cameras.cameraWasAdded"))
+            message(i18n("addresses.cameraWasAdded"))
         }).
-        always(modules.cameras.route);
+        always(modules.addresses.cameras.route);
     },
 
     doModifyCamera: function (camera) {
@@ -21,9 +21,9 @@
         PUT("cameras", "camera", camera.cameraId, camera).
         fail(FAIL).
         done(() => {
-            message(i18n("cameras.cameraWasChanged"))
+            message(i18n("addresses.cameraWasChanged"))
         }).
-        always(modules.cameras.route);
+        always(modules.addresses.cameras.route);
     },
 
     doDeleteCamera: function (cameraId) {
@@ -31,27 +31,27 @@
         DELETE("cameras", "camera", cameraId).
         fail(FAIL).
         done(() => {
-            message(i18n("cameras.cameraWasDeleted"))
+            message(i18n("addresses.cameraWasDeleted"))
         }).
-        always(modules.cameras.route);
+        always(modules.addresses.cameras.route);
     },
 
     addCamera: function () {
         let models = [];
         let first;
 
-        for (let id in modules.cameras.meta.models) {
+        for (let id in modules.addresses.cameras.meta.models) {
             if (!first) {
                 first = id;
             }
             models.push({
                 id,
-                text: modules.cameras.meta.models[id].title,
+                text: modules.addresses.cameras.meta.models[id].title,
             })
         }
 
         cardForm({
-            title: i18n("cameras.addCamera"),
+            title: i18n("addresses.addCamera"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -60,20 +60,20 @@
                 {
                     id: "enabled",
                     type: "yesno",
-                    title: i18n("cameras.enabled"),
+                    title: i18n("addresses.enabled"),
                     value: "1",
                 },
                 {
                     id: "model",
                     type: "select2",
-                    title: i18n("cameras.model"),
-                    placeholder: i18n("cameras.model"),
+                    title: i18n("addresses.model"),
+                    placeholder: i18n("addresses.model"),
                     options: models,
                 },
                 {
                     id: "url",
                     type: "text",
-                    title: i18n("cameras.url"),
+                    title: i18n("addresses.url"),
                     placeholder: "http://",
                     validate: v => {
                         try {
@@ -87,7 +87,7 @@
                 {
                     id: "stream",
                     type: "text",
-                    title: i18n("cameras.stream"),
+                    title: i18n("addresses.stream"),
                     placeholder: "rtsp://",
                     validate: v => {
                         try {
@@ -101,8 +101,8 @@
                 {
                     id: "credentials",
                     type: "text",
-                    title: i18n("cameras.credentials"),
-                    placeholder: i18n("cameras.credentials"),
+                    title: i18n("addresses.credentials"),
+                    placeholder: i18n("addresses.credentials"),
                     validate: v => {
                         return $.trim(v) !== "";
                     }
@@ -110,14 +110,14 @@
                 {
                     id: "comment",
                     type: "text",
-                    title: i18n("cameras.comment"),
-                    placeholder: i18n("cameras.comment"),
+                    title: i18n("addresses.comment"),
+                    placeholder: i18n("addresses.comment"),
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
                 },
             ],
-            callback: modules.cameras.doAddCamera,
+            callback: modules.addresses.cameras.doAddCamera,
         });
     },
 
@@ -125,59 +125,59 @@
         let models = [];
         let first;
 
-        for (let id in modules.cameras.meta.models) {
+        for (let id in modules.addresses.cameras.meta.models) {
             if (!first) {
                 first = id;
             }
             models.push({
                 id,
-                text: modules.cameras.meta.models[id].title,
+                text: modules.addresses.cameras.meta.models[id].title,
             })
         }
 
         let camera = false;
 
-        for (let i in modules.cameras.meta.cameras) {
-            if (modules.cameras.meta.cameras[i].cameraId == cameraId) {
-                camera = modules.cameras.meta.cameras[i];
+        for (let i in modules.addresses.cameras.meta.cameras) {
+            if (modules.addresses.cameras.meta.cameras[i].cameraId == cameraId) {
+                camera = modules.addresses.cameras.meta.cameras[i];
                 break;
             }
         }
 
         if (camera) {
             cardForm({
-                title: i18n("cameras.modifyCamera"),
+                title: i18n("addresses.modifyCamera"),
                 footer: true,
                 borderless: true,
                 topApply: true,
                 apply: i18n("edit"),
-                delete: i18n("cameras.deleteCamera"),
+                delete: i18n("addresses.deleteCamera"),
                 fields: [
                     {
                         id: "cameraId",
                         type: "text",
-                        title: i18n("cameras.cameraId"),
+                        title: i18n("addresses.cameraId"),
                         value: cameraId,
                         readonly: true,
                     },
                     {
                         id: "enabled",
                         type: "yesno",
-                        title: i18n("cameras.enabled"),
+                        title: i18n("addresses.enabled"),
                         value: camera.enabled,
                     },
                     {
                         id: "model",
                         type: "select2",
-                        title: i18n("cameras.model"),
-                        placeholder: i18n("cameras.model"),
+                        title: i18n("addresses.model"),
+                        placeholder: i18n("addresses.model"),
                         options: models,
                         value: camera.model,
                     },
                     {
                         id: "url",
                         type: "text",
-                        title: i18n("cameras.url"),
+                        title: i18n("addresses.url"),
                         placeholder: "http://",
                         value: camera.url,
                         validate: v => {
@@ -192,7 +192,7 @@
                     {
                         id: "stream",
                         type: "text",
-                        title: i18n("cameras.stream"),
+                        title: i18n("addresses.stream"),
                         placeholder: "rtsp://",
                         value: camera.stream,
                         validate: v => {
@@ -207,8 +207,8 @@
                     {
                         id: "credentials",
                         type: "text",
-                        title: i18n("cameras.credentials"),
-                        placeholder: i18n("cameras.credentials"),
+                        title: i18n("addresses.credentials"),
+                        placeholder: i18n("addresses.credentials"),
                         value: camera.credentials,
                         validate: v => {
                             return $.trim(v) !== "";
@@ -217,8 +217,8 @@
                     {
                         id: "comment",
                         type: "text",
-                        title: i18n("cameras.comment"),
-                        placeholder: i18n("cameras.comment"),
+                        title: i18n("addresses.comment"),
+                        placeholder: i18n("addresses.comment"),
                         value: camera.comment,
                         validate: v => {
                             return $.trim(v).length <= 64;
@@ -227,20 +227,20 @@
                 ],
                 callback: result => {
                     if (result.delete === "yes") {
-                        modules.cameras.deleteCamera(cameraId);
+                        modules.addresses.cameras.deleteCamera(cameraId);
                     } else {
-                        modules.cameras.doModifyCamera(result);
+                        modules.addresses.cameras.doModifyCamera(result);
                     }
                 },
             });
         } else {
-            error(i18n("cameras.cameraNotFound"));
+            error(i18n("addresses.cameraNotFound"));
         }
     },
 
     deleteCamera: function (cameraId) {
-        mConfirm(i18n("cameras.confirmDeleteCamera", cameraId), i18n("confirm"), `danger:${i18n("cameras.deleteCamera")}`, () => {
-            modules.cameras.doDeleteCamera(cameraId);
+        mConfirm(i18n("addresses.confirmDeleteCamera", cameraId), i18n("confirm"), `danger:${i18n("addresses.deleteCamera")}`, () => {
+            modules.addresses.cameras.doDeleteCamera(cameraId);
         });
     },
 
@@ -248,51 +248,51 @@
         $("#subTop").html("");
         $("#altForm").hide();
 
-        document.title = i18n("windowTitle") + " :: " + i18n("cameras.cameras");
+        document.title = i18n("windowTitle") + " :: " + i18n("addresses.cameras");
 
         GET("cameras", "cameras", false, true).
         done(response => {
-            modules.cameras.meta = response.cameras;
+            modules.addresses.cameras.meta = response.cameras;
 
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("cameras.cameras"),
+                    caption: i18n("addresses.cameras"),
                     button: {
-                        caption: i18n("cameras.addCamera"),
-                        click: modules.cameras.addCamera,
+                        caption: i18n("addresses.addCamera"),
+                        click: modules.addresses.cameras.addCamera,
                     },
                     filter: true,
                 },
-                edit: modules.cameras.modifyCamera,
+                edit: modules.addresses.cameras.modifyCamera,
                 columns: [
                     {
-                        title: i18n("cameras.cameraId"),
+                        title: i18n("addresses.cameraId"),
                     },
                     {
-                        title: i18n("cameras.url"),
+                        title: i18n("addresses.url"),
                     },
                     {
-                        title: i18n("cameras.comment"),
+                        title: i18n("addresses.comment"),
                         fullWidth: true,
                     },
                 ],
                 rows: () => {
                     let rows = [];
 
-                    for (let i in modules.cameras.meta.cameras) {
+                    for (let i in modules.addresses.cameras.meta.cameras) {
                         rows.push({
-                            uid: modules.cameras.meta.cameras[i].cameraId,
+                            uid: modules.addresses.cameras.meta.cameras[i].cameraId,
                             cols: [
                                 {
-                                    data: modules.cameras.meta.cameras[i].cameraId,
+                                    data: modules.addresses.cameras.meta.cameras[i].cameraId,
                                 },
                                 {
-                                    data: modules.cameras.meta.cameras[i].url,
+                                    data: modules.addresses.cameras.meta.cameras[i].url,
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.cameras.meta.cameras[i].comment,
+                                    data: modules.addresses.cameras.meta.cameras[i].comment,
                                 },
                             ],
                         });

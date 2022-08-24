@@ -313,9 +313,10 @@
                 })
 
                 for (let i in response.cameras.cameras) {
+                    let url = new URL(response.cameras.cameras[i].url);
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
-                        text:  response.cameras.cameras[i].url + (response.cameras.cameras[i].comment?(" (" + response.cameras.cameras[i].comment + ")"):""),
+                        text:  url.host,
                     })
                 }
 
@@ -330,9 +331,10 @@
                     for (let i in response.domophones.domophones) {
                         if (first === false) first = response.domophones.domophones[i].domophoneId;
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                        let url = new URL(response.domophones.domophones[i].url);
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
-                            text:  response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment?(" (" + response.domophones.domophones[i].comment + ")"):""),
+                            text:  url.host,
                         })
                     }
 
@@ -791,9 +793,10 @@
             });
 
             for (let i in response.cameras.cameras) {
+                let url = new URL(response.cameras.cameras[i].url);
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text: response.cameras.cameras[i].url + (response.cameras.cameras[i].comment ? (" (" + response.cameras.cameras[i].comment + ")") : ""),
+                    text: url.host,
                 })
             }
 
@@ -806,9 +809,10 @@
 
                 for (let i in response.domophones.domophones) {
                     modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                    let url = new URL(response.domophones.domophones[i].url);
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
-                        text: response.domophones.domophones[i].callerId + (response.domophones.domophones[i].comment ? (" (" + response.domophones.domophones[i].comment + ")") : ""),
+                        text: url.host,
                     })
                 }
 
@@ -1499,10 +1503,10 @@
                                     },
                                     {
                                         icon: "fas fa-video",
-                                        title: i18n("cameras.camera"),
+                                        title: i18n("addresses.camera"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].cameraId,
                                         click: entranceId => {
-                                            location.href = "#cameras&cameraId=" + entrances[entranceId].cameraId;
+                                            location.href = "#addresses.cameras&cameraId=" + entrances[entranceId].cameraId;
                                         },
                                     },
                                     {

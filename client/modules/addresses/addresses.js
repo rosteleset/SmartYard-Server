@@ -7,6 +7,7 @@
         loadSubModules("addresses", [
             "houses",
             "domophones",
+            "cameras",
             "subscribers", // and keys
         ], this);
     },
@@ -2088,10 +2089,6 @@
                 </li>
             `;
         }
-
-        top += `<li class="nav-item d-none d-sm-inline-block">`;
-        top += `<a href="#addresses.domophones" class="nav-link nav-item-back-hover text-dark">${i18n("addresses.domophones")}</a>`;
-        top += `</li>`;
 
         $("#leftTopDynamic").html(top);
         $(".addHouseMagic").off("click").on("click", modules.addresses.houses.houseMagic);

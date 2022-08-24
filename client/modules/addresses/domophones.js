@@ -1,5 +1,6 @@
 ({
     init: function () {
+        leftSide("fas fa-fw fa-door-open", i18n("addresses.domophones"), "#addresses.domophones");
         moduleLoaded("addresses.domophones", this);
     },
 
