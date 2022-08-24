@@ -334,7 +334,7 @@
                         }
                     } else {
                         $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/img/callcenter.jpg"));
-                        $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                        $redis->setex("live_" . $params["hash"], 30 * 3 * 60, json_encode([
                             "model" => "fake",
                             "url" => "callcenter.jpg",
                             "credentials" => "none",
