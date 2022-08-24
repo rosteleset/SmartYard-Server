@@ -88,11 +88,6 @@ function loadCamera($model, $url, $password, $first_time = false) {
         $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/cameras/");
         $iterator = new RecursiveIteratorIterator($directory);
 
-        file_put_contents("/tmp/php_test", print_r([
-            $class,
-            __DIR__ . "/../hw/cameras/",
-        ], true));
-
         foreach($iterator as $file) {
             if ($file->getFilename() == "$class.php") {
                 $path_to_class = $file->getPath() . "/" . $class . ".php";

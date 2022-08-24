@@ -7,8 +7,6 @@
 
     $camera = @loadCamera($camera_params["model"], $camera_params["url"], $camera_params["credentials"]);
 
-    file_put_contents("/tmp/test_live", print_r($camera, true));
-
     if (!$camera) {
         response(404);
     }
