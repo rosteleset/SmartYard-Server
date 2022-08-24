@@ -186,10 +186,13 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
 
     local subscribers = dm("subscribers", flatId)
 
-    local dtmf = dm("domophone", domophoneId).dtmf
+    local dtmf = '1'
 
-    if not dtmf or dtmf == '' then
-        dtmf = '1'
+    if domophoneId >= 0 then
+        dtmf = dm("domophone", domophoneId).dtmf
+        if not dtmf or dtmf == '' then
+            dtmf = '1'
+        end
     end
 
     local hash = camshow(domophoneId)
