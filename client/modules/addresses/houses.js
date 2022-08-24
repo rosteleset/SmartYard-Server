@@ -1416,7 +1416,10 @@
                                         },
                                     },
                                     {
-                                        icon: "fas fa-headset",
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-mobile-alt",
                                         title: i18n("addresses.mobileCall"),
                                         click: flatId => {
                                             if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
@@ -1426,7 +1429,7 @@
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
                                     },
                                     {
-                                        icon: "fas fa-headset",
+                                        icon: "fas fa-home  ",
                                         title: i18n("addresses.flatCall"),
                                         click: flatId => {
                                             if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
