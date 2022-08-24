@@ -349,7 +349,7 @@ extensions = {
 
             if dest ~= "" then
                 log_debug("dialing: " .. dest)
-                app.Dial(dest, 120)
+                app.Dial(dest, 120, "m")
             else
                 log_debug("nothing to dial")
             end

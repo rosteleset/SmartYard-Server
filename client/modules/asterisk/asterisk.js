@@ -238,7 +238,7 @@
     },
 
     call: function (number) {
-        if (!ua || !ready) {
+        if (!modules.asterisk.ua || !modules.asterisk.ready) {
             return;
         }
         let _n = number.toString();
@@ -250,14 +250,14 @@
         }
         if (number) {
             if (modules.asterisk.currentSession && extension(modules.asterisk.currentSession.remote_identity.uri) == number) {
-                hangup();
+                hmodules.asterisk.angup();
             } else {
                 if (!modules.asterisk.currentSession) {
 //                        notify(number, "Исходящий вызов", "/images/phone.png", [], 'phone');
-                    ua.call(number, options);
+                    modules.asterisk.ua.call(number, modules.asterisk.options);
                 } else {
                     if (!modules.asterisk.holdedSession) {
-                        hold(number);
+                        modules.asterisk.hold(number);
                     } else {
                         new Beep(22050).play(2000, 0.1, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ]);
                     }
@@ -348,7 +348,7 @@
     },
 
     asteriskMenuRight: function () {
-        //
+        modules.asterisk.call("5000000001");
     },
 
 }).init();
