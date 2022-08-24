@@ -1411,6 +1411,16 @@
                                             }
                                         },
                                     },
+                                    {
+                                        icon: "fas fa-headset",
+                                        title: i18n("addresses.call"),
+                                        click: flatId => {
+                                            if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
+                                                modules.asterisk.call(5000000000 + parseInt(flatId));
+                                            }
+                                        },
+                                        disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
+                                    },
                                 ],
                             },
                         });
