@@ -303,6 +303,8 @@ extensions = {
             local flatId = tonumber(extension:sub(2))
             local flat = dm("flat", flatId)
 
+            log_debug(flat)
+
             if flat then
                 local dest = ""
                 for i, e in ipairs(flat.entrances) do
