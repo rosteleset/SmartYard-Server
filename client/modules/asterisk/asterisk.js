@@ -25,12 +25,6 @@
 
         if (config.ws && config.ice && config.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
             modules.asterisk.options = {
-                eventHandlers: {
-                    progress: modules.asterisk.onProgress,
-                    failed: modules.asterisk.onFailed,
-                    ended: modules.asterisk.onEnded,
-                    confirmed: modules.asterisk.onConfirmed,
-                },
                 mediaConstraints: {
                     audio: true,
                     video: false
@@ -61,25 +55,7 @@
         }
     },
 
-    onProgress: function (e) {
-        console.log("progress");
-    },
-
-    onFailed: function (e) {
-        console.log("failed");
-    },
-
-    onEnded: function (e) {
-        console.log("ended");
-    },
-
-    onConfirmed: function (e) {
-        console.log("confirmed");
-    },
-
     newRTCSession: function (e) {
-        console.log('newRTCSession');
-
         let session = e.session;
         if ((modules.asterisk.holdedSession || modules.asterisk.currentSession) && session.direction == 'incoming') {
             session.terminate();
@@ -94,7 +70,7 @@
 
         if (session.direction == 'incoming') {
             session.data = 'incoming';
-//                notify(extension(session.remote_identity.uri), "Входящий вызов", "/images/phone.png", [], 'phone: incoming');
+//                notify(modules.asterisk.extension(session.remote_identity.uri), "Входящий вызов", "/images/phone.png", [], 'phone: incoming');
 //                play_audio('audio-ringtone');
         } else {
             modules.asterisk.currentSession.connection.addEventListener('addstream', modules.asterisk.addStream);
@@ -107,14 +83,10 @@
         });
 
         session.on('confirmed', function () {
-            console.log('session.confirmed');
-
             new Beep(22050).play(1500, 0.1, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ]);
         });
 
         session.on('ended', function () {
-            console.log('session.ended');
-
             let s = this;
             if (modules.asterisk.currentSession == s) {
                 modules.asterisk.currentSession = false;
@@ -135,8 +107,6 @@
         });
 
         session.on('failed', function () {
-            console.log('session.failed');
-
             let s = this;
             if (modules.asterisk.currentSession == s) {
                 modules.asterisk.currentSession = false;
@@ -157,8 +127,6 @@
         });
 
         session.on('accepted', function () {
-            console.log('session.accepted');
-
             this.data = 'accepted';
             this.answered = true;
             modules.asterisk.updateButton();
@@ -168,10 +136,6 @@
     },
 
     onConnected: function (e) {
-        console.log('connected');
-
-        $('#asteriskMenuRight').addClass("text-success");
-        $('#asteriskMenuRight').removeClass("text-secondary");
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
@@ -179,10 +143,6 @@
     },
 
     onDisconnected: function (e) {
-        console.log('disconnected');
-
-        $('#asteriskMenuRight').addClass("text-secondary");
-        $('#asteriskMenuRight').removeClass("text-success");
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
@@ -191,16 +151,11 @@
     },
 
     onRegistered: function (e) {
-        console.log('registered');
-
         modules.asterisk.ready = true;
+        modules.asterisk.updateButton()
     },
 
     onUnregistered: function (e) {
-        console.log('unregistered');
-
-        $('#asteriskMenuRight').addClass("text-secondary");
-        $('#asteriskMenuRight').removeClass("text-success");
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
@@ -209,10 +164,6 @@
     },
 
     onRegistrationFailed: function (e) {
-        console.log('registrationFailed');
-
-        $('#asteriskMenuRight').addClass("text-secondary");
-        $('#asteriskMenuRight').removeClass("text-success");
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
@@ -238,8 +189,8 @@
             }
         }
         if (number) {
-            if (modules.asterisk.currentSession && extension(modules.asterisk.currentSession.remote_identity.uri) == number) {
-                hmodules.asterisk.angup();
+            if (modules.asterisk.currentSession && modules.asterisk.extension(modules.asterisk.currentSession.remote_identity.uri) == number) {
+                hmodules.asterisk.hangup();
             } else {
                 if (!modules.asterisk.currentSession) {
                     modules.asterisk.ua.call(number, modules.asterisk.options);
@@ -330,11 +281,31 @@
     },
 
     updateButton: function () {
-
+        if (modules.asterisk.ready) {
+            if (modules.asterisk.currentSession) {
+                $('#asteriskMenuRight').removeClass("text-success");
+                $('#asteriskMenuRight').removeClass("text-secondary");
+                $('#asteriskMenuRight').addClass("text-danger");
+            } else {
+                $('#asteriskMenuRight').addClass("text-success");
+                $('#asteriskMenuRight').removeClass("text-secondary");
+                $('#asteriskMenuRight').removeClass("text-danger");
+            }
+        } else {
+            $('#asteriskMenuRight').removeClass("text-success");
+            $('#asteriskMenuRight').addClass("text-secondary");
+            $('#asteriskMenuRight').removeClass("text-danger");
+        }
     },
 
     asteriskMenuRight: function () {
-        modules.asterisk.call("5000000001");
+        if (modules.asterisk.currentSession) {
+            console.log("hangup");
+            modules.asterisk.hangup();
+        } else {
+            console.log("call");
+            modules.asterisk.call("5000000001");
+        }
     },
 
 }).init();

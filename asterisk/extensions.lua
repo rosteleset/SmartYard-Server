@@ -346,6 +346,9 @@ extensions = {
 
             log_debug("mobile intercom test call")
 
+            app.Answer()
+            app.StartMusicOnHold()
+
             local flatId = tonumber(extension:sub(2))
 
             local dest = mobile_intercom(flatId, -1, -1)
