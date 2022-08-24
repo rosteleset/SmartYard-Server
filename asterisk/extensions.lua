@@ -324,23 +324,15 @@ extensions = {
         [ "_4XXXXXXXXX" ] = function (context, extension)
             checkin()
 
-            log_debug("sip intercom call")
+            log_debug("sip intercom call, dialing: " .. extension)
 
-            local callerId = channel.CALLERID("num"):get()
-            local hash = camshow(callerId)
-
-            app.Wait(2)
-            channel.OCID:set(callerId)
-
-            -- for web preview (akuvox)
-            channel.CALLERID("all"):set('123456')
-
-            log_debug("dialing: " .. extension)
-
-            app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120)
+            local dest = channel.PJSIP_DIAL_CONTACTS(extension):get()
+            if dest ~= "" and dest ~= nil then
+                app.Dial(dest, 120)
+            end
         end,
 
-        -- from PSTN to mobile application call (for testing)
+        -- from "PSTN" to mobile application call (for testing)
         [ "_5XXXXXXXXX" ] = function (context, extension)
             checkin()
 
@@ -368,15 +360,6 @@ extensions = {
             log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
 
             app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
-        end,
-
-        -- call to webrtc account
-        [ "_7XXXXXXXXX" ] = function (context, extension)
-            checkin()
-
-            log_debug("call to webrtc account " .. extension)
-
-            app.Dial("PJSIP/" .. extension, 120, "m")
         end,
 
         -- SOS
