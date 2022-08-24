@@ -45,10 +45,12 @@
             });
 
             modules.asterisk.ua.on('newRTCSession', modules.asterisk.newRTCSession);
-            modules.asterisk.ua.on('connected', modules.asterisk.onConnected);
-            modules.asterisk.ua.on('disconnected', modules.asterisk.onDisconnected);
+
+            modules.asterisk.ua.on('connected', modules.asterisk.onConnectionBroken);
+            modules.asterisk.ua.on('disconnected', modules.asterisk.onConnectionBroken);
+            modules.asterisk.ua.on('unregistered', modules.asterisk.onConnectionBroken);
+
             modules.asterisk.ua.on('registered', modules.asterisk.onRegistered);
-            modules.asterisk.ua.on('unregistered', modules.asterisk.onUnregistered);
             modules.asterisk.ua.on('registrationFailed', modules.asterisk.onRegistrationFailed);
 
             modules.asterisk.ua.start();
@@ -86,45 +88,9 @@
             new Beep(22050).play(1500, 0.1, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ]);
         });
 
-        session.on('ended', function () {
-            let s = this;
-            if (modules.asterisk.currentSession == s) {
-                modules.asterisk.currentSession = false;
-            }
-            if (modules.asterisk.holdedSession == s) {
-                modules.asterisk.holdedSession = false;
-            }
-            s.data = 'bye';
-            modules.asterisk.updateButton();
-            if (parseInt(new Date().getTime()/1000) - modules.asterisk.beepBeep >= 2) {
-                modules.asterisk.beepBeep = parseInt(new Date().getTime()/1000);
-                new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], function () {
-                    new Beep(22050).play(1, 0.01, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], function () {
-                        new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ]);
-                    });
-                });
-            }
-        });
+        session.on('ended', modules.asterisk.onCallEnded);
 
-        session.on('failed', function () {
-            let s = this;
-            if (modules.asterisk.currentSession == s) {
-                modules.asterisk.currentSession = false;
-            }
-            if (modules.asterisk.holdedSession == s) {
-                modules.asterisk.holdedSession = false;
-            }
-            s.data = 'bye';
-            modules.asterisk.updateButton();
-            if (parseInt(new Date().getTime()/1000) - modules.asterisk.beepBeep >= 2) {
-                modules.asterisk.beepBeep = parseInt(new Date().getTime()/1000);
-                new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], function () {
-                    new Beep(22050).play(1, 0.01, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], function () {
-                        new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ]);
-                    });
-                });
-            }
-        });
+        session.on('failed', modules.asterisk.onCallEnded);
 
         session.on('accepted', function () {
             this.data = 'accepted';
@@ -135,14 +101,27 @@
         modules.asterisk.updateButton();
     },
 
-    onConnected: function (e) {
-        modules.asterisk.ready = false;
-        modules.asterisk.currentSession = false;
-        modules.asterisk.holdedSession = false;
+    onCallEnded: function () {
+        let s = this;
+        if (modules.asterisk.currentSession == s) {
+            modules.asterisk.currentSession = false;
+        }
+        if (modules.asterisk.holdedSession == s) {
+            modules.asterisk.holdedSession = false;
+        }
+        s.data = 'bye';
         modules.asterisk.updateButton();
+        if (parseInt(new Date().getTime()/1000) - modules.asterisk.beepBeep >= 2) {
+            modules.asterisk.beepBeep = parseInt(new Date().getTime()/1000);
+            new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], () => {
+                new Beep(22050).play(1, 0.01, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ], () => {
+                    new Beep(22050).play(2000, 0.06, [ Beep.utils.amplify(modules.asterisk.beepAmplify) ]);
+                });
+            });
+        }
     },
 
-    onDisconnected: function (e) {
+    onConnectionBroken: function () {
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
@@ -150,28 +129,21 @@
         modules.asterisk.updateButton();
     },
 
-    onRegistered: function (e) {
+    onRegistrationFailed: function () {
+        modules.asterisk.ready = false;
+        modules.asterisk.currentSession = false;
+        modules.asterisk.holdedSession = false;
+        modules.asterisk.registered = false;
+        setTimeout(() => {
+            ua.register();
+        }, 5000);
+        modules.asterisk.updateButton();
+    },
+
+    onRegistered: function () {
         modules.asterisk.ready = true;
         modules.asterisk.updateButton()
     },
-
-    onUnregistered: function (e) {
-        modules.asterisk.ready = false;
-        modules.asterisk.currentSession = false;
-        modules.asterisk.holdedSession = false;
-        modules.asterisk.registered = false;
-        modules.asterisk.updateButton();
-    },
-
-    onRegistrationFailed: function (e) {
-        modules.asterisk.ready = false;
-        modules.asterisk.currentSession = false;
-        modules.asterisk.holdedSession = false;
-        modules.asterisk.registered = false;
-        setTimeout('ua.register()', 5000);
-        modules.asterisk.updateButton();
-    },
-
 
     extension: function (uri) {
         return uri.toString().split('sip:')[1].split('@')[0];
@@ -209,8 +181,8 @@
     },
 
     end: function (callback) {
-        if (ua) {
-            ua.stop();
+        if (modules.asterisk.ua) {
+            modules.asterisk.ua.stop();
         }
         if (typeof callback == "function") {
             callback();
@@ -234,13 +206,13 @@
         modules.asterisk.updateButton();
     },
 
-    hold: function(dial_after_hold) {
+    hold: function(dialAfterHold) {
         if (modules.asterisk.currentSession && !modules.asterisk.holdedSession) {
             modules.asterisk.currentSession.hold();
             modules.asterisk.holdedSession = modules.asterisk.currentSession;
             modules.asterisk.currentSession = false;
-            if (dial_after_hold) {
-                ua.call(dial_after_hold, options);
+            if (dialAfterHold) {
+                ua.call(dialAfterHold, options);
             }
             modules.asterisk.updateButton();
         }
@@ -300,10 +272,8 @@
 
     asteriskMenuRight: function () {
         if (modules.asterisk.currentSession) {
-            console.log("hangup");
             modules.asterisk.hangup();
         } else {
-            console.log("call");
             modules.asterisk.call("5000000001");
         }
     },
