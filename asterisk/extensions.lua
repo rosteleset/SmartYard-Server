@@ -345,10 +345,14 @@ extensions = {
 
             local flatId = tonumber(extension:sub(2))
 
-            mobile_intercom(flatId, -1)
+            local dest = mobile_intercom(flatId, -1, -1)
 
-            -- TODO
-            -- add local dial to 2xxxx...
+            if dest ~= "" then
+                log_debug("dialing: " .. dest)
+                app.Dial(dest, 120)
+            else
+                log_debug("nothing to dial")
+            end
         end,
 
         -- вызов на панель
