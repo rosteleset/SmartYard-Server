@@ -273,8 +273,6 @@
     asteriskMenuRight: function () {
         if (modules.asterisk.currentSession) {
             modules.asterisk.hangup();
-        } else {
-            modules.asterisk.call("5000000001");
         }
     },
 
