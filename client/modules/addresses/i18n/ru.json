@@ -203,7 +203,7 @@
     "keyWasDeleted": "Ключ удален",
     "voipEnabled": "Вызовы включены",
     "cmsEnabled": "КМС вызовы включены",
-    "call": "Позвонить",
+    "mobileCall": "Позвонить в приложение",
     "cameras": "Камеры",
     "camera": "Камера",
     "addCamera": "Добавить камеру",

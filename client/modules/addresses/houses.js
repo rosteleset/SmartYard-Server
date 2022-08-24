@@ -1417,7 +1417,7 @@
                                     },
                                     {
                                         icon: "fas fa-headset",
-                                        title: i18n("addresses.call"),
+                                        title: i18n("addresses.mobileCall"),
                                         click: flatId => {
                                             if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
                                                 modules.asterisk.call(5000000000 + parseInt(flatId));
