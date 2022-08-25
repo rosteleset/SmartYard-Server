@@ -1433,7 +1433,7 @@
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
                                     },
                                     {
-                                        icon: "fas fa-home  ",
+                                        icon: "fas fa-home",
                                         title: i18n("addresses.flatCall"),
                                         click: flatId => {
                                             let n = 3000000000 + parseInt(flatId);
