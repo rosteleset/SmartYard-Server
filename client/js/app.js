@@ -24,10 +24,29 @@ function hashChange() {
 
             let r = route.split(".");
 
-            $(".sidebar .withibleOnlyWhenActive[target!='#" + r[0] + "']").hide();
-            $(".sidebar .withibleOnlyWhenActive[target='#" + r[0] + "']").show();
-            $(".sidebar .nav-item a[href!='#" + r[0] + "']").removeClass('active');
-            $(".sidebar .nav-item a[href='#" + r[0] + "']").addClass('active');
+            if ($(".sidebar .withibleOnlyWhenActive[target!='#" + route + "']").length) {
+                $(".sidebar .withibleOnlyWhenActive[target!='#" + route + "']").hide();
+            } else {
+                $(".sidebar .withibleOnlyWhenActive[target!='#" + r[0] + "']").hide();
+            }
+
+            if ($(".sidebar .withibleOnlyWhenActive[target='#" + route + "']").length) {
+                $(".sidebar .withibleOnlyWhenActive[target='#" + route + "']").show();
+            } else {
+                $(".sidebar .withibleOnlyWhenActive[target='#" + r[0] + "']").show();
+            }
+
+            if ($(".sidebar .nav-item a[href!='#" + r[0] + "']").length) {
+                $(".sidebar .nav-item a[href!='#" + route + "']").removeClass('active');
+            } else {
+                $(".sidebar .nav-item a[href!='#" + r[0] + "']").removeClass('active');
+            }
+
+            if ($(".sidebar .nav-item a[href='#" + r[0] + "']").length) {
+                $(".sidebar .nav-item a[href='#" + route + "']").addClass('active');
+            } else {
+                $(".sidebar .nav-item a[href='#" + r[0] + "']").addClass('active');
+            }
 
             $("#loginForm").hide();
             $("#forgotForm").hide();

@@ -186,10 +186,13 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
 
     local subscribers = dm("subscribers", flatId)
 
-    local dtmf = dm("domophone", domophoneId).dtmf
+    local dtmf = '1'
 
-    if not dtmf or dtmf == '' then
-        dtmf = '1'
+    if domophoneId >= 0 then
+        dtmf = dm("domophone", domophoneId).dtmf
+        if not dtmf or dtmf == '' then
+            dtmf = '1'
+        end
     end
 
     local hash = camshow(domophoneId)
@@ -300,6 +303,8 @@ extensions = {
             local flatId = tonumber(extension:sub(2))
             local flat = dm("flat", flatId)
 
+            log_debug(flat)
+
             if flat then
                 local dest = ""
                 for i, e in ipairs(flat.entrances) do
@@ -321,52 +326,42 @@ extensions = {
         [ "_4XXXXXXXXX" ] = function (context, extension)
             checkin()
 
-            log_debug("sip intercom call")
+            log_debug("sip intercom call, dialing: " .. extension)
 
-            local callerId = channel.CALLERID("num"):get()
-            local hash = camshow(callerId)
-
-            app.Wait(2)
-            channel.OCID:set(callerId)
-
-            -- for web preview (akuvox)
-            channel.CALLERID("all"):set('123456')
-
-            log_debug("dialing: " .. extension)
-
-            app.Dial(channel.PJSIP_DIAL_CONTACTS(extension):get(), 120)
+            local dest = channel.PJSIP_DIAL_CONTACTS(extension):get()
+            if dest ~= "" and dest ~= nil then
+                app.Dial(dest, 120)
+            end
         end,
 
-        -- from PSTN to mobile application call (for testing)
+        -- from "PSTN" to mobile application call (for testing)
         [ "_5XXXXXXXXX" ] = function (context, extension)
             checkin()
 
             log_debug("mobile intercom test call")
 
+            app.Answer()
+            app.StartMusicOnHold()
+
             local flatId = tonumber(extension:sub(2))
 
-            mobile_intercom(flatId, -1)
+            local dest = mobile_intercom(flatId, -1, -1)
 
-            -- TODO
-            -- add local dial to 2xxxx...
+            if dest ~= "" then
+                log_debug("dialing: " .. dest)
+                app.Dial(dest, 120, "m")
+            else
+                log_debug("nothing to dial")
+            end
         end,
 
-        -- вызов на панель
+        -- panel's call
         [ "_6XXXXXXXXX" ] = function (context, extension)
             checkin()
 
             log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
 
             app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
-        end,
-
-        -- call to webrtc account
-        [ "_7XXXXXXXXX" ] = function (context, extension)
-            checkin()
-
-            log_debug("call to webrtc account " .. extension)
-
-            app.Dial("PJSIP/" .. extension, 120, "m")
         end,
 
         -- SOS

@@ -311,25 +311,36 @@
                     break;
 
                 case "camshot":
-                    $households = loadBackend("households");
+                    if ($params["domophoneId"] >= 0) {
+                        $households = loadBackend("households");
 
-                    $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
+                        $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
-                    if ($entrances && $entrances[0]) {
-                        $camera = $households->getCamera($entrances[0]["cameraId"]);
+                        if ($entrances && $entrances[0]) {
+                            $camera = $households->getCamera($entrances[0]["cameraId"]);
 
-                        if ($camera) {
-                            $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
+                            if ($camera) {
+                                $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
 
-                            $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
-                            $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                                "model" => $camera["model"],
-                                "url" => $camera["url"],
-                                "credentials" => $camera["credentials"],
-                            ]));
+                                $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
+                                $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                                    "model" => $camera["model"],
+                                    "url" => $camera["url"],
+                                    "credentials" => $camera["credentials"],
+                                ]));
 
-                            echo $params["hash"];
+                                echo $params["hash"];
+                            }
                         }
+                    } else {
+                        $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/hw/cameras/fake/img/callcenter.jpg"));
+                        $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                            "model" => "fake.json",
+                            "url" => "callcenter.jpg",
+                            "credentials" => "none",
+                        ]));
+
+                        echo $params["hash"];
                     }
 
                     break;

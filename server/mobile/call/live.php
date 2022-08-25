@@ -1,6 +1,7 @@
 <?php
 
     $hash = $param;
+
     $json_camera = @$redis->get("live_" . $hash);
     $camera_params = @json_decode($json_camera, true);
 
