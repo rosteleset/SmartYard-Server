@@ -1423,7 +1423,11 @@
                                         title: i18n("addresses.mobileCall"),
                                         click: flatId => {
                                             if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
-                                                modules.asterisk.call(5000000000 + parseInt(flatId));
+                                                let n = 5000000000 + parseInt(flatId);
+                                                modules.asterisk.call(n);
+                                                message(i18n("asterisk.dialing", n), i18n("asterisk.outgoingCall"), 5);
+                                            } else {
+                                                error(i18n("asterisk.dialFail"), i18n("asterisk.outgoingCall"), 5);
                                             }
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
@@ -1432,8 +1436,12 @@
                                         icon: "fas fa-home  ",
                                         title: i18n("addresses.flatCall"),
                                         click: flatId => {
+                                            let n = 3000000000 + parseInt(flatId);
                                             if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
-                                                modules.asterisk.call(3000000000 + parseInt(flatId));
+                                                modules.asterisk.call(n);
+                                                message(i18n("asterisk.dialing", n), i18n("asterisk.outgoingCall"), 5);
+                                            } else {
+                                                error(i18n("asterisk.dialFail"), i18n("asterisk.outgoingCall"), 5);
                                             }
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),

@@ -1,3 +1,6 @@
 {
-    "asterisk": "WebRTC"
+    "asterisk": "WebRTC",
+    "outgoingCall": "Исходящий вызов",
+    "dialing": "Вызывается: %s",
+    "dialFail": "Ошибка набора номера"
 }
