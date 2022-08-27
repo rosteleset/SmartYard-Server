@@ -218,7 +218,9 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         end
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
-        redis:setex("mobile_token_" .. extension, 3 * 60, token)
+        if (tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2) then
+            redis:setex("mobile_token_" .. extension, 3 * 60, token)
+        end
         -- ios over fcm (with repeat)
         if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
             redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
