@@ -218,7 +218,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
         end
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
-        if (tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2) then
+        if tonumber(s.tokenType) ~= 1 and tonumber(s.tokenType) ~= 2 then
             -- not for apple's voips
             redis:setex("mobile_token_" .. extension, 3 * 60, token)
         end
