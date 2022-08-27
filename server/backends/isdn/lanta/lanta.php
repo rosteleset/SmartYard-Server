@@ -72,10 +72,11 @@
 
                 $result = file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query);
 
+                file_put_contents("/tmp/test_php_push", $result);
+
                 if (strtolower(trim($result)) !== "ok") {
                     $households = loadBackend("households");
 //                    $households->dismissToken($push["token"]);
-                    file_put_contents("/tmp/test_php_push", $result);
                 }
                 return $result;
             }
