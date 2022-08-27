@@ -272,6 +272,13 @@ extensions = {
             local status = ''
             local pjsip_extension = ''
             local skip = false
+
+            local token = redis:get("mobile_token_" .. extension)
+
+            if token ~= "" or token ~= nil then
+                channel.TOKEN:set(token)
+            end
+
             while os.time() < timeout do
                 pjsip_extension = channel.PJSIP_DIAL_CONTACTS(extension):get()
                 if pjsip_extension ~= "" and pjsip_extension ~= nil then
@@ -506,10 +513,10 @@ extensions = {
                 status = "UNKNOWN"
             end
 
-            local token = redis:get("mobile_token_" .. extension)
+            local token = channel.HASH:get()
 
-            if token == "" or token == nil or token == false then
-                token = none
+            if token == nil then
+                token = "none"
             end
 
             log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", token: " .. token)
