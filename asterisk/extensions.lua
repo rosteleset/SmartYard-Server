@@ -210,14 +210,15 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
             redis:set("autoextension", "1")
         end
         extension = extension + 2000000000
-        redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
-        redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
         local token = ""
         if tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2 then
             token = s.voipToken
         else
             token = s.pushToken
         end
+        redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
+        redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
+        redis:setex("mobile_token_" .. extension, 3 * 60, token)
         -- ios over fcm (with repeat)
         if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
             redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
@@ -495,20 +496,20 @@ extensions = {
 
         -- завершение вызова
         [ "h" ] = function (context, extension)
-            local original_cid = channel.OCID:get()
             local src = channel.CDR("src"):get()
             local status = channel.DIALSTATUS:get()
-
-            if original_cid ~= nil then
-                log_debug('reverting original CID: ' .. original_cid)
-                src = original_cid
-            end
 
             if status == nil then
                 status = "UNKNOWN"
             end
 
-            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status)
+            local token = redis:get("mobile_token_" .. extension)
+
+            if token == "" or token == nil or token == false then
+                token = none
+            end
+
+            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", token: " .. token)
         end,
     },
 }
