@@ -275,7 +275,7 @@ extensions = {
 
             local token = redis:get("mobile_token_" .. extension)
 
-            if token ~= "" or token ~= nil then
+            if token ~= "" and token ~= nil then
                 channel.TOKEN:set(token)
             end
 
