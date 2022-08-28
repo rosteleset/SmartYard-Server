@@ -17,7 +17,9 @@
  */
 
 auth();
+response();
 
+/*
 $cam = (int)@$postdata['id'];
 $from = strtotime(@$postdata['from']);
 $to = strtotime(@$postdata['to']);
@@ -29,3 +31,4 @@ if ($id) {
 } else {
     response();
 }
+*/

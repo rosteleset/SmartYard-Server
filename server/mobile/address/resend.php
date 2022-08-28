@@ -21,7 +21,9 @@
  */
 
     auth();
+    response();
 
+/*
     $flat_id = (int)@$postdata['flatId'];
     $guest_phone = pg_escape_string(@$postdata['guestPhone']);
     $guest_phone[0] = '8';
@@ -52,4 +54,4 @@
         // облом
         response(404);
     }
-
+*/

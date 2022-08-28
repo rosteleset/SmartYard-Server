@@ -9,6 +9,9 @@
  *
  * @apiParam {String{11}} userPhone номер телефона
  *
+ * @apiSuccess {string="sms","outgoingCall","flashCall"} [method="sms"] способ авторизации
+ * @apiSuccess {string[]} [confirmationNumbers] список номеров для авторизации исходящим звонком (outgoingCall)
+ *
  * @apiErrorExample Ошибки
  * 422 неверный формат данных
  * 429 код уже запрошен

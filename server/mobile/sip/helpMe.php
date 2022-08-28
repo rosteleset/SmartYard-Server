@@ -21,13 +21,16 @@
 
 auth();
 
-$extension = (int)(mysqli_fetch_assoc(mysql("select dm.autoextension() as ext")))['ext'] + 2000000000;
+/*$extension = (int)(mysqli_fetch_assoc(mysql("select dm.autoextension() as ext")))['ext'] + 2000000000;
 $hash = md5(time() + rand());
 mysql("insert into dm.turnusers_lt (realm, name, hmackey, expire) values ('dm.lanta.me', '$extension', md5(concat('$extension', ':', 'dm.lanta.me', ':', '$hash')), addtime(now(), '00:03:00'))");
 mysql("insert into asterisk.ps_aors (id, max_contacts, remove_existing, synchronized, expire) values ('$extension', 1, 'yes', true, addtime(now(), '03:00:00'))");
 mysql("insert ignore into asterisk.ps_auths (id, auth_type, password, username, synchronized) values ('$extension', 'userpass', '$hash', '$extension', true)");
 mysql("insert ignore into asterisk.ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, synchronized) values ('$extension', '$extension', '$extension', '$extension', 'default', 'all', 'alaw,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', true)");
-mysql("insert into dm.helpme values ('{$bearer['id']}', '$extension')");
+mysql("insert into dm.helpme values ('{$bearer['id']}', '$extension')");*/
+
+$extension = '123';
+$hash = '123123';
 
 response(200, [
     'server' => 'dm.lanta.me',

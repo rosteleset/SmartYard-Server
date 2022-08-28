@@ -19,7 +19,9 @@
  */
 
 auth();
+response();
 
+/*
 $ret = [];
 
 $ocams = demo('overviewCams');
@@ -39,3 +41,4 @@ if (count($ret)) {
 } else {
     response();
 }
+*/

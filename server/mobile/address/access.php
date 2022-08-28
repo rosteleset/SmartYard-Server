@@ -24,7 +24,9 @@
  */
 
     auth();
+    response();
 
+/*
     $flat_id = (int)@$postdata['flatId'];
     $guest_phone = pg_escape_string(@$postdata['guestPhone']);
     $guest_phone = $guest_phone?$guest_phone:$bearer['id'];
@@ -210,4 +212,4 @@
     } else {
         response(412);
     }
-
+*/

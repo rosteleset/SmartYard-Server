@@ -21,7 +21,9 @@
  */
 
     auth();
+    response();
 
+/*
     $nominals = [
         100 => 100,
         200 => 210,
@@ -51,3 +53,4 @@
     pg_query("insert into webadmin.client_card_log (client_id, date, login, action) values ('$client_id', now(), 'dm', 'Подготовка бонусов к списанию')");
 
     response(200);
+*/

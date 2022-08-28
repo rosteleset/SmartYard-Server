@@ -16,7 +16,9 @@
  */
 
     auth();
+    response(200, "");
 
+/*
     $payment_id = pg_escape_string($postdata['paymentId']);
     $sb_id = pg_escape_string($postdata['sbId']);
 
@@ -32,3 +34,4 @@
     } else {
         response(404);
     }
+*/

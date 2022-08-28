@@ -20,9 +20,12 @@
  */
 
 auth();
+response();
 
+/*
 jira_require();
 
 jira_action(@$postdata['key'], @$postdata['action'], @$postdata['customFields']);
 
 response();
+*/

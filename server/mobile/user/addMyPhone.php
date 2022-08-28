@@ -24,7 +24,9 @@
  */
 
 auth();
+response();
 
+/*
 $password = pg_escape_string(trim(@$postdata['password']));
 
 $contract = trim(@$postdata['login']);
@@ -59,3 +61,4 @@ if ($flat_id) {
 }
 
 response();
+*/

@@ -40,7 +40,9 @@
  */
 
 auth();
+response();
 
+/*
 $c = implode(',', all_clients());
 
 $ret = [];
@@ -145,3 +147,4 @@ if (count($ret)) {
 } else {
     response();
 }
+*/

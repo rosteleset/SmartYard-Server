@@ -17,9 +17,12 @@
  */
 
 auth();
+response();
 
+/*
 jira_require();
 
 $jiraSoap->addComment($jiraAuth, @$postdata['key'], [ 'body' => @$postdata['comment'] ]);
 
 response();
+*/

@@ -16,7 +16,9 @@
  */
 
     auth();
+    response(200, "");
 
+/*
     $phone = $bearer['id'];
     $phone[0] = '8';
 
@@ -39,4 +41,4 @@
     } catch (Exception $ex) {
         response(520, false, $ex->getCode(), $ex->getMessage());
     }
-
+*/

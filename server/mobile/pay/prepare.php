@@ -17,7 +17,9 @@
  */
 
     auth();
+    response(200, "");
 
+/*
     $client_id = (int)$postdata['clientId'];
     $amount = (float)$postdata['amount'];
 
@@ -34,3 +36,4 @@
     } else {
         response(403);
     }
+*/
