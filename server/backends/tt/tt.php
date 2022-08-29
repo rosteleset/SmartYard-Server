@@ -38,12 +38,27 @@
 
                 $w = [];
                 foreach ($dir as $f) {
-                    if ($f != "." && $f != ".." && file_exists($base . $f ."/" . $f . ".php")) {
-                        $w[] = $f;
+                    if ($f != "." && $f != ".." && file_exists($base . $f)) {
+                        $w[$f] = 1;
                     }
                 }
 
-                return $w;
+                $base = dirname(__FILE__) . "/" . $class . "/customWorkflows/";
+                $dir = scandir($base);
+
+                foreach ($dir as $f) {
+                    if ($f != "." && $f != ".." && file_exists($base . $f)) {
+                        $w[$f] = 1;
+                    }
+                }
+
+                $wx = [];
+
+                foreach ($w as $workflow => $one) {
+                    $wx[] = $workflow;
+                }
+
+                return $wx;
             }
 
             /**
