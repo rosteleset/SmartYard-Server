@@ -876,7 +876,7 @@
             /**
              * @inheritDoc
              */
-            public function availableFilters($projectId)
+            public function availableFilters()
             {
                 // TODO: Implement availableFilters() method.
             }

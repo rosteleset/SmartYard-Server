@@ -54,6 +54,19 @@
              */
 
             public function loadWorkflow($workflow) {
+
+                function workflow($self, $config, $db, $redis, $workflow) {
+                    if (class_exists("tt\\workflow\\" . $workflow)) {
+                        $className = "tt\\workflow\\" . $workflow;
+                        $w = new $className($config, $db, $redis);
+                        $self->workflows[$workflow] = $w;
+                        return $w;
+                    } else {
+                        error_log("class not found!");
+                        return false;
+                    }
+                }
+
                 $workflow = trim($workflow);
 
                 if (array_key_exists($workflow, $this->workflows)) {
@@ -73,18 +86,15 @@
                 }
 
                 $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . "/" . $workflow . ".php";
+                $fileCustom = dirname(__FILE__) . "/" . $class . "/customWorkflows/" . $workflow . "/" . $workflow . ".php";
 
+                if (file_exists($fileCustom)) {
+                    require_once $fileCustom;
+                    return workflow($this, $this->config, $this->db, $this->redis, $workflow);
+                } else
                 if (file_exists($file)) {
                     require_once $file;
-                    if (class_exists("tt\\workflow\\" . $workflow)) {
-                        $className = "tt\\workflow\\" . $workflow;
-                        $w = new $className($this->config, $this->db, $this->redis);
-                        $this->workflows[$workflow] = $w;
-                        return $w;
-                    } else {
-                        error_log("class not found!");
-                        return false;
-                    }
+                    return workflow($this, $this->config, $this->db, $this->redis, $workflow);
                 } else {
                     error_log("file not found!");
                     return false;
@@ -309,10 +319,9 @@
             abstract public function searchIssues($by, $query);
 
             /**
-             * @param $projectId
              * @return false|array
              */
-            abstract public function availableFilters($projectId);
+            abstract public function availableFilters();
 
         }
     }
