@@ -9,12 +9,7 @@
  *
  * @apiHeader {string} authorization токен авторизации
  *
- * @apiSuccess {object[]="addresses", "notifications", "chat", "payments", "additional"} [mainMenu] доступные пункты меню приложения
- *
- * @apiSuccess {string="t","f"} [cctv="f"] видеонаблюдение
  * @apiSuccess {string="t","f"} [cityCams="f"] городские камеры
- * @apiSuccess {string="t","f"} [events="f"] события
- * @apiSuccess {string="t","f"} [frs="f"] распознавание лиц
  * @apiSuccess {string="t","f"} [issues="f"] заявки
  * @apiSuccess {string="t","f"} [payments="f"] оплата за услуги
  * @apiSuccess {string} [paymentsUrl] URL платёжной системы
@@ -33,8 +28,8 @@
     // отвечает за отображение раздела оплаты и городских камер
     response(200, [
         "cityCams" => "f",
+        "issues" => "f",
         "payments" => "f",
-        "mainMenu" => ["addresses", "additional"],
         "paymentsUrl" => "https://your.url.of.payments.page", 
         "supportPhone" => "+7(4752)429999"
     ]);
