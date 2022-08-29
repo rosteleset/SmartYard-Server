@@ -7,6 +7,7 @@
     namespace backends\authentication {
 
         use backends\backend;
+        use MongoDB\Exception\BadMethodCallException;
 
         /**
          * base authentication class
@@ -35,30 +36,39 @@
                 $uid = $this->check_auth($login, $password);
                 if ($uid !== false) {
                     $keys = $this->redis->keys("auth_*_" . $uid);
-                    if (count($keys) < $this->config["redis"]["max_allowed_tokens"]) {
-                        if ($rememberMe) {
-                            $token = md5($uid . ":" . $login . ":" . $password . ":" . $did);
-                        } else {
-                            $token = md5(GUIDv4());
+                    $first_key = "";
+                    $first_key_time = time();
+                    if (count($keys) > $this->config["redis"]["max_allowed_tokens"]) {
+                        foreach ($keys as $key) {
+                            try {
+                                $auth = json_decode($this->redis->get($key));
+                                if (@(int)$auth["updated"] < $first_key_time) {
+                                    $first_key = $key;
+                                }
+                            } catch (\Exception $e) {
+                                $this->redis->delete($key);
+                            }
                         }
-                        $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe?(10 * 365 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode([
-                            "uid" => (string)$uid,
-                            "login" => $login,
-                            "persistent" => $rememberMe,
-                            "ua" => $ua,
-                            "did" => $did,
-                        ]));
-                        return [
-                            "result" => true,
-                            "token" => $token,
-                        ];
-                    } else {
-                        return [
-                            "result" => false,
-                            "code" => 429,
-                            "error" => "tooManyRequests",
-                        ];
+                        $this->redis->delete($first_key);
                     }
+                    if ($rememberMe) {
+                        $token = md5($uid . ":" . $login . ":" . $password . ":" . $did);
+                    } else {
+                        $token = md5(GUIDv4());
+                    }
+                    $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode([
+                        "uid" => (string)$uid,
+                        "login" => $login,
+                        "persistent" => $rememberMe,
+                        "ua" => $ua,
+                        "did" => $did,
+                        "started" => time(),
+                        "updated" => time(),
+                    ]));
+                    return [
+                        "result" => true,
+                        "token" => $token,
+                    ];
                 } else {
                     return [
                         "result" => false,
@@ -88,7 +98,9 @@
                         $auth["ip"] = $ip;
                     }
 
-                    $this->redis->setex($key, $auth["persistent"]?(10 * 365 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
+                    $auth["updated"] = time();
+
+                    $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
 
                     return $auth;
                 }
