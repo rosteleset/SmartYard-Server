@@ -31,7 +31,6 @@
                     "fields" => [
                         "subject",
                         "description",
-                        "resolution",
                         "tags"
                     ],
                 ];

@@ -101,6 +101,8 @@
         exit(1);
     }
 
+    $version = 0;
+
     try {
         $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
         if ($query) {
@@ -110,7 +112,7 @@
         $version = 0;
     }
 
-    echo "dbVersion; $version\n";
+    echo "dbVersion: $version\n";
 
     $backends = [];
     foreach ($required_backends as $backend) {
