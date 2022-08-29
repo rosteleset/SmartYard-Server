@@ -85,8 +85,8 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . "/" . $workflow . ".php";
-                $fileCustom = dirname(__FILE__) . "/" . $class . "/customWorkflows/" . $workflow . "/" . $workflow . ".php";
+                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . ".php";
+                $fileCustom = dirname(__FILE__) . "/" . $class . "/customWorkflows/" . $workflow . ".php";
 
                 if (file_exists($fileCustom)) {
                     require_once $fileCustom;
