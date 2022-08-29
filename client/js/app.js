@@ -36,13 +36,13 @@ function hashChange() {
                 $(".sidebar .withibleOnlyWhenActive[target='#" + r[0] + "']").show();
             }
 
-            if ($(".sidebar .nav-item a[href!='#" + r[0] + "']").length) {
+            if ($(".sidebar .nav-item a[href!='#" + route + "']").length) {
                 $(".sidebar .nav-item a[href!='#" + route + "']").removeClass('active');
             } else {
                 $(".sidebar .nav-item a[href!='#" + r[0] + "']").removeClass('active');
             }
 
-            if ($(".sidebar .nav-item a[href='#" + r[0] + "']").length) {
+            if ($(".sidebar .nav-item a[href='#" + route + "']").length) {
                 $(".sidebar .nav-item a[href='#" + route + "']").addClass('active');
             } else {
                 $(".sidebar .nav-item a[href='#" + r[0] + "']").addClass('active');
