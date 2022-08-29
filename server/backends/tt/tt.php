@@ -77,7 +77,6 @@
                         $self->workflows[$workflow] = $w;
                         return $w;
                     } else {
-                        error_log("class not found!");
                         return false;
                     }
                 }
@@ -89,7 +88,6 @@
                 }
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
-                    error_log("preg_match fail!");
                     return false;
                 }
 
@@ -111,7 +109,6 @@
                     require_once $file;
                     return workflow($this, $this->config, $this->db, $this->redis, $workflow);
                 } else {
-                    error_log("file not found!");
                     return false;
                 }
             }
