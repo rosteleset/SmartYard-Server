@@ -80,7 +80,10 @@
                                 minimumResultsForSearch: Infinity,
                                 language: lang["_code"],
                             });
-                        }
+                        },
+                        validate: v => {
+                            return v && v !== '-' && v !== 'undefined';
+                        },
                     },
                     {
                         id: "workflow",
@@ -88,6 +91,9 @@
                         title: i18n("tt.workflow"),
                         minimumResultsForSearch: Infinity,
                         options: workflowsByProject(project),
+                        validate: v => {
+                            return v && v !== '-' && v !== 'undefined';
+                        },
                     },
                 ],
                 callback: function (result) {
