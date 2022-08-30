@@ -3,9 +3,13 @@
 
     "mobile": {
         "webServerBasePath": "<!-- put base path to your static web-content here --!>",
-        "talkMe_id": "",
-        "talkMe_domain": "",
-        "talkMe_token": ""
+        "payments": true,
+        "paymentsUrl": "https://dm.lanta.me/app_static/payments/template.html",
+        "cityCams": false,
+        "supportPhone": "+7(4752)429999",
+        "talkMe_id": "<!-- put your talkMe chat id here --!>",
+        "talkMe_domain": "<!-- put your talkMe chat domain id here --!>",
+        "talkMe_token": "<!-- put your talkMe chat rest Api Token here --!>"
     },
 
     "db": {
@@ -117,10 +121,6 @@
             "incoming_title": "Входящий вызов",
             "call_failed": "Пропущенный вызов"
         }
-    ],
-
-    "ntp_servers": [
-        "ntp://80.240.216.155:123"
     ],
 
     "telegram": {

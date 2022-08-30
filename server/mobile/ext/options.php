@@ -29,11 +29,17 @@
     // отвечает за отображение раздела оплаты и городских камер
 
     $response = [
-        "cityCams" => "f",
-        "payments" => "f",
-        "paymentsUrl" => "https://your.url.of.payments.page", 
-        "supportPhone" => "+7(4752)429999"
+        "cityCams" => @$config["mobile"]["cityCams"] ? "t" : "f",
+        "payments" => @$config["mobile"]["payments"] ? "t" : "f"
         ];
+        
+        if (@$config["mobile"]["supportPhone"]) {
+            $response["supportPhone"] = $config["mobile"]["supportPhone"];
+        }
+
+        if (@$config["mobile"]["paymentsUrl"]) {
+            $response["paymentsUrl"] = $config["mobile"]["paymentsUrl"];
+        }
 
         if (@$config["mobile"]["talkMe_id"] && @$config["mobile"]["talkMe_domain"] && @$config["mobile"]["talkMe_token"]) {
             $response["chat"] = "t";
