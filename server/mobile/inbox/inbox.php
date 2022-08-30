@@ -16,11 +16,10 @@
 
     auth();
 
-    $html = "<html><h1>Hello</h1></html>";
+    // $html = "<html><h1>Hello</h1></html>";
+    // response(200, [ 'basePath' => "https://192.168.13.39/", 'code' => trim($html) ]);
 
-    response(200, [ 'basePath' => "https://192.168.13.39/", 'code' => trim($html) ]);
-
-    /*require_once __DIR__ . "/../../lib/parsedown/Parsedown.php";
+    require_once __DIR__ . "/../../lib/parsedown/Parsedown.php";
 
     $parsedown = new Parsedown();
 
@@ -75,4 +74,4 @@
     // mysql("update dm.inbox set readed=true, code='app' where id='$id' and code is null");
     // mysql("update dm.inbox set readed=true where id='$id'");
 
-    response(200, [ 'basePath' => $config['webServerBasePath'], 'code' => trim($html) ]);*/
+    response(200, [ 'basePath' => $config['webServerBasePath'], 'code' => trim($html) ]);
