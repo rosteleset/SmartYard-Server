@@ -9,16 +9,12 @@
  *
  * @apiHeader {string} authorization токен авторизации
  *
- * @apiSuccess {object[]="addresses", "notifications", "chat", "payments", "additional"} [mainMenu] доступные пункты меню приложения
- *
- * @apiSuccess {string="t","f"} [cctv="f"] видеонаблюдение
  * @apiSuccess {string="t","f"} [cityCams="f"] городские камеры
- * @apiSuccess {string="t","f"} [events="f"] события
- * @apiSuccess {string="t","f"} [frs="f"] распознавание лиц
  * @apiSuccess {string="t","f"} [issues="f"] заявки
  * @apiSuccess {string="t","f"} [payments="f"] оплата за услуги
  * @apiSuccess {string} [paymentsUrl] URL платёжной системы
  * @apiSuccess {string} [supportPhone] номер телефона техподдержки
+ * @apiSuccess {string="t","f"} [chat="f"] чат talkMe
  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
@@ -31,10 +27,22 @@
     auth();
 
     // отвечает за отображение раздела оплаты и городских камер
-    response(200, [
+
+    $response = [
         "cityCams" => "f",
         "payments" => "f",
-        "mainMenu" => ["addresses", "additional"],
         "paymentsUrl" => "https://your.url.of.payments.page", 
         "supportPhone" => "+7(4752)429999"
-    ]);
+        ];
+
+        if (@$config["mobile"]["talkMe_id"] && @$config["mobile"]["talkMe_domain"] && @$config["mobile"]["talkMe_token"]) {
+            $response["chat"] = "t";
+            $response["chatOptions"] = [
+                "id" => $config["mobile"]["talkMe_id"],
+                "domain" => $config["mobile"]["talkMe_domain"],
+                "token" => $config["mobile"]["talkMe_token"]
+            ];
+        } else {
+            $response["chat"] = "f";
+        }
+    response(200, $response);

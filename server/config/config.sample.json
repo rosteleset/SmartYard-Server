@@ -1,7 +1,12 @@
 {
     "server": "http://127.0.0.1:8000/server/api.php",
 
-    "webServerBasePath": "<!-- put base path to your static web-content here --!>",
+    "mobile": {
+        "webServerBasePath": "<!-- put base path to your static web-content here --!>",
+        "talkMe_id": "",
+        "talkMe_domain": "",
+        "talkMe_token": ""
+    },
 
     "db": {
         "dsn": "sqlite:/home/mmikel/projects/rbt/server/db/internal.db"
