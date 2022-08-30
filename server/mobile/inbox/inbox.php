@@ -74,4 +74,4 @@
     // mysql("update dm.inbox set readed=true, code='app' where id='$id' and code is null");
     // mysql("update dm.inbox set readed=true where id='$id'");
 
-    response(200, [ 'basePath' => $config['webServerBasePath'], 'code' => trim($html) ]);
+    response(200, [ 'basePath' => $config['mobile']['webServerBasePath'], 'code' => trim($html) ]);
