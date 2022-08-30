@@ -130,6 +130,30 @@
                     },
                 },
                 {
+                    id: "syslog",
+                    type: "text",
+                    title: i18n("addresses.syslog"),
+                    placeholder: "syslog://",
+                    validate: v => {
+                        if (v) {
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
+                        } else {
+                            return true;
+                        }
+                    },
+                },
+                {
+                    id: "nat",
+                    type: "yesno",
+                    title: i18n("addresses.nat"),
+                    value: "0",
+                },
+                {
                     id: "comment",
                     type: "text",
                     title: i18n("addresses.comment"),
@@ -255,6 +279,31 @@
                         },
                     },
                     {
+                        id: "syslog",
+                        type: "text",
+                        title: i18n("addresses.syslog"),
+                        placeholder: "syslog://",
+                        value: domophone.syslog,
+                        validate: v => {
+                            if (v) {
+                                try {
+                                    new URL(v);
+                                    return true;
+                                } catch (_) {
+                                    return false;
+                                }
+                            } else {
+                                return true;
+                            }
+                        },
+                    },
+                    {
+                        id: "nat",
+                        type: "yesno",
+                        title: i18n("addresses.nat"),
+                        value: domophone.nat,
+                    },
+                    {
                         id: "comment",
                         type: "text",
                         title: i18n("addresses.comment"),
@@ -285,8 +334,6 @@
     },
 
     route: function (params) {
-        modules.addresses.topMenu();
-
         $("#altForm").hide();
         $("#subTop").html("");
 

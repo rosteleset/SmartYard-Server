@@ -9,6 +9,8 @@ CREATE TABLE houses_domophones
     credentials character varying not null,                                                                             -- plaintext:login:password, token:token, or something else
     caller_id character varying not null,
     dtmf character varying not null,
+    syslog character varying,
+    nat integer,
     comment character varying
 );
 CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(url);

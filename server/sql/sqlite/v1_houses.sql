@@ -9,6 +9,8 @@ CREATE TABLE houses_domophones
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     caller_id text not null,
     dtmf text not null,
+    syslog text,
+    nat integer,
     comment text
 );
 CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(url);

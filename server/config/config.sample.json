@@ -114,6 +114,10 @@
         }
     ],
 
+    "ntp_servers": [
+        "ntp://80.240.216.155:123"
+    ],
+
     "telegram": {
         "token": "your_bot_token_here"
     },
