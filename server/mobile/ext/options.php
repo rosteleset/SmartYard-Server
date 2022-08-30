@@ -31,5 +31,11 @@
         "issues" => "f",
         "payments" => "f",
         "paymentsUrl" => "https://your.url.of.payments.page", 
-        "supportPhone" => "+7(4752)429999"
+        "supportPhone" => "+7(4752)429999",
+        "chat" => "t",
+        "chatOptions" => [
+            "id" => "917a4b093ed8c35dde26120825f90803",
+            "domain" => "sesameware.com",
+            "token" => "fubz96opykrts5phs9p0g7tyjigusxvfgvgp96xfbpxo9j1ryhg644lrucc3ipy8"
+        ]
     ]);
