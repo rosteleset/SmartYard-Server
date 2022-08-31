@@ -65,38 +65,5 @@
              * @return false|string
              */
             abstract public function createIssue($issue);
-
-            /**
-             * @return false|array
-             */
-            public function getFilters() {
-
-            }
-
-            /**
-             * @param $name
-             * @param $filter
-             * @return boolean
-             */
-            public function addFilter($name, $filter) {
-
-            }
-
-            /**
-             * @param $name
-             * @param $filter
-             * @return boolean
-             */
-            public function modifyFilter($name, $filter) {
-
-            }
-
-            /**
-             * @param $name
-             * @return boolean
-             */
-            public function deleteFilter($name) {
-
-            }
         }
     }

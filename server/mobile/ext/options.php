@@ -14,6 +14,7 @@
  * @apiSuccess {string="t","f"} [payments="f"] оплата за услуги
  * @apiSuccess {string} [paymentsUrl] URL платёжной системы
  * @apiSuccess {string} [supportPhone] номер телефона техподдержки
+ * @apiSuccess {string="t","f"} [chat="f"] чат talkMe
  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
@@ -26,16 +27,28 @@
     auth();
 
     // отвечает за отображение раздела оплаты и городских камер
-    response(200, [
-        "cityCams" => "f",
-        "issues" => "f",
-        "payments" => "f",
-        "paymentsUrl" => "https://your.url.of.payments.page", 
-        "supportPhone" => "+7(4752)429999",
-        "chat" => "t",
-        "chatOptions" => [
-            "id" => "917a4b093ed8c35dde26120825f90803",
-            "domain" => "sesameware.com",
-            "token" => "fubz96opykrts5phs9p0g7tyjigusxvfgvgp96xfbpxo9j1ryhg644lrucc3ipy8"
-        ]
-    ]);
+
+    $response = [
+        "cityCams" => @$config["mobile"]["cityCams"] ? "t" : "f",
+        "payments" => @$config["mobile"]["payments"] ? "t" : "f"
+        ];
+        
+        if (@$config["mobile"]["supportPhone"]) {
+            $response["supportPhone"] = $config["mobile"]["supportPhone"];
+        }
+
+        if (@$config["mobile"]["paymentsUrl"]) {
+            $response["paymentsUrl"] = $config["mobile"]["paymentsUrl"];
+        }
+
+        if (@$config["mobile"]["talkMe_id"] && @$config["mobile"]["talkMe_domain"] && @$config["mobile"]["talkMe_token"]) {
+            $response["chat"] = "t";
+            $response["chatOptions"] = [
+                "id" => $config["mobile"]["talkMe_id"],
+                "domain" => $config["mobile"]["talkMe_domain"],
+                "token" => $config["mobile"]["talkMe_token"]
+            ];
+        } else {
+            $response["chat"] = "f";
+        }
+    response(200, $response);

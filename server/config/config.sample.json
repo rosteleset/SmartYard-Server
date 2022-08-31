@@ -1,7 +1,16 @@
 {
     "server": "http://127.0.0.1:8000/server/api.php",
 
-    "webServerBasePath": "<!-- put base path to your static web-content here --!>",
+    "mobile": {
+        "webServerBasePath": "<!-- put base path to your static web-content here --!>",
+        "payments": true,
+        "paymentsUrl": "https://dm.lanta.me/app_static/payments/template.html",
+        "cityCams": false,
+        "supportPhone": "+7(4752)429999",
+        "talkMe_id": "<!-- put your talkMe chat id here --!>",
+        "talkMe_domain": "<!-- put your talkMe chat domain id here --!>",
+        "talkMe_token": "<!-- put your talkMe chat rest Api Token here --!>"
+    },
 
     "db": {
         "dsn": "sqlite:/home/mmikel/projects/rbt/server/db/internal.db"

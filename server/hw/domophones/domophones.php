@@ -204,9 +204,12 @@
 
             /** Очистить и настроить панель */
             public function clean(
-                string $mgmt_server,
+                string $sip_server,
+                string $ntp_server,
+                string $syslog_server,
                 string $sip_username,
                 int $sip_port,
+                int $ntp_port,
                 int $syslog_port,
                 array $audio_levels = [],
                 array $cms_levels = [],
@@ -223,10 +226,10 @@
                 $this->set_web_language('RU');
                 $this->set_audio_levels($audio_levels);
                 $this->set_cms_levels($cms_levels);
-                $this->configure_ntp($mgmt_server, 123, 'GMT+03:00');
-                $this->configure_sip($sip_username, $this->pass, $mgmt_server, $sip_port, $nat);
+                $this->configure_ntp($ntp_server, $ntp_port, 'GMT+03:00');
+                $this->configure_sip($sip_username, $this->pass, $sip_server, $sip_port, $nat);
                 $this->set_relay_dtmf(1, 2, 3);
-                $this->configure_syslog($mgmt_server, $syslog_port);
+                $this->configure_syslog($syslog_server, $syslog_port);
                 $this->clear_rfid();
                 $this->clear_apartment();
                 $this->set_cms_model($cms_model);

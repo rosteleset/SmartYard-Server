@@ -38,12 +38,27 @@
 
                 $w = [];
                 foreach ($dir as $f) {
-                    if ($f != "." && $f != ".." && file_exists($base . $f ."/" . $f . ".php")) {
-                        $w[] = $f;
+                    if ($f != "." && $f != ".." && file_exists($base . $f)) {
+                        $w[$f] = 1;
                     }
                 }
 
-                return $w;
+                $base = dirname(__FILE__) . "/" . $class . "/customWorkflows/";
+                $dir = scandir($base);
+
+                foreach ($dir as $f) {
+                    if ($f != "." && $f != ".." && file_exists($base . $f)) {
+                        $w[$f] = 1;
+                    }
+                }
+
+                $wx = [];
+
+                foreach ($w as $workflow => $one) {
+                    $wx[] = $workflow;
+                }
+
+                return $wx;
             }
 
             /**
@@ -54,6 +69,18 @@
              */
 
             public function loadWorkflow($workflow) {
+
+                function workflow($self, $config, $db, $redis, $workflow) {
+                    if (class_exists("tt\\workflow\\" . $workflow)) {
+                        $className = "tt\\workflow\\" . $workflow;
+                        $w = new $className($config, $db, $redis);
+                        $self->workflows[$workflow] = $w;
+                        return $w;
+                    } else {
+                        return false;
+                    }
+                }
+
                 $workflow = trim($workflow);
 
                 if (array_key_exists($workflow, $this->workflows)) {
@@ -61,7 +88,6 @@
                 }
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
-                    error_log("preg_match fail!");
                     return false;
                 }
 
@@ -72,21 +98,17 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . "/" . $workflow . ".php";
+                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . ".php";
+                $fileCustom = dirname(__FILE__) . "/" . $class . "/customWorkflows/" . $workflow . ".php";
 
+                if (file_exists($fileCustom)) {
+                    require_once $fileCustom;
+                    return workflow($this, $this->config, $this->db, $this->redis, $workflow);
+                } else
                 if (file_exists($file)) {
                     require_once $file;
-                    if (class_exists("tt\\workflow\\" . $workflow)) {
-                        $className = "tt\\workflow\\" . $workflow;
-                        $w = new $className($this->config, $this->db, $this->redis);
-                        $this->workflows[$workflow] = $w;
-                        return $w;
-                    } else {
-                        error_log("class not found!");
-                        return false;
-                    }
+                    return workflow($this, $this->config, $this->db, $this->redis, $workflow);
                 } else {
-                    error_log("file not found!");
                     return false;
                 }
             }
@@ -309,10 +331,9 @@
             abstract public function searchIssues($by, $query);
 
             /**
-             * @param $projectId
              * @return false|array
              */
-            abstract public function availableFilters($projectId);
+            abstract public function availableFilters();
 
         }
     }

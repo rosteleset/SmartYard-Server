@@ -518,6 +518,8 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
+                    "syslog" => "syslog",
+                    "nat" => "nat",
                     "comment" => "comment"
                 ]);
             }
@@ -525,7 +527,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $callerId, $dtmf, $comment)
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $callerId, $dtmf, $syslog, $nat, $comment)
             {
                 if (!$model) {
                     setLastError("moModel");
@@ -553,7 +555,12 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :comment)", [
+                if (!checkInt($nat)) {
+                    setLastError("nat");
+                    return false;
+                }
+
+                return $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, syslog, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :syslog, :nat, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -561,6 +568,8 @@
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
+                    "syslog" => $syslog,
+                    "nat" => $nat,
                     "comment" => $comment,
                 ]);
             }
@@ -568,7 +577,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $syslog, $nat, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -602,7 +611,12 @@
                     return false;
                 }
 
-                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, comment = :comment where house_domophone_id = $domophoneId", [
+                if (!checkInt($nat)) {
+                    setLastError("nat");
+                    return false;
+                }
+
+                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, syslog = :syslog, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -610,6 +624,8 @@
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
+                    "syslog" => $syslog,
+                    "nat" => $nat,
                     "comment" => $comment,
                 ]);
             }
@@ -691,6 +707,8 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
+                    "syslog" => "syslog",
+                    "nat" => "nat",
                     "comment" => "comment"
                 ], [
                     "singlify"
