@@ -207,6 +207,11 @@
                 if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
                     $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
 
+                    if ($openCode == "!") {
+                        // TODO add unique check !!!
+                        $openCode = 11000 + rand(0, 88999);
+                    }
+
                     $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
