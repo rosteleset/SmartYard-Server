@@ -277,6 +277,11 @@
                         $params["autoOpen"] = date('Y-m-d H:i:s', strtotime($params["autoOpen"]));
                     }
 
+                    if (@$params["openCode"] == "!") {
+                        // TODO add unique check !!!
+                        $params["openCode"] = 11000 + rand(0, 88999);
+                    }
+
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
                         "floor" => "floor",
                         "flat" => "flat",
