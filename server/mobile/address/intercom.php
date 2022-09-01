@@ -49,6 +49,36 @@
         response(404);
     }
 
+    if (@$postdata['settings']) {
+        $params = [];
+        $settings = $postdata['settings'];
+
+        if (@$settings['CMS']) {
+            $params["cmsEnabled"] = ($settings['CMS'] == 't') ? 1: 0;
+        }
+
+        if (@$settings['autoOpen']) {
+            $d = date('Y-m-d H:i:s', strtotime($settings['autoOpen']));
+            $params['autoOpen'] = $d;
+        }
+
+        if (array_key_exists('whiteRabbit', $settings)) {
+            $wr = (int)$settings['whiteRabbit'];
+            if (!in_array($wr, [0, 1, 2, 3, 5, 7, 10]))
+                $wr = 0;
+            $params['whiteRabbit'] = $wr;
+        }
+
+        $households->modifyFlat($flat_id, $params);
+
+        if (@$settings['VoIP']) {
+            $params = [];
+            $params['voipEnabled'] = ($settings['VoIP'] == 't') ? 1: 0;
+            $households->modifySubscriber($subscriber['subscriberId'], $params);
+        }
+    }
+
+    $subscriber = $households->getSubscribers('id', $subscriber['subscriberId'])[0];
     $flat = $households->getFlat($flat_id);
     /*
         "flatId": "1",
@@ -65,18 +95,16 @@
 		"cmsEnabled": "1",
 		"entrances": []
     */
-    
     // response(200, $flat);
     $ret = [];
     // $ret['FRSDisabled'] = 't';
     $ret['allowDoorCode'] = 't';
     $ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
-    $ret['CMS'] = @$flat['cmsEnabled']?'t':'f';
-    $ret['VoIP'] = 't'; // TODO: разобраться как отключить voip для конкретного пользователя
+    $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
+    $ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
     $ret['autoOpen'] = $flat['autoOpen'];
     $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
-    
-    
+
     if ($ret) {
         response(200, $ret);
     } else {
