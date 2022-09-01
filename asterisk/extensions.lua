@@ -200,6 +200,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
     callerId = channel.CALLERID("name"):get()
 
     for i, s in ipairs(subscribers) do
+        -- TODO add voipEnabled check for subscriber
         log_debug(s)
         if s.platform == cjson.null or s.type == cjson.null then
             goto continue
