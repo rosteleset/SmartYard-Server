@@ -22,7 +22,18 @@
  */
 
     auth();
-    response(200, ["code" => "12345"]);
+    $households = loadBackend("households");
+    $flat_id = (int)@$postdata['flatId'];
+    if (!$flat_id) {
+        response(422);
+    }
+
+    // TODO: allowDoorCode будет использоваться?
+    $params = [];
+    $params['openCode'] = '!';
+    $households->modifyFlat($flat_id, $params);
+    $flat = $households->getFlat($flat_id);
+    response(200, ["code" => $flat['openCode']]);
 
 /*
     $flat_id = (int)@$postdata['flatId'];
