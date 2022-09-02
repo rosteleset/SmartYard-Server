@@ -238,6 +238,7 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
                 flatNumber = flatNumber,
             }))
         end
+        channel.TOKEN:set(token)
         push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
         res = res .. "&Local/" .. extension
         ::continue::
@@ -516,13 +517,19 @@ extensions = {
                 status = "UNKNOWN"
             end
 
-            local token = channel.HASH:get()
+            local hash = channel.HASH:get()
+
+            if hash == nil then
+                hash = "none"
+            end
+
+            local token = channel.TOKEN:get()
 
             if token == nil then
                 token = "none"
             end
 
-            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", token: " .. token)
+            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", hash: " .. hash .. ", token: " .. token)
         end,
     },
 }
