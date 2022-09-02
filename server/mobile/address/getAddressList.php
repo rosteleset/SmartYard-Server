@@ -71,7 +71,7 @@
             
             // TODO: проверить обработку блокировки
             // 
-            if ($flatDetail['manualBlock']) {
+            if ($flatDetail['autoBlock']) {
                 $door['blocked'] = "Услуга домофонии заблокирована";
             }
 
@@ -80,17 +80,13 @@
         }
         
     }
-    $result = [];
-    foreach($houses as $h) {
-        $doors = $h['doors']; 
-        $doors_ = [];
-        foreach($doors as $dk => $d) {
-            $doors_[] = $d;
-        }
-        $h['doors'] = $doors_;
-        $result[] = $h;
-    }
 
+    // конвертируем ассоциативные массивы в простые
+    foreach($houses as $h) {
+        $h['doors'] = array_values($h['doors']);
+    }
+    $result = array_values($houses);
+    
     if (count($result)) {
         response(200, $result);
     } else {
