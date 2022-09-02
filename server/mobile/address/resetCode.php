@@ -22,7 +22,14 @@
  */
 
     auth();
-    response(200, ["code" => "12345"]);
+    $flat_id = (int)@$postdata['flatId'];
+    $households = loadBackend("households");
+    $params = [];
+    $params['openCode'] = "!";
+    $households->modifyFlat($flat_id, $params);
+    $result = $households->getFlat($flat_id);
+    $newcode = strval($result['openCode']); 
+    response(200, ["code" => $newcode]);
 
 /*
     $flat_id = (int)@$postdata['flatId'];
