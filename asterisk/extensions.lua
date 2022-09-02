@@ -200,9 +200,8 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
     callerId = channel.CALLERID("name"):get()
 
     for i, s in ipairs(subscribers) do
-        -- TODO add voipEnabled check for subscriber
         log_debug(s)
-        if s.platform == cjson.null or s.type == cjson.null then
+        if s.platform == cjson.null or s.type == cjson.null or tonumber(s.voipEnabled) ~= 1 then
             goto continue
         end
         redis:incr("autoextension")
@@ -216,6 +215,9 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
             token = s.voipToken
         else
             token = s.pushToken
+        end
+        if token == cjson.null or token == nil or token == "" then
+            goto continue
         end
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
@@ -260,7 +262,7 @@ extensions = {
         [ "_2XXXXXXXXX" ] = function (context, extension)
             checkin()
 
-            log_debug("starting loop for: "..extension)
+            log_debug("starting loop for: " .. extension)
 
             local timeout = os.time() + 35
             local voip_crutch = redis:get("voip_crutch_" .. extension)
@@ -278,6 +280,12 @@ extensions = {
 
             if token ~= "" and token ~= nil then
                 channel.TOKEN:set(token)
+            end
+
+            local hash = redis:get("mobile_extension_" .. extension)
+
+            if hash ~= "" and hash ~= nil then
+                channel.HASH:set(hash)
             end
 
             while os.time() < timeout do
@@ -514,13 +522,19 @@ extensions = {
                 status = "UNKNOWN"
             end
 
-            local token = channel.HASH:get()
+            local hash = channel.HASH:get()
+
+            if hash == nil then
+                hash = "none"
+            end
+
+            local token = channel.TOKEN:get()
 
             if token == nil then
                 token = "none"
             end
 
-            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", token: " .. token)
+            log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", hash: " .. hash .. ", token: " .. token)
         end,
     },
 }

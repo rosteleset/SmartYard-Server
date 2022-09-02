@@ -184,7 +184,9 @@
                 string $password,
                 string $server,
                 int $port = 5060,
-                bool $nat = false
+                bool $nat = false,
+                string $stun_server = '',
+                int $stun_port = 3478
             ) {
                 $params = [
                     'cksip1' => 1,
@@ -216,8 +218,8 @@
                 ];
                 if ($nat) {
                     $params['cknat'] = 1;
-                    $params['stunip'] = $server;
-                    $params['stunport'] = 3478;
+                    $params['stunip'] = $stun_server;
+                    $params['stunport'] = $stun_port;
                 }
                 $this->api_call('webs/SIPCfgEx', $params);
             }

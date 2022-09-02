@@ -115,7 +115,9 @@
                 string $password,
                 string $server,
                 int $port = 5060,
-                bool $nat = false
+                bool $nat = false,
+                string $stun_server = '',
+                int $stun_port = 3478
             );
 
             /** Настроить remote syslog */
@@ -214,7 +216,9 @@
                 array $audio_levels = [],
                 array $cms_levels = [],
                 string $cms_model = '',
-                bool $nat = false
+                bool $nat = false,
+                string $stun_server = '',
+                int $stun_port = 3478
             ) {
                 $this->keep_doors_unlocked();
                 $this->set_unlock_time(5);
@@ -227,7 +231,7 @@
                 $this->set_audio_levels($audio_levels);
                 $this->set_cms_levels($cms_levels);
                 $this->configure_ntp($ntp_server, $ntp_port, 'GMT+03:00');
-                $this->configure_sip($sip_username, $this->pass, $sip_server, $sip_port, $nat);
+                $this->configure_sip($sip_username, $this->pass, $sip_server, $sip_port, $nat, $stun_server, $stun_port);
                 $this->set_relay_dtmf(1, 2, 3);
                 $this->configure_syslog($syslog_server, $syslog_port);
                 $this->clear_rfid();
