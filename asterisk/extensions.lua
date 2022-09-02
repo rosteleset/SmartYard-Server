@@ -238,7 +238,6 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
                 flatNumber = flatNumber,
             }))
         end
-        channel.TOKEN:set(token)
         push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
         res = res .. "&Local/" .. extension
         ::continue::
@@ -263,7 +262,7 @@ extensions = {
         [ "_2XXXXXXXXX" ] = function (context, extension)
             checkin()
 
-            log_debug("starting loop for: "..extension)
+            log_debug("starting loop for: " .. extension)
 
             local timeout = os.time() + 35
             local voip_crutch = redis:get("voip_crutch_" .. extension)
