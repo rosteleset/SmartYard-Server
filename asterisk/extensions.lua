@@ -200,9 +200,8 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
     callerId = channel.CALLERID("name"):get()
 
     for i, s in ipairs(subscribers) do
-        -- TODO add voipEnabled check for subscriber
         log_debug(s)
-        if s.platform == cjson.null or s.type == cjson.null then
+        if s.platform == cjson.null or s.type == cjson.null or tonumber(s.voipEnabled) ~= 1 then
             goto continue
         end
         redis:incr("autoextension")
@@ -216,6 +215,9 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
             token = s.voipToken
         else
             token = s.pushToken
+        end
+        if token == cjson.null or token == nil or token == "" then
+            goto continue
         end
         redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
         redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
