@@ -82,8 +82,8 @@
     }
 
     // конвертируем ассоциативные массивы в простые
-    foreach($houses as $h) {
-        $h['doors'] = array_values($h['doors']);
+    foreach($houses as $house_key => $h) {
+        $houses[$house_key]['doors'] = array_values($h['doors']);
     }
     $result = array_values($houses);
     
