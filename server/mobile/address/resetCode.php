@@ -33,7 +33,7 @@
     $params['openCode'] = '!';
     $households->modifyFlat($flat_id, $params);
     $flat = $households->getFlat($flat_id);
-    response(200, ["code" => $flat['openCode']]);
+    response(200, ["code" => intval($flat['openCode'])]);
 
 /*
     $flat_id = (int)@$postdata['flatId'];
