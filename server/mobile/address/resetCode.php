@@ -23,9 +23,17 @@
 
     auth();
     $households = loadBackend("households");
+
     $flat_id = (int)@$postdata['flatId'];
+
     if (!$flat_id) {
         response(422);
+    }
+    $flatIds = array_map( function($item) { return $item['flatId']; }, $subscriber['flats']);
+    $f = in_array($flat_id, $flatIds);
+
+    if (!$f) {
+        response(404);
     }
 
     // TODO: allowDoorCode будет использоваться?

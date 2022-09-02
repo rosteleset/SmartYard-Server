@@ -24,6 +24,68 @@
  */
 
     auth();
+    $households = loadBackend("households");
+
+    $flat_id = (int)@$postdata['flatId'];
+    if (!$flat_id) {
+        response(422);
+    }
+
+    $flat = [];
+    foreach($subscriber['flats'] as $item) {
+        if ((int)$item['flatId'] == $flat_id) {
+            $flat = $item;
+            break;
+        }
+    }
+
+    if (!$flat) {
+        response(404);
+    }
+
+    if ((int)$flat['role'] != 0) {
+        response(404);
+    }
+
+    $guest_phone = @$postdata['guestPhone'];
+    $guest_phone[0] = '8';
+
+    if (array_key_exists('expire', $postdata)) {
+        $expire = strtotime($postdata['expire']);
+        if (!$expire) {
+            $expire = time();
+        }
+    } else {
+        $expire = strtotime('3001-01-01');
+    }
+
+    if ($expire < time()) {
+        //удаление
+
+        if ($guest_phone == $subscriber['mobile']) {
+            response(422, false, false, 'Владельцу квартиры нельзя самоудалиться');
+        }
+
+        //выпиливаем подселенца
+        $guest = $households->getSubscribers('mobile', $guest_phone)[0];
+
+        response(200, $guest);
+
+        if (!$guest) {
+            response();
+        }
+
+        $households->deleteSubscriber($guest['subscriberId']);
+    } else {
+        //добавление
+
+        if ($households->addSubscriber($guest_phone, "", "", $flat_id)) {
+            response();
+        } else {
+            response(422);
+        }
+    }
+
     response();
 
 /*
