@@ -34,3 +34,5 @@ __pycache__
 /.stylelintrc.json
 RBT/RBT.xcodeproj/
 /server/services/nodejs
+package.json
+package-lock.json
