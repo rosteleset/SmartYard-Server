@@ -282,6 +282,12 @@ extensions = {
                 channel.TOKEN:set(token)
             end
 
+            local hash = redis:get("mobile_extension_" .. extension)
+
+            if hash ~= "" and hash ~= nil then
+                channel.HASH:set(hash)
+            end
+
             while os.time() < timeout do
                 pjsip_extension = channel.PJSIP_DIAL_CONTACTS(extension):get()
                 if pjsip_extension ~= "" and pjsip_extension ~= nil then
