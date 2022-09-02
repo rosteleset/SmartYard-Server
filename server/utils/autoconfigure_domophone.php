@@ -22,13 +22,16 @@
         [ 'host' => $ntp_server, 'port' => $ntp_port ] = parse_url($config['ntp_servers'][0]);
         [ 'host' => $syslog_server, 'port' => $syslog_port ] = parse_url($domophone['syslog']);
 
-        $sip_server = '192.168.13.60';
         $sip_username = sprintf("1%05d", $domophone['domophoneId']);
+        $sip_server = $config['asterisk_servers'][0]['ip'];
         $sip_port = $config['asterisk_servers'][0]['sip_tcp_port'];
+
+        $nat = (bool) $domophone['nat'];
+        [, $stun_server, $stun_port ] = explode(':', $config['asterisk_servers'][0]['stun_server']);
+
         $audio_levels = [];
         $cms_levels = [];
         $cms_model = '';
-        $nat = (bool) $domophone['nat'];
 
         $panel->clean(
             $sip_server,
@@ -41,6 +44,8 @@
             $audio_levels,
             $cms_levels,
             $cms_model,
-            $nat
+            $nat,
+            $stun_server,
+            $stun_port
         );
     }

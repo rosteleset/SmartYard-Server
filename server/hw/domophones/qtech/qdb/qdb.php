@@ -424,7 +424,9 @@
                 string $password,
                 string $server,
                 int $port = 5060,
-                bool $nat = false
+                bool $nat = false,
+                string $stun_server = '',
+                int $stun_port = 3478
             ) {
                 $sip_account = [
                     'AccountID' => '0',
@@ -449,8 +451,8 @@
 
                 $params = $this->params_to_str([
                     'Config.Account1.STUN.Enable' => (int) $nat,
-                    'Config.Account1.STUN.Server' => $server,
-                    'Config.Account1.STUN.Port' => 3478,
+                    'Config.Account1.STUN.Server' => $stun_server,
+                    'Config.Account1.STUN.Port' => $stun_port,
                     'Config.DoorSetting.GENERAL.UseDialPlanOnly' => 1,
                     'Config.Account1.AUTO_ANSWER.Enable' => 0,
                 ]);
