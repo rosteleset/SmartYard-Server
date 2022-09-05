@@ -113,6 +113,7 @@
              * @param $houseId
              * @param $floor
              * @param $flat
+             * @param $code
              * @param $entrances
              * @param $apartmentsAndLevels
              * @param $manualBlock
@@ -123,7 +124,7 @@
              * @param $sipPassword
              * @return boolean|integer
              */
-            abstract function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword);
+            abstract function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword);
 
             /**
              * @param $flatId

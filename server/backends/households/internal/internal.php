@@ -21,12 +21,13 @@
                     return false;
                 }
 
-                $flats = $this->db->get("select house_flat_id, floor, flat, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, last_opened, cms_enabled from houses_flats where address_house_id = $houseId order by flat",
+                $flats = $this->db->get("select house_flat_id, floor, flat, code, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, last_opened, cms_enabled from houses_flats where address_house_id = $houseId order by flat",
                     false,
                     [
                         "house_flat_id" => "flatId",
                         "floor" => "floor",
                         "flat" => "flat",
+                        "code" => "code",
                         "auto_block" => "autoBlock",
                         "manual_block" => "manualBlock",
                         "open_code" => "openCode",
@@ -202,7 +203,7 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
+            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
                 if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
                     $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
@@ -212,10 +213,11 @@
                         $openCode = 11000 + rand(0, 88999);
                     }
 
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
+                        ":code" => $code,
                         ":manual_block" => $manualBlock,
                         ":open_code" => $openCode,
                         ":auto_open" => $autoOpen,
@@ -278,6 +280,11 @@
                         return false;
                     }
 
+                    if (array_key_exists("code", $params) && !checkStr($params["code"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (array_key_exists("autoOpen", $params)) {
                         $params["autoOpen"] = date('Y-m-d H:i:s', strtotime($params["autoOpen"]));
                     }
@@ -290,6 +297,7 @@
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
                         "floor" => "floor",
                         "flat" => "flat",
+                        "code" => "code",
                         "manual_block" => "manualBlock",
                         "open_code" => "openCode",
                         "auto_open" => "autoOpen",
@@ -455,6 +463,7 @@
                         house_flat_id,
                         floor, 
                         flat,
+                        code,
                         coalesce(auto_block, 0) auto_block, 
                         manual_block, 
                         open_code, 
@@ -472,6 +481,7 @@
                     "house_flat_id" => "flatId",
                     "floor" => "floor",
                     "flat" => "flat",
+                    "code" => "code",
                     "auto_block" => "autoBlock",
                     "manual_block" => "manualBlock",
                     "open_code" => "openCode",
@@ -724,7 +734,7 @@
                     "singlify"
                 ]);
 
-                $domophone["json"] = json_decode(file_get_contents("hw/domophones/models/" . $domophone["model"]), true);
+                $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $domophone["model"]), true);
 
                 return $domophone;
             }

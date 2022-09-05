@@ -635,6 +635,13 @@
                     }
                 },
                 {
+                    id: "code",
+                    type: "text",
+                    title: i18n("addresses.addCode"),
+                    placeholder: i18n("addresses.addCode"),
+                    value: md5(guid()),
+                },
+                {
                     id: "entrances",
                     type: "multiselect",
                     title: i18n("addresses.entrances"),
@@ -1111,6 +1118,13 @@
                         validate: (v) => {
                             return $.trim(v) !== "";
                         }
+                    },
+                    {
+                        id: "code",
+                        type: "text",
+                        title: i18n("addresses.addCode"),
+                        placeholder: i18n("addresses.addCode"),
+                        value: flat.code,
                     },
                     {
                         id: "entrances",

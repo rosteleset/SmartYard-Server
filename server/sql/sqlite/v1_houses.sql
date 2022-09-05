@@ -70,6 +70,7 @@ CREATE TABLE houses_flats
     address_house_id integer not null,
     floor integer,
     flat text not null,
+    code text,
 -- domophone's specific flat settings
     manual_block integer,                                                                                               -- 1/0 manaul blocking (by abonent?)
     auto_block integer,                                                                                                 -- 1/0 auto block (by billing system?)
