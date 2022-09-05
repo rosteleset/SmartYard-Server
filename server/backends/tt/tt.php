@@ -40,7 +40,9 @@
                 foreach ($dir as $f) {
                     if ($f != "." && $f != ".." && file_exists($base . $f)) {
                         $f = pathinfo($f);
-                        $w[$f['filename']] = 'builtIn';
+                        if ($f['extension'] === "php") {
+                            $w[$f['filename']] = 'builtIn';
+                        }
                     }
                 }
 
@@ -52,7 +54,9 @@
                     foreach ($dir as $f) {
                         if ($f != "." && $f != ".." && file_exists($base . $f)) {
                             $f = pathinfo($f);
-                            $w[$f['filename']] = 'custom';
+                            if ($f['extension'] === "php") {
+                                $w[$f['filename']] = 'custom';
+                            }
                         }
                     }
                 }
@@ -447,5 +451,28 @@
              */
             abstract public function availableFilters();
 
+            /**
+             * @param $filter
+             * @return false|string
+             */
+            public function getFilter($filter) {
+
+            }
+
+            /**
+             * @param $filter
+             * @return false|string
+             */
+            public function putFilter($filter) {
+
+            }
+
+            /**
+             * @param $filter
+             * @return false|string
+             */
+            public function deleteFilter($filter) {
+
+            }
         }
     }

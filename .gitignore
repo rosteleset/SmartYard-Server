@@ -28,7 +28,7 @@ __pycache__
 /server/config/config.json
 /server/vendor
 /server/backends/tt/mongo/customWorkflows/
-/server/backends/tt/mongo/customFilters/
+/server/backends/tt/mongo/filters/
 /api/
 /doc/
 /.stylelintrc.json
