@@ -65,7 +65,7 @@
             $e = $households->getEntrance($entrance['entranceId']);
             $door = [];
             $door['domophoneId'] = strval($entrance['domophoneId']);
-            $door['doorId'] = intval($entrance['entranceId']);
+            $door['doorId'] = intval($e['domophoneOutput']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
             
