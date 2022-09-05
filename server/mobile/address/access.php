@@ -63,26 +63,31 @@
         //удаление
 
         if ($guest_phone == $subscriber['mobile']) {
-            response(422, false, false, 'Владельцу квартиры нельзя самоудалиться');
+            response(422, false, false, 'Из квартиры нельзя самоудалиться');
         }
 
-        //выпиливаем подселенца
         $guest = $households->getSubscribers('mobile', $guest_phone)[0];
-
-        response(200, $guest);
-
         if (!$guest) {
             response();
         }
 
-        $households->deleteSubscriber($guest['subscriberId']);
+        //выпиливаем подселенца: из его спика идентификаторов квартир убираем $flat_id
+        $f_list = [];
+        foreach ($guest['flats'] as $item) {
+            $f_id = (int)$item['flatId'];
+            $owner = (int)$item['role'] == 0;
+            if ($f_id > 0 && $f_id != $flat_id) {
+                $f_list[$f_id] = $owner;
+            }
+        }
+        $households->setSubscriberFlats((int)$guest['subscriberId'], $f_list);
     } else {
         //добавление
 
         if ($households->addSubscriber($guest_phone, "", "", $flat_id)) {
             response();
         } else {
-            response(422);
+            response(422, false, false, "Операция не выполнена. Телефон уже есть в списке?");
         }
     }
 
