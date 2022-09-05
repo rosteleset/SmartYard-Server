@@ -1597,7 +1597,7 @@
     renderWorkflow: function (workflow) {
         loadingStart();
         GET("tt", "customWorkflow", workflow, true).
-        done(workflow => {
+        done(w => {
             // TODO f..ck!
             let top = 75;
             let height = $(window).height() - top;
@@ -1605,14 +1605,22 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.worflowSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.worflowSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
             editor.session.setMode("ace/mode/php");
-            editor.setValue(workflow.body, -1);
+            editor.setValue(w.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
+            $("#workflowSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "customWorkflow", workflow, { "body": $.trim(editor.getValue()) }).
+                fail(FAIL).
+                always(() => {
+                    loadingDone();
+                });
+            });
         }).
         fail(FAIL).
         always(() => {
@@ -1621,7 +1629,40 @@
     },
 
     deleteWorkflow: function (workflow) {
-        console.log(workflow);
+        mConfirm(i18n("tt.confirmWorkflowDelete", workflow), i18n("confirm"), i18n("delete"), () => {
+            loadingStart();
+            DELETE("tt", "customWorkflow", workflow, false).
+            fail(err => {
+                FAIL(err);
+                loadingDone();
+            }).
+            done(() => {
+                modules.tt.settings.renderWorkflows();
+            });
+        });
+    },
+
+    addWorkflow: function () {
+        cardForm({
+            title: i18n("tt.addWorkflow"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "file",
+                    type: "text",
+                    title: i18n("tt.workflow"),
+                    placeholder: i18n("tt.workflow"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: f => {
+                modules.tt.settings.renderWorkflow(f.file);
+            },
+        }).show();
     },
 
     renderWorkflows: function () {
@@ -1633,6 +1674,10 @@
                 target: "#mainForm",
                 title: {
                     caption: i18n("tt.workflows"),
+                    button: {
+                        caption: i18n("tt.addWorkflow"),
+                        click: modules.tt.settings.addWorkflow,
+                    },
                     filter: true,
                 },
                 columns: [

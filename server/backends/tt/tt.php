@@ -121,7 +121,7 @@
 
             /**
              * @param $workflow
-             * @return string|false
+             * @return string
              */
 
             public function getWorkflow($workflow) {
@@ -149,7 +149,7 @@
                 if (file_exists($file)) {
                     return file_get_contents($file);
                 } else {
-                    return false;
+                    return "<?php\n\n";
                 }
             }
 

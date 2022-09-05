@@ -94,5 +94,6 @@
     "customFieldWasChanged": "Поле изменено",
     "editWorkflow": "Редактировать рабочий процесс",
     "deleteWorkflow": "Удалить рабочий процесс",
-    "worflowSave": "Сохранить"
+    "worflowSave": "Сохранить",
+    "confirmWorkflowDelete": "Удалить рабочий процесс \"%s\"?"
 }

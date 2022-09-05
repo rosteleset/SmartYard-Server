@@ -17,7 +17,7 @@
             public static function GET($params) {
                 $workflow = loadBackend("tt")->getWorkflow($params["_id"]);
 
-                if ($workflow) {
+                if ($workflow !== false) {
                     return api::ANSWER($workflow, "body");
                 } else {
                     return api::ERROR("inaccessible");
