@@ -39,23 +39,28 @@
                 $w = [];
                 foreach ($dir as $f) {
                     if ($f != "." && $f != ".." && file_exists($base . $f)) {
-                        $w[$f] = 1;
+                        $f = pathinfo($f);
+                        $w[$f['filename']] = 'builtIn';
                     }
                 }
 
                 $base = dirname(__FILE__) . "/" . $class . "/customWorkflows/";
-                $dir = scandir($base);
 
-                foreach ($dir as $f) {
-                    if ($f != "." && $f != ".." && file_exists($base . $f)) {
-                        $w[$f] = 1;
+                if (file_exists($base)) {
+                    $dir = scandir($base);
+
+                    foreach ($dir as $f) {
+                        if ($f != "." && $f != ".." && file_exists($base . $f)) {
+                            $f = pathinfo($f);
+                            $w[$f['filename']] = 'custom';
+                        }
                     }
                 }
 
                 $wx = [];
 
-                foreach ($w as $workflow => $one) {
-                    $wx[] = $workflow;
+                foreach ($w as $workflow => $type) {
+                    $wx[] = [ "file" => $workflow, "type" => $type ];
                 }
 
                 return $wx;
@@ -99,9 +104,10 @@
                 }
 
                 $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . ".php";
-                $fileCustom = dirname(__FILE__) . "/" . $class . "/customWorkflows/" . $workflow . ".php";
+                $customDir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $fileCustom = $customDir . "/" . $workflow . ".php";
 
-                if (file_exists($fileCustom)) {
+                if (file_exists($customDir) && file_exists($fileCustom)) {
                     require_once $fileCustom;
                     return workflow($this, $this->config, $this->db, $this->redis, $workflow);
                 } else
@@ -109,6 +115,112 @@
                     require_once $file;
                     return workflow($this, $this->config, $this->db, $this->redis, $workflow);
                 } else {
+                    return false;
+                }
+            }
+
+            /**
+             * @param $workflow
+             * @return string
+             */
+
+            public function getWorkflow($workflow) {
+
+                $workflow = trim($workflow);
+
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                    return false;
+                }
+
+                $class = get_class($this);
+                $ns = __NAMESPACE__;
+
+                if (strpos($class, $ns) === 0) {
+                    $class = substr($class, strlen($ns) + 1);
+                }
+
+                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . ".php";
+                $customDir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $fileCustom = $customDir . "/" . $workflow . ".php";
+
+                if (file_exists($customDir) && file_exists($fileCustom)) {
+                    return file_get_contents($fileCustom);
+                } else
+                if (file_exists($file)) {
+                    return file_get_contents($file);
+                } else {
+                    return "<?php\n\n";
+                }
+            }
+
+            /**
+             * @param $workflow
+             * @param $body
+             * @return boolean
+             */
+
+            public function putWorkflow($workflow, $body) {
+
+                $workflow = trim($workflow);
+
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                    return false;
+                }
+
+                $class = get_class($this);
+                $ns = __NAMESPACE__;
+
+                if (strpos($class, $ns) === 0) {
+                    $class = substr($class, strlen($ns) + 1);
+                }
+
+                $dir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $fileCustom = $dir . "/" . $workflow . ".php";
+
+                try {
+                    if (!file_exists($dir)) {
+                        mkdir($dir);
+                    }
+
+                    file_put_contents($fileCustom, $body);
+
+                    return true;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * @param $workflow
+             * @return boolean
+             */
+
+            public function deleteWorkflow($workflow) {
+                $workflow = trim($workflow);
+
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                    return false;
+                }
+
+                $class = get_class($this);
+                $ns = __NAMESPACE__;
+
+                if (strpos($class, $ns) === 0) {
+                    $class = substr($class, strlen($ns) + 1);
+                }
+
+                $dir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $fileCustom = $dir . "/" . $workflow . ".php";
+
+                try {
+                    if (file_exists($fileCustom)) {
+                        unlink($fileCustom);
+
+                        return true;
+                    }
+
+                    return false;
+                } catch (\Exception $e) {
                     return false;
                 }
             }

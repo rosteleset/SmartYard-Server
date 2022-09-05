@@ -91,5 +91,9 @@
     "customFieldWasAdded": "Настраиваемое поле добавлено",
     "customFieldDelete": "Удалить поле",
     "customFieldWasDeleted": "Поле удалено",
-    "customFieldWasChanged": "Поле изменено"
+    "customFieldWasChanged": "Поле изменено",
+    "editWorkflow": "Редактировать рабочий процесс",
+    "deleteWorkflow": "Удалить рабочий процесс",
+    "worflowSave": "Сохранить",
+    "confirmWorkflowDelete": "Удалить рабочий процесс \"%s\"?"
 }

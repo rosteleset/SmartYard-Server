@@ -1594,6 +1594,77 @@
         always(loadingDone);
     },
 
+    renderWorkflow: function (workflow) {
+        loadingStart();
+        GET("tt", "customWorkflow", workflow, true).
+        done(w => {
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.worflowSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("workflowEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/php");
+            editor.setValue(w.body, -1);
+            editor.clearSelection();
+            editor.setFontSize(14);
+            $("#workflowSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "customWorkflow", workflow, { "body": $.trim(editor.getValue()) }).
+                fail(FAIL).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
+    deleteWorkflow: function (workflow) {
+        mConfirm(i18n("tt.confirmWorkflowDelete", workflow), i18n("confirm"), i18n("delete"), () => {
+            loadingStart();
+            DELETE("tt", "customWorkflow", workflow, false).
+            fail(err => {
+                FAIL(err);
+                loadingDone();
+            }).
+            done(() => {
+                modules.tt.settings.renderWorkflows();
+            });
+        });
+    },
+
+    addWorkflow: function () {
+        cardForm({
+            title: i18n("tt.addWorkflow"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "file",
+                    type: "text",
+                    title: i18n("tt.workflow"),
+                    placeholder: i18n("tt.workflow"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: f => {
+                modules.tt.settings.renderWorkflow(f.file);
+            },
+        }).show();
+    },
+
     renderWorkflows: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -1603,6 +1674,10 @@
                 target: "#mainForm",
                 title: {
                     caption: i18n("tt.workflows"),
+                    button: {
+                        caption: i18n("tt.addWorkflow"),
+                        click: modules.tt.settings.addWorkflow,
+                    },
                     filter: true,
                 },
                 columns: [
@@ -1625,15 +1700,34 @@
 
                     for (let i = 0; i < modules.tt.meta.workflows.length; i++) {
                         rows.push({
-                            uid: modules.tt.meta.workflows[i],
+                            uid: modules.tt.meta.workflows[i].file,
                             cols: [
                                 {
-                                    data: modules.tt.meta.workflows[i],
+                                    data: modules.tt.meta.workflows[i].file,
                                 },
                                 {
-                                    data: w[modules.tt.meta.workflows[i]]?w[modules.tt.meta.workflows[i]]:modules.tt.meta.workflows[i],
+                                    data: w[modules.tt.meta.workflows[i].file]?w[modules.tt.meta.workflows[i].file]:modules.tt.meta.workflows[i].file,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "far fa-file-code",
+                                        title: i18n("tt.editWorkflow"),
+                                        click: workflow => {
+                                            location.href = "#tt.settings&section=workflow&workflow=" + modules.tt.meta.workflows[i].file;
+                                        },
+                                    },
+                                    {
+                                        icon: "far fa-trash-alt",
+                                        title: i18n("tt.deleteWorkflow"),
+                                        click: workflow => {
+                                            modules.tt.settings.deleteWorkflow(modules.tt.meta.workflows[i].file);
+                                        },
+                                        disabled: modules.tt.meta.workflows[i].type === "builtIn",
+                                    },
+                                ],
+                            },
                         });
                     }
 
@@ -1892,7 +1986,7 @@
             "customFields"
         ];
 
-        let section = (params["section"] && sections.indexOf(params["section"]) >= 0)?params["section"]:"projects";
+        let section = params["section"]?params["section"]:"projects";
 
         let top = '';
 
@@ -1909,12 +2003,12 @@
         $("#leftTopDynamic").html(top);
 
         switch (section) {
-            case "projects":
-                modules.tt.settings.renderProjects();
-                break;
-
             case "workflows":
                 modules.tt.settings.renderWorkflows();
+                break;
+
+            case "workflow":
+                modules.tt.settings.renderWorkflow(params["workflow"]);
                 break;
 
             case "statuses":
@@ -1931,6 +2025,10 @@
 
             case "customFields":
                 modules.tt.settings.renderCustomFields();
+                break;
+
+            default:
+                modules.tt.settings.renderProjects();
                 break;
         }
     },

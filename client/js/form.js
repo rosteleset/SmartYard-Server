@@ -215,7 +215,7 @@ function cardForm(params) {
             case "code":
                 let height = params.fields[i].height?params.fields[i].height:400;
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
-                h += `<pre class="ace-editor" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
+                h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}" rows="5" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
                 h += `</pre>`;
                 h += `</div>`;
                 break;
