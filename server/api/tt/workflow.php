@@ -9,7 +9,7 @@
         use api\api;
 
         /**
-         * project method
+         * workflow method
          */
 
         class workflow extends api {

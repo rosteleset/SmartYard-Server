@@ -114,6 +114,93 @@
             }
 
             /**
+             * @param $workflow
+             * @return string|false
+             */
+
+            public function getWorkflow($workflow) {
+
+                $workflow = trim($workflow);
+
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                    return false;
+                }
+
+                $class = get_class($this);
+                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . ".php";
+                $fileCustom = dirname(__FILE__) . "/" . $class . "/customWorkflows/" . $workflow . ".php";
+
+                if (file_exists($fileCustom)) {
+                    return file_get_contents($fileCustom);
+                } else
+                    if (file_exists($file)) {
+                        return file_get_contents($file);
+                    } else {
+                        return false;
+                    }
+            }
+
+            /**
+             * @param $workflow
+             * @param $body
+             * @return boolean
+             */
+
+            public function putWorkflow($workflow, $body) {
+
+                $workflow = trim($workflow);
+
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                    return false;
+                }
+
+                $class = get_class($this);
+                $dir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $fileCustom = $dir . "/" . $workflow . ".php";
+
+                try {
+                    if (!file_exists($dir)) {
+                        mkdir($dir);
+                    }
+
+                    file_put_contents($fileCustom, $body);
+
+                    return true;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * @param $workflow
+             * @return boolean
+             */
+
+            public function deleteWorkflow($workflow) {
+                $workflow = trim($workflow);
+
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                    return false;
+                }
+
+                $class = get_class($this);
+                $dir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $fileCustom = $dir . "/" . $workflow . ".php";
+
+                try {
+                    if (file_exists($fileCustom)) {
+                        unlink($fileCustom);
+
+                        return true;
+                    }
+
+                    return false;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
              * get projects
              *
              * @return false|array[]
