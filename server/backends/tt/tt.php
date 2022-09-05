@@ -482,7 +482,7 @@
             /**
              * @param $filter
              * @param $body
-             * @return false|string
+             * @return boolean
              */
             public function putFilter($filter, $body) {
 
@@ -517,7 +517,7 @@
 
             /**
              * @param $filter
-             * @return false|string
+             * @return boolean
              */
             public function deleteFilter($filter) {
                 $filter = trim($filter);
