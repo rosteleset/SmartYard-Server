@@ -1660,7 +1660,7 @@
                 },
             ],
             callback: f => {
-                modules.tt.settings.renderWorkflow(f.file);
+                location.href = "#tt.settings&section=workflow&workflow=" + f.file;
             },
         }).show();
     },
@@ -1715,14 +1715,14 @@
                                         icon: "far fa-file-code",
                                         title: i18n("tt.editWorkflow"),
                                         click: workflow => {
-                                            location.href = "#tt.settings&section=workflow&workflow=" + modules.tt.meta.workflows[i].file;
+                                            location.href = "#tt.settings&section=workflow&workflow=" + workflow;
                                         },
                                     },
                                     {
                                         icon: "far fa-trash-alt",
                                         title: i18n("tt.deleteWorkflow"),
                                         click: workflow => {
-                                            modules.tt.settings.deleteWorkflow(modules.tt.meta.workflows[i].file);
+                                            modules.tt.settings.deleteWorkflow(workflow);
                                         },
                                         disabled: modules.tt.meta.workflows[i].type === "builtIn",
                                     },
