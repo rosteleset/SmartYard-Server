@@ -285,6 +285,10 @@
                         return false;
                     }
 
+                    if (@$params["code"] == "!") {
+                        $params["code"] = md5(GUIDv4());
+                    }
+
                     if (array_key_exists("autoOpen", $params)) {
                         $params["autoOpen"] = date('Y-m-d H:i:s', strtotime($params["autoOpen"]));
                     }
