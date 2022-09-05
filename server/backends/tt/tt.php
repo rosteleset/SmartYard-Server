@@ -500,7 +500,7 @@
                 }
 
                 $dir = dirname(__FILE__) . "/" . $class . "/filters";
-                $file = $dir . "/" . $filter . ".php";
+                $file = $dir . "/" . $filter . ".json";
 
                 try {
                     if (!file_exists($dir)) {
@@ -534,7 +534,7 @@
                 }
 
                 $dir = dirname(__FILE__) . "/" . $class . "/filters";
-                $fileCustom = $dir . "/" . $filter . ".php";
+                $fileCustom = $dir . "/" . $filter . ".json";
 
                 try {
                     if (file_exists($fileCustom)) {
