@@ -1980,10 +1980,11 @@
         let sections = [
             "projects",
             "workflows",
+            "filters",
             "statuses",
             "resolutions",
             "roles",
-            "customFields"
+            "customFields",
         ];
 
         let section = params["section"]?params["section"]:"projects";
@@ -2009,6 +2010,10 @@
 
             case "workflow":
                 modules.tt.settings.renderWorkflow(params["workflow"]);
+                break;
+
+            case "filters":
+                modules.tt.settings.renderFilters();
                 break;
 
             case "statuses":
