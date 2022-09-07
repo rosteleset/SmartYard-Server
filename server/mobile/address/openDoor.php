@@ -24,6 +24,7 @@
 
     $domophone_id = (int)@$postdata['domophoneId'];
     $door_id = (int)@$postdata['doorId'];
+    $households = loadBackend("households");
     
     // проверка на блокировку домофона
     $blocked = true;
