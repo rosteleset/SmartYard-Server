@@ -1124,6 +1124,7 @@
              */
             function getFlats($by, $params)
             {
+                $flatId = false;
                 switch ($by) {
                     case "domophoneAndNumber":
                         $flatId = $this->db->get("
@@ -1144,11 +1145,26 @@
                             "prefix" => $params["prefix"],
                             "apartment" => $params["flatNumber"],
                         ], false, [ "fieldlify" ]);
-                        if ($flatId !== false) {
-                            return [ $this->getFlat($flatId) ];
-                        } else {
-                            return false;
-                        }
+                        break;
+
+                    case "code":
+                        $flatId = $this->db->get("
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                code = :code
+                        ", [
+                            "code" => $params["code"]
+                        ], false, ["fieldlify"]);
+                        break;
+                }
+
+                if ($flatId !== false) {
+                    return [ $this->getFlat($flatId) ];
+                } else {
+                    return false;
                 }
             }
 

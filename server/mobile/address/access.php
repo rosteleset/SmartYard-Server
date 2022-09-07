@@ -43,9 +43,7 @@
         response(404);
     }
 
-    if ((int)$flat['role'] != 0) {
-        response(404);
-    }
+    $is_owner = ((int)$flat['role'] == 0);
 
     $guest_phone = @$postdata['guestPhone'];
     $guest_phone[0] = '8';
@@ -62,8 +60,8 @@
     if ($expire < time()) {
         //удаление
 
-        if ($guest_phone == $subscriber['mobile']) {
-            response(422, false, false, 'Из квартиры нельзя самоудалиться');
+        if ($guest_phone != $subscriber['mobile'] && !$is_owner) {
+            response(200, 'Нет прав для удаления');
         }
 
         $guest = $households->getSubscribers('mobile', $guest_phone)[0];
