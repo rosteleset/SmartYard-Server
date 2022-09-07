@@ -59,7 +59,7 @@
             $model->open_door($door_id);
         }
         catch (\Exception $e) {
-            response(404, false, 'Ошибка', print_r($e, true));
+            response(404, false, 'Ошибка', 'Домофон недоступен');
         }
         response();
     } else {
