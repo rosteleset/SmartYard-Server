@@ -75,7 +75,7 @@
                 $door['blocked'] = "Услуга домофонии заблокирована";
             }
 
-            $house['doors'][$door['doorId']] = $door;
+            $house['doors'][$entrance['entranceId']] = $door;
             
         }
         

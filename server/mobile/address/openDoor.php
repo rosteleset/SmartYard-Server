@@ -36,7 +36,8 @@
 
         foreach ($flatDetail['entrances'] as $entrance) {
             $domophoneId = intval($entrance['domophoneId']);
-            $doorId = intval($entrance['entranceId']);
+            $e = $households->getEntrance($entrance['entranceId']);
+            $doorId = intval($e['domophoneOutput']);
             
             if($domophone_id == $domophoneId && $door_id == $doorId) {
                 $blocked = false;
