@@ -55,7 +55,12 @@
         $domophone = $households->getDomophone($domophone_id);
 
         $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
-        $model->open_door($door_id);
+        try {
+            $model->open_door($door_id);
+        }
+        catch (\Exception $e) {
+            response(404, false, 'Ошибка', print_r($e, true));
+        }
         response();
     } else {
         response(404, false, 'Не найдено', 'Услуга недоступна (договор заблокирован либо не оплачен)');
