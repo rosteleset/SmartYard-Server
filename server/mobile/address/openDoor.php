@@ -54,8 +54,8 @@
         $households = loadBackend("households");
         $domophone = $households->getDomophone($domophone_id);
 
-        $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
         try {
+            $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
             $model->open_door($door_id);
         }
         catch (\Exception $e) {
