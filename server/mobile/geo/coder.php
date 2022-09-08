@@ -38,6 +38,6 @@
             "lat" => "0.0",
             "lon" => "0.0",
             "address" => 'Адрес не найден ('.$postdata['address'].')',
-        ]
+        ];
     }
     response(200, $response);
