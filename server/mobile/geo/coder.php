@@ -21,7 +21,15 @@
     if (!@$postdata['address']) {
         response(422, false, 'Отсутствуют данные', 'Отсутствуют данные');
     }
+    $query = $postdata['address'];
 
+    $geocoder = loadBackend('geocoder');
+
+    $result = $geocoder->suggestions($query);
+
+    response(200, $result);
+    
+    /*
     try {
         $g1 = file_get_contents("http://geocode-maps.yandex.ru/1.x/?geocode=".urlencode($postdata['address'])."&apikey=ba41cd9b-72f2-470e-8a2e-de75956bbd67");
         $g2 = simplexml_load_string($g1);
@@ -56,3 +64,4 @@
     } catch (Exception $ex) {
         response(400, false, $ex->getCode(), $ex->getMessage());
     }
+    */
