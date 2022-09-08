@@ -77,5 +77,15 @@
             public function usage($object, $id) {
                 return false;
             }
+
+
+            /**
+             * @param $part = [ 'minutely', 'hourly', 'daily' ]
+             * @return false
+             */
+
+            public function cron($part) {
+                return false;
+            }
         }
     }
