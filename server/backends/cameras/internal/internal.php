@@ -24,6 +24,8 @@ namespace backends\cameras
                 "url" => "url",
                 "stream" => "stream",
                 "credentials" => "credentials",
+                "publish" => "publish",
+                "flussonic" => "flussonic",
                 "comment" => "comment"
             ]);
         }
@@ -31,7 +33,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function addCamera($enabled, $model, $url,  $stream, $credentials, $comment)
+        public function addCamera($enabled, $model, $url,  $stream, $credentials, $publish, $flussonic, $comment)
         {
             if (!$model) {
                 return false;
@@ -47,12 +49,14 @@ namespace backends\cameras
                 return false;
             }
 
-            return $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, comment) values (:enabled, :model, :url, :stream, :credentials, :comment)", [
+            return $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, publish, flussonic, comment) values (:enabled, :model, :url, :stream, :credentials, :publish, :flussonic, :comment)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
                 "stream" => $stream,
                 "credentials" => $credentials,
+                "publish" => $publish,
+                "flussonic" => $flussonic,
                 "comment" => $comment,
             ]);
         }
@@ -60,7 +64,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $comment)
+        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $publish, $flussonic, $comment)
         {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
@@ -83,12 +87,14 @@ namespace backends\cameras
                 return false;
             }
 
-            return $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, comment = :comment where camera_id = $cameraId", [
+            return $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, publish = :publish, flussonic = :flussonic, comment = :comment where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
                 "stream" => $stream,
                 "credentials" => $credentials,
+                "publish" => $publish,
+                "flussonic" => $flussonic,
                 "comment" => $comment,
             ]);
         }
@@ -140,6 +146,8 @@ namespace backends\cameras
                 "url" => "url",
                 "stream" => "stream",
                 "credentials" => "credentials",
+                "publish" => "publish",
+                "flussonic" => "flussonic",
                 "comment" => "comment"
             ]);
         }

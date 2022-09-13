@@ -36,10 +36,12 @@ namespace backends\cameras
          * @param $url
          * @param $stream
          * @param $credentials
+         * @param $publish
+         * @param $flussonic
          * @param $comment
          * @return false|integer
          */
-        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $comment);
+        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $publish, $flussonic, $comment);
 
         /**
          * @param $cameraId
@@ -48,10 +50,12 @@ namespace backends\cameras
          * @param $url
          * @param $stream
          * @param $credentials
+         * @param $publish
+         * @param $flussonic
          * @param $comment
          * @return boolean
          */
-        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $comment);
+        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $publish, $flussonic, $comment);
 
         /**
          * @param $cameraId
