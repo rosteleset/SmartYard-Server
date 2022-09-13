@@ -24,7 +24,7 @@
  */
 
 auth();
-response();
+response(404, false, 'Не найден', "Не найден договор с указанными логином и паролем");
 
 /*
 $password = pg_escape_string(trim(@$postdata['password']));
