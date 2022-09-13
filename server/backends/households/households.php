@@ -179,6 +179,21 @@
             /**
              * @return false|array
              */
+            public function getAsteriskServer($domophoneId) {
+                $server_ip = $this->getDomophone($domophoneId)['server'];
+
+                foreach ($this->config["asterisk_servers"] as $server) {
+                    if (in_array($server_ip, $server)) {
+                        return $server;
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @return false|array
+             */
             abstract public function getModels();
 
             /**
