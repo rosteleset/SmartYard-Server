@@ -154,6 +154,7 @@
     "domophoneOutputSecondary":  "Дополнительный #%s",
     "locksDisabled": "Замки открыты",
     "cmsLevels": "Уровни",
+    "cmsLevelsOrder": "Снятия трубки, открытия двери",
     "cms": "КМС",
     "cmsD": "Д",
     "cmsU": "Е",
