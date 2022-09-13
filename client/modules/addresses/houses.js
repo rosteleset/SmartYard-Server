@@ -453,6 +453,7 @@
                                 id: "cmsLevels",
                                 type: "text",
                                 title: i18n("addresses.cmsLevels"),
+                                placeholder: i18n("addresses.cmsLevelsOrder"),
                                 hidden: true,
                             },
                             {
@@ -964,6 +965,7 @@
                                 id: "cmsLevels",
                                 type: "text",
                                 title: i18n("addresses.cmsLevels"),
+                                placeholder: i18n("addresses.cmsLevelsOrder"),
                                 value: entrance.cmsLevels,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                             },

@@ -7,10 +7,14 @@
         $domophone = $households->getDomophone($domophoneId);
         $entrance = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ])[0];
         $asterisk_server = $households->getAsteriskServer($domophoneId);
+        $cms_allocation = $households->getCms($entrance['entranceId']);
+        $cmses = $households->getCmses();
 
         print_r($entrance);
         print_r($asterisk_server);
         print_r($domophone);
+//        print_r($cms_allocation);
+//        print_r($cmses);
 
         try {
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $firstTime);
@@ -34,8 +38,8 @@
         [, $stun_server, $stun_port ] = explode(':', $asterisk_server['stun_server']);
 
         $audio_levels = [];
-        $cms_levels = [];
-        $cms_model = '';
+        $cms_levels = explode(',', $entrance['cmsLevels']);
+        $cms_model = $cmses[$entrance['cms']]['model'];
 
         $panel->clean(
             $sip_server,
@@ -53,5 +57,10 @@
             $stun_port
         );
 
+        foreach ($cms_allocation as $item) {
+            $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment']);
+        }
+
+        $panel->set_display_text($domophone['callerId']);
         $panel->keep_doors_unlocked($entrance['locksDisabled']);
     }

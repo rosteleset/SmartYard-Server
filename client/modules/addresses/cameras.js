@@ -55,6 +55,7 @@
             footer: true,
             borderless: true,
             topApply: true,
+            size: "lg",
             apply: i18n("add"),
             fields: [
                 {
@@ -108,6 +109,34 @@
                     }
                 },
                 {
+                    id: "publish",
+                    type: "text",
+                    title: i18n("addresses.publish"),
+                    placeholder: "rtmp://",
+                    validate: v => {
+                        try {
+                            new URL(v);
+                            return true;
+                        } catch (_) {
+                            return false;
+                        }
+                    },
+                },
+                {
+                    id: "flussonic",
+                    type: "text",
+                    title: i18n("addresses.flussonic"),
+                    placeholder: "https://",
+                    validate: v => {
+                        try {
+                            new URL(v);
+                            return true;
+                        } catch (_) {
+                            return false;
+                        }
+                    },
+                },
+                {
                     id: "comment",
                     type: "text",
                     title: i18n("addresses.comment"),
@@ -150,6 +179,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                size: "lg",
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteCamera"),
                 fields: [
@@ -215,6 +245,36 @@
                         }
                     },
                     {
+                        id: "publish",
+                        type: "text",
+                        title: i18n("addresses.publish"),
+                        placeholder: "rtmp://",
+                        value: camera.publish,
+                        validate: v => {
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
+                        },
+                    },
+                    {
+                        id: "flussonic",
+                        type: "text",
+                        title: i18n("addresses.flussonic"),
+                        placeholder: "https://",
+                        value: camera.flussonic,
+                        validate: v => {
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
+                        },
+                    },
+                    {
                         id: "comment",
                         type: "text",
                         title: i18n("addresses.comment"),
@@ -244,7 +304,7 @@
         });
     },
 
-    route: function (params) {
+    route: function () {
         $("#subTop").html("");
         $("#altForm").hide();
 
