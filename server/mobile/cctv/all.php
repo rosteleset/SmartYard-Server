@@ -28,7 +28,7 @@ $ret = [
         "id" => 1,
         "name" => "Тестовая камера",
         "lat" => "52.703267836456",
-        "url" => "https:\/\/s5n3g69sluzg1.play-flussonic.cloud\/2rfXfXQphj8-qLlkZWluhj8",
+        "url" => "https://s5n3g69sluzg1.play-flussonic.cloud/2rfXfXQphj8-qLlkZWluhj8",
         "token" => "empty",
         "lon" => "41.4726675977"
     ]
