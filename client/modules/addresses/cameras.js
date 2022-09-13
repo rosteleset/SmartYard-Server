@@ -55,6 +55,7 @@
             footer: true,
             borderless: true,
             topApply: true,
+            size: "lg",
             apply: i18n("add"),
             fields: [
                 {
@@ -178,6 +179,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                size: "lg",
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteCamera"),
                 fields: [
