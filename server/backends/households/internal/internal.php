@@ -15,30 +15,41 @@
             /**
              * @inheritDoc
              */
-            function getHouseFlats($houseId)
-            {
-                if (!checkInt($houseId)) {
-                    return false;
+            function getAllFlats($by, $query) {
+                $q = "";
+                $p = [];
+
+                switch ($by) {
+                    case "house":
+                        $q = "select house_flat_id, floor, flat, code, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, last_opened, cms_enabled from houses_flats where address_house_id = :houseId order by flat";
+                        $p = [
+                            "houseId" => $query,
+                        ];
+                        break;
+
+                    case "domophone":
+                        $q = "select distinct house_flat_id, floor, flat, code, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, last_opened, cms_enabled from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :domophoneId order by flat";
+                        $p = [
+                            "domophoneId" => $query,
+                        ];
+                        break;
                 }
 
-                $flats = $this->db->get("select house_flat_id, floor, flat, code, auto_block, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, last_opened, cms_enabled from houses_flats where address_house_id = $houseId order by flat",
-                    false,
-                    [
-                        "house_flat_id" => "flatId",
-                        "floor" => "floor",
-                        "flat" => "flat",
-                        "code" => "code",
-                        "auto_block" => "autoBlock",
-                        "manual_block" => "manualBlock",
-                        "open_code" => "openCode",
-                        "auto_open" => "autoOpen",
-                        "white_rabbit" => "whiteRabbit",
-                        "sip_enabled" => "sipEnabled",
-                        "sip_password" => "sipPassword",
-                        "last_opened" => "lastOpened",
-                        "cms_enabled" => "cmsEnabled",
-                    ]
-                );
+                $flats = $this->db->get($q, $p, [
+                    "house_flat_id" => "flatId",
+                    "floor" => "floor",
+                    "flat" => "flat",
+                    "code" => "code",
+                    "auto_block" => "autoBlock",
+                    "manual_block" => "manualBlock",
+                    "open_code" => "openCode",
+                    "auto_open" => "autoOpen",
+                    "white_rabbit" => "whiteRabbit",
+                    "sip_enabled" => "sipEnabled",
+                    "sip_password" => "sipPassword",
+                    "last_opened" => "lastOpened",
+                    "cms_enabled" => "cmsEnabled",
+                ]);
 
                 if ($flats) {
                     foreach ($flats as &$flat) {

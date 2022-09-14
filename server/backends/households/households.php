@@ -16,10 +16,11 @@
         {
 
             /**
-             * @param $houseId
+             * @param $by
+             * @param $query
              * @return false|array
              */
-            abstract function getHouseFlats($houseId);
+            abstract function getAllFlats($by, $query);
 
             /**
              * @param $houseId
