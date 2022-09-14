@@ -9,10 +9,12 @@
         $asterisk_server = $households->getAsteriskServer($domophoneId);
         $cms_allocation = $households->getCms($entrance['entranceId']);
         $cmses = $households->getCmses();
+        $flats = $households->getAllFlats('domophone', $domophoneId);
 
         print_r($entrance);
         print_r($asterisk_server);
         print_r($domophone);
+        print_r($flats);
 //        print_r($cms_allocation);
 //        print_r($cmses);
 
@@ -59,6 +61,15 @@
 
         foreach ($cms_allocation as $item) {
             $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment']);
+        }
+
+        foreach ($flats as $flat) {
+            $panel->configure_apartment(
+                $flat['flat'],
+                (bool) $flat['openCode'],
+                $flat['cmsEnabled'],
+                [ sprintf('1%09d', $flat['flatId']) ],
+                $flat['openCode'] ?: 0);
         }
 
         $panel->set_display_text($domophone['callerId']);
