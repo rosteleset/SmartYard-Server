@@ -52,7 +52,7 @@
             // TODO: добавить журнал событий.
             $house['hasPlog'] = 'f';
             // TODO: добавить камеры.
-            $house['cctv'] = 0;
+            $house['cctv'] = 1;
             $house['doors'] = [];
         }
         
