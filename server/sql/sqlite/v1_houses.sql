@@ -104,16 +104,20 @@ CREATE TABLE houses_cameras
     house_camera_id integer not null primary key autoincrement,
     lat real,
     lon real,
-    shared integer,
-    camera_id integer
+    direction real,
+    angle real,
+    distance real,
+    camera_id integer,
+    common integer
 );
 CREATE INDEX houses_cameras_multihouse on houses_cameras(shared);
 
 -- houses <-> cameras
 CREATE TABLE houses_houses_cameras
 (
-    address_house_id integer,
-    house_camera_id integer not null
+    address_house_id integer not null,
+    house_camera_id integer not null,
+    common integer
 );
 CREATE UNIQUE INDEX houses_houses_cameras_uniq on houses_houses_cameras(address_house_id, house_camera_id);
 CREATE INDEX houses_houses_cameras_house_id on houses_houses_cameras(address_house_id);
@@ -123,11 +127,12 @@ CREATE INDEX houses_houses_cameras_camera_id on houses_houses_cameras(house_came
 CREATE TABLE houses_cameras_flats
 (
     house_camera_id integer not null,
-    house_flat_id integer not null
+    house_flat_id integer not null,
+    common integer
 );
-CREATE UNIQUE INDEX houses_entrances_flats_uniq on houses_cameras_flats(house_camera_id, house_flat_id);
-CREATE INDEX houses_entrances_flats_camera_id on houses_cameras_flats(house_camera_id);
-CREATE INDEX houses_entrances_flats_flat_id on houses_cameras_flats(house_flat_id);
+CREATE UNIQUE INDEX houses_cameras_flats_uniq on houses_cameras_flats(house_camera_id, house_flat_id);
+CREATE INDEX houses_cameras_flats_camera_id on houses_cameras_flats(house_camera_id);
+CREATE INDEX houses_cameras_flats_flat_id on houses_cameras_flats(house_flat_id);
 
 -- rfid keys
 CREATE TABLE houses_rfids
@@ -167,3 +172,11 @@ CREATE TABLE houses_flats_subscribers
     role integer                                                                                                        -- ?
 );
 CREATE UNIQUE INDEX houses_flats_subscribers_uniq on houses_flats_subscribers(house_flat_id, house_subscriber_id);
+
+-- cameras <-> subscribers
+CREATE TABLE houses_cameras_subscribers
+(
+    house_camera_id integer not null,
+    house_subscriber_id integer not null
+);
+CREATE UNIQUE INDEX houses_cameras_subscribers_uniq on houses_cameras_subscribers(house_camera_id, house_subscriber_id);
