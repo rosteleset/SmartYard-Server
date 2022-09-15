@@ -70,6 +70,12 @@
                 $flat['cmsEnabled'],
                 [ sprintf('1%09d', $flat['flatId']) ],
                 $flat['openCode'] ?: 0);
+
+            $keys = $households->getKeys('flat', $flat['flatId']);
+
+            foreach ($keys as $key) {
+                $panel->add_rfid($key['rfId']);
+            }
         }
 
         $panel->set_display_text($domophone['callerId']);
