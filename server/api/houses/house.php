@@ -30,7 +30,9 @@
                         "cmses" => $households->getCMSes(),
                     ];
 
-                    return api::ANSWER($house, ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?"house":false);
+                    $house = $house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false;
+
+                    return api::ANSWER($house, "house");
                 }
             }
 

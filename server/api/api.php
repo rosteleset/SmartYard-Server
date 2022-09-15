@@ -85,13 +85,11 @@
              * @param mixed $data
              * @param integer $cache
              *
-             * @return array[]|false[]
+             * @return array[]
              */
 
             public static function SUCCESS($key, $data, $cache = -1) {
                 global $redis_cache_ttl;
-
-                $r = [];
 
                 if ($data !== false) {
                     $r = [

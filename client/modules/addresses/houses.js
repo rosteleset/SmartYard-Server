@@ -1358,6 +1358,7 @@
                     if (!modules.addresses.houses.meta) {
                         modules.addresses.houses.meta = {};
                     }
+
                     modules.addresses.houses.meta.entrances = response["house"].entrances;
                     modules.addresses.houses.meta.flats = response["house"].flats;
                     modules.addresses.houses.meta.domophoneModels = response["house"].domophoneModels;

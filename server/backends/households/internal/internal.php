@@ -157,7 +157,7 @@
                     }
                     return $_flats;
                 } else {
-                    return false;
+                    return [];
                 }
             }
 
