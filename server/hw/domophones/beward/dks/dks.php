@@ -154,7 +154,8 @@
                 bool $private_code_enabled,
                 bool $cms_handset_enabled,
                 array $sip_numbers = [],
-                int $private_code = 0
+                int $private_code = 0,
+                array $levels = []
             ) {
                 $params = [
                     'action' => 'set',
@@ -164,6 +165,11 @@
                     'BlockCMS' => $cms_handset_enabled ? 'off' : 'on',
                     'PhonesActive' => count($sip_numbers) ? 'on' : 'off',
                 ];
+
+                if (count($levels) == 2) {
+                    $params[] = [ 'HandsetUpLevel' => $levels[0] ];
+                    $params[] = [ 'DoorOpenLevel' => $levels[1] ];
+                }
 
                 for ($i = 1; $i <= count($sip_numbers); $i++) {
                     $params['Phone'.$i] = $sip_numbers[$i - 1];
@@ -555,24 +561,15 @@
                 $this->set_intercom('CallTimeout', $timeout);
             }
 
-            public function set_cms_levels(array $levels, int $apartment = -1) {
+            public function set_cms_levels(array $levels) {
                 if ($levels) {
-                    if ($apartment > 0) {
-                        $this->api_call('cgi-bin/apartment_cgi', [
-                            'action' => 'set',
-                            'Number' => $apartment,
-                            'HandsetUpLevel' => $levels[0],
-                            'DoorOpenLevel' => $levels[1],
-                        ]);
-                    } else {
-                        $this->set_intercom('HandsetUpLevel', $levels[0]);
-                        $this->set_intercom('DoorOpenLevel', $levels[1]);
-                        $this->api_call('cgi-bin/apartment_cgi', [
-                            'action' => 'levels',
-                            'HandsetUpLevel' => $levels[0],
-                            'DoorOpenLevel' => $levels[1],
-                        ]);
-                    }
+                    $this->set_intercom('HandsetUpLevel', $levels[0]);
+                    $this->set_intercom('DoorOpenLevel', $levels[1]);
+                    $this->api_call('cgi-bin/apartment_cgi', [
+                        'action' => 'levels',
+                        'HandsetUpLevel' => $levels[0],
+                        'DoorOpenLevel' => $levels[1],
+                    ]);
                 }
             }
 

@@ -69,7 +69,8 @@
                 (bool) $flat['openCode'],
                 $flat['cmsEnabled'],
                 [ sprintf('1%09d', $flat['flatId']) ],
-                $flat['openCode'] ?: 0);
+                $flat['openCode'] ?: 0
+            );
 
             $keys = $households->getKeys('flat', $flat['flatId']);
 

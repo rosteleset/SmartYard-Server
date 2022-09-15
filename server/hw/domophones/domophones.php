@@ -85,7 +85,8 @@
                 bool $private_code_enabled,
                 bool $cms_handset_enabled,
                 array $sip_numbers = [],
-                int $private_code = 0
+                int $private_code = 0,
+                array $levels = []
             );
 
             /** Настроить ККМ адресацию для квартиры ("нормальное" заполнение) */
@@ -172,7 +173,7 @@
             abstract public function set_call_timeout(int $timeout);
 
             /** Задать уровни ККМ */
-            abstract public function set_cms_levels(array $levels, int $apartment = -1);
+            abstract public function set_cms_levels(array $levels);
 
             /** Задать модель ККМ */
             abstract public function set_cms_model(string $model = '');

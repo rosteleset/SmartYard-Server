@@ -96,7 +96,8 @@
                 bool $private_code_enabled,
                 bool $cms_handset_enabled,
                 array $sip_numbers = [],
-                int $private_code = 0
+                int $private_code = 0,
+                array $levels = []
             ) {
                 $params = [ 'action' => 'set' ];
 
@@ -117,7 +118,7 @@
                 // не используется
             }
 
-            public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment) {
+            public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
                 // не используется
             }
 
@@ -346,7 +347,7 @@
                 // не используется
             }
 
-            public function set_cms_levels(array $levels, int $apartment = -1) {
+            public function set_cms_levels(array $levels) {
                 // не используется
             }
 
