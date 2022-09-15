@@ -15,6 +15,131 @@
             /**
              * @inheritDoc
              */
+            function getFlat($flatId)
+            {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                $flats = $this->db->get("
+                    select
+                        house_flat_id,
+                        floor, 
+                        flat,
+                        code,
+                        coalesce(auto_block, 0) auto_block, 
+                        manual_block, 
+                        open_code, 
+                        auto_open, 
+                        white_rabbit, 
+                        sip_enabled, 
+                        sip_password,
+                        last_opened,
+                        cms_enabled
+                    from
+                        houses_flats
+                    where
+                        house_flat_id = $flatId
+                ", false, [
+                    "house_flat_id" => "flatId",
+                    "floor" => "floor",
+                    "flat" => "flat",
+                    "code" => "code",
+                    "auto_block" => "autoBlock",
+                    "manual_block" => "manualBlock",
+                    "open_code" => "openCode",
+                    "auto_open" => "autoOpen",
+                    "white_rabbit" => "whiteRabbit",
+                    "sip_enabled" => "sipEnabled",
+                    "sip_password" => "sipPassword",
+                    "last_opened" => "lastOpened",
+                    "cms_enabled" => "cmsEnabled",
+                ]);
+
+                if ($flats) {
+                    foreach ($flats as &$flat) {
+                        $entrances = $this->db->get("
+                            select
+                                house_entrance_id,
+                                house_domophone_id, 
+                                apartment, 
+                                coalesce(houses_entrances_flats.cms_levels, houses_entrances.cms_levels, '') cms_levels,
+                                (select count(*) from houses_entrances_cmses where houses_entrances_cmses.house_entrance_id = houses_entrances_flats.house_entrance_id and houses_entrances_cmses.apartment = houses_entrances_flats.apartment) matrix
+                            from 
+                                houses_entrances_flats
+                                    left join houses_entrances using (house_entrance_id)
+                            where house_flat_id = {$flat["flatId"]}
+                        ", false, [
+                            "house_entrance_id" => "entranceId",
+                            "apartment" => "apartment",
+                            "cms_levels" => "apartmentLevels",
+                            "house_domophone_id" => "domophoneId",
+                            "matrix" => "matrix"
+                        ]);
+                        $flat["entrances"] = [];
+                        foreach ($entrances as $e) {
+                            $flat["entrances"][] = $e;
+                        }
+                    }
+
+                    return $flats[0];
+                }
+
+                return false;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getFlats($by, $params)
+            {
+                $flatId = false;
+                switch ($by) {
+                    case "domophoneAndNumber":
+                        $flatId = $this->db->get("
+                            select
+                                house_flat_id
+                            from
+                                houses_entrances_flats
+                                    left join houses_entrances using (house_entrance_id)
+                                    left join houses_houses_entrances using (house_entrance_id)
+                            where
+                                house_domophone_id = :house_domophone_id
+                              and 
+                                prefix = :prefix 
+                              and 
+                                apartment = :apartment
+                        ", [
+                            "house_domophone_id" => $params["domophoneId"],
+                            "prefix" => $params["prefix"],
+                            "apartment" => $params["flatNumber"],
+                        ], false, [ "fieldlify" ]);
+                        break;
+
+                    case "code":
+                        $flatId = $this->db->get("
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                code = :code
+                        ", [
+                            "code" => $params["code"]
+                        ], false, ["fieldlify"]);
+                        break;
+                }
+
+                if ($flatId !== false) {
+                    return [ $this->getFlat($flatId) ];
+                } else {
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             function getAllFlats($by, $query) {
                 $q = "";
                 $p = [];
@@ -462,81 +587,6 @@
                 }
 
                 return $result;
-            }
-
-            /**
-             * @inheritDoc
-             */
-            function getFlat($flatId)
-            {
-                if (!checkInt($flatId)) {
-                    return false;
-                }
-
-                $flats = $this->db->get("
-                    select
-                        house_flat_id,
-                        floor, 
-                        flat,
-                        code,
-                        coalesce(auto_block, 0) auto_block, 
-                        manual_block, 
-                        open_code, 
-                        auto_open, 
-                        white_rabbit, 
-                        sip_enabled, 
-                        sip_password,
-                        last_opened,
-                        cms_enabled
-                    from
-                        houses_flats
-                    where
-                        house_flat_id = $flatId
-                ", false, [
-                    "house_flat_id" => "flatId",
-                    "floor" => "floor",
-                    "flat" => "flat",
-                    "code" => "code",
-                    "auto_block" => "autoBlock",
-                    "manual_block" => "manualBlock",
-                    "open_code" => "openCode",
-                    "auto_open" => "autoOpen",
-                    "white_rabbit" => "whiteRabbit",
-                    "sip_enabled" => "sipEnabled",
-                    "sip_password" => "sipPassword",
-                    "last_opened" => "lastOpened",
-                    "cms_enabled" => "cmsEnabled",
-                ]);
-
-                if ($flats) {
-                    foreach ($flats as &$flat) {
-                        $entrances = $this->db->get("
-                            select
-                                house_entrance_id,
-                                house_domophone_id, 
-                                apartment, 
-                                coalesce(houses_entrances_flats.cms_levels, houses_entrances.cms_levels, '') cms_levels,
-                                (select count(*) from houses_entrances_cmses where houses_entrances_cmses.house_entrance_id = houses_entrances_flats.house_entrance_id and houses_entrances_cmses.apartment = houses_entrances_flats.apartment) matrix
-                            from 
-                                houses_entrances_flats
-                                    left join houses_entrances using (house_entrance_id)
-                            where house_flat_id = {$flat["flatId"]}
-                        ", false, [
-                            "house_entrance_id" => "entranceId",
-                            "apartment" => "apartment",
-                            "cms_levels" => "apartmentLevels",
-                            "house_domophone_id" => "domophoneId",
-                            "matrix" => "matrix"
-                        ]);
-                        $flat["entrances"] = [];
-                        foreach ($entrances as $e) {
-                            $flat["entrances"][] = $e;
-                        }
-                    }
-                    return $flats[0];
-                }
-
-                return false;
             }
 
             /**
@@ -1128,55 +1178,6 @@
                 return $this->db->modify("update houses_flats set last_opened = :now where house_flat_id = $flatId", [
                     "now" => $this->db->now(),
                 ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            function getFlats($by, $params)
-            {
-                $flatId = false;
-                switch ($by) {
-                    case "domophoneAndNumber":
-                        $flatId = $this->db->get("
-                            select
-                                house_flat_id
-                            from
-                                houses_entrances_flats
-                                    left join houses_entrances using (house_entrance_id)
-                                    left join houses_houses_entrances using (house_entrance_id)
-                            where
-                                house_domophone_id = :house_domophone_id
-                              and 
-                                prefix = :prefix 
-                              and 
-                                apartment = :apartment
-                        ", [
-                            "house_domophone_id" => $params["domophoneId"],
-                            "prefix" => $params["prefix"],
-                            "apartment" => $params["flatNumber"],
-                        ], false, [ "fieldlify" ]);
-                        break;
-
-                    case "code":
-                        $flatId = $this->db->get("
-                            select
-                                house_flat_id
-                            from
-                                houses_flats
-                            where
-                                code = :code
-                        ", [
-                            "code" => $params["code"]
-                        ], false, ["fieldlify"]);
-                        break;
-                }
-
-                if ($flatId !== false) {
-                    return [ $this->getFlat($flatId) ];
-                } else {
-                    return false;
-                }
             }
 
             /**
