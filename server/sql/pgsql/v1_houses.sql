@@ -110,7 +110,6 @@ CREATE TABLE houses_cameras
     camera_id integer,
     common integer
 );
-CREATE INDEX houses_cameras_multihouse on houses_cameras(shared);
 
 -- houses <-> cameras
 CREATE TABLE houses_houses_cameras
