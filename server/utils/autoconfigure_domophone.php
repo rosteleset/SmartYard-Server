@@ -9,7 +9,7 @@
         $asterisk_server = $households->getAsteriskServer($domophoneId);
         $cms_allocation = $households->getCms($entrance['entranceId']);
         $cmses = $households->getCmses();
-        $flats = $households->getAllFlats('domophone', $domophoneId);
+        $flats = $households->getFlats('domophone', $domophoneId);
 
         print_r($entrance);
         print_r($asterisk_server);

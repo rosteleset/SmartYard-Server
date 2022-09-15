@@ -16,13 +16,6 @@
         {
 
             /**
-             * @param $by
-             * @param $query
-             * @return false|array
-             */
-            abstract function getAllFlats($by, $query);
-
-            /**
              * @param $houseId
              * @param $entranceType
              * @param $entrance
