@@ -360,7 +360,7 @@
             }
 
             public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment) {
-                $analog_replace = (int) ($index . $dozens . $units);
+                $analog_replace = $index * 100 + $dozens * 10 + $units;
                 $this->configure_dialplan($apartment, $analog_replace);
             }
 
