@@ -92,7 +92,13 @@
             abstract public function configure_cms(int $apartment, int $offset);
 
             /** Настроить ККМ адресацию для квартиры ("перемапленное" заполнение) */
-            abstract public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment);
+            abstract public function configure_cms_raw(
+                int $index,
+                int $dozens,
+                int $units,
+                int $apartment,
+                string $cms_model
+            );
 
             /** Настроить режим калитки */
             abstract public function configure_gate(array $links);

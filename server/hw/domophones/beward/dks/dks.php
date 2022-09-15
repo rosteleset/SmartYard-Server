@@ -213,7 +213,15 @@
                 ]);
             }
 
-            public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment) {
+            public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
+                switch ($cms_model) {
+                    case 'COM-25U':
+                    case 'COM-220U':
+                    case 'KAD-2501':
+                        $units -= 1;
+                        break;
+                }
+
                 $this->api_call('cgi-bin/intercomdu_cgi', [
                     'action' => 'set',
                     'Index' => $index,

@@ -60,7 +60,7 @@
         );
 
         foreach ($cms_allocation as $item) {
-            $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment']);
+            $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment'], $cms_model);
         }
 
         foreach ($flats as $flat) {
