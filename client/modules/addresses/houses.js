@@ -1423,7 +1423,7 @@
                                 items: [
                                     {
                                         icon: "fas fa-house-user",
-                                        title: i18n("addresses.subscribers"),
+                                        title: i18n("addresses.subscribersAndKeys"),
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {
                                                 if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
@@ -1462,16 +1462,6 @@
                                             }
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
-                                    },
-                                    {
-                                        title: "-",
-                                    },
-                                    {
-                                        icon: "fas fa-key",
-                                        title: i18n("addresses.keys"),
-                                        click: flatId => {
-                                            // ?
-                                        },
                                     },
                                 ],
                             },
