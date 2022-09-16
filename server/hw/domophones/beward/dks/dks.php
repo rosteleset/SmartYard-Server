@@ -576,8 +576,9 @@
             public function set_cms_model(string $model = '') {
                 if (array_key_exists($model, $this->cms_models)) {
                     $this->api_call('webs/kmnDUCfgEx', [ 'kmntype' => $this->cms_models[$model] ]);
-                    $this->clear_cms();
                 }
+
+                $this->clear_cms();
             }
 
             public function set_concierge_number(int $number) {
