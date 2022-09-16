@@ -91,11 +91,15 @@
                     title: i18n("addresses.stream"),
                     placeholder: "rtsp://",
                     validate: v => {
-                        try {
-                            new URL(v);
+                        if (v) {
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
+                        } else {
                             return true;
-                        } catch (_) {
-                            return false;
                         }
                     },
                 },
@@ -114,11 +118,15 @@
                     title: i18n("addresses.publish"),
                     placeholder: "rtmp://",
                     validate: v => {
-                        try {
-                            new URL(v);
+                        if (v) {
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
+                        } else {
                             return true;
-                        } catch (_) {
-                            return false;
                         }
                     },
                 },
@@ -128,13 +136,53 @@
                     title: i18n("addresses.flussonic"),
                     placeholder: "https://",
                     validate: v => {
-                        try {
-                            new URL(v);
+                        if (v) {
+                            try {
+                                new URL(v);
+                                return true;
+                            } catch (_) {
+                                return false;
+                            }
+                        } else {
                             return true;
-                        } catch (_) {
-                            return false;
                         }
                     },
+                },
+                {
+                    id: "lat",
+                    type: "text",
+                    title: i18n("addresses.lat"),
+                    placeholder: i18n("addresses.lon"),
+                },
+                {
+                    id: "lon",
+                    type: "text",
+                    title: i18n("addresses.lon"),
+                    placeholder: i18n("addresses.lon"),
+                },
+                {
+                    id: "direction",
+                    type: "text",
+                    title: i18n("addresses.direction"),
+                    placeholder: i18n("addresses.direction"),
+                },
+                {
+                    id: "angle",
+                    type: "text",
+                    title: i18n("addresses.angle"),
+                    placeholder: i18n("addresses.angle"),
+                },
+                {
+                    id: "distance",
+                    type: "text",
+                    title: i18n("addresses.distance"),
+                    placeholder: i18n("addresses.distance"),
+                },
+                {
+                    id: "common",
+                    type: "yesno",
+                    title: i18n("addresses.common"),
+                    placeholder: i18n("addresses.common"),
                 },
                 {
                     id: "comment",
@@ -226,11 +274,15 @@
                         placeholder: "rtsp://",
                         value: camera.stream,
                         validate: v => {
-                            try {
-                                new URL(v);
+                            if (v) {
+                                try {
+                                    new URL(v);
+                                    return true;
+                                } catch (_) {
+                                    return false;
+                                }
+                            } else {
                                 return true;
-                            } catch (_) {
-                                return false;
                             }
                         },
                     },
@@ -251,11 +303,15 @@
                         placeholder: "rtmp://",
                         value: camera.publish,
                         validate: v => {
-                            try {
-                                new URL(v);
+                            if (v) {
+                                try {
+                                    new URL(v);
+                                    return true;
+                                } catch (_) {
+                                    return false;
+                                }
+                            } else {
                                 return true;
-                            } catch (_) {
-                                return false;
                             }
                         },
                     },
@@ -266,13 +322,59 @@
                         placeholder: "https://",
                         value: camera.flussonic,
                         validate: v => {
-                            try {
-                                new URL(v);
+                            if (v) {
+                                try {
+                                    new URL(v);
+                                    return true;
+                                } catch (_) {
+                                    return false;
+                                }
+                            } else {
                                 return true;
-                            } catch (_) {
-                                return false;
                             }
                         },
+                    },
+                    {
+                        id: "lat",
+                        type: "text",
+                        title: i18n("addresses.lat"),
+                        placeholder: i18n("addresses.lon"),
+                        value: camera.lat,
+                    },
+                    {
+                        id: "lon",
+                        type: "text",
+                        title: i18n("addresses.lon"),
+                        placeholder: i18n("addresses.lon"),
+                        value: camera.lon,
+                    },
+                    {
+                        id: "direction",
+                        type: "text",
+                        title: i18n("addresses.direction"),
+                        placeholder: i18n("addresses.direction"),
+                        value: camera.direction,
+                    },
+                    {
+                        id: "angle",
+                        type: "text",
+                        title: i18n("addresses.angle"),
+                        placeholder: i18n("addresses.angle"),
+                        value: camera.angle,
+                    },
+                    {
+                        id: "distance",
+                        type: "text",
+                        title: i18n("addresses.distance"),
+                        placeholder: i18n("addresses.distance"),
+                        value: camera.distance,
+                    },
+                    {
+                        id: "common",
+                        type: "yesno",
+                        title: i18n("addresses.common"),
+                        placeholder: i18n("addresses.common"),
+                        value: camera.common,
                     },
                     {
                         id: "comment",
