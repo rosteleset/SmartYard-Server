@@ -1261,5 +1261,37 @@
                     return false;
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getCameras($by, $params)
+            {
+                // TODO: Implement getCameras() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function setCameras($to, $list)
+            {
+                // TODO: Implement setCameras() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addCamera($to, $id)
+            {
+                // TODO: Implement addCamera() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function unlinkCamera($from, $id)
+            {
+                // TODO: Implement unlinkCamera() method.
+            }
         }
     }

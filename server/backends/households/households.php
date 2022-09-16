@@ -314,5 +314,33 @@
              * @return boolean
              */
             abstract public function dismissToken($token);
+
+            /**
+             * @param $by
+             * @param $params
+             * @return array|false
+             */
+            abstract public function getCameras($by, $params);
+
+            /**
+             * @param $to
+             * @param $list
+             * @return mixed
+             */
+            abstract public function setCameras($to, $list);
+
+            /**
+             * @param $to
+             * @param $id
+             * @return mixed
+             */
+            abstract public function addCamera($to, $id);
+
+            /**
+             * @param $from
+             * @param $id
+             * @return mixed
+             */
+            abstract public function unlinkCamera($from, $id);
         }
     }

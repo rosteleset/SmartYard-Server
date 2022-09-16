@@ -1463,6 +1463,16 @@
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
                                     },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-key",
+                                        title: i18n("addresses.keys"),
+                                        click: flatId => {
+                                            // ?
+                                        },
+                                    },
                                 ],
                             },
                         });
