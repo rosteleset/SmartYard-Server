@@ -1471,6 +1471,7 @@
                     return rows;
                 },
             }).show();
+
             cardTable({
                 target: "#altForm",
                 title: {
@@ -1575,13 +1576,43 @@
 
                     return rows;
                 },
+            });
+
+            cardTable({
+                target: "#altForm",
+                mode: "append",
+                title: {
+                    caption: i18n("addresses.cameras"),
+                    button: {
+                        caption: i18n("addresses.addCamera"),
+                        click: () => {
+                            modules.addresses.houses.addCamera(houseId);
+                        },
+                    },
+                },
+                columns: [
+                    {
+                        title: i18n("addresses.cameraId"),
+                    },
+                    {
+                        title: i18n("addresses.url"),
+                    },
+                    {
+                        title: i18n("addresses.comments"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+                    return rows;
+                },
             }).show();
 
             loadingDone();
         });
     },
 
-    renderEntrance: function (houseId, entranceId) {
+    renderEntranceCMS: function (houseId, entranceId) {
         GET("houses", "cms", entranceId, true).
         fail(FAIL).
         fail(() => {
@@ -1711,7 +1742,7 @@
             $("#altForm").hide();
             $("#subTop").html("");
 
-            modules.addresses.houses.renderEntrance(params.houseId, params.entranceId);
+            modules.addresses.houses.renderEntranceCMS(params.houseId, params.entranceId);
         } else {
             modules.addresses.houses.renderHouse(params.houseId);
         }

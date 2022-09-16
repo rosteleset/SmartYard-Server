@@ -351,7 +351,11 @@ function cardTable(params) {
     }
 
     if (params.target) {
-        $(params.target).html(h);
+        if (params.mode === "append") {
+            $(params.target).append(h);
+        } else {
+            $(params.target).html(h);
+        }
 
         if (Math.ceil(rows.length / pageLength) > 1) {
             $("#" + tfoot).show();
@@ -398,5 +402,7 @@ function cardTable(params) {
         $(`.${tableClass}-navButton`).off("click").on("click", doPager);
 
         return $(params.target);
+    } else {
+        return h;
     }
 }
