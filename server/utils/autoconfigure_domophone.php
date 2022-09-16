@@ -41,7 +41,7 @@
 
         $audio_levels = [];
         $cms_levels = explode(',', $entrance['cmsLevels']);
-        $cms_model = $cmses[$entrance['cms']]['model'];
+        $cms_model = (string) @$cmses[$entrance['cms']]['model'];
 
         $panel->clean(
             $sip_server,

@@ -562,7 +562,7 @@
             }
 
             public function set_cms_levels(array $levels) {
-                if ($levels) {
+                if (count($levels) == 2) {
                     $this->set_intercom('HandsetUpLevel', $levels[0]);
                     $this->set_intercom('DoorOpenLevel', $levels[1]);
                     $this->api_call('cgi-bin/apartment_cgi', [
