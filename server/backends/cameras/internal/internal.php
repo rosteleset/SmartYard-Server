@@ -15,9 +15,20 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function getCameras()
+        public function getCameras($by = false, $params = false)
         {
-            return $this->db->get("select * from cameras order by camera_id", false, [
+            $q = "select * from cameras order by camera_id";
+            $p = false;
+
+            switch ($by) {
+                case "id":
+                    $q = "select * from cameras where camera_id = :camera_id";
+                    $p = [
+                        "camera_id" => $params,
+                    ];
+            }
+
+            return $this->db->get($q, $p, [
                 "camera_id" => "cameraId",
                 "enabled" => "enabled",
                 "model" => "model",
@@ -34,6 +45,24 @@ namespace backends\cameras
                 "common" => "common",
                 "comment" => "comment"
             ]);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function getCamera($cameraId)
+        {
+            if (!checkInt($cameraId)) {
+                return false;
+            }
+
+            $cams = $this->getCameras("id", $cameraId);
+
+            if (count($cams) === 1) {
+                return $cams[0];
+            } else {
+                return false;
+            }
         }
 
         /**
@@ -146,28 +175,6 @@ namespace backends\cameras
             }
 
             return $models;
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function getCamera($cameraId)
-        {
-            if (!checkInt($cameraId)) {
-                return false;
-            }
-
-            return $this->db->get("select * from cameras where camera_id = $cameraId", false, [
-                "camera_id" => "cameraId",
-                "enabled" => "enabled",
-                "model" => "model",
-                "url" => "url",
-                "stream" => "stream",
-                "credentials" => "credentials",
-                "publish" => "publish",
-                "flussonic" => "flussonic",
-                "comment" => "comment"
-            ]);
         }
     }
 }

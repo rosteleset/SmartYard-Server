@@ -17,7 +17,7 @@ namespace backends\cameras
         /**
          * @return false|array
          */
-        abstract public function getCameras();
+        abstract public function getCameras($by = false, $params = false);
 
         /**
          * @param $cameraId
@@ -43,6 +43,7 @@ namespace backends\cameras
          * @param $direction
          * @param $angle
          * @param $distance
+         * @param $common
          * @param $comment
          * @return false|integer
          */
@@ -62,6 +63,7 @@ namespace backends\cameras
          * @param $direction
          * @param $angle
          * @param $distance
+         * @param $common
          * @param $comment
          * @return boolean
          */
