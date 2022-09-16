@@ -332,7 +332,8 @@
                 bool $private_code_enabled,
                 bool $cms_handset_enabled,
                 array $sip_numbers = [],
-                int $private_code = 0
+                int $private_code = 0,
+                array $levels = []
             ) {
                 $this->configure_dialplan($apartment, null, $sip_numbers, $cms_handset_enabled);
                 $this->configure_private_code($apartment, $private_code, $private_code_enabled);
@@ -359,7 +360,7 @@
                 $this->configure_dialplan($apartment, $analog_replace);
             }
 
-            public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment) {
+            public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
                 $analog_replace = $index * 100 + $dozens * 10 + $units;
                 $this->configure_dialplan($apartment, $analog_replace);
             }
@@ -648,7 +649,7 @@
                 $this->set_params($params);
             }
 
-            public function set_cms_levels(array $levels = [], int $apartment = -1) {
+            public function set_cms_levels(array $levels) {
                 // не используется
             }
 

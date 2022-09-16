@@ -60,7 +60,7 @@
         );
 
         foreach ($cms_allocation as $item) {
-            $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment']);
+            $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment'], $cms_model);
         }
 
         foreach ($flats as $flat) {
@@ -69,7 +69,14 @@
                 (bool) $flat['openCode'],
                 $flat['cmsEnabled'],
                 [ sprintf('1%09d', $flat['flatId']) ],
-                $flat['openCode'] ?: 0);
+                $flat['openCode'] ?: 0
+            );
+
+            $keys = $households->getKeys('flat', $flat['flatId']);
+
+            foreach ($keys as $key) {
+                $panel->add_rfid($key['rfId']);
+            }
         }
 
         $panel->set_display_text($domophone['callerId']);
