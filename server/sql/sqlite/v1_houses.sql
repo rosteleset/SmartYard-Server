@@ -117,7 +117,7 @@ CREATE TABLE houses_cameras_flats
     common integer
 );
 CREATE UNIQUE INDEX houses_cameras_flats_uniq on houses_cameras_flats(camera_id, house_flat_id);
-CREATE INDEX houses_cameras_flats_camera_id on houses_cameras_flats(house_camera_id);
+CREATE INDEX houses_cameras_flats_camera_id on houses_cameras_flats(camera_id);
 CREATE INDEX houses_cameras_flats_flat_id on houses_cameras_flats(house_flat_id);
 
 -- rfid keys
