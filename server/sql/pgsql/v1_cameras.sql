@@ -9,6 +9,12 @@ CREATE TABLE cameras
     credentials character varying not null,                                                                                          -- plaintext:login:password, token:token, or something else
     publish character varying,
     flussonic character varying,
+    lat real,
+    lon real,
+    direction real,
+    angle real,
+    distance real,
+    common integer,
     comment character varying
 );
 CREATE INDEX cameras_url on cameras(url);

@@ -9,6 +9,12 @@ CREATE TABLE cameras
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     publish text,
     flussonic text,
+    lat real,
+    lon real,
+    direction real,
+    angle real,
+    distance real,
+    common integer,
     comment text
 );
 CREATE INDEX cameras_url on cameras(url);
