@@ -26,6 +26,7 @@
                     $house = [
                         "flats" => $households->getFlats("house", $params["_id"]),
                         "entrances" => $households->getEntrances("house", $params["_id"]),
+                        "cameras" => $households->getCameras("house", $params["_id"]),
                         "domophoneModels" => $households->getModels(),
                         "cmses" => $households->getCMSes(),
                     ];
