@@ -1618,6 +1618,7 @@
                                 cols: [
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].cameraId,
+                                        click: "#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId,
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].url,
