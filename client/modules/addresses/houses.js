@@ -1361,6 +1361,7 @@
 
                     modules.addresses.houses.meta.entrances = response["house"].entrances;
                     modules.addresses.houses.meta.flats = response["house"].flats;
+                    modules.addresses.houses.meta.cameras = response["house"].cameras;
                     modules.addresses.houses.meta.domophoneModels = response["house"].domophoneModels;
                     modules.addresses.houses.meta.cmses = response["house"].cmses;
 
@@ -1578,35 +1579,76 @@
                 },
             });
 
-            cardTable({
-                target: "#altForm",
-                mode: "append",
-                title: {
-                    caption: i18n("addresses.cameras"),
-                    button: {
-                        caption: i18n("addresses.addCamera"),
-                        click: () => {
-                            modules.addresses.houses.addCamera(houseId);
+            if (modules.addresses.houses.meta.cameras === false) {
+                $("#altForm").show();
+            } else {
+                cardTable({
+                    target: "#altForm",
+                    mode: "append",
+                    title: {
+                        caption: i18n("addresses.cameras"),
+                        button: {
+                            caption: i18n("addresses.addCamera"),
+                            click: () => {
+                                modules.addresses.houses.addCamera(houseId);
+                            },
                         },
                     },
-                },
-                columns: [
-                    {
-                        title: i18n("addresses.cameraId"),
+                    columns: [
+                        {
+                            title: i18n("addresses.cameraIdList"),
+                        },
+                        {
+                            title: i18n("addresses.url"),
+                        },
+                        {
+                            title: i18n("addresses.common"),
+                        },
+                        {
+                            title: i18n("addresses.comments"),
+                            fullWidth: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in modules.addresses.houses.meta.cameras) {
+                            rows.push({
+                                uid: modules.addresses.houses.meta.cameras[i].cameraId,
+                                cols: [
+                                    {
+                                        data: modules.addresses.houses.meta.cameras[i].cameraId,
+                                    },
+                                    {
+                                        data: modules.addresses.houses.meta.cameras[i].url,
+                                    },
+                                    {
+                                        data: modules.addresses.houses.meta.cameras[i].common?i18n("yes"):i18n("no"),
+                                    },
+                                    {
+                                        data: modules.addresses.houses.meta.cameras[i].comment,
+                                        nowrap: true,
+                                    },
+                                ],
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("users.delete"),
+                                            class: "text-warning",
+                                            click: cameraId => {
+                                                //
+                                            },
+                                        },
+                                    ],
+                                },
+                            });
+                        }
+
+                        return rows;
                     },
-                    {
-                        title: i18n("addresses.url"),
-                    },
-                    {
-                        title: i18n("addresses.comments"),
-                        fullWidth: true,
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
-                    return rows;
-                },
-            }).show();
+                }).show();
+            }
 
             loadingDone();
         });

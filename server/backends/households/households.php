@@ -324,23 +324,26 @@
 
             /**
              * @param $to
+             * @param $id
              * @param $list
              * @return mixed
              */
-            abstract public function setCameras($to, $list);
+            abstract public function setCameras($to, $id, $list);
 
             /**
              * @param $to
              * @param $id
+             * @param $cameraId
              * @return mixed
              */
-            abstract public function addCamera($to, $id);
+            abstract public function addCamera($to, $id, $cameraId);
 
             /**
              * @param $from
              * @param $id
+             * @param $cameraId
              * @return mixed
              */
-            abstract public function unlinkCamera($from, $id);
+            abstract public function unlinkCamera($from, $id, $cameraId);
         }
     }

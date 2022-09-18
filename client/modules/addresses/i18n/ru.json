@@ -151,6 +151,7 @@
     "10m": "Десять минут",
     "domophoneOutput": "&quotВыход&quot; домофона",
     "cameraId": "Камера",
+    "cameraIdList": "#",
     "domophoneOutputPrimary": "Основной",
     "domophoneOutputSecondary":  "Дополнительный #%s",
     "locksDisabled": "Замки открыты",

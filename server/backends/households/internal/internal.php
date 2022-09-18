@@ -1267,13 +1267,46 @@
              */
             public function getCameras($by, $params)
             {
-                // TODO: Implement getCameras() method.
+
+                $cameras = loadBackend("cameras");
+
+                if (!$cameras) {
+                    return false;
+                }
+
+                $q = "";
+                $p = false;
+
+                switch ($by) {
+                    case "house":
+                        if (!checkInt($params)) {
+                            return [];
+                        }
+                        $q = "select camera_id from houses_houses_cameras where address_house_id = $params";
+                        break;
+                }
+
+                if ($q) {
+                    $list = [];
+
+                    $ids = $this->db->get($q, $p, [
+                        "camera_id" => "cameraId",
+                    ]);
+
+                    foreach ($ids as $id) {
+                        $list[] = $cameras->getCamera($id["cameraId"]);
+                    }
+
+                    return $list;
+                } else {
+                    return [];
+                }
             }
 
             /**
              * @inheritDoc
              */
-            public function setCameras($to, $list)
+            public function setCameras($to, $id, $list)
             {
                 // TODO: Implement setCameras() method.
             }
@@ -1281,7 +1314,7 @@
             /**
              * @inheritDoc
              */
-            public function addCamera($to, $id)
+            public function addCamera($to, $id, $cameraId)
             {
                 // TODO: Implement addCamera() method.
             }
@@ -1289,7 +1322,7 @@
             /**
              * @inheritDoc
              */
-            public function unlinkCamera($from, $id)
+            public function unlinkCamera($from, $id, $cameraId)
             {
                 // TODO: Implement unlinkCamera() method.
             }
