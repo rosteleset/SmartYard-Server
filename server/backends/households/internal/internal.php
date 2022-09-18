@@ -1314,7 +1314,7 @@
             /**
              * @inheritDoc
              */
-            public function addCamera($to, $id, $cameraId)
+            public function addCamera($to, $id, $cameraId, $options)
             {
                 // TODO: Implement addCamera() method.
             }
