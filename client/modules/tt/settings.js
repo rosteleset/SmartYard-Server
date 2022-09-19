@@ -1971,12 +1971,67 @@
         always(loadingDone);
     },
 
+    modifyFilter: function (fileName) {
+
+    },
+
     renderFilters: function () {
         loadingStart();
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            console.log(modules.tt.meta);
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("tt.addFilter"),
+                        click: modules.tt.settings.addFilter,
+                    },
+                    caption: i18n("tt.Filters"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.filterFileName"),
+                    },
+                    {
+                        title: i18n("tt.filterName"),
+                        fullWidth: true,
+                    },
+                ],
+                edit: modules.tt.settings.modifyFilter,
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules.tt.meta.filters) {
+                        rows.push({
+                            uid: i,
+                            cols: [
+                                {
+                                    data: i,
+                                },
+                                {
+                                    data: modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("tt.deleteFilter"),
+                                        class: "text-warning",
+                                        click: filterFileName => {
+                                            //
+                                        },
+                                    },
+                                ],
+                            },
+                        });
+                    }
+
+                    return rows;
+                },
+            });
         }).
         fail(FAIL).
         always(loadingDone);
