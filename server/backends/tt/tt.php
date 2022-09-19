@@ -468,11 +468,10 @@
 
                     try {
                         $f = $this->getFilter($filter["filename"]);
+                        $list[] = [ $filter["filename"] => $f["name"], ];
                     } catch (\Exception $e) {
-                        $f["name"] = $filter["filename"];
+                        $list[] = [ $filter["filename"] => $filter["filename"], ];
                     }
-
-                    $list[] = [ $filter["filename"] => $f["name"] ];
                 }
 
                 return $list;
