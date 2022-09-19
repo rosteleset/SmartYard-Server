@@ -955,7 +955,7 @@
              */
             public function availableFilters()
             {
-                // TODO: Implement availableFilters() method.
+                return parent::availableFilters();
             }
 
             /**

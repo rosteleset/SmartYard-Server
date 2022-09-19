@@ -9,8 +9,6 @@
              */
             public function __construct($config, $db, $redis) {
                 parent::__construct($config, $db, $redis);
-
-                $this->filterType = "json";
             }
 
             /**

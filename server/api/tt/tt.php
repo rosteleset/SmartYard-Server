@@ -22,6 +22,7 @@
                         "projects" => $tt->getProjects(),
                         "workflows" => $tt->getWorkflows(),
                         "workflowAliases" => $tt->getWorkflowAliases(),
+                        "filters" => $tt->availableFilters(),
                         "statuses" => $tt->getStatuses(),
                         "resolutions" => $tt->getResolutions(),
                         "customFields" => $tt->getCustomFields(),

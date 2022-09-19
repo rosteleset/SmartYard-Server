@@ -449,7 +449,34 @@
             /**
              * @return false|array
              */
-            abstract public function availableFilters();
+            public function availableFilters() {
+                $class = get_class($this);
+                $ns = __NAMESPACE__;
+
+                if (strpos($class, $ns) === 0) {
+                    $class = substr($class, strlen($ns) + 1);
+                }
+
+                $filters = glob(dirname(__FILE__) . "/" . $class . "/filters/*.json");
+
+                $list = [];
+
+                foreach ($filters as $filter) {
+                    error_log($filter);
+
+                    $filter = pathinfo($filter);
+
+                    try {
+                        $f = $this->getFilter($filter["filename"]);
+                    } catch (\Exception $e) {
+                        $f["name"] = $filter["filename"];
+                    }
+
+                    $list[] = [ $filter["filename"] => $f["name"] ];
+                }
+
+                return $list;
+            }
 
             /**
              * @param $filter

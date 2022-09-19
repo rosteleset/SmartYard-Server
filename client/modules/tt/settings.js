@@ -1971,6 +1971,17 @@
         always(loadingDone);
     },
 
+    renderFilters: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            console.log(modules.tt.meta);
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
