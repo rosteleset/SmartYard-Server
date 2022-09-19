@@ -1987,7 +1987,7 @@
                         caption: i18n("tt.addFilter"),
                         click: modules.tt.settings.addFilter,
                     },
-                    caption: i18n("tt.Filters"),
+                    caption: i18n("tt.filters"),
                     filter: true,
                 },
                 columns: [
