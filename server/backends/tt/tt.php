@@ -466,7 +466,7 @@
 
                     try {
                         $f = $this->getFilter($filter["filename"]);
-                        $list[] = [ $filter["filename"] => $f["name"], ];
+                        $list[] = [ $filter["filename"] => @$f["name"], ];
                     } catch (\Exception $e) {
                         $list[] = [ $filter["filename"] => $filter["filename"], ];
                     }
