@@ -462,8 +462,6 @@
                 $list = [];
 
                 foreach ($filters as $filter) {
-                    error_log($filter);
-
                     $filter = pathinfo($filter);
 
                     try {
