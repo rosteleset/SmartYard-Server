@@ -1759,7 +1759,7 @@
                                 cms: cmses,
                             }).
                             done(() => {
-                                modules.addresses.houses.renderEntrance(houseId, entranceId);
+                                modules.addresses.houses.renderEntranceCMS(houseId, entranceId);
                             }).
                             fail(FAIL).
                             fail(loadingDone);
