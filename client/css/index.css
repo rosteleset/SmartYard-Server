@@ -4,6 +4,10 @@
   filter: alpha(opacity=100);
 }
 
+.toast-warning > .toast-message {
+  color: black;
+}
+
 .direct-chat-text-secondary::after {
   content: none !important;
   display: none;
