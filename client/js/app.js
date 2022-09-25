@@ -317,6 +317,10 @@ function initAll() {
         $.cookie("_cookie", "1", { expires: 36500 });
     }
 
+    if (window.location.protocol === 'http:') {
+        warning(i18n("httpsWarning"), false, 3600);
+    }
+
     if (config.logo) {
         setFavicon("img/" + config.logo + "Icon.png");
         $("#leftSideToggler").attr("src", "img/" + config.logo + ".png");
