@@ -14,6 +14,7 @@ __pycache__
 .phpdoc
 /package.json
 /package-lock.json
+/client/lib/
 /client/lib/AdminLTE/
 /client/lib/qrcodejs/
 /client/lib/loading-bar/
