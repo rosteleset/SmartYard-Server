@@ -8,6 +8,10 @@
   color: black;
 }
 
+.toast-warning > .toast-title {
+  color: black;
+}
+
 .direct-chat-text-secondary::after {
   content: none !important;
   display: none;
