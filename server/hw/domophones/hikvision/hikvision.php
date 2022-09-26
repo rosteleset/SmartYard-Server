@@ -12,14 +12,14 @@
             protected $def_pass = 'admin';
 
             protected function api_call($resource, $method = 'GET', $payload = null) {
-                $req = 'http://' . $this->url . $this->api_prefix . $resource;
+                $req = $this->url . $this->api_prefix . $resource;
                 $json_payload = json_encode($payload);
 
                 echo $method.'   '.$req.'   '.$json_payload . PHP_EOL;
 
                 $ch = curl_init($req);
 
-                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
                 curl_setopt($ch, CURLOPT_USERPWD, "$this->user:$this->pass");
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -126,6 +126,14 @@
             }
 
             public function get_sysinfo(): array {
+                $res = $this->api_call('System/deviceInfo');
+                print_r($res);
+
+//                $sysinfo['DeviceID'] = str_replace(':', '', $res['data']['mac']);
+//                $sysinfo['DeviceModel'] = $res['data']['model'];
+//                $sysinfo['HardwareVersion'] = $res['data']['hardware'];
+//                $sysinfo['SoftwareVersion'] = $res['data']['firmware'];
+
                 return [];
             }
 
@@ -206,11 +214,11 @@
             }
 
             public function reboot() {
-                // TODO: Implement reboot() method.
+                $this->api_call('System/reboot', 'PUT');
             }
 
             public function reset() {
-                // TODO: Implement reset() method.
+                $this->api_call('System/factoryReset', 'PUT');
             }
 
         }
