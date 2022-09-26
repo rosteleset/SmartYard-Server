@@ -63,20 +63,23 @@
 
         // domophone panel
         if ($extension[0] === "1" && strlen($extension) === 6) {
+            $domophones = loadBackend("households");
+            $panel = $domophones->getDomophone((int)substr($extension, 1));
+
             switch ($section) {
                 case "aors":
-                    return [
-                        "id" => $extension,
-                        "max_contacts" => "1",
-                        "remove_existing" => "yes"
-                    ];
+                    if ($panel && $panel["credentials"]) {
+                        return [
+                            "id" => $extension,
+                            "max_contacts" => "1",
+                            "remove_existing" => "yes"
+                        ];
+                    }
+                    break;
 
                 case "auths":
-                    $domophones = loadBackend("households");
 
-                    $panel = $domophones->getDomophone((int)substr($extension, 1));
-
-                    if ($panel) {
+                    if ($panel && $panel["credentials"]) {
                         return [
                             "id" => $extension,
                             "username" => $extension,
@@ -84,15 +87,10 @@
                             "password" => $panel["credentials"],
                         ];
                     }
-
                     break;
 
                 case "endpoints":
-                    $domophones = loadBackend("households");
-
-                    $panel = $domophones->getDomophone((int)substr($extension, 1));
-
-                    if ($panel) {
+                    if ($panel && $panel["credentials"]) {
                         return [
                             "id" => $extension,
                             "auth" => $extension,
@@ -112,7 +110,6 @@
                             "ice_support" => "no",
                         ];
                     }
-
                     break;
             }
         }
@@ -249,20 +246,31 @@
         mysql_query("insert ignore into ps_endpoints (id, auth, outbound_auth, aors, context, disallow, allow, dtmf_mode, rtp_symmetric, force_rport, rewrite_contact, direct_media, transport, ice_support, synchronized) values ('"..extension.."', '"..extension.."', '"..extension.."', '"..extension.."', 'default', 'all', 'alaw,h264', 'rfc4733', 'yes', 'yes', 'yes', 'no', 'transport-tcp', 'yes', true)")
 */
 
-    $path = explode("/", @$_SERVER["REQUEST_URI"]);
-    array_shift($path);
+    $path = $_SERVER["REQUEST_URI"];
 
-    switch ($path[1]) {
+    $server = parse_url($config["asteriskApi"]);
+
+    if ($server && $server['path']) {
+        $path = substr($path, strlen($server['path']));
+    }
+
+    if ($path && $path[0] == '/') {
+        $path = substr($path, 1);
+    }
+
+    $path = explode("/", $path);
+
+    switch ($path[0]) {
         case "aors":
         case "auths":
         case "endpoints":
-            if (@$_POST["id"]) echo paramsToResponse(getExtension($_POST["id"], $path[1]));
+            if (@$_POST["id"]) echo paramsToResponse(getExtension($_POST["id"], $path[0]));
             break;
 
         case "extensions":
             $params = json_decode(file_get_contents("php://input"), true);
 
-            switch ($path[2]) {
+            switch ($path[1]) {
                 case "log":
                     error_log($params);
                     break;

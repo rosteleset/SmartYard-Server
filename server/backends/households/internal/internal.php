@@ -757,7 +757,9 @@
                     "singlify"
                 ]);
 
-                $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $domophone["model"]), true);
+                if ($domophone) {
+                    $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $domophone["model"]), true);
+                }
 
                 return $domophone;
             }

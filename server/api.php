@@ -119,7 +119,7 @@
 
     $path = explode("?", $_SERVER["REQUEST_URI"])[0];
 
-    $server = parse_url($config["server"]);
+    $server = parse_url($config["api"]);
 
     if ($server && $server['path']) {
         $path = substr($path, strlen($server['path']));
