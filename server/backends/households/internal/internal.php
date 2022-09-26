@@ -141,7 +141,7 @@
                         break;
 
                     case "domophone":
-                        $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id order by flat";
+                        $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id order by flat";
                         $p = [
                             "house_domophone_id" => $params,
                         ];
