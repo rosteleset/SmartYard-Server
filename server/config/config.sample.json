@@ -103,7 +103,7 @@
 
         "providers": {
             "backend": "lanta",
-            "providers.json": "/path/to/providers.json"
+            "providers.json": "<!-- path to providers.json -->"
         }
     },
 
