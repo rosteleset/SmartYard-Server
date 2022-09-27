@@ -13,9 +13,8 @@
 
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
-                $json_payload = json_encode($payload);
 
-                echo $method.'   '.$req.'   '.$json_payload . PHP_EOL;
+                echo $method.'   '.$req.'   '.$payload . PHP_EOL;
 
                 $ch = curl_init($req);
 
@@ -24,12 +23,16 @@
                 curl_setopt($ch, CURLOPT_USERPWD, "$this->user:$this->pass");
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_VERBOSE, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $json_payload);
+
+                if ($payload) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                }
 
                 $res = curl_exec($ch);
                 curl_close($ch);
 
-                return $res;
+                $xml_str = simplexml_load_string($res);
+                return json_decode(json_encode($xml_str), true);
             }
 
             public function add_rfid(string $code) {
@@ -127,14 +130,13 @@
 
             public function get_sysinfo(): array {
                 $res = $this->api_call('System/deviceInfo');
-                print_r($res);
 
-//                $sysinfo['DeviceID'] = str_replace(':', '', $res['data']['mac']);
-//                $sysinfo['DeviceModel'] = $res['data']['model'];
-//                $sysinfo['HardwareVersion'] = $res['data']['hardware'];
-//                $sysinfo['SoftwareVersion'] = $res['data']['firmware'];
+                $sysinfo['DeviceID'] = $res['deviceID'];
+                $sysinfo['DeviceModel'] = $res['model'];
+                $sysinfo['HardwareVersion'] = $res['hardwareVersion'];
+                $sysinfo['SoftwareVersion'] = $res['firmwareVersion'] . ' ' . $res['firmwareReleasedDate'];
 
-                return [];
+                return $sysinfo;
             }
 
             public function keep_doors_unlocked(bool $unlocked = true) {
