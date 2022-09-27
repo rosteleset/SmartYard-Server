@@ -11,8 +11,8 @@
             protected $api_prefix = '/ISAPI/';
             protected $def_pass = 'admin';
 
-            protected function api_call($resource, $method = 'GET', $payload = null) {
-                $req = $this->url . $this->api_prefix . $resource;
+            protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
+                $req = $this->url . $this->api_prefix . $resource . '?' . http_build_query($params);
 
                 echo $method.'   '.$req.'   '.$payload . PHP_EOL;
 
@@ -220,7 +220,7 @@
             }
 
             public function reset() {
-                $this->api_call('System/factoryReset', 'PUT');
+                $this->api_call('System/factoryReset', 'PUT', [ 'mode' => 'basic' ]);
             }
 
         }
