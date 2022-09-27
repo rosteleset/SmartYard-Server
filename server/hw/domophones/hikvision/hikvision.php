@@ -25,7 +25,7 @@
                 curl_setopt($ch, CURLOPT_VERBOSE, false);
 
                 if ($payload) {
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
                 }
 
                 $res = curl_exec($ch);
@@ -140,7 +140,12 @@
             }
 
             public function keep_doors_unlocked(bool $unlocked = true) {
-                // TODO: Implement keep_doors_unlocked() method.
+                $this->api_call(
+                    'AccessControl/RemoteControl/door/1',
+                    'PUT',
+                    [],
+                    $unlocked ? '<cmd>alwaysOpen</cmd>' : '<cmd>resume</cmd>'
+                );
             }
 
             public function line_diag(int $apartment) {
@@ -148,7 +153,12 @@
             }
 
             public function open_door(int $door_number = 0) {
-                // TODO: Implement open_door() method.
+                $this->api_call(
+                    'AccessControl/RemoteControl/door/' . ($door_number + 1),
+                    'PUT',
+                    [],
+                    '<cmd>open</cmd>'
+                );
             }
 
             public function set_admin_password(string $password) {
@@ -196,7 +206,12 @@
             }
 
             public function set_unlock_time(int $time) {
-                // TODO: Implement set_unlock_time() method.
+                $this->api_call(
+                    'AccessControl/Door/param/1',
+                    'PUT',
+                    [],
+                    "<DoorParam><doorName>Door1</doorName><openDuration>$time</openDuration></DoorParam>"
+                );
             }
 
             public function set_video_overlay(string $title = '') {
