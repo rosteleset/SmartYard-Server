@@ -38,7 +38,13 @@
             {
                 try {
                     json_decode($text);
-                    file_put_contents($this->config["backends"]["providers"]["providers.json"], $text);
+                    $error = json_last_error();
+                    if ($error === JSON_ERROR_NONE) {
+                        file_put_contents($this->config["backends"]["providers"]["providers.json"], $text);
+                    } else {
+                        setLastError("Json error: $error");
+                        return false;
+                    }
                 } catch (\Exception $e) {
                     setLastError($e->getMessage());
                     return false;
