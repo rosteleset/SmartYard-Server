@@ -21,9 +21,12 @@
             public function getJson()
             {
                 try {
-                    return json_encode(json_decode(file_get_contents($this->config["backends"]["providers"]["providers.json"])), JSON_PRETTY_PRINT);
+                    if (file_exists($this->config["backends"]["providers"]["providers.json"])) {
+                        return file_get_contents($this->config["backends"]["providers"]["providers.json"]);
+                    } else {
+                        return "";
+                    }
                 } catch (\Exception $e) {
-                    setLastError($e->getMessage());
                     return false;
                 }
             }
@@ -34,7 +37,8 @@
             public function putJson($text)
             {
                 try {
-                    file_put_contents($this->config["backends"]["providers"]["providers.json"], json_decode(json_encode($text), true));
+                    json_decode($text);
+                    file_put_contents($this->config["backends"]["providers"]["providers.json"], $text);
                 } catch (\Exception $e) {
                     setLastError($e->getMessage());
                     return false;

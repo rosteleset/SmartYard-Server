@@ -33,6 +33,9 @@
             $("#workflowSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("providers", "json", false, { "body": $.trim(editor.getValue()) }).
+                done(() => {
+                    message(i18n("providers.fileWasSaved"))
+                }).
                 fail(FAIL).
                 always(() => {
                     loadingDone();

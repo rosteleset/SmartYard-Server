@@ -10,7 +10,7 @@
              * @var object $redis link to redis object
              */
 
-            protected $config, $db, $redis, $filterType;
+            protected $config, $db, $redis;
 
             /**
              * default constructor
