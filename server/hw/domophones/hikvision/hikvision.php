@@ -11,25 +11,28 @@
             protected $api_prefix = '/ISAPI/';
             protected $def_pass = 'admin';
 
-            protected function api_call($resource, $method = 'GET', $payload = null) {
-                $req = 'http://' . $this->url . $this->api_prefix . $resource;
-                $json_payload = json_encode($payload);
+            protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
+                $req = $this->url . $this->api_prefix . $resource . '?' . http_build_query($params);
 
-                echo $method.'   '.$req.'   '.$json_payload . PHP_EOL;
+                echo $method.'   '.$req.'   '.$payload . PHP_EOL;
 
                 $ch = curl_init($req);
 
-                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
                 curl_setopt($ch, CURLOPT_USERPWD, "$this->user:$this->pass");
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_VERBOSE, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $json_payload);
+
+                if ($payload) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                }
 
                 $res = curl_exec($ch);
                 curl_close($ch);
 
-                return $res;
+                $xml_str = simplexml_load_string($res);
+                return json_decode(json_encode($xml_str), true);
             }
 
             public function add_rfid(string $code) {
@@ -126,7 +129,14 @@
             }
 
             public function get_sysinfo(): array {
-                return [];
+                $res = $this->api_call('System/deviceInfo');
+
+                $sysinfo['DeviceID'] = $res['deviceID'];
+                $sysinfo['DeviceModel'] = $res['model'];
+                $sysinfo['HardwareVersion'] = $res['hardwareVersion'];
+                $sysinfo['SoftwareVersion'] = $res['firmwareVersion'] . ' ' . $res['firmwareReleasedDate'];
+
+                return $sysinfo;
             }
 
             public function keep_doors_unlocked(bool $unlocked = true) {
@@ -206,11 +216,11 @@
             }
 
             public function reboot() {
-                // TODO: Implement reboot() method.
+                $this->api_call('System/reboot', 'PUT');
             }
 
             public function reset() {
-                // TODO: Implement reset() method.
+                $this->api_call('System/factoryReset', 'PUT', [ 'mode' => 'basic' ]);
             }
 
         }
