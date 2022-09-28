@@ -1,7 +1,9 @@
 {
     "api": {
-        "main":"http://127.0.0.1:8000/server/api.php",
-        "asterisk": "http://127.0.0.1:8000/server/api.php"
+        "main": "http://127.0.0.1:8000/server/api.php",
+        "asterisk": "http://127.0.0.1:8000/server/asterisk.php",
+        "internal": "http://127.0.0.1:8000/server/internel.php",
+        "mobile": "http://127.0.0.1:8000/server/mobile.php"
     },
 
     "mobile": {
@@ -33,6 +35,12 @@
         "cache_ttl": 3600,
         "max_allowed_tokens": 15,
         "token_idle_ttl": 3600
+    },
+
+    "clickhouse": {
+        "host": "127.0.0.1",
+        "port": 8123,
+        "username": "default"
     },
 
     "backends": {
