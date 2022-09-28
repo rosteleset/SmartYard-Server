@@ -186,7 +186,7 @@
             }
 
             public function set_display_text(string $text = '') {
-                // TODO: Implement set_display_text() method.
+                // не используется
             }
 
             public function set_public_code(int $code) {

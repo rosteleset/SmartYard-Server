@@ -80,5 +80,6 @@
         }
 
         $panel->set_display_text($domophone['callerId']);
+        $panel->set_video_overlay($domophone['callerId']);
         $panel->keep_doors_unlocked($entrance['locksDisabled']);
     }

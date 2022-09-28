@@ -181,7 +181,7 @@
             /** Задать SIP-номер для кнопки вызова консьержа */
             abstract public function set_concierge_number(int $number);
 
-            /** Задать текст панели (дисплей + оверлей) */
+            /** Задать текст на дисплее */
             abstract public function set_display_text(string $text = '');
 
             /** Задать публичный код доступа */

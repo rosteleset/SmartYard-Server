@@ -703,7 +703,6 @@
                     'Config.DoorSetting.GENERAL.DisplayNumber' => 1,
                 ]);
                 $this->set_params($params);
-                $this->set_video_overlay($text);
             }
 
             public function set_public_code(int $code) {

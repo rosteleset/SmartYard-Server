@@ -360,7 +360,7 @@
             }
 
             public function set_display_text(string $text = '') {
-                $this->set_video_overlay($text);
+                // не используется
             }
 
             public function set_public_code(int $code) {
