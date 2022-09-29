@@ -85,7 +85,27 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                // TODO: Implement configure_ntp() method.
+                $this->api_call(
+                    'System/time',
+                    'PUT',
+                    [],
+                    '<Time>
+                                <timeMode>NTP</timeMode>
+                                <timeZone>CST-3:00:00</timeZone>
+                             </Time>'
+                );
+                $this->api_call(
+                    'System/time/ntpServers/1',
+                    'PUT',
+                    [],
+                    "<NTPServer>
+                                <id>1</id>
+                                <addressingFormatType>ipaddress</addressingFormatType>
+                                <ipAddress>$server</ipAddress>
+                                <portNo>$port</portNo>
+                                <synchronizeInterval>60</synchronizeInterval>
+                            </NTPServer>"
+                );
             }
 
             public function configure_sip(
