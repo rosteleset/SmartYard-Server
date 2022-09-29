@@ -219,10 +219,39 @@
             }
 
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                $this->api_call(
+                    'System/Video/inputs/channels/1',
+                    'PUT',
+                    [],
+                    "<VideoInputChannel>
+                                <id>1</id>
+                                <inputPort>1</inputPort>
+                                <name>$title</name>
+                            </VideoInputChannel>"
+                );
+                $this->api_call(
+                    'System/Video/inputs/channels/1/overlays',
+                    'PUT',
+                    [],
+                    '<VideoOverlay>
+                                <DateTimeOverlay>
+                                    <enabled>true</enabled>
+                                    <positionY>540</positionY>
+                                    <positionX>0</positionX>
+                                    <dateStyle>MM-DD-YYYY</dateStyle>
+                                    <timeStyle>24hour</timeStyle>
+                                    <displayWeek>true</displayWeek>
+                                </DateTimeOverlay>
+                                <channelNameOverlay>
+                                    <enabled>true</enabled>
+                                    <positionY>700</positionY>
+                                    <positionX>0</positionX>
+                                </channelNameOverlay>
+                            </VideoOverlay>'
+                );
             }
 
-            public function set_web_language(string $lang) {
+            public function set_language(string $lang) {
                 switch ($lang) {
                     case 'RU':
                         $language = 'Russian';

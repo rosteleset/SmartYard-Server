@@ -203,7 +203,7 @@
             abstract public function set_video_overlay(string $title = '');
 
             /** Задать язык WEB-интерфейса */
-            abstract public function set_web_language(string $lang);
+            abstract public function set_language(string $lang);
 
             /** Принудительно сохранить настройки */
             abstract public function write_config();
@@ -234,7 +234,7 @@
                 $this->enable_public_code(false);
                 $this->set_call_timeout(45);
                 $this->set_talk_timeout(90);
-                $this->set_web_language('RU');
+                $this->set_language('RU');
                 $this->set_audio_levels($audio_levels);
                 $this->set_cms_levels($cms_levels);
                 $this->configure_ntp($ntp_server, $ntp_port, 'GMT+03:00');

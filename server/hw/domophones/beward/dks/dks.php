@@ -640,7 +640,7 @@
                 ]);
             }
 
-            public function set_web_language(string $lang) {
+            public function set_language(string $lang) {
                 switch ($lang) {
                     case 'RU':
                         $web_lang = 1;

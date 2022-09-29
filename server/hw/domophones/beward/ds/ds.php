@@ -410,7 +410,7 @@
                 ]);
             }
 
-            public function set_web_language(string $lang) {
+            public function set_language(string $lang) {
                 // не используется
             }
 
