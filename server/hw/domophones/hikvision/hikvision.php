@@ -12,13 +12,17 @@
             protected $def_pass = 'admin';
 
             protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
-                $req = $this->url . $this->api_prefix . $resource . '?' . http_build_query($params);
+                $req = $this->url . $this->api_prefix . $resource;
+
+                if ($params) {
+                    $req .= '?' . http_build_query($params);
+                }
 
                 echo $method.'   '.$req.'   '.$payload . PHP_EOL;
 
                 $ch = curl_init($req);
 
-                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
                 curl_setopt($ch, CURLOPT_USERPWD, "$this->user:$this->pass");
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -219,7 +223,20 @@
             }
 
             public function set_web_language(string $lang) {
-                // TODO: Implement set_web_language() method.
+                switch ($lang) {
+                    case 'RU':
+                        $language = 'Russian';
+                        break;
+                    default:
+                        $language = 'English';
+                        break;
+                }
+                $this->api_call(
+                    'System/DeviceLanguage',
+                    'PUT',
+                    [],
+                    "<DeviceLanguage><language>$language</language></DeviceLanguage>"
+                );
             }
 
             public function write_config() {
