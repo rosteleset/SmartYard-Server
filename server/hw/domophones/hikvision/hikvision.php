@@ -117,7 +117,26 @@
                 string $stun_server = '',
                 int $stun_port = 3478
             ) {
-                // TODO: Implement configure_sip() method.
+                $this->api_call(
+                    'System/Network/SIP',
+                    'PUT',
+                    [],
+                    "<SIPServerList>
+                                <SIPServer>
+                                    <id>1</id>
+                                    <Standard>
+                                        <enabled>true</enabled>
+                                        <proxy>$server</proxy>
+                                        <proxyPort>$port</proxyPort>
+                                        <displayName>$login</displayName>
+                                        <userName>$login</userName>
+                                        <authID>$login</authID>
+                                        <password>$password</password>
+                                        <expires>30</expires>
+                                    </Standard>
+                                </SIPServer>
+                            </SIPServerList>"
+                );
             }
 
             public function configure_syslog(string $server, int $port) {
