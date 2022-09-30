@@ -1,0 +1,24 @@
+{
+  "name": "syslog",
+  "version": "1.0.0",
+  "description": "Intercom Syslog service",
+  "scripts": {
+    "dev-beward": "ts-node-dev --respawn --transpile-only ./src/beward.ts",
+    "dev-qtech": "ts-node-dev --respawn --transpile-only ./src/qtech.ts",
+    "build": "tsc -p .",
+    "start:beward":"node ./dist/syslog/src/beward.js",
+    "start:qtech":"node ./dist/syslog/src/qtech.js",
+    "start": "concurrently \"npm run start:beward\" \"npm run start:qtech\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^7.4.0",
+    "ts-syslog": "^1.0.2"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.4"
+  }
+}

@@ -149,5 +149,10 @@
         "username": "mmikel@localhost",
         "password": "qwerty",
         "from": "RBT"
-    }
+    },
+
+    "syslog_servers": {
+        "beward": { "address": "127.0.0.1", "port": 45450 },
+        "qtech": { "address": "127.0.0.1", "port": 45451 }
+      }
 }
