@@ -12,13 +12,17 @@
             protected $def_pass = 'admin';
 
             protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
-                $req = $this->url . $this->api_prefix . $resource . '?' . http_build_query($params);
+                $req = $this->url . $this->api_prefix . $resource;
+
+                if ($params) {
+                    $req .= '?' . http_build_query($params);
+                }
 
                 echo $method.'   '.$req.'   '.$payload . PHP_EOL;
 
                 $ch = curl_init($req);
 
-                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
                 curl_setopt($ch, CURLOPT_USERPWD, "$this->user:$this->pass");
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -81,7 +85,27 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                // TODO: Implement configure_ntp() method.
+                $this->api_call(
+                    'System/time',
+                    'PUT',
+                    [],
+                    '<Time>
+                                <timeMode>NTP</timeMode>
+                                <timeZone>CST-3:00:00</timeZone>
+                             </Time>'
+                );
+                $this->api_call(
+                    'System/time/ntpServers/1',
+                    'PUT',
+                    [],
+                    "<NTPServer>
+                                <id>1</id>
+                                <addressingFormatType>ipaddress</addressingFormatType>
+                                <ipAddress>$server</ipAddress>
+                                <portNo>$port</portNo>
+                                <synchronizeInterval>60</synchronizeInterval>
+                            </NTPServer>"
+                );
             }
 
             public function configure_sip(
@@ -93,7 +117,26 @@
                 string $stun_server = '',
                 int $stun_port = 3478
             ) {
-                // TODO: Implement configure_sip() method.
+                $this->api_call(
+                    'System/Network/SIP',
+                    'PUT',
+                    [],
+                    "<SIPServerList>
+                                <SIPServer>
+                                    <id>1</id>
+                                    <Standard>
+                                        <enabled>true</enabled>
+                                        <proxy>$server</proxy>
+                                        <proxyPort>$port</proxyPort>
+                                        <displayName>$login</displayName>
+                                        <userName>$login</userName>
+                                        <authID>$login</authID>
+                                        <password>$password</password>
+                                        <expires>30</expires>
+                                    </Standard>
+                                </SIPServer>
+                            </SIPServerList>"
+                );
             }
 
             public function configure_syslog(string $server, int $port) {
@@ -186,7 +229,7 @@
             }
 
             public function set_display_text(string $text = '') {
-                // TODO: Implement set_display_text() method.
+                // не используется
             }
 
             public function set_public_code(int $code) {
@@ -215,11 +258,53 @@
             }
 
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                $this->api_call(
+                    'System/Video/inputs/channels/1',
+                    'PUT',
+                    [],
+                    "<VideoInputChannel>
+                                <id>1</id>
+                                <inputPort>1</inputPort>
+                                <name>$title</name>
+                            </VideoInputChannel>"
+                );
+                $this->api_call(
+                    'System/Video/inputs/channels/1/overlays',
+                    'PUT',
+                    [],
+                    '<VideoOverlay>
+                                <DateTimeOverlay>
+                                    <enabled>true</enabled>
+                                    <positionY>540</positionY>
+                                    <positionX>0</positionX>
+                                    <dateStyle>MM-DD-YYYY</dateStyle>
+                                    <timeStyle>24hour</timeStyle>
+                                    <displayWeek>true</displayWeek>
+                                </DateTimeOverlay>
+                                <channelNameOverlay>
+                                    <enabled>true</enabled>
+                                    <positionY>700</positionY>
+                                    <positionX>0</positionX>
+                                </channelNameOverlay>
+                            </VideoOverlay>'
+                );
             }
 
-            public function set_web_language(string $lang) {
-                // TODO: Implement set_web_language() method.
+            public function set_language(string $lang) {
+                switch ($lang) {
+                    case 'RU':
+                        $language = 'Russian';
+                        break;
+                    default:
+                        $language = 'English';
+                        break;
+                }
+                $this->api_call(
+                    'System/DeviceLanguage',
+                    'PUT',
+                    [],
+                    "<DeviceLanguage><language>$language</language></DeviceLanguage>"
+                );
             }
 
             public function write_config() {

@@ -598,7 +598,6 @@
                     'LineEnable4' => 'off',
                     'LineEnable5' => 'off',
                 ]);
-                $this->set_video_overlay($text);
             }
 
             public function set_public_code(int $code) {
@@ -641,7 +640,7 @@
                 ]);
             }
 
-            public function set_web_language(string $lang) {
+            public function set_language(string $lang) {
                 switch ($lang) {
                     case 'RU':
                         $web_lang = 1;

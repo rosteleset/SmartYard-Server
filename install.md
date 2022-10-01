@@ -30,6 +30,11 @@ git clone https://github.com/loadingio/loading-bar
 git clone https://github.com/ajaxorg/ace-builds/
 ```
 
+edit client config
+```
+cp client/config/config.sample.json client/config/config.json
+```
+
 edit db, redis and email settings (email - optional)
 
 ```
