@@ -17,22 +17,6 @@ TTL date + toIntervalDay(31)
 SETTINGS index_granularity = 8192
 
 
-CREATE TABLE default.applog
-(
-`date` DateTime,
-`id` String,
-`action` String,
-`ip` IPv4,
-`idmnt_id` Int32,
-`ipmnt_id` Int32
-)
-ENGINE = MergeTree
-PARTITION BY toYYYYMM(date)
-ORDER BY date
-TTL date + toIntervalMonth(6)
-SETTINGS index_granularity = 8192
-
-
 CREATE TABLE default.inbox
 (
 `date` DateTime,
