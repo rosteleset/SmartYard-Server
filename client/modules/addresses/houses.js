@@ -1659,7 +1659,57 @@
         GET("cameras", "cameras", false, true).
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
-            console.log(modules.addresses.cameras.meta = response.cameras);
+            let cameras = [];
+
+            cameras.push({
+                id: "0",
+                text: i18n("no"),
+            })
+
+            for (let i in response.cameras.cameras) {
+                let url = new URL(response.cameras.cameras[i].url);
+                cameras.push({
+                    id: response.cameras.cameras[i].cameraId,
+                    text:  url.host,
+                })
+            }
+
+            cardForm({
+                title: i18n("addresses.addCamera"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("add"),
+                size: "lg",
+                fields: [
+                    {
+                        id: "cameraId",
+                        type: "select2",
+                        title: i18n("addresses.cameraId"),
+                        options: cameras,
+                    },
+                    {
+                        id: "shared",
+                        type: "select",
+                        title: i18n("addresses.common"),
+                        select: modules.addresses.houses.sharedSelect,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            }
+                        ]
+                    },
+                ],
+                callback: result => {
+                    result.houseId = houseId;
+                    modules.addresses.houses.doCreateEntrance(result);
+                },
+            });
         }).
         fail(FAIL).
         always(() => {

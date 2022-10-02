@@ -27,7 +27,7 @@
 
                 $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"],  $params["credentials"], $params["publish"],  $params["flussonic"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["common"], $params["comment"]);
 
-                return api::ANSWER($success);
+                return api::ANSWER($success?$success:$params["_id"], $success?"cameraId":false);
             }
 
             public static function DELETE($params) {
