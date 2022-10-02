@@ -235,6 +235,18 @@
         });
     },
 
+    doAddCamera: function (camera) {
+        loadingStart();
+        POST("houses", "cameras", false, camera).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.cameraWasAdded"));
+        }).
+        always(() => {
+            modules.addresses.houses.renderHouse(camera.houseId);
+        });
+    },
+
     doModifyEntrance: function (entrance) {
         loadingStart();
         PUT("houses", "entrance", entrance.entranceId, entrance).
@@ -292,6 +304,18 @@
         fail(FAIL).
         done(() => {
             message(i18n("addresses.flatWasDeleted"));
+        }).
+        always(() => {
+            modules.addresses.houses.renderHouse(houseId);
+        });
+    },
+
+    doDeleteCamera: function (cameraId, houseId) {
+        loadingStart();
+        DELETE("houses", "cameras", false, { from: "house", cameraId, houseId }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("addresses.cameraWasDeleted"));
         }).
         always(() => {
             modules.addresses.houses.renderHouse(houseId);
@@ -1602,7 +1626,7 @@
                             title: i18n("addresses.url"),
                         },
                         {
-                            title: i18n("addresses.common"),
+                            title: i18n("addresses.houseCommon"),
                         },
                         {
                             title: i18n("addresses.comments"),
@@ -1624,7 +1648,7 @@
                                         data: modules.addresses.houses.meta.cameras[i].url,
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].common?i18n("yes"):i18n("no"),
+                                        data: modules.addresses.houses.meta.cameras[i].houseCommon?i18n("yes"):i18n("no"),
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].comment,
@@ -1638,7 +1662,9 @@
                                             title: i18n("users.delete"),
                                             class: "text-warning",
                                             click: cameraId => {
-                                                //
+                                                mConfirm(i18n("addresses.confirmDeleteCamera", cameraId), i18n("confirm"), `danger:${i18n("addresses.deleteCamera")}`, () => {
+                                                    modules.addresses.houses.doDeleteCamera(cameraId, houseId);
+                                                });
                                             },
                                         },
                                     ],
@@ -1655,7 +1681,7 @@
         });
     },
 
-    addCamera: function () {
+    addCamera: function (houseId) {
         GET("cameras", "cameras", false, true).
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
@@ -1689,9 +1715,9 @@
                         options: cameras,
                     },
                     {
-                        id: "shared",
+                        id: "common",
                         type: "select",
-                        title: i18n("addresses.common"),
+                        title: i18n("addresses.houseCommon"),
                         select: modules.addresses.houses.sharedSelect,
                         options: [
                             {
@@ -1707,7 +1733,7 @@
                 ],
                 callback: result => {
                     result.houseId = houseId;
-                    modules.addresses.houses.doCreateEntrance(result);
+                    modules.addresses.houses.doAddCamera(result);
                 },
             });
         }).

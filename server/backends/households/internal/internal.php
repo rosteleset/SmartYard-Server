@@ -1284,7 +1284,7 @@
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id from houses_houses_cameras where address_house_id = $params";
+                        $q = "select camera_id, common from houses_houses_cameras where address_house_id = $params";
                         break;
                 }
 
@@ -1293,10 +1293,13 @@
 
                     $ids = $this->db->get($q, $p, [
                         "camera_id" => "cameraId",
+                        "common" => "houseCommon",
                     ]);
 
                     foreach ($ids as $id) {
-                        $list[] = $cameras->getCamera($id["cameraId"]);
+                        $cam = $cameras->getCamera($id["cameraId"]);
+                        $cam["houseCommon"] = $id["houseCommon"];
+                        $list[] = $cam;
                     }
 
                     return $list;
@@ -1318,7 +1321,16 @@
              */
             public function addCamera($to, $id, $cameraId, $options)
             {
-                // TODO: Implement addCamera() method.
+                switch ($to) {
+                    case "house":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false && checkInt($options) !== false) {
+                            return $this->db->insert("insert into houses_houses_cameras (camera_id, address_house_id, common) values ($cameraId, $id, $options)");
+                        } else {
+                            return false;
+                        }
+                }
+
+                return false;
             }
 
             /**
@@ -1326,7 +1338,17 @@
              */
             public function unlinkCamera($from, $id, $cameraId)
             {
-                // TODO: Implement unlinkCamera() method.
+                switch ($from) {
+                    case "house":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->modify("delete from houses_houses_cameras where camera_id = $cameraId and address_house_id = $id");
+                        } else {
+                            return false;
+                        }
+                        break;
+                }
+
+                return false;
             }
         }
     }

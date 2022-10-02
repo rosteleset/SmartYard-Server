@@ -16,32 +16,28 @@
         class cameras extends api
         {
 
-            public static function GET($params)
-            {
-                // getCameras
-            }
-
-            public static function PUT($params)
-            {
-                // setCameras
-            }
-
             public static function POST($params)
             {
-                // addCamera
+                $households = loadBackend("households");
+
+                $cameraId = $households->addCamera("house", $params["houseId"], $params["cameraId"], $params["common"]);
+
+                return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":"notAcceptable");
             }
 
             public static function DELETE($params)
             {
-                // unlinkCamera
+                $households = loadBackend("households");
+
+                $success = $households->unlinkCamera("house", $params["houseId"], $params["cameraId"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index()
             {
                 return [
-                    "GET" => "#same(houses,house,GET)",
                     "POST" => "#same(houses,house,PUT)",
-                    "PUT" => "#same(houses,house,PUT)",
                     "DELETE" => "#same(houses,house,PUT)",
                 ];
             }
