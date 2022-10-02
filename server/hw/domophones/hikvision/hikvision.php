@@ -140,7 +140,23 @@
             }
 
             public function configure_syslog(string $server, int $port) {
-                // TODO: Implement configure_syslog() method.
+                $this->api_call(
+                    'Event/notification/httpHosts',
+                    'PUT',
+                    [],
+                    "<HttpHostNotificationList>
+                                <HttpHostNotification>
+                                    <id>1</id>
+                                    <url>/</url>
+                                    <protocolType>HTTP</protocolType>
+                                    <parameterFormatType>XML</parameterFormatType>
+                                    <addressingFormatType>ipaddress</addressingFormatType>
+                                    <ipAddress>$server</ipAddress>
+                                    <portNo>$port</portNo>
+                                    <httpAuthenticationMethod>none</httpAuthenticationMethod>
+                                </HttpHostNotification>
+                            </HttpHostNotificationList>"
+                );
             }
 
             public function configure_user_account(string $password) {
