@@ -1655,6 +1655,18 @@
         });
     },
 
+    addCamera: function () {
+        GET("cameras", "cameras", false, true).
+        done(response => {
+            modules.addresses.cameras.meta = response.cameras;
+            console.log(modules.addresses.cameras.meta = response.cameras);
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
     renderEntranceCMS: function (houseId, entranceId) {
         GET("houses", "cms", entranceId, true).
         fail(FAIL).
