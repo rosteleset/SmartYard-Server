@@ -1461,6 +1461,16 @@
                                         title: "-",
                                     },
                                     {
+                                        icon: "fas fa-video",
+                                        title: i18n("addresses.cameras"),
+                                        click: flatId => {
+                                            //
+                                        },
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
                                         icon: "fas fa-mobile-alt",
                                         title: i18n("addresses.mobileCall"),
                                         click: flatId => {
