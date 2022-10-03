@@ -20,7 +20,6 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            $keys = $households->getKeys(@$params["by"], @$params["query"]);
 
             return api::ANSWER($keys, ($keys !== false)?"keys":false);
         }

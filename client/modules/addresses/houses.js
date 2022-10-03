@@ -1448,23 +1448,13 @@
                                 items: [
                                     {
                                         icon: "fas fa-house-user",
-                                        title: i18n("addresses.subscribersAndKeys"),
+                                        title: i18n("addresses.subscribersKeysAndCameras"),
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {
                                                 if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
                                                     location.href = "#addresses.subscribers&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
                                                 }
                                             }
-                                        },
-                                    },
-                                    {
-                                        title: "-",
-                                    },
-                                    {
-                                        icon: "fas fa-video",
-                                        title: i18n("addresses.cameras"),
-                                        click: flatId => {
-                                            //
                                         },
                                     },
                                     {

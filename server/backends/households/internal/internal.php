@@ -1286,6 +1286,13 @@
                         }
                         $q = "select camera_id, common from houses_houses_cameras where address_house_id = $params";
                         break;
+
+                    case "flat":
+                        if (!checkInt($params)) {
+                            return [];
+                        }
+                        $q = "select camera_id, common from houses_cameras_flats where house_flat_id = $params";
+                        break;
                 }
 
                 if ($q) {
@@ -1328,6 +1335,12 @@
                         } else {
                             return false;
                         }
+                    case "flat":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false && checkInt($options) !== false) {
+                            return $this->db->insert("insert into houses_cameras_flats (camera_id, house_flat_id, common) values ($cameraId, $id, $options)");
+                        } else {
+                            return false;
+                        }
                 }
 
                 return false;
@@ -1345,7 +1358,12 @@
                         } else {
                             return false;
                         }
-                        break;
+                    case "flat":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->modify("delete from houses_cameras_flats where camera_id = $cameraId and house_flat_id = $id");
+                        } else {
+                            return false;
+                        }
                 }
 
                 return false;
