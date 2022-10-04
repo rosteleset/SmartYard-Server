@@ -24,7 +24,7 @@
         always(modules.providers.route);
     },
 
-    doDeleteRegion: function (providerId) {
+    doDeleteProvider: function (providerId) {
         loadingStart();
         DELETE("providers", "provider", providerId).
         fail(FAIL).
@@ -123,7 +123,7 @@
 
             let provider = false;
             for (let i in response.providers) {
-                if (response.providers[i].id == providerId) {
+                if (response.providers[i].providerId == providerId) {
                     provider = response.providers[i];
                 }
             }
@@ -212,7 +212,6 @@
                         },
                     ],
                     callback: result => {
-                        console.log(result);
                         if (result.delete === "yes") {
                             modules.providers.deleteProvider(provider.providerId);
                         } else {
@@ -227,9 +226,9 @@
         always(loadingDone);
     },
 
-    deleteRegion: function (providerId) {
+    deleteProvider: function (providerId) {
         mConfirm(i18n("providers.confirmDeleteProvider", providerId), i18n("confirm"), `danger:${i18n("providers.deleteProvider")}`, () => {
-            modules.providers.doDeleteProviders(providerId);
+            modules.providers.doDeleteProvider(providerId);
         });
     },
 
@@ -259,10 +258,10 @@
                 },
                 columns: [
                     {
-                        title: i18n("providers.providerId"),
+                        title: i18n("providers.id"),
                     },
                     {
-                        title: i18n("providers.id"),
+                        title: i18n("providers.uid"),
                     },
                     {
                         title: i18n("providers.baseUrl"),

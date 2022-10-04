@@ -5,5 +5,13 @@
     "id": "#",
     "uid": "Идентификатор",
     "baseUrl": "Стартовая страница",
-    "name": "Наименование"
+    "name": "Наименование",
+    "tokenCommon": "Общий токен",
+    "tokenSms": "Токен для отправки SMS",
+    "tokenFlashCall": "Токен для входящих звонков",
+    "deleteProvider": "Удалить провайдера?",
+    "confirmDeleteProvider": "Удалить провайдера #%s?",
+    "providerWasAdded": "Провайдер добавлен",
+    "providerWasChanged": "Провайдер изменен",
+    "providerWasDeleted": "Провайдер удален"
 }
