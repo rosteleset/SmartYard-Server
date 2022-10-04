@@ -16,7 +16,7 @@
 
     doModifyProvider: function (providerId, params) {
         loadingStart();
-        PUT("providers", "providers", regionId, params).
+        PUT("providers", "providers", providerId, params).
         fail(FAIL).
         done(() => {
             message(i18n("providers.providerWasChanged"));
@@ -129,7 +129,7 @@
             }
             if (provider) {
                 cardForm({
-                    title: i18n("providers.addProvider"),
+                    title: i18n("providers.modifyProvider"),
                     footer: true,
                     borderless: true,
                     topApply: true,
@@ -260,10 +260,10 @@
                 },
                 columns: [
                     {
-                        title: i18n("providers.id"),
+                        title: i18n("providers.providerId"),
                     },
                     {
-                        title: i18n("providers.uid"),
+                        title: i18n("providers.id"),
                     },
                     {
                         title: i18n("providers.baseUrl"),
@@ -281,10 +281,10 @@
                             uid: response.providers[i].providerId,
                             cols: [
                                 {
-                                    data: response.providers[i].id,
+                                    data: response.providers[i].providerId,
                                 },
                                 {
-                                    data: response.providers[i].uid,
+                                    data: response.providers[i].id,
                                 },
                                 {
                                     data: response.providers[i].baseUrl,
