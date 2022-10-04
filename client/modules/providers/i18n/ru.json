@@ -14,5 +14,6 @@
     "providerWasAdded": "Провайдер добавлен",
     "providerWasChanged": "Провайдер изменен",
     "providerWasDeleted": "Провайдер удален",
-    "addProvider": "Добавить провайдера"
+    "addProvider": "Добавить провайдера",
+    "modifyProvider": "Изменить параметры провайдера"
 }
