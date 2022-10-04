@@ -13,5 +13,6 @@
     "confirmDeleteProvider": "Удалить провайдера #%s?",
     "providerWasAdded": "Провайдер добавлен",
     "providerWasChanged": "Провайдер изменен",
-    "providerWasDeleted": "Провайдер удален"
+    "providerWasDeleted": "Провайдер удален",
+    "addProvider": "Добавить провайдера"
 }
