@@ -15,8 +15,59 @@
         class lanta extends providers
         {
 
-            public function updateTokens() {
+            function putSecrets($section, $secrets) {
+                $curl = curl_init();
 
+                curl_setopt($curl, CURLOPT_HTTPHEADER, [ 'Content-Type: application_request/json' ]);
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($secrets));
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($curl, CURLOPT_URL, $this->config["backends"]["providers"]["providers.api"] . "?secrets=" . $section);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+                curl_setopt($curl, CURLOPT_VERBOSE, false);
+
+                curl_exec($curl);
+                curl_close($curl);
+            }
+
+            public function updateTokens() {
+                $providers = $this->getProviders();
+
+                $common = [];
+                $Sms = [];
+                $FlashCall = [];
+                $provs = [];
+
+                foreach ($providers as $p) {
+                    if ($p["tokenCommon"]) $common[] = $p["tokenCommon"];
+                    if ($p["tokenSms"]) $Sms[] = $p["tokenSms"];
+                    if ($p["tokenFlashCall"]) $FlashCall[] = $p["tokenFlashCall"];
+                    $provs[] = [
+                        "id" => $p["id"],
+                        "name" => $p["name"],
+                        "baseUrl" => $p["baseUrl"],
+                    ];
+                }
+
+                $this->putSecrets("Common", $common);
+                $this->putSecrets("Sms", $Sms);
+                $this->putSecrets("FlashCall", $FlashCall);
+
+                try {
+                    file_put_contents($this->config["backends"]["providers"]["providers.json"], json_encode([
+                        "code" => 200,
+                        "name" => "OK",
+                        "message" => "GOOD",
+                        "data" => $provs,
+                    ]));
+                } catch (\Exception $e) {
+                    setLastError($e->getMessage());
+                    return false;
+                }
+
+                return true;
             }
 
             /**
@@ -68,40 +119,59 @@
                     "name" => "name",
                     "base_url" => "baseUrl",
                     "logo" => "logo",
-                    "token" => "token",
-                    "allow_sms" => "allowSms",
-                    "allow_flash_call" => "allowFlashCall",
-                    "allow_outgoing_call" => "allowOutgoingCall",
+                    "token_common" => "tokenCommon",
+                    "token_sms" => "tokenSms",
+                    "token_flash_call" => "tokenFlashCall",
                 ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function createProvider($id, $name, $baseUrl, $logo, $token, $allowSms, $allowFlashCall, $allowOutgoingCall)
+            public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall)
             {
-                return $this->db->insert("insert into providers (id, name, base_url, logo, token, allow_sms, allow_flash_call, allow_outgoing_call) values (:id, :name, :base_url, :logo, :token, :allow_sms, :allow_flash_call, :allow_outgoing_call)", [
+                $r = $this->db->insert("insert into providers (id, name, base_url, logo, token_common, token_sms, token_flash_call) values (:id, :name, :base_url, :logo, :token_common, :token_sms, :token_flash_call)", [
                     "id" => $id,
                     "name" => $name,
                     "base_url" => $baseUrl,
                     "logo" => $logo,
-                    "token" => $token,
-                    "allow_sms" => $allowSms,
-                    "allow_flash_call" => $allowFlashCall,
-                    "allow_outgoing_call" => $allowOutgoingCall
+                    "token_common" => $tokenCommon,
+                    "token_sms" => $tokenSms,
+                    "token_flash_call" => $tokenFlashCall,
                 ]);
+
+                if ($this->updateTokens()) {
+                    return $r;
+                } else {
+                    $this->deleteProvider($r);
+                    return false;
+                }
             }
 
             /**
              * @inheritDoc
              */
-            public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $token, $allowSms, $allowFlashCall, $allowOutgoingCall)
+            public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall)
             {
                 if (!checkInt($providerId)) {
                     return false;
                 }
 
-                return $this->db->modify("update providers set id = :id, name = :name, base_url = :base_url, logo = :logo, token = :token, allow_sms = :allow_sms, allow_flash_call = :allow_flash_call, allow_outgoing_call = :allow_outgoing_call where provider_id = $providerId");
+                $r = $this->db->modify("update providers set id = :id, name = :name, base_url = :base_url, logo = :logo, token_common = :token_common, token_sms = :token_sms, token_flash_call = :token_flash_call where provider_id = $providerId", [
+                    "id" => $id,
+                    "name" => $name,
+                    "base_url" => $baseUrl,
+                    "logo" => $logo,
+                    "token_common" => $tokenCommon,
+                    "token_sms" => $tokenSms,
+                    "token_flash_call" => $tokenFlashCall,
+                ]);
+
+                if ($this->updateTokens()) {
+                    return $r;
+                } else {
+                    return false;
+                }
             }
 
             /**

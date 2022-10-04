@@ -6,7 +6,6 @@ CREATE TABLE providers
     name text,
     base_url text,
     logo text,
-    token text,
     token_common text,                                                                                                  -- for push and outgoing calls
     token_flash_call text,
     token_sms text
