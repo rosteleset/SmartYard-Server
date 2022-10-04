@@ -15,6 +15,10 @@
         class lanta extends providers
         {
 
+            public function updateTokens() {
+
+            }
+
             /**
              * @inheritDoc
              */
@@ -51,6 +55,65 @@
                 }
 
                 return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getProviders()
+            {
+                return $this->db->get("select * from providers order by name", false, [
+                    "provider_id" => "providerId",
+                    "id" => "id",
+                    "name" => "name",
+                    "base_url" => "baseUrl",
+                    "logo" => "logo",
+                    "token" => "token",
+                    "allow_sms" => "allowSms",
+                    "allow_flash_call" => "allowFlashCall",
+                    "allow_outgoing_call" => "allowOutgoingCall",
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function createProvider($id, $name, $baseUrl, $logo, $token, $allowSms, $allowFlashCall, $allowOutgoingCall)
+            {
+                return $this->db->insert("insert into providers (id, name, base_url, logo, token, allow_sms, allow_flash_call, allow_outgoing_call) values (:id, :name, :base_url, :logo, :token, :allow_sms, :allow_flash_call, :allow_outgoing_call)", [
+                    "id" => $id,
+                    "name" => $name,
+                    "base_url" => $baseUrl,
+                    "logo" => $logo,
+                    "token" => $token,
+                    "allow_sms" => $allowSms,
+                    "allow_flash_call" => $allowFlashCall,
+                    "allow_outgoing_call" => $allowOutgoingCall
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $token, $allowSms, $allowFlashCall, $allowOutgoingCall)
+            {
+                if (!checkInt($providerId)) {
+                    return false;
+                }
+
+                return $this->db->modify("update providers set id = :id, name = :name, base_url = :base_url, logo = :logo, token = :token, allow_sms = :allow_sms, allow_flash_call = :allow_flash_call, allow_outgoing_call = :allow_outgoing_call where provider_id = $providerId");
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteProvider($providerId)
+            {
+                if (!checkInt($providerId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from providers where provider_id = $providerId");
             }
         }
     }
