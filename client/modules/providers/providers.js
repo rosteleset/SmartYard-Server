@@ -243,7 +243,6 @@
         loadingStart();
         GET("providers", "provider", false, true).
         done(response => {
-            console.log(response);
             cardTable({
                 target: "#mainForm",
                 title: {
