@@ -350,7 +350,14 @@
             }
 
             public function set_call_timeout(int $timeout) {
-                // TODO: Implement set_call_timeout() method.
+                $this->api_call(
+                    'VideoIntercom/operationTime',
+                    'PUT',
+                    [],
+                    "<OperationTime>
+                                <maxRingTime>$timeout</maxRingTime>
+                            </OperationTime>"
+                );
             }
 
             public function set_cms_levels(array $levels) {
@@ -362,7 +369,7 @@
             }
 
             public function set_concierge_number(int $number) {
-                // TODO: Implement set_concierge_number() method.
+                // не используется
             }
 
             public function set_display_text(string $text = '') {
@@ -378,11 +385,18 @@
             }
 
             public function set_sos_number(int $number) {
-                // TODO: Implement set_sos_number() method.
+                // не используется
             }
 
             public function set_talk_timeout(int $timeout) {
-                // TODO: Implement set_talk_timeout() method.
+                $this->api_call(
+                    'VideoIntercom/operationTime',
+                    'PUT',
+                    [],
+                    "<OperationTime>
+                                <talkTime>$timeout</talkTime>
+                            </OperationTime>"
+                );
             }
 
             public function set_unlock_time(int $time) {
