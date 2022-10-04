@@ -63,15 +63,15 @@
             }
 
             public function configure_cms(int $apartment, int $offset) {
-                // TODO: Implement configure_cms() method.
+                // не используется
             }
 
             public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
-                // TODO: Implement configure_cms_raw() method.
+                // не используется
             }
 
             public function configure_gate(array $links) {
-                // TODO: Implement configure_gate() method.
+                // не используется
             }
 
             public function configure_md(
@@ -160,15 +160,105 @@
             }
 
             public function configure_user_account(string $password) {
-                // TODO: Implement configure_user_account() method.
+                // не используется
             }
 
             public function configure_video_encoding() {
-                // TODO: Implement configure_video_encoding() method.
+                $this->api_call(
+                    'Streaming/channels/101',
+                    'PUT',
+                    [],
+                    '<StreamingChannel>
+                                <id>101</id>
+                                <channelName>Camera 01</channelName>
+                                <enabled>true</enabled>
+                                <Transport>
+                                    <ControlProtocolList>
+                                        <ControlProtocol>
+                                            <streamingTransport>RTSP</streamingTransport>
+                                        </ControlProtocol>
+                                        <ControlProtocol>
+                                            <streamingTransport>HTTP</streamingTransport>
+                                        </ControlProtocol>
+                                    </ControlProtocolList>
+                                    <Security>
+                                        <enabled>true</enabled>
+                                    </Security>
+                                </Transport>
+                                <Video>
+                                    <enabled>true</enabled>
+                                    <videoInputChannelID>1</videoInputChannelID>
+                                    <videoCodecType>H.264</videoCodecType>
+                                    <videoScanType>progressive</videoScanType>
+                                    <videoResolutionWidth>1280</videoResolutionWidth>
+                                    <videoResolutionHeight>720</videoResolutionHeight>
+                                    <videoQualityControlType>VBR</videoQualityControlType>
+                                    <constantBitRate>2048</constantBitRate>
+                                    <fixedQuality>60</fixedQuality>
+                                    <vbrUpperCap>1024</vbrUpperCap>
+                                    <vbrLowerCap>32</vbrLowerCap>
+                                    <maxFrameRate>2500</maxFrameRate>
+                                    <keyFrameInterval>2000</keyFrameInterval>
+                                    <snapShotImageType>JPEG</snapShotImageType>
+                                    <GovLength>50</GovLength>
+                                </Video>
+                                <Audio>
+                                    <enabled>true</enabled>
+                                    <audioInputChannelID>1</audioInputChannelID>
+                                    <audioCompressionType>G.711ulaw</audioCompressionType>
+                                </Audio>
+                            </StreamingChannel>'
+                );
+
+                $this->api_call(
+                    'Streaming/channels/102',
+                    'PUT',
+                    [],
+                    '<StreamingChannel>
+                                <id>102</id>
+                                <channelName>Camera 01</channelName>
+                                <enabled>true</enabled>
+                                <Transport>
+                                    <ControlProtocolList>
+                                        <ControlProtocol>
+                                            <streamingTransport>RTSP</streamingTransport>
+                                        </ControlProtocol>
+                                        <ControlProtocol>
+                                            <streamingTransport>HTTP</streamingTransport>
+                                        </ControlProtocol>
+                                    </ControlProtocolList>
+                                    <Security>
+                                        <enabled>true</enabled>
+                                    </Security>
+                                </Transport>
+                                <Video>
+                                    <enabled>true</enabled>
+                                    <videoInputChannelID>1</videoInputChannelID>
+                                    <videoCodecType>H.264</videoCodecType>
+                                    <videoScanType>progressive</videoScanType>
+                                    <videoResolutionWidth>704</videoResolutionWidth>
+                                    <videoResolutionHeight>576</videoResolutionHeight>
+                                    <videoQualityControlType>VBR</videoQualityControlType>
+                                    <constantBitRate>512</constantBitRate>
+                                    <fixedQuality>60</fixedQuality>
+                                    <vbrUpperCap>348</vbrUpperCap>
+                                    <vbrLowerCap>32</vbrLowerCap>
+                                    <maxFrameRate>2500</maxFrameRate>
+                                    <keyFrameInterval>2000</keyFrameInterval>
+                                    <snapShotImageType>JPEG</snapShotImageType>
+                                    <GovLength>50</GovLength>
+                                </Video>
+                                <Audio>
+                                    <enabled>true</enabled>
+                                    <audioInputChannelID>1</audioInputChannelID>
+                                    <audioCompressionType>G.711ulaw</audioCompressionType>
+                                </Audio>
+                            </StreamingChannel>'
+                );
             }
 
             public function enable_public_code(bool $enabled = true) {
-                // TODO: Implement enable_public_code() method.
+                // не используется
             }
 
             public function get_audio_levels(): array {
@@ -208,7 +298,7 @@
             }
 
             public function line_diag(int $apartment) {
-                // TODO: Implement line_diag() method.
+                // не используется
             }
 
             public function open_door(int $door_number = 0) {
@@ -225,7 +315,38 @@
             }
 
             public function set_audio_levels(array $levels) {
-                // TODO: Implement set_audio_levels() method.
+                $levels[0] = @$levels[0] ?: 7;
+                $levels[1] = @$levels[1] ?: 7;
+                $levels[2] = @$levels[2] ?: 7;
+
+                $this->api_call(
+                    'System/Audio/AudioIn/channels/1',
+                    'PUT',
+                    [],
+                    "<AudioIn>
+                                <id>1</id>
+                                <AudioInVolumelist><AudioInVlome>
+                                <type>audioInput</type>
+                                <volume>$levels[0]</volume>
+                                </AudioInVlome></AudioInVolumelist>
+                            </AudioIn>"
+                );
+
+                $this->api_call(
+                    'System/Audio/AudioOut/channels/1',
+                    'PUT',
+                    [],
+                    "<AudioOut>
+                                <id>1</id>
+                                <AudioOutVolumelist>
+                                    <AudioOutVlome>
+                                        <type>audioOutput</type>
+                                        <volume>$levels[1]</volume>
+                                        <talkVolume>$levels[2]</talkVolume>
+                                    </AudioOutVlome>
+                                </AudioOutVolumelist>
+                            </AudioOut>"
+                );
             }
 
             public function set_call_timeout(int $timeout) {
@@ -233,11 +354,11 @@
             }
 
             public function set_cms_levels(array $levels) {
-                // TODO: Implement set_cms_levels() method.
+                // не используется
             }
 
             public function set_cms_model(string $model = '') {
-                // TODO: Implement set_cms_model() method.
+                // не используется
             }
 
             public function set_concierge_number(int $number) {
@@ -249,11 +370,11 @@
             }
 
             public function set_public_code(int $code) {
-                // TODO: Implement set_public_code() method.
+                // не используется
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
-                // TODO: Implement set_relay_dtmf() method.
+                // не используется
             }
 
             public function set_sos_number(int $number) {
@@ -324,7 +445,7 @@
             }
 
             public function write_config() {
-                // TODO: Implement write_config() method.
+                // не используется
             }
 
             public function prepare() {
