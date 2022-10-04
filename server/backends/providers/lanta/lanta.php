@@ -23,7 +23,7 @@
                 curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($secrets));
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                curl_setopt($curl, CURLOPT_URL, $this->config["backends"]["providers"]["providers.api"] . "?secrets=" . $section);
+                curl_setopt($curl, CURLOPT_URL, $this->config["backends"]["providers"]["providers.api"] . "?action=secrets&secrets=" . $section);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($curl, CURLOPT_TIMEOUT, 5);
                 curl_setopt($curl, CURLOPT_VERBOSE, false);
