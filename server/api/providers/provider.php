@@ -25,7 +25,7 @@
             public static function PUT($params) {
                 $providers = loadBackend("providers");
 
-                $success = $providers->modifyProvider($params["_id"], $params["id"], $params["name"], $params["baseUrl"], $params["logo"], $params["token"], $params["allow_sms"], $params["allow_flash_call"], $params["allow_outgoing_call"]);
+                $success = $providers->modifyProvider($params["_id"], $params["id"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
 
                 return api::ANSWER($success);
             }
@@ -33,7 +33,7 @@
             public static function POST($params) {
                 $providers = loadBackend("providers");
 
-                $success = $providers->createProvider($params["id"], $params["name"], $params["baseUrl"], $params["logo"], $params["token"], $params["allow_sms"], $params["allow_flash_call"], $params["allow_outgoing_call"]);
+                $success = $providers->createProvider($params["id"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
 
                 return api::ANSWER($success);
             }
