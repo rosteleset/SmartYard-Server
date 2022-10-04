@@ -18,7 +18,7 @@
                     $req .= '?' . http_build_query($params);
                 }
 
-                echo $method.'   '.$req.'   '.$payload . PHP_EOL;
+                // echo $method . '   ' . $req . '   ' . $payload . PHP_EOL;
 
                 $ch = curl_init($req);
 
@@ -29,14 +29,23 @@
                 curl_setopt($ch, CURLOPT_VERBOSE, false);
 
                 if ($payload) {
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+                    $postfields = $payload;
+
+                    if (isset($params['format']) && $params['format'] == 'json') {
+                        $postfields = json_encode($payload);
+                    }
+
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
                 }
 
                 $res = curl_exec($ch);
                 curl_close($ch);
 
-                $xml_str = simplexml_load_string($res);
-                return json_decode(json_encode($xml_str), true);
+                if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/xml') {
+                    return json_decode(json_encode(simplexml_load_string($res)), true);
+                }
+
+                return json_decode($res, true);
             }
 
             public function add_rfid(string $code) {
@@ -59,7 +68,18 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
-                // TODO: Implement configure_apartment() method.
+                $this->api_call(
+                    'AccessControl/UserInfo/Record',
+                    'PUT',
+                    [ 'format' => 'json' ],
+                    [
+                        'UserInfo' => [
+                            'employeeNo' => 1,
+                            'name' => 1,
+                            'userType' => 'normal',
+                        ]
+                    ]
+                );
             }
 
             public function configure_cms(int $apartment, int $offset) {
