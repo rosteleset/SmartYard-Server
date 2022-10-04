@@ -4,43 +4,301 @@
         moduleLoaded("providers", this);
     },
 
-    route: function () {
+    doAddProvider: function (provider) {
+        loadingStart();
+        POST("providers", "providers", false, provider).
+        fail(FAIL).
+        done(() => {
+            message(i18n("providers.providerWasAdded"));
+        }).
+        always(modules.providers.route);
+    },
+
+    doModifyProvider: function (providerId, params) {
+        loadingStart();
+        PUT("providers", "providers", regionId, params).
+        fail(FAIL).
+        done(() => {
+            message(i18n("providers.providerWasChanged"));
+        }).
+        always(modules.providers.route);
+    },
+
+    doDeleteRegion: function (providerId) {
+        loadingStart();
+        DELETE("providers", "providers", providerId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("providers.providerWasDeleted"));
+        }).
+        always(modules.providers.route);
+    },
+
+    addProvider: function () {
+        cardForm({
+            title: i18n("providers.addProvider"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            size: "lg",
+            fields: [
+                {
+                    id: "uid",
+                    type: "text",
+                    title: i18n("providers.uid"),
+                    placeholder: i18n("providers.uid"),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    },
+                },
+                {
+                    id: "baseUrl",
+                    type: "text",
+                    title: i18n("providers.baseUrl"),
+                    placeholder: i18n("providers.baseUrl"),
+                    validate: v => {
+                        try {
+                            new URL(v);
+                            return true;
+                        } catch (_) {
+                            return false;
+                        }
+                    },
+                },
+                {
+                    id: "name",
+                    type: "text",
+                    title: i18n("providers.name"),
+                    placeholder: i18n("providers.name"),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    },
+                },
+                {
+                    id: "tokenCommon",
+                    type: "text",
+                    title: i18n("providers.tokenCommon"),
+                    placeholder: i18n("providers.tokenCommon"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}tokenCommon`).val(md5(guid()));
+                        },
+                    }
+                },
+                {
+                    id: "tokenSms",
+                    type: "text",
+                    title: i18n("providers.tokenSms"),
+                    placeholder: i18n("providers.tokenSms"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}tokenSms`).val(md5(guid()));
+                        },
+                    }
+                },
+                {
+                    id: "tokenFlashCall",
+                    type: "text",
+                    title: i18n("providers.tokenFlashCall"),
+                    placeholder: i18n("providers.tokenFlashCall"),
+                    button: {
+                        class: "fas fa-magic",
+                        click: prefix => {
+                            $(`#${prefix}tokenFlashCall`).val(md5(guid()));
+                        },
+                    }
+                },
+            ],
+            callback: modules.providers.doAddProvider,
+        });
+    },
+
+    modifyProvider: function (providerId) {
+        loadingStart();
+        GET("providers", "provider", false, true).
+        done(response => {
+
+            let provider = false;
+            for (let i in response.providers) {
+                if (response.providers[i].id == providerId) {
+                    provider = response.providers[i];
+                }
+            }
+            if (provider) {
+                cardForm({
+                    title: i18n("providers.addProvider"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("add"),
+                    size: "lg",
+                    delete: i18n("providers.deleteProvider"),
+                    fields: [
+                        {
+                            id: "uid",
+                            type: "text",
+                            title: i18n("providers.uid"),
+                            placeholder: i18n("providers.uid"),
+                            validate: v => {
+                                return $.trim(v) !== "";
+                            },
+                            value: provider.id,
+                        },
+                        {
+                            id: "baseUrl",
+                            type: "text",
+                            title: i18n("providers.baseUrl"),
+                            placeholder: i18n("providers.baseUrl"),
+                            validate: v => {
+                                try {
+                                    new URL(v);
+                                    return true;
+                                } catch (_) {
+                                    return false;
+                                }
+                            },
+                            value: provider.baseUrl,
+                        },
+                        {
+                            id: "name",
+                            type: "text",
+                            title: i18n("providers.name"),
+                            placeholder: i18n("providers.name"),
+                            validate: v => {
+                                return $.trim(v) !== "";
+                            },
+                            value: provider.name,
+                        },
+                        {
+                            id: "tokenCommon",
+                            type: "text",
+                            title: i18n("providers.tokenCommon"),
+                            placeholder: i18n("providers.tokenCommon"),
+                            button: {
+                                class: "fas fa-magic",
+                                click: prefix => {
+                                    $(`#${prefix}tokenCommon`).val(md5(guid()));
+                                },
+                            },
+                            value: provider.tokenCommon,
+                        },
+                        {
+                            id: "tokenSms",
+                            type: "text",
+                            title: i18n("providers.tokenSms"),
+                            placeholder: i18n("providers.tokenSms"),
+                            button: {
+                                class: "fas fa-magic",
+                                click: prefix => {
+                                    $(`#${prefix}tokenSms`).val(md5(guid()));
+                                },
+                            },
+                            value: provider.tokenSms,
+                        },
+                        {
+                            id: "tokenFlashCall",
+                            type: "text",
+                            title: i18n("providers.tokenFlashCall"),
+                            placeholder: i18n("providers.tokenFlashCall"),
+                            button: {
+                                class: "fas fa-magic",
+                                click: prefix => {
+                                    $(`#${prefix}tokenFlashCall`).val(md5(guid()));
+                                },
+                            },
+                            value: provider.tokenFlashCall,
+                        },
+                    ],
+                    callback: result => {
+                        console.log(result);
+                        if (result.delete === "yes") {
+                            modules.providers.deleteProvider(provider.providerId);
+                        } else {
+                            modules.providers.doModifyProvider(provider.providerId, result);
+                        }
+                    },
+                });
+            } else {
+                error(i18n("providers.providerNotFound"));
+            }
+        }).
+        always(loadingDone);
+    },
+
+    deleteRegion: function (providerId) {
+        mConfirm(i18n("providers.confirmDeleteProvider", providerId), i18n("confirm"), `danger:${i18n("providers.deleteProvider")}`, () => {
+            modules.providers.doDeleteProviders(providerId);
+        });
+    },
+
+    route: function (params) {
+        console.log(params);
+
         $("#subTop").html("");
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("providers.providers");
 
         loadingStart();
-        GET("providers", "json", false, true).
-        done(json => {
-            // TODO f..ck!
-            let top = 75;
-            let height = $(window).height() - top;
-            let h = '';
-            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
-            h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
-            h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("providers.save")}</span></span>`;
-            $("#mainForm").html(h);
-            let editor = ace.edit("workflowEditor");
-            editor.setTheme("ace/theme/chrome");
-            editor.session.setMode("ace/mode/json");
-            if (json.json && json.json !== "null") {
-                editor.setValue(json.json.toString(), -1);
-                editor.clearSelection();
-            }
-            editor.setFontSize(14);
-            $("#workflowSave").off("click").on("click", () => {
-                loadingStart();
-                PUT("providers", "json", false, { "body": $.trim(editor.getValue()) }).
-                done(() => {
-                    message(i18n("providers.fileWasSaved"))
-                }).
-                fail(FAIL).
-                always(() => {
-                    loadingDone();
-                });
-            });
+        GET("providers", "provider", false, true).
+        done(response => {
+            console.log(response);
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    caption: i18n("providers.providers"),
+                    button: {
+                        caption: i18n("providers.addProvider"),
+                        click: modules.providers.addProvider,
+                    },
+                },
+                edit: providerId => {
+                    modules.providers.modifyProvider(providerId);
+                },
+                columns: [
+                    {
+                        title: i18n("providers.id"),
+                    },
+                    {
+                        title: i18n("providers.uid"),
+                    },
+                    {
+                        title: i18n("providers.baseUrl"),
+                    },
+                    {
+                        title: i18n("providers.name"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in response.providers) {
+                        rows.push({
+                            uid: response.providers[i].providerId,
+                            cols: [
+                                {
+                                    data: response.providers[i].id,
+                                },
+                                {
+                                    data: response.providers[i].uid,
+                                },
+                                {
+                                    data: response.providers[i].baseUrl,
+                                },
+                                {
+                                    data: response.providers[i].name,
+                                },
+                            ],
+                        });
+                    }
+
+                    return rows;
+                },
+            }).show();
         }).
         fail(FAIL).
         always(() => {

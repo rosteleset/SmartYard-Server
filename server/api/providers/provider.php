@@ -19,13 +19,13 @@
 
                 $providers = $providers->getProviders();
 
-                return api::ANSWER($providers, ($providers !== false)?"json":"notAcceptable");
+                return api::ANSWER($providers, ($providers !== false)?"providers":"notAcceptable");
             }
 
             public static function PUT($params) {
                 $providers = loadBackend("providers");
 
-                $success = $providers->modifyProvider($params["_id"], $params["id"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
+                $success = $providers->modifyProvider($params["_id"], $params["uid"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
 
                 return api::ANSWER($success);
             }
@@ -33,7 +33,7 @@
             public static function POST($params) {
                 $providers = loadBackend("providers");
 
-                $success = $providers->createProvider($params["id"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
+                $success = $providers->createProvider($params["uid"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
 
                 return api::ANSWER($success);
             }
