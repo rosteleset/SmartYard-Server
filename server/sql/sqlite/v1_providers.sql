@@ -7,7 +7,9 @@ CREATE TABLE providers
     base_url text,
     logo text,
     token text,
-    allow_sms integer,
-    allow_flash_call integer,
-    allow_outgoing_call integer
+    token_common text,                                                                                                  -- for push and outgoing calls
+    token_flash_call text,
+    token_sms text
 );
+CREATE UNIQUE INDEX providers_id on providers (id);
+CREATE UNIQUE INDEX providers_name on providers (name);
