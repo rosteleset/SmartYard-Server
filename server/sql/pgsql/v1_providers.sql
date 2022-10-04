@@ -4,7 +4,7 @@ CREATE TABLE providers
     provider_id serial not null primary key,
     id character varying not null,
     name character varying,
-    baseUrl character varying,
+    base_url character varying,
     logo character varying,
     token character varying,
     allow_sms integer,
