@@ -6,7 +6,7 @@
 
     doAddProvider: function (provider) {
         loadingStart();
-        POST("providers", "providers", false, provider).
+        POST("providers", "provider", false, provider).
         fail(FAIL).
         done(() => {
             message(i18n("providers.providerWasAdded"));
@@ -16,7 +16,7 @@
 
     doModifyProvider: function (providerId, params) {
         loadingStart();
-        PUT("providers", "providers", providerId, params).
+        PUT("providers", "provider", providerId, params).
         fail(FAIL).
         done(() => {
             message(i18n("providers.providerWasChanged"));
@@ -26,7 +26,7 @@
 
     doDeleteRegion: function (providerId) {
         loadingStart();
-        DELETE("providers", "providers", providerId).
+        DELETE("providers", "provider", providerId).
         fail(FAIL).
         done(() => {
             message(i18n("providers.providerWasDeleted"));
@@ -133,7 +133,6 @@
                     footer: true,
                     borderless: true,
                     topApply: true,
-                    apply: i18n("add"),
                     size: "lg",
                     delete: i18n("providers.deleteProvider"),
                     fields: [

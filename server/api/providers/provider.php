@@ -25,7 +25,7 @@
             public static function PUT($params) {
                 $providers = loadBackend("providers");
 
-                $success = $providers->modifyProvider($params["_id"], $params["uid"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
+                $success = $providers->modifyProvider($params["_id"], $params["uid"], $params["name"], $params["baseUrl"], @$params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["tokenFlashCall"]);
 
                 return api::ANSWER($success);
             }
