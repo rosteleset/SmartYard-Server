@@ -2,6 +2,9 @@
 
     namespace hw\domophones {
 
+        use DateInterval;
+        use DateTime;
+
         require_once __DIR__ . '/../domophones.php';
 
         abstract class hikvision extends domophones {
@@ -48,6 +51,30 @@
                 return json_decode($res, true);
             }
 
+            protected function apartment_exists(int $apartment) {
+                $res = $this->api_call(
+                    'AccessControl/UserInfo/Search',
+                    'POST',
+                    [ 'format' => 'json' ],
+                    [
+                        'UserInfoSearchCond' => [
+                            'searchID' => (string) $apartment,
+                            'maxResults' => 1,
+                            'searchResultPosition' => 0,
+                            'EmployeeNoList' => [
+                                [ 'employeeNo' => (string) $apartment ]
+                            ],
+                        ],
+                    ]
+                );
+
+                if ($res['UserInfoSearch']['responseStatusStrg'] == 'OK') {
+                    return true;
+                }
+
+                return false;
+            }
+
             public function add_rfid(string $code) {
                 // TODO: Implement add_rfid() method.
             }
@@ -68,15 +95,45 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
+                $now = new DateTime();
+                $beginTime = $now->format('Y-m-dTH:i:s');
+                $endTime = $now->add(new DateInterval('P10Y'))->format('Y-m-dTH:i:s');
+
+                if ($this->apartment_exists($apartment)) {
+                    $method = 'PUT';
+                    $action = 'Modify';
+                } else {
+                    $method = 'POST';
+                    $action = 'Record';
+                }
+
                 $this->api_call(
-                    'AccessControl/UserInfo/Record',
-                    'PUT',
+                    "AccessControl/UserInfo/$action",
+                    $method,
                     [ 'format' => 'json' ],
                     [
                         'UserInfo' => [
-                            'employeeNo' => 1,
-                            'name' => 1,
+                            'employeeNo' => (string) $apartment,
+                            'name' => (string) $apartment,
                             'userType' => 'normal',
+                            'localUIRight' => false,
+                            'maxOpenDoorTime' => 0,
+                            'Valid' => [
+                                'enable' => true,
+                                'beginTime' => $beginTime,
+                                'endTime' => $endTime,
+                                'timeType' => 'local'
+                            ],
+                            'doorRight' => '1',
+                            'RightPlan' => [
+                                [
+                                    'doorNo' => 1,
+                                    'planTemplateNo' => '1'
+                                ]
+                            ],
+                            'roomNumber' => $apartment,
+                            'floorNumber' => 0,
+                            'userVerifyMode' => ''
                         ]
                     ]
                 );
