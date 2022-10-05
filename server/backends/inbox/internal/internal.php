@@ -36,5 +36,13 @@
             {
                 // TODO: Implement markMessage() method.
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function revokeMessage($msgId)
+            {
+                // TODO: Implement revokeMessage() method.
+            }
         }
     }
