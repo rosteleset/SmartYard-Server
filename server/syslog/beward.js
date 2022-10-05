@@ -1,31 +1,20 @@
-import SyslogServer, { SyslogError, SyslogMessage } from "ts-syslog";
-import { syslog_servers } from "../../config/config.json";
-import { thisMoment } from "./utils/now";
-import API from "./utils/api";
-
+const syslog = new (require("syslog-server"))();
+const { syslog_servers } = require("../config/config.json");
+const thisMoment = require("./utils/thisMoment");
+const API = require("./utils/api");
 const { port } = syslog_servers.beward;
-const server = new SyslogServer();
+let gate_rabbits = {};
 
-interface IGateRabbitItem {
-  prefix: number;
-  apartment: number;
-  expire: number;
-}
-interface IGateRabbitItems {
-  [index: string]: IGateRabbitItem;
-}
-
-let gate_rabbits: IGateRabbitItems = {};
-
-server.on("message", ({ date, host, message, protocol }: SyslogMessage) => {
-  let bw_msg = message.split(" - - ")[1].trim() as string;
-  console.log("::DEBUG::| messge: ", bw_msg);
+syslog.on("message", async ({ date, host, protocol, message }) => {
+  const now = thisMoment();
+  //   console.log(date, host, protocol, message);
+  let bw_msg = message.split(" - - ")[1].trim();
+  console.log(bw_msg);
 
   /**Отправка соощения в syslog
    * сделать фильтр для менее значимых событий
-   *
    */
-  API.sendLog({ date: thisMoment(), ip: host, msg: bw_msg });
+  await API.sendLog({ date: now, ip: host, msg: bw_msg });
 
   //Действия:
   //1 Открытие по ключу
@@ -92,14 +81,14 @@ server.on("message", ({ date, host, message, protocol }: SyslogMessage) => {
   }
 
   if (bw_msg.indexOf("Main door opened by button press") >= 0) {
-    API.doorIsOpen(host);
+    // API.doorIsOpen(host);
   }
 });
 
-server.on("error", (err: SyslogError) => {
+syslog.on("error", (err) => {
   console.error(err.message);
 });
 
-server.listen({ port }, () => {
+syslog.start({ port }, () => {
   console.log(`Start BEWARD syslog service on port ${port}`);
 });
