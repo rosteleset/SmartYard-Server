@@ -4,6 +4,7 @@
 
         require_once __DIR__ . '/../hw.php';
 
+        use backends\accounting\none;
         use Exception;
         use hw\hw;
 
@@ -71,7 +72,7 @@
             }
 
             /** Добавить RFID-ключ */
-            abstract public function add_rfid(string $code);
+            abstract public function add_rfid(string $code, int $apartment = 0);
 
             /** Очистка квартиры */
             abstract public function clear_apartment(int $apartment = -1);
