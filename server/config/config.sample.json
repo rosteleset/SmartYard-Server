@@ -106,7 +106,9 @@
 
         "isdn": {
             "backend": "lanta",
-            "secret": "<-- your secret here -->",
+            "flash_call_secret": "<-- your FlashCall secret here -->",
+            "sms_secret": "<-- your SMS secret here -->",
+            "common_secret": "<-- your common (PUSH and incoming call) secret here -->",
             "_comment": "supported subscriber's phone confirm methods: smsCode, outgoingCall or flashCall",
             "confirmMethod": "outgoingCall"
         },
