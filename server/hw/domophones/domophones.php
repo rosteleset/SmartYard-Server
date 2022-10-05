@@ -4,7 +4,6 @@
 
         require_once __DIR__ . '/../hw.php';
 
-        use backends\accounting\none;
         use Exception;
         use hw\hw;
 
