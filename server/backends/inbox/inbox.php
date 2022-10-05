@@ -18,7 +18,7 @@
              * @param $id
              * @param $msg
              * @param $action
-             * @return string|boolean
+             * @return integer|false
              */
             abstract public function sendMessage($id, $msg, $action);
 
@@ -26,7 +26,7 @@
              * @param $id
              * @param $dateFrom
              * @param $dateTo
-             * @return array|boolean
+             * @return array|false
              */
             abstract public function getMessages($id, $dateFrom = false, $dateTo = false);
 
@@ -43,5 +43,11 @@
              * @return boolean
              */
             abstract public function markMessage($msgId, $delivered = null, $readed = null);
+
+            /**
+             * @param $id
+             * @return array|false
+             */
+            abstract public function msgMonths($id);
         }
     }
