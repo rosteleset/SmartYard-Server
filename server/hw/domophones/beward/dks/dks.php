@@ -117,7 +117,7 @@
                 $this->api_call('cgi-bin/intercom_cgi', [ 'action' => 'set', $name => $value ]);
             }
 
-            public function add_rfid(string $code) {
+            public function add_rfid(string $code, int $apartment = 0) {
                 $this->api_call('cgi-bin/rfid_cgi', [ 'action' => 'add', 'Key' => $code ]);
             }
 

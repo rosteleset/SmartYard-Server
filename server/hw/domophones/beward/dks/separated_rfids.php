@@ -4,7 +4,7 @@
 
         trait separated_rfids {
 
-            public function add_rfid(string $code) {
+            public function add_rfid(string $code, int $apartment = 0) {
                 $this->api_call('cgi-bin/mifare_cgi', [ 'action' => 'add', 'Key' => $code, 'Type' => 1 ]);
                 $this->api_call('cgi-bin/extrfid_cgi', [ 'action' => 'add', 'Key' => $code, 'Type' => 1 ]);
             }

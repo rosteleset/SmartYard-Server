@@ -75,12 +75,42 @@
                 return false;
             }
 
-            public function add_rfid(string $code) {
-                // TODO: Implement add_rfid() method.
+            public function add_rfid(string $code, int $apartment = 0) {
+                $this->api_call(
+                    'AccessControl/CardInfo/Record',
+                    'POST',
+                    [ 'format' => 'json' ],
+                    [
+                        'CardInfo' => [
+                            'employeeNo' => (string) $apartment,
+                            'cardNo' => sprintf('0%09d', hexdec($code)),
+                            'cardType' => 'normalCard'
+                        ]
+                    ]
+                );
             }
 
             public function clear_apartment(int $apartment = -1) {
-                // TODO: Implement clear_apartment() method.
+                $payload = [
+                    'UserInfoDelCond' => [
+                        'EmployeeNoList' => []
+                    ]
+                ];
+
+                if ($apartment == -1) {
+                    for ($i = 1; $i <= 30; $i++) {
+                        $payload['UserInfoDelCond']['EmployeeNoList'][] = [ 'employeeNo' => (string) $i ];
+                    }
+                } else {
+                    $payload['UserInfoDelCond']['EmployeeNoList'][] = [ 'employeeNo' => (string) $apartment ];
+                }
+
+                $this->api_call(
+                    'AccessControl/UserInfo/Delete',
+                    'PUT',
+                    [ 'format' => 'json' ],
+                    $payload
+                );
             }
 
             public function clear_rfid(string $code = '') {

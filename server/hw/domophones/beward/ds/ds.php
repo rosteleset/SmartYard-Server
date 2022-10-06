@@ -79,7 +79,7 @@
                 ]);
             }
 
-            public function add_rfid(string $code) {
+            public function add_rfid(string $code, int $apartment = 0) {
                 // не используется
             }
 

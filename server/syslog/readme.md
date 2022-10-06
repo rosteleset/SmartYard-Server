@@ -3,13 +3,6 @@ install
 ```
 npm i
 ```
-
-build 
-
-```
-npm run build
-```
-
 start 
 
 ```

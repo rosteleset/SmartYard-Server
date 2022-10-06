@@ -2,24 +2,24 @@
   "name": "syslog",
   "version": "1.0.0",
   "description": "Intercom Syslog service",
+  "main": "beward.js",
   "scripts": {
-    "dev":"concurrently -k \"npm run dev-beward\" \"npm run dev-qtech\"",
-    "dev-beward": "ts-node-dev --respawn --transpile-only ./src/beward.ts",
-    "dev-qtech": "ts-node-dev --respawn --transpile-only ./src/qtech.ts",
-    "build": "tsc -p .",
-    "start:beward":"node ./dist/syslog/src/beward.js",
-    "start:qtech":"node ./dist/syslog/src/qtech.js",
-    "start": "concurrently -k \"npm run start:beward\" \"npm run start:qtech\""
+    "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:qtech\"",
+    "start": "concurrently -k \"npm run start:beward\" \"npm run start:qtech\"",
+    "start:beward": "node beward.js",
+    "start:qtech": "node qtech.js",
+    "dev:beward": "nodemon beward.js",
+    "dev:qtech": "nodemon qtech.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.0.0",
     "concurrently": "^7.4.0",
-    "ts-syslog": "^1.0.2"
+    "syslog-server": "^1.0.1"
   },
   "devDependencies": {
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^4.8.4"
+    "nodemon": "^2.0.20"
   }
 }
