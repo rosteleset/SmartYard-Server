@@ -75,6 +75,16 @@
                 return false;
             }
 
+            protected function get_apartments_number(): int {
+                $res = $this->api_call(
+                    'AccessControl/UserInfo/Count',
+                    'GET',
+                    [ 'format' => 'json' ]
+                );
+
+                return $res['UserInfoCount']['userNumber'];
+            }
+
             public function add_rfid(string $code, int $apartment = 0) {
                 $this->api_call(
                     'AccessControl/CardInfo/Record',
@@ -164,6 +174,24 @@
                             'roomNumber' => $apartment,
                             'floorNumber' => 0,
                             'userVerifyMode' => ''
+                        ]
+                    ]
+                );
+
+                $phone_numbers = [];
+
+                foreach ($sip_numbers as $value) {
+                    $phone_numbers[] = [ 'phoneNumber' => (string) $value ];
+                }
+
+                $this->api_call(
+                    'VideoIntercom/PhoneNumberRecords',
+                    'POST',
+                    [ 'format' => 'json' ],
+                    [
+                        'PhoneNumberRecord' => [
+                            'roomNo' => '1',
+                            'PhoneNumbers' => $phone_numbers
                         ]
                     ]
                 );
