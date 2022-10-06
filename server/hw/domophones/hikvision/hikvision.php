@@ -75,6 +75,32 @@
                 return false;
             }
 
+            protected function get_apartments(): array {
+                $apartments = [];
+                $pages_number = intdiv($this->get_apartments_number(), 20) + 1;
+
+                for ($i = 1; $i <= $pages_number; $i++) {
+                    $res = $this->api_call(
+                        'AccessControl/UserInfo/Search',
+                        'POST',
+                        [ 'format' => 'json' ],
+                        [
+                            'UserInfoSearchCond' => [
+                                'searchID' => '1',
+                                'maxResults' => 20,
+                                'searchResultPosition' => ($i - 1) * 20,
+                            ],
+                        ]
+                    );
+
+                    foreach ($res['UserInfoSearch']['UserInfo'] as $value) {
+                        $apartments[] = $value['roomNumber'];
+                    }
+                }
+
+                return $apartments;
+            }
+
             protected function get_apartments_number(): int {
                 $res = $this->api_call(
                     'AccessControl/UserInfo/Count',
@@ -101,26 +127,24 @@
             }
 
             public function clear_apartment(int $apartment = -1) {
-                $payload = [
-                    'UserInfoDelCond' => [
-                        'EmployeeNoList' => []
-                    ]
-                ];
-
                 if ($apartment == -1) {
-                    for ($i = 1; $i <= 30; $i++) {
-                        $payload['UserInfoDelCond']['EmployeeNoList'][] = [ 'employeeNo' => (string) $i ];
+                    foreach ($this->get_apartments() as $value) {
+                        $this->clear_apartment($value);
                     }
                 } else {
-                    $payload['UserInfoDelCond']['EmployeeNoList'][] = [ 'employeeNo' => (string) $apartment ];
+                    $this->api_call(
+                        'AccessControl/UserInfo/Delete',
+                        'PUT',
+                        [ 'format' => 'json' ],
+                        [
+                            'UserInfoDelCond' => [
+                                'EmployeeNoList' => [
+                                    [ 'employeeNo' => (string) $apartment ]
+                                ]
+                            ]
+                        ]
+                    );
                 }
-
-                $this->api_call(
-                    'AccessControl/UserInfo/Delete',
-                    'PUT',
-                    [ 'format' => 'json' ],
-                    $payload
-                );
             }
 
             public function clear_rfid(string $code = '') {
