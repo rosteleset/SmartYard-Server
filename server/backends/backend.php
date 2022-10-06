@@ -78,7 +78,7 @@
             }
 
             /**
-             * @param $part = [ 'minutely', 'hourly', 'daily' ]
+             * @param $part = [ 'minutely', 'hourly', 'daily', 'monthly' ]
              * @return false
              */
 

@@ -10,7 +10,7 @@
          * authenticate by local database
          */
 
-        class mongo extends attachments {
+        class internal extends attachments {
 
             /**
              * @inheritDoc

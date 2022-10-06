@@ -44,5 +44,13 @@
             {
                 // TODO: Implement revokeMessage() method.
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function msgMonths($id)
+            {
+                // TODO: Implement msgMonths() method.
+            }
         }
     }
