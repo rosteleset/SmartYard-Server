@@ -51,7 +51,7 @@
                 return json_decode($res, true);
             }
 
-            protected function apartment_exists(int $apartment) {
+            protected function apartment_exists(int $apartment): bool {
                 $res = $this->api_call(
                     'AccessControl/UserInfo/Search',
                     'POST',
@@ -83,7 +83,7 @@
                     [
                         'CardInfo' => [
                             'employeeNo' => (string) $apartment,
-                            'cardNo' => sprintf('0%09d', hexdec($code)),
+                            'cardNo' => sprintf("%'.010d", hexdec($code)),
                             'cardType' => 'normalCard'
                         ]
                     ]
@@ -369,7 +369,14 @@
             }
 
             public function get_audio_levels(): array {
-                return [];
+                $audio_in = $this->api_call('System/Audio/AudioIn/channels/1');
+                $audio_out = $this->api_call('System/Audio/AudioOut/channels/1');
+
+                return [
+                    $audio_in['AudioInVolumelist']['AudioInVlome']['volume'],
+                    $audio_out['AudioOutVolumelist']['AudioOutVlome']['volume'],
+                    $audio_out['AudioOutVolumelist']['AudioOutVlome']['talkVolume'],
+                ];
             }
 
             public function get_cms_allocation(): array {
@@ -381,6 +388,7 @@
             }
 
             public function get_rfids(): array {
+                // TODO
                 return [];
             }
 
