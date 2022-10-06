@@ -1,6 +1,6 @@
 {
     "api": {
-        "main": "http://127.0.0.1:8000/server/api.php",
+        "frontend": "http://127.0.0.1:8000/server/api.php",
         "asterisk": "http://127.0.0.1:8000/server/asterisk.php",
         "internal": "http://127.0.0.1:8000/server/internel.php",
         "mobile": "http://127.0.0.1:8000/server/mobile.php"
@@ -116,6 +116,15 @@
         "providers": {
             "backend": "lanta",
             "providers.json": "<!-- path to providers.json -->"
+        },
+
+        "inbox": {
+            "backend": "internal",
+            "archive": {
+                "dsn": "mysql:host=127.0.0.1;port=9004;dbname=default;charset=utf8mb4",
+                "username": "default",
+                "password": "<!-- password -->"
+            }
         }
     },
 
