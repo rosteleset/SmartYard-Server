@@ -111,6 +111,16 @@
                 return $res['UserInfoCount']['userNumber'];
             }
 
+            protected function get_rfids_number(): int {
+                $res = $this->api_call(
+                    'AccessControl/CardInfo/Count',
+                    'GET',
+                    [ 'format' => 'json' ]
+                );
+
+                return $res['CardInfoCount']['cardNumber'];
+            }
+
             public function add_rfid(string $code, int $apartment = 0) {
                 $this->api_call(
                     'AccessControl/CardInfo/Record',
@@ -130,6 +140,10 @@
                 if ($apartment == -1) {
                     foreach ($this->get_apartments() as $value) {
                         $this->clear_apartment($value);
+                        $this->api_call(
+                            'VideoIntercom/PhoneNumberRecords/10010110001',
+                            'DELETE'
+                        );
                     }
                 } else {
                     $this->api_call(
@@ -440,8 +454,29 @@
             }
 
             public function get_rfids(): array {
-                // TODO
-                return [];
+                $rfids = [];
+                $pages_number = intdiv($this->get_rfids_number(), 30) + 1;
+
+                for ($i = 1; $i <= $pages_number; $i++) {
+                    $res = $this->api_call(
+                        'AccessControl/CardInfo/Search',
+                        'POST',
+                        ['format' => 'json'],
+                        [
+                            'CardInfoSearchCond' => [
+                                'searchID' => '1',
+                                'maxResults' => 30,
+                                'searchResultPosition' => ($i - 1) * 30,
+                            ]
+                        ]
+                    );
+
+                    foreach ($res['CardInfoSearch']['CardInfo'] as $value) {
+                        $rfids[] = '000000' . strtoupper(dechex($value['cardNo']));
+                    }
+                }
+
+                return $rfids;
             }
 
             public function get_sysinfo(): array {
