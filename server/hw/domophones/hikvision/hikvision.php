@@ -12,7 +12,7 @@
             public $user = 'admin';
 
             protected $api_prefix = '/ISAPI/';
-            protected $def_pass = 'admin';
+            protected $def_pass = 'password123';
 
             protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
@@ -73,6 +73,21 @@
                 }
 
                 return false;
+            }
+
+            protected function enable_dhcp() {
+                $this->api_call(
+                    'System/Network/interfaces/1',
+                    'PUT',
+                    [],
+                    "<NetworkInterface>
+                                <id>1</id>
+                                <IPAddress>
+                                    <ipVersion>v4</ipVersion>
+                                    <addressingType>dynamic</addressingType>
+                                </IPAddress>
+                            </NetworkInterface>"
+                );
             }
 
             protected function get_apartments(): array {
@@ -513,7 +528,18 @@
             }
 
             public function set_admin_password(string $password) {
-                // TODO: Implement set_admin_password() method.
+                $this->api_call(
+                    'Security/users/1',
+                    'PUT',
+                    [],
+                    "<User>
+                                <id>1</id>
+                                <userName>admin</userName>
+                                <password>$password</password>
+                                <userLevel>Administrator</userLevel>
+                                <loginPassword>$this->pass</loginPassword>
+                            </User>"
+                );
             }
 
             public function set_audio_levels(array $levels) {
@@ -674,6 +700,7 @@
 
             public function reset() {
                 $this->api_call('System/factoryReset', 'PUT', [ 'mode' => 'basic' ]);
+                $this->enable_dhcp();
             }
 
         }
