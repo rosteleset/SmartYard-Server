@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Intercom Syslog service",
   "main": "beward.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:qtech\"",
     "start": "concurrently -k \"npm run start:beward\" \"npm run start:qtech\"",
@@ -15,11 +16,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.0.0",
+    "axios": "^1.1.0",
     "concurrently": "^7.4.0",
     "syslog-server": "^1.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=18.0.0"
   }
 }
