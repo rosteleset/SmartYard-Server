@@ -1,6 +1,6 @@
 {
     "api": {
-        "frontend": "http://127.0.0.1:8000/server/api.php",
+        "frontend": "http://127.0.0.1:8000/server/frontend.php",
         "asterisk": "http://127.0.0.1:8000/server/asterisk.php",
         "internal": "http://127.0.0.1:8000/server/internel.php",
         "mobile": "http://127.0.0.1:8000/server/mobile.php"
