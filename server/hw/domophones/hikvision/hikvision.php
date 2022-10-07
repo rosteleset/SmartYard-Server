@@ -12,7 +12,7 @@
             public $user = 'admin';
 
             protected $api_prefix = '/ISAPI/';
-            protected $def_pass = 'admin';
+            protected $def_pass = 'password123';
 
             protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
@@ -75,6 +75,67 @@
                 return false;
             }
 
+            protected function enable_dhcp() {
+                $this->api_call(
+                    'System/Network/interfaces/1',
+                    'PUT',
+                    [],
+                    "<NetworkInterface>
+                                <id>1</id>
+                                <IPAddress>
+                                    <ipVersion>v4</ipVersion>
+                                    <addressingType>dynamic</addressingType>
+                                </IPAddress>
+                            </NetworkInterface>"
+                );
+            }
+
+            protected function get_apartments(): array {
+                $apartments = [];
+                $pages_number = intdiv($this->get_apartments_number(), 20) + 1;
+
+                for ($i = 1; $i <= $pages_number; $i++) {
+                    $res = $this->api_call(
+                        'AccessControl/UserInfo/Search',
+                        'POST',
+                        [ 'format' => 'json' ],
+                        [
+                            'UserInfoSearchCond' => [
+                                'searchID' => '1',
+                                'maxResults' => 20,
+                                'searchResultPosition' => ($i - 1) * 20,
+                            ],
+                        ]
+                    );
+
+                    foreach ($res['UserInfoSearch']['UserInfo'] as $value) {
+                        $apartments[] = $value['roomNumber'];
+                    }
+                }
+
+                return $apartments;
+            }
+
+            protected function get_apartments_number(): int {
+                $res = $this->api_call(
+                    'AccessControl/UserInfo/Count',
+                    'GET',
+                    [ 'format' => 'json' ]
+                );
+
+                return $res['UserInfoCount']['userNumber'];
+            }
+
+            protected function get_rfids_number(): int {
+                $res = $this->api_call(
+                    'AccessControl/CardInfo/Count',
+                    'GET',
+                    [ 'format' => 'json' ]
+                );
+
+                return $res['CardInfoCount']['cardNumber'];
+            }
+
             public function add_rfid(string $code, int $apartment = 0) {
                 $this->api_call(
                     'AccessControl/CardInfo/Record',
@@ -91,26 +152,28 @@
             }
 
             public function clear_apartment(int $apartment = -1) {
-                $payload = [
-                    'UserInfoDelCond' => [
-                        'EmployeeNoList' => []
-                    ]
-                ];
-
                 if ($apartment == -1) {
-                    for ($i = 1; $i <= 30; $i++) {
-                        $payload['UserInfoDelCond']['EmployeeNoList'][] = [ 'employeeNo' => (string) $i ];
+                    foreach ($this->get_apartments() as $value) {
+                        $this->clear_apartment($value);
+                        $this->api_call(
+                            'VideoIntercom/PhoneNumberRecords/10010110001',
+                            'DELETE'
+                        );
                     }
                 } else {
-                    $payload['UserInfoDelCond']['EmployeeNoList'][] = [ 'employeeNo' => (string) $apartment ];
+                    $this->api_call(
+                        'AccessControl/UserInfo/Delete',
+                        'PUT',
+                        [ 'format' => 'json' ],
+                        [
+                            'UserInfoDelCond' => [
+                                'EmployeeNoList' => [
+                                    [ 'employeeNo' => (string) $apartment ]
+                                ]
+                            ]
+                        ]
+                    );
                 }
-
-                $this->api_call(
-                    'AccessControl/UserInfo/Delete',
-                    'PUT',
-                    [ 'format' => 'json' ],
-                    $payload
-                );
             }
 
             public function clear_rfid(string $code = '') {
@@ -164,6 +227,24 @@
                             'roomNumber' => $apartment,
                             'floorNumber' => 0,
                             'userVerifyMode' => ''
+                        ]
+                    ]
+                );
+
+                $phone_numbers = [];
+
+                foreach ($sip_numbers as $value) {
+                    $phone_numbers[] = [ 'phoneNumber' => (string) $value ];
+                }
+
+                $this->api_call(
+                    'VideoIntercom/PhoneNumberRecords',
+                    'POST',
+                    [ 'format' => 'json' ],
+                    [
+                        'PhoneNumberRecord' => [
+                            'roomNo' => '1',
+                            'PhoneNumbers' => $phone_numbers
                         ]
                     ]
                 );
@@ -388,8 +469,29 @@
             }
 
             public function get_rfids(): array {
-                // TODO
-                return [];
+                $rfids = [];
+                $pages_number = intdiv($this->get_rfids_number(), 30) + 1;
+
+                for ($i = 1; $i <= $pages_number; $i++) {
+                    $res = $this->api_call(
+                        'AccessControl/CardInfo/Search',
+                        'POST',
+                        ['format' => 'json'],
+                        [
+                            'CardInfoSearchCond' => [
+                                'searchID' => '1',
+                                'maxResults' => 30,
+                                'searchResultPosition' => ($i - 1) * 30,
+                            ]
+                        ]
+                    );
+
+                    foreach ($res['CardInfoSearch']['CardInfo'] as $value) {
+                        $rfids[] = '000000' . strtoupper(dechex($value['cardNo']));
+                    }
+                }
+
+                return $rfids;
             }
 
             public function get_sysinfo(): array {
@@ -426,7 +528,18 @@
             }
 
             public function set_admin_password(string $password) {
-                // TODO: Implement set_admin_password() method.
+                $this->api_call(
+                    'Security/users/1',
+                    'PUT',
+                    [],
+                    "<User>
+                                <id>1</id>
+                                <userName>admin</userName>
+                                <password>$password</password>
+                                <userLevel>Administrator</userLevel>
+                                <loginPassword>$this->pass</loginPassword>
+                            </User>"
+                );
             }
 
             public function set_audio_levels(array $levels) {
@@ -587,6 +700,7 @@
 
             public function reset() {
                 $this->api_call('System/factoryReset', 'PUT', [ 'mode' => 'basic' ]);
+                $this->enable_dhcp();
             }
 
         }
