@@ -167,8 +167,8 @@
                 ];
 
                 if (count($levels) == 2) {
-                    $params[] = [ 'HandsetUpLevel' => $levels[0] ];
-                    $params[] = [ 'DoorOpenLevel' => $levels[1] ];
+                    $params['HandsetUpLevel'] = $levels[0];
+                    $params['DoorOpenLevel'] = $levels[1];
                 }
 
                 for ($i = 1; $i <= count($sip_numbers); $i++) {
