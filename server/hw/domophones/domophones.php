@@ -231,8 +231,6 @@
             ) {
                 $this->keep_doors_unlocked();
                 $this->set_unlock_time(5);
-                $this->set_concierge_number(9999);
-                $this->set_sos_number(112);
                 $this->enable_public_code(false);
                 $this->set_call_timeout(45);
                 $this->set_talk_timeout(90);
@@ -245,6 +243,8 @@
                 $this->configure_syslog($syslog_server, $syslog_port);
                 $this->clear_rfid();
                 $this->clear_apartment();
+                $this->set_concierge_number(9999);
+                $this->set_sos_number(112);
                 $this->set_cms_model($cms_model);
                 $this->configure_gate([]);
             }
