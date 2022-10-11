@@ -209,7 +209,9 @@
             abstract public function write_config();
 
             /** Подготовить панель */
-            abstract public function prepare();
+            public function prepare() {
+                $this->configure_video_encoding();
+            }
 
             /** Очистить и настроить панель */
             public function clean(
@@ -245,7 +247,6 @@
                 $this->clear_apartment();
                 $this->set_cms_model($cms_model);
                 $this->configure_gate([]);
-                $this->configure_video_encoding();
             }
 
         }

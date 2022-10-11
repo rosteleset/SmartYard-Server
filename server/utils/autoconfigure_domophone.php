@@ -4,6 +4,7 @@
         global $config;
 
         $households = loadBackend('households');
+
         $domophone = $households->getDomophone($domophoneId);
         $entrance = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ])[0];
         $asterisk_server = $households->getAsteriskServer($domophoneId);
@@ -64,12 +65,21 @@
         }
 
         foreach ($flats as $flat) {
+            $apartment_levels = $cms_levels;
+
+            foreach ($flat['entrances'] as $flat_entrance) {
+                if (isset($flat_entrance['domophoneId']) && $flat_entrance['domophoneId'] == $domophoneId) {
+                    $apartment_levels = $flat_entrance['apartmentLevels'];
+                }
+            }
+
             $panel->configure_apartment(
                 $flat['flat'],
                 (bool) $flat['openCode'],
                 $flat['cmsEnabled'],
                 [ sprintf('1%09d', $flat['flatId']) ],
-                $flat['openCode'] ?: 0
+                $flat['openCode'] ?: 0,
+                explode(',', $apartment_levels)
             );
 
             $keys = $households->getKeys('flat', $flat['flatId']);

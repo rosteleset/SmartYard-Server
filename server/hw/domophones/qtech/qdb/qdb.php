@@ -788,6 +788,7 @@
             }
 
             public function prepare() {
+                parent::prepare();
                 $this->bind_inputs();
                 $this->enable_display_heat();
                 $this->enable_ftp(false);

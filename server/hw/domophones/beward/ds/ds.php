@@ -427,6 +427,7 @@
             }
 
             public function prepare() {
+                parent::prepare();
                 $this->enable_bonjour(false);
                 $this->enable_upnp(false);
                 $this->configure_audio();

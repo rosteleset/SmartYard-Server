@@ -692,6 +692,7 @@
 
             public function prepare() {
                 // TODO: Implement prepare() method.
+                parent::prepare();
             }
 
             public function reboot() {

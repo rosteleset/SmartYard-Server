@@ -666,6 +666,7 @@
             }
 
             public function prepare() {
+                parent::prepare();
                 $this->enable_upnp(false);
                 $this->set_alarm('SOSCallActive', 'on');
                 $this->set_intercom('AlertNoUSBDisk', 'off');
