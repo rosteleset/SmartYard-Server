@@ -154,5 +154,10 @@
     "syslog_servers": {
         "beward": { "address": "127.0.0.1", "port": 45450 },
         "qtech": { "address": "127.0.0.1", "port": 45451 }
-      }
+    },
+
+    "ntp_servers": [
+        { "address": "127.0.0.1", "port": 123 },
+        { "address": "127.0.0.2", "port": 123 }
+    ]
 }
