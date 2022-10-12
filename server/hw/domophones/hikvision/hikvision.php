@@ -263,11 +263,11 @@
             }
 
             public function configure_md(
-                int $sensitivity,
+                int $sensitivity = 4,
                 int $left = 0,
                 int $top = 0,
-                int $width = 0,
-                int $height = 0
+                int $width = 705,
+                int $height = 576
             ) {
                 // TODO: Implement configure_md() method.
             }

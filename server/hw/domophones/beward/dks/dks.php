@@ -258,7 +258,13 @@
                 $this->api_call('cgi-bin/gate_cgi', $params);
             }
 
-            public function configure_md(int $sensitivity, int $left = 0, int $top = 0, int $width = 0, int $height = 0) {
+            public function configure_md(
+                int $sensitivity = 4,
+                int $left = 0,
+                int $top = 0,
+                int $width = 705,
+                int $height = 576
+            ) {
                 $params = [
                     'sens' => $sensitivity ? ($sensitivity - 1) : 0,
                     'ckdetect' => $sensitivity ? '1' : '0',
