@@ -12,7 +12,7 @@
     header('Content-Type: application/json');
 
     try {
-        $config = @json_decode(file_get_contents("config/config.json"), true);
+        $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
     } catch (Exception $e) {
         echo "can't load config file\n";
         exit(1);
