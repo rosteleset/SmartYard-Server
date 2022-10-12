@@ -30,7 +30,6 @@ __pycache__
 /server/vendor
 /server/backends/tt/mongo/customWorkflows/
 /server/backends/tt/mongo/filters/
-/server/syslog/dist/
 /api/
 /doc/
 /.stylelintrc.json

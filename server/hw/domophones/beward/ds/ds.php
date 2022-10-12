@@ -79,7 +79,7 @@
                 ]);
             }
 
-            public function add_rfid(string $code) {
+            public function add_rfid(string $code, int $apartment = 0) {
                 // не используется
             }
 
@@ -127,11 +127,11 @@
             }
 
             public function configure_md(
-                int $sensitivity,
+                int $sensitivity = 4,
                 int $left = 0,
                 int $top = 0,
-                int $width = 0,
-                int $height = 0
+                int $width = 705,
+                int $height = 576
             ) {
                 $params = [
                     'sens' => $sensitivity ? ($sensitivity - 1) : 0,
@@ -427,6 +427,7 @@
             }
 
             public function prepare() {
+                parent::prepare();
                 $this->enable_bonjour(false);
                 $this->enable_upnp(false);
                 $this->configure_audio();

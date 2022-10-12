@@ -66,7 +66,6 @@
                 return false;
             }
 
-
             /**
              * check if object is used in backend
              * for example, usage("house", 4474)
@@ -78,9 +77,8 @@
                 return false;
             }
 
-
             /**
-             * @param $part = [ 'minutely', 'hourly', 'daily' ]
+             * @param $part = [ 'minutely', 'hourly', 'daily', 'monthly' ]
              * @return false
              */
 

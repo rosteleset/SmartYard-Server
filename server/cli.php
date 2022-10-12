@@ -180,6 +180,29 @@
         exit(0);
     }
 
+    if (count($args) == 2 && array_key_exists("--cron", $args)) {
+        $parts = [ "minutely", "hourly", "daily", "monthly" ];
+        $part = false;
+
+        foreach ($parts as $p) {
+            if (array_key_exists($p, $args)) {
+                $part = $p;
+            }
+        }
+
+        if ($part) {
+            foreach ($config["backends"] as $backend => $cfg) {
+                echo "$backend\n";
+                $backend = loadBackend($backend);
+                if ($backend) {
+                    $backend->cron($part);
+                }
+            }
+        }
+
+        exit(0);
+    }
+
     if (count($args) == 1 || count($args) == 2
         && array_key_exists("--autoconfigure-domophone", $args)
         && isset($args["--autoconfigure-domophone"]))

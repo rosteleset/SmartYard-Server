@@ -1,6 +1,6 @@
 {
     "api": {
-        "main": "http://127.0.0.1:8000/server/api.php",
+        "frontend": "http://127.0.0.1:8000/server/frontend.php",
         "asterisk": "http://127.0.0.1:8000/server/asterisk.php",
         "internal": "http://127.0.0.1:8000/server/internel.php",
         "mobile": "http://127.0.0.1:8000/server/mobile.php"
@@ -106,7 +106,9 @@
 
         "isdn": {
             "backend": "lanta",
-            "secret": "<-- your secret here -->",
+            "flash_call_secret": "<-- your FlashCall secret here -->",
+            "sms_secret": "<-- your SMS secret here -->",
+            "common_secret": "<-- your common (PUSH and incoming call) secret here -->",
             "_comment": "supported subscriber's phone confirm methods: smsCode, outgoingCall or flashCall",
             "confirmMethod": "outgoingCall"
         },
@@ -114,6 +116,15 @@
         "providers": {
             "backend": "lanta",
             "providers.json": "<!-- path to providers.json -->"
+        },
+
+        "inbox": {
+            "backend": "internal",
+            "archive": {
+                "dsn": "mysql:host=127.0.0.1;port=9004;dbname=default;charset=utf8mb4",
+                "username": "default",
+                "password": "<!-- password -->"
+            }
         }
     },
 
@@ -157,7 +168,6 @@
     },
 
     "ntp_servers": [
-        { "address": "127.0.0.1", "port": 123 },
-        { "address": "127.0.0.2", "port": 123 }
+        "ntp://80.240.216.155:123"
     ]
 }

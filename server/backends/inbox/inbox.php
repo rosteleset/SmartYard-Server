@@ -18,7 +18,7 @@
              * @param $id
              * @param $msg
              * @param $action
-             * @return mixed
+             * @return integer|false
              */
             abstract public function sendMessage($id, $msg, $action);
 
@@ -26,16 +26,28 @@
              * @param $id
              * @param $dateFrom
              * @param $dateTo
-             * @return mixed
+             * @return array|false
              */
             abstract public function getMessages($id, $dateFrom = false, $dateTo = false);
 
             /**
              * @param $msgId
+             * @return boolean
+             */
+            abstract public function revokeMessage($msgId);
+
+            /**
+             * @param $msgId
              * @param $delivered
              * @param $readed
-             * @return mixed
+             * @return boolean
              */
             abstract public function markMessage($msgId, $delivered = null, $readed = null);
+
+            /**
+             * @param $id
+             * @return array|false
+             */
+            abstract public function msgMonths($id);
         }
     }

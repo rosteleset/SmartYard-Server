@@ -117,7 +117,7 @@
                 $this->api_call('cgi-bin/intercom_cgi', [ 'action' => 'set', $name => $value ]);
             }
 
-            public function add_rfid(string $code) {
+            public function add_rfid(string $code, int $apartment = 0) {
                 $this->api_call('cgi-bin/rfid_cgi', [ 'action' => 'add', 'Key' => $code ]);
             }
 
@@ -167,8 +167,8 @@
                 ];
 
                 if (count($levels) == 2) {
-                    $params[] = [ 'HandsetUpLevel' => $levels[0] ];
-                    $params[] = [ 'DoorOpenLevel' => $levels[1] ];
+                    $params['HandsetUpLevel'] = $levels[0];
+                    $params['DoorOpenLevel'] = $levels[1];
                 }
 
                 for ($i = 1; $i <= count($sip_numbers); $i++) {
@@ -258,7 +258,13 @@
                 $this->api_call('cgi-bin/gate_cgi', $params);
             }
 
-            public function configure_md(int $sensitivity, int $left = 0, int $top = 0, int $width = 0, int $height = 0) {
+            public function configure_md(
+                int $sensitivity = 4,
+                int $left = 0,
+                int $top = 0,
+                int $width = 705,
+                int $height = 576
+            ) {
                 $params = [
                     'sens' => $sensitivity ? ($sensitivity - 1) : 0,
                     'ckdetect' => $sensitivity ? '1' : '0',
@@ -666,6 +672,7 @@
             }
 
             public function prepare() {
+                parent::prepare();
                 $this->enable_upnp(false);
                 $this->set_alarm('SOSCallActive', 'on');
                 $this->set_intercom('AlertNoUSBDisk', 'off');

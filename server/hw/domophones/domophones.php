@@ -71,7 +71,7 @@
             }
 
             /** Добавить RFID-ключ */
-            abstract public function add_rfid(string $code);
+            abstract public function add_rfid(string $code, int $apartment = 0);
 
             /** Очистка квартиры */
             abstract public function clear_apartment(int $apartment = -1);
@@ -106,11 +106,11 @@
 
             /** Настроить параметры обнаружения движения */
             abstract public function configure_md(
-                int $sensitivity,
+                int $sensitivity = 4,
                 int $left = 0,
                 int $top = 0,
-                int $width = 0,
-                int $height = 0
+                int $width = 705,
+                int $height = 576
             );
 
             /** Настроить NTP */
@@ -209,7 +209,9 @@
             abstract public function write_config();
 
             /** Подготовить панель */
-            abstract public function prepare();
+            public function prepare() {
+                $this->configure_video_encoding();
+            }
 
             /** Очистить и настроить панель */
             public function clean(
@@ -229,8 +231,6 @@
             ) {
                 $this->keep_doors_unlocked();
                 $this->set_unlock_time(5);
-                $this->set_concierge_number(9999);
-                $this->set_sos_number(112);
                 $this->enable_public_code(false);
                 $this->set_call_timeout(45);
                 $this->set_talk_timeout(90);
@@ -243,9 +243,10 @@
                 $this->configure_syslog($syslog_server, $syslog_port);
                 $this->clear_rfid();
                 $this->clear_apartment();
+                $this->set_concierge_number(9999);
+                $this->set_sos_number(112);
                 $this->set_cms_model($cms_model);
                 $this->configure_gate([]);
-                $this->configure_video_encoding();
             }
 
         }

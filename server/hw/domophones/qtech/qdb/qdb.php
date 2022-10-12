@@ -294,7 +294,7 @@
                 $this->set_params($params);
             }
 
-            public function add_rfid(string $code) {
+            public function add_rfid(string $code, int $apartment = 0) {
                 $data = [
                     'name' => '',
                     'code' => $code,
@@ -386,11 +386,11 @@
             }
 
             public function configure_md(
-                int $sensitivity,
+                int $sensitivity = 4,
                 int $left = 0,
                 int $top = 0,
-                int $width = 0,
-                int $height = 0
+                int $width = 705,
+                int $height = 576
             ) {
                 $params = $this->params_to_str([
                     'Config.DoorSetting.MOTION_DETECT.MotionDectect' => 1,
@@ -788,6 +788,7 @@
             }
 
             public function prepare() {
+                parent::prepare();
                 $this->bind_inputs();
                 $this->enable_display_heat();
                 $this->enable_ftp(false);
