@@ -1,8 +1,9 @@
 const syslog = new (require("syslog-server"))();
 const { syslog_servers } = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
+const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
-const { port } = syslog_servers.qtech;
+const { port } = urlParser(syslog_servers.qtech);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
@@ -51,7 +52,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   //Детектор движения
   if (at_msg_parts[1] === "000" && at_msg_parts[3] === "Send Photo") {
-    console.log(":: Обнаружения движения");
+    console.log(":: Обнаружение движения");
     await API.motionDetection(host, true);
   }
 });
