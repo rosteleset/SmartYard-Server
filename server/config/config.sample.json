@@ -146,6 +146,9 @@
         ],
         "qtech": [
             "syslog.udp:127.0.0.1:45451"
+        ],
+        "hikvision": [
+            "syslog.udp:127.0.0.1:45452"
         ]
     },
 
