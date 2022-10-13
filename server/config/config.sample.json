@@ -126,7 +126,7 @@
             "http_port": 8088,
             "ari_username": "domophone",
             "ari_password": "<!-- your very secret password here -->",
-            "stun_server": "stun:37.235.209.140:3478",
+            "stun_server": "stun:127.0.0.1:3478",
             "incoming_title": "Входящий вызов",
             "call_failed": "Пропущенный вызов"
         }
