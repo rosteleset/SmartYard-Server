@@ -1,5 +1,5 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
-const axios = require("axios").default;
+const axios = require("axios");
 
 const rbt = axios.create({
   baseURL: "http://127.0.0.1:8084/75779b1f-8c0b-4213-a23e-515c5c684719",
@@ -10,6 +10,19 @@ const frs = axios.create({
 });
 
 class API {
+  /**
+   * Устанавливаем последнее общение с панелью
+   * @param {string} host
+   * @returns
+   */
+  async lastSeen(host) {
+    try {
+      return await rtb.post("/lastSeen", host);
+    } catch (error) {
+      console.error("Error", error.message);
+    }
+  }
+
   /**
    * Отправка syslog messages to internal php
    * @param data
@@ -96,7 +109,7 @@ class API {
   // домофон в режиме калитки на несколько домов
   async incomingDTMF() {}
 
-  async openBycode({host,code}) {}
+  async openBycode({ host, code }) {}
 
   /**
    * Получить frs_server, stream_id из RBT (internal.php), сделать запрос на FRS
