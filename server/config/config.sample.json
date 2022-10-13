@@ -132,10 +132,6 @@
         }
     ],
 
-    "telegram": {
-        "token": "your_bot_token_here"
-    },
-
     "email": {
         "server": "127.0.0.1",
         "port": 587,
