@@ -13,6 +13,7 @@
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
     require_once "utils/db_ext.php";
+    require_once "utils/parse_uri.php";
 
     require_once "backends/backend.php";
 
