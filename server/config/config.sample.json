@@ -143,11 +143,6 @@
         "token": "your_bot_token_here"
     },
 
-    "real_ip_header": [
-        "HTTP_X_FORWARDED_FOR",
-        "REMOTE_ADDR"
-    ],
-
     "email": {
         "server": "127.0.0.1",
         "port": 587,
