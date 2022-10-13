@@ -37,12 +37,6 @@
         "token_idle_ttl": 3600
     },
 
-    "clickhouse": {
-        "dsn": "mysql:host=127.0.0.1;port=9004;dbname=default;charset=utf8mb4",
-        "username": "default",
-        "passwowrd": "<!-- your very secret password here -->"
-    },
-
     "backends": {
         "authentication": {
             "backend": "internal"
@@ -103,8 +97,7 @@
             "flash_call_secret": "<-- your FlashCall secret here -->",
             "sms_secret": "<-- your SMS secret here -->",
             "common_secret": "<-- your common (PUSH and incoming call) secret here -->",
-            "_comment": "supported subscriber's phone confirm methods: smsCode, outgoingCall or flashCall",
-            "confirmMethod": "outgoingCall"
+            "confirmMethod": "outgoingCall|smsCode|flashCall"
         },
 
         "providers": {
@@ -151,14 +144,14 @@
         "from": "RBT"
     },
 
-    "syslog_servers": [
-        {
-            "beward": "syslog.udp:127.0.0.1:45450"
-        },
-        {
-            "qtech": "syslog.udp:127.0.0.1:45451"
-        }
-    ],
+    "syslog_servers": {
+        "beward": [
+            "syslog.udp:127.0.0.1:45450"
+        ],
+        "qtech": [
+            "syslog.udp:127.0.0.1:45451"
+        ]
+    },
 
     "ntp_servers": [
         "ntp:127.0.0.1:123"
