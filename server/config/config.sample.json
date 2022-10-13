@@ -62,13 +62,7 @@
 
         "geocoder": {
             "backend": "dadata",
-            "token": "<!-- your dadata token here --!>",
-            "location is optional, can limit geocoder, see dadata api": "!!! comment, remove this line !!!",
-            "locations": [
-                {
-                    "fias_id": "a9a71961-9363-44ba-91b5-ddf0463aebc2"
-                }
-            ]
+            "token": "<!-- your dadata token here --!>"
         },
 
         "tt": {
@@ -123,7 +117,7 @@
             "archive": {
                 "dsn": "mysql:host=127.0.0.1;port=9004;dbname=default;charset=utf8mb4",
                 "username": "default",
-                "password": "<!-- password -->"
+                "password": "<!-- your very secret password here -->"
             }
         }
     },
@@ -135,10 +129,10 @@
             "sip_tcp_port": 5060,
             "sip_udp_port": 5060,
             "ami_port": 5038,
-            "ami_password": "b47c9917fd1eed2b450483282faea0cf",
+            "ami_password": "<!-- your very secret password here -->",
             "http_port": 8088,
             "ari_username": "domophone",
-            "ari_password": "b47c9917fd1eed2b450483282faea0cf",
+            "ari_password": "<!-- your very secret password here -->",
             "stun_server": "stun:37.235.209.140:3478",
             "incoming_title": "Входящий вызов",
             "call_failed": "Пропущенный вызов"
