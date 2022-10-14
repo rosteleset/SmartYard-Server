@@ -13,9 +13,8 @@
         $flats = $households->getFlats('domophone', $domophoneId);
 
         print_r($entrance);
-        print_r($asterisk_server);
         print_r($domophone);
-        print_r($flats);
+//        print_r($flats);
 //        print_r($cms_allocation);
 //        print_r($cmses);
 
@@ -30,17 +29,26 @@
             $panel->prepare();
         }
 
-        [ 'host' => $ntp_server, 'port' => $ntp_port ] = parse_url($config['ntp_servers'][0]);
-        [ 'host' => $syslog_server, 'port' => $syslog_port ] = parse_url($domophone['syslog']);
+        $ntp = parseURI($config['ntp_servers'][0]);
+        $ntp_server = $ntp['host'];
+        $ntp_port = $ntp['port'] ?? 123;
+
+        $syslog = parse_url($domophone['syslog']);
+        $syslog_server = $syslog['host'];
+        $syslog_port = $syslog['port'] ?? 514;
 
         $sip_username = sprintf("1%05d", $domophone['domophoneId']);
         $sip_server = $asterisk_server['ip'];
         $sip_port = $asterisk_server['sip_tcp_port'];
 
         $nat = (bool) $domophone['nat'];
-        [, $stun_server, $stun_port ] = explode(':', $asterisk_server['stun_server']);
+
+        $stun = parseURI($asterisk_server['stun_server']);
+        $stun_server = $stun['host'];
+        $stun_port = $stun['port'] ?? 3478;
 
         $audio_levels = [];
+
         $cms_levels = explode(',', $entrance['cmsLevels']);
         $cms_model = (string) @$cmses[$entrance['cms']]['model'];
 
@@ -59,6 +67,19 @@
             $stun_server,
             $stun_port
         );
+
+//        if ($entrance['entranceType'] != 'entrance') {
+//
+//            if ($entrance['entranceType'] == 'wicket') {
+//                // [addr, prefix, begin, end]
+//                $links = [
+//
+//                ];
+//
+//                $panel->configure_gate($links);
+//            }
+//
+//        }
 
         foreach ($cms_allocation as $item) {
             $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment'], $cms_model);
@@ -89,6 +110,7 @@
             }
         }
 
+        $panel->configure_md();
         $panel->set_display_text($domophone['callerId']);
         $panel->set_video_overlay($domophone['callerId']);
         $panel->keep_doors_unlocked($entrance['locksDisabled']);

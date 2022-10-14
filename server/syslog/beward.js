@@ -1,14 +1,24 @@
 const syslog = new (require("syslog-server"))();
 const { syslog_servers } = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
+const {urlParser} = require("./utils/url_parser")
 const API = require("./utils/api");
-const { port } = syslog_servers.beward;
+const { port } = urlParser(syslog_servers.beward);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = thisMoment();
-  //   console.log(date, host, protocol, message);
   let bw_msg = message.split(" - - ")[1].trim();
+  await API.lastSeen(host);
+
+   //Фиьтр сообщений не несущих смысловой нагрузки
+   if (
+    bw_msg.indexOf("RTSP") >= 0 ||
+    bw_msg.indexOf("DestroyClientSession") >= 0 ||
+    bw_msg.indexOf("Request: /cgi-bin/images_cgi") >= 0
+  ) {
+    return;
+  }
   console.log(bw_msg);
 
   /**Отправка соощения в syslog
