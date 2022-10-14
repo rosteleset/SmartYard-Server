@@ -22,7 +22,7 @@
  * @apiSuccess {string} -.mechanizmaDescription описание нагрузки (двери)
  * @apiSuccess {integer="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)"} -.event тип события
  * @apiSuccess {string} [-.preview] url картинки
- * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - flussonic, 2 - FRS)
+ * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - flussonic, 2 - FRS, 3 - base64)
  * @apiSuccess {string} [-.detail] непонятная фигня
  * @apiSuccess {object} [-.detailX] детализация события
  * @apiSuccess {string="t","f"} [-.detailX.opened] открыли или нет (1, 2)
@@ -50,8 +50,43 @@
  * 424 неверный токен
  */
 
-    auth(3);
-    response(200);
+auth();
+$households = loadBackend("households");
+$flat_id = (int)@$postdata['flatId'];
+
+if (!$flat_id) {
+    response(422);
+}
+
+$flatIds = array_map( function($item) { return $item['flatId']; }, $subscriber['flats']);
+$f = in_array($flat_id, $flatIds);
+if (!$f) {
+    response(404);
+}
+
+if (!@$postdata['day']) {
+    response(404);
+}
+
+$events = loadBackend("events");
+
+if (!$events) {
+    response(403);
+}
+
+//TODO сделать проверку на доступность и видимость событий
+
+try {
+    $date = date('Ymd', strtotime(@$postdata['day']));
+    $result = $events->getDetailEventsByDay($flat_id, $date);
+    if ($result) {
+        response(200, $result);
+    } else {
+        response();
+    }
+} catch (\Throwable $e)  {
+    response(500, false, 'Внутренняя ошибка сервера');
+}
     
     /*
      * Disclaimer: использование "иерархии" владелец\не владелец считаю в данном случае избыточным и вредоносным,

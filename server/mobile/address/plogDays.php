@@ -25,8 +25,55 @@
  * 424 неверный токен
  */
 
-    auth();
-    response(200);
+auth();
+$households = loadBackend("households");
+$flat_id = (int)@$postdata['flatId'];
+
+if (!$flat_id) {
+    response(422);
+}
+
+$flatIds = array_map( function($item) { return $item['flatId']; }, $subscriber['flats']);
+$f = in_array($flat_id, $flatIds);
+if (!$f) {
+    response(404);
+}
+
+$events = loadBackend("events");
+
+if (!$events) {
+    response(403);
+}
+
+//TODO сделать проверку на доступность и видимость событий
+
+$filter_events = false;
+
+if (@$postdata['events']) {
+    //фильтр событий
+
+    $filter_events = explode(',', $postdata['events']);
+    $t = [];
+    foreach ($filter_events as $e) {
+        $t[(int)$e] = 1;
+    }
+    $filter_events = [];
+    foreach ($t as $e => $one) {
+        $filter_events[] = $e;
+    }
+    $filter_events = implode(',', $filter_events);
+}
+
+try {
+    $result = $events->getEventsDays($flat_id, $filter_events);
+    if ($result) {
+        response(200, $result);
+    } else {
+        response();
+    }
+} catch (\Throwable $e)  {
+    response(500, false, 'Внутренняя ошибка сервера');
+}
 
 /*
 
