@@ -91,3 +91,14 @@ EVENT:000:Login:Web:admin
 ```
 EVENT:106:1:1:Open Door By DTMF, DTMF Symbol 1 ,Apartment No 1
 ```
+
+
+---
+### События по нажатию кнопки открытия двери
+```
+EVENT:000:Time:15:27:14:Input1:Low
+EVENT:102:INPUTA:Exit button pressed,INPUTA
+EVENT:104:1:The Door is opened! Relay ID:1
+EVENT:000:Time:15:27:14:Input1:High
+EVENT:103:Exit button release
+```
