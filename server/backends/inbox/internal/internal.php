@@ -32,25 +32,17 @@
             /**
              * @inheritDoc
              */
-            public function markMessage($msgId, $delivered = null, $readed = null)
-            {
-                // TODO: Implement markMessage() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function revokeMessage($msgId)
-            {
-                // TODO: Implement revokeMessage() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function msgMonths($id)
             {
                 // TODO: Implement msgMonths() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function markMessageAsReaded($msgId)
+            {
+                // TODO: Implement markMessageAsReaded() method.
             }
         }
     }

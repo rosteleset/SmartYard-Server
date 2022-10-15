@@ -34,15 +34,7 @@
              * @param $msgId
              * @return boolean
              */
-            abstract public function revokeMessage($msgId);
-
-            /**
-             * @param $msgId
-             * @param $delivered
-             * @param $readed
-             * @return boolean
-             */
-            abstract public function markMessage($msgId, $delivered = null, $readed = null);
+            abstract public function markMessageAsReaded($msgId);
 
             /**
              * @param $id

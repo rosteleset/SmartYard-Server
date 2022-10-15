@@ -22,6 +22,7 @@ CREATE TABLE default.inbox
 `date` DateTime,
 `id` String,
 `msg` String,
+`action` String,
 `code` String
 )
 ENGINE = MergeTree
