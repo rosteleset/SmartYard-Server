@@ -2,7 +2,7 @@
 
     $real_ip_header = 'HTTP_X_FORWARDED_FOR';
 
-    // main client API support
+    // frontend client API support
 
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Headers: *");
