@@ -1,7 +1,8 @@
 -- inbox
 CREATE TABLE inbox
 (
-    msg_id integer not null primary key autoincrement ,
+    msg_id integer not null primary key autoincrement,
+    house_subscriber_id integer,
     id test not null,                                                                                                   -- phone number
     date test,                                                                                                          -- send date
     title text,                                                                                                         -- title (subject)

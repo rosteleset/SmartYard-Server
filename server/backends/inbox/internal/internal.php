@@ -16,9 +16,11 @@
             /**
              * @inheritDoc
              */
-            public function sendMessage($id, $title, $msg, $action = "inbox")
+            public function sendMessage($subscriberId, $title, $msg, $action = "inbox")
             {
-                $subscriber = $this->db->get("select id, platform, push_token, push_token_type from houses_subscribers_mobile where id = :id", false, [
+                $subscriber = $this->db->get("select id, platform, push_token, push_token_type from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id", [
+                    "house_subscriber_id" => $subscriberId,
+                ], [
                     "id" => "id",
                     "platform" => "platform",
                     "push_token" => "token",
@@ -26,8 +28,9 @@
                 ], [ "singlify" ]);
 
                 if ($subscriber) {
-                    $msgId = $this->db->insert("insert into inbox (id, date, title, msg, action, expire, readed, code) values (:id, :date, :title, :msg, :action, :expire, 0, null)", [
+                    $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, null)", [
                         "id" => $subscriber["id"],
+                        "house_subscriber_id" => $subscriberId,
                         "date" => $this->db->now(),
                         "title" => $title,
                         "msg" => $msg,
@@ -86,6 +89,9 @@
              */
             public function getMessages($subscriberId, $by, $params)
             {
+                $w = "";
+                $q = [];
+
                 $id = $this->db->get("select id from houses_subscribers_mobile where house_subscriber_id = :id", [
                     "id" => $subscriberId,
                 ], false, [ "singlify" ]);
@@ -110,6 +116,7 @@
 
                 return $this->db->get("select * from inbox $w", $q, [
                     "msg_id" => "msgId",
+                    "house_subscriber_id" => "subscriberId",
                     "id" => "id",
                     "date" => "date",
                     "title" => "title",
@@ -126,8 +133,8 @@
              */
             public function msgMonths($subscriberId)
             {
-                $months = $this->db->get("select month from (select substr(date, 1, 7) as month from inbox where id in (select id from houses_subscribers_mobile where house_subscriber_id = :id)) group by month order by month", [
-                    "id" => $subscriberId,
+                $months = $this->db->get("select month from (select substr(date, 1, 7) as month from inbox where house_subscriber_id = :house_subscriber_id) group by month order by month", [
+                    "house_subscriber_id" => $subscriberId,
                 ]);
 
                 $r = [];
@@ -144,8 +151,8 @@
              */
             public function markMessageAsReaded($subscriberId, $msgId)
             {
-                return $this->db->modify("update inbox set readed = 1 where msg_id = :msg_id and (select id from houses_subscribers_mobile where house_subscriber_id = :id)", [
-                    "id" => $subscriberId,
+                return $this->db->modify("update inbox set readed = 1 where msg_id = :msg_id and house_subscriber_id = :house_subscriber_id)", [
+                    "house_subscriber_id" => $subscriberId,
                     "msg_id" => $msgId,
                 ]);
             }

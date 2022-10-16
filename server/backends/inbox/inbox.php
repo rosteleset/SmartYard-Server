@@ -15,13 +15,13 @@
         abstract class inbox extends backend
         {
             /**
-             * @param $id
+             * @param $subscriberId
              * @param $title
              * @param $msg
              * @param $action
              * @return integer|false
              */
-            abstract public function sendMessage($id, $title, $msg, $action = "inbox");
+            abstract public function sendMessage($subscriberId, $title, $msg, $action = "inbox");
 
             /**
              * @param $subscriberId

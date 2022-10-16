@@ -5,13 +5,59 @@
     },
 
     sendMessage: function (subscriberId) {
-
+        cardForm({
+            title: i18n("users.add"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "login",
+                    type: "text",
+                    title: i18n("users.login"),
+                    placeholder: i18n("users.login"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "realName",
+                    type: "text",
+                    title: i18n("users.realName"),
+                    placeholder: i18n("users.realName"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "eMail",
+                    type: "email",
+                    title: i18n("eMail"),
+                    placeholder: i18n("eMail"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "phone",
+                    type: "tel",
+                    title: i18n("phone"),
+                    placeholder: i18n("phone"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules.users.doAddUser(result.login, result.realName, result.eMail, result.phone);
+            },
+        }).show();
     },
 
     renderSubscriberInbox: function (subscriberId) {
         loadingStart();
 
-        GET("inbox", "messages", subscriberId, false).
+        GET("inbox", "message", subscriberId, false).
         fail(FAILPAGE).
         done(response => {
             console.log(response);

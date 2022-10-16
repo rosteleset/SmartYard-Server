@@ -9,10 +9,10 @@
         use api\api;
 
         /**
-         * providers method
+         * message method
          */
 
-        class messages extends api {
+        class message extends api {
 
             public static function GET($params) {
                 $inbox = loadBackend("inbox");
@@ -26,9 +26,18 @@
                 return api::ANSWER($messages, ($messages !== false)?"messages":"notAcceptable");
             }
 
+            public static function POST($params) {
+                $inbox = loadBackend("inbox");
+
+                $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["msg"], $params["inbox"]);
+
+                return api::ANSWER($msgId, ($msgId !== false)?"$msgId":"notAcceptable");
+            }
+
             public static function index() {
                 return [
                     "GET",
+                    "POST",
                 ];
             }
         }
