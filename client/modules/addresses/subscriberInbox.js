@@ -4,52 +4,55 @@
         moduleLoaded("addresses.subscriberInbox", this);
     },
 
+    doSendMessage: function (subscriberId, params) {
+
+    },
+
     sendMessage: function (subscriberId) {
         cardForm({
-            title: i18n("users.add"),
+            title: i18n("addresses.messageSend"),
             footer: true,
             borderless: true,
             topApply: true,
+            apply: "addresses.doMessageSend",
+            size: "lg",
             fields: [
                 {
-                    id: "login",
+                    id: "title",
                     type: "text",
-                    title: i18n("users.login"),
-                    placeholder: i18n("users.login"),
+                    title: i18n("addresses.messageTitle"),
+                    placeholder: i18n("addresses.messageTitle"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
                 },
                 {
-                    id: "realName",
-                    type: "text",
-                    title: i18n("users.realName"),
-                    placeholder: i18n("users.realName"),
+                    id: "body",
+                    type: "area",
+                    title: i18n("addresses.messageBody"),
+                    placeholder: i18n("addresses.messageBody"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
                 },
                 {
-                    id: "eMail",
-                    type: "email",
-                    title: i18n("eMail"),
-                    placeholder: i18n("eMail"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "phone",
-                    type: "tel",
-                    title: i18n("phone"),
-                    placeholder: i18n("phone"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
+                    id: "action",
+                    type: "select2",
+                    title: i18n("addresses.messageAction"),
+                    options: [
+                        {
+                            value: "inbox",
+                            text: i18n("addresses.messageActionInbox"),
+                        },
+                        {
+                            value: "money",
+                            text: i18n("addresses.messageActionBalancePlus"),
+                        },
+                    ]
                 },
             ],
             callback: function (result) {
-                modules.users.doAddUser(result.login, result.realName, result.eMail, result.phone);
+                modules.addresses.subscriberInbox.doSendMessage(subscriberId, result);
             },
         }).show();
     },
