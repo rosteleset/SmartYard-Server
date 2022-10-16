@@ -96,7 +96,6 @@
                     },
                     {
                         title: i18n("addresses.messageBody"),
-                        nowrap: true,
                         fullWidth: true,
                     },
                     {
@@ -110,6 +109,13 @@
                     let rows = [];
 
                     for (let i in response.messages) {
+                        let msg = nl2br(response.messages[i].msg);
+                        if (msg.length > 1) {
+                            msg = msg[0] + '...';
+                        } else {
+                            msg = msg[0];
+                        }
+
                         rows.push({
                             uid: response.messages[i].msgId,
                             cols: [
@@ -123,7 +129,7 @@
                                     data: response.messages[i].title,
                                 },
                                 {
-                                    data: response.messages[i].msg,
+                                    data: msg,
                                 },
                                 {
                                     data: parseInt(response.messages[i].readed)?i18n("yes"):i18n("no"),
