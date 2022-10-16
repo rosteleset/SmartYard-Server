@@ -65,7 +65,7 @@
                             "ttl" => 30,
                             "platform" => (int)$subscriber["platform"]?"ios":"android",
                             "title" => $title,
-                            "body" => $msg,
+                            "msg" => $msg,
                             "badge" => $unreaded,
                             "sound" => "default",
                             "action" => $action,
