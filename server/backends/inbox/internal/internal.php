@@ -50,7 +50,7 @@
 
                     $isdn = loadBackend("isdn");
                     if ($isdn) {
-                        return $isdn->push([
+                        $result = $isdn->push([
                             "token" => $subscriber["token"],
                             "type" => $subscriber["tokenType"],
                             "timestamp" => time(),
@@ -62,6 +62,15 @@
                             "sound" => "default",
                             "action" => $action,
                         ]);
+                        if ($this->db->modify("update inbox set code = :code where msg_id = :msg_id", [
+                            "msg_id" => $msgId,
+                            "code" => $result,
+                        ])) {
+                            return $msgId;
+                        } else {
+                            setLastError("errorSendingPush: " . $result);
+                            return false;
+                        }
                     } else {
                         setLastError("pushCantBeSent");
                         return false;

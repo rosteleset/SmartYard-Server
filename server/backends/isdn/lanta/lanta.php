@@ -73,7 +73,7 @@
                 $result = file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["common_secret"] . "&" . $query);
 
                 if (strtolower(trim($result)) !== "ok") {
-                    loadBackend("households")->dismissToken($push["token"]);
+//                    loadBackend("households")->dismissToken($push["token"]);
                 }
 
                 return $result;
