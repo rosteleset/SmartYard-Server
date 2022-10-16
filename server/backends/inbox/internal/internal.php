@@ -75,16 +75,40 @@
             /**
              * @inheritDoc
              */
-            public function getMessages($subscriberId, $dateFrom, $dateTo)
+            public function getMessages($subscriberId, $by, $params)
             {
                 $id = $this->db->get("select id from houses_subscribers_mobile where house_subscriber_id = :id", [
                     "id" => $subscriberId,
                 ], false, [ "singlify" ]);
 
-                return $this->db->get("select * from inbox where id = :id and date < :date_to and date >= :date_from", [
-                    "id" => $id,
-                    "date_from" => $dateFrom,
-                    "date_to" => $dateTo,
+                switch ($by) {
+                    case "dates":
+                        $w = "where id = :id and date < :date_to and date >= :date_from";
+                        $q = [
+                            "id" => $id,
+                            "date_from" => $params["dateFrom"],
+                            "date_to" => $params["dateTo"],
+                        ];
+                        break;
+                    case "id":
+                        $w = "where id = :id and msg_id = :msg_id";
+                        $q = [
+                            "id" => $id,
+                            "msg_id" => $params,
+                        ];
+                        break;
+                }
+
+                return $this->db->get("select * from inbox $w", $q, [
+                    "msg_id" => "msgId",
+                    "id" => "id",
+                    "date" => "date",
+                    "title" => "title",
+                    "msg" => "msg",
+                    "action" => "action",
+                    "expire" => "expire",
+                    "readed" => "readed",
+                    "code" => "code",
                 ]);
             }
 

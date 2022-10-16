@@ -442,6 +442,17 @@
                                 data: owner?i18n("yes"):i18n("no"),
                             },
                         ],
+                        dropDown: {
+                            items: [
+                                {
+                                    icon: "far fa-envelope",
+                                    title: i18n("addresses.subscriberInbox"),
+                                    click: subscriberId => {
+                                        location.href = "#addresses.subscriberInbox&subscriberId=" + subscriberId;
+                                    },
+                                },
+                            ]
+                        },
                     });
                 }
 

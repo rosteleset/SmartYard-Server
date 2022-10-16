@@ -25,11 +25,11 @@
 
             /**
              * @param $subscriberId
-             * @param bool $dateFrom
-             * @param bool $dateTo
+             * @param $by
+             * @param $params
              * @return array|false
              */
-            abstract public function getMessages($subscriberId, $dateFrom, $dateTo);
+            abstract public function getMessages($subscriberId, $by, $params);
 
             /**
              * @param $subscriberId
