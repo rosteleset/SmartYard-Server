@@ -8,5 +8,5 @@ CREATE TABLE inbox
     action text,                                                                                                        -- application action (money, new_address, ...)
     expire integer,                                                                                                     -- when need to delete (time()) unsended message
     readed integer,                                                                                                     -- readed
-    code character varying                                                                                              -- send code from google, smssending, etc...
+    code character varying                                                                                              -- result code from google, smssending, etc...
 );
