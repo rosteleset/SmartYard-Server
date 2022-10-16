@@ -68,8 +68,6 @@
         GET("inbox", "message", subscriberId, false).
         fail(FAILPAGE).
         done(response => {
-            console.log(response);
-
             cardTable({
                 target: "#mainForm",
                 title: {
