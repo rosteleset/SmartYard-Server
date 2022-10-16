@@ -212,7 +212,23 @@ function auth($_response_cache_ttl = -1) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $raw_postdata = file_get_contents("php://input");
     $postdata = json_decode($raw_postdata, true);
-    $m = explode('/', $_SERVER["REQUEST_URI"]);
+
+    $path = explode("?", $_SERVER["REQUEST_URI"])[0];
+
+    $server = parse_url($config["api"]["mobile"]);
+
+    if ($server && $server['path']) {
+        $path = substr($path, strlen($server['path']));
+    }
+
+    if ($path && $path[0] == '/') {
+        $path = substr($path, 1);
+    }
+
+    $m = explode('/', $path);
+
+    array_unshift($m, "mobile");
+    array_unshift($m, false);
 
     if (count($m) == 4 && !$m[0] && $m[1] == 'mobile') {
         $module = $m[2];
