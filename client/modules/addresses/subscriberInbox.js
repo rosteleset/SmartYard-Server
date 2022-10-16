@@ -5,7 +5,12 @@
     },
 
     doSendMessage: function (subscriberId, params) {
-
+        loadingStart();
+        POST("inbox", "message", subscriberId, params).
+        fail(FAIL).
+        always(() => {
+             modules.addresses.subscriberInbox.renderSubscriberInbox(subscriberId);
+        });
     },
 
     sendMessage: function (subscriberId) {
@@ -131,5 +136,7 @@
         modules.addresses.topMenu();
 
         modules.addresses.subscriberInbox.renderSubscriberInbox(params.subscriberId);
+
+        $("#altForm").hide();
     }
 }).init();
