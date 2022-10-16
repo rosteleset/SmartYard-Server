@@ -4,7 +4,8 @@ CREATE TABLE inbox
     msg_id integer not null primary key autoincrement ,
     id test not null,                                                                                                   -- phone number
     date test,                                                                                                          -- send date
-    msg text,                                                                                                           -- message
+    title text,                                                                                                         -- title (subject)
+    msg text not null,                                                                                                  -- message
     action text,                                                                                                        -- application action (money, new_address, ...)
     expire integer,                                                                                                     -- when need to delete (time()) unsended message
     readed integer,                                                                                                     -- readed

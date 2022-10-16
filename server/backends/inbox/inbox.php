@@ -16,30 +16,32 @@
         {
             /**
              * @param $id
+             * @param $title
              * @param $msg
              * @param $action
              * @return integer|false
              */
-            abstract public function sendMessage($id, $msg, $action);
+            abstract public function sendMessage($id, $title, $msg, $action = "inbox");
 
             /**
-             * @param $id
-             * @param $dateFrom
-             * @param $dateTo
+             * @param $subscriberId
+             * @param bool $dateFrom
+             * @param bool $dateTo
              * @return array|false
              */
-            abstract public function getMessages($id, $dateFrom = false, $dateTo = false);
+            abstract public function getMessages($subscriberId, $dateFrom, $dateTo);
 
             /**
+             * @param $subscriberId
              * @param $msgId
              * @return boolean
              */
-            abstract public function markMessageAsReaded($msgId);
+            abstract public function markMessageAsReaded($subscriberId, $msgId);
 
             /**
-             * @param $id
+             * @param $subscriberId
              * @return array|false
              */
-            abstract public function msgMonths($id);
+            abstract public function msgMonths($subscriberId);
         }
     }
