@@ -74,6 +74,8 @@
                 target: "#mainForm",
                 title: {
                     caption: i18n("addresses.messages"),
+                    filter: true,
+                    pagerItemsCount: 250,
                     button: {
                         icon: "fas fa-fw fa-envelope-open",
                         caption: i18n("addresses.messageSend"),
@@ -106,24 +108,33 @@
                 ],
                 rows: () => {
                     let rows = [];
-                    /*
-                                    let list = [];
 
-                                    rows.push({
-                                        uid: list[i].subscriberId,
-                                        cols: [
-                                            {
-                                                data: list[i].subscriberId,
-                                            },
-                                            {
-                                                data: list[i].mobile,
-                                            },
-                                            {
-                                                data: owner?i18n("yes"):i18n("no"),
-                                            },
-                                        ],
-                                    });
-                    */
+                    for (let i in response.messages) {
+                        rows.push({
+                            uid: response.messages[i].msgId,
+                            cols: [
+                                {
+                                    data: response.messages[i].msgId,
+                                },
+                                {
+                                    data: response.messages[i].id,
+                                },
+                                {
+                                    data: response.messages[i].title,
+                                },
+                                {
+                                    data: response.messages[i].msg,
+                                },
+                                {
+                                    data: parseInt(response.messages[i].readed)?i18n("yes"):i18n("no"),
+                                },
+                                {
+                                    data: response.messages[i].code,
+                                },
+                            ],
+                        });
+                    }
+
                     return rows;
                 }
 

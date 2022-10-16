@@ -46,7 +46,7 @@
                     $unreaded = $this->db->get("select count(*) as unreaded from inbox where id = :id and readed = 0", [
                         "id" => $subscriber["id"],
                     ], [
-                        "unreaded"
+                        "unreaded" => "unreaded",
                     ], [
                         "fieldlify"
                     ]);
