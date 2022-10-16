@@ -29,9 +29,9 @@
             public static function POST($params) {
                 $inbox = loadBackend("inbox");
 
-                $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["msg"], $params["inbox"]);
+                $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
 
-                return api::ANSWER($msgId, ($msgId !== false)?"$msgId":"notAcceptable");
+                return api::ANSWER($msgId, ($msgId !== false)?"$msgId":"");
             }
 
             public static function index() {

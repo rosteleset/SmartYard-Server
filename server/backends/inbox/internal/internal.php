@@ -27,6 +27,11 @@
                     "push_token_type" => "tokenType"
                 ], [ "singlify" ]);
 
+                if (!checkInt($subscriber["platform"]) || !checkInt($subscriber["tokenType"]) || !$subscriber["id"] || !$subscriber["token"]) {
+                    setLastError("mobileSubscriberNotRegistered");
+                    return false;
+                }
+
                 if ($subscriber) {
                     $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, null)", [
                         "id" => $subscriber["id"],
@@ -92,23 +97,24 @@
                 $w = "";
                 $q = [];
 
-                $id = $this->db->get("select id from houses_subscribers_mobile where house_subscriber_id = :id", [
-                    "id" => $subscriberId,
-                ], false, [ "singlify" ]);
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidSubscriberId");
+                    return false;
+                }
 
                 switch ($by) {
                     case "dates":
-                        $w = "where id = :id and date < :date_to and date >= :date_from";
+                        $w = "where house_subscriber_id = :id and date < :date_to and date >= :date_from";
                         $q = [
-                            "id" => $id,
+                            "id" => $subscriberId,
                             "date_from" => $params["dateFrom"],
                             "date_to" => $params["dateTo"],
                         ];
                         break;
                     case "id":
-                        $w = "where id = :id and msg_id = :msg_id";
+                        $w = "where house_subscriber_id = :id and msg_id = :msg_id";
                         $q = [
-                            "id" => $id,
+                            "id" => $subscriberId,
                             "msg_id" => $params,
                         ];
                         break;
