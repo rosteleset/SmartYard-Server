@@ -218,6 +218,13 @@
         }
     }
 
+    if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
+        require_once "utils/install_crontabs.php";
+        $n = installCrontabs();
+        echo "$n crontabs entries installed\n";
+        exit(0);
+    }
+
     echo "usage: {$argv[0]}
         [--init-db]
         [--admin-password=<password>]
