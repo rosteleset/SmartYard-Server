@@ -36,7 +36,7 @@
                 $redis->setex("userpin_".$user_phone, 60, $pinreq);
             }
         }
-        $redis->setex("userpin.attempts_".$user_phone, 3600, (int)$redis->get("userpin.attempts_".$user_phone));
+        $redis->setex("userpin.attempts_".$user_phone, 3600, (int)$redis->get("userpin.attempts_".$user_phone) + 1);
 
         if (!$pinreq) {
             response(404);
