@@ -193,7 +193,7 @@
 
         if ($part) {
             foreach ($config["backends"] as $backend => $cfg) {
-                echo "$backend\n";
+                echo "$backend [$part]\n";
                 $backend = loadBackend($backend);
                 if ($backend) {
                     $backend->cron($part);
@@ -234,4 +234,6 @@
         [--check-mail=<your email address>]
         [--run-demo-server]
         [--autoconfigure-domophone=<domophone_id> [--first-time]]
+        [--cron=<minutely|hourly|daily|monthly>]
+        [--install-crontabs]
     \n";
