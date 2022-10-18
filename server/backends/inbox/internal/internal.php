@@ -157,7 +157,7 @@
              */
             public function markMessageAsReaded($subscriberId, $msgId)
             {
-                return $this->db->modify("update inbox set readed = 1 where msg_id = :msg_id and house_subscriber_id = :house_subscriber_id)", [
+                return $this->db->modify("update inbox set readed = 1 where msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
                     "house_subscriber_id" => $subscriberId,
                     "msg_id" => $msgId,
                 ]);
