@@ -273,6 +273,13 @@
             abstract public function deleteSubscriber($subscriberId);
 
             /**
+             * @param $flatId
+             * @param $subscriberId
+             * @return mixed
+             */
+            abstract public function removeSubscriberFromFlat($flatId, $subscriberId);
+
+            /**
              * @param $subscriberId
              * @param $flats
              * @return boolean

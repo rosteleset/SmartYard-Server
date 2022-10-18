@@ -871,16 +871,21 @@
                     ]);
                 }
 
+                error_log("1");
                 if ($subscriberId && $flatId) {
+                    error_log("2");
+
                     if (!checkInt($flatId)) {
                         setLastError("invalidFlat");
                         return false;
                     }
 
                     if ($message) {
+                        error_log("3");
                         $inbox = loadBackend("inbox");
 
                         if ($inbox) {
+                            error_log("4");
                             $inbox->sendMessage($subscriberId, $message['title'], $message['msg'], $action = "newAddress");
                         }
                     }
