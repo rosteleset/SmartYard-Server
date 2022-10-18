@@ -879,11 +879,9 @@
                     }
 
                     if ($message) {
-                        error_log("3");
                         $inbox = loadBackend("inbox");
 
                         if ($inbox) {
-                            error_log("4");
                             $inbox->sendMessage($subscriberId, $message['title'], $message['msg'], $action = "newAddress");
                         }
                     }
