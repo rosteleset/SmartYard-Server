@@ -121,5 +121,5 @@ http://localhost:8000/client/index.html
 use your server (in server field at login page)
 
 ```
-http://localhost:8000/server/api.php
+http://localhost:8000/server/frontend.php
 ```
