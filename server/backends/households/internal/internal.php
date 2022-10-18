@@ -838,7 +838,7 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $flatId = false)
+            public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false)
             {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32 ]) ||
@@ -875,6 +875,14 @@
                     if (!checkInt($flatId)) {
                         setLastError("invalidFlat");
                         return false;
+                    }
+
+                    if ($message) {
+                        $inbox = loadBackend("inbox");
+
+                        if ($inbox) {
+                            $inbox->sendMessage($subscriberId, $message['title'], $message['msg'], $action = "newAddress");
+                        }
                     }
 
                     if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, 1)", [
