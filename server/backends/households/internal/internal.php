@@ -871,9 +871,7 @@
                     ]);
                 }
 
-                error_log("1");
                 if ($subscriberId && $flatId) {
-                    error_log("2");
 
                     if (!checkInt($flatId)) {
                         setLastError("invalidFlat");
