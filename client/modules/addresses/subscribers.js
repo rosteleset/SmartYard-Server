@@ -5,6 +5,8 @@
     },
 
     doAddSubscriber: function (subscriber) {
+        subscriber.title = i18n("addresses.addFlatTtitle");
+        subscriber.msg = i18n("addresses.addFlatMsg");
         loadingStart();
         POST("subscribers", "subscriber", false, subscriber).
         fail(FAIL).
