@@ -38,7 +38,7 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            $success = $households->deleteSubscriber($params["_id"]);
+            $success = $households->deleteSubscriber($params["_id"], $params["subscriberId"]);
 
             return api::ANSWER($success);
         }

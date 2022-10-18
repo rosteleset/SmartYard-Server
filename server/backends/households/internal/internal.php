@@ -922,6 +922,19 @@
             /**
              * @inheritDoc
              */
+            public function removeSubscriberFromFlat($flatId, $subscriberId) {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                if (!checkInt($subscriberId)) {
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function modifySubscriber($subscriberId, $params = [])
             {
                 if (!checkInt($subscriberId)) {
