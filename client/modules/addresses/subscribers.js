@@ -5,6 +5,10 @@
     },
 
     doAddSubscriber: function (subscriber) {
+        subscriber.message = {
+            title: i18n("addresses.addFlatTtitle"),
+            msg: i18n("addresses.addFlatMsg"),
+        }
         loadingStart();
         POST("subscribers", "subscriber", false, subscriber).
         fail(FAIL).
@@ -64,9 +68,9 @@
         });
     },
 
-    doDeleteSubscriber: function (subscriberId) {
+    doDeleteSubscriber: function (flatId, subscriberId) {
         loadingStart();
-        DELETE("subscribers", "subscriber", subscriberId).
+        DELETE("subscribers", "subscriber", flatId, { subscriberId: subscriberId }).
         fail(FAIL).
         done(() => {
             message(i18n("addresses.subscriberWasDeleted"));
@@ -179,7 +183,7 @@
         }).show();
     },
 
-    modifySubscriber: function (subscriberId, list) {
+    modifySubscriber: function (subscriberId, list, flatId) {
         let subscriber = false;
 
         for (let i in list) {
@@ -297,7 +301,7 @@
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
-                        modules.addresses.subscribers.deleteSubscriber(subscriberId);
+                        modules.addresses.subscribers.deleteSubscriber(flatId, subscriberId);
                     } else {
                         let params = hashParse()[1];
 
@@ -371,9 +375,9 @@
         }
     },
 
-    deleteSubscriber: function (subscriberId) {
+    deleteSubscriber: function (flatId, subscriberId) {
         mConfirm(i18n("addresses.confirmDeleteSubscriber", subscriberId.toString()), i18n("confirm"), `danger:${i18n("addresses.deleteSubscriber")}`, () => {
-            modules.addresses.subscribers.doDeleteSubscriber(subscriberId);
+            modules.addresses.subscribers.doDeleteSubscriber(flatId, subscriberId);
         });
     },
 
@@ -383,7 +387,7 @@
         });
     },
 
-    renderSubscribers: function (list) {
+    renderSubscribers: function (list, flatId) {
         loadingStart();
 
         let params = hashParse()[1];
@@ -398,7 +402,7 @@
                 },
             },
             edit: subscriberId => {
-                modules.addresses.subscribers.modifySubscriber(subscriberId, list);
+                modules.addresses.subscribers.modifySubscriber(subscriberId, list, flatId);
             },
             columns: [
                 {
@@ -442,6 +446,17 @@
                                 data: owner?i18n("yes"):i18n("no"),
                             },
                         ],
+                        dropDown: {
+                            items: [
+                                {
+                                    icon: "far fa-envelope",
+                                    title: i18n("addresses.subscriberInbox"),
+                                    click: subscriberId => {
+                                        location.href = "#addresses.subscriberInbox&subscriberId=" + subscriberId;
+                                    },
+                                },
+                            ]
+                        },
                     });
                 }
 
@@ -648,7 +663,7 @@
                 by: "flat",
                 query: params.flatId,
             }).done(response => {
-                modules.addresses.subscribers.renderSubscribers(response.flat.subscribers);
+                modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId);
                 modules.addresses.subscribers.renderKeys(response.flat.keys);
                 modules.addresses.subscribers.renderCameras(response.flat.cameras);
             }).

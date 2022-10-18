@@ -1,14 +1,25 @@
 const syslog = new (require("syslog-server"))();
 const { syslog_servers } = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
+const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
-const { port } = syslog_servers.beward;
+const { port } = urlParser(syslog_servers.beward);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = thisMoment();
-  //   console.log(date, host, protocol, message);
   let bw_msg = message.split(" - - ")[1].trim();
+  await API.lastSeen(host);
+
+  //Фиьтр сообщений не несущих смысловой нагрузки
+  if (
+    bw_msg.indexOf("RTSP") >= 0 ||
+    bw_msg.indexOf("DestroyClientSession") >= 0 ||
+    bw_msg.indexOf("Request: /cgi-bin/images_cgi") >= 0 ||
+    bw_msg.indexOf("GetOneVideoFrame") >= 0
+  ) {
+    return;
+  }
   console.log(bw_msg);
 
   /**Отправка соощения в syslog
@@ -24,7 +35,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   ) {
     let rfid = bw_msg.split("RFID")[1].split(",")[0].trim();
     let door = bw_msg.indexOf("external") >= 0 ? "1" : "0";
-    API.opnenDoorByRFID({ host, door, rfid });
+    await API.openDoor({ host, door, detail: rfid, type: "rfid" });
   }
 
   // домофон в режиме калитки на несколько домов
@@ -51,18 +62,18 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   if (bw_msg.indexOf("Opening door by code") >= 0) {
     let code = parseInt(bw_msg.split("code")[1].split(",")[0]);
     if (code) {
-      // mysql.query(`insert into dm.door_open (ip, event, door, detail) values ('${value.host}', '6', '0', '${code}')`);
+      await API.openDoor({ host, detail: code, type: "code" });
     }
   }
 
   //Дектектор движения: старт
   if (bw_msg.indexOf("SS_MAINAPI_ReportAlarmHappen") >= 0) {
-    API.motionDetection(host, true);
+    await API.motionDetection(host, true);
   }
 
   //Дектектор движения: стоп
   if (bw_msg.indexOf("SS_MAINAPI_ReportAlarmFinish") >= 0) {
-    API.motionDetection(host, false);
+    await API.motionDetection(host, false);
   }
 
   if (bw_msg.indexOf("Main door opened by button press") >= 0) {

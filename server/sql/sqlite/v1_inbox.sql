@@ -1,15 +1,14 @@
 -- inbox
 CREATE TABLE inbox
 (
-    msg_id integer not null primary key autoincrement ,
+    msg_id integer not null primary key autoincrement,
+    house_subscriber_id integer,
     id test not null,                                                                                                   -- phone number
     date test,                                                                                                          -- send date
-    msg text,                                                                                                           -- message
+    title text,                                                                                                         -- title (subject)
+    msg text not null,                                                                                                  -- message
     action text,                                                                                                        -- application action (money, new_address, ...)
-    expire integer,                                                                                                     -- when need to move to archive or delete (time())
-    bulk integer,                                                                                                       -- bulk message (low priority send)
-    delivered integer,                                                                                                  -- delivered
+    expire integer,                                                                                                     -- when need to delete (time()) unsended message
     readed integer,                                                                                                     -- readed
-    ext_id text,                                                                                                        -- external id from google, smssending, etc...
-    code character varying                                                                                              -- send code from google, smssending, etc...
+    code character varying                                                                                              -- result code from google, smssending, etc...
 );

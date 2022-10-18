@@ -17,7 +17,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["callerId"], $params["dtmf"], $params["syslog"], $params["nat"], $params["comment"]);
+                $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["callerId"], $params["dtmf"], $params["nat"], $params["comment"]);
 
                 return api::ANSWER($domophoneId, ($domophoneId !== false)?"domophoneId":false);
             }
@@ -25,7 +25,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"],  $params["credentials"], $params["callerId"], $params["dtmf"], $params["syslog"], $params["nat"], $params["comment"]);
+                $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"],  $params["credentials"], $params["callerId"], $params["dtmf"], $params["nat"], $params["comment"]);
 
                 return api::ANSWER($success);
             }

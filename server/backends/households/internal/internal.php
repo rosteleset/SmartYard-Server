@@ -561,7 +561,6 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
-                    "syslog" => "syslog",
                     "nat" => "nat",
                     "comment" => "comment"
                 ]);
@@ -570,7 +569,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $callerId, $dtmf, $syslog, $nat, $comment)
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $callerId, $dtmf, $nat, $comment)
             {
                 if (!$model) {
                     setLastError("moModel");
@@ -603,7 +602,7 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, syslog, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :syslog, :nat, :comment)", [
+                return $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :nat, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -611,7 +610,6 @@
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
-                    "syslog" => $syslog,
                     "nat" => $nat,
                     "comment" => $comment,
                 ]);
@@ -620,7 +618,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $syslog, $nat, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $nat, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -659,7 +657,7 @@
                     return false;
                 }
 
-                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, syslog = :syslog, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
+                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -667,7 +665,6 @@
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
-                    "syslog" => $syslog,
                     "nat" => $nat,
                     "comment" => $comment,
                 ]);
@@ -750,7 +747,6 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
-                    "syslog" => "syslog",
                     "nat" => "nat",
                     "comment" => "comment"
                 ], [
@@ -842,7 +838,7 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $flatId = false)
+            public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false)
             {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32 ]) ||
@@ -876,9 +872,18 @@
                 }
 
                 if ($subscriberId && $flatId) {
+
                     if (!checkInt($flatId)) {
                         setLastError("invalidFlat");
                         return false;
+                    }
+
+                    if ($message) {
+                        $inbox = loadBackend("inbox");
+
+                        if ($inbox) {
+                            $inbox->sendMessage($subscriberId, $message['title'], $message['msg'], $action = "newAddress");
+                        }
                     }
 
                     if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, 1)", [
@@ -908,6 +913,24 @@
                 } else {
                     return $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id not in (select house_subscriber_id from houses_subscribers_mobile)");
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function removeSubscriberFromFlat($flatId, $subscriberId) {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                if (!checkInt($subscriberId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = :house_subscriber_id and house_flat_id = :house_flat_id", [
+                    "house_flat_id" => $flatId,
+                    "house_subscriber_id" => $subscriberId,
+                ]);
             }
 
             /**
@@ -1204,12 +1227,12 @@
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                         break;
                 }
 
                 if (!$q) {
-                    $q = "select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances where $where order by entrance_type, entrance";
+                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
                 return $this->db->get($q,

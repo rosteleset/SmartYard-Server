@@ -9,6 +9,7 @@
             "domophones",
             "cameras",
             "subscribers", // and keys
+            "subscriberInbox",
         ], this);
     },
 

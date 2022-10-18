@@ -1,6 +1,8 @@
 <?php
 
-    // main client API support
+    $real_ip_header = 'HTTP_X_FORWARDED_FOR';
+
+    // frontend client API support
 
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Headers: *");
@@ -78,10 +80,13 @@
     }
 
     $ip = false;
-    foreach ($config["real_ip_header"] as $h) {
-        if (isset($_SERVER[$h])) {
-            $ip = $_SERVER[$h];
-            break;
+    if (isset($_SERVER['REMOTE_ADDR'])) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+
+    if (!$ip) {
+        if (isset($_SERVER[$real_ip_header])) {
+            $ip = $_SERVER[$real_ip_header];
         }
     }
 

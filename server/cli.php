@@ -13,6 +13,7 @@
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
     require_once "utils/db_ext.php";
+    require_once "utils/parse_uri.php";
 
     require_once "backends/backend.php";
 
@@ -180,33 +181,37 @@
         exit(0);
     }
 
-    if (count($args) == 2 && array_key_exists("--cron", $args)) {
+    if (count($args) == 1 && array_key_exists("--cron", $args)) {
         $parts = [ "minutely", "hourly", "daily", "monthly" ];
         $part = false;
 
         foreach ($parts as $p) {
-            if (array_key_exists($p, $args)) {
+            if (in_array($p, $args)) {
                 $part = $p;
             }
         }
 
         if ($part) {
             foreach ($config["backends"] as $backend => $cfg) {
-                echo "$backend\n";
+                echo "$backend [$part] ";
                 $backend = loadBackend($backend);
                 if ($backend) {
-                    $backend->cron($part);
+                    if ($backend->cron($part)) {
+                        echo "done";
+                    } else {
+                        echo "fail";
+                    }
+                } else {
+                    echo "no backend";
                 }
+                echo "\n";
             }
         }
 
         exit(0);
     }
 
-    if (count($args) == 1 || count($args) == 2
-        && array_key_exists("--autoconfigure-domophone", $args)
-        && isset($args["--autoconfigure-domophone"]))
-    {
+    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigure-domophone", $args) && isset($args["--autoconfigure-domophone"])) {
         $domophone_id = $args["--autoconfigure-domophone"];
         $first_time = array_key_exists("--first-time", $args);
 
@@ -215,6 +220,13 @@
             autoconfigure_domophone($args["--autoconfigure-domophone"], $first_time);
             exit(0);
         }
+    }
+
+    if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
+        require_once "utils/install_crontabs.php";
+        $n = installCrontabs();
+        echo "$n crontabs entries installed\n";
+        exit(0);
     }
 
     echo "usage: {$argv[0]}
@@ -226,4 +238,6 @@
         [--check-mail=<your email address>]
         [--run-demo-server]
         [--autoconfigure-domophone=<domophone_id> [--first-time]]
+        [--cron=<minutely|hourly|daily|monthly>]
+        [--install-crontabs]
     \n";

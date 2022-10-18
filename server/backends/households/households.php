@@ -203,12 +203,11 @@
              * @param $credentials
              * @param $callerId
              * @param $dtmf
-             * @param $syslog
              * @param $nat
              * @param $comment
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $syslog, $nat, $comment);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $nat, $comment);
 
             /**
              * @param $domophoneId
@@ -219,12 +218,11 @@
              * @param $credentials
              * @param $callerId
              * @param $dtmf
-             * @param $syslog
              * @param $nat
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $syslog, $nat, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $nat, $comment);
 
             /**
              * @param $domophoneId
@@ -255,10 +253,11 @@
              * @param $mobile
              * @param $name
              * @param $patronymic
-             * @param $flatId
+             * @param bool $flatId
+             * @param null $message
              * @return boolean|integer
              */
-            abstract public function addSubscriber($mobile, $name, $patronymic, $flatId = false);
+            abstract public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false);
 
             /**
              * @param $subscriberId
@@ -272,6 +271,13 @@
              * @return boolean
              */
             abstract public function deleteSubscriber($subscriberId);
+
+            /**
+             * @param $flatId
+             * @param $subscriberId
+             * @return mixed
+             */
+            abstract public function removeSubscriberFromFlat($flatId, $subscriberId);
 
             /**
              * @param $subscriberId

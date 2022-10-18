@@ -1,5 +1,6 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
 const axios = require("axios").default;
+const events = require("./events.json");
 
 const rbt = axios.create({
   baseURL: "http://127.0.0.1:8084/75779b1f-8c0b-4213-a23e-515c5c684719",
@@ -10,6 +11,20 @@ const frs = axios.create({
 });
 
 class API {
+  /**
+   * Устанавливаем последнее общение с панелью
+   * @param {string} host
+   * @returns
+   */
+  async lastSeen(host) {
+    try {
+      console.log(`:: lastSeen: ${host}`);
+      return await rbt.post("/lastSeen", host);
+    } catch (error) {
+      console.error("Error", error.message);
+    }
+  }
+
   /**
    * Отправка syslog messages to internal php
    * @param data
@@ -96,7 +111,7 @@ class API {
   // домофон в режиме калитки на несколько домов
   async incomingDTMF() {}
 
-  async openBycode({host,code}) {}
+  async openBycode({ host, code }) {}
 
   /**
    * Получить frs_server, stream_id из RBT (internal.php), сделать запрос на FRS
@@ -116,6 +131,35 @@ class API {
     } catch (error) {
       console.error("Error", error.message);
     }
+  }
+
+  /**
+   * Логирование события ткрытия двери
+   * @param {string} host - ip address вызывной панели
+   * @param {number} door - идентификатор двери, допустимые значения 0,1,2
+   * @param {string} detail - код или sn ключа квартиры
+   * @param {string} type - допустимые значения code / rfid
+   * @eturns
+   */
+  async openDoor({ host, door = 0, detail, type }) {
+    try {
+      switch (type) {
+        case "code":
+          return await rbt.post("/openDoor", {
+            host,
+            event: events.OPEN_BY_CODE,
+            door,
+            detail,
+          });
+        case "rfid":
+          return await rbt.post("/openDoor", {
+            host,
+            event: events.OPEN_BY_KEY,
+            door,
+            detail,
+          });
+      }
+    } catch (error) {}
   }
 }
 

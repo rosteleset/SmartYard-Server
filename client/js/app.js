@@ -380,6 +380,9 @@ function initAll() {
     $("#brandTitle").text(i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
 
+    if (config.z2Enabled) {
+        $(".rs232-scanner-button").show();
+    }
     $('.rs232-scanner').attr('title', i18n("connectScanner"));
 
     $("#searchInput").attr("placeholder", i18n("search")).off("keypress").on("keypress", e => {
