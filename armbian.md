@@ -50,11 +50,11 @@ server {
                 try_files $uri $uri/ =404;
         }
 
-        location /api {
-                rewrite ^.*$ /api.php last;
+        location /frontend {
+                rewrite ^.*$ /frontend.php last;
         }
 
-        location = /api.php {
+        location = /frontend.php {
                 root /opt/rbt/server;
                 include snippets/fastcgi-php.conf;
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
