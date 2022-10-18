@@ -68,7 +68,7 @@
 
     doDeleteSubscriber: function (flatId, subscriberId) {
         loadingStart();
-        DELETE("subscribers", "subscriber", subscriberId, { flatId: flatId }).
+        DELETE("subscribers", "subscriber", flatId, { subscriberId: subscriberId }).
         fail(FAIL).
         done(() => {
             message(i18n("addresses.subscriberWasDeleted"));
