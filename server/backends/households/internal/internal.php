@@ -930,6 +930,11 @@
                 if (!checkInt($subscriberId)) {
                     return false;
                 }
+
+                return $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = :house_subscriber_id and house_flat_id = :house_flat_id", [
+                    "house_flat_id" => $flatId,
+                    "house_subscriber_id" => $subscriberId,
+                ]);
             }
 
             /**
