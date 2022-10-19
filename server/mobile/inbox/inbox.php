@@ -22,7 +22,7 @@
     $inbox = loadBackend("inbox");
     $msgs = array_map(function($item) {
         return ['msgId' => $item['msgId'], 'date' => $item['date'], 'msg' => $item['msg']];
-    }, $inbox->getMessages((int)$subscriber['subscriberId'], "dates", ["dateFrom" => "expire", "dateTo" => "3000-01-01"]));
+    }, $inbox->getMessages((int)$subscriber['subscriberId'], "dates", ["dateFrom" => '2000-01-01', "dateTo" => "3000-01-01"]));
 
     usort($msgs, function ($a, $b) {
         if (strtotime($a['date']) > strtotime($b['date'])) {
