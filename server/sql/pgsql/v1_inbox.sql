@@ -12,3 +12,4 @@ CREATE TABLE inbox
     readed integer,                                                                                                     -- readed
     code character varying                                                                                              -- result code from google, smssending, etc...
 );
+CREATE INDEX inbox_readed on inbox(readed);
