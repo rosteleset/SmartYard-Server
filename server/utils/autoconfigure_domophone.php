@@ -13,12 +13,6 @@
         $cmses = $households->getCmses();
         $flats = $households->getFlats('domophone', $domophoneId);
 
-        print_r($entrances);
-        print_r($domophone);
-//        print_r($flats);
-//        print_r($cms_allocation);
-//        print_r($cmses);
-
         try {
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $firstTime);
         } catch (Exception $e) {
@@ -71,23 +65,21 @@
             $stun_port
         );
 
-        if ($entrances[0]['entranceType'] != 'entrance') {
-            if ($entrances[0]['entranceType'] == 'wicket') {
-                $links = [];
+        if ($entrances[0]['shared']) {
+            $links = [];
 
-                foreach ($entrances as $entrance) {
-                    $house_flats = $households->getFlats('house', $entrance['houseId']);
+            foreach ($entrances as $entrance) {
+                $house_flats = $households->getFlats('house', $entrance['houseId']);
 
-                    $links[] = [
-                        'addr' => $addresses->getHouse($entrance['houseId'])['houseFull'],
-                        'prefix' => $entrance['prefix'],
-                        'begin' => reset($house_flats)['flat'],
-                        'end' => end($house_flats)['flat'],
-                    ];
-                }
-
-                $panel->configure_gate($links);
+                $links[] = [
+                    'addr' => $addresses->getHouse($entrance['houseId'])['houseFull'],
+                    'prefix' => $entrance['prefix'],
+                    'begin' => reset($house_flats)['flat'],
+                    'end' => end($house_flats)['flat'],
+                ];
             }
+
+            $panel->configure_gate($links);
         }
 
         foreach ($cms_allocation as $item) {
@@ -106,8 +98,8 @@
             $panel->configure_apartment(
                 $flat['flat'],
                 (bool) $flat['openCode'],
-                $flat['cmsEnabled'],
-                [ sprintf('1%09d', $flat['flatId']) ],
+                $entrances[0]['shared'] ? false : $flat['cmsEnabled'],
+                $entrances[0]['shared'] ? [] : [ sprintf('1%09d', $flat['flatId']) ],
                 $flat['openCode'] ?: 0,
                 explode(',', $apartment_levels)
             );
