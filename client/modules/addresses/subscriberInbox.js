@@ -107,7 +107,7 @@
                     let rows = [];
 
                     for (let i in response.messages) {
-                        let msg = nl2br(response.messages[i].msg);
+                        let msg = $.trim(response.messages[i].msg).split("\n");
                         if (msg.length > 1) {
                             msg = msg[0] + '...';
                         } else {
@@ -125,6 +125,7 @@
                                 },
                                 {
                                     data: response.messages[i].title,
+                                    nowrap: true,
                                 },
                                 {
                                     data: msg,

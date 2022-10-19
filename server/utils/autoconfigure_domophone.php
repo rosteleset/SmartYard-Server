@@ -4,6 +4,7 @@
         global $config;
 
         $households = loadBackend('households');
+        $addresses = loadBackend('addresses');
 
         $domophone = $households->getDomophone($domophoneId);
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
@@ -70,18 +71,24 @@
             $stun_port
         );
 
-//        if ($entrance['entranceType'] != 'entrance') {
-//
-//            if ($entrance['entranceType'] == 'wicket') {
-//                // [addr, prefix, begin, end]
-//                $links = [
-//
-//                ];
-//
-//                $panel->configure_gate($links);
-//            }
-//
-//        }
+        if ($entrances[0]['entranceType'] != 'entrance') {
+            if ($entrances[0]['entranceType'] == 'wicket') {
+                $links = [];
+
+                foreach ($entrances as $entrance) {
+                    $house_flats = $households->getFlats('house', $entrance['houseId']);
+
+                    $links[] = [
+                        'addr' => $addresses->getHouse($entrance['houseId'])['houseFull'],
+                        'prefix' => $entrance['prefix'],
+                        'begin' => reset($house_flats)['flat'],
+                        'end' => end($house_flats)['flat'],
+                    ];
+                }
+
+                $panel->configure_gate($links);
+            }
+        }
 
         foreach ($cms_allocation as $item) {
             $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment'], $cms_model);

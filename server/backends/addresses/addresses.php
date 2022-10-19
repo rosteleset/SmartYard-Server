@@ -22,7 +22,7 @@
 
             /**
              * @param integer $regionId
-             * @return false|arrau
+             * @return false|array
              */
             abstract function getRegion($regionId);
 
