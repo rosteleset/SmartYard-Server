@@ -20,9 +20,10 @@
 
     $parsedown = new Parsedown();
     $inbox = loadBackend("inbox");
+    $subscriber_id = (int)$subscriber['subscriberId'];
     $msgs = array_map(function($item) {
         return ['msgId' => $item['msgId'], 'date' => $item['date'], 'msg' => $item['msg']];
-    }, $inbox->getMessages((int)$subscriber['subscriberId'], "dates", ["dateFrom" => '2000-01-01', "dateTo" => "3000-01-01"]));
+    }, $inbox->getMessages($subscriber_id, "dates", ["dateFrom" => '2000-01-01', "dateTo" => "3000-01-01"]));
 
     usort($msgs, function ($a, $b) {
         if (strtotime($a['date']) > strtotime($b['date'])) {
@@ -64,14 +65,10 @@
         $h .= "</p>";
         $h .= "<span class=\"inbox-message-time\">".date("H:i", $dd)."</span></div></div>";
     //        $h .= "<script type=\"application/javascript\">scrollingElement = (document.scrollingElement || document.body);scrollingElement.scrollTop = scrollingElement.scrollHeight;</script>";
-
-        // помечаем сообщение как прочитанное
-        $inbox->markMessageAsReaded((int)$subscriber['subscriberId'], (int)$row['msgId']);
     }
-
     $html = str_replace("%c", $h, file_get_contents(__DIR__ . "/../../templates/inbox.html"));
 
-    // mysql("update dm.inbox set readed=true, code='app' where id='$id' and code is null");
-    // mysql("update dm.inbox set readed=true where id='$id'");
+    // помечаем все сообщения как прочитанные
+    $inbox->markMessageAsReaded($subscriber_id);
 
     response(200, [ 'basePath' => $config['mobile']['webServerBasePath'], 'code' => trim($html) ]);

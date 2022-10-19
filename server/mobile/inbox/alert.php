@@ -15,6 +15,22 @@
  */
 
 auth();
+
+$msg = @$postdata['msg'];
+if (!$msg) {
+    response(406, false, 'Ошибка', 'Сообщение (msg) не должно быть пустым');
+}
+
+$action = @$postdata['action'];
+if (!$action) {
+    response(406, false, 'Ошибка', 'Действие (action) не должно быть пустым');
+}
+
+//TODO: сделать обработку pushOnly
+
+$inbox = loadBackend("inbox");
+$subscriber_id = (int)$subscriber['subscriberId'];
+$inbox->sendMessage($subscriber_id, '', $msg, $action);
 response();
 
 /*
