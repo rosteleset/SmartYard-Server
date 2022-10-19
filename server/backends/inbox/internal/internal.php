@@ -168,6 +168,11 @@
              */
             public function unreaded($subscriberId)
             {
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidSubscriberId");
+                    return false;
+                }
+
                 return $this->db->get("select count(*) as unreaded from inbox where house_subscriber_id = :house_subscriber_id and readed = 0", [
                     "house_subscriber_id" => $subscriberId,
                 ],
