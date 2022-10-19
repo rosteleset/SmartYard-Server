@@ -16,16 +16,13 @@
 
     auth();
 
-    // $html = "<html><h1>Hello</h1></html>";
-    // response(200, [ 'basePath' => "https://192.168.13.39/", 'code' => trim($html) ]);
-
     require_once __DIR__ . "/../../lib/parsedown/Parsedown.php";
 
     $parsedown = new Parsedown();
-
-    $msgs = [
-        ['date' => '01-01-2022T10:10:10', 'msg' => 'Добро пожаловать! Это просто тестовое сообщение.']
-    ];
+    $inbox = loadBackend("inbox");
+    $msgs = array_map(function($item) {
+        return ['msgId' => $item['msgId'], 'date' => $item['date'], 'msg' => $item['msg']];
+    }, $inbox->getMessages((int)$subscriber['subscriberId'], "dates", ["dateFrom" => "expire", "dateTo" => "3000-01-01"]));
 
     usort($msgs, function ($a, $b) {
         if (strtotime($a['date']) > strtotime($b['date'])) {
@@ -67,6 +64,9 @@
         $h .= "</p>";
         $h .= "<span class=\"inbox-message-time\">".date("H:i", $dd)."</span></div></div>";
     //        $h .= "<script type=\"application/javascript\">scrollingElement = (document.scrollingElement || document.body);scrollingElement.scrollTop = scrollingElement.scrollHeight;</script>";
+
+        // помечаем сообщение как прочитанное
+        $inbox->markMessageAsReaded((int)$subscriber['subscriberId'], (int)$row['msgId']);
     }
 
     $html = str_replace("%c", $h, file_get_contents(__DIR__ . "/../../templates/inbox.html"));
