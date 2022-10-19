@@ -149,12 +149,18 @@
             /**
              * @inheritDoc
              */
-            public function markMessageAsReaded($subscriberId, $msgId)
+            public function markMessageAsReaded($subscriberId, $msgId = false)
             {
-                return $this->db->modify("update inbox set readed = 1 where msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
-                    "house_subscriber_id" => $subscriberId,
-                    "msg_id" => $msgId,
-                ]);
+                if ($msgId) {
+                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                        "msg_id" => $msgId,
+                    ]);
+                } else {
+                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                    ]);
+                }
             }
 
             /**

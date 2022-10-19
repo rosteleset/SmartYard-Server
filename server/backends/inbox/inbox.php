@@ -36,7 +36,7 @@
              * @param $msgId
              * @return boolean
              */
-            abstract public function markMessageAsReaded($subscriberId, $msgId);
+            abstract public function markMessageAsReaded($subscriberId, $msgId = false);
 
             /**
              * @param $subscriberId
