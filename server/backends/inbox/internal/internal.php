@@ -43,13 +43,7 @@
                         "expire" => time() + 7 * 60 * 60 * 60,
                     ]);
 
-                    $unreaded = $this->db->get("select count(*) as unreaded from inbox where id = :id and readed = 0", [
-                        "id" => $subscriber["id"],
-                    ], [
-                        "unreaded" => "unreaded",
-                    ], [
-                        "fieldlify"
-                    ]);
+                    $unreaded = $this->unreaded($subscriberId);
 
                     if (!$msgId) {
                         setLastError("cantStoreMessage");
