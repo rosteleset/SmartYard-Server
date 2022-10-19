@@ -14,12 +14,13 @@
 
 auth();
 
-$id = @$postdata['messageId'];
+$msg_id = @$postdata['messageId'];
 
-if (!$id) {
-    // TODO: отметить все сообщения как прочитанные
+$inbox = loadBackend("inbox");
+$subscriber_id = (int)$subscriber['subscriberId'];
+if ($msg_id) {
+    $inbox->markMessageAsReaded($subscriber_id, $msg_id);
 } else {
-    // TODO: отметить сообщение как прочитанное
+    $inbox->markMessageAsReaded($subscriber_id);
 }
-
 response();
