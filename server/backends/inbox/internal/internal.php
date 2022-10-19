@@ -162,5 +162,21 @@
                     "msg_id" => $msgId,
                 ]);
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function unreaded($subscriberId)
+            {
+                return $this->db->get("select count(*) as unreaded from inbox where house_subscriber_id = :house_subscriber_id and readed = 0", [
+                    "house_subscriber_id" => $subscriberId,
+                ],
+                [
+                    "unreaded" => "unreaded",
+                ],
+                [
+                    "fieldlify"
+                ]);
+            }
         }
     }
