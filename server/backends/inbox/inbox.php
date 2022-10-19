@@ -36,12 +36,18 @@
              * @param $msgId
              * @return boolean
              */
-            abstract public function markMessageAsReaded($subscriberId, $msgId);
+            abstract public function markMessageAsReaded($subscriberId, $msgId = false);
 
             /**
              * @param $subscriberId
              * @return array|false
              */
             abstract public function msgMonths($subscriberId);
+
+            /**
+             * @param $subscriberId
+             * @return mixed
+             */
+            abstract public function unreaded($subscriberId);
         }
     }

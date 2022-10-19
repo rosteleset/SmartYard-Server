@@ -43,13 +43,7 @@
                         "expire" => time() + 7 * 60 * 60 * 60,
                     ]);
 
-                    $unreaded = $this->db->get("select count(*) as unreaded from inbox where id = :id and readed = 0", [
-                        "id" => $subscriber["id"],
-                    ], [
-                        "unreaded" => "unreaded",
-                    ], [
-                        "fieldlify"
-                    ]);
+                    $unreaded = $this->unreaded($subscriberId);
 
                     if (!$msgId) {
                         setLastError("cantStoreMessage");
@@ -155,11 +149,38 @@
             /**
              * @inheritDoc
              */
-            public function markMessageAsReaded($subscriberId, $msgId)
+            public function markMessageAsReaded($subscriberId, $msgId = false)
             {
-                return $this->db->modify("update inbox set readed = 1 where msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
+                if ($msgId) {
+                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                        "msg_id" => $msgId,
+                    ]);
+                } else {
+                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function unreaded($subscriberId)
+            {
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidSubscriberId");
+                    return false;
+                }
+
+                return $this->db->get("select count(*) as unreaded from inbox where house_subscriber_id = :house_subscriber_id and readed = 0", [
                     "house_subscriber_id" => $subscriberId,
-                    "msg_id" => $msgId,
+                ],
+                [
+                    "unreaded" => "unreaded",
+                ],
+                [
+                    "fieldlify"
                 ]);
             }
         }
