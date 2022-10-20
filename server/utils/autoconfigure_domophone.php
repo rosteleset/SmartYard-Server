@@ -45,6 +45,7 @@
         $stun_port = $stun['port'] ?? 3478;
 
         $audio_levels = [];
+        $main_door_dtmf = $domophone['dtmf'];
 
         $cms_levels = explode(',', $entrances[0]['cmsLevels']);
         $cms_model = (string) @$cmses[$entrances[0]['cms']]['model'];
@@ -57,6 +58,7 @@
             $sip_port,
             $ntp_port,
             $syslog_port,
+            $main_door_dtmf,
             $audio_levels,
             $cms_levels,
             $cms_model,
@@ -96,7 +98,7 @@
             }
 
             $panel->configure_apartment(
-                $flat['flat'],
+                $flat['flat'], // TODO: shared offset
                 (bool) $flat['openCode'],
                 $entrances[0]['shared'] ? false : $flat['cmsEnabled'],
                 $entrances[0]['shared'] ? [] : [ sprintf('1%09d', $flat['flatId']) ],
