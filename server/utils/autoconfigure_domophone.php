@@ -89,21 +89,24 @@
         }
 
         foreach ($flats as $flat) {
+            $apartment = $flat['flat'];
             $apartment_levels = $cms_levels;
 
             foreach ($flat['entrances'] as $flat_entrance) {
-                if (isset($flat_entrance['domophoneId']) && $flat_entrance['domophoneId'] == $domophoneId) {
-                    $apartment_levels = $flat_entrance['apartmentLevels'];
+                if ($flat_entrance['domophoneId'] == $domophoneId) {
+                    $apartment_levels = explode(',', $flat_entrance['apartmentLevels']);
+                    $apartment = $flat_entrance['apartment'];
+                    break;
                 }
             }
 
             $panel->configure_apartment(
-                $flat['flat'], // TODO: shared offset
+                $apartment, // TODO: shared offset
                 (bool) $flat['openCode'],
                 $entrances[0]['shared'] ? false : $flat['cmsEnabled'],
                 $entrances[0]['shared'] ? [] : [ sprintf('1%09d', $flat['flatId']) ],
                 $flat['openCode'] ?: 0,
-                explode(',', $apartment_levels)
+                $apartment_levels
             );
 
             $keys = $households->getKeys('flat', $flat['flatId']);
