@@ -19,6 +19,25 @@
 
     require_once "api/api.php";
 
+    function usage() {
+        global $argv;
+
+        echo "usage: {$argv[0]}
+            [--init-db]
+            [--admin-password=<password>]
+            [--reindex]
+            [--clear-cache]
+            [--cleanup]
+            [--check-mail=<your email address>]
+            [--run-demo-server]
+            [--autoconfigure-domophone=<domophone_id> [--first-time]]
+            [--cron=<minutely|hourly|daily|monthly>]
+            [--install-crontabs]
+        \n";
+
+        exit(0);
+    }
+
     $args = [];
 
     for ($i = 1; $i < count($argv); $i++) {
@@ -213,11 +232,20 @@
 
     if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigure-domophone", $args) && isset($args["--autoconfigure-domophone"])) {
         $domophone_id = $args["--autoconfigure-domophone"];
-        $first_time = array_key_exists("--first-time", $args);
+
+        $first_time = false;
+
+        if (count($args) == 2) {
+            if (array_key_exists("--first-time", $args)) {
+                $first_time = true;
+            } else {
+                usage();
+            }
+        }
 
         if (checkInt($domophone_id)) {
             require_once "utils/autoconfigure_domophone.php";
-            autoconfigure_domophone($args["--autoconfigure-domophone"], $first_time);
+            autoconfigure_domophone($domophone_id, $first_time);
             exit(0);
         }
     }
@@ -229,15 +257,4 @@
         exit(0);
     }
 
-    echo "usage: {$argv[0]}
-        [--init-db]
-        [--admin-password=<password>]
-        [--reindex]
-        [--clear-cache]
-        [--cleanup]
-        [--check-mail=<your email address>]
-        [--run-demo-server]
-        [--autoconfigure-domophone=<domophone_id> [--first-time]]
-        [--cron=<minutely|hourly|daily|monthly>]
-        [--install-crontabs]
-    \n";
+    usage();
