@@ -1,5 +1,11 @@
 // modalUpload([ "image/jpeg", "image/png", "application/pdf" ], 2 * 1024 * 1024, '/server/');
 
+const mime2fa = {
+    false: "far fa-fw fa-file",
+    "image/jpeg": "far fa-fw fa-file-image",
+    "application/pdf": "far fa-fw fa-file-pdf"
+};
+
 function uploadForm(mimeTypes) {
     let h = `
         <div class="card mt-0 mb-0">
@@ -12,13 +18,16 @@ function uploadForm(mimeTypes) {
                 <table class="table tform-borderless">
                     <tbody>
                         <tr style="display: none">
-                            <td colspan="2" id="uploadFileInfo">&nbsp;</td>
+                            <td id="fileIcon">&nbsp;</td>
+                            <td id="uploadFileInfo">&nbsp;</td>
                         </tr>
                     </tbody>
+                </table>
+                <table class="table tform-borderless">
                     <tfoot>
                         <tr>
-                            <td><button id="chooseFileToUpload" class="btn btn-default">${i18n("chooseFile")}</button></td>
-                            <td style="text-align: right"><button id="uploadButton" class="btn btn-default">${i18n("doUpload")}</button></td>
+                            <td><button id="uploadButton" class="btn btn-default">${i18n("doUpload")}</button></td>
+                            <td style="text-align: right"><button id="chooseFileToUpload" class="btn btn-default">${i18n("chooseFile")}...</button></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -154,6 +163,13 @@ function loadFile(mimeTypes, maxSize, callback) {
             }
 
             if (file) {
+                let icon;
+                if (mime2fa[file.type]) {
+                    icon = mime2fa[file.type];
+                } else {
+                    icon = mime2fa[false];
+                }
+                $("#fileIcon").html(`<h1><i class="${icon}"></i></h1>`);
                 $("#uploadFileInfo").html(`
                     ${i18n("fileName")}: ${file.name}<br />
                     ${i18n("fileSize")}: ${formatBytes(file.size)}<br />
