@@ -1,6 +1,6 @@
 // modalUpload([ "image/jpeg", "image/png", "application/pdf" ], 2 * 1024 * 1024, '/server/');
 
-function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
+function uploadForm(mimeTypes) {
     let h = `
         <div class="card mt-0 mb-0">
             <div class="card-header">
@@ -14,15 +14,9 @@ function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
                             <td colspan="2" id="uploadFileInfo">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td class="tdform">${i18n("chooseFile")}</td>
                             <td class="tdform-right">
                                 <input type="file" id="fileInput" style="display: none" accept="${mimeTypes?mimeTypes.join(","):""}"/>
-                                <div class="input-group">
-                                    <input id="fakeFileInput" type="text" class="form-control modalFormField" autocomplete="off" placeholder="${i18n("chooseFile")}" readonly="readonly">
-                                    <div class="input-group-append">
-                                        <span id="fakeFileInputButton" class="input-group-text pointer"><i class="fas fa-fw fa-folder-open"></i></span>
-                                    </div>
-                                </div>
+                                <span id="fakeFileInputButton" class="btn btn-default">${i18n("chooseFile")}</span>
                             </td>
                         </tr>
                     </tbody>
@@ -37,6 +31,11 @@ function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
     `;
 
     $("#modalUploadBody").html(h);
+}
+
+function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
+
+    uploadForm(mimeTypes);
 
     function progress(p) {
         loadingProgress.set(p);
@@ -121,6 +120,84 @@ function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
         });
 
         request.send(data);
+    });
+
+    autoZ($('#modalUpload')).modal('show');
+
+    xblur();
+}
+
+function loadFile(mimeTypes, maxSize, callback) {
+    uploadForm(mimeTypes);
+
+    let files = [];
+    let file = false;
+
+    $("#fakeFileInputButton").off("click").on("click", () => {
+        $("#fakeFileInput").val("");
+        $("#uploadFileInfo").parent().hide();
+        $("#fileInput").off("change").val("").click().on("change", () => {
+            files = document.querySelector("#fileInput").files;
+
+            if (files.length === 0) {
+                error(i18n("noFileSelected"));
+                return;
+            }
+
+            if (files.length > 1) {
+                error(i18n("multiuploadNotSupported"));
+                return;
+            }
+
+            file = files[0];
+
+            if (mimeTypes && mimeTypes.indexOf(file.type) === -1) {
+                error("incorrectFileType");
+                return;
+            }
+
+            if (maxSize && file.size > maxSize) {
+                error("exceededSize");
+                return;
+            }
+
+            if (file) {
+                $("#fakeFileInput").val(file.name);
+                $("#uploadFileInfo").html(`
+                    ${i18n("fileName")}: ${file.name}<br />
+                    ${i18n("fileSize")}: ${formatBytes(file.size)}<br />
+                    ${i18n("fileDate")}: ${date("Y-m-d H:i", file.lastModified / 1000)}<br />
+                    ${i18n("fileType")}: ${file.type}<br />
+                `).parent().show();
+            }
+        });
+    });
+
+    $("#uploadButton").off("click").on("click", () => {
+        if (file) {
+            $('#modalUpload').modal('hide');
+
+            fetch(URL.createObjectURL(file)).then(response => {
+                return response.blob();
+            }).then(blob => {
+                setTimeout(() => {
+                    let reader = new FileReader();
+                    reader.onloadend = () => {
+                        let body = reader.result.split(';base64,')[1];
+                        if (typeof callback === "function") {
+                            callback({
+                                name: file.name,
+                                size: file.size,
+                                date: file.lastModified,
+                                type: file.type,
+                                body: body,
+                            });
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+                }, 100);
+            });
+        }
     });
 
     autoZ($('#modalUpload')).modal('show');

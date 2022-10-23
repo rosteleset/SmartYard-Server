@@ -1034,6 +1034,7 @@
 
     projectWorkflows: function (projectId) {
         let project = false;
+
         for (let i in modules.tt.meta.projects) {
             if (modules.tt.meta.projects[i].projectId == projectId) {
                 project = modules.tt.meta.projects[i];
@@ -1043,7 +1044,7 @@
 
         let w = {};
         for (let i in modules.tt.meta.workflows) {
-            w[modules.tt.meta.workflows[i]] = modules.tt.meta.workflows[i];
+            w[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].file;
         }
 
         for (let i in modules.tt.meta.workflowAliases) {
