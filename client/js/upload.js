@@ -15,11 +15,11 @@ function uploadForm(mimeTypes) {
             </div>
             <div class="card-body table-responsive p-0">
                 <input type="file" id="fileInput" style="display: none" accept="${mimeTypes?mimeTypes.join(","):""}"/>
-                <table class="table tform-borderless">
+                <table class="table tform-borderless" style="width: 100%;">
                     <tbody>
                         <tr style="display: none">
                             <td id="fileIcon">&nbsp;</td>
-                            <td id="uploadFileInfo">&nbsp;</td>
+                            <td id="uploadFileInfo" style="text-align: left; width: 100%;">&nbsp;</td>
                         </tr>
                     </tbody>
                 </table>
@@ -170,8 +170,8 @@ function loadFile(mimeTypes, maxSize, callback) {
                     icon = mime2fa[false];
                 }
                 $("#fileIcon").html(`<h1><i class="${icon}"></i></h1>`);
+                $("#fileIcon").attr("title", file.name);
                 $("#uploadFileInfo").html(`
-                    ${i18n("fileName")}: ${file.name}<br />
                     ${i18n("fileSize")}: ${formatBytes(file.size)}<br />
                     ${i18n("fileDate")}: ${date("Y-m-d H:i", file.lastModified / 1000)}<br />
                     ${i18n("fileType")}: ${file.type}<br />
