@@ -172,6 +172,7 @@ function loadFile(mimeTypes, maxSize, callback) {
                 $("#fileIcon").html(`<h1><i class="${icon}"></i></h1>`);
                 $("#fileIcon").attr("title", file.name);
                 $("#uploadFileInfo").html(`
+                    ${file.name}<br />
                     ${i18n("fileSize")}: ${formatBytes(file.size)}<br />
                     ${i18n("fileDate")}: ${date("Y-m-d H:i", file.lastModified / 1000)}<br />
                     ${i18n("fileType")}: ${file.type}<br />
