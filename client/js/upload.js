@@ -8,21 +8,17 @@ function uploadForm(mimeTypes) {
                 <button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right uploadModalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>
             </div>
             <div class="card-body table-responsive p-0">
+                <input type="file" id="fileInput" style="display: none" accept="${mimeTypes?mimeTypes.join(","):""}"/>
                 <table class="table tform-borderless">
                     <tbody>
                         <tr style="display: none">
                             <td colspan="2" id="uploadFileInfo">&nbsp;</td>
                         </tr>
-                        <tr>
-                            <td class="tdform-right">
-                                <input type="file" id="fileInput" style="display: none" accept="${mimeTypes?mimeTypes.join(","):""}"/>
-                                <span id="fakeFileInputButton" class="btn btn-default">${i18n("chooseFile")}</span>
-                            </td>
-                        </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="2"><button id="uploadButton" class="btn btn-default">${i18n("doUpload")}</button></td>
+                            <td><button id="chooseFileToUpload" class="btn btn-default">${i18n("chooseFile")}</button></td>
+                            <td style="text-align: right"><button id="uploadButton" class="btn btn-default">${i18n("doUpload")}</button></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -41,22 +37,19 @@ function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
         loadingProgress.set(p);
     }
 
-    $("#fakeFileInputButton").off("click").on("click", () => {
-        $("#fakeFileInput").val("");
+    $("#chooseFileToUpload").off("click").on("click", () => {
         $("#uploadFileInfo").parent().hide();
         $("#uploadFileProgress").hide();
         progress(0);
         $("#fileInput").off("change").val("").click().on("change", () => {
             let files = document.querySelector("#fileInput").files;
             if (files && files.length && files[0].name) {
-                $("#fakeFileInput").val(files[0].name);
                 $("#uploadFileInfo").html(`
                     ${i18n("fileName")}: ${files[0].name}<br />
                     ${i18n("fileSize")}: ${formatBytes(files[0].size)}<br />
                     ${i18n("fileDate")}: ${date("Y-m-d H:i", files[0].lastModified / 1000)}<br />
                     ${i18n("fileType")}: ${files[0].type}<br />
                 `).parent().show();
-                console.log(document.querySelector("#fileInput").files);
             }
         });
     });
@@ -133,8 +126,7 @@ function loadFile(mimeTypes, maxSize, callback) {
     let files = [];
     let file = false;
 
-    $("#fakeFileInputButton").off("click").on("click", () => {
-        $("#fakeFileInput").val("");
+    $("#chooseFileToUpload").off("click").on("click", () => {
         $("#uploadFileInfo").parent().hide();
         $("#fileInput").off("change").val("").click().on("change", () => {
             files = document.querySelector("#fileInput").files;
@@ -162,7 +154,6 @@ function loadFile(mimeTypes, maxSize, callback) {
             }
 
             if (file) {
-                $("#fakeFileInput").val(file.name);
                 $("#uploadFileInfo").html(`
                     ${i18n("fileName")}: ${file.name}<br />
                     ${i18n("fileSize")}: ${formatBytes(file.size)}<br />
@@ -203,4 +194,6 @@ function loadFile(mimeTypes, maxSize, callback) {
     autoZ($('#modalUpload')).modal('show');
 
     xblur();
+
+    $("#chooseFileToUpload").click();
 }
