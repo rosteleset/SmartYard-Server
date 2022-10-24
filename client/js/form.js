@@ -1,6 +1,8 @@
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
     let h = "";
+    let files = {};
+
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
@@ -250,6 +252,12 @@ function cardForm(params) {
                     h += `</div>`;
                 }
                 break;
+
+            case "files":
+                h += `<button id="${_prefix}${params.fields[i].id}-add" class="btn btn-primary" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}">${i18n("add")}</button><br/>`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control mt-2" multiple="multiple"></select>`;
+                h += `<span class="text-secondary text-xs">${i18n("dblClickToRemove")}</span>`;
+                break;
         }
 
         if (params.fields[i].hint) {
@@ -497,6 +505,8 @@ function cardForm(params) {
             if (params.fields[i].value) {
                 $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value).trigger("change");
             }
+
+            $(`#${_prefix}${params.fields[i].id}`).next().css("width", "100%");
         }
 
         if (params.fields[i].type === "rich") {
@@ -531,6 +541,24 @@ function cardForm(params) {
                 editor.clearSelection();
             }
             editor.setFontSize(14);
+        }
+
+        if (params.fields[i].type === "files") {
+            $(`#${_prefix}${params.fields[i].id}`).off("dblclick").on("dblclick", function () {
+
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", function () {
+                let id = $(this).attr("data-for");
+                let mimeTypes = JSON.parse($(this).attr("data-mime-types"));
+                let maxSize = parseInt($(this).attr("data-max-size"));
+
+                loadFile(mimeTypes, maxSize, file => {
+                    if (file) {
+                        $("#" + id).append("<option>" + file.name + "</option>");
+                    }
+                });
+            });
         }
     }
 

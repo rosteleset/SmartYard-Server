@@ -1426,11 +1426,11 @@
                         }
                     }
                     cardForm({
-                        title: i18n("tt.addTag"),
+                        title: i18n("tt.modifyTag"),
                         footer: true,
                         borderless: true,
                         topApply: true,
-                        apply: i18n("add"),
+                        apply: i18n("apply"),
                         delete: i18n("tt.deleteTag"),
                         fields: [
                             {

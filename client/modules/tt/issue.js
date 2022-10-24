@@ -104,11 +104,6 @@
                     location.href = `#tt.issue&action=create&project=${result.project}&workflow=${result.workflow}`;
                 },
             }).show();
-
-            loadFile([ "image/jpeg", "image/png", "application/pdf" ], 1024 * 1024, r => {
-                console.log(r);
-            });
-
         }).
         fail(FAIL).
         always(loadingDone)
@@ -158,6 +153,13 @@
                             readonly: true,
                             title: i18n("tt.workflow"),
                             value: workflowName,
+                        },
+                        {
+                            id: "attachments",
+                            type: "files",
+                            title: i18n("tt.attachments"),
+                            mimeTypes: [ "image/jpeg", "image/png", "application/pdf" ],
+                            maxSize: 1024 * 1024,
                         },
                     ];
 
