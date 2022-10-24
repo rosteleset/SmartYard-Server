@@ -100,5 +100,9 @@
     "filterFileName": "Файл",
     "filterName": "Фильтр",
     "deleteFilter": "Удалить фильтр",
-    "addFilter": "Добавить фильтр"
+    "addFilter": "Добавить фильтр",
+    "attachments": "Вложения",
+    "deleteTag": "Удалить ярлык",
+    "confirmDeleteTag": "Удалить ярлык #%s?",
+    "modifyTag": "Редактирование ярлыка"
 }

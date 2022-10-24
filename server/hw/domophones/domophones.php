@@ -222,6 +222,7 @@
                 int $sip_port,
                 int $ntp_port,
                 int $syslog_port,
+                int $main_door_dtmf = 1,
                 array $audio_levels = [],
                 array $cms_levels = [],
                 string $cms_model = '',
@@ -239,7 +240,7 @@
                 $this->set_cms_levels($cms_levels);
                 $this->configure_ntp($ntp_server, $ntp_port, 'GMT+03:00');
                 $this->configure_sip($sip_username, $this->pass, $sip_server, $sip_port, $nat, $stun_server, $stun_port);
-                $this->set_relay_dtmf(1, 2, 3);
+                $this->set_relay_dtmf($main_door_dtmf, 2, 3);
                 $this->configure_syslog($syslog_server, $syslog_port);
                 $this->clear_rfid();
                 $this->clear_apartment();

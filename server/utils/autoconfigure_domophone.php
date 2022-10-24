@@ -13,12 +13,6 @@
         $cmses = $households->getCmses();
         $flats = $households->getFlats('domophone', $domophoneId);
 
-        print_r($entrances);
-        print_r($domophone);
-//        print_r($flats);
-//        print_r($cms_allocation);
-//        print_r($cmses);
-
         try {
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $firstTime);
         } catch (Exception $e) {
@@ -51,6 +45,7 @@
         $stun_port = $stun['port'] ?? 3478;
 
         $audio_levels = [];
+        $main_door_dtmf = $domophone['dtmf'];
 
         $cms_levels = explode(',', $entrances[0]['cmsLevels']);
         $cms_model = (string) @$cmses[$entrances[0]['cms']]['model'];
@@ -63,6 +58,7 @@
             $sip_port,
             $ntp_port,
             $syslog_port,
+            $main_door_dtmf,
             $audio_levels,
             $cms_levels,
             $cms_model,
@@ -71,23 +67,21 @@
             $stun_port
         );
 
-        if ($entrances[0]['entranceType'] != 'entrance') {
-            if ($entrances[0]['entranceType'] == 'wicket') {
-                $links = [];
+        if ($entrances[0]['shared']) {
+            $links = [];
 
-                foreach ($entrances as $entrance) {
-                    $house_flats = $households->getFlats('house', $entrance['houseId']);
+            foreach ($entrances as $entrance) {
+                $house_flats = $households->getFlats('house', $entrance['houseId']);
 
-                    $links[] = [
-                        'addr' => $addresses->getHouse($entrance['houseId'])['houseFull'],
-                        'prefix' => $entrance['prefix'],
-                        'begin' => reset($house_flats)['flat'],
-                        'end' => end($house_flats)['flat'],
-                    ];
-                }
-
-                $panel->configure_gate($links);
+                $links[] = [
+                    'addr' => $addresses->getHouse($entrance['houseId'])['houseFull'],
+                    'prefix' => $entrance['prefix'],
+                    'begin' => reset($house_flats)['flat'],
+                    'end' => end($house_flats)['flat'],
+                ];
             }
+
+            $panel->configure_gate($links);
         }
 
         foreach ($cms_allocation as $item) {
@@ -95,21 +89,24 @@
         }
 
         foreach ($flats as $flat) {
+            $apartment = $flat['flat'];
             $apartment_levels = $cms_levels;
 
             foreach ($flat['entrances'] as $flat_entrance) {
-                if (isset($flat_entrance['domophoneId']) && $flat_entrance['domophoneId'] == $domophoneId) {
-                    $apartment_levels = $flat_entrance['apartmentLevels'];
+                if ($flat_entrance['domophoneId'] == $domophoneId) {
+                    $apartment_levels = explode(',', $flat_entrance['apartmentLevels']);
+                    $apartment = $flat_entrance['apartment'];
+                    break;
                 }
             }
 
             $panel->configure_apartment(
-                $flat['flat'],
+                $apartment, // TODO: shared offset
                 (bool) $flat['openCode'],
-                $flat['cmsEnabled'],
-                [ sprintf('1%09d', $flat['flatId']) ],
+                $entrances[0]['shared'] ? false : $flat['cmsEnabled'],
+                $entrances[0]['shared'] ? [] : [ sprintf('1%09d', $flat['flatId']) ],
                 $flat['openCode'] ?: 0,
-                explode(',', $apartment_levels)
+                $apartment_levels
             );
 
             $keys = $households->getKeys('flat', $flat['flatId']);

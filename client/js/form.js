@@ -1,6 +1,8 @@
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
     let h = "";
+    let files = {};
+
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
@@ -250,6 +252,12 @@ function cardForm(params) {
                     h += `</div>`;
                 }
                 break;
+
+            case "files":
+                h += `<button id="${_prefix}${params.fields[i].id}-add" class="btn btn-primary" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}">${i18n("add")}</button><br/>`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control mt-2" multiple="multiple"></select>`;
+                h += `<span class="text-secondary text-xs">${i18n("dblClickToRemove")}</span>`;
+                break;
         }
 
         if (params.fields[i].hint) {
@@ -318,6 +326,9 @@ function cardForm(params) {
             case "code":
                 let code = $.trim(params.fields[i].editor.getValue());
                 return code;
+
+            case "files":
+                return files[_prefix + params.fields[i].id];
         }
     }
 
@@ -497,6 +508,8 @@ function cardForm(params) {
             if (params.fields[i].value) {
                 $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value).trigger("change");
             }
+
+            $(`#${_prefix}${params.fields[i].id}`).next().css("width", "100%");
         }
 
         if (params.fields[i].type === "rich") {
@@ -531,6 +544,60 @@ function cardForm(params) {
                 editor.clearSelection();
             }
             editor.setFontSize(14);
+        }
+
+        if (params.fields[i].type === "files") {
+            $(`#${_prefix}${params.fields[i].id}`).off("dblclick").on("dblclick", function () {
+                let id = $(this).attr("id");
+                let fileNames = $(this).val();
+
+                for (let i in fileNames) {
+                    let found;
+                    do {
+                        found = false;
+                        for (let j in files[id]) {
+                            if (files[id][j].name == fileNames[i]) {
+                                files[id].splice(j, 1);
+                                found = true;
+                                break;
+                            }
+                        }
+                    } while (found);
+                }
+
+                $("#" + id).html("");
+                for (let j in files[id]) {
+                    $("#" + id).append("<option>" + files[id][j].name + "</option>");
+                }
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", function () {
+                let id = $(this).attr("data-for");
+                let mimeTypes = JSON.parse($(this).attr("data-mime-types"));
+                let maxSize = parseInt($(this).attr("data-max-size"));
+
+                loadFile(mimeTypes, maxSize, file => {
+                    if (file) {
+                        let already = false;
+
+                        $("#" + id).each(function () {
+                            if ($(this).text() == file.name) {
+                                already = true;
+                            }
+                        });
+
+                        if (!already) {
+                            $("#" + id).append("<option>" + file.name + "</option>");
+                            if (!files[id]) {
+                                files[id] = [];
+                            }
+                            files[id].push(file);
+                        } else {
+                            error(i18n("fileAlreadyExists"));
+                        }
+                    }
+                });
+            });
         }
     }
 
