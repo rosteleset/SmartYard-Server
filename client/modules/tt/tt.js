@@ -171,6 +171,16 @@
             // custom field
             fieldId = fieldId.substring(4);
 
+/*
+            id: "TextString",
+            id: "TextArea",
+            id: "Integer",
+            id: "Real",
+            id: "Select",
+            id: "MultiSelect",
+            id: "Users",
+*/
+
             let cf = false;
             for (let i in modules.tt.meta.customFields) {
                 if (modules.tt.meta.customFields[i].field === fieldId) {
