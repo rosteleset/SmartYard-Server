@@ -326,6 +326,9 @@ function cardForm(params) {
             case "code":
                 let code = $.trim(params.fields[i].editor.getValue());
                 return code;
+
+            case "files":
+                return files[_prefix + params.fields[i].id];
         }
     }
 
