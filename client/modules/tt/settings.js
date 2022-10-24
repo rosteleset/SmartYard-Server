@@ -97,12 +97,9 @@
         });
     },
 
-    doModifyProject: function (projectId, acronym, project) {
+    doModifyProject: function (project) {
         loadingStart();
-        PUT("tt", "project", projectId, {
-            acronym: acronym,
-            project: project,
-        }).
+        PUT("tt", "project", project["projectId"], project).
         fail(FAIL).
         done(() => {
             message(i18n("tt.projectWasChanged"));
@@ -516,11 +513,36 @@
             }
         }
 
+
+        let allowedMimeTypes;
+
+        try {
+            allowedMimeTypes = JSON.parse(project.allowedMimeTypes);
+            if (!allowedMimeTypes) {
+                allowedMimeTypes = [];
+            }
+        } catch (e) {
+            allowedMimeTypes = [];
+        }
+
+        let w = [];
+
+        for (let i in mime2fa) {
+            if (i && i != "false") {
+                w.push({
+                    id: md5(i),
+                    text: i,
+                    checked: allowedMimeTypes.includes(i),
+                });
+            }
+        }
+
         cardForm({
             title: i18n("tt.projectEdit"),
             footer: true,
             borderless: true,
             topApply: true,
+            size: "lg",
             fields: [
                 {
                     id: "projectId",
@@ -549,13 +571,38 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "maxFileSize",
+                    type: "text",
+                    value: project.maxFileSize,
+                    title: i18n("tt.maxFileSize"),
+                    placeholder: i18n("tt.maxFileSize"),
+                    validate: (v) => {
+                        return parseInt(v) >= 0 && parseInt(v) <= 64 * 1024 * 1024;
+                    }
+                },
+                {
+                    id: "allowedMimeTypes",
+                    type: "multiselect",
+                    options: w,
+                    title: i18n("tt.allowedMimeTypes"),
+                },
             ],
             delete: i18n("tt.projectDelete"),
             callback: function (result) {
+                let t = [];
+                for (let i in result.allowedMimeTypes) {
+                    for (let j in mime2fa) {
+                        if (md5(j) == result.allowedMimeTypes[i]) {
+                            t.push(j)
+                        }
+                    }
+                }
+                result.allowedMimeTypes = JSON.stringify(t);
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteProject(result.projectId);
                 } else {
-                    modules.tt.settings.doModifyProject(result.projectId, result.acronym, result.project);
+                    modules.tt.settings.doModifyProject(result);
                 }
             },
         }).show();

@@ -3,7 +3,9 @@ CREATE TABLE tt_projects
 (
     project_id serial not null primary key,
     acronym character varying not null,
-    project character varying not null
+    project character varying not null,
+    max_file_size integer,
+    mime_types character varying
 );
 CREATE UNIQUE INDEX tt_projects_acronym on tt_projects(acronym);
 CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);

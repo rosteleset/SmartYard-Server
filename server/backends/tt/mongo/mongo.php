@@ -63,7 +63,7 @@
             public function getProjects()
             {
                 try {
-                    $projects = $this->db->query("select project_id, acronym, project from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
+                    $projects = $this->db->query("select project_id, acronym, project, max_file_size, mime_types from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
                     $_projects = [];
 
                     foreach ($projects as $project) {
@@ -148,6 +148,8 @@
                             "projectId" => $project["project_id"],
                             "acronym" => $project["acronym"],
                             "project" => $project["project"],
+                            "maxFileSize" => $project["max_file_size"],
+                            "allowedMimeTypes" => $project["mime_types"],
                             "workflows" => $w,
                             "resolutions" => $r,
                             "customFields" => $cf,
@@ -194,17 +196,19 @@
             /**
              * @inheritDoc
              */
-            public function modifyProject($projectId, $acronym, $project)
+            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes)
             {
-                if (!checkInt($projectId) || !trim($acronym) || !trim($project)) {
+                if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project where project_id = $projectId");
+                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, mime_types = :mime_types where project_id = $projectId");
                     $sth->execute([
-                        ":acronym" => $acronym,
-                        ":project" => $project,
+                        "acronym" => $acronym,
+                        "project" => $project,
+                        "max_file_size" => $maxFileSize,
+                        "mime_types" => $allowedMimeTypes,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

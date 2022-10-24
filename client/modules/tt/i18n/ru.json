@@ -104,5 +104,7 @@
     "attachments": "Вложения",
     "deleteTag": "Удалить ярлык",
     "confirmDeleteTag": "Удалить ярлык #%s?",
-    "modifyTag": "Редактирование ярлыка"
+    "modifyTag": "Редактирование ярлыка",
+    "maxFileSize": "Максимальный размер файла",
+    "allowedMimeTypes": "Разрешенные типы файлов"
 }

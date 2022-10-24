@@ -154,13 +154,6 @@
                             title: i18n("tt.workflow"),
                             value: workflowName,
                         },
-                        {
-                            id: "attachments",
-                            type: "files",
-                            title: i18n("tt.attachments"),
-                            mimeTypes: [ "image/jpeg", "image/png", "application/pdf" ],
-                            maxSize: 1024 * 1024,
-                        },
                     ];
 
                     let af = [];

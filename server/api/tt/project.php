@@ -25,7 +25,7 @@
                 $tt = loadBackend("tt");
 
                 if (array_key_exists("acronym", $params)) {
-                    $success = $tt->modifyProject($params["_id"], $params["acronym"]);
+                    $success = $tt->modifyProject($params["_id"], $params["acronym"], $params["project"], $params["maxFileSize"], $params["allowedMimeTypes"]);
                 }
 
                 if (array_key_exists("workflows", $params)) {
@@ -52,7 +52,6 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET" => "tt",
                         "POST" => "tt",
                         "PUT" => "tt",
                         "DELETE" => "tt",

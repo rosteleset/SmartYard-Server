@@ -152,6 +152,15 @@
                         options: peoples(project, false),
                     };
 
+                case "attachments":
+                    return {
+                        id: "attachments",
+                        type: "files",
+                        title: i18n("tt.attachments"),
+                        mimeTypes: [ "image/jpeg", "image/png", "application/pdf" ],
+                        maxSize: 1024 * 1024,
+                    };
+
                 case "plans":
                     break;
 
