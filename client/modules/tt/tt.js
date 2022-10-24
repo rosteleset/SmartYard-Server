@@ -157,8 +157,8 @@
                         id: "attachments",
                         type: "files",
                         title: i18n("tt.attachments"),
-                        mimeTypes: [ "image/jpeg", "image/png", "application/pdf" ],
-                        maxSize: 1024 * 1024,
+                        mimeTypes: JSON.parse(project.allowedMimeTypes),
+                        maxSize: project.maxFileSize,
                     };
 
                 case "plans":

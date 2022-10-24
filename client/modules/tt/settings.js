@@ -573,10 +573,39 @@
                 },
                 {
                     id: "maxFileSize",
-                    type: "text",
+                    type: "select2",
                     value: project.maxFileSize,
                     title: i18n("tt.maxFileSize"),
-                    placeholder: i18n("tt.maxFileSize"),
+                    options: [
+                        {
+                            id: 1024 * 1024,
+                            text: "1Mb"
+                        },
+                        {
+                            id: 2 * 1024 * 1024,
+                            text: "2Mb"
+                        },
+                        {
+                            id: 4 * 1024 * 1024,
+                            text: "4Mb"
+                        },
+                        {
+                            id: 8 * 1024 * 1024,
+                            text: "8Mb"
+                        },
+                        {
+                            id: 16 * 1024 * 1024,
+                            text: "16Mb"
+                        },
+                        {
+                            id: 32 * 1024 * 1024,
+                            text: "32Mb"
+                        },
+                        {
+                            id: 64 * 1024 * 1024,
+                            text: "64Mb"
+                        },
+                    ],
                     validate: (v) => {
                         return parseInt(v) >= 0 && parseInt(v) <= 64 * 1024 * 1024;
                     }
