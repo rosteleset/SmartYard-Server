@@ -545,7 +545,27 @@ function cardForm(params) {
 
         if (params.fields[i].type === "files") {
             $(`#${_prefix}${params.fields[i].id}`).off("dblclick").on("dblclick", function () {
+                let id = $(this).attr("id");
+                let fileNames = $(this).val();
 
+                for (let i in fileNames) {
+                    let found;
+                    do {
+                        found = false;
+                        for (let j in files[id]) {
+                            if (files[id][j].name == fileNames[i]) {
+                                files[id].splice(j, 1);
+                                found = true;
+                                break;
+                            }
+                        }
+                    } while (found);
+                }
+
+                $("#" + id).html("");
+                for (let j in files[id]) {
+                    $("#" + id).append("<option>" + files[id][j].name + "</option>");
+                }
             });
 
             $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", function () {
@@ -555,7 +575,23 @@ function cardForm(params) {
 
                 loadFile(mimeTypes, maxSize, file => {
                     if (file) {
-                        $("#" + id).append("<option>" + file.name + "</option>");
+                        let already = false;
+
+                        $("#" + id).each(function () {
+                            if ($(this).text() == file.name) {
+                                already = true;
+                            }
+                        });
+
+                        if (!already) {
+                            $("#" + id).append("<option>" + file.name + "</option>");
+                            if (!files[id]) {
+                                files[id] = [];
+                            }
+                            files[id].push(file);
+                        } else {
+                            error(i18n("fileAlreadyExists"));
+                        }
                     }
                 });
             });
