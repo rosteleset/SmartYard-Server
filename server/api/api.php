@@ -147,6 +147,45 @@
             }
 
             /**
+             * @param $body
+             * @param $contentType
+             * @param $fileName
+             * @return void
+             */
+
+            public static function FILE($body, $contentType, $fileName) {
+                header("Content-type: $contentType");
+                header("Content-Disposition: attachment; filename=$fileName");
+
+                $begin  = 0;
+                $size = strlen($body);
+                $end  = $size - 1;
+
+                if (isset($_SERVER['HTTP_RANGE'])) {
+                    if (preg_match('/bytes=\h*(\d+)-(\d*)[\D.*]?/i', $_SERVER['HTTP_RANGE'], $matches)) {
+                        $begin  = intval($matches[1]);
+                        if (!empty($matches[2])) {
+                            $end  = intval($matches[2]);
+                        }
+                    }
+                    header('HTTP/1.1 206 Partial Content');
+                    header("Content-Range: bytes $begin-$end/$size");
+                } else {
+                    header('HTTP/1.1 200 OK');
+                }
+
+                header('Cache-Control: public, must-revalidate, max-age=0');
+                header('Pragma: no-cache');
+                header('Accept-Ranges: bytes');
+                header('Content-Length:' . ($size - $begin));
+                header('Content-Transfer-Encoding: binary');
+
+                echo substr($body, $begin, $size - $begin);
+
+                exit(0);
+            }
+
+            /**
              * internal function for indexing methods
              *
              * @return boolean|string[]
