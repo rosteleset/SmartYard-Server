@@ -66,6 +66,7 @@
                 borderless: true,
                 noHover: true,
                 topApply: true,
+                apply: "create",
                 singleColumn: true,
                 fields: [
                     {
