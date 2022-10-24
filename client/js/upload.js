@@ -11,8 +11,8 @@ const mime2fa = {
     ".doc": "far fa-fw fa-file-word",
     ".docx": "far fa-fw fa-file-word",
     ".ods": "far fa-fw fa-file-excel",
-    ".xclx": "far fa-fw fa-file-excel",
-    ".xcl": "far fa-fw fa-file-excel",
+    ".xlsx": "far fa-fw fa-file-excel",
+    ".xls": "far fa-fw fa-file-excel",
 };
 
 function uploadForm(mimeTypes) {
