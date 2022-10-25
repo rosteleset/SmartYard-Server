@@ -953,10 +953,10 @@
                             }
                         },
                         {
-                            id: "usersMultiple",
+                            id: "multiple",
                             type: "select",
-                            title: i18n("tt.usersMultiple"),
-                            value: (cf.format && cf.format.indexOf("usersMultiple") >= 0)?"1":"0",
+                            title: i18n("tt.multiple"),
+                            value: (cf.format && cf.format.indexOf("multiple") >= 0)?"1":"0",
                             options: [
                                 {
                                     id: "1",
@@ -970,18 +970,24 @@
                             hidden: cf.type !== "Users",
                         },
                         {
-                            id: "usersWithGroups",
+                            id: "usersAndGroups",
                             type: "select",
-                            title: i18n("tt.usersWithGroups"),
-                            value: (cf.format && cf.format.indexOf("usersWithGroups") >= 0)?"1":"0",
+                            title: i18n("tt.usersAndGroups"),
                             options: [
                                 {
-                                    id: "1",
-                                    text: i18n("yes"),
+                                    id: "users",
+                                    text: i18n("tt.users"),
+                                    selected: cf.format && cf.format.indexOf("users") >= 0,
                                 },
                                 {
-                                    id: "0",
-                                    text: i18n("no"),
+                                    id: "groups",
+                                    text: i18n("tt.groups"),
+                                    selected: cf.format && cf.format.indexOf("groups") >= 0,
+                                },
+                                {
+                                    id: "usersAndGroups",
+                                    text: i18n("tt.usersAndGroupsChoice"),
+                                    selected: cf.format && cf.format.indexOf("usersAndGroups") >= 0,
                                 },
                             ],
                             hidden: cf.type !== "Users",
@@ -1030,12 +1036,10 @@
                         } else {
                             if (cf.type === "Users") {
                                 result.format = "";
-                                if (result.usersMultiple === "1") {
-                                    result.format += " usersMultiple";
+                                if (result.multiple === "1") {
+                                    result.format += " multiple";
                                 }
-                                if (result.usersWithGroups === "1") {
-                                    result.format += " usersWithGroups";
-                                }
+                                result.format += " " + result.usersAndGroups;
                                 result.format = $.trim(result.format);
                             }
                             modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes, result.required);
