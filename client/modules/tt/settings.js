@@ -378,28 +378,16 @@
                     minimumResultsForSearch: Infinity,
                     options: [
                         {
-                            id: "TextString",
-                            text: i18n("tt.customFieldTypeTextString"),
+                            id: "Text",
+                            text: i18n("tt.customFieldTypeText"),
                         },
                         {
-                            id: "TextArea",
-                            text: i18n("tt.customFieldTypeTextArea"),
-                        },
-                        {
-                            id: "Integer",
-                            text: i18n("tt.customFieldTypeInteger"),
-                        },
-                        {
-                            id: "Real",
-                            text: i18n("tt.customFieldTypeReal"),
+                            id: "Number",
+                            text: i18n("tt.customFieldTypeNumber"),
                         },
                         {
                             id: "Select",
                             text: i18n("tt.customFieldTypeSelect"),
-                        },
-                        {
-                            id: "MultiSelect",
-                            text: i18n("tt.customFieldTypeMultiSelect"),
                         },
                         {
                             id: "Users",
@@ -829,7 +817,7 @@
                     },
                 ];
 
-                if (cf.type === "Select" || cf.type === "MultiSelect") {
+                if (cf.type === "Select") {
                     fields.push({
                         id: "-",
                     });
@@ -857,7 +845,7 @@
                     fields: fields,
                     callback: function (result) {
                         let options = {};
-                        if (cf.type === "Select" || cf.type === "MultiSelect") {
+                        if (cf.type === "Select") {
                             for (let i in result) {
                                 if (i.indexOf("_cfWorkflowOption_") === 0) {
                                     options[i.split("_cfWorkflowOption_")[1]] = result[i];
@@ -922,7 +910,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "Select" || cf.type === "MultiSelect" || cf.type === "Users",
+                            hidden: cf.type === "Select" || cf.type === "Users",
                         },
                         {
                             id: "format",
@@ -931,7 +919,7 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type === "Text" || cf.type === "MultiSelect" || cf.type === "Users",
+                            hidden: cf.type !== "Number",
                         },
                         {
                             id: "link",
@@ -947,7 +935,7 @@
                             title: i18n("tt.customFieldOptions"),
                             placeholder: i18n("tt.customFieldOptions"),
                             value: options,
-                            hidden: cf.type !== "Select" && cf.type !== "MultiSelect",
+                            hidden: cf.type !== "Select",
                             validate: (v, prefix) => {
                                 return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                             }
@@ -955,8 +943,8 @@
                         {
                             id: "multiple",
                             type: "select",
-                            title: i18n("tt.multiple"),
-                            value: (cf.format && cf.format.indexOf("multiple") >= 0)?"1":"0",
+                            title: (cf.type === "Text")?i18n("tt.multiline"):i18n("tt.multiple"),
+                            value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
                             options: [
                                 {
                                     id: "1",
@@ -967,7 +955,7 @@
                                     text: i18n("no"),
                                 },
                             ],
-                            hidden: cf.type !== "Users",
+                            hidden: cf.type !== "Users" && cf.type !== "Select" && cf.type !== "Text",
                         },
                         {
                             id: "usersAndGroups",
@@ -977,17 +965,17 @@
                                 {
                                     id: "users",
                                     text: i18n("tt.users"),
-                                    selected: cf.format && cf.format.indexOf("users") >= 0,
+                                    selected: cf.format && cf.format.split(" ").includes("users"),
                                 },
                                 {
                                     id: "groups",
                                     text: i18n("tt.groups"),
-                                    selected: cf.format && cf.format.indexOf("groups") >= 0,
+                                    selected: cf.format && cf.format.split(" ").includes("groups"),
                                 },
                                 {
                                     id: "usersAndGroups",
                                     text: i18n("tt.usersAndGroupsChoice"),
-                                    selected: cf.format && cf.format.indexOf("usersAndGroups") >= 0,
+                                    selected: cf.format && cf.format.split(" ").includes("usersAndGroups"),
                                 },
                             ],
                             hidden: cf.type !== "Users",
@@ -1034,12 +1022,14 @@
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
-                            if (cf.type === "Users") {
+                            if (cf.type === "Users" || cf.type === "Select" || cf.type === "Text") {
                                 result.format = "";
                                 if (result.multiple === "1") {
                                     result.format += " multiple";
                                 }
-                                result.format += " " + result.usersAndGroups;
+                                if (cf.type === "Users") {
+                                    result.format += " " + result.usersAndGroups;
+                                }
                                 result.format = $.trim(result.format);
                             }
                             modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes, result.required);
