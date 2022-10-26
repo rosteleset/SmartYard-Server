@@ -92,19 +92,23 @@
             ];
 
             foreach ($flats as $flat) {
-                if (array_filter($flat['entrances'], function ($entrance) use ($domophoneId) {
+                $flat_entrances = array_filter($flat['entrances'], function ($entrance) use ($domophoneId) {
                     return $entrance['domophoneId'] === $domophoneId;
-                })) {
+                });
+
+                if  ($flat_entrances) {
                     $apartment = $flat['flat'];
                     $apartment_levels = $cms_levels;
 
-//                    foreach ($flat['entrances'] as $flat_entrance) {
-//                        if ($flat_entrance['domophoneId'] == $domophoneId && $flat_entrance['matrix']) {
-//                            $apartment = $flat_entrance['apartment'];
-//                            $apartment_levels = explode(',', $flat_entrance['apartmentLevels']);
-//                            break;
-//                        }
-//                    }
+                    foreach ($flat_entrances as $flat_entrance) {
+                        if (isset($flat_entrance['apartmentLevels'])) {
+                            $apartment_levels = explode(',', $flat_entrance['apartmentLevels']);
+                        }
+
+                        if ($flat_entrance['apartment'] != $apartment) {
+                            $apartment = $flat_entrance['apartment'];
+                        }
+                    }
 
                     $panel->configure_apartment(
                         $apartment + $offset,
