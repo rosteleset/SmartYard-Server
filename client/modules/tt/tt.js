@@ -172,13 +172,10 @@
             fieldId = fieldId.substring(4);
 
 /*
-            id: "TextString",
-            id: "TextArea",
-            id: "Integer",
-            id: "Real",
-            id: "Select",
-            id: "MultiSelect",
-            id: "Users",
+            id: "String [format: multiple]",
+            id: "Number",
+            id: "Select [format: multiple]",
+            id: "Users [format: multiple, users|groups|usersAndGroups]",
 */
 
             let cf = false;

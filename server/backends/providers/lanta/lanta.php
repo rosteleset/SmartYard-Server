@@ -42,6 +42,7 @@
                 $provs = [];
 
                 foreach ($providers as $p) {
+                    if ((int)$p["hidden"]) continue;
                     if ($p["tokenCommon"]) $common[] = $p["tokenCommon"];
                     if ($p["tokenSms"]) $Sms[] = $p["tokenSms"];
                     if ($p["tokenFlashCall"]) $FlashCall[] = $p["tokenFlashCall"];
@@ -123,15 +124,20 @@
                     "token_common" => "tokenCommon",
                     "token_sms" => "tokenSms",
                     "token_flash_call" => "tokenFlashCall",
+                    "hidden" => "hidden",
                 ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall)
+            public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall, $hidden)
             {
-                $r = $this->db->insert("insert into providers (id, name, base_url, logo, token_common, token_sms, token_flash_call) values (:id, :name, :base_url, :logo, :token_common, :token_sms, :token_flash_call)", [
+                if (!checkInt($hidden)) {
+                    return false;
+                }
+
+                $r = $this->db->insert("insert into providers (id, name, base_url, logo, token_common, token_sms, token_flash_call, hidden) values (:id, :name, :base_url, :logo, :token_common, :token_sms, :token_flash_call, :hidden)", [
                     "id" => $id,
                     "name" => $name,
                     "base_url" => $baseUrl,
@@ -139,6 +145,7 @@
                     "token_common" => $tokenCommon,
                     "token_sms" => $tokenSms,
                     "token_flash_call" => $tokenFlashCall,
+                    "hidden" => $hidden,
                 ]);
 
                 if ($this->updateTokens()) {
@@ -152,13 +159,17 @@
             /**
              * @inheritDoc
              */
-            public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall)
+            public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall, $hidden)
             {
                 if (!checkInt($providerId)) {
                     return false;
                 }
 
-                $r = $this->db->modify("update providers set id = :id, name = :name, base_url = :base_url, logo = :logo, token_common = :token_common, token_sms = :token_sms, token_flash_call = :token_flash_call where provider_id = $providerId", [
+                if (!checkInt($hidden)) {
+                    return false;
+                }
+
+                $r = $this->db->modify("update providers set id = :id, name = :name, base_url = :base_url, logo = :logo, token_common = :token_common, token_sms = :token_sms, token_flash_call = :token_flash_call, hidden = :hidden where provider_id = $providerId", [
                     "id" => $id,
                     "name" => $name,
                     "base_url" => $baseUrl,
@@ -166,6 +177,7 @@
                     "token_common" => $tokenCommon,
                     "token_sms" => $tokenSms,
                     "token_flash_call" => $tokenFlashCall,
+                    "hidden" => $hidden,
                 ]);
 
                 if ($this->updateTokens()) {

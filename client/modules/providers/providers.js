@@ -111,6 +111,13 @@
                         },
                     }
                 },
+                {
+                    id: "hidden",
+                    type: "yesno",
+                    title: i18n("providers.hidden"),
+                    placeholder: i18n("providers.hidden"),
+                    value: "0",
+                },
             ],
             callback: modules.providers.doAddProvider,
         });
@@ -209,6 +216,13 @@
                                 },
                             },
                             value: provider.tokenFlashCall,
+                        },
+                        {
+                            id: "hidden",
+                            type: "yesno",
+                            title: i18n("providers.hidden"),
+                            placeholder: i18n("providers.hidden"),
+                            value: provider.hidden,
                         },
                     ],
                     callback: result => {
