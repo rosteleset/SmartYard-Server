@@ -246,9 +246,7 @@
         });
     },
 
-    route: function (params) {
-        console.log(params);
-
+    route: function () {
         $("#subTop").html("");
         $("#altForm").hide();
 
