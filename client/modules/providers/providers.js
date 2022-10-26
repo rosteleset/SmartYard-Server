@@ -283,6 +283,9 @@
                         title: i18n("providers.name"),
                         fullWidth: true,
                     },
+                    {
+                        title: i18n("providers.hidden"),
+                    },
                 ],
                 rows: () => {
                     let rows = [];
@@ -302,6 +305,9 @@
                                 },
                                 {
                                     data: response.providers[i].name,
+                                },
+                                {
+                                    data: parseInt(response.providers[i].hidden)?i18n("yes"):i18n("no"),
                                 },
                             ],
                         });
