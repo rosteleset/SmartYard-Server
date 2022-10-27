@@ -1352,12 +1352,10 @@
 
                     $ids = $this->db->get($q, $p, [
                         "camera_id" => "cameraId",
-                        "common" => "houseCommon",
                     ]);
 
                     foreach ($ids as $id) {
                         $cam = $cameras->getCamera($id["cameraId"]);
-                        $cam["houseCommon"] = $id["houseCommon"];
                         $list[] = $cam;
                     }
 

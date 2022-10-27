@@ -94,7 +94,7 @@
 
     doDeleteCamera: function (cameraId, flatId) {
         loadingStart();
-        DELETE("subscribers", "cameras", false, { from: "flat", cameraId, flatId }).
+        DELETE("subscribers", "flatCameras", false, { from: "flat", cameraId, flatId }).
         fail(FAIL).
         done(() => {
             message(i18n("addresses.cameraWasDeleted"));
