@@ -5,6 +5,9 @@ CREATE TABLE tasks
     object_type character varying,
     object_id integer,
     task character varying,
-    paraams character varying
+    paraams character varying,
+    pid integer,
+    done integer,
+    started string,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
+    ended string                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
 );
-

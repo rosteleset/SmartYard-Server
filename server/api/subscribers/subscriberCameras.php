@@ -13,7 +13,7 @@
          * suvscriberCameras method
          */
 
-        class suvscriberCameras extends api
+        class subscriberCameras extends api
         {
 
             public static function POST($params)
