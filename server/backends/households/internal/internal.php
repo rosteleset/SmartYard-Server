@@ -97,20 +97,42 @@
                 $p = [];
 
                 switch ($by) {
-                    case "domophoneAndNumber":
+                    case "flatIdByPrefix":
+                        // houses_entrances_flats
                         $q = "
                             select
                                 house_flat_id
                             from
                                 houses_entrances_flats
-                                    left join houses_entrances using (house_entrance_id)
-                                    left join houses_houses_entrances using (house_entrance_id)
                             where
-                                house_domophone_id = :house_domophone_id
-                              and 
-                                prefix = :prefix 
-                              and 
+                                house_flat_id in (
+                                    select
+                                        house_flat_id
+                                    from
+                                        houses_flats
+                                    where
+                                            address_house_id in (
+                                            select
+                                                address_house_id
+                                            from
+                                                houses_houses_entrances
+                                            where
+                                                    house_entrance_id in (
+                                                    select
+                                                        house_entrance_id
+                                                    from
+                                                        houses_entrances
+                                                    where
+                                                        house_domophone_id = :house_domophone_id
+                                                )
+                                              and
+                                            prefix = :prefix
+                                        )
+                                )
+                                and
                                 apartment = :apartment
+                                group by
+                                    house_flat_id
                         ";
                         $p = [
                             "house_domophone_id" => $params["domophoneId"],

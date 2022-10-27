@@ -297,7 +297,7 @@
                 case "flatIdByPrefix":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getFlats("domophoneAndNumber", $params));
+                    echo json_encode($households->getFlats("flatIdByPrefix", $params));
                     break;
 
                 case "subscribers":
