@@ -34,7 +34,7 @@
 
     doAddCamera: function (camera) {
         loadingStart();
-        POST("subscribers", "cameras", false, camera).
+        POST("subscribers", "flatCameras", false, camera).
         fail(FAIL).
         done(() => {
             message(i18n("addresses.cameraWasAdded"));
@@ -553,22 +553,6 @@
                         type: "select2",
                         title: i18n("addresses.cameraId"),
                         options: cameras,
-                    },
-                    {
-                        id: "common",
-                        type: "select",
-                        title: i18n("addresses.flatCommon"),
-                        select: modules.addresses.houses.sharedSelect,
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("yes"),
-                            }
-                        ]
                     },
                 ],
                 callback: result => {

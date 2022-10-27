@@ -1329,14 +1329,21 @@
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, common from houses_houses_cameras where address_house_id = $params";
+                        $q = "select camera_id from houses_cameras_houses where address_house_id = $params";
                         break;
 
                     case "flat":
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, common from houses_cameras_flats where house_flat_id = $params";
+                        $q = "select camera_id from houses_cameras_flats where house_flat_id = $params";
+                        break;
+
+                    case "subscriber":
+                        if (!checkInt($params)) {
+                            return [];
+                        }
+                        $q = "select camera_id from houses_cameras_subscribers where house_subscriber_id = $params";
                         break;
                 }
 
@@ -1363,26 +1370,24 @@
             /**
              * @inheritDoc
              */
-            public function setCameras($to, $id, $list)
-            {
-                // TODO: Implement setCameras() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addCamera($to, $id, $cameraId, $options)
+            public function addCamera($to, $id, $cameraId)
             {
                 switch ($to) {
                     case "house":
-                        if (checkInt($id) !== false && checkInt($cameraId) !== false && checkInt($options) !== false) {
-                            return $this->db->insert("insert into houses_houses_cameras (camera_id, address_house_id, common) values ($cameraId, $id, $options)");
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false ) {
+                            return $this->db->insert("insert into houses_cameras_houses (camera_id, address_house_id) values ($cameraId, $id)");
                         } else {
                             return false;
                         }
                     case "flat":
-                        if (checkInt($id) !== false && checkInt($cameraId) !== false && checkInt($options) !== false) {
-                            return $this->db->insert("insert into houses_cameras_flats (camera_id, house_flat_id, common) values ($cameraId, $id, $options)");
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->insert("insert into houses_cameras_flats (camera_id, house_flat_id) values ($cameraId, $id)");
+                        } else {
+                            return false;
+                        }
+                    case "subscriber":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->insert("insert into houses_cameras_subscribers (camera_id, house_subscriber_id) values ($cameraId, $id)");
                         } else {
                             return false;
                         }
@@ -1399,13 +1404,19 @@
                 switch ($from) {
                     case "house":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
-                            return $this->db->modify("delete from houses_houses_cameras where camera_id = $cameraId and address_house_id = $id");
+                            return $this->db->modify("delete from houses_cameras_houses where camera_id = $cameraId and address_house_id = $id");
                         } else {
                             return false;
                         }
                     case "flat":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
                             return $this->db->modify("delete from houses_cameras_flats where camera_id = $cameraId and house_flat_id = $id");
+                        } else {
+                            return false;
+                        }
+                    case "subscriber":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->modify("delete from houses_cameras_subscribers where camera_id = $cameraId and house_subscriber_id = $id");
                         } else {
                             return false;
                         }

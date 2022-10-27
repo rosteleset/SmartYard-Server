@@ -10,17 +10,17 @@
         use api\api;
 
         /**
-         * entrance method
+         * flatCameras method
          */
 
-        class cameras extends api
+        class flatCameras extends api
         {
 
             public static function POST($params)
             {
                 $households = loadBackend("households");
 
-                $cameraId = $households->addCamera("flat", $params["flatId"], $params["cameraId"], $params["common"]);
+                $cameraId = $households->addCamera("flat", $params["flatId"], $params["cameraId"]);
 
                 return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":"notAcceptable");
             }

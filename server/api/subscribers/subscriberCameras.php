@@ -1,26 +1,26 @@
 <?php
 
     /**
-     * houses api
+     * subscribers api
      */
 
-    namespace api\houses
+    namespace api\subscribers
     {
 
         use api\api;
 
         /**
-         * entrance method
+         * suvscriberCameras method
          */
 
-        class cameras extends api
+        class suvscriberCameras extends api
         {
 
             public static function POST($params)
             {
                 $households = loadBackend("households");
 
-                $cameraId = $households->addCamera("house", $params["houseId"], $params["cameraId"]);
+                $cameraId = $households->addCamera("subscriber", $params["subscriberId"], $params["cameraId"]);
 
                 return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":"notAcceptable");
             }
@@ -29,7 +29,7 @@
             {
                 $households = loadBackend("households");
 
-                $success = $households->unlinkCamera("house", $params["houseId"], $params["cameraId"]);
+                $success = $households->unlinkCamera("subscriber", $params["subscriberId"], $params["cameraId"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

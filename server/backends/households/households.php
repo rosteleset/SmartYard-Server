@@ -331,19 +331,10 @@
             /**
              * @param $to
              * @param $id
-             * @param $list
-             * @return mixed
-             */
-            abstract public function setCameras($to, $id, $list);
-
-            /**
-             * @param $to
-             * @param $id
              * @param $cameraId
-             * @param $options
              * @return mixed
              */
-            abstract public function addCamera($to, $id, $cameraId, $options);
+            abstract public function addCamera($to, $id, $cameraId);
 
             /**
              * @param $from
