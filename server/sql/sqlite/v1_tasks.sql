@@ -11,3 +11,10 @@ CREATE TABLE tasks
     started string,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
     ended string                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
 );
+
+CREATE TABLE tasks_config_queue
+(
+    task_queue_id integer not null primary key autoincrement,
+    object_type text,
+    object_id integer
+);
