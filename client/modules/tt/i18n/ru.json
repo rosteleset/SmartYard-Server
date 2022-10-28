@@ -106,5 +106,11 @@
     "confirmDeleteTag": "Удалить ярлык #%s?",
     "modifyTag": "Редактирование ярлыка",
     "maxFileSize": "Максимальный размер файла",
-    "allowedMimeTypes": "Разрешенные типы файлов"
+    "allowedMimeTypes": "Разрешенные типы файлов",
+    "customFieldEditor": "Редактор",
+    "customFieldEditorText": "Текст",
+    "customFieldEditorCalc": "Калькулятор",
+    "customFieldEditorDate": "Дата",
+    "customFieldEditorTime": "Время",
+    "customFieldEditorDateTime": "Дата и время"
 }

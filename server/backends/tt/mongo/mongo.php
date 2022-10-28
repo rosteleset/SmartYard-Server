@@ -534,7 +534,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -559,6 +559,7 @@
                             "regex" => $customField["regex"],
                             "link" => $customField["link"],
                             "format" => $customField["format"],
+                            "editor" => $customField["editor"],
                             "indexes" => $customField["indexes"],
                             "required" => $customField["required"],
                             "options" => $_options,
@@ -759,7 +760,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor)
             {
                 if (!checkInt($customFieldId)) {
                     return false;
@@ -818,6 +819,7 @@
                                 regex = :regex,
                                 link = :link,
                                 format = :format,
+                                editor = :editor,
                                 indexes = :indexes,
                                 required = :required
                             where
@@ -830,6 +832,7 @@
                             ":regex" => $regex,
                             ":link" => $link,
                             ":format" => $format,
+                            ":editor" => $editor,
                             ":indexes" => $indexes,
                             ":required" => $required,
                         ]);

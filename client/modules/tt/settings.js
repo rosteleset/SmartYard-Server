@@ -922,6 +922,36 @@
                             hidden: cf.type !== "Number",
                         },
                         {
+                            id: "editor",
+                            type: "select2",
+                            title: i18n("tt.customFieldEditor"),
+                            placeholder: i18n("tt.customFieldEditor"),
+                            value: cf.editor,
+                            options: [
+                                {
+                                    id: "text",
+                                    text: i18n("tt.customFieldEditorText"),
+                                },
+                                {
+                                    id: "calc",
+                                    text: i18n("tt.customFieldEditorCalc"),
+                                },
+                                {
+                                    id: "date",
+                                    text: i18n("tt.customFieldEditorDate"),
+                                },
+                                {
+                                    id: "time",
+                                    text: i18n("tt.customFieldEditorTime"),
+                                },
+                                {
+                                    id: "dateTime",
+                                    text: i18n("tt.customFieldEditorDateTime"),
+                                },
+                            ],
+                            hidden: cf.type !== "Number" && cf.type !== "Text",
+                        },
+                        {
                             id: "link",
                             type: "text",
                             title: i18n("tt.customFieldLink"),

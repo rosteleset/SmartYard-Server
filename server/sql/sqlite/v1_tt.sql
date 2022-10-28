@@ -71,6 +71,7 @@ CREATE TABLE tt_issue_custom_fields
     regex text,
     link text,
     format text,
+    editor text,
     indexes integer,                                                                                                    -- 0 - none, 1 - field index, 2 - full text search index
     required integer
 );
