@@ -1,9 +1,11 @@
 const syslog = new (require("syslog-server"))();
-const { syslog_servers } = require("../config/config.json");
+const {
+  syslog_servers: { qtech },
+} = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
-const { port } = urlParser(syslog_servers.qtech);
+const { port } = urlParser(qtech);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
@@ -60,7 +62,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   //Детектор движения
   if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Send Photo") {
-        await API.motionDetection(host, true);
+    await API.motionDetection(host, true);
   }
 
   /**Открытие двери используя кнопку*/

@@ -1,11 +1,19 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
 const axios = require("axios");
 const events = require("./events.json");
+const {
+  api: { internal },
+} = require("../../config/config.json"); //https://host:port/internal
 
-const rbt = axios.create({
-  baseURL: "http://127.0.0.1:8084/75779b1f-8c0b-4213-a23e-515c5c684719",
+const internalApi = axios.create({
+  baseURL: internal,
 });
 
+/**
+ * Сделать импорт FRS url из config.json,
+ * сейчас это тестовый локальный endpoint
+ * https://github.com/webhooksite/webhook.site
+ */
 const frs = axios.create({
   baseURL: "http://127.0.0.1:8084/75779b1f-8c0b-4213-a23e-515c5c684719",
 });
@@ -19,7 +27,7 @@ class API {
   async lastSeen(host) {
     try {
       console.log(`:: lastSeen: ${host}`);
-      return await rbt.post("/lastSeen", host);
+      return await internalApi.post("/lastSeen", host);
     } catch (error) {
       console.error("Error", error.message);
     }
@@ -31,7 +39,7 @@ class API {
    */
   async sendLog(data) {
     try {
-      await rbt.post("/syslog", data);
+      await internalApi.post("/syslog", data);
     } catch (error) {}
   }
 
@@ -42,7 +50,7 @@ class API {
    */
   async motionDetection(host, start) {
     try {
-      await rbt
+      await internal
         .post("/getStreamID", { host })
         .then(async ({ frs_server, stream_id }) => {
           if (frs_server && stream_id) {
@@ -64,7 +72,7 @@ class API {
   async opnenDoorByRFID({ host, door, rfid, event }) {
     try {
       //TODO: актуализировать endpoint,
-      await rbt.post("/openDoorAction");
+      await internalApi.post("/openDoorAction");
     } catch (error) {
       console.error("Error", error.message);
     }
@@ -79,7 +87,7 @@ class API {
 
   async callFinished(call_id) {
     try {
-      await rbt.post("/callFinished", call_id);
+      await internalApi.post("/callFinished", call_id);
     } catch (error) {
       console.error("Error", error.message);
     }
@@ -93,7 +101,7 @@ class API {
    */
   async setRabbitGates({ host, gate_rabbits }) {
     try {
-      await rbt.post("/setRabbitGates", { host, gate_rabbits });
+      await internalApi.post("/setRabbitGates", { host, gate_rabbits });
     } catch (error) {
       console.error("Error", error.message);
     }
@@ -119,7 +127,7 @@ class API {
    */
   async doorIsOpen(host) {
     try {
-      await rbt
+      await internal
         .post("/getStreamID", { host })
         .then(async ({ frs_server, stream_id }) => {
           if (frs_server && stream_id) {
@@ -145,14 +153,14 @@ class API {
     try {
       switch (type) {
         case "code":
-          return await rbt.post("/openDoor", {
+          return await internalApi.post("/openDoor", {
             host,
             event: events.OPEN_BY_CODE,
             door,
             detail,
           });
         case "rfid":
-          return await rbt.post("/openDoor", {
+          return await internalApi.post("/openDoor", {
             host,
             event: events.OPEN_BY_KEY,
             door,
