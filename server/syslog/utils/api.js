@@ -1,5 +1,5 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
-const axios = require("axios").default;
+const axios = require("axios");
 const events = require("./events.json");
 
 const rbt = axios.create({
