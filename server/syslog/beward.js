@@ -1,7 +1,5 @@
 const syslog = new (require("syslog-server"))();
-const {
-  syslog_servers: { beward },
-} = require("../config/config.json");
+const {syslog_servers: { beward }} = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
@@ -12,7 +10,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = thisMoment();
   let bw_msg = message.split(" - - ")[1].trim();
   await API.lastSeen(host);
-
+  
   //Фиьтр сообщений не несущих смысловой нагрузки
   if (
     bw_msg.indexOf("RTSP") >= 0 ||

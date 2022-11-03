@@ -1,16 +1,31 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
-const axios = require("axios");
+const axios = require("axios").default;
+const https = require("https");
 const events = require("./events.json");
 const {
   api: { internal },
 } = require("../../config/config.json"); //https://host:port/internal
 
-const internalApi = axios.create({
-  baseURL: internal,
-});
+const agent = new https.Agent({ rejectUnauthorized: false });
 
 /**
- * Сделать импорт FRS url из config.json,
+ * Шаблон для работы с модифицированным https агнетом.
+ * Использвем только для работы с самоподписанным ssl
+ */
+const internalApi = axios.create({
+  baseURL: internal,
+  withCredentials: true,
+  responseType: "json",
+  httpsAgent: agent
+});
+
+//Актуальный шаблон для работы с internal API. Версия для корректного ssl
+// const internalApi = axios.create({
+//   baseURL: internal,
+// });
+
+/**
+ * Сделать импорт FRS url из config.json или получить из internal API,
  * сейчас это тестовый локальный endpoint
  * https://github.com/webhooksite/webhook.site
  */

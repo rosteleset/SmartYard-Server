@@ -1,7 +1,5 @@
 const syslog = new (require("syslog-server"))();
-const {
-  syslog_servers: { qtech },
-} = require("../config/config.json");
+const {syslog_servers: { qtech }} = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
