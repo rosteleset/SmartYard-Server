@@ -108,9 +108,10 @@
         "inbox": {
             "backend": "internal",
             "archive": {
-                "dsn": "mysql:host=127.0.0.1;port=9004;dbname=default;charset=utf8mb4",
+                "host": "localhost",
+                "port": "8123",
                 "username": "default",
-                "password": "<!-- your very secret password here -->"
+                "password": "qqq"
             }
         }
     },
