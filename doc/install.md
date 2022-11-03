@@ -100,6 +100,9 @@ php server/cli.php --admin-password=<your very secret admin password>
 php server/cli.php --reindex
 ```
 
+установите права на запись для веб-сервера на 
+файл server/db/internal.db и папку server/db 
+
 optionally
 
 ```
