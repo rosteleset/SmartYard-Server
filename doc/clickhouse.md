@@ -59,7 +59,7 @@ CREATE TABLE default.plog
     `gate_phone` String,
     `preview` Int8,
     INDEX plog_date date TYPE set(100) GRANULARITY 1024,
-    INDEX plog_uuid uuid TYPE set(100) GRANULARITY 1024,
+    INDEX plog_event_uuid event_uuid TYPE set(100) GRANULARITY 1024,
     INDEX plog_hidden hidden TYPE set(100) GRANULARITY 1024,
     INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024,
     INDEX plog_domophone_id domophone_id TYPE set(100) GRANULARITY 1024,
