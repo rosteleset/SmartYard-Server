@@ -8,7 +8,7 @@ CREATE TABLE default.syslog
     `date` DateTime,
     `ip` IPv4,
     `unit` String,
-    `msg` String
+    `msg` String,
     INDEX syslog_ip ip TYPE set(100) GRANULARITY 1024,
     INDEX syslog_unit unit TYPE set(100) GRANULARITY 1024
 )
