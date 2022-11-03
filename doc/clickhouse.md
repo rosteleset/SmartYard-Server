@@ -43,7 +43,7 @@ SET allow_experimental_object_type = 1;
 CREATE TABLE default.plog
 (
     `date` DateTime,
-    `uuid` UUID,
+    `event_uuid` UUID,
     `hidden` Int8,
     `image` UUID,
     `flat_id` Int32,
