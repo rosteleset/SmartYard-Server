@@ -45,7 +45,7 @@ CREATE TABLE default.plog
     `date` DateTime,
     `event_uuid` UUID,
     `hidden` Int8,
-    `image` UUID,
+    `image_uuid` UUID,
     `flat_id` Int32,
     `domophone_id` Int32,
     `domophone_output` Int8,
