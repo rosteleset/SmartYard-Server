@@ -21,6 +21,8 @@
             }
         }
 
+        $clean = explode("\n", trim(implode("\n", $clean)));
+
         $clean[] = "";
 
         $clean[] = "## RBT crons start, dont't touch!!!";
