@@ -279,9 +279,7 @@
 
         if ($part == "minutely") {
             check_if_pid_exists();
-            $db->modify("delete from core_running_processes where coalesce(expire, 0) < :expire", [
-                "expire" => time(),
-            ]);
+            $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
         }
 
         exit(0);
