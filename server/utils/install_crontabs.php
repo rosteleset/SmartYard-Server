@@ -1,13 +1,15 @@
 <?php
 
     function installCrontabs() {
+        global $script_filename;
+
         $crontab = [];
         exec("crontab -l", $crontab);
 
         $clean = [];
         $skip = false;
 
-        $cli = PHP_BINARY . " " . __DIR__ . "/../cli.php --cron";
+        $cli = PHP_BINARY . " " . $script_filename . " --cron";
 
         $lines = 0;
 

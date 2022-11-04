@@ -40,12 +40,13 @@
     }
 
     $script_result = null;
-    $running_process_id = -1;
+    $script_process_id = -1;
+    $script_filename = __FILE__;
 
     function startup() {
-        global $db, $params, $running_process_id;
+        global $db, $params, $script_process_id;
 
-        $running_process_id = $db->insert('insert into core_running_processes (pid, start, process, params) values (:pid, :start, :process, :params)', [
+        $script_process_id = $db->insert('insert into core_running_processes (pid, start, process, params) values (:pid, :start, :process, :params)', [
             "pid" => getmypid(),
             "start" => $db->now(),
             "process" => "cli.php",
@@ -54,13 +55,13 @@
     }
 
     function shutdown() {
-        global $running_process_id, $db, $script_result;
+        global $script_process_id, $db, $script_result;
 
         if ($db) {
             $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
                 "done" => $db->now(),
                 "result" => $script_result,
-                "running_process_id" => $running_process_id,
+                "running_process_id" => $script_process_id,
             ]);
         }
     }
