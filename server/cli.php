@@ -46,11 +46,12 @@
     function startup() {
         global $db, $params, $script_process_id;
 
-        $script_process_id = $db->insert('insert into core_running_processes (pid, start, process, params) values (:pid, :start, :process, :params)', [
+        $script_process_id = $db->insert('insert into core_running_processes (pid, start, process, params, expire) values (:pid, :start, :process, :params, :expire)', [
             "pid" => getmypid(),
             "start" => $db->now(),
             "process" => "cli.php",
             "params" => implode(' ', $params),
+            "expire" => time() + 24 * 60 * 60,
         ]);
     }
 
@@ -278,6 +279,9 @@
 
         if ($part == "minutely") {
             check_if_pid_exists();
+            $db->modify("delete from core_running_processes where coalesce(expire, 0) < :expire", [
+                "expire" => time(),
+            ]);
         }
 
         exit(0);

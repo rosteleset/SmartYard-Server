@@ -113,5 +113,6 @@ CREATE TABLE core_running_processes
     process character varying,
     params character varying,
     done timestamp,
-    result character varying
+    result character varying,
+    expire integer
 );

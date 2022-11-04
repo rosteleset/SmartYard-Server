@@ -113,5 +113,6 @@ CREATE TABLE core_running_processes
     process text,
     params text,
     done text,
-    result text
+    result text,
+    expire integer
 );
