@@ -100,7 +100,7 @@ php server/cli.php --admin-password=<your very secret admin password>
 php server/cli.php --reindex
 ```
 
-if you are using sqlite and standalone (not build-in) web-server (nginx)
+if you are using sqlite and standalone (not built-in) web-server (nginx)
 set valid rights and ownership for web server to 
 file server/db/internal.db and folder server/db 
 
