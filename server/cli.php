@@ -38,24 +38,25 @@
         exit(0);
     }
 
+    $script_result = "";
+
+    function shutdown() {
+        global $running_process_id, $db, $script_result;
+
+        $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+            "done" => $db->now(),
+            "result" => $script_result,
+            "running_process_id" => $running_process_id,
+        ]);
+    }
+
+    register_shutdown_function('shutdown');
+
     $args = [];
 
     for ($i = 1; $i < count($argv); $i++) {
         $a = explode("=", $argv[$i]);
         $args[$a[0]] = @$a[1];
-    }
-
-    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
-        $db = null;
-        if (is_executable_pathenv(PHP_BINARY)) {
-            echo "open in your browser:\n\n";
-            echo "http://localhost:8000/client/index.html\n\n";
-            chdir(dirname(__FILE__) . "/..");
-            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
-        } else {
-            echo "no php interpreter found in path\n";
-        }
-        exit(0);
     }
 
     try {
@@ -109,6 +110,16 @@
         exit(1);
     }
 
+    $params = $argv;
+    array_shift($params);
+
+    $running_process_id = $db->insert('insert into core_running_processes (pid, start, process, params) values (:pid, :start, :process, :params)', [
+        "pid" => getmypid(),
+        "start" => $db->now(),
+        "process" => "cli.php",
+        "params" => implode(' ', $params),
+    ]);
+
     try {
         $redis = new Redis();
         $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
@@ -137,6 +148,19 @@
         if (loadBackend($backend) === false) {
             die("can't load required backend [$backend]\n");
         }
+    }
+
+    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
+        $db = null;
+        if (is_executable_pathenv(PHP_BINARY)) {
+            echo "open in your browser:\n\n";
+            echo "http://localhost:8000/client/index.html\n\n";
+            chdir(dirname(__FILE__) . "/..");
+            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
+        } else {
+            echo "no php interpreter found in path\n";
+        }
+        exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {

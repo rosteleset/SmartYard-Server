@@ -138,7 +138,6 @@
         }
 
         function now($with_millis = true) {
-            error_log(date("Y-m-d H:i:s.000"));
             if ($with_millis) {
                 return date("Y-m-d H:i:s.000");
             } else {
