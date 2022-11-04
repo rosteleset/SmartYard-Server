@@ -33,11 +33,11 @@
         $lines++;
         $clean[] = "*/1 * * * * $cli=minutely";
         $lines++;
-        $clean[] = "2 */1 * * * $cli=hourly";
+        $clean[] = "1 */1 * * * $cli=hourly";
         $lines++;
-        $clean[] = "3 1 */1 * * $cli=daily";
+        $clean[] = "1 1 */1 * * $cli=daily";
         $lines++;
-        $clean[] = "4 1 1 */1 * $cli=monthly";
+        $clean[] = "1 1 1 */1 * $cli=monthly";
         $lines++;
         $clean[] = "## RBT crons end, dont't touch!!!";
         $lines++;
