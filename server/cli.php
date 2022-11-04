@@ -211,11 +211,11 @@
         }
 
         if ($part) {
-            foreach ($config["backends"] as $backend => $cfg) {
-                $backend = loadBackend($backend);
+            foreach ($config["backends"] as $backend_name => $cfg) {
+                $backend = loadBackend($backend_name);
                 if ($backend) {
                     if (!$backend->cron($part)) {
-                        echo "$backend [$part] fail \n";
+                        echo "$backend_name [$part] fail \n";
                     }
                 }
             }
