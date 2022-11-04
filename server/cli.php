@@ -305,14 +305,14 @@
     if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
         require_once "utils/install_crontabs.php";
         $n = installCrontabs();
-        echo "$n crontabs entries installed\n";
+        echo "$n crontabs lines added\n";
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--install-crontabs"])) {
         require_once "utils/install_crontabs.php";
         $n = unInstallCrontabs();
-        echo "$n crontabs entries uninstalled\n";
+        echo "$n crontabs lines removed\n";
         exit(0);
     }
 
