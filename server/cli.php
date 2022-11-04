@@ -1,7 +1,5 @@
 <?php
 
-    sleep(rand(0, 10));
-
 // command line client
 
     chdir(dirname(__FILE__));
