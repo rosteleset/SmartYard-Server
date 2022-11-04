@@ -215,7 +215,7 @@
                 $backend = loadBackend($backend_name);
                 if ($backend) {
                     if (!$backend->cron($part)) {
-                        echo "$backend_name [$part] fail \n";
+                        echo "$backend_name [$part] fail\n";
                     }
                 }
             }
