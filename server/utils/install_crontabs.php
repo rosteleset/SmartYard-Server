@@ -28,8 +28,8 @@
         $clean[] = "## RBT crons start, dont't touch!!!";
         $clean[] = "*/1 * * * * $cli=minutely";
         $clean[] = "2 */1 * * * $cli=hourly";
-        $clean[] = "3 4 */1 * * $cli=daily";
-        $clean[] = "5 6 7 */1 * $cli=monthly";
+        $clean[] = "3 1 */1 * * $cli=daily";
+        $clean[] = "4 1 1 */1 * $cli=monthly";
         $clean[] = "## RBT crons end, dont't touch!!!";
 
         file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)));
