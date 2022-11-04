@@ -83,7 +83,7 @@
              */
 
             public function cron($part) {
-                return false;
+                return true;
             }
         }
     }

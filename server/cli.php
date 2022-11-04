@@ -132,8 +132,6 @@
         $version = 0;
     }
 
-    echo "dbVersion: $version\n";
-
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
@@ -142,6 +140,8 @@
     }
 
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
+        echo "dbVersion: $version\n";
+
         require_once "sql/install.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
@@ -212,18 +212,12 @@
 
         if ($part) {
             foreach ($config["backends"] as $backend => $cfg) {
-                echo "$backend [$part] ";
                 $backend = loadBackend($backend);
                 if ($backend) {
-                    if ($backend->cron($part)) {
-                        echo "done";
-                    } else {
-                        echo "fail";
+                    if (!$backend->cron($part)) {
+                        echo "$backend [$part] fail \n";
                     }
-                } else {
-                    echo "no backend";
                 }
-                echo "\n";
             }
         }
 
