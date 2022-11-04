@@ -46,8 +46,6 @@
         $clean = [];
         $skip = false;
 
-        $cli = PHP_BINARY . " " . __DIR__ . "/../cli.php --cron";
-
         foreach ($crontab as $line) {
             if ($line === "## RBT crons start, dont't touch!!!") {
                 $skip = true;
