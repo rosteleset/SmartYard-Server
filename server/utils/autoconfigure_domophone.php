@@ -93,7 +93,7 @@
 
             foreach ($flats as $flat) {
                 $flat_entrances = array_filter($flat['entrances'], function ($entrance) use ($domophoneId) {
-                    return $entrance['domophoneId'] === $domophoneId;
+                    return $entrance['domophoneId'] == $domophoneId;
                 });
 
                 if  ($flat_entrances) {
