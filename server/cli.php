@@ -38,16 +38,49 @@
         exit(0);
     }
 
-    $script_result = "";
+    $script_result = null;
+    $running_process_id = -1;
+
+    function startup() {
+        global $db, $params, $running_process_id;
+
+        $running_process_id = $db->insert('insert into core_running_processes (pid, start, process, params) values (:pid, :start, :process, :params)', [
+            "pid" => getmypid(),
+            "start" => $db->now(),
+            "process" => "cli.php",
+            "params" => implode(' ', $params),
+        ]);
+    }
 
     function shutdown() {
         global $running_process_id, $db, $script_result;
 
-        $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-            "done" => $db->now(),
-            "result" => $script_result,
-            "running_process_id" => $running_process_id,
+        if ($db) {
+            $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                "done" => $db->now(),
+                "result" => $script_result,
+                "running_process_id" => $running_process_id,
+            ]);
+        }
+    }
+
+    function check_if_pid_exists() {
+        global $db;
+
+        $pids = $db->get("select running_process_id, pid from core_running_processes where done is null or done = ''", false, [
+            "running_process_id" => "id",
+            "pid" => "pid",
         ]);
+
+        foreach ($pids as $process) {
+            if (!file_exists( "/proc/{$process['pid']}")) {
+                $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                    "done" => $db->now(),
+                    "result" => "unknown",
+                    "running_process_id" => $process['id'],
+                ]);
+            }
+        }
     }
 
     register_shutdown_function('shutdown');
@@ -57,6 +90,19 @@
     for ($i = 1; $i < count($argv); $i++) {
         $a = explode("=", $argv[$i]);
         $args[$a[0]] = @$a[1];
+    }
+
+    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
+        $db = null;
+        if (is_executable_pathenv(PHP_BINARY)) {
+            echo "open in your browser:\n\n";
+            echo "http://localhost:8000/client/index.html\n\n";
+            chdir(dirname(__FILE__) . "/..");
+            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
+        } else {
+            echo "no php interpreter found in path\n";
+        }
+        exit(0);
     }
 
     try {
@@ -113,13 +159,6 @@
     $params = $argv;
     array_shift($params);
 
-    $running_process_id = $db->insert('insert into core_running_processes (pid, start, process, params) values (:pid, :start, :process, :params)', [
-        "pid" => getmypid(),
-        "start" => $db->now(),
-        "process" => "cli.php",
-        "params" => implode(' ', $params),
-    ]);
-
     try {
         $redis = new Redis();
         $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
@@ -150,19 +189,6 @@
         }
     }
 
-    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
-        $db = null;
-        if (is_executable_pathenv(PHP_BINARY)) {
-            echo "open in your browser:\n\n";
-            echo "http://localhost:8000/client/index.html\n\n";
-            chdir(dirname(__FILE__) . "/..");
-            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
-        } else {
-            echo "no php interpreter found in path\n";
-        }
-        exit(0);
-    }
-
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
         echo "dbVersion: $version\n";
 
@@ -170,12 +196,15 @@
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
         init_db();
+        startup();
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
         reindex();
         echo "\n";
         exit(0);
     }
+
+    startup();
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
         require_once "utils/cleanup.php";
@@ -243,6 +272,10 @@
                     }
                 }
             }
+        }
+
+        if ($part == "minutely") {
+            check_if_pid_exists();
         }
 
         exit(0);

@@ -5,11 +5,11 @@ CREATE TABLE tasks
     object_type character varying,
     object_id integer,
     task character varying,
-    paraams character varying,
+    params character varying,
     pid integer,
     done integer,
-    started string,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
-    ended string                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
+    started timestamp,                                                                                                  -- "YYYY-MM-DD HH:MM:SS.SSS"
+    ended timestamp                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
 );
 
 CREATE TABLE tasks_config_queue

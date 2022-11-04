@@ -5,11 +5,11 @@ CREATE TABLE tasks
     object_type text,
     object_id integer,
     task text,
-    paraams text,
+    params text,
     pid integer,
     done integer,
-    started string,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
-    ended string                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
+    started text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
+    ended text                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
 );
 
 CREATE TABLE tasks_config_queue
