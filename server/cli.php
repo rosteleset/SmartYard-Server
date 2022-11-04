@@ -33,6 +33,7 @@
             [--autoconfigure-domophone=<domophone_id> [--first-time]]
             [--cron=<minutely|hourly|daily|monthly>]
             [--install-crontabs]
+            [--uninstall-crontabs]
         \n";
 
         exit(0);
@@ -308,4 +309,11 @@
         exit(0);
     }
 
-    usage();
+    if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--install-crontabs"])) {
+        require_once "utils/install_crontabs.php";
+        $n = unInstallCrontabs();
+        echo "$n crontabs entries uninstalled\n";
+        exit(0);
+    }
+
+usage();
