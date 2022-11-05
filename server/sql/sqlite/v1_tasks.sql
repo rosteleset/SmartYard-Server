@@ -5,11 +5,7 @@ CREATE TABLE tasks
     object_type text,
     object_id integer,
     task text,
-    params text,
-    pid integer,
-    done integer,
-    started text,                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
-    ended text                                                                                                        -- "YYYY-MM-DD HH:MM:SS.SSS"
+    params text
 );
 
 CREATE TABLE tasks_config_queue
@@ -18,3 +14,4 @@ CREATE TABLE tasks_config_queue
     object_type text,
     object_id integer
 );
+CREATE UNIQUE INDEX tasks_config_queue_uniq on tasks_config_queue(object_type, object_id);

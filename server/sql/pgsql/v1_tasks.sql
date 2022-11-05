@@ -5,11 +5,7 @@ CREATE TABLE tasks
     object_type character varying,
     object_id integer,
     task character varying,
-    params character varying,
-    pid integer,
-    done integer,
-    started timestamp,                                                                                                  -- "YYYY-MM-DD HH:MM:SS.SSS"
-    ended timestamp                                                                                                     -- "YYYY-MM-DD HH:MM:SS.SSS"
+    params character varying
 );
 
 CREATE TABLE tasks_config_queue
@@ -18,3 +14,4 @@ CREATE TABLE tasks_config_queue
     object_type character varying,
     object_id integer
 );
+CREATE UNIQUE INDEX tasks_config_queue_uniq on tasks_config_queue(object_type, object_id);
