@@ -266,6 +266,11 @@
             }
         }
 
+        if ($part == "minutely") {
+            check_if_pid_exists();
+            $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
+        }
+
         if ($part) {
             foreach ($config["backends"] as $backend_name => $cfg) {
                 $backend = loadBackend($backend_name);
@@ -275,11 +280,8 @@
                     }
                 }
             }
-        }
-
-        if ($part == "minutely") {
-            check_if_pid_exists();
-            $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
+        } else {
+            usage();
         }
 
         exit(0);
