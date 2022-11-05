@@ -175,17 +175,6 @@
         exit(1);
     }
 
-    $version = 0;
-
-    try {
-        $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
-        if ($query) {
-            $version = (int)($query->fetch()["var_value"]);
-        }
-    } catch (Exception $e) {
-        $version = 0;
-    }
-
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
@@ -194,11 +183,23 @@
     }
 
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
+        $version = 0;
+
+        try {
+            $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
+            if ($query) {
+                $version = (int)($query->fetch()["var_value"]);
+            }
+        } catch (Exception $e) {
+            $version = 0;
+        }
+
         echo "dbVersion: $version\n";
 
         require_once "sql/install.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
+
         init_db();
         startup();
         $n = clearCache(true);
@@ -219,6 +220,7 @@
     if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["--reindex"])) {
         require_once "utils/reindex.php";
         require_once "utils/clear_cache.php";
+
         reindex();
         $n = clearCache(true);
         echo "$n cache entries cleared\n";
@@ -227,6 +229,7 @@
 
     if (count($args) == 1 && array_key_exists("--clear-cache", $args) && !isset($args["--clear-cache"])) {
         require_once "utils/clear_cache.php";
+
         $n = clearCache(true);
         echo "$n cache entries cleared\n";
         exit(0);
@@ -303,6 +306,7 @@
 
         if (checkInt($domophone_id)) {
             require_once "utils/autoconfigure_domophone.php";
+
             autoconfigure_domophone($domophone_id, $first_time);
             exit(0);
         }
@@ -310,6 +314,7 @@
 
     if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
         require_once "utils/install_crontabs.php";
+
         $n = installCrontabs();
         echo "$n crontabs lines added\n";
         exit(0);
@@ -317,9 +322,10 @@
 
     if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--install-crontabs"])) {
         require_once "utils/install_crontabs.php";
+
         $n = unInstallCrontabs();
         echo "$n crontabs lines removed\n";
         exit(0);
     }
 
-usage();
+    usage();
