@@ -5,6 +5,7 @@ CREATE TABLE tasks_changes
     object_type text,
     object_id integer
 );
+CREATE UNIQUE INDEX tasks_changes_uniq on tasks_changes(object_type, object_id);
 
 CREATE TABLE tasks_queue
 (
