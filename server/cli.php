@@ -59,13 +59,11 @@
     function shutdown() {
         global $script_process_id, $db, $script_result;
 
-        if ($db) {
-            $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                "done" => $db->now(),
-                "result" => $script_result,
-                "running_process_id" => $script_process_id,
-            ]);
-        }
+        $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+            "done" => $db->now(),
+            "result" => $script_result,
+            "running_process_id" => $script_process_id,
+        ]);
     }
 
     function check_if_pid_exists() {
@@ -212,14 +210,19 @@
 
     startup();
 
+    check_if_pid_exists();
+    $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
+
     $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
         'params' => $params,
     ], false, [ 'fieldlify' ]);
 
     if ($already) {
-        echo "already running\n";
+        $script_result = "already running";
         exit(0);
     }
+
+    sleep(10);
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
         require_once "utils/cleanup.php";
@@ -278,11 +281,6 @@
             if (in_array($p, $args)) {
                 $part = $p;
             }
-        }
-
-        if ($part == "minutely") {
-            check_if_pid_exists();
-            $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
         }
 
         if ($part) {
