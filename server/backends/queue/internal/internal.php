@@ -11,17 +11,17 @@
             /**
              * @inheritDoc
              */
-            function change($object_type, $object_id)
+            function changed($object_type, $object_id)
             {
-                // TODO: Implement change() method.
+                // TODO: Implement changed() method.
             }
 
             /**
              * @inheritDoc
              */
-            function queue($object_type, $object_id, $task, $params)
+            function addToQueue($object_type, $object_id, $task, $params)
             {
-                // TODO: Implement queue() method.
+                // TODO: Implement addToQueue() method.
             }
         }
     }

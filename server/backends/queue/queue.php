@@ -19,7 +19,7 @@
              * @param $object_id
              * @return mixed
              */
-            abstract function change($object_type, $object_id);
+            abstract function changed($object_type, $object_id);
 
             /**
              * @param $object_type
@@ -28,6 +28,6 @@
              * @param $params
              * @return mixed
              */
-            abstract function queue($object_type, $object_id, $task, $params);
+            abstract function addToQueue($object_type, $object_id, $task, $params);
         }
     }
