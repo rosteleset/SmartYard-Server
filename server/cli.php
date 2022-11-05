@@ -46,8 +46,9 @@
     function startup() {
         global $db, $params, $script_process_id;
 
-        $script_process_id = $db->insert('insert into core_running_processes (pid, start, process, params, expire) values (:pid, :start, :process, :params, :expire)', [
+        $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
             "pid" => getmypid(),
+            "ppid" => posix_getppid(),
             "start" => $db->now(),
             "process" => "cli.php",
             "params" => implode(' ', $params),

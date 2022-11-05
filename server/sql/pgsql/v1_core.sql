@@ -109,6 +109,7 @@ CREATE TABLE core_running_processes
 (
     running_process_id serial primary key,
     pid integer,
+    ppid integer,
     start timestamp,
     process character varying,
     params character varying,

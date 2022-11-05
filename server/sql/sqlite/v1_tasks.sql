@@ -15,4 +15,4 @@ CREATE TABLE tasks_queue
     task text,
     params text
 );
-CREATE UNIQUE INDEX tasks_config_queue_uniq on tasks_config_queue(object_type, object_id);
+CREATE UNIQUE INDEX tasks_queue_uniq on tasks_queue(object_type, object_id);
