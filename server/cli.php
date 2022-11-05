@@ -276,6 +276,13 @@
         }
 
         if ($part) {
+            $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = '--cron=$part' and pid <> " . getmypid(), false, false, [ 'fieldlify' ]);
+
+            if ($already) {
+                echo "already running\n";
+                exit(0);
+            }
+
             foreach ($config["backends"] as $backend_name => $cfg) {
                 $backend = loadBackend($backend_name);
                 if ($backend) {
