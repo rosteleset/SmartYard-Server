@@ -222,8 +222,6 @@
         exit(0);
     }
 
-    sleep(10);
-
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
         require_once "utils/cleanup.php";
         cleanup();
