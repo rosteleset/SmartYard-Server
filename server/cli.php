@@ -51,7 +51,7 @@
             "ppid" => posix_getppid(),
             "start" => $db->now(),
             "process" => "cli.php",
-            "params" => implode(' ', $params),
+            "params" => $params,
             "expire" => time() + 24 * 60 * 60,
         ]);
     }
@@ -162,6 +162,7 @@
 
     $params = $argv;
     array_shift($params);
+    $params = implode(' ', $params);
 
     try {
         $redis = new Redis();
@@ -210,6 +211,15 @@
     }
 
     startup();
+
+    $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
+        'params' => $params,
+    ], false, [ 'fieldlify' ]);
+
+    if ($already) {
+        echo "already running\n";
+        exit(0);
+    }
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
         require_once "utils/cleanup.php";
@@ -276,13 +286,6 @@
         }
 
         if ($part) {
-            $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = '--cron=$part' and pid <> " . getmypid(), false, false, [ 'fieldlify' ]);
-
-            if ($already) {
-                echo "already running\n";
-                exit(0);
-            }
-
             foreach ($config["backends"] as $backend_name => $cfg) {
                 $backend = loadBackend($backend_name);
                 if ($backend) {
