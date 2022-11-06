@@ -33,6 +33,8 @@
         $lines++;
         $clean[] = "*/1 * * * * $cli=minutely";
         $lines++;
+        $clean[] = "*/5 * * * * $cli=5min";
+        $lines++;
         $clean[] = "1 */1 * * * $cli=hourly";
         $lines++;
         $clean[] = "1 1 */1 * * $cli=daily";

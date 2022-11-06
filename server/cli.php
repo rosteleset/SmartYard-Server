@@ -31,7 +31,7 @@
             [--check-mail=<your email address>]
             [--run-demo-server]
             [--autoconfigure-domophone=<domophone_id> [--first-time]]
-            [--cron=<minutely|hourly|daily|monthly>]
+            [--cron=<minutely|5min|hourly|daily|monthly>]
             [--install-crontabs]
             [--uninstall-crontabs]
         \n";
@@ -272,7 +272,7 @@
     }
 
     if (count($args) == 1 && array_key_exists("--cron", $args)) {
-        $parts = [ "minutely", "hourly", "daily", "monthly" ];
+        $parts = [ "minutely", "5min", "hourly", "daily", "monthly" ];
         $part = false;
 
         foreach ($parts as $p) {
