@@ -43,6 +43,17 @@
     $script_process_id = -1;
     $script_filename = __FILE__;
 
+    $args = [];
+
+    for ($i = 1; $i < count($argv); $i++) {
+        $a = explode("=", $argv[$i]);
+        $args[$a[0]] = @$a[1];
+    }
+
+    $params = $argv;
+    array_shift($params);
+    $params = implode(' ', $params);
+
     function startup() {
         global $db, $params, $script_process_id;
 
@@ -86,13 +97,6 @@
     }
 
     register_shutdown_function('shutdown');
-
-    $args = [];
-
-    for ($i = 1; $i < count($argv); $i++) {
-        $a = explode("=", $argv[$i]);
-        $args[$a[0]] = @$a[1];
-    }
 
     if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
         $db = null;
@@ -157,10 +161,6 @@
         echo "can't open database " . $config["db"]["dsn"] . "\n";
         exit(1);
     }
-
-    $params = $argv;
-    array_shift($params);
-    $params = implode(' ', $params);
 
     try {
         $redis = new Redis();
