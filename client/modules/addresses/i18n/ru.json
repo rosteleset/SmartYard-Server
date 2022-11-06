@@ -218,7 +218,6 @@
     "cameraWasAdded": "Камера добавлена",
     "cameraWasDeleted": "Камера удалена",
     "cameraWasChanged": "Камера изменена",
-    "syslog": "Syslog сервер",
     "nat": "NAT",
     "addCode": "QR код добавления",
     "publish": "Адрес публикации",

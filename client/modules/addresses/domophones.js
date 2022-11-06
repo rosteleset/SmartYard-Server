@@ -130,24 +130,6 @@
                     },
                 },
                 {
-                    id: "syslog",
-                    type: "text",
-                    title: i18n("addresses.syslog"),
-                    placeholder: "syslog://",
-                    validate: v => {
-                        if (v) {
-                            try {
-                                new URL(v);
-                                return true;
-                            } catch (_) {
-                                return false;
-                            }
-                        } else {
-                            return true;
-                        }
-                    },
-                },
-                {
                     id: "nat",
                     type: "yesno",
                     title: i18n("addresses.nat"),
@@ -276,25 +258,6 @@
                         value: domophone.dtmf,
                         validate: v => {
                             return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
-                        },
-                    },
-                    {
-                        id: "syslog",
-                        type: "text",
-                        title: i18n("addresses.syslog"),
-                        placeholder: "syslog://",
-                        value: domophone.syslog,
-                        validate: v => {
-                            if (v) {
-                                try {
-                                    new URL(v);
-                                    return true;
-                                } catch (_) {
-                                    return false;
-                                }
-                            } else {
-                                return true;
-                            }
                         },
                     },
                     {
