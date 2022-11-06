@@ -624,7 +624,7 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :nat, :comment)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :nat, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -635,6 +635,14 @@
                     "nat" => $nat,
                     "comment" => $comment,
                 ]);
+
+                $queue = loadBackend("queue");
+
+                if ($queue) {
+                    $queue->addToQueue("domophone", $domophoneId, "autoconfig", "firstTime");
+                }
+
+                return $domophoneId;
             }
 
             /**
@@ -679,7 +687,7 @@
                     return false;
                 }
 
-                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
+                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -690,6 +698,14 @@
                     "nat" => $nat,
                     "comment" => $comment,
                 ]);
+
+                $queue = loadBackend("queue");
+
+                if ($queue) {
+                    $queue->changed("domophone", $domophoneId);
+                }
+
+                return $result;
             }
 
             /**

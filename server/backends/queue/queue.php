@@ -15,19 +15,20 @@
         abstract class queue extends backend
         {
             /**
-             * @param $object_type
-             * @param $object_id
+             * @param $objectType
+             * @param $objectId
              * @return mixed
              */
-            abstract function changed($object_type, $object_id);
+            abstract function changed($objectType, $objectId);
 
             /**
-             * @param $object_type
-             * @param $object_id
+             * @param $objectType
+             * @param $objectId
              * @param $task
              * @param $params
+             * @param int $groupId
              * @return mixed
              */
-            abstract function addToQueue($object_type, $object_id, $task, $params);
+            abstract function addToQueue($objectType, $objectId, $task, $params, $groupId = -1);
         }
     }
