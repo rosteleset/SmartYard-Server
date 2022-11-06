@@ -36,7 +36,7 @@
             [--uninstall-crontabs]
         \n";
 
-        exit(0);
+        exit(1);
     }
 
     $script_result = null;
@@ -315,6 +315,8 @@
 
             autoconfigure_domophone($domophone_id, $first_time);
             exit(0);
+        } else {
+            usage();
         }
     }
 
