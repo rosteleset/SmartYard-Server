@@ -29,6 +29,6 @@
              * @param int $groupId
              * @return mixed
              */
-            abstract function addToQueue($objectType, $objectId, $task, $params, $groupId = -1);
+            abstract function addToQueue($objectType, $objectId, $task, $params = false, $groupId = -1);
         }
     }
