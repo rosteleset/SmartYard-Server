@@ -11,7 +11,7 @@ CREATE TABLE houses_domophones
     dtmf character varying not null,
     first_time integer default 1,
     nat integer,
-    locks_are_open integer,
+    locks_are_open integer default 1,
     comment character varying
 );
 CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(url);
