@@ -9,6 +9,7 @@ CREATE TABLE houses_domophones
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     caller_id text not null,
     dtmf text not null,
+    first_time integer default 1,
     nat integer,
     comment text
 );

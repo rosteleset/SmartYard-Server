@@ -583,6 +583,7 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
+                    "first_time" => "firstTime",
                     "nat" => "nat",
                     "comment" => "comment"
                 ]);
@@ -639,7 +640,7 @@
                 $queue = loadBackend("queue");
 
                 if ($queue) {
-                    $queue->addToQueue("domophone", $domophoneId, "autoconfig", "firstTime");
+                    $queue->changed("domophone", $domophoneId);
                 }
 
                 return $domophoneId;
@@ -648,7 +649,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $nat, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -682,12 +683,17 @@
                     return false;
                 }
 
+                if (!checkInt($firstTime)) {
+                    setLastError("firstTime");
+                    return false;
+                }
+
                 if (!checkInt($nat)) {
                     setLastError("nat");
                     return false;
                 }
 
-                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
+                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, first_time = :first_time, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -695,6 +701,7 @@
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
+                    "first_time" => $firstTime,
                     "nat" => $nat,
                     "comment" => $comment,
                 ]);
@@ -785,6 +792,7 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
+                    "first_time" => "firstTime",
                     "nat" => "nat",
                     "comment" => "comment"
                 ], [

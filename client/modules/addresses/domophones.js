@@ -261,6 +261,12 @@
                         },
                     },
                     {
+                        id: "firstTime",
+                        type: "yesno",
+                        title: i18n("addresses.firstTime"),
+                        value: domophone.firstTime,
+                    },
+                    {
                         id: "nat",
                         type: "yesno",
                         title: i18n("addresses.nat"),
