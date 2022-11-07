@@ -159,9 +159,11 @@
             abstract public function setCms($entranceId, $cms);
 
             /**
-             * @return false|array
+             * @param $by
+             * @param $query
+             * @return mixed
              */
-            abstract public function getDomophones();
+            abstract public function getDomophones($by = "all", $query = -1);
 
             /**
              * @return mixed

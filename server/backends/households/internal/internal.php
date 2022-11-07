@@ -572,9 +572,10 @@
             /**
              * @inheritDoc
              */
-            public function getDomophones()
+            public function getDomophones($by = "all", $query = -1)
             {
-                return $this->db->get("select * from houses_domophones order by house_domophone_id", false, [
+                $q = "select * from houses_domophones order by house_domophone_id";
+                $r = [
                     "house_domophone_id" => "domophoneId",
                     "enabled" => "enabled",
                     "model" => "model",
@@ -587,7 +588,32 @@
                     "nat" => "nat",
                     "locks_are_open" => "locksAreOpen",
                     "comment" => "comment"
-                ]);
+                ];
+
+                if (!checkInt($query)) {
+                    setLastError("query");
+                    return false;
+                }
+
+                switch ($by) {
+                    case "house":
+                        $q = "select * from houses_domophones where house_domophone_id in (select house_domophone_id from houses_entrances where house_entrance_id in (select house_entrance_id from houses_houses_entrances where address_house_id = $query) group by house_domophone_id) order by house_domophone_id";
+                        break;
+
+                    case "entrance":
+                        $q = "select * from houses_domophones where house_domophone_id in (select house_domophone_id from houses_entrances where house_entrance_id = $query group by house_domophone_id) order by house_domophone_id";
+                        break;
+
+                    case "flat":
+                        $q = "select * from houses_domophones where house_domophone_id in (select house_domophone_id from houses_entrances where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) group by house_domophone_id) order by house_domophone_id";
+                        break;
+
+                    case "subscriber":
+                        $q = "select * from houses_domophones where house_domophone_id in (select house_domophone_id from houses_entrances where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id = $query)) group by house_domophone_id) order by house_domophone_id";
+                        break;
+                }
+
+                return $this->db->get($q, false, $r);
             }
 
             /**
