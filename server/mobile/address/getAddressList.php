@@ -38,6 +38,8 @@
 
     auth(3600);
     $households = loadBackend("households");
+    $cameras = loadBackend("cameras");
+
     $houses = [];
     
     foreach($subscriber['flats'] as $flat) {
@@ -71,6 +73,11 @@
             $door['doorId'] = intval($e['domophoneOutput']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
+
+            if ($e['cameraId'] && $cam = @$cameras->getCamera($e["cameraId"])) {
+                $house['cameras'][] = $cam;
+                $house['cctv']++;
+            }
             
             // TODO: проверить обработку блокировки
             // 

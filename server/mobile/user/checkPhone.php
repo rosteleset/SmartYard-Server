@@ -20,7 +20,6 @@
  * @apiSuccess {String} names.patronymic отчество
  */
     $user_phone = @$postdata['userPhone'];
-    // $user_phone[0] = '8';
     $user_phone = substr($user_phone,1);
     $households = loadBackend("households");
 
