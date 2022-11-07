@@ -273,6 +273,12 @@
                         value: domophone.nat,
                     },
                     {
+                        id: "locksAreOpen",
+                        type: "yesno",
+                        title: i18n("addresses.locksAreOpen"),
+                        value: domophone.locksAreOpen,
+                    },
+                    {
                         id: "comment",
                         type: "text",
                         title: i18n("addresses.comment"),

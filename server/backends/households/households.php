@@ -220,10 +220,11 @@
              * @param $dtmf
              * @param $firstTime
              * @param $nat
+             * @param $locksAreOpen
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $locksAreOpen, $comment);
 
             /**
              * @param $domophoneId

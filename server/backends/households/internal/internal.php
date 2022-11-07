@@ -585,6 +585,7 @@
                     "dtmf" => "dtmf",
                     "first_time" => "firstTime",
                     "nat" => "nat",
+                    "locks_are_open" => "locksAreOpen",
                     "comment" => "comment"
                 ]);
             }
@@ -649,7 +650,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -693,7 +694,12 @@
                     return false;
                 }
 
-                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, first_time = :first_time, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
+                if (!checkInt($locksAreOpen)) {
+                    setLastError("nat");
+                    return false;
+                }
+
+                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -703,6 +709,7 @@
                     "dtmf" => $dtmf,
                     "first_time" => $firstTime,
                     "nat" => $nat,
+                    "locks_are_open" => $locksAreOpen,
                     "comment" => $comment,
                 ]);
 
@@ -794,6 +801,7 @@
                     "dtmf" => "dtmf",
                     "first_time" => "firstTime",
                     "nat" => "nat",
+                    "locks_are_open" => "locksAreOpen",
                     "comment" => "comment"
                 ], [
                     "singlify"
