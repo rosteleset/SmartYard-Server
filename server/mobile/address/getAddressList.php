@@ -74,7 +74,8 @@
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
 
-            if ($e['cameraId'] && $cam = @$cameras->getCamera($e["cameraId"])) {
+            if ($e['cameraId']) {
+                $cam = $cameras->getCamera($e["cameraId"]);
                 $house['cameras'][] = $cam;
                 $house['cctv']++;
             }
