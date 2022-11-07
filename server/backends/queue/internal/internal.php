@@ -13,7 +13,26 @@
              */
             function changed($objectType, $objectId)
             {
-                // TODO: Implement changed() method.
+                switch ($objectType) {
+                    case "domophone":
+                        $this->db->insert("insert into tasks_changes (object_type, object_id) values (:object_type, :object_id)", [
+                            "object_type" => $objectType,
+                            "object_id" => $objectId,
+                        ]);
+                        break;
+                    case "house":
+                        //
+                        break;
+                    case "entrance":
+                        //
+                        break;
+                    case "flat":
+                        //
+                        break;
+                    case "subscriber":
+                        //
+                        break;
+                }
             }
 
             /**
