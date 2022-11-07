@@ -42,8 +42,11 @@
     
     foreach($subscriber['flats'] as $flat) {
         $houseId = $flat['addressHouseId'];
+        
         if (array_key_exists($houseId, $houses)) {
             $house = &$houses[$houseId];
+            $house['cameras'] += $households->getCameras("flat", $flat['flatId']);
+            $house['cctv'] = count($house['cameras']);
         } else {
             $houses[$houseId] = [];
             $house = &$houses[$houseId];
@@ -51,8 +54,8 @@
             $house['address'] = $flat['house']['houseFull'];
             // TODO: добавить журнал событий.
             $house['hasPlog'] = 'f';
-            // TODO: добавить камеры.
-            $house['cctv'] = 1;
+            $house['cameras'] = $households->getCameras("house", $houseId);
+            $house['cctv'] = count($house['cameras']);
             $house['doors'] = [];
         }
         
@@ -81,9 +84,10 @@
         
     }
 
-    // конвертируем ассоциативные массивы в простые
+    // конвертируем ассоциативные массивы в простые и удаляем лишние ключи
     foreach($houses as $house_key => $h) {
         $houses[$house_key]['doors'] = array_values($h['doors']);
+        unset( $houses[$house_key]['cameras']);
     }
     $result = array_values($houses);
     
