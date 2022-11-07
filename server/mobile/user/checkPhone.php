@@ -33,7 +33,7 @@
         $result3 = $isdn->checkIncoming('7'. $user_phone);
 
         if ($result || $result2 || $result3) {
-            $user_phone = '8' . $user_phone;
+            $user_phone = '7' . $user_phone;
             $token = GUIDv4();
             $subscribers = $households->getSubscribers("mobile", $user_phone);
                 $names = [ "name" => "", "patronymic" => "" ];
