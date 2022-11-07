@@ -15,9 +15,8 @@
             {
                 switch ($objectType) {
                     case "domophone":
-                        $this->db->insert("insert into tasks_changes (object_type, object_id) values (:object_type, :object_id)", [
-                            "object_type" => $objectType,
-                            "object_id" => $objectId,
+                        $this->db->insert("insert into tasks_changes (object_type, object_id) values ('domophone', :object_id)", [
+                            "object_id" => checkInt($objectId),
                         ]);
                         break;
                     case "house":
