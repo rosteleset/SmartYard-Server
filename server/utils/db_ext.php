@@ -16,7 +16,7 @@
             return $remap;
         }
 
-        function insert($query, $params = []) {
+        function insert($query, $params = [], $options = []) {
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -25,8 +25,10 @@
                     return false;
                 }
             } catch (\PDOException $e) {
-                setLastError($e->errorInfo[2]?:$e->getMessage());
-                error_log(print_r($e, true));
+                if (!in_array("silent", $options)) {
+                    setLastError($e->errorInfo[2] ?: $e->getMessage());
+                    error_log(print_r($e, true));
+                }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
@@ -35,7 +37,7 @@
             }
         }
 
-        function modify($query, $params = []) {
+        function modify($query, $params = [], $options = []) {
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -44,8 +46,10 @@
                     return false;
                 }
             } catch (\PDOException $e) {
-                setLastError($e->errorInfo[2]?:$e->getMessage());
-                error_log(print_r($e, true));
+                if (!in_array("silent", $options)) {
+                    setLastError($e->errorInfo[2] ?: $e->getMessage());
+                    error_log(print_r($e, true));
+                }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
@@ -54,7 +58,7 @@
             }
         }
 
-        function modifyEx($query, $map, $params) {
+        function modifyEx($query, $map, $params, $options = []) {
             $mod = false;
             try {
                 foreach ($map as $db => $param) {
@@ -71,8 +75,10 @@
                 }
                 return $mod;
             } catch (\PDOException $e) {
-                setLastError($e->errorInfo[2]?:$e->getMessage());
-                error_log(print_r($e, true));
+                if (!in_array("silent", $options)) {
+                    setLastError($e->errorInfo[2] ?: $e->getMessage());
+                    error_log(print_r($e, true));
+                }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
@@ -127,8 +133,10 @@
                 return $r;
 
             } catch (\PDOException $e) {
-                setLastError($e->errorInfo[2]?:$e->getMessage());
-                error_log(print_r($e, true));
+                if (!in_array("silent", $options)) {
+                    setLastError($e->errorInfo[2] ?: $e->getMessage());
+                    error_log(print_r($e, true));
+                }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());

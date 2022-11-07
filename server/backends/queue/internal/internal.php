@@ -20,6 +20,8 @@
                     case "domophone":
                         $this->db->insert("insert into tasks_changes (object_type, object_id) values ('domophone', :object_id)", [
                             "object_id" => checkInt($objectId),
+                        ], [
+                            "silent"
                         ]);
                         return true;
 
@@ -45,6 +47,8 @@
                 foreach ($domophones as $domophone) {
                     $this->db->insert("insert into tasks_changes (object_type, object_id) values ('domophone', :object_id)", [
                         "object_id" => checkInt($domophone["domophoneId"]),
+                    ], [
+                        "silent"
                     ]);
                 }
 
