@@ -26,21 +26,12 @@
                         return true;
 
                     case "house":
-                        if ($households) {
-                            $domophones = $households->getDomophones("house", $objectId);
-                        }
-                        break;
-
                     case "entrance":
-                        $domophones = $households->getDomophones("entrance", $objectId);
-                        break;
-
                     case "flat":
-                        $domophones = $households->getDomophones("flat", $objectId);
-                        break;
-
                     case "subscriber":
-                        $domophones = $households->getDomophones("subscriber", $objectId);
+                        if ($households) {
+                            $domophones = $households->getDomophones($objectType, $objectId);
+                        }
                         break;
                 }
 
