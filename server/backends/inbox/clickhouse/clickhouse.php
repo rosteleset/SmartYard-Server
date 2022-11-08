@@ -10,7 +10,7 @@
         /**
          * internal.db inbox class
          */
-        class internal extends inbox
+        class clickhouse extends inbox
         {
 
             /**
