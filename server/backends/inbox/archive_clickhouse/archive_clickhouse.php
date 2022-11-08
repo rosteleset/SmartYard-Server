@@ -10,7 +10,7 @@
         /**
          * internal.db inbox class
          */
-        class clickhouse extends inbox
+        class archive_clickhouse extends inbox
         {
 
             /**
@@ -182,6 +182,18 @@
                 [
                     "fieldlify"
                 ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function cron($part)
+            {
+                if ($part == '5min') {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }
     }
