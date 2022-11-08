@@ -25,7 +25,7 @@
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
-                $this->clickhouse = new \clickhouse($config['backends']['accounting']['host'], $config['backends']['accounting']['port'], $config['backends']['accounting']['username'], $config['backends']['accounting']['password']);
+                $this->clickhouse = new \clickhouse($config['backends']['accounting']['host'], $config['backends']['accounting']['port'], $config['backends']['accounting']['username'], $config['backends']['accounting']['password'], $config['backends']['accounting']['database']);
             }
 
             public function log($params, $code) {

@@ -1,14 +1,15 @@
 <?php
 
     class clickhouse {
-        private $host, $port, $username, $password;
+        private $host, $port, $username, $password, $database;
 
-        function __construct($host, $port, $username, $password)
+        function __construct($host, $port, $username, $password, $database = 'default')
         {
             $this->host = $host;
             $this->port = $port;
             $this->username = $username;
             $this->password = $password;
+            $this->database = $database;
         }
 
         function select($query) {
@@ -93,7 +94,7 @@
             curl_setopt($curl, CURLOPT_POSTFIELDS, $_data);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($curl, CURLOPT_URL, "http://{$this->host}:{$this->port}/?query=" . urlencode("INSERT INTO $table FORMAT JSONEachRow"));
+            curl_setopt($curl, CURLOPT_URL, "http://{$this->host}:{$this->port}/?query=" . urlencode("INSERT INTO {$this->database}.$table FORMAT JSONEachRow"));
             curl_setopt($curl, CURLOPT_POST, true);
 
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);

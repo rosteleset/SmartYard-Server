@@ -123,7 +123,7 @@
             "ari_password": "<!-- your very secret password here -->",
             "stun_server": "stun:127.0.0.1:3478",
             "incoming_title": "Входящий вызов",
-            "call_failed": "Пропущенный вызов"
+            "call_failed_title": "Пропущенный вызов"
         }
     ],
 
