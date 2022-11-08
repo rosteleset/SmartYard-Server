@@ -25,7 +25,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   /**Отправка соощения в syslog
    * сделать фильтр для менее значимых событий
    */
-  await API.sendLog({ date: now, ip: host, msg: bw_msg });
+  await API.sendLog({ date: now, ip: host, unit:"beward", msg: bw_msg });
 
   //Действия:
   //1 Открытие по ключу
