@@ -14,11 +14,10 @@
             private $clickhouse;
 
             /**
-             * @param object $params all params passed to api handlers
-             * @param integer $code return code
-             * @return void
+             * @param $config
+             * @param $db
+             * @param $redis
              */
-
             function __construct($config, $db, $redis)
             {
                 parent::__construct($config, $db, $redis);
@@ -34,6 +33,11 @@
                 );
             }
 
+            /**
+             * @param $params
+             * @param $code
+             * @return void
+             */
             public function log($params, $code) {
                 $login = @($params["_login"]?:$params["login"]);
                 $login = $login?:"-";
