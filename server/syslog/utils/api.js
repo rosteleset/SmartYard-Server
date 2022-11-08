@@ -1,11 +1,34 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
-const axios = require("axios").default;
+const axios = require("axios");
+const https = require("https");
 const events = require("./events.json");
+const {
+  api: { internal },
+} = require("../../config/config.json"); //https://host:port/internal
 
-const rbt = axios.create({
-  baseURL: "http://127.0.0.1:8084/75779b1f-8c0b-4213-a23e-515c5c684719",
+const agent = new https.Agent({ rejectUnauthorized: false });
+
+/**
+ * Шаблон для работы с модифицированным https агнетом.
+ * Использвем только для работы с самоподписанным ssl
+ */
+const internalApi = axios.create({
+  baseURL: internal,
+  withCredentials: true,
+  responseType: "json",
+  httpsAgent: agent
 });
 
+//Актуальный шаблон для работы с internal API. Версия для корректного ssl
+// const internalApi = axios.create({
+//   baseURL: internal,
+// });
+
+/**
+ * Сделать импорт FRS url из config.json или получить из internal API,
+ * сейчас это тестовый локальный endpoint
+ * https://github.com/webhooksite/webhook.site
+ */
 const frs = axios.create({
   baseURL: "http://127.0.0.1:8084/75779b1f-8c0b-4213-a23e-515c5c684719",
 });
@@ -19,9 +42,9 @@ class API {
   async lastSeen(host) {
     try {
       console.log(`:: lastSeen: ${host}`);
-      return await rbt.post("/lastSeen", host);
+      return await internalApi.post("/lastSeen", host);
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error :", error.message);
     }
   }
 
@@ -31,8 +54,10 @@ class API {
    */
   async sendLog(data) {
     try {
-      await rbt.post("/syslog", data);
-    } catch (error) {}
+      return await internalApi.post("/syslog", data);
+    } catch (error) {
+      console.error("Error", error.message);
+    }
   }
 
   /**
@@ -42,7 +67,7 @@ class API {
    */
   async motionDetection(host, start) {
     try {
-      await rbt
+      return await internalApi
         .post("/getStreamID", { host })
         .then(async ({ frs_server, stream_id }) => {
           if (frs_server && stream_id) {
@@ -55,7 +80,7 @@ class API {
           }
         });
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error: ", error.message);
     }
 
     // await frs.post("", { host, start });
@@ -64,9 +89,9 @@ class API {
   async opnenDoorByRFID({ host, door, rfid, event }) {
     try {
       //TODO: актуализировать endpoint,
-      await rbt.post("/openDoorAction");
+      await internalApi.post("/openDoorAction");
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error", error.message);
     }
 
     //TODO: Действия выполняемые на стороне internal.php
@@ -79,9 +104,9 @@ class API {
 
   async callFinished(call_id) {
     try {
-      await rbt.post("/callFinished", call_id);
+      return await internalApi.post("/callFinished", call_id);
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error: ", error.message);
     }
     // mysql.query('insert into dm.call_done (date, ip, call_id) values (?, ?, ?)', [ now, value.host, call_id ]);
   }
@@ -93,9 +118,9 @@ class API {
    */
   async setRabbitGates({ host, gate_rabbits }) {
     try {
-      await rbt.post("/setRabbitGates", { host, gate_rabbits });
+      return await internalApi.post("/setRabbitGates", { host, gate_rabbits });
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error :", error.message);
     }
     //TODO: логика выполняемая на стороне internal.php
 
@@ -119,7 +144,7 @@ class API {
    */
   async doorIsOpen(host) {
     try {
-      await rbt
+      await internal
         .post("/getStreamID", { host })
         .then(async ({ frs_server, stream_id }) => {
           if (frs_server && stream_id) {
@@ -129,7 +154,7 @@ class API {
           }
         });
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error :", error.message);
     }
   }
 
@@ -145,21 +170,23 @@ class API {
     try {
       switch (type) {
         case "code":
-          return await rbt.post("/openDoor", {
+          return await internalApi.post("/openDoor", {
             host,
             event: events.OPEN_BY_CODE,
             door,
             detail,
           });
         case "rfid":
-          return await rbt.post("/openDoor", {
+          return await internalApi.post("/openDoor", {
             host,
             event: events.OPEN_BY_KEY,
             door,
             detail,
           });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("error :", error.message);
+    }
   }
 }
 

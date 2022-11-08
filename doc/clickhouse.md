@@ -8,7 +8,7 @@ CREATE TABLE default.syslog
     `date` DateTime,
     `ip` IPv4,
     `unit` String,
-    `msg` String
+    `msg` String,
     INDEX syslog_ip ip TYPE set(100) GRANULARITY 1024,
     INDEX syslog_unit unit TYPE set(100) GRANULARITY 1024
 )
@@ -18,7 +18,11 @@ ORDER BY date
 TTL date + toIntervalDay(31)
 SETTINGS index_granularity = 8192
 ```
-
+#### Буферная таблица для храниения syslog
+```
+CREATE TABLE default.syslog_buffer AS default.syslog 
+ENGINE = Buffer(default, syslog, 8, 30, 60, 8192, 65536, 262144, 67108864);
+```
 ```
 CREATE TABLE default.inbox
 (
@@ -36,29 +40,38 @@ SETTINGS index_granularity = 8192
 ```
 
 ```
+SET allow_experimental_object_type = 1;
+```
+
+```
 CREATE TABLE default.plog
 (
     `date` DateTime,
-    `uuid` UUID,
-    `image` UUID,
+    `event_uuid` UUID,
+    `hidden` Int8,
+    `image_uuid` UUID,
     `flat_id` Int32,
-    `object_id` Int32,
-    `object_type` Int32 DEFAULT 0,
-    `object_mechanizma` Int32 DEFAULT 0,
-    `mechanizma_description` String,
-    `event` Int32,
-    `detail` String,
-    `preview` Int8 DEFAULT 0,
-    `hidden` Int8 DEFAULT 0,
-    INDEX plog_object_id object_id TYPE set(100) GRANULARITY 1024,
-    INDEX plog_uuid uuid TYPE set(100) GRANULARITY 1024,
-    INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024,
+    `domophone_id` Int32,
+    `domophone_output` Int8,
+    `domophone_output_description` String,
+    `event` Int8,
+    `opened` Int8,
+    `face` JSON,
+    `rfid` String,
+    `code` String,
+    `user_phone` String,
+    `gate_phone` String,
+    `preview` Int8,
     INDEX plog_date date TYPE set(100) GRANULARITY 1024,
-    INDEX plog_hidden hidden TYPE set(100) GRANULARITY 1024
+    INDEX plog_event_uuid event_uuid TYPE set(100) GRANULARITY 1024,
+    INDEX plog_hidden hidden TYPE set(100) GRANULARITY 1024,
+    INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024,
+    INDEX plog_domophone_id domophone_id TYPE set(100) GRANULARITY 1024,
+    INDEX plog_domophone_output domophone_output TYPE set(100) GRANULARITY 1024
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMMDD(date)
 ORDER BY date
 TTL date + toIntervalMonth(6)
-SETTINGS index_granularity = 1024
+SETTINGS index_granularity = 1024;
 ```

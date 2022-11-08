@@ -1,16 +1,16 @@
 const syslog = new (require("syslog-server"))();
-const { syslog_servers } = require("../config/config.json");
+const {syslog_servers: { beward }} = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
-const { port } = urlParser(syslog_servers.beward);
+const { port } = urlParser(beward);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = thisMoment();
   let bw_msg = message.split(" - - ")[1].trim();
   await API.lastSeen(host);
-
+  
   //Фиьтр сообщений не несущих смысловой нагрузки
   if (
     bw_msg.indexOf("RTSP") >= 0 ||
@@ -25,7 +25,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   /**Отправка соощения в syslog
    * сделать фильтр для менее значимых событий
    */
-  await API.sendLog({ date: now, ip: host, msg: bw_msg });
+  await API.sendLog({ date: now, ip: host, unit:"beward", msg: bw_msg });
 
   //Действия:
   //1 Открытие по ключу

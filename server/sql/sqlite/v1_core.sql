@@ -103,3 +103,17 @@ CREATE TABLE core_api_methods_by_backend
     aid text not null primary key,
     backend text
 );
+
+-- running processes
+CREATE TABLE core_running_processes
+(
+    running_process_id integer not null primary key autoincrement,
+    pid integer,
+    ppid integer,
+    start text,
+    process text,
+    params text,
+    done text,
+    result text,
+    expire integer
+);

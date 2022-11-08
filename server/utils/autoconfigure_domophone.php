@@ -9,9 +9,7 @@
         $domophone = $households->getDomophone($domophoneId);
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
         $asterisk_server = $households->getAsteriskServer($domophoneId);
-        $cms_allocation = $households->getCms($entrances[0]['entranceId']);
         $cmses = $households->getCmses();
-        $flats = $households->getFlats('domophone', $domophoneId);
 
         try {
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $firstTime);
@@ -50,6 +48,8 @@
         $cms_levels = explode(',', $entrances[0]['cmsLevels']);
         $cms_model = (string) @$cmses[$entrances[0]['cms']]['model'];
 
+        $is_shared = $entrances[0]['shared'];
+
         $panel->clean(
             $sip_server,
             $ntp_server,
@@ -67,53 +67,73 @@
             $stun_port
         );
 
-        if ($entrances[0]['shared']) {
-            $links = [];
+        if (!$is_shared) {
+            $cms_allocation = $households->getCms($entrances[0]['entranceId']);
 
-            foreach ($entrances as $entrance) {
-                $house_flats = $households->getFlats('house', $entrance['houseId']);
-
-                $links[] = [
-                    'addr' => $addresses->getHouse($entrance['houseId'])['houseFull'],
-                    'prefix' => $entrance['prefix'],
-                    'begin' => reset($house_flats)['flat'],
-                    'end' => end($house_flats)['flat'],
-                ];
+            foreach ($cms_allocation as $item) {
+                $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment'], $cms_model);
             }
-
-            $panel->configure_gate($links);
         }
 
-        foreach ($cms_allocation as $item) {
-            $panel->configure_cms_raw($item['cms'], $item['dozen'], $item['unit'], $item['apartment'], $cms_model);
-        }
+        $links = [];
+        $offset = 0;
 
-        foreach ($flats as $flat) {
-            $apartment = $flat['flat'];
-            $apartment_levels = $cms_levels;
+        foreach ($entrances as $entrance) {
+            $flats = $households->getFlats('house', $entrance['houseId']);
 
-            foreach ($flat['entrances'] as $flat_entrance) {
-                if ($flat_entrance['domophoneId'] == $domophoneId) {
-                    $apartment_levels = explode(',', $flat_entrance['apartmentLevels']);
-                    $apartment = $flat_entrance['apartment'];
-                    break;
+            $begin = reset($flats)['flat'];
+            $end = end($flats)['flat'];
+
+            $links[] = [
+                'addr' => $addresses->getHouse($entrance['houseId'])['houseFull'],
+                'prefix' => $entrance['prefix'],
+                'begin' => $begin,
+                'end' => $end,
+            ];
+
+            foreach ($flats as $flat) {
+                $flat_entrances = array_filter($flat['entrances'], function ($entrance) use ($domophoneId) {
+                    return $entrance['domophoneId'] == $domophoneId;
+                });
+
+                if  ($flat_entrances) {
+                    $apartment = $flat['flat'];
+                    $apartment_levels = $cms_levels;
+
+                    foreach ($flat_entrances as $flat_entrance) {
+                        if (isset($flat_entrance['apartmentLevels'])) {
+                            $apartment_levels = explode(',', $flat_entrance['apartmentLevels']);
+                        }
+
+                        if ($flat_entrance['apartment'] != $apartment) {
+                            $apartment = $flat_entrance['apartment'];
+                        }
+                    }
+
+                    $panel->configure_apartment(
+                        $apartment + $offset,
+                        (bool) $flat['openCode'],
+                        $is_shared ? false : $flat['cmsEnabled'],
+                        $is_shared ? [] : [ sprintf('1%09d', $flat['flatId']) ],
+                        $flat['openCode'] ?: 0,
+                        $apartment_levels
+                    );
+
+                    $keys = $households->getKeys('flat', $flat['flatId']);
+
+                    foreach ($keys as $key) {
+                        $panel->add_rfid($key['rfId']);
+                    }
+                }
+
+                if ($flat['flat'] == $end) {
+                    $offset += $flat['flat'];
                 }
             }
+        }
 
-            $panel->configure_apartment(
-                $apartment, // TODO: shared offset
-                (bool) $flat['openCode'],
-                $entrances[0]['shared'] ? false : $flat['cmsEnabled'],
-                $entrances[0]['shared'] ? [] : [ sprintf('1%09d', $flat['flatId']) ],
-                $flat['openCode'] ?: 0,
-                $apartment_levels
-            );
-
-            $keys = $households->getKeys('flat', $flat['flatId']);
-
-            foreach ($keys as $key) {
-                $panel->add_rfid($key['rfId']);
-            }
+        if ($is_shared) {
+            $panel->configure_gate($links);
         }
 
         $panel->configure_md();

@@ -9,7 +9,9 @@ CREATE TABLE houses_domophones
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     caller_id text not null,
     dtmf text not null,
+    first_time integer default 1,
     nat integer,
+    locks_are_open integer default 1,
     comment text
 );
 CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(url);
@@ -97,28 +99,6 @@ CREATE UNIQUE INDEX houses_entrances_flats_uniq on houses_entrances_flats (house
 CREATE INDEX houses_entrances_flats_house_entrance_id on houses_entrances_flats(house_entrance_id);
 CREATE INDEX houses_entrances_flats_house_flat_id on houses_entrances_flats(house_flat_id);
 
--- cameras <-> houses
-CREATE TABLE houses_houses_cameras
-(
-    camera_id integer not null,
-    address_house_id integer not null,
-    common integer
-);
-CREATE UNIQUE INDEX houses_houses_cameras_uniq on houses_houses_cameras(camera_id, address_house_id);
-CREATE INDEX houses_houses_cameras_camera_id on houses_houses_cameras(camera_id);
-CREATE INDEX houses_houses_cameras_house_id on houses_houses_cameras(address_house_id);
-
--- cameras <-> flats
-CREATE TABLE houses_cameras_flats
-(
-    camera_id integer not null,
-    house_flat_id integer not null,
-    common integer
-);
-CREATE UNIQUE INDEX houses_cameras_flats_uniq on houses_cameras_flats(camera_id, house_flat_id);
-CREATE INDEX houses_cameras_flats_camera_id on houses_cameras_flats(camera_id);
-CREATE INDEX houses_cameras_flats_flat_id on houses_cameras_flats(house_flat_id);
-
 -- rfid keys
 CREATE TABLE houses_rfids
 (
@@ -157,6 +137,28 @@ CREATE TABLE houses_flats_subscribers
     role integer                                                                                                        -- ?
 );
 CREATE UNIQUE INDEX houses_flats_subscribers_uniq on houses_flats_subscribers(house_flat_id, house_subscriber_id);
+
+-- cameras <-> houses
+CREATE TABLE houses_cameras_houses
+(
+    camera_id integer not null,
+    address_house_id integer not null,
+    common integer
+);
+CREATE UNIQUE INDEX houses_cameras_houses_uniq on houses_cameras_houses(camera_id, address_house_id);
+CREATE INDEX houses_cameras_houses_camera_id on houses_cameras_houses(camera_id);
+CREATE INDEX houses_cameras_houses_house_id on houses_cameras_houses(address_house_id);
+
+-- cameras <-> flats
+CREATE TABLE houses_cameras_flats
+(
+    camera_id integer not null,
+    house_flat_id integer not null,
+    common integer
+);
+CREATE UNIQUE INDEX houses_cameras_flats_uniq on houses_cameras_flats(camera_id, house_flat_id);
+CREATE INDEX houses_cameras_flats_camera_id on houses_cameras_flats(camera_id);
+CREATE INDEX houses_cameras_flats_flat_id on houses_cameras_flats(house_flat_id);
 
 -- cameras <-> subscribers
 CREATE TABLE houses_cameras_subscribers

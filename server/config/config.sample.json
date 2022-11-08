@@ -2,7 +2,7 @@
     "api": {
         "frontend": "http://127.0.0.1:8000/server/frontend.php",
         "asterisk": "http://127.0.0.1:8000/server/asterisk.php",
-        "internal": "http://127.0.0.1:8000/server/internel.php",
+        "internal": "http://127.0.0.1:8000/server/internal.php",
         "mobile": "http://127.0.0.1:8000/server/mobile.php"
     },
 
@@ -106,12 +106,7 @@
         },
 
         "inbox": {
-            "backend": "internal",
-            "archive": {
-                "dsn": "mysql:host=127.0.0.1;port=9004;dbname=default;charset=utf8mb4",
-                "username": "default",
-                "password": "<!-- your very secret password here -->"
-            }
+            "backend": "clickhouse"
         }
     },
 
@@ -128,7 +123,7 @@
             "ari_password": "<!-- your very secret password here -->",
             "stun_server": "stun:127.0.0.1:3478",
             "incoming_title": "Входящий вызов",
-            "call_failed": "Пропущенный вызов"
+            "call_failed_title": "Пропущенный вызов"
         }
     ],
 

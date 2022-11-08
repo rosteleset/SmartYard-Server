@@ -63,7 +63,7 @@
             public function getProjects()
             {
                 try {
-                    $projects = $this->db->query("select project_id, acronym, project from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
+                    $projects = $this->db->query("select project_id, acronym, project, max_file_size, mime_types from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
                     $_projects = [];
 
                     foreach ($projects as $project) {
@@ -148,6 +148,8 @@
                             "projectId" => $project["project_id"],
                             "acronym" => $project["acronym"],
                             "project" => $project["project"],
+                            "maxFileSize" => $project["max_file_size"],
+                            "allowedMimeTypes" => $project["mime_types"],
                             "workflows" => $w,
                             "resolutions" => $r,
                             "customFields" => $cf,
@@ -194,17 +196,19 @@
             /**
              * @inheritDoc
              */
-            public function modifyProject($projectId, $acronym, $project)
+            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes)
             {
-                if (!checkInt($projectId) || !trim($acronym) || !trim($project)) {
+                if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project where project_id = $projectId");
+                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, mime_types = :mime_types where project_id = $projectId");
                     $sth->execute([
-                        ":acronym" => $acronym,
-                        ":project" => $project,
+                        "acronym" => $acronym,
+                        "project" => $project,
+                        "max_file_size" => $maxFileSize,
+                        "mime_types" => $allowedMimeTypes,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -530,7 +534,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -555,6 +559,7 @@
                             "regex" => $customField["regex"],
                             "link" => $customField["link"],
                             "format" => $customField["format"],
+                            "editor" => $customField["editor"],
                             "indexes" => $customField["indexes"],
                             "required" => $customField["required"],
                             "options" => $_options,
@@ -755,7 +760,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor)
             {
                 if (!checkInt($customFieldId)) {
                     return false;
@@ -814,6 +819,7 @@
                                 regex = :regex,
                                 link = :link,
                                 format = :format,
+                                editor = :editor,
                                 indexes = :indexes,
                                 required = :required
                             where
@@ -826,6 +832,7 @@
                             ":regex" => $regex,
                             ":link" => $link,
                             ":format" => $format,
+                            ":editor" => $editor,
                             ":indexes" => $indexes,
                             ":required" => $required,
                         ]);

@@ -2,11 +2,21 @@
 
 const mime2fa = {
     false: "far fa-fw fa-file",
-    "image/jpeg": "far fa-fw fa-file-image",
-    "application/pdf": "far fa-fw fa-file-pdf"
+    ".jpg": "far fa-fw fa-file-image",
+    ".png": "far fa-fw fa-file-image",
+    ".tiff": "far fa-fw fa-file-image",
+    ".pdf": "far fa-fw fa-file-pdf",
+    ".mp4": "far fa-fw fa-file-video",
+    ".odt": "far fa-fw fa-file-word",
+    ".doc": "far fa-fw fa-file-word",
+    ".docx": "far fa-fw fa-file-word",
+    ".ods": "far fa-fw fa-file-excel",
+    ".xlsx": "far fa-fw fa-file-excel",
+    ".xls": "far fa-fw fa-file-excel",
 };
 
 function uploadForm(mimeTypes) {
+    mimeTypes = escapeHTML(mimeTypes?mimeTypes.join(","):"");
     let h = `
         <div class="card mt-0 mb-0">
             <div class="card-header">
@@ -14,7 +24,7 @@ function uploadForm(mimeTypes) {
                 <button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right uploadModalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>
             </div>
             <div class="card-body table-responsive p-0">
-                <input type="file" id="fileInput" style="display: none" accept="${mimeTypes?mimeTypes.join(","):""}"/>
+                <input type="file" id="fileInput" style="display: none" accept="${mimeTypes}"/>
                 <table class="table tform-borderless" style="width: 100%;">
                     <tbody>
                         <tr style="display: none">

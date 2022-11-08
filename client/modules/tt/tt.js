@@ -152,6 +152,15 @@
                         options: peoples(project, false),
                     };
 
+                case "attachments":
+                    return {
+                        id: "attachments",
+                        type: "files",
+                        title: i18n("tt.attachments"),
+                        mimeTypes: JSON.parse(project.allowedMimeTypes),
+                        maxSize: project.maxFileSize,
+                    };
+
                 case "plans":
                     break;
 
@@ -161,6 +170,13 @@
         } else {
             // custom field
             fieldId = fieldId.substring(4);
+
+/*
+            id: "String [format: multiple]",
+            id: "Number",
+            id: "Select [format: multiple]",
+            id: "Users [format: multiple, users|groups|usersAndGroups]",
+*/
 
             let cf = false;
             for (let i in modules.tt.meta.customFields) {

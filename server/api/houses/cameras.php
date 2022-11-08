@@ -20,7 +20,7 @@
             {
                 $households = loadBackend("households");
 
-                $cameraId = $households->addCamera("house", $params["houseId"], $params["cameraId"], $params["common"]);
+                $cameraId = $households->addCamera("house", $params["houseId"], $params["cameraId"]);
 
                 return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":"notAcceptable");
             }

@@ -7,6 +7,7 @@
     require_once "utils/loader.php";
     require_once "utils/checkint.php";
     require_once "utils/db_ext.php";
+
     require_once "backends/backend.php";
 
     header('Content-Type: application/json');
@@ -297,7 +298,7 @@
                 case "flatIdByPrefix":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getFlats("domophoneAndNumber", $params));
+                    echo json_encode($households->getFlats("flatIdByPrefix", $params));
                     break;
 
                 case "subscribers":

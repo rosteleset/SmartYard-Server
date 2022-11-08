@@ -1,0 +1,11 @@
+{
+    "title": "IS ISCOM X1",
+    "vendor": "IS",
+    "model": "ISCOM X1",
+    "class": "iscomx1",
+    "outputs": 1,
+    "camera": "is",
+    "cmses": [
+
+    ]
+}

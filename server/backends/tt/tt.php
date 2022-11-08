@@ -240,7 +240,6 @@
             /**
              * @param $acronym
              * @param $project
-             *
              * @return false|integer
              */
 
@@ -250,10 +249,12 @@
              * @param $projectId integer
              * @param $acronym string
              * @param $project string
+             * @param $maxFileSize
+             * @param $allowedMimeTypes
              * @return boolean
              */
 
-            abstract public function modifyProject($projectId, $acronym, $project);
+            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes);
 
             /**
              * delete project and all it derivatives
@@ -409,9 +410,10 @@
              * @param $options
              * @param $indexes
              * @param $required
+             * @param $editor
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
 
             /**
              * @param $customFieldId

@@ -111,6 +111,13 @@
                         },
                     }
                 },
+                {
+                    id: "hidden",
+                    type: "yesno",
+                    title: i18n("providers.hidden"),
+                    placeholder: i18n("providers.hidden"),
+                    value: "0",
+                },
             ],
             callback: modules.providers.doAddProvider,
         });
@@ -210,6 +217,13 @@
                             },
                             value: provider.tokenFlashCall,
                         },
+                        {
+                            id: "hidden",
+                            type: "yesno",
+                            title: i18n("providers.hidden"),
+                            placeholder: i18n("providers.hidden"),
+                            value: provider.hidden,
+                        },
                     ],
                     callback: result => {
                         if (result.delete === "yes") {
@@ -232,9 +246,7 @@
         });
     },
 
-    route: function (params) {
-        console.log(params);
-
+    route: function () {
         $("#subTop").html("");
         $("#altForm").hide();
 
@@ -269,6 +281,9 @@
                         title: i18n("providers.name"),
                         fullWidth: true,
                     },
+                    {
+                        title: i18n("providers.hidden"),
+                    },
                 ],
                 rows: () => {
                     let rows = [];
@@ -288,6 +303,9 @@
                                 },
                                 {
                                     data: response.providers[i].name,
+                                },
+                                {
+                                    data: parseInt(response.providers[i].hidden)?i18n("yes"):i18n("no"),
                                 },
                             ],
                         });

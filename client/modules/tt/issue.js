@@ -66,6 +66,7 @@
                 borderless: true,
                 noHover: true,
                 topApply: true,
+                apply: "create",
                 singleColumn: true,
                 fields: [
                     {
@@ -153,13 +154,6 @@
                             readonly: true,
                             title: i18n("tt.workflow"),
                             value: workflowName,
-                        },
-                        {
-                            id: "attachments",
-                            type: "files",
-                            title: i18n("tt.attachments"),
-                            mimeTypes: [ "image/jpeg", "image/png", "application/pdf" ],
-                            maxSize: 1024 * 1024,
                         },
                     ];
 

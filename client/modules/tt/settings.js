@@ -97,12 +97,9 @@
         });
     },
 
-    doModifyProject: function (projectId, acronym, project) {
+    doModifyProject: function (project) {
         loadingStart();
-        PUT("tt", "project", projectId, {
-            acronym: acronym,
-            project: project,
-        }).
+        PUT("tt", "project", project["projectId"], project).
         fail(FAIL).
         done(() => {
             message(i18n("tt.projectWasChanged"));
@@ -381,28 +378,16 @@
                     minimumResultsForSearch: Infinity,
                     options: [
                         {
-                            id: "TextString",
-                            text: i18n("tt.customFieldTypeTextString"),
+                            id: "Text",
+                            text: i18n("tt.customFieldTypeText"),
                         },
                         {
-                            id: "TextArea",
-                            text: i18n("tt.customFieldTypeTextArea"),
-                        },
-                        {
-                            id: "Integer",
-                            text: i18n("tt.customFieldTypeInteger"),
-                        },
-                        {
-                            id: "Real",
-                            text: i18n("tt.customFieldTypeReal"),
+                            id: "Number",
+                            text: i18n("tt.customFieldTypeNumber"),
                         },
                         {
                             id: "Select",
                             text: i18n("tt.customFieldTypeSelect"),
-                        },
-                        {
-                            id: "MultiSelect",
-                            text: i18n("tt.customFieldTypeMultiSelect"),
                         },
                         {
                             id: "Users",
@@ -516,11 +501,36 @@
             }
         }
 
+
+        let allowedMimeTypes;
+
+        try {
+            allowedMimeTypes = JSON.parse(project.allowedMimeTypes);
+            if (!allowedMimeTypes) {
+                allowedMimeTypes = [];
+            }
+        } catch (e) {
+            allowedMimeTypes = [];
+        }
+
+        let w = [];
+
+        for (let i in mime2fa) {
+            if (i && i != "false") {
+                w.push({
+                    id: md5(i),
+                    text: i,
+                    checked: allowedMimeTypes.includes(i),
+                });
+            }
+        }
+
         cardForm({
             title: i18n("tt.projectEdit"),
             footer: true,
             borderless: true,
             topApply: true,
+            size: "lg",
             fields: [
                 {
                     id: "projectId",
@@ -549,13 +559,67 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "maxFileSize",
+                    type: "select2",
+                    value: project.maxFileSize,
+                    title: i18n("tt.maxFileSize"),
+                    options: [
+                        {
+                            id: 1024 * 1024,
+                            text: "1Mb"
+                        },
+                        {
+                            id: 2 * 1024 * 1024,
+                            text: "2Mb"
+                        },
+                        {
+                            id: 4 * 1024 * 1024,
+                            text: "4Mb"
+                        },
+                        {
+                            id: 8 * 1024 * 1024,
+                            text: "8Mb"
+                        },
+                        {
+                            id: 16 * 1024 * 1024,
+                            text: "16Mb"
+                        },
+                        {
+                            id: 32 * 1024 * 1024,
+                            text: "32Mb"
+                        },
+                        {
+                            id: 64 * 1024 * 1024,
+                            text: "64Mb"
+                        },
+                    ],
+                    validate: (v) => {
+                        return parseInt(v) >= 0 && parseInt(v) <= 64 * 1024 * 1024;
+                    }
+                },
+                {
+                    id: "allowedMimeTypes",
+                    type: "multiselect",
+                    options: w,
+                    title: i18n("tt.allowedMimeTypes"),
+                },
             ],
             delete: i18n("tt.projectDelete"),
             callback: function (result) {
+                let t = [];
+                for (let i in result.allowedMimeTypes) {
+                    for (let j in mime2fa) {
+                        if (md5(j) == result.allowedMimeTypes[i]) {
+                            t.push(j)
+                        }
+                    }
+                }
+                result.allowedMimeTypes = JSON.stringify(t);
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteProject(result.projectId);
                 } else {
-                    modules.tt.settings.doModifyProject(result.projectId, result.acronym, result.project);
+                    modules.tt.settings.doModifyProject(result);
                 }
             },
         }).show();
@@ -753,7 +817,7 @@
                     },
                 ];
 
-                if (cf.type === "Select" || cf.type === "MultiSelect") {
+                if (cf.type === "Select") {
                     fields.push({
                         id: "-",
                     });
@@ -781,7 +845,7 @@
                     fields: fields,
                     callback: function (result) {
                         let options = {};
-                        if (cf.type === "Select" || cf.type === "MultiSelect") {
+                        if (cf.type === "Select") {
                             for (let i in result) {
                                 if (i.indexOf("_cfWorkflowOption_") === 0) {
                                     options[i.split("_cfWorkflowOption_")[1]] = result[i];
@@ -846,7 +910,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "Select" || cf.type === "MultiSelect" || cf.type === "Users",
+                            hidden: cf.type === "Select" || cf.type === "Users",
                         },
                         {
                             id: "format",
@@ -855,7 +919,37 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type === "Text" || cf.type === "MultiSelect" || cf.type === "Users",
+                            hidden: cf.type !== "Number",
+                        },
+                        {
+                            id: "editor",
+                            type: "select2",
+                            title: i18n("tt.customFieldEditor"),
+                            placeholder: i18n("tt.customFieldEditor"),
+                            value: cf.editor,
+                            options: [
+                                {
+                                    id: "text",
+                                    text: i18n("tt.customFieldEditorText"),
+                                },
+                                {
+                                    id: "calc",
+                                    text: i18n("tt.customFieldEditorCalc"),
+                                },
+                                {
+                                    id: "date",
+                                    text: i18n("tt.customFieldEditorDate"),
+                                },
+                                {
+                                    id: "time",
+                                    text: i18n("tt.customFieldEditorTime"),
+                                },
+                                {
+                                    id: "dateTime",
+                                    text: i18n("tt.customFieldEditorDateTime"),
+                                },
+                            ],
+                            hidden: cf.type !== "Number" && cf.type !== "Text",
                         },
                         {
                             id: "link",
@@ -871,16 +965,16 @@
                             title: i18n("tt.customFieldOptions"),
                             placeholder: i18n("tt.customFieldOptions"),
                             value: options,
-                            hidden: cf.type !== "Select" && cf.type !== "MultiSelect",
+                            hidden: cf.type !== "Select",
                             validate: (v, prefix) => {
                                 return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                             }
                         },
                         {
-                            id: "usersMultiple",
+                            id: "multiple",
                             type: "select",
-                            title: i18n("tt.usersMultiple"),
-                            value: (cf.format && cf.format.indexOf("usersMultiple") >= 0)?"1":"0",
+                            title: (cf.type === "Text")?i18n("tt.multiline"):i18n("tt.multiple"),
+                            value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
                             options: [
                                 {
                                     id: "1",
@@ -891,21 +985,27 @@
                                     text: i18n("no"),
                                 },
                             ],
-                            hidden: cf.type !== "Users",
+                            hidden: cf.type !== "Users" && cf.type !== "Select" && cf.type !== "Text",
                         },
                         {
-                            id: "usersWithGroups",
+                            id: "usersAndGroups",
                             type: "select",
-                            title: i18n("tt.usersWithGroups"),
-                            value: (cf.format && cf.format.indexOf("usersWithGroups") >= 0)?"1":"0",
+                            title: i18n("tt.usersAndGroups"),
                             options: [
                                 {
-                                    id: "1",
-                                    text: i18n("yes"),
+                                    id: "users",
+                                    text: i18n("tt.users"),
+                                    selected: cf.format && cf.format.split(" ").includes("users"),
                                 },
                                 {
-                                    id: "0",
-                                    text: i18n("no"),
+                                    id: "groups",
+                                    text: i18n("tt.groups"),
+                                    selected: cf.format && cf.format.split(" ").includes("groups"),
+                                },
+                                {
+                                    id: "usersAndGroups",
+                                    text: i18n("tt.usersAndGroupsChoice"),
+                                    selected: cf.format && cf.format.split(" ").includes("usersAndGroups"),
                                 },
                             ],
                             hidden: cf.type !== "Users",
@@ -952,13 +1052,13 @@
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
-                            if (cf.type === "Users") {
+                            if (cf.type === "Users" || cf.type === "Select" || cf.type === "Text") {
                                 result.format = "";
-                                if (result.usersMultiple === "1") {
-                                    result.format += " usersMultiple";
+                                if (result.multiple === "1") {
+                                    result.format += " multiple";
                                 }
-                                if (result.usersWithGroups === "1") {
-                                    result.format += " usersWithGroups";
+                                if (cf.type === "Users") {
+                                    result.format += " " + result.usersAndGroups;
                                 }
                                 result.format = $.trim(result.format);
                             }

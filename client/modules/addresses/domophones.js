@@ -130,24 +130,6 @@
                     },
                 },
                 {
-                    id: "syslog",
-                    type: "text",
-                    title: i18n("addresses.syslog"),
-                    placeholder: "syslog://",
-                    validate: v => {
-                        if (v) {
-                            try {
-                                new URL(v);
-                                return true;
-                            } catch (_) {
-                                return false;
-                            }
-                        } else {
-                            return true;
-                        }
-                    },
-                },
-                {
                     id: "nat",
                     type: "yesno",
                     title: i18n("addresses.nat"),
@@ -279,29 +261,22 @@
                         },
                     },
                     {
-                        id: "syslog",
-                        type: "text",
-                        title: i18n("addresses.syslog"),
-                        placeholder: "syslog://",
-                        value: domophone.syslog,
-                        validate: v => {
-                            if (v) {
-                                try {
-                                    new URL(v);
-                                    return true;
-                                } catch (_) {
-                                    return false;
-                                }
-                            } else {
-                                return true;
-                            }
-                        },
+                        id: "firstTime",
+                        type: "yesno",
+                        title: i18n("addresses.firstTime"),
+                        value: domophone.firstTime,
                     },
                     {
                         id: "nat",
                         type: "yesno",
                         title: i18n("addresses.nat"),
                         value: domophone.nat,
+                    },
+                    {
+                        id: "locksAreOpen",
+                        type: "yesno",
+                        title: i18n("addresses.locksAreOpen"),
+                        value: domophone.locksAreOpen,
                     },
                     {
                         id: "comment",

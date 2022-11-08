@@ -177,6 +177,7 @@
                     'ServerAddress' => $server,
                     'ServerPort' => $port,
                     'Timezone' => $tz,
+                    'AutoMode' => 'off',
                 ]);
             }
 

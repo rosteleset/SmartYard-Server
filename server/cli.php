@@ -31,12 +31,17 @@
             [--check-mail=<your email address>]
             [--run-demo-server]
             [--autoconfigure-domophone=<domophone_id> [--first-time]]
-            [--cron=<minutely|hourly|daily|monthly>]
+            [--cron=<minutely|5min|hourly|daily|monthly>]
             [--install-crontabs]
+            [--uninstall-crontabs]
         \n";
 
-        exit(0);
+        exit(1);
     }
+
+    $script_result = null;
+    $script_process_id = -1;
+    $script_filename = __FILE__;
 
     $args = [];
 
@@ -44,6 +49,54 @@
         $a = explode("=", $argv[$i]);
         $args[$a[0]] = @$a[1];
     }
+
+    $params = $argv;
+    array_shift($params);
+    $params = implode(' ', $params);
+
+    function startup() {
+        global $db, $params, $script_process_id;
+
+        $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
+            "pid" => getmypid(),
+            "ppid" => posix_getppid(),
+            "start" => $db->now(),
+            "process" => "cli.php",
+            "params" => $params,
+            "expire" => time() + 24 * 60 * 60,
+        ]);
+    }
+
+    function shutdown() {
+        global $script_process_id, $db, $script_result;
+
+        $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+            "done" => $db->now(),
+            "result" => $script_result,
+            "running_process_id" => $script_process_id,
+        ]);
+    }
+
+    function check_if_pid_exists() {
+        global $db;
+
+        $pids = $db->get("select running_process_id, pid from core_running_processes where done is null or done = ''", false, [
+            "running_process_id" => "id",
+            "pid" => "pid",
+        ]);
+
+        foreach ($pids as $process) {
+            if (!file_exists( "/proc/{$process['pid']}")) {
+                $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                    "done" => $db->now(),
+                    "result" => "unknown",
+                    "running_process_id" => $process['id'],
+                ]);
+            }
+        }
+    }
+
+    register_shutdown_function('shutdown');
 
     if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
         $db = null;
@@ -121,19 +174,6 @@
         exit(1);
     }
 
-    $version = 0;
-
-    try {
-        $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
-        if ($query) {
-            $version = (int)($query->fetch()["var_value"]);
-        }
-    } catch (Exception $e) {
-        $version = 0;
-    }
-
-    echo "dbVersion: $version\n";
-
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
@@ -142,14 +182,43 @@
     }
 
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
+        $version = 0;
+
+        try {
+            $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
+            if ($query) {
+                $version = (int)($query->fetch()["var_value"]);
+            }
+        } catch (Exception $e) {
+            $version = 0;
+        }
+
+        echo "dbVersion: $version\n";
+
         require_once "sql/install.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
+
         init_db();
+        startup();
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
         reindex();
         echo "\n";
+        exit(0);
+    }
+
+    startup();
+
+    check_if_pid_exists();
+    $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
+
+    $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
+        'params' => $params,
+    ], false, [ 'fieldlify' ]);
+
+    if ($already) {
+        $script_result = "already running";
         exit(0);
     }
 
@@ -162,6 +231,7 @@
     if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["--reindex"])) {
         require_once "utils/reindex.php";
         require_once "utils/clear_cache.php";
+
         reindex();
         $n = clearCache(true);
         echo "$n cache entries cleared\n";
@@ -170,6 +240,7 @@
 
     if (count($args) == 1 && array_key_exists("--clear-cache", $args) && !isset($args["--clear-cache"])) {
         require_once "utils/clear_cache.php";
+
         $n = clearCache(true);
         echo "$n cache entries cleared\n";
         exit(0);
@@ -201,7 +272,7 @@
     }
 
     if (count($args) == 1 && array_key_exists("--cron", $args)) {
-        $parts = [ "minutely", "hourly", "daily", "monthly" ];
+        $parts = [ "minutely", "5min", "hourly", "daily", "monthly" ];
         $part = false;
 
         foreach ($parts as $p) {
@@ -211,20 +282,16 @@
         }
 
         if ($part) {
-            foreach ($config["backends"] as $backend => $cfg) {
-                echo "$backend [$part] ";
-                $backend = loadBackend($backend);
+            foreach ($config["backends"] as $backend_name => $cfg) {
+                $backend = loadBackend($backend_name);
                 if ($backend) {
-                    if ($backend->cron($part)) {
-                        echo "done";
-                    } else {
-                        echo "fail";
+                    if (!$backend->cron($part)) {
+                        echo "$backend_name [$part] fail\n";
                     }
-                } else {
-                    echo "no backend";
                 }
-                echo "\n";
             }
+        } else {
+            usage();
         }
 
         exit(0);
@@ -245,15 +312,27 @@
 
         if (checkInt($domophone_id)) {
             require_once "utils/autoconfigure_domophone.php";
+
             autoconfigure_domophone($domophone_id, $first_time);
             exit(0);
+        } else {
+            usage();
         }
     }
 
     if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
         require_once "utils/install_crontabs.php";
+
         $n = installCrontabs();
-        echo "$n crontabs entries installed\n";
+        echo "$n crontabs lines added\n";
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--install-crontabs"])) {
+        require_once "utils/install_crontabs.php";
+
+        $n = unInstallCrontabs();
+        echo "$n crontabs lines removed\n";
         exit(0);
     }
 

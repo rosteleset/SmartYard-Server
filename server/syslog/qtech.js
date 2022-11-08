@@ -1,9 +1,9 @@
 const syslog = new (require("syslog-server"))();
-const { syslog_servers } = require("../config/config.json");
+const {syslog_servers: { qtech }} = require("../config/config.json");
 const thisMoment = require("./utils/thisMoment");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
-const { port } = urlParser(syslog_servers.qtech);
+const { port } = urlParser(qtech);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
@@ -12,8 +12,8 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   let qtMsgParts = qtMsg.split(":").filter(Boolean);
 
   //Фиьтр сообщений не несущих смысловой нагрузки
-  if (qtMsg.indexOf("Heart Beat") >= 0) {
-    console.log(`msg is filtred: ${qtMsg}`);
+  if (qtMsg.indexOf("Heart Beat") >= 0 ||
+      qtMsg.indexOf("IP CHANGED") >= 0 ) {
     return;
   }
 
@@ -24,7 +24,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   /**
    * Отправка соощения в syslog
    */
-  await API.sendLog({ date: now, ip: host, msg: qtMsg });
+  await API.sendLog({ date: now, ip: host, unit:"qtech", msg: qtMsg });
 
   //Открытие двери по ключу
   if (
@@ -60,7 +60,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   //Детектор движения
   if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Send Photo") {
-        await API.motionDetection(host, true);
+    await API.motionDetection(host, true);
   }
 
   /**Открытие двери используя кнопку*/

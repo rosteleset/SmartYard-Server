@@ -1626,9 +1626,6 @@
                             title: i18n("addresses.url"),
                         },
                         {
-                            title: i18n("addresses.houseCommon"),
-                        },
-                        {
                             title: i18n("addresses.comments"),
                             fullWidth: true,
                         },
@@ -1646,9 +1643,6 @@
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].url,
-                                    },
-                                    {
-                                        data: modules.addresses.houses.meta.cameras[i].houseCommon?i18n("yes"):i18n("no"),
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].comment,
@@ -1713,22 +1707,6 @@
                         type: "select2",
                         title: i18n("addresses.cameraId"),
                         options: cameras,
-                    },
-                    {
-                        id: "common",
-                        type: "select",
-                        title: i18n("addresses.houseCommon"),
-                        select: modules.addresses.houses.sharedSelect,
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("yes"),
-                            }
-                        ]
                     },
                 ],
                 callback: result => {

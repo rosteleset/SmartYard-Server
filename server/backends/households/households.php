@@ -159,9 +159,11 @@
             abstract public function setCms($entranceId, $cms);
 
             /**
-             * @return false|array
+             * @param $by
+             * @param $query
+             * @return mixed
              */
-            abstract public function getDomophones();
+            abstract public function getDomophones($by = "all", $query = -1);
 
             /**
              * @return mixed
@@ -218,11 +220,13 @@
              * @param $credentials
              * @param $callerId
              * @param $dtmf
+             * @param $firstTime
              * @param $nat
+             * @param $locksAreOpen
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $nat, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $locksAreOpen, $comment);
 
             /**
              * @param $domophoneId
@@ -331,19 +335,10 @@
             /**
              * @param $to
              * @param $id
-             * @param $list
-             * @return mixed
-             */
-            abstract public function setCameras($to, $id, $list);
-
-            /**
-             * @param $to
-             * @param $id
              * @param $cameraId
-             * @param $options
              * @return mixed
              */
-            abstract public function addCamera($to, $id, $cameraId, $options);
+            abstract public function addCamera($to, $id, $cameraId);
 
             /**
              * @param $from

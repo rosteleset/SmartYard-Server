@@ -97,20 +97,42 @@
                 $p = [];
 
                 switch ($by) {
-                    case "domophoneAndNumber":
+                    case "flatIdByPrefix":
+                        // houses_entrances_flats
                         $q = "
                             select
                                 house_flat_id
                             from
                                 houses_entrances_flats
-                                    left join houses_entrances using (house_entrance_id)
-                                    left join houses_houses_entrances using (house_entrance_id)
                             where
-                                house_domophone_id = :house_domophone_id
-                              and 
-                                prefix = :prefix 
-                              and 
+                                house_flat_id in (
+                                    select
+                                        house_flat_id
+                                    from
+                                        houses_flats
+                                    where
+                                            address_house_id in (
+                                            select
+                                                address_house_id
+                                            from
+                                                houses_houses_entrances
+                                            where
+                                                    house_entrance_id in (
+                                                    select
+                                                        house_entrance_id
+                                                    from
+                                                        houses_entrances
+                                                    where
+                                                        house_domophone_id = :house_domophone_id
+                                                )
+                                              and
+                                            prefix = :prefix
+                                        )
+                                )
+                                and
                                 apartment = :apartment
+                                group by
+                                    house_flat_id
                         ";
                         $p = [
                             "house_domophone_id" => $params["domophoneId"],
@@ -550,9 +572,10 @@
             /**
              * @inheritDoc
              */
-            public function getDomophones()
+            public function getDomophones($by = "all", $query = -1)
             {
-                return $this->db->get("select * from houses_domophones order by house_domophone_id", false, [
+                $q = "select * from houses_domophones order by house_domophone_id";
+                $r = [
                     "house_domophone_id" => "domophoneId",
                     "enabled" => "enabled",
                     "model" => "model",
@@ -561,9 +584,52 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
+                    "first_time" => "firstTime",
                     "nat" => "nat",
+                    "locks_are_open" => "locksAreOpen",
                     "comment" => "comment"
-                ]);
+                ];
+
+                if (!checkInt($query)) {
+                    setLastError("query");
+                    return false;
+                }
+
+                switch ($by) {
+                    case "house":
+                        $q = "select * from houses_domophones where house_domophone_id in (
+                                select house_domophone_id from houses_entrances where house_entrance_id in (
+                                  select house_entrance_id from houses_houses_entrances where address_house_id = $query
+                                ) group by house_domophone_id
+                              ) order by house_domophone_id";
+                        break;
+
+                    case "entrance":
+                        $q = "select * from houses_domophones where house_domophone_id in (
+                                select house_domophone_id from houses_entrances where house_entrance_id = $query group by house_domophone_id
+                              ) order by house_domophone_id";
+                        break;
+
+                    case "flat":
+                        $q = "select * from houses_domophones where house_domophone_id in (
+                                select house_domophone_id from houses_entrances where house_entrance_id in (
+                                  select house_entrance_id from houses_entrances_flats where house_flat_id = $query
+                                ) group by house_domophone_id
+                              ) order by house_domophone_id";
+                        break;
+
+                    case "subscriber":
+                        $q = "select * from houses_domophones where house_domophone_id in (
+                                select house_domophone_id from houses_entrances where house_entrance_id in (
+                                  select house_entrance_id from houses_entrances_flats where house_flat_id in (
+                                    select house_flat_id from houses_flats_subscribers where house_subscriber_id = $query
+                                  )
+                                ) group by house_domophone_id
+                              ) order by house_domophone_id";
+                        break;
+                }
+
+                return $this->db->get($q, false, $r);
             }
 
             /**
@@ -602,7 +668,7 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :nat, :comment)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :nat, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -613,12 +679,20 @@
                     "nat" => $nat,
                     "comment" => $comment,
                 ]);
+
+                $queue = loadBackend("queue");
+
+                if ($queue) {
+                    $queue->changed("domophone", $domophoneId);
+                }
+
+                return $domophoneId;
             }
 
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $nat, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -652,12 +726,22 @@
                     return false;
                 }
 
+                if (!checkInt($firstTime)) {
+                    setLastError("firstTime");
+                    return false;
+                }
+
                 if (!checkInt($nat)) {
                     setLastError("nat");
                     return false;
                 }
 
-                return $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, nat = :nat, comment = :comment where house_domophone_id = $domophoneId", [
+                if (!checkInt($locksAreOpen)) {
+                    setLastError("nat");
+                    return false;
+                }
+
+                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -665,9 +749,19 @@
                     "credentials" => $credentials,
                     "caller_id" => $callerId,
                     "dtmf" => $dtmf,
+                    "first_time" => $firstTime,
                     "nat" => $nat,
+                    "locks_are_open" => $locksAreOpen,
                     "comment" => $comment,
                 ]);
+
+                $queue = loadBackend("queue");
+
+                if ($queue) {
+                    $queue->changed("domophone", $domophoneId);
+                }
+
+                return $result;
             }
 
             /**
@@ -747,7 +841,9 @@
                     "credentials" => "credentials",
                     "caller_id" => "callerId",
                     "dtmf" => "dtmf",
+                    "first_time" => "firstTime",
                     "nat" => "nat",
+                    "locks_are_open" => "locksAreOpen",
                     "comment" => "comment"
                 ], [
                     "singlify"
@@ -1307,14 +1403,21 @@
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, common from houses_houses_cameras where address_house_id = $params";
+                        $q = "select camera_id from houses_cameras_houses where address_house_id = $params";
                         break;
 
                     case "flat":
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, common from houses_cameras_flats where house_flat_id = $params";
+                        $q = "select camera_id from houses_cameras_flats where house_flat_id = $params";
+                        break;
+
+                    case "subscriber":
+                        if (!checkInt($params)) {
+                            return [];
+                        }
+                        $q = "select camera_id from houses_cameras_subscribers where house_subscriber_id = $params";
                         break;
                 }
 
@@ -1323,12 +1426,10 @@
 
                     $ids = $this->db->get($q, $p, [
                         "camera_id" => "cameraId",
-                        "common" => "houseCommon",
                     ]);
 
                     foreach ($ids as $id) {
                         $cam = $cameras->getCamera($id["cameraId"]);
-                        $cam["houseCommon"] = $id["houseCommon"];
                         $list[] = $cam;
                     }
 
@@ -1341,26 +1442,24 @@
             /**
              * @inheritDoc
              */
-            public function setCameras($to, $id, $list)
-            {
-                // TODO: Implement setCameras() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addCamera($to, $id, $cameraId, $options)
+            public function addCamera($to, $id, $cameraId)
             {
                 switch ($to) {
                     case "house":
-                        if (checkInt($id) !== false && checkInt($cameraId) !== false && checkInt($options) !== false) {
-                            return $this->db->insert("insert into houses_houses_cameras (camera_id, address_house_id, common) values ($cameraId, $id, $options)");
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false ) {
+                            return $this->db->insert("insert into houses_cameras_houses (camera_id, address_house_id) values ($cameraId, $id)");
                         } else {
                             return false;
                         }
                     case "flat":
-                        if (checkInt($id) !== false && checkInt($cameraId) !== false && checkInt($options) !== false) {
-                            return $this->db->insert("insert into houses_cameras_flats (camera_id, house_flat_id, common) values ($cameraId, $id, $options)");
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->insert("insert into houses_cameras_flats (camera_id, house_flat_id) values ($cameraId, $id)");
+                        } else {
+                            return false;
+                        }
+                    case "subscriber":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->insert("insert into houses_cameras_subscribers (camera_id, house_subscriber_id) values ($cameraId, $id)");
                         } else {
                             return false;
                         }
@@ -1377,13 +1476,19 @@
                 switch ($from) {
                     case "house":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
-                            return $this->db->modify("delete from houses_houses_cameras where camera_id = $cameraId and address_house_id = $id");
+                            return $this->db->modify("delete from houses_cameras_houses where camera_id = $cameraId and address_house_id = $id");
                         } else {
                             return false;
                         }
                     case "flat":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
                             return $this->db->modify("delete from houses_cameras_flats where camera_id = $cameraId and house_flat_id = $id");
+                        } else {
+                            return false;
+                        }
+                    case "subscriber":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->modify("delete from houses_cameras_subscribers where camera_id = $cameraId and house_subscriber_id = $id");
                         } else {
                             return false;
                         }
