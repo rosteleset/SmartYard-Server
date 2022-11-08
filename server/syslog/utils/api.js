@@ -1,5 +1,5 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
-const axios = require("axios").default;
+const axios = require("axios");
 const https = require("https");
 const events = require("./events.json");
 const {
@@ -44,7 +44,7 @@ class API {
       console.log(`:: lastSeen: ${host}`);
       return await internalApi.post("/lastSeen", host);
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error :", error.message);
     }
   }
 
@@ -54,8 +54,10 @@ class API {
    */
   async sendLog(data) {
     try {
-      await internalApi.post("/syslog", data);
-    } catch (error) {}
+      return await internalApi.post("/syslog", data);
+    } catch (error) {
+      console.error("Error", error.message);
+    }
   }
 
   /**
@@ -65,7 +67,7 @@ class API {
    */
   async motionDetection(host, start) {
     try {
-      await internal
+      return await internalApi
         .post("/getStreamID", { host })
         .then(async ({ frs_server, stream_id }) => {
           if (frs_server && stream_id) {
@@ -78,7 +80,7 @@ class API {
           }
         });
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error: ", error.message);
     }
 
     // await frs.post("", { host, start });
@@ -89,7 +91,7 @@ class API {
       //TODO: актуализировать endpoint,
       await internalApi.post("/openDoorAction");
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error", error.message);
     }
 
     //TODO: Действия выполняемые на стороне internal.php
@@ -102,9 +104,9 @@ class API {
 
   async callFinished(call_id) {
     try {
-      await internalApi.post("/callFinished", call_id);
+      return await internalApi.post("/callFinished", call_id);
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error: ", error.message);
     }
     // mysql.query('insert into dm.call_done (date, ip, call_id) values (?, ?, ?)', [ now, value.host, call_id ]);
   }
@@ -116,9 +118,9 @@ class API {
    */
   async setRabbitGates({ host, gate_rabbits }) {
     try {
-      await internalApi.post("/setRabbitGates", { host, gate_rabbits });
+      return await internalApi.post("/setRabbitGates", { host, gate_rabbits });
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error :", error.message);
     }
     //TODO: логика выполняемая на стороне internal.php
 
@@ -152,7 +154,7 @@ class API {
           }
         });
     } catch (error) {
-      console.error("Error", error.message);
+      console.error("error :", error.message);
     }
   }
 
@@ -182,7 +184,9 @@ class API {
             detail,
           });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("error :", error.message);
+    }
   }
 }
 

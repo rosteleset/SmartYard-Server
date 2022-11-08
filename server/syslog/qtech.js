@@ -12,8 +12,8 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   let qtMsgParts = qtMsg.split(":").filter(Boolean);
 
   //Фиьтр сообщений не несущих смысловой нагрузки
-  if (qtMsg.indexOf("Heart Beat") >= 0) {
-    console.log(`msg is filtred: ${qtMsg}`);
+  if (qtMsg.indexOf("Heart Beat") >= 0 ||
+      qtMsg.indexOf("IP CHANGED") >= 0 ) {
     return;
   }
 
@@ -24,7 +24,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   /**
    * Отправка соощения в syslog
    */
-  await API.sendLog({ date: now, ip: host, msg: qtMsg });
+  await API.sendLog({ date: now, ip: host, unit:"qtech", msg: qtMsg });
 
   //Открытие двери по ключу
   if (
