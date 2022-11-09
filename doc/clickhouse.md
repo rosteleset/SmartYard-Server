@@ -1,6 +1,8 @@
+```
 curl -O 'https://builds.clickhouse.com/master/amd64/clickhouse' && chmod a+x clickhouse
 
 sudo ./clickhouse install
+```
 
 ```
 CREATE TABLE default.syslog
