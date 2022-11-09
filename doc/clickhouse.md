@@ -18,6 +18,7 @@ ORDER BY date
 TTL date + toIntervalDay(31)
 SETTINGS index_granularity = 8192
 ```
+
 ```
 CREATE TABLE default.inbox
 (
