@@ -22,14 +22,20 @@ namespace internal\actions;
             );
         }
 
+        /***
+         * Не готово.
+         * TODO: запись в бд последней активности от устройства
+         */
         public function lastSeen($data)
         {
-            //TODO: запись в бд последней активности от устройства
+            ["ip" => $ip, "date" => $date] = $data;
+            //mysql.query(`update dm.domophones set last_seen=now() where ip='${value.host}'`);
             Response::res(200, "OK", "LastSeen");
         }
 
         /**
-        Сохраняем syslog сообщения в БД
+         * Не используется.
+         * Сохраняем syslog сообщения в БД
          */
         public function syslogStore($data)
         {
@@ -52,27 +58,49 @@ namespace internal\actions;
             $this->conn->close();
         }
 
+        /**
+         * Не готово.
+         * TODO:  вернуть frs_server, stream_id
+         */
         public function getStreamID($data)
         {
-            //TODO: вернуть frs_server, stream_id
+            ["host" => $host] = $data;
+
             Response::res(200, "OK", "getStreamID");
         }
 
+        /**
+         * Не готово.
+         * TODO: сохраняем информацию в БД по событию открытия двери (RFID\code)
+         */
         public function openDoor($data)
         {
-            //TODO: сохраняем информацию по открытию двери (rfid\code)
+            [
+                "host" => $host,
+                "event" => $event,
+                "door" => $door,
+                "detail" => $detail
+            ] = $data;
+
             Response::res(200, "OK", "openDoor");
         }
 
+        /**
+         * Не готово.
+         * TODO: сохраняем информацию по завершенному вызову
+         */
         public function callFinished($data)
         {
-            //TODO: сохраняем инфу по завершенному вызову
             Response::res(200, "OK", "callFinished");
         }
 
+        /**
+         * Не готово.
+         * TODO: функционал whiteRabbit
+         */
         public function setRabbitGates($data)
         {
-            //TODO: функционал whiteRabbit
+            //
             Response::res(200, "OK", "setRabbitGates");
         }
 
