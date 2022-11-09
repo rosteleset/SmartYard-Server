@@ -225,7 +225,7 @@
     startup();
 
     check_if_pid_exists();
-    $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
+    $db->modify("delete from core_running_processes where (done is null or done = '') and coalesce(expire, 0) < " . time());
 
     $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
         'params' => $params,
