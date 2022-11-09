@@ -18,11 +18,6 @@ ORDER BY date
 TTL date + toIntervalDay(31)
 SETTINGS index_granularity = 8192
 ```
-#### Буферная таблица для храниения syslog
-```
-CREATE TABLE default.syslog_buffer AS default.syslog 
-ENGINE = Buffer(default, syslog, 8, 30, 60, 8192, 65536, 262144, 67108864);
-```
 ```
 CREATE TABLE default.inbox
 (

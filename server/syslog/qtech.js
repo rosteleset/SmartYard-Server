@@ -19,8 +19,6 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   console.log("incoming msg: ", qtMsg);
 
-  await API.lastSeen(host);
-
   /**
    * Отправка соощения в syslog
    */
