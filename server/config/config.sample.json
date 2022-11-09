@@ -107,6 +107,11 @@
 
         "inbox": {
             "backend": "clickhouse"
+        },
+
+        "events": {
+            "backend": "internal",
+            "image_url_prefix": "<-- URL prefix for event screenshots, for instance https://my.domain/static/ -->"
         }
     },
 
