@@ -59,7 +59,7 @@
                 $script_parent_pid = $a[1];
             }
         } else
-        if ($a[0] == '--debug' && !@$a[1]) {
+        if ($a[0] == '--debug' && !isset($a[1])) {
             $script_debug = true;
         }
         else {
