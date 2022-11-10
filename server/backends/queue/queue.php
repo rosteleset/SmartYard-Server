@@ -20,5 +20,15 @@
              * @return mixed
              */
             abstract function changed($objectType, $objectId);
+
+            /**
+             * @return mixed
+             */
+            abstract function autoconfigureDomophones();
+
+            /**
+             * @return mixed
+             */
+            abstract function wait();
         }
     }
