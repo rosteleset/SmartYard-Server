@@ -72,6 +72,7 @@ CREATE TABLE houses_flats
     floor integer,
     flat character varying not null,
     code character varying,                                                                                             -- code for adding subscriber to flat
+    plog integer,                                                                                                       -- 0 - disabled, 1 - all, 2 - owner only
 -- domophone's specific flat settings
     manual_block integer,                                                                                               -- 1/0 manaul blocking (by abonent?)
     auto_block integer,                                                                                                 -- 1/0 auto block (by billing system?)

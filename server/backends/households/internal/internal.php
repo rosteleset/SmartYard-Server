@@ -319,9 +319,9 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
+            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
-                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog)) {
                     $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
 
                     if ($openCode == "!") {
@@ -329,11 +329,12 @@
                         $openCode = 11000 + rand(0, 88999);
                     }
 
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
                         ":code" => $code,
+                        ":plog" => $plog,
                         ":manual_block" => $manualBlock,
                         ":open_code" => $openCode,
                         ":auto_open" => $autoOpen,
@@ -401,6 +402,11 @@
                         return false;
                     }
 
+                    if (array_key_exists("plog", $params) && !checkInt($params["plog"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (@$params["code"] == "!") {
                         $params["code"] = md5(GUIDv4());
                     }
@@ -418,6 +424,7 @@
                         "floor" => "floor",
                         "flat" => "flat",
                         "code" => "code",
+                        "plog" => "plog",
                         "manual_block" => "manualBlock",
                         "open_code" => "openCode",
                         "auto_open" => "autoOpen",

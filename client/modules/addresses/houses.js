@@ -696,6 +696,26 @@
                     placeholder: i18n("addresses.openCode"),
                 },
                 {
+                    id: "plog",
+                    type: "select",
+                    title: i18n("addresses.plog"),
+                    placeholder: i18n("addresses.plog"),
+                    options: [
+                        {
+                            id: "0",
+                            text: i18n("addresses.plogNone"),
+                        },
+                        {
+                            id: "1",
+                            text: i18n("addresses.plogAll"),
+                        },
+                        {
+                            id: "2",
+                            text: i18n("addresses.plogOwner"),
+                        },
+                    ]
+                },
+                {
                     id: "autoOpen",
                     type: "text",
                     title: i18n("addresses.autoOpen"),
@@ -1151,6 +1171,27 @@
                         title: i18n("addresses.addCode"),
                         placeholder: i18n("addresses.addCode"),
                         value: flat.code,
+                    },
+                    {
+                        id: "plog",
+                        type: "select",
+                        title: i18n("addresses.plog"),
+                        placeholder: i18n("addresses.plog"),
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("addresses.plogNone"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("addresses.plogAll"),
+                            },
+                            {
+                                id: "2",
+                                text: i18n("addresses.plogOwner"),
+                            },
+                        ],
+                        value: flat.plog,
                     },
                     {
                         id: "entrances",
