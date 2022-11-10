@@ -713,7 +713,8 @@
                             id: "2",
                             text: i18n("addresses.plogOwner"),
                         },
-                    ]
+                    ],
+                    value: 1,
                 },
                 {
                     id: "autoOpen",
