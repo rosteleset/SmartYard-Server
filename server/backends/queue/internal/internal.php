@@ -82,7 +82,7 @@
                 ]);
 
                 foreach ($domophones as $domophone) {
-                    $this->db->modify("delete from tasks_changes where task_change_id = ${domophone['task_change_id']}");
+                    $this->db->modify("delete from tasks_changes where task_change_id = ${domophone['taskChangeId']}");
                     if ((int)$domophone['firstTime']) {
                         shell_exec("{PHP_BINARY} {$script_filename} --autoconfigure-domophone={$domophone["domophoneId"]} --first-time 1>/dev/null 2>&1 &");
                     } else {
@@ -99,7 +99,7 @@
                 global $script_parent_pid;
 
                 while (true) {
-                    $running = (int)$this->db->get("select count(*) from core_running_processes where (done is null or done = '') and ppid = $script_parent_pid", [], [], ["fieldlify"]);
+                    $running = (int)$this->db->get("select count(*) from core_running_processes where (done is null or done = '') and ppid = $script_parent_pid", [], [], [ "fieldlify" ]);
                     if ($running) {
                         sleep(1);
                     } else {
