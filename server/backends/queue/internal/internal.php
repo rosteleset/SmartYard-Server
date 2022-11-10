@@ -100,7 +100,7 @@
 
                 while (true) {
                     $running = (int)$this->db->get("select count(*) from core_running_processes where (done is null or done = '') and ppid = $script_parent_pid", [], [], ["fieldlify"]);
-                    if (!$running) {
+                    if ($running) {
                         sleep(1);
                     } else {
                         break;
