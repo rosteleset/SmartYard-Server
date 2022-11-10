@@ -24,6 +24,7 @@
 
         echo "usage: {$argv[0]}
             [--parent-pid=pid]
+            [--debug]
             [--init-db]
             [--admin-password=<password>]
             [--reindex]
@@ -45,6 +46,7 @@
     $script_process_id = -1;
     $script_filename = __FILE__;
     $script_parent_pid = null;
+    $script_debug = false;
 
     $args = [];
 
@@ -56,7 +58,11 @@
             } else {
                 $script_parent_pid = $a[1];
             }
-        } else {
+        } else
+        if ($a[0] == '--debug' && !@$a[1]) {
+            $script_debug = true;
+        }
+        else {
             $args[$a[0]] = @$a[1];
         }
     }
