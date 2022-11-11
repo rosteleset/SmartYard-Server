@@ -91,6 +91,8 @@
                         shell_exec("{PHP_BINARY} {$script_filename} --autoconfigure-domophone={$domophone["domophoneId"]} --parent-pid=$pid 1>/dev/null 2>&1 &");
                     }
                 }
+
+                $this->wait();
             }
 
             /**
