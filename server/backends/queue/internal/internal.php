@@ -101,7 +101,7 @@
                 $pid = getmypid();
 
                 while (true) {
-                    $running = (int)$this->db->get("select count(*) from core_running_processes where (done is null or done = '') and ppid = $pid", [], [], [ "fieldlify" ]);
+                    $running = @(int)$this->db->get("select count(*) from core_running_processes where (done is null or done = '') and ppid = $pid", [], [], [ "fieldlify" ]);
                     if ($running) {
                         sleep(1);
                     } else {
