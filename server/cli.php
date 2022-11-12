@@ -14,6 +14,7 @@
     require_once "utils/is_executable.php";
     require_once "utils/db_ext.php";
     require_once "utils/parse_uri.php";
+    require_once "utils/debug.php";
 
     require_once "backends/backend.php";
 
@@ -46,7 +47,6 @@
     $script_process_id = -1;
     $script_filename = __FILE__;
     $script_parent_pid = null;
-    $script_debug = false;
 
     $args = [];
 
@@ -60,7 +60,7 @@
             }
         } else
         if ($a[0] == '--debug' && !isset($a[1])) {
-            $script_debug = true;
+            debugOn();
         }
         else {
             $args[$a[0]] = @$a[1];

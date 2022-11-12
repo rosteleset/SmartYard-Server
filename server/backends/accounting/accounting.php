@@ -28,19 +28,6 @@
              * @return mixed
              */
             public abstract function raw($ip, $unit, $msg);
-
-            /**
-             * @param $unit
-             * @param $msg
-             * @return mixed
-             */
-            public function debug($unit, $msg) {
-                global $script_debug;
-
-                if (@$script_debug) {
-                    $this->raw("127.0.0.1", $unit, $msg);
-                }
-            }
         }
     }
 

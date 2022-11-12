@@ -51,7 +51,6 @@
                 $this->clickhouse->insert("syslog", [ [ "date" => $this->db->now(false), "ip" => $params["_ip"], "unit" => "frontend", "msg" => $msg ] ]);
             }
 
-
             /**
              * @inheritDoc
              */
