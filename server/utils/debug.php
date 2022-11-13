@@ -34,6 +34,6 @@
     function logMsg($msg) {
         $accounting = loadBackend('accounting');
         if ($accounting) {
-            $accounting->raw("127.0.0.1", unit(), "log" . $msg);
+            $accounting->raw("127.0.0.1", unit(), "log: " . $msg);
         }
     }
