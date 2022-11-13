@@ -8,13 +8,32 @@
         $script_debug = $enable;
     }
 
-    function debug($msg, $unit = 'debug') {
+    function unit() {
+        $it = get_included_files();
+
+        $path = '';
+
+        foreach ($it as $f) {
+            $path .= basename($f) . '\\';
+        }
+
+        return substr($path, 0, -1);
+    }
+
+    function debug($msg) {
         global $script_debug;
 
         if ($script_debug) {
             $accounting = loadBackend('accounting');
             if ($accounting) {
-                $accounting->raw("127.0.0.1", $unit, $msg);
+                $accounting->raw("127.0.0.1", unit(), $msg);
             }
+        }
+    }
+
+    function log($msg) {
+        $accounting = loadBackend('accounting');
+        if ($accounting) {
+            $accounting->raw("127.0.0.1", unit(), $msg);
         }
     }
