@@ -20,20 +20,20 @@
         return substr($path, 0, -1);
     }
 
-    function debug($msg) {
+    function debugMsg($msg) {
         global $script_debug;
 
         if ($script_debug) {
             $accounting = loadBackend('accounting');
             if ($accounting) {
-                $accounting->raw("127.0.0.1", unit(), $msg);
+                $accounting->raw("127.0.0.1", unit(), "debug: " . $msg);
             }
         }
     }
 
-    function log($msg) {
+    function logMsg($msg) {
         $accounting = loadBackend('accounting');
         if ($accounting) {
-            $accounting->raw("127.0.0.1", unit(), $msg);
+            $accounting->raw("127.0.0.1", unit(), "log" . $msg);
         }
     }
