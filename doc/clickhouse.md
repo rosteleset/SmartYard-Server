@@ -1,6 +1,8 @@
 ```
 curl -O 'https://builds.clickhouse.com/master/amd64/clickhouse' && chmod a+x clickhouse
+```
 
+```
 sudo ./clickhouse install
 ```
 
@@ -49,16 +51,13 @@ CREATE TABLE default.plog
     `hidden` Int8,
     `image_uuid` UUID,
     `flat_id` Int32,
-    `domophone_id` Int32,
-    `domophone_output` Int8,
-    `domophone_output_description` String,
+    `domophone` JSON,
     `event` Int8,
     `opened` Int8,
     `face` JSON,
     `rfid` String,
     `code` String,
-    `user_phone` String,
-    `gate_phone` String,
+    `phones` JSON,
     `preview` Int8,
     INDEX plog_date date TYPE set(100) GRANULARITY 1024,
     INDEX plog_event_uuid event_uuid TYPE set(100) GRANULARITY 1024,
