@@ -9,15 +9,7 @@
     }
 
     function unit() {
-        $it = get_included_files();
-
-        $path = '';
-
-        foreach ($it as $f) {
-            $path .= basename($f) . '\\';
-        }
-
-        return substr($path, 0, -1);
+        return basename(get_included_files()[0]);
     }
 
     function debugMsg($msg) {
@@ -26,14 +18,15 @@
         if ($script_debug) {
             $accounting = loadBackend('accounting');
             if ($accounting) {
-                $accounting->raw("127.0.0.1", unit(), "debug: " . $msg);
+                $accounting->raw("127.0.0.1", unit() . ":debug", $msg);
             }
         }
     }
 
     function logMsg($msg) {
+        error_log(">>>>>>>>>>>> " . $msg);
         $accounting = loadBackend('accounting');
         if ($accounting) {
-            $accounting->raw("127.0.0.1", unit(), "log: " . $msg);
+            $accounting->raw("127.0.0.1", unit() . ":log", $msg);
         }
     }
