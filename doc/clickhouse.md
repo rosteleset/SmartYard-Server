@@ -62,9 +62,7 @@ CREATE TABLE default.plog
     INDEX plog_date date TYPE set(100) GRANULARITY 1024,
     INDEX plog_event_uuid event_uuid TYPE set(100) GRANULARITY 1024,
     INDEX plog_hidden hidden TYPE set(100) GRANULARITY 1024,
-    INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024,
-    INDEX plog_domophone_id domophone_id TYPE set(100) GRANULARITY 1024,
-    INDEX plog_domophone_output domophone_output TYPE set(100) GRANULARITY 1024
+    INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMMDD(date)
