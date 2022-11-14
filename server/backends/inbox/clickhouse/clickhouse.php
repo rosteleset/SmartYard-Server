@@ -10,7 +10,7 @@
         /**
          * clickhouse archive class
          */
-        class archive_clickhouse extends inbox
+        class clickhouse extends inbox
         {
 
             /**

@@ -10,7 +10,7 @@
         /**
          * clickhouse archive class
          */
-        class archive_clickhouse extends plog
+        class clickhouse extends plog
         {
             /**
              * @inheritDoc

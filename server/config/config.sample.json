@@ -106,7 +106,21 @@
         },
 
         "inbox": {
-            "backend": "clickhouse"
+            "backend": "clickhouse",
+            "username": "default",
+            "password": "qqq",
+            "host": "127.0.0.1",
+            "port": 8123,
+            "database": "default"
+        },
+
+        "plog": {
+            "backend": "clickhouse",
+            "username": "default",
+            "password": "qqq",
+            "host": "127.0.0.1",
+            "port": 8123,
+            "database": "default"
         }
     },
 
