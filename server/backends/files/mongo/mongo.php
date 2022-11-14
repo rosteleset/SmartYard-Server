@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * backends attachments namespace
+     * backends files namespace
      */
 
     namespace backends\attachments {
@@ -10,7 +10,7 @@
          * gridFS storage
          */
 
-        class mongo extends attachments {
+        class mongo extends files {
 
             /**
              * @inheritDoc

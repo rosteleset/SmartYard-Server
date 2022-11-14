@@ -1,10 +1,10 @@
 <?php
 
     /**
-     * backends attachments namespace
+     * backends files namespace
      */
 
-    namespace backends\attachments {
+    namespace backends\files {
 
         use backends\backend;
 
@@ -12,7 +12,7 @@
          * local storage attachments class
          */
 
-        abstract class attachments extends backend {
+        abstract class files extends backend {
 
             /**
              * add file to storage

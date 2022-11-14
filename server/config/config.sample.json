@@ -63,9 +63,9 @@
             "backend": "internal"
         },
 
-        "attachments": {
-            "backend": "internal",
-            "path": "<-- path to local storage -->"
+        "files": {
+            "backend": "mongo",
+            "uri": "<-- optional -->"
         },
 
         "addresses": {
