@@ -8,7 +8,7 @@
     {
 
         /**
-         * internal.db inbox class
+         * clickhouse archive class
          */
         class archive_clickhouse extends inbox
         {
