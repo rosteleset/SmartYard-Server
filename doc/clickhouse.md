@@ -1,6 +1,10 @@
+```
 curl -O 'https://builds.clickhouse.com/master/amd64/clickhouse' && chmod a+x clickhouse
+```
 
+```
 sudo ./clickhouse install
+```
 
 ```
 CREATE TABLE default.syslog
@@ -18,11 +22,7 @@ ORDER BY date
 TTL date + toIntervalDay(31)
 SETTINGS index_granularity = 8192
 ```
-#### Буферная таблица для храниения syslog
-```
-CREATE TABLE default.syslog_buffer AS default.syslog 
-ENGINE = Buffer(default, syslog, 8, 30, 60, 8192, 65536, 262144, 67108864);
-```
+
 ```
 CREATE TABLE default.inbox
 (
@@ -51,23 +51,18 @@ CREATE TABLE default.plog
     `hidden` Int8,
     `image_uuid` UUID,
     `flat_id` Int32,
-    `domophone_id` Int32,
-    `domophone_output` Int8,
-    `domophone_output_description` String,
+    `domophone` JSON,
     `event` Int8,
     `opened` Int8,
     `face` JSON,
     `rfid` String,
     `code` String,
-    `user_phone` String,
-    `gate_phone` String,
+    `phones` JSON,
     `preview` Int8,
     INDEX plog_date date TYPE set(100) GRANULARITY 1024,
     INDEX plog_event_uuid event_uuid TYPE set(100) GRANULARITY 1024,
     INDEX plog_hidden hidden TYPE set(100) GRANULARITY 1024,
-    INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024,
-    INDEX plog_domophone_id domophone_id TYPE set(100) GRANULARITY 1024,
-    INDEX plog_domophone_output domophone_output TYPE set(100) GRANULARITY 1024
+    INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMMDD(date)

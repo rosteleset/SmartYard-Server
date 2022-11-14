@@ -19,8 +19,15 @@
              * @param integer $code return code
              * @return void
              */
-
             public abstract function log($params, $code);
+
+            /**
+             * @param $ip
+             * @param $unit
+             * @param $msg
+             * @return mixed
+             */
+            public abstract function raw($ip, $unit, $msg);
         }
     }
 

@@ -14,20 +14,30 @@
             private $clickhouse;
 
             /**
-             * @param object $params all params passed to api handlers
-             * @param integer $code return code
-             * @return void
+             * @param $config
+             * @param $db
+             * @param $redis
              */
-
             function __construct($config, $db, $redis)
             {
                 parent::__construct($config, $db, $redis);
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
-                $this->clickhouse = new \clickhouse($config['backends']['accounting']['host'], $config['backends']['accounting']['port'], $config['backends']['accounting']['username'], $config['backends']['accounting']['password'], $config['backends']['accounting']['database']);
+                $this->clickhouse = new \clickhouse(
+                    $config['backends']['accounting']['host'],
+                    $config['backends']['accounting']['port'],
+                    $config['backends']['accounting']['username'],
+                    $config['backends']['accounting']['password'],
+                    $config['backends']['accounting']['database']
+                );
             }
 
+            /**
+             * @param $params
+             * @param $code
+             * @return void
+             */
             public function log($params, $code) {
                 $login = @($params["_login"]?:$params["login"]);
                 $login = $login?:"-";
@@ -39,6 +49,14 @@
                 }
 
                 $this->clickhouse->insert("syslog", [ [ "date" => $this->db->now(false), "ip" => $params["_ip"], "unit" => "frontend", "msg" => $msg ] ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function raw($ip, $unit, $msg)
+            {
+                $this->clickhouse->insert("syslog", [ [ "date" => $this->db->now(false), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
             }
         }
     }

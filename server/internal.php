@@ -1,7 +1,6 @@
 <?php
 
     // API for internal usage
-    require_once __DIR__ . "/utils/db_ext.php";
     require_once __DIR__ . "/internal/services/router.php";
     require_once __DIR__ . "/internal/routes/routes.php";
     require_once __DIR__ . "/internal/services/response.php";

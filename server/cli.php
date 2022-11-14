@@ -14,6 +14,7 @@
     require_once "utils/is_executable.php";
     require_once "utils/db_ext.php";
     require_once "utils/parse_uri.php";
+    require_once "utils/debug.php";
 
     require_once "backends/backend.php";
 
@@ -23,6 +24,8 @@
         global $argv;
 
         echo "usage: {$argv[0]}
+            [--parent-pid=pid]
+            [--debug]
             [--init-db]
             [--admin-password=<password>]
             [--reindex]
@@ -34,6 +37,7 @@
             [--cron=<minutely|5min|hourly|daily|monthly>]
             [--install-crontabs]
             [--uninstall-crontabs]
+            [--get-db-version]
         \n";
 
         exit(1);
@@ -42,24 +46,42 @@
     $script_result = null;
     $script_process_id = -1;
     $script_filename = __FILE__;
+    $script_parent_pid = null;
 
     $args = [];
 
     for ($i = 1; $i < count($argv); $i++) {
-        $a = explode("=", $argv[$i]);
-        $args[$a[0]] = @$a[1];
+        $a = explode('=', $argv[$i]);
+        if ($a[0] == '--parent-pid') {
+            if (!checkInt($a[1])) {
+                usage();
+            } else {
+                $script_parent_pid = $a[1];
+            }
+        } else
+        if ($a[0] == '--debug' && !isset($a[1])) {
+            debugOn();
+        }
+        else {
+            $args[$a[0]] = @$a[1];
+        }
     }
 
-    $params = $argv;
-    array_shift($params);
-    $params = implode(' ', $params);
+    $params = '';
+    foreach($args as $key => $value) {
+        if ($value) {
+            $params .= " {$key}={$value}";
+        } else {
+            $params .= " {$key}";
+        }
+    }
 
     function startup() {
-        global $db, $params, $script_process_id;
+        global $db, $params, $script_process_id, $script_parent_pid;
 
         $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
             "pid" => getmypid(),
-            "ppid" => posix_getppid(),
+            "ppid" => $script_parent_pid,
             "start" => $db->now(),
             "process" => "cli.php",
             "params" => $params,
@@ -163,6 +185,17 @@
     }
 
     try {
+        $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
+        if ($query) {
+            $version = (int)($query->fetch()["var_value"]);
+        } else {
+            $version = 0;
+        }
+    } catch (\Exception $e) {
+        $version = 0;
+    }
+
+    try {
         $redis = new Redis();
         $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
         if (@$config["redis"]["password"]) {
@@ -182,19 +215,6 @@
     }
 
     if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
-        $version = 0;
-
-        try {
-            $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
-            if ($query) {
-                $version = (int)($query->fetch()["var_value"]);
-            }
-        } catch (Exception $e) {
-            $version = 0;
-        }
-
-        echo "dbVersion: $version\n";
-
         require_once "sql/install.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
@@ -211,7 +231,7 @@
     startup();
 
     check_if_pid_exists();
-    $db->modify("delete from core_running_processes where coalesce(expire, 0) < " . time());
+    $db->modify("delete from core_running_processes where (done is null or done = '') and coalesce(expire, 0) < " . time());
 
     $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
         'params' => $params,
@@ -333,6 +353,11 @@
 
         $n = unInstallCrontabs();
         echo "$n crontabs lines removed\n";
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--get-db-version", $args) && !isset($args["--install-crontabs"])) {
+        echo "dbVersion: $version\n";
         exit(0);
     }
 

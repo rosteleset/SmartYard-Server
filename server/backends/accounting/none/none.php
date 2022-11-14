@@ -21,5 +21,13 @@
             public function log($params, $code) {
                 // do nothing
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function raw($ip, $unit, $msg)
+            {
+                // do nothing
+            }
         }
     }

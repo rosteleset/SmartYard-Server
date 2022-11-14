@@ -50,5 +50,13 @@
             public function __destruct() {
                 closelog();
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function raw($ip, $unit, $msg)
+            {
+                syslog(LOG_INFO, "{$ip} [$unit] $msg");
+            }
         }
     }

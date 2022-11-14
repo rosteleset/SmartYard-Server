@@ -106,12 +106,21 @@
         },
 
         "inbox": {
-            "backend": "clickhouse"
+            "backend": "clickhouse",
+            "username": "default",
+            "password": "qqq",
+            "host": "127.0.0.1",
+            "port": 8123,
+            "database": "default"
         },
 
-        "events": {
-            "backend": "internal",
-            "image_url_prefix": "<-- URL prefix for event screenshots, for instance https://my.domain/static/ -->"
+        "plog": {
+            "backend": "clickhouse",
+            "username": "default",
+            "password": "qqq",
+            "host": "127.0.0.1",
+            "port": 8123,
+            "database": "default"
         }
     },
 

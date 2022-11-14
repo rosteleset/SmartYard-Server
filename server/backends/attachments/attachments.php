@@ -25,15 +25,6 @@
             abstract public function addFile($meta, $fileContent);
 
             /**
-             * add file to storage
-             *
-             * @param string $meta
-             * @return string uuid
-             */
-
-            abstract public function uploadFile($meta);
-
-            /**
              * get file from storage
              *
              * @param $uuid

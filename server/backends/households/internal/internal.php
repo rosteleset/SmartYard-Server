@@ -27,6 +27,7 @@
                         floor, 
                         flat,
                         code,
+                        plog,
                         coalesce(auto_block, 0) auto_block, 
                         manual_block, 
                         open_code, 
@@ -45,6 +46,7 @@
                     "floor" => "floor",
                     "flat" => "flat",
                     "code" => "code",
+                    "plog" => "plog",
                     "auto_block" => "autoBlock",
                     "manual_block" => "manualBlock",
                     "open_code" => "openCode",
@@ -186,7 +188,7 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
@@ -204,12 +206,17 @@
                     return false;
                 }
 
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, locks_disabled, cms_levels) values (:entrance_type, :entrance, :lat, :lon, :shared, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :locks_disabled, :cms_levels)", [
+                if (!checkInt($plog)) {
+                    return false;
+                }
+
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, locks_disabled, cms_levels) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :locks_disabled, :cms_levels)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
                     ":lon" => (float)$lon,
                     ":shared" => (int)$shared,
+                    ":plog" => (int)$plog,
                     ":caller_id" => $callerId,
                     ":house_domophone_id" => (int)$domophoneId,
                     ":domophone_output" => (int)$domophoneOutput,
@@ -250,7 +257,7 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
                     return false;
@@ -279,15 +286,20 @@
                     $r1 = $this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") !== false;
                 }
 
+                if (!checkInt($plog)) {
+                    return false;
+                }
+
                 return
                     $r1
                     and
-                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, locks_disabled = :locks_disabled, cms_levels = :cms_levels where house_entrance_id = $entranceId", [
+                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, locks_disabled = :locks_disabled, cms_levels = :cms_levels where house_entrance_id = $entranceId", [
                         ":entrance_type" => $entranceType,
                         ":entrance" => $entrance,
                         ":lat" => (float)$lat,
                         ":lon" => (float)$lon,
                         ":shared" => $shared,
+                        ":plog" => $plog,
                         ":caller_id" => $callerId,
                         ":house_domophone_id" => (int)$domophoneId,
                         ":domophone_output" => (int)$domophoneOutput,
@@ -319,9 +331,9 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
+            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
-                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled)) {
+                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog)) {
                     $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
 
                     if ($openCode == "!") {
@@ -329,11 +341,12 @@
                         $openCode = 11000 + rand(0, 88999);
                     }
 
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, open_code, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :open_code, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
                         ":code" => $code,
+                        ":plog" => $plog,
                         ":manual_block" => $manualBlock,
                         ":open_code" => $openCode,
                         ":auto_open" => $autoOpen,
@@ -401,6 +414,11 @@
                         return false;
                     }
 
+                    if (array_key_exists("plog", $params) && !checkInt($params["plog"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (@$params["code"] == "!") {
                         $params["code"] = md5(GUIDv4());
                     }
@@ -418,6 +436,7 @@
                         "floor" => "floor",
                         "flat" => "flat",
                         "code" => "code",
+                        "plog" => "plog",
                         "manual_block" => "manualBlock",
                         "open_code" => "openCode",
                         "auto_open" => "autoOpen",
@@ -1268,7 +1287,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -1277,6 +1296,7 @@
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
+                        "plog" => "plog",
                         "caller_id" => "callerId",
                         "house_domophone_id" => "domophoneId",
                         "domophone_output" => "domophoneOutput",
@@ -1323,12 +1343,12 @@
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        $q = "select address_house_id, plog, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                         break;
                 }
 
                 if (!$q) {
-                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
+                    $q = "select address_house_id, plog, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
                 return $this->db->get($q,
@@ -1341,6 +1361,7 @@
                         "lat" => "lat",
                         "lon" => "lon",
                         "shared" => "shared",
+                        "plog" => "plog",
                         "prefix" => "prefix",
                         "caller_id" => "callerId",
                         "house_domophone_id" => "domophoneId",

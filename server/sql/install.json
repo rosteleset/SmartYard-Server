@@ -8,6 +8,7 @@
         "v1_tt.sql",
         "v1_inbox.sql",
         "v1_providers.sql",
-        "v1_tasks.sql"
+        "v1_tasks.sql",
+        "v1_plog.sql"
     ]
 }

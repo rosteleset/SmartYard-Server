@@ -9,8 +9,7 @@ let gate_rabbits = {};
 syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = thisMoment();
   let bw_msg = message.split(" - - ")[1].trim();
-  await API.lastSeen(host);
-  
+
   //Фиьтр сообщений не несущих смысловой нагрузки
   if (
     bw_msg.indexOf("RTSP") >= 0 ||
