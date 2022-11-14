@@ -80,14 +80,6 @@
             "backend": "internal"
         },
 
-        "keys": {
-            "backend": "internal"
-        },
-
-        "domophones": {
-            "backend": "internal"
-        },
-
         "cameras": {
             "backend": "internal"
         },

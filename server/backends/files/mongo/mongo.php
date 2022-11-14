@@ -4,7 +4,7 @@
      * backends files namespace
      */
 
-    namespace backends\attachments {
+    namespace backends\files {
 
         /**
          * gridFS storage
