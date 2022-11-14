@@ -274,6 +274,12 @@
 
             switch ($path[1]) {
                 case "log":
+                    logMsg($params);
+                    error_log($params);
+                    break;
+
+                case "debug":
+                    debugMsg($params);
                     error_log($params);
                     break;
 

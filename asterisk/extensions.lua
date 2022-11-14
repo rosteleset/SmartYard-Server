@@ -1,14 +1,5 @@
-package.path = "/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;" .. package.path
+package.path = "/etc/asterisk/?.lua;./live/etc/asterisk/?.lua;/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;./lua/?.lua;" .. package.path
 package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
-
-realm = "rbt"
-dm_server = "http://127.0.0.1/asterisk/extensions"
-log_file = "/var/log/asterisk/pbx_lua_debug.log"
-redis_server = {
-    host = "127.0.0.1",
-    port = 6379,
---    auth = "7d5c125b8be8fef0be016f2a965745e4"
-}
 
 log = require "log"
 inspect = require "inspect"
@@ -18,12 +9,15 @@ cjson = require "cjson"
 md5 = (require 'md5').sumhexa
 redis = require "redis"
 
-log.outfile = log_file
+dofile("config.lua")
 
-redis = redis.connect(redis_server)
+redis = redis.connect({
+    host = redis_server_host,
+    port = redis_server_port
+})
 
-if redis_server.auth ~= nil then
-    redis:auth(redis_server.auth)
+if redis_server_auth and redis_server.auth ~= nil then
+    redis:auth(redis_server_auth)
 end
 
 function dm(action, request)
