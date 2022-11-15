@@ -17,6 +17,8 @@
             /**
              * add file to storage
              *
+             * $meta["expire"] (optional) expire filetime (unix timestamp)
+             *
              * @param string $realFileName
              * @param string $fileContent
              * @param string $meta
