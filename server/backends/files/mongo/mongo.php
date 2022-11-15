@@ -11,7 +11,7 @@
          */
 
         class mongo extends files {
-            private $mongo;
+            private $mongo, $collection;
 
             /**
              * @inheritDoc
@@ -21,6 +21,8 @@
                 require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
 
                 parent::__construct($config, $db, $redis);
+
+                $this->collection = @$config["backends"]["files"]["collection"]?:"rbt";
 
                 if (@$config["backends"]["files"]["uri"]) {
                     $this->mongo = new \MongoDB\Client($config["backends"]["files"]["uri"]);
@@ -34,7 +36,9 @@
              */
             public function addFile($realFileName, $fileContent, $meta = [])
             {
-                $bucket = $this->mongo->rbt->selectGridFSBucket();
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
 
                 $stream = $bucket->openUploadStream($realFileName);
                 fwrite($stream, $fileContent);
@@ -44,7 +48,7 @@
                 $fileId = new \MongoDB\BSON\ObjectId($id);
 
                 $fsFiles = "fs.files";
-                $collection = $this->mongo->rbt->$fsFiles;
+                $collection = $this->mongo->$collection->$fsFiles;
 
                 $collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
 
@@ -56,7 +60,9 @@
              */
             public function getFile($uuid)
             {
-                $bucket = $this->mongo->rbt->selectGridFSBucket();
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
@@ -73,7 +79,9 @@
              */
             public function getContents($uuid)
             {
-                $bucket = $this->mongo->rbt->selectGridFSBucket();
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
@@ -85,7 +93,9 @@
              */
             public function getMeta($uuid)
             {
-                $bucket = $this->mongo->rbt->selectGridFSBucket();
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
@@ -97,7 +107,9 @@
              */
             public function deleteFile($uuid)
             {
-                $bucket = $this->mongo->rbt->selectGridFSBucket();
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
@@ -109,10 +121,12 @@
              */
             public function cron($part)
             {
+                $collection = $this->collection;
+
                 if ($part == '5min') {
                     $fsFiles = "fs.files";
 
-                    $cursor = $this->mongo->rbt->$fsFiles->find([ "metadata.expire" => [ '$lt' => time() ] ]);
+                    $cursor = $this->mongo->$collection->$fsFiles->find([ "metadata.expire" => [ '$lt' => time() ] ]);
                     foreach ($cursor as $document) {
                         $this->deleteFile($document->_id);
                     }
