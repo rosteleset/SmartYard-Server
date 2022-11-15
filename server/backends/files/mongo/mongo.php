@@ -84,5 +84,17 @@
 
                 $bucket->delete($fileId);
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function cron($part)
+            {
+                if ($part == '5min') {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
         }
     }
