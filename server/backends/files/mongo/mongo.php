@@ -34,7 +34,21 @@
              */
             public function addFile($realFileName, $fileContent, $meta = [])
             {
-                return GUIDv4();
+                $bucket = $this->mongo->rbt->selectGridFSBucket();
+
+                $stream = $bucket->openUploadStream($realFileName);
+                fwrite($stream, $fileContent);
+                $id = $bucket->getFileIdForStream($stream);
+                fclose($stream);
+
+                $fileId = new \MongoDB\BSON\ObjectId($id);
+
+                $fsFiles = "fs.files";
+                $collection = $this->mongo->rbt->$fsFiles;
+
+                $collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
+
+                return $id;
             }
 
             /**
@@ -42,7 +56,21 @@
              */
             public function getFile($uuid)
             {
-                return false;
+                $bucket = $this->mongo->rbt->selectGridFSBucket();
+
+                $fileId = new \MongoDB\BSON\ObjectId($uuid);
+
+                $stream = $bucket->openDownloadStream($fileId);
+                $contents = stream_get_contents($stream);
+
+                $stream = $bucket->openDownloadStream($fileId);
+
+                $metadata = $bucket->getFileDocumentForStream($stream);
+
+                return [
+                    "meta" => $metadata,
+                    "contents" => $contents,
+                ];
             }
 
             /**
@@ -50,7 +78,11 @@
              */
             public function deleteFile($uuid)
             {
-                return true;
+                $bucket = $this->mongo->rbt->selectGridFSBucket();
+
+                $fileId = new \MongoDB\BSON\ObjectId($uuid);
+
+                $bucket->delete($fileId);
             }
         }
     }
