@@ -38,10 +38,13 @@
 
     auth(3600);
     $households = loadBackend("households");
+    $cameras = loadBackend("cameras");
+
     $houses = [];
     
     foreach($subscriber['flats'] as $flat) {
         $houseId = $flat['addressHouseId'];
+        
         if (array_key_exists($houseId, $houses)) {
             $house = &$houses[$houseId];
         } else {
@@ -51,11 +54,13 @@
             $house['address'] = $flat['house']['houseFull'];
             // TODO: добавить журнал событий.
             $house['hasPlog'] = 'f';
-            // TODO: добавить камеры.
-            $house['cctv'] = 1;
+            $house['cameras'] = $households->getCameras("house", $houseId);
             $house['doors'] = [];
         }
         
+        $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flat", $flat['flatId']));
+        $house['cctv'] = count($house['cameras']);
+
         $flatDetail = $households->getFlat($flat['flatId']);
         foreach ($flatDetail['entrances'] as $entrance) {
             if (array_key_exists($entrance['entranceId'], $house['doors'])) {
@@ -64,10 +69,16 @@
             
             $e = $households->getEntrance($entrance['entranceId']);
             $door = [];
-            $door['domophoneId'] = strval($entrance['domophoneId']);
+            $door['domophoneId'] = strval($e['domophoneId']);
             $door['doorId'] = intval($e['domophoneOutput']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
+
+            if ($e['cameraId']) {
+                $cam = $cameras->getCamera($e["cameraId"]);
+                $house['cameras'][] = $cam;
+                $house['cctv']++;
+            }
             
             // TODO: проверить обработку блокировки
             // 
@@ -81,9 +92,10 @@
         
     }
 
-    // конвертируем ассоциативные массивы в простые
+    // конвертируем ассоциативные массивы в простые и удаляем лишние ключи
     foreach($houses as $house_key => $h) {
         $houses[$house_key]['doors'] = array_values($h['doors']);
+        unset( $houses[$house_key]['cameras']);
     }
     $result = array_values($houses);
     
