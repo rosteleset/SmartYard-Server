@@ -22,8 +22,69 @@
  */
 
 auth();
+
+$ret = [];
+
+$house_id = (int)@$postdata['houseId'];
+$households = loadBackend("households");
+$cameras = loadBackend("cameras");
+
+$houses = [];
+
+foreach($subscriber['flats'] as $flat) {
+    $houseId = $flat['addressHouseId'];
+    
+    if (array_key_exists($houseId, $houses)) {
+        $house = &$houses[$houseId];
+        
+    } else {
+        $houses[$houseId] = [];
+        $house = &$houses[$houseId];
+        $house['houseId'] = strval($houseId);
+        // TODO: добавить журнал событий.
+        $house['cameras'] = $households->getCameras("house", $houseId);
+        $house['doors'] = [];
+    }
+    
+    $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flat", $flat['flatId']));
+
+    $flatDetail = $households->getFlat($flat['flatId']);
+    foreach ($flatDetail['entrances'] as $entrance) {
+        if (array_key_exists($entrance['entranceId'], $house['doors'])) {
+            continue;
+        }
+        
+        $e = $households->getEntrance($entrance['entranceId']);
+        $door = [];
+        
+        if ($e['cameraId']) {
+            $cam = $cameras->getCamera($e["cameraId"]);
+            $house['cameras'][] = $cam;
+        }
+        
+        $house['doors'][$entrance['entranceId']] = $door;
+        
+    }
+    
+}
+$ret = [];
+foreach($houses as $house_key => $h) {
+    $houses[$house_key]['doors'] = array_values($h['doors']);
+    unset( $houses[$house_key]['cameras']);
+    foreach($h['cameras'] as $camera) {
+        $ret[] = [
+            "id" => $camera['cameraId'],
+            "name" => $camera['comment'],
+            "lat" => strval($camera['lat']),
+            "url" => $camera['url'],
+            "token" => "empty",
+            "lon" => strval($camera['lon'])
+        ];
+    }
+}
+
 // response();
-$ret = [
+/*$ret = [
     [
         "id" => 1,
         "name" => "Тестовая камера",
@@ -33,7 +94,7 @@ $ret = [
         "lon" => "41.4726675977"
     ]
 ];
-
+*/
 response(200, $ret);
 
 /*
