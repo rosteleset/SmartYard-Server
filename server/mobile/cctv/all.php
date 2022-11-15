@@ -75,10 +75,10 @@ foreach($houses as $house_key => $h) {
         $ret[] = [
             "id" => $camera['cameraId'],
             "name" => $camera['comment'],
-            "lat" => $camera['lat'],
+            "lat" => strval($camera['lat']),
             "url" => $camera['url'],
             "token" => "empty",
-            "lon" => $camera['lon']
+            "lon" => strval($camera['lon'])
         ];
     }
 }
