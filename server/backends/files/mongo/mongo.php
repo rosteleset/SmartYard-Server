@@ -48,9 +48,9 @@
                 $fileId = new \MongoDB\BSON\ObjectId($id);
 
                 $fsFiles = "fs.files";
-                $collection = $this->mongo->$collection->$fsFiles;
+                $_collection = $this->mongo->$collection->$fsFiles;
 
-                $collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
+                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
 
                 return $id;
             }
