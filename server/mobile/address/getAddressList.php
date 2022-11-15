@@ -47,8 +47,6 @@
         
         if (array_key_exists($houseId, $houses)) {
             $house = &$houses[$houseId];
-            $house['cameras'] += $households->getCameras("flat", $flat['flatId']);
-            $house['cctv'] = count($house['cameras']);
         } else {
             $houses[$houseId] = [];
             $house = &$houses[$houseId];
@@ -57,10 +55,12 @@
             // TODO: добавить журнал событий.
             $house['hasPlog'] = 'f';
             $house['cameras'] = $households->getCameras("house", $houseId);
-            $house['cctv'] = count($house['cameras']);
             $house['doors'] = [];
         }
         
+        $house['cameras'] += $households->getCameras("flat", $flat['flatId']);
+        $house['cctv'] = count($house['cameras']);
+
         $flatDetail = $households->getFlat($flat['flatId']);
         foreach ($flatDetail['entrances'] as $entrance) {
             if (array_key_exists($entrance['entranceId'], $house['doors'])) {
@@ -69,7 +69,7 @@
             
             $e = $households->getEntrance($entrance['entranceId']);
             $door = [];
-            $door['domophoneId'] = strval($entrance['domophoneId']);
+            $door['domophoneId'] = strval($e['domophoneId']);
             $door['doorId'] = intval($e['domophoneOutput']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
