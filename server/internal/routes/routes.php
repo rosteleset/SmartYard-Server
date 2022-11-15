@@ -4,7 +4,6 @@
     use internal\actions\actions;
     
     Router::post("/lastSeen", Actions::class,"lastSeen");
-    Router::post("/syslog", Actions::class,"syslogStore");
     Router::post("/getStreamID", Actions::class,"getStreamID");
     Router::post("/openDoor", Actions::class,"openDoor");
     Router::post("/callFinished", Actions::class,"callFinished");

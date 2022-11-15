@@ -17,7 +17,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
     return;
   }
 
-  console.log("incoming msg: ", qtMsg);
+  console.log(qtMsg);
 
   /**
    * Отправка соощения в syslog

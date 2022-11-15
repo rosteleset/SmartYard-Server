@@ -28,7 +28,9 @@ const internalAPI = axios.create({
     httpsAgent: agent
 });
 
-//Актуальный шаблон для работы с internal API. Версия для корректного ssl
+/**
+ * Актуальный шаблон для работы с internal API. Версия для корректного ssl
+ */
 // const internalApi = axios.create({
 //   baseURL: internal,
 // });
@@ -49,27 +51,26 @@ class API {
      * Затем обновляем последнее общение с панелью
      * @param data
      */
-    async sendLog(payload) {
-        const {date, ip, unit, msg} = payload;
-        const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${msg}');`;
-        const config = {
-            method: "post",
-            url: `http://${clickhouse.host}:${clickhouse.port}`,
-            headers: {
-                'Authorization': `Basic ${btoa(`${clickhouse.username}:${clickhouse.password}`)}`,
-                'Content-Type': 'text/plain;charset=UTF-8',
-                'X-ClickHouse-Database': 'default'
-            },
-            data: query
-        };
-
-        await axios(config)
-            .then(({status}) => {
-                if (status === 200) {
-                    internalAPI.post("/lastSeen", {ip, date})
-                }
-            })
+    async sendLog({date, ip, unit, msg}) {
         try {
+            const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${msg}');`;
+            const config = {
+                method: "post",
+                url: `http://${clickhouse.host}:${clickhouse.port}`,
+                headers: {
+                    'Authorization': `Basic ${btoa(`${clickhouse.username}:${clickhouse.password}`)}`,
+                    'Content-Type': 'text/plain;charset=UTF-8',
+                    'X-ClickHouse-Database': 'default'
+                },
+                data: query
+            };
+
+            await axios(config)
+                .then(({status}) => {
+                    if (status === 200) {
+                        internalAPI.post("/lastSeen", {ip, date})
+                    }
+                })
         } catch (error) {
             console.error("error", error.message);
         }
@@ -103,7 +104,7 @@ class API {
 
     async callFinished(call_id) {
         try {
-            return await internalApi.post("/callFinished", call_id);
+            return await internalAPI.post("/callFinished", call_id);
         } catch (error) {
             console.error("error: ", error.message);
         }
@@ -142,7 +143,7 @@ class API {
      */
     async doorIsOpen(host) {
         try {
-            await internalAPI
+           return await internalAPI
                 .post("/getStreamID", {host})
                 .then(async ({frs_server, stream_id}) => {
                     if (frs_server && stream_id) {
@@ -157,7 +158,7 @@ class API {
     }
 
     /**
-     * Логирование события ткрытия двери
+     * Логирование события открытия двери
      * @param {string} host - ip address вызывной панели
      * @param {number} door - идентификатор двери, допустимые значения 0,1,2
      * @param {string} detail - код или sn ключа квартиры

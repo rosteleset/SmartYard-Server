@@ -7,24 +7,19 @@ namespace internal\actions;
     class Actions
     {
         public $config = false;
-        public $conn;
-
+        public $households = false;
+        public $events = false;
         function __construct()
         {
             $this->config = json_decode(file_get_contents(__DIR__ . "../../../config/config.json"), true);
-
-            $this->conn = new \mysqli(
-                $this->config["clickhouse"]["host"],
-                $this->config["clickhouse"]["username"],
-                $this->config["clickhouse"]["password"],
-                "default",
-                $this->config["clickhouse"]["port"]
-            );
+            $this->households = loadBackend("households");
+            $this->events = json_decode(file_get_contents(__DIR__ . "../../syslog/utils/events.json"),true);
         }
 
         /***
          * Не готово.
-         * TODO: запись в бд последней активности от устройства
+         * TODO: запись в бд последней активности от устройства?
+         * Вероятно не актально в связи с использованием clickhouse
          */
         public function lastSeen($data)
         {
@@ -34,33 +29,9 @@ namespace internal\actions;
         }
 
         /**
-         * Не используется.
-         * Сохраняем syslog сообщения в БД
-         */
-        public function syslogStore($data)
-        {
-            [
-                "date" => $date,
-                "ip" => $ip,
-                "unit" => $unit,
-                "msg" => $msg
-            ] = $data;
-
-            if (!isset($data, $date, $ip, $unit, $msg)){
-                Response::res(400,"Bad Request","Invalid POST request body");
-                exit();
-            }
-
-            $result = $this->conn->query("INSERT INTO default.syslog_buffer (date, ip, unit, msg) VALUES ('$date','$ip','$unit','$msg')");
-            if ($result) {
-                Response::res(201, "Created", "Syslog message saved");
-            }
-            $this->conn->close();
-        }
-
-        /**
          * Не готово.
-         * TODO:  вернуть frs_server, stream_id
+         * TODO:  вернуть frs_server, stream_id для дальнейшего формирования POST запроса к FRS на стороне syslog
+         * добавить соответствующие методы для работы с backend:
          */
         public function getStreamID($data)
         {
@@ -72,6 +43,9 @@ namespace internal\actions;
         /**
          * Не готово.
          * TODO: сохраняем информацию в БД по событию открытия двери (RFID\code)
+         * добавить соответствующие методы для работы с backend:
+         * Поиск ключа по SN
+         * Обновление информации о ключе
          */
         public function openDoor($data)
         {
@@ -82,7 +56,15 @@ namespace internal\actions;
                 "detail" => $detail
             ] = $data;
 
-            Response::res(200, "OK", "openDoor");
+        switch ($event) {
+            case $this->events['OPEN_BY_KEY']:
+                Response::res(200, "OK", "openDoor by key");
+                break;
+            case $this->events['OPEN_BY_CODE']:
+                Response::res(200, "OK", "openDoor by code");
+                break;
+        }
+
         }
 
         /**
@@ -105,9 +87,11 @@ namespace internal\actions;
         }
 
         //test endpoint
-        public function test($data)
+        public function test($data )
         {
-            Response::res(200, "TEST | Syslog message saved", $data);
+            //$key = $households->getKeys("flat", $data['flat_id']);
+            $key = $this->households->getKeys("rfid", $data['rfid']);
+            Response::res(200, "TEST | Syslog message saved", $key);
         }
 
         //test endpoint

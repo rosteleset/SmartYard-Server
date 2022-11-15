@@ -10,12 +10,16 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = thisMoment();
   let bw_msg = message.split(" - - ")[1].trim();
 
-  //Фиьтр сообщений не несущих смысловой нагрузки
+  //Фильтр сообщений не несущих смысловой нагрузки
   if (
     bw_msg.indexOf("RTSP") >= 0 ||
     bw_msg.indexOf("DestroyClientSession") >= 0 ||
     bw_msg.indexOf("Request: /cgi-bin/images_cgi") >= 0 ||
-    bw_msg.indexOf("GetOneVideoFrame") >= 0
+    bw_msg.indexOf("GetOneVideoFrame") >= 0 ||
+    bw_msg.indexOf("SS_FLASH_SaveParam") >= 0 ||
+    bw_msg.indexOf("Have Check Param Change Beg Save") >= 0 ||
+    bw_msg.indexOf("Param Change Save To Disk Finish") >= 0
+
   ) {
     return;
   }
@@ -49,13 +53,13 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   // домофон в режиме калитки на несколько домов
   if (bw_msg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
-    if (gate_rabbits[host]) API.setRabbitGates({ host, gate_rabbits });
+    if (gate_rabbits[host]) await API.setRabbitGates({ host, gate_rabbits });
   }
 
   // Не стабильное поведение с сислогами и пропущенными и отвеченными звонками, может сломаться в любой момент
   if (bw_msg.indexOf("All calls are done for apartment") >= 0) {
     let call_id = parseInt(bw_msg.split("[")[1].split("]")[0]);
-    if (call_id) API.callFinished(call_id);
+    if (call_id) await API.callFinished(call_id);
   }
 
   if (bw_msg.indexOf("Opening door by code") >= 0) {
