@@ -58,7 +58,7 @@
             $house['doors'] = [];
         }
         
-        $house['cameras'] += $households->getCameras("flat", $flat['flatId']);
+        $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flat", $flat['flatId']));
         $house['cctv'] = count($house['cameras']);
 
         $flatDetail = $households->getFlat($flat['flatId']);

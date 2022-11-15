@@ -46,7 +46,7 @@ foreach($subscriber['flats'] as $flat) {
         $house['doors'] = [];
     }
     
-    $house['cameras'] += $households->getCameras("flat", $flat['flatId']);
+    $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flat", $flat['flatId']));
 
     $flatDetail = $households->getFlat($flat['flatId']);
     foreach ($flatDetail['entrances'] as $entrance) {
