@@ -72,7 +72,7 @@ foreach($houses as $house_key => $h) {
     $houses[$house_key]['doors'] = array_values($h['doors']);
     unset( $houses[$house_key]['cameras']);
     foreach($h['cameras'] as $camera) {
-        ret[] = [
+        $ret[] = [
             "id" => $camera['cameraId'],
             "name" => $camera['comment'],
             "lat" => $camera['lat'],
@@ -82,6 +82,7 @@ foreach($houses as $house_key => $h) {
         ];
     }
 }
+
 // response();
 /*$ret = [
     [
