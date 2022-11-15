@@ -76,7 +76,7 @@ foreach($houses as $house_key => $h) {
             "id" => $camera['cameraId'],
             "name" => $camera['comment'],
             "lat" => $camera['lat'],
-            "url" => $camera['comment'],
+            "url" => $camera['url'],
             "token" => "empty",
             "lon" => $camera['lon']
         ];
