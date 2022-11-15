@@ -6,7 +6,8 @@ CREATE TABLE cameras
     model character varying not null,
     url character varying not null,
     stream character varying,
-    credentials character varying not null,                                                                                          -- plaintext:login:password, token:token, or something else
+    credentials character varying not null,                                                                             -- plaintext:login:password, token:token, or something else
+    name character varying,
     publish character varying,
     flussonic character varying,
     lat real,

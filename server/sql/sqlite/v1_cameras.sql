@@ -7,6 +7,7 @@ CREATE TABLE cameras
     url text not null,
     stream text,
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
+    name text,
     publish text,
     flussonic text,
     lat real,
