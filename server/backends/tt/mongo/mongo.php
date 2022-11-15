@@ -20,10 +20,10 @@
             public function __construct($config, $db, $redis) {
                 parent::__construct($config, $db, $redis);
 
-                require_once __DIR__ . '/../../../utils/mongodb.php';
+                require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
 
-                if (@$config["backends"]["tt"]["mongo"]) {
-                    $this->mongo = new \MongoDB\Client($config["backends"]["tt"]["mongo"]);
+                if (@$config["backends"]["files"]["uri"]) {
+                    $this->mongo = new \MongoDB\Client($config["backends"]["files"]["uri"]);
                 } else {
                     $this->mongo = new \MongoDB\Client();
                 }

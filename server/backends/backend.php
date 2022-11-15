@@ -85,5 +85,12 @@
             public function cron($part) {
                 return true;
             }
+
+            /**
+             * @return bool
+             */
+            public function check() {
+                return true;
+            }
         }
     }

@@ -18,7 +18,7 @@
              */
             public function __construct($config, $db, $redis)
             {
-                require_once __DIR__ . "/../../../mzfc/mongodb/autoload.php";
+                require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
 
                 parent::__construct($config, $db, $redis);
 
@@ -88,13 +88,26 @@
             /**
              * @inheritDoc
              */
+            public function check()
+            {
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cron($part)
             {
                 if ($part == '5min') {
-                    return false;
-                } else {
-                    return true;
+                    $fsFiles = "fs.files";
+
+                    $cursor = $this->mongo->rbt->$fsFiles->find([ "metadata.expire" => [ '$lt' => time() ] ]);
+                    foreach ($cursor as $document) {
+                        $this->deleteFile($document->_id);
+                    }
                 }
+
+                return true;
             }
         }
     }

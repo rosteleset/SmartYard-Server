@@ -370,6 +370,16 @@
             if (!$t) {
                 echo "loading $backend failed\n";
                 $all_ok = false;
+            } else {
+                try {
+                    if (!$t->check()) {
+                        echo "error checking backend $backend\n";
+                        $all_ok = false;
+                    }
+                } catch (\Exception $e) {
+                    print_r($e);
+                    $all_ok = false;
+                }
             }
         }
 
