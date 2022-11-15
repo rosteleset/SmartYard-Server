@@ -24,21 +24,27 @@
         global $argv;
 
         echo "usage: {$argv[0]}
+        -- common part
             [--parent-pid=pid]
             [--debug]
+        -- demo server
+            [--run-demo-server]
+        -- initialization
             [--init-db]
             [--admin-password=<password>]
             [--reindex]
             [--clear-cache]
             [--cleanup]
+        -- tests
             [--check-mail=<your email address>]
-            [--run-demo-server]
+            [--get-db-version]
+            [--check-backends]
+        -- autoconfigure
             [--autoconfigure-domophone=<domophone_id> [--first-time]]
+        -- cron
             [--cron=<minutely|5min|hourly|daily|monthly>]
             [--install-crontabs]
             [--uninstall-crontabs]
-            [--get-db-version]
-            [--check-backends]
         \n";
 
         exit(1);
