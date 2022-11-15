@@ -107,14 +107,6 @@
             /**
              * @inheritDoc
              */
-            public function check()
-            {
-                return true;
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function cron($part)
             {
                 if ($part == '5min') {
