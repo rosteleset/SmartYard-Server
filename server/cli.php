@@ -80,41 +80,47 @@
     function startup() {
         global $db, $params, $script_process_id, $script_parent_pid;
 
-        $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
-            "pid" => getmypid(),
-            "ppid" => $script_parent_pid,
-            "start" => $db->now(),
-            "process" => "cli.php",
-            "params" => $params,
-            "expire" => time() + 24 * 60 * 60,
-        ]);
+        if (@$db) {
+            $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
+                "pid" => getmypid(),
+                "ppid" => $script_parent_pid,
+                "start" => $db->now(),
+                "process" => "cli.php",
+                "params" => $params,
+                "expire" => time() + 24 * 60 * 60,
+            ]);
+        }
     }
 
     function shutdown() {
         global $script_process_id, $db, $script_result;
 
-        $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-            "done" => $db->now(),
-            "result" => $script_result,
-            "running_process_id" => $script_process_id,
-        ]);
+        if (@$db) {
+            $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                "done" => $db->now(),
+                "result" => $script_result,
+                "running_process_id" => $script_process_id,
+            ]);
+        }
     }
 
     function check_if_pid_exists() {
         global $db;
 
-        $pids = $db->get("select running_process_id, pid from core_running_processes where done is null or done = ''", false, [
-            "running_process_id" => "id",
-            "pid" => "pid",
-        ]);
+        if (@$db) {
+            $pids = $db->get("select running_process_id, pid from core_running_processes where done is null or done = ''", false, [
+                "running_process_id" => "id",
+                "pid" => "pid",
+            ]);
 
-        foreach ($pids as $process) {
-            if (!file_exists( "/proc/{$process['pid']}")) {
-                $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                    "done" => $db->now(),
-                    "result" => "unknown",
-                    "running_process_id" => $process['id'],
-                ]);
+            foreach ($pids as $process) {
+                if (!file_exists( "/proc/{$process['pid']}")) {
+                    $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                        "done" => $db->now(),
+                        "result" => "unknown",
+                        "running_process_id" => $process['id'],
+                    ]);
+                }
             }
         }
     }
@@ -232,16 +238,19 @@
     startup();
 
     check_if_pid_exists();
-    $db->modify("delete from core_running_processes where (done is null or done = '') and coalesce(expire, 0) < " . time());
+    if (@$db) {
+        $db->modify("delete from core_running_processes where (done is null or done = '') and coalesce(expire, 0) < " . time());
 
-    $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
-        'params' => $params,
-    ], false, [ 'fieldlify' ]);
+        $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
+            'params' => $params,
+        ], false, [ 'fieldlify' ]);
 
-    if ($already) {
-        $script_result = "already running";
-        exit(0);
+        if ($already) {
+            $script_result = "already running";
+            exit(0);
+        }
     }
+
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
         require_once "utils/cleanup.php";
@@ -273,9 +282,14 @@
         } catch (Exception $e) {
             //
         }
-        $sth = $db->prepare("update core_users set password = :password, login = 'admin', enabled = 1 where uid = 0");
-        $sth->execute([ ":password" => password_hash($args["--admin-password"], PASSWORD_DEFAULT) ]);
-        echo "admin account updated\n";
+
+        try {
+            $sth = $db->prepare("update core_users set password = :password, login = 'admin', enabled = 1 where uid = 0");
+            $sth->execute([ ":password" => password_hash($args["--admin-password"], PASSWORD_DEFAULT) ]);
+            echo "admin account updated\n";
+        } catch (Exception $e) {
+            echo "admin account update failed\n";
+        }
         exit(0);
     }
 
