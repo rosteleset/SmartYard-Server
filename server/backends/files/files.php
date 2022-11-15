@@ -33,6 +33,18 @@
             abstract public function getFile($uuid);
 
             /**
+             * @param $uuid
+             * @return mixed
+             */
+            abstract public function getContents($uuid);
+
+            /**
+             * @param $uuid
+             * @return mixed
+             */
+            abstract public function getMeta($uuid);
+
+            /**
              * delete file
              *
              * @param $uuid

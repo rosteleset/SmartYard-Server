@@ -61,16 +61,35 @@
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
                 $stream = $bucket->openDownloadStream($fileId);
-                $contents = stream_get_contents($stream);
-
-                $stream = $bucket->openDownloadStream($fileId);
-
-                $metadata = $bucket->getFileDocumentForStream($stream);
 
                 return [
-                    "meta" => $metadata,
-                    "contents" => $contents,
+                    "meta" => $bucket->getFileDocumentForStream($stream),
+                    "contents" => stream_get_contents($stream),
                 ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getContents($uuid)
+            {
+                $bucket = $this->mongo->rbt->selectGridFSBucket();
+
+                $fileId = new \MongoDB\BSON\ObjectId($uuid);
+
+                return stream_get_contents($bucket->openDownloadStream($fileId));
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getMeta($uuid)
+            {
+                $bucket = $this->mongo->rbt->selectGridFSBucket();
+
+                $fileId = new \MongoDB\BSON\ObjectId($uuid);
+
+                return $bucket->getFileDocumentForStream($bucket->openDownloadStream($fileId));
             }
 
             /**
@@ -109,5 +128,6 @@
 
                 return true;
             }
+
         }
     }
