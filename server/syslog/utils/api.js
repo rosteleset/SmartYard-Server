@@ -28,7 +28,9 @@ const internalAPI = axios.create({
     httpsAgent: agent
 });
 
-//Актуальный шаблон для работы с internal API. Версия для корректного ssl
+/**
+ * Актуальный шаблон для работы с internal API. Версия для корректного ssl
+ */
 // const internalApi = axios.create({
 //   baseURL: internal,
 // });
@@ -44,41 +46,35 @@ const frsAPI = axios.create({
 
 class API {
 
-    /**
-     * Отправка syslog messages в clickhouse.
-     * Затем обновляем последнее общение с панелью
-     * @param data
+    /** Отправка syslog messages в clickhouse.
+     * @param {string} date
+     * @param {string} ip
+     * @param {"beward" | "qtech"} unit
+     * @param {string} msg
      */
-    async sendLog(payload) {
-        const {date, ip, unit, msg} = payload;
-        const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${msg}');`;
-        const config = {
-            method: "post",
-            url: `http://${clickhouse.host}:${clickhouse.port}`,
-            headers: {
-                'Authorization': `Basic ${btoa(`${clickhouse.username}:${clickhouse.password}`)}`,
-                'Content-Type': 'text/plain;charset=UTF-8',
-                'X-ClickHouse-Database': 'default'
-            },
-            data: query
-        };
-
-        await axios(config)
-            .then(({status}) => {
-                if (status === 200) {
-                    internalAPI.post("/lastSeen", {ip, date})
-                }
-            })
+    async sendLog({date, ip, unit, msg}) {
         try {
+            const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${msg}');`;
+            const config = {
+                method: "post",
+                url: `http://${clickhouse.host}:${clickhouse.port}`,
+                headers: {
+                    'Authorization': `Basic ${Buffer.from(`${clickhouse.username}:${clickhouse.password}`).toString('base64')}`,
+                    'Content-Type': 'text/plain;charset=UTF-8',
+                    'X-ClickHouse-Database': 'default'
+                },
+                data: query
+            };
+
+            await axios(config);
         } catch (error) {
             console.error("error", error.message);
         }
     }
 
-    /**
-     * Запрос к FRS по событию детектор движения домофона
-     * @param host ipAddress
-     * @param start true/false motion detect
+    /** Запрос к FRS по событию детектор движения домофона
+     * @param {string} host ip address
+     * @param {boolean} start start/stop face detection
      */
     async motionDetection(host, start) {
         try {
@@ -101,9 +97,14 @@ class API {
         // await frs.post("", { host, start });
     }
 
-    async callFinished(call_id) {
+    /**Обновление информации о завершении звонка.
+     * call_id присутствует только у BEWARD?!
+     * @param {string} ip
+     * @param {string|null} call_id
+     * */
+    async callFinished(ip, call_id) {
         try {
-            return await internalApi.post("/callFinished", call_id);
+            return await internalAPI.post("/callFinished", call_id);
         } catch (error) {
             console.error("error: ", error.message);
         }
@@ -111,9 +112,8 @@ class API {
     }
 
     /**
-     *
      * @param  {string} host - ip address intercom device
-     * @param gate_rabbits
+     * @param {object} gate_rabbits
      */
     async setRabbitGates({host, gate_rabbits}) {
         try {
@@ -136,13 +136,12 @@ class API {
     async incomingDTMF() {
     }
 
-    /**
-     * Получить frs_server, stream_id из RBT (internal.php), сделать запрос на FRS
-     * @param {*} host - ip address вызывной панели
+    /** Получить frs_server, stream_id из RBT (internal.php), сделать запрос на FRS
+     * @param {string} host - ip address вызывной панели
      */
     async doorIsOpen(host) {
         try {
-            await internalAPI
+           return await internalAPI
                 .post("/getStreamID", {host})
                 .then(async ({frs_server, stream_id}) => {
                     if (frs_server && stream_id) {
@@ -156,13 +155,11 @@ class API {
         }
     }
 
-    /**
-     * Логирование события ткрытия двери
-     * @param {string} host - ip address вызывной панели
-     * @param {number} door - идентификатор двери, допустимые значения 0,1,2
-     * @param {string} detail - код или sn ключа квартиры
-     * @param {string} type - допустимые значения code / rfid
-     * @eturns
+    /** Логирование события открытия двери
+     * @param {string} host ip address вызывной панели.
+     * @param {1,2,3} door идентификатор двери, допустимые значения 0,1,2
+     * @param {string} detail код или sn ключа квартиры
+     * @param {"rfid"|"code"} type
      */
     async openDoor({host, door = 0, detail, type}) {
         try {

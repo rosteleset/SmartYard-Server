@@ -2,7 +2,6 @@
   "name": "syslog",
   "version": "1.0.0",
   "description": "Intercom Syslog service",
-  "main": "beward.js",
   "type": "commonjs",
   "scripts": {
     "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:qtech\"",

@@ -38,6 +38,7 @@
             [--install-crontabs]
             [--uninstall-crontabs]
             [--get-db-version]
+            [--check-backends]
         \n";
 
         exit(1);
@@ -348,7 +349,7 @@
         exit(0);
     }
 
-    if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--install-crontabs"])) {
+    if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--uninstall-crontabs"])) {
         require_once "utils/install_crontabs.php";
 
         $n = unInstallCrontabs();
@@ -356,8 +357,35 @@
         exit(0);
     }
 
-    if (count($args) == 1 && array_key_exists("--get-db-version", $args) && !isset($args["--install-crontabs"])) {
+    if (count($args) == 1 && array_key_exists("--get-db-version", $args) && !isset($args["--get-db-version"])) {
         echo "dbVersion: $version\n";
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--check-backends", $args) && !isset($args["--check-backends"])) {
+        $all_ok = true;
+
+        foreach ($config["backends"] as $backend => $null) {
+            $t = loadBackend($backend);
+            if (!$t) {
+                echo "loading $backend failed\n";
+                $all_ok = false;
+            } else {
+                try {
+                    if (!$t->check()) {
+                        echo "error checking backend $backend\n";
+                        $all_ok = false;
+                    }
+                } catch (\Exception $e) {
+                    print_r($e);
+                    $all_ok = false;
+                }
+            }
+        }
+
+        if ($all_ok) {
+            echo "everything is all right\n";
+        }
         exit(0);
     }
 
