@@ -168,9 +168,10 @@
     }
 
     try {
-        $config = @json_decode(file_get_contents("config/config.json"), true);
+        $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
     } catch (Exception $e) {
         echo "can't load config file\n";
+        echo strtolower($e->getMessage()) . "\n";
         exit(1);
     }
 
