@@ -133,6 +133,13 @@
         }
     ],
 
+    "frs_servers": [
+        {
+            "title": "First server",
+            "ip": "127.0.0.1"
+        }
+    ],
+
     "email": {
         "server": "127.0.0.1",
         "port": 587,

@@ -1,44 +1,38 @@
 <?php
 
     /**
-     * tt api
+     * config api
      */
 
-    namespace api\tt {
+    namespace api\config {
 
         use api\api;
 
         /**
-         * tt (task tracker metadata(s)) method
+         * config method
          */
 
-        class tt extends api {
+        class config extends api {
 
             public static function GET($params) {
-                $tt = loadBackend("tt");
+                $config = loadBackend("config");
 
-                if ($tt) {
-                    $meta = [
-                        "projects" => $tt->getProjects(),
-                        "workflows" => $tt->getWorkflows(),
-                        "workflowAliases" => $tt->getWorkflowAliases(),
-                        "filters" => $tt->availableFilters(),
-                        "statuses" => $tt->getStatuses(),
-                        "resolutions" => $tt->getResolutions(),
-                        "customFields" => $tt->getCustomFields(),
-                        "roles" => $tt->getRoles(),
-                        "tags" => $tt->getTags(),
+                if ($config) {
+                    $sections = [
+                        "FRSServers" => $config->getFRSServers(),
                     ];
 
-                    return api::ANSWER($meta, "meta");
+                    return api::ANSWER($sections, "sections");
                 } else {
                     return api::ERROR("inaccessible");
                 }
             }
 
             public static function index() {
-                if (loadBackend("tt")) {
-                    return [ "GET" ];
+                if (loadBackend("config")) {
+                    return [
+                        "GET" => "#common",
+                    ];
                 } else {
                     return false;
                 }

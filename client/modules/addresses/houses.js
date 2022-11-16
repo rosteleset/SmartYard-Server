@@ -325,6 +325,7 @@
     addEntrance: function (houseId) {
         mYesNo(i18n("addresses.useExistingEntranceQuestion"), i18n("addresses.addEntrance"), () => {
             loadingStart();
+            GET("config")
             GET("cameras", "cameras").
             done(response => {
                 modules.addresses.houses.meta.cameras = response.cameras;
@@ -497,19 +498,10 @@
                                 ]
                             },
                             {
-                                id: "plog",
+                                id: "frs",
                                 type: "select",
-                                title: i18n("addresses.plog"),
-                                options: [
-                                    {
-                                        id: "0",
-                                        text: i18n("addresses.plogNone"),
-                                    },
-                                    {
-                                        id: "1",
-                                        text: i18n("addresses.plogEnabled"),
-                                    }
-                                ]
+                                title: i18n("addresses.rsf"),
+                                options: frss,
                             },
                             {
                                 id: "prefix",
