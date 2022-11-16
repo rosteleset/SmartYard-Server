@@ -497,6 +497,11 @@
                                 ]
                             },
                             {
+                                id: "plog",
+                                type: "yesno",
+                                title: i18n("addresses.plog"),
+                            },
+                            {
                                 id: "prefix",
                                 type: "text",
                                 title: i18n("addresses.prefix"),
