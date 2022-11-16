@@ -20,7 +20,6 @@
  * @apiSuccess {String} names.patronymic отчество
  */
     $user_phone = @$postdata['userPhone'];
-    // $user_phone[0] = '8';
     $user_phone = substr($user_phone,1);
     $households = loadBackend("households");
 
@@ -33,7 +32,7 @@
         $result3 = $isdn->checkIncoming('7'. $user_phone);
 
         if ($result || $result2 || $result3) {
-            $user_phone = '8' . $user_phone;
+            $user_phone = '7' . $user_phone;
             $token = GUIDv4();
             $subscribers = $households->getSubscribers("mobile", $user_phone);
                 $names = [ "name" => "", "patronymic" => "" ];

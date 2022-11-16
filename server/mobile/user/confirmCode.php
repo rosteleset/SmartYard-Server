@@ -21,7 +21,9 @@
  * @apiSuccess {String} names.patronymic отчество
  */
     $user_phone = @$postdata['userPhone'];
-    $user_phone[0] = '8';
+    if ($user_phone[0] == '8') { 
+        $user_phone[0] = '7'; 
+    }
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");
     $households = loadBackend("households");

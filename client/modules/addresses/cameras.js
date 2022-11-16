@@ -113,6 +113,12 @@
                     }
                 },
                 {
+                    id: "name",
+                    type: "text",
+                    title: i18n("addresses.cameraName"),
+                    placeholder: i18n("addresses.cameraName"),
+                },
+                {
                     id: "publish",
                     type: "text",
                     title: i18n("addresses.publish"),
@@ -328,6 +334,13 @@
                         validate: v => {
                             return $.trim(v) !== "";
                         }
+                    },
+                    {
+                        id: "name",
+                        type: "text",
+                        title: i18n("addresses.cameraName"),
+                        placeholder: i18n("addresses.cameraName"),
+                        value: camera.name,
                     },
                     {
                         id: "publish",
