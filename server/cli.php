@@ -114,7 +114,7 @@
         global $db;
 
         if (@$db) {
-            $pids = $db->get("select running_process_id, pid from core_running_processes where done is null or done = ''", false, [
+            $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
                 "running_process_id" => "id",
                 "pid" => "pid",
             ]);
@@ -246,9 +246,9 @@
 
     check_if_pid_exists();
     if (@$db) {
-        $db->modify("delete from core_running_processes where (done is null or done = '') and coalesce(expire, 0) < " . time());
+        $db->modify("delete from core_running_processes where done is null and coalesce(expire, 0) < " . time());
 
-        $already = (int)$db->get("select count(*) as already from core_running_processes where (done is null or done = '') and params = :params and pid <> " . getmypid(), [
+        $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
             'params' => $params,
         ], false, [ 'fieldlify' ]);
 
