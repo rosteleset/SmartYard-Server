@@ -1707,13 +1707,15 @@
                             title: i18n("addresses.url"),
                         },
                         {
+                            title: i18n("addresses.cameraName"),
+                        },
+                        {
                             title: i18n("addresses.comments"),
                             fullWidth: true,
                         },
                     ],
                     rows: () => {
                         let rows = [];
-
                         for (let i in modules.addresses.houses.meta.cameras) {
                             rows.push({
                                 uid: modules.addresses.houses.meta.cameras[i].cameraId,
@@ -1724,6 +1726,10 @@
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].url,
+                                    },
+                                    {
+                                        data: modules.addresses.houses.meta.cameras[i].name,
+                                        nowrap: true,
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].comment,
