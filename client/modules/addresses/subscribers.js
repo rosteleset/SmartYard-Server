@@ -591,6 +591,9 @@
                     title: i18n("addresses.url"),
                 },
                 {
+                    title: i18n("addresses.cameraName"),
+                },
+                {
                     title: i18n("addresses.comments"),
                     fullWidth: true,
                 },
@@ -608,6 +611,10 @@
                             },
                             {
                                 data: list[i].url,
+                            },
+                            {
+                                data: list[i].name,
+                                nowrap: true,
                             },
                             {
                                 data: list[i].comment,
