@@ -1,16 +1,16 @@
 <?php
 
     /**
-     * backends config namespace
+     * backends configs namespace
      */
 
-    namespace backends\config {
+    namespace backends\configs {
 
         /**
-         * config.json config class
+         * config.json configs class
          */
 
-        class json extends config {
+        class json extends configs {
             /**
              * @inheritDoc
              */
@@ -40,7 +40,7 @@
              */
             public function getFRSServers()
             {
-                // TODO: Implement getFRSServers() method.
+                return $this->config["frs_servers"];
             }
         }
     }

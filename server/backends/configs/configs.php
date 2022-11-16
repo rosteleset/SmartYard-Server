@@ -1,18 +1,18 @@
 <?php
 
     /**
-     * backends config namespace
+     * backends configs namespace
      */
 
-    namespace backends\config {
+    namespace backends\configs {
 
         use backends\backend;
 
         /**
-         * base config class
+         * base configs class
          */
 
-        abstract class config extends backend {
+        abstract class configs extends backend {
             /**
              * @return mixed
              */

@@ -50,6 +50,20 @@
             })
         }
 
+        frss = [];
+
+        frss.push({
+            value: "-",
+            text: i18n('no'),
+        });
+
+        for (let i in modules.addresses.cameras.meta.frsServers) {
+            frss.push({
+                value: modules.addresses.cameras.meta.frsServers[i].ip,
+                text: modules.addresses.cameras.meta.frsServers[i].title,
+            });
+        }
+
         cardForm({
             title: i18n("addresses.addCamera"),
             footer: true,
@@ -190,6 +204,13 @@
                     value: "0.0",
                 },
                 {
+                    id: "frs",
+                    type: "select2",
+                    title: i18n("addresses.frs"),
+                    value: "-",
+                    options: frss,
+                },
+                {
                     id: "mdLeft",
                     type: "text",
                     title: i18n("addresses.mdLeft"),
@@ -258,6 +279,20 @@
                 camera = modules.addresses.cameras.meta.cameras[i];
                 break;
             }
+        }
+
+        frss = [];
+
+        frss.push({
+            value: "-",
+            text: i18n('no'),
+        });
+
+        for (let i in modules.addresses.cameras.meta.frsServers) {
+            frss.push({
+                value: modules.addresses.cameras.meta.frsServers[i].ip,
+                text: modules.addresses.cameras.meta.frsServers[i].title,
+            });
         }
 
         if (camera) {
@@ -414,6 +449,13 @@
                         title: i18n("addresses.distance"),
                         placeholder: "0.0",
                         value: camera.distance,
+                    },
+                    {
+                        id: "frs",
+                        type: "select2",
+                        title: i18n("addresses.frs"),
+                        value: camera.frs,
+                        options: frss,
                     },
                     {
                         id: "mdLeft",

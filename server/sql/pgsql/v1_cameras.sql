@@ -15,6 +15,7 @@ CREATE TABLE cameras
     direction real,
     angle real,
     distance real,
+    frs character varying,
     md_left integer,
     md_top integer,
     md_width integer,

@@ -325,7 +325,6 @@
     addEntrance: function (houseId) {
         mYesNo(i18n("addresses.useExistingEntranceQuestion"), i18n("addresses.addEntrance"), () => {
             loadingStart();
-            GET("config")
             GET("cameras", "cameras").
             done(response => {
                 modules.addresses.houses.meta.cameras = response.cameras;
@@ -496,12 +495,6 @@
                                         text: i18n("yes"),
                                     }
                                 ]
-                            },
-                            {
-                                id: "frs",
-                                type: "select",
-                                title: i18n("addresses.rsf"),
-                                options: frss,
                             },
                             {
                                 id: "prefix",
