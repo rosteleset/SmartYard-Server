@@ -31,6 +31,33 @@
             /**
              * @return mixed
              */
+            public function getAsteriskServer($ip) {
+                $asterisks = $this->getAsteriskServers();
+
+                foreach ($asterisks as $server) {
+                    if (in_array($ip, $server)) {
+                        return $server;
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @return mixed
+             */
             abstract public function getFRSServers();
+
+            public function getFRSServer($ip) {
+                $frss = $this->getFRSServers();
+
+                foreach ($frss as $server) {
+                    if (in_array($ip, $server)) {
+                        return $server;
+                    }
+                }
+
+                return false;
+            }
         }
     }

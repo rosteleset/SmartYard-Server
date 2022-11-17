@@ -26,11 +26,6 @@ namespace backends\cameras
         abstract public function getCamera($cameraId);
 
         /**
-         * @return false|array
-         */
-        abstract public function getModels();
-
-        /**
          * @param $enabled
          * @param $model
          * @param $url

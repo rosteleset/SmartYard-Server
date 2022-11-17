@@ -11,12 +11,23 @@
          */
 
         class json extends configs {
+
             /**
              * @inheritDoc
              */
             public function getDomophonesModels()
             {
-                // TODO: Implement getDomophonesModels() method.
+                $files = scandir(__DIR__ . "/../../../hw/domophones/models");
+
+                $models = [];
+
+                foreach ($files as $file) {
+                    if (substr($file, -5) === ".json") {
+                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $file), true);
+                    }
+                }
+
+                return $models;
             }
 
             /**
@@ -24,7 +35,17 @@
              */
             public function getCamerasModels()
             {
-                // TODO: Implement getCamerasModels() method.
+                $files = scandir(__DIR__ . "/../../../hw/cameras/models");
+
+                $models = [];
+
+                foreach ($files as $file) {
+                    if (substr($file, -5) === ".json") {
+                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/cameras/models/" . $file), true);
+                    }
+                }
+
+                return $models;
             }
 
             /**
@@ -32,7 +53,7 @@
              */
             public function getAsteriskServers()
             {
-                // TODO: Implement getAsteriskServers() method.
+                return $this->config["asterisk_servers"];
             }
 
             /**

@@ -80,7 +80,8 @@ namespace backends\cameras
                 return false;
             }
 
-            $models = $this->getModels();
+            $configs = loadBackend("configs");
+            $models = $configs->getCamerasModels();
 
             if (!@$models[$model]) {
                 return false;
@@ -133,7 +134,8 @@ namespace backends\cameras
                 return false;
             }
 
-            $models = $this->getModels();
+            $configs = loadBackend("configs");
+            $models = $configs->getCamerasModels();
 
             if (!@$models[$model]) {
                 setLastError("modelUnknown");
@@ -179,24 +181,6 @@ namespace backends\cameras
             }
 
             return $this->db->modify("delete from cameras where camera_id = $cameraId");
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function getModels()
-        {
-            $files = scandir(__DIR__ . "/../../../hw/cameras/models");
-
-            $models = [];
-
-            foreach ($files as $file) {
-                if (substr($file, -5) === ".json") {
-                    $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/cameras/models/" . $file), true);
-                }
-            }
-
-            return $models;
         }
     }
 }

@@ -16,14 +16,15 @@
 
             public static function GET($params) {
                 $households = loadBackend("households");
+                $configs = loadBackend("configs");
 
                 if (!$households) {
                     return api::ERROR();
                 } else {
                     $response = [
                         "domophones" => $households->getDomophones(),
-                        "models" => $households->getModels(),
-                        "servers" => $households->getAsteriskServers(),
+                        "models" => $configs->getDomophonesModels(),
+                        "servers" => $configs->getAsteriskServers(),
                     ];
 
                     return api::ANSWER($response, "domophones");

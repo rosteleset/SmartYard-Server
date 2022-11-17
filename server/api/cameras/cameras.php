@@ -20,7 +20,7 @@
 
                 $response = [
                     "cameras" => $cameras->getCameras(),
-                    "models" => $cameras->getModels(),
+                    "models" => $configs->getCamerasModels(),
                     "frsServers" => $configs->getFRSServers(),
                 ];
 

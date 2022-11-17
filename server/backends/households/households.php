@@ -169,33 +169,6 @@
             abstract public function getDomophones($by = "all", $query = -1);
 
             /**
-             * @return mixed
-             */
-            public function getAsteriskServers() {
-                return $this->config["asterisk_servers"];
-            }
-
-            /**
-             * @return false|array
-             */
-            public function getAsteriskServer($domophoneId) {
-                $server_ip = $this->getDomophone($domophoneId)['server'];
-
-                foreach ($this->config["asterisk_servers"] as $server) {
-                    if (in_array($server_ip, $server)) {
-                        return $server;
-                    }
-                }
-
-                return false;
-            }
-
-            /**
-             * @return false|array
-             */
-            abstract public function getModels();
-
-            /**
              * @return false|array
              */
             abstract public function getCMSes();

@@ -652,7 +652,8 @@
                     return false;
                 }
 
-                $models = $this->getModels();
+                $configs = loadBackend("configs");
+                $models = $configs->getDomophonesModels();
 
                 if (!@$models[$model]) {
                     setLastError("modelUnknown");
@@ -718,7 +719,8 @@
                     return false;
                 }
 
-                $models = $this->getModels();
+                $configs = loadBackend("configs");
+                $models = $configs->getDomophonesModels();
 
                 if (!@$models[$model]) {
                     setLastError("modelUnknown");
@@ -793,24 +795,6 @@
                     &&
                     $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
                 ;
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getModels()
-            {
-                $files = scandir(__DIR__ . "/../../../hw/domophones/models");
-
-                $models = [];
-
-                foreach ($files as $file) {
-                    if (substr($file, -5) === ".json") {
-                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $file), true);
-                    }
-                }
-
-                return $models;
             }
 
             /**
