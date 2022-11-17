@@ -419,6 +419,9 @@
                                 id: "callerId",
                                 type: "text",
                                 title: i18n("addresses.callerId"),
+                                validate: (v) => {
+                                    return $.trim(v) !== "";
+                                },
                             },
                             {
                                 id: "cameraId",
@@ -960,6 +963,9 @@
                                 type: "text",
                                 title: i18n("addresses.callerId"),
                                 value: entrance.callerId,
+                                validate: (v) => {
+                                    return $.trim(v) !== "";
+                                },
                             },
                             {
                                 id: "cameraId",
