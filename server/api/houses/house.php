@@ -29,7 +29,7 @@
                         "entrances" => $households->getEntrances("house", $params["_id"]),
                         "cameras" => $households->getCameras("house", $params["_id"]),
                         "domophoneModels" => $configs->getDomophonesModels(),
-                        "cmses" => $households->getCMSes(),
+                        "cmses" => $configs->getCMSes(),
                     ];
 
                     $house = ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?$house:false;

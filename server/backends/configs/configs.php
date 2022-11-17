@@ -59,5 +59,10 @@
 
                 return false;
             }
+
+            /**
+             * @return false|array
+             */
+            abstract public function getCMSes();
         }
     }

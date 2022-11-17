@@ -63,5 +63,23 @@
             {
                 return $this->config["frs_servers"];
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getCMSes()
+            {
+                $files = scandir(__DIR__ . "/../../../hw/domophones/cmses");
+
+                $cmses = [];
+
+                foreach ($files as $file) {
+                    if (substr($file, -5) === ".json") {
+                        $cmses[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/cmses/" . $file), true);
+                    }
+                }
+
+                return $cmses;
+            }
         }
     }

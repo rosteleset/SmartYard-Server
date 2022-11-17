@@ -169,11 +169,6 @@
             abstract public function getDomophones($by = "all", $query = -1);
 
             /**
-             * @return false|array
-             */
-            abstract public function getCMSes();
-
-            /**
              * @param $enabled
              * @param $model
              * @param $server

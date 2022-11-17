@@ -10,7 +10,7 @@
         $domophone = $households->getDomophone($domophoneId);
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
         $asterisk_server = $configs->getAsteriskServer($domophoneId);
-        $cmses = $households->getCmses();
+        $cmses = $configs->getCMSes();
 
         try {
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $firstTime);
