@@ -50,6 +50,8 @@
  * 424 неверный токен
  */
 
+use backends\plog\plog;
+
 auth();
 $households = loadBackend("households");
 $flat_id = (int)@$postdata['flatId'];
@@ -68,23 +70,86 @@ if (!@$postdata['day']) {
     response(404);
 }
 
-$events = loadBackend("events");
+$events = loadBackend("plog");
 
 if (!$events) {
     response(403);
 }
 
-//TODO сделать проверку на доступность и видимость событий
+// TODO сделать проверку на доступность и видимость событий
 
 try {
     $date = date('Ymd', strtotime(@$postdata['day']));
     $result = $events->getDetailEventsByDay($flat_id, $date);
     if ($result) {
-        response(200, $result);
+        $events_details = [];
+        foreach ($result as &$row) {
+            $e_details = [];
+            $e_details['date'] = $row[plog::COLUMN_DATE];
+            $e_details['uuid'] = $row[plog::COLUMN_EVENT_UUID];
+            $e_details['image'] = $row[plog::COLUMN_IMAGE_UUID];
+            $e_details['previewType'] = $row[plog::COLUMN_PREVIEW];
+            $e_details['objectId'] = $row[plog::COLUMN_DOMOPHONE_ID];
+            $e_details['objectType'] = 0;
+            $e_details['objectMechanizma'] = $row[plog::COLUMN_DOMOPHONE_OUTPUT];
+            $e_details['mechanizmaDescription'] = $row[plog::COLUMN_DOMOPHONE_OUTPUT_DESCRIPTION];
+            $e_details['event'] = $row[plog::COLUMN_EVENT];
+            $face = json_decode($row[plog::COLUMN_FACE]);
+            if ($face->width && $face->height) {
+                $e_details['detailX']['face'] = [
+                    'left' => $face->left,
+                    'top' => $face->top,
+                    'width' => $face->width,
+                    'height' => $face->height
+                ];
+            }
+            if ($face->faceId) {
+                $e_details['detailX']['faceId'] = $face->faceId;
+            }
+
+            switch ((int)$row[plog::COLUMN_EVENT]) {
+                case plog::EVENT_UNANSWERED_CALL:
+                case plog::EVENT_ANSWERED_CALL:
+                    $e_details['detailX']['opened'] = ($row[plog::COLUMN_OPENED] == 1) ? 't' : 'f';
+                    break;
+
+                case plog::EVENT_OPENED_BY_KEY:
+                    $e_details['detailX']['key'] = $row[plog::COLUMN_RFID];
+                    break;
+
+                case plog::EVENT_OPENED_BY_APP:
+                    $e_details['detailX']['phone'] = $row[plog::COLUMN_USER_PHONE];
+                    break;
+
+                case plog::EVENT_OPENED_BY_FACE:
+                    break;
+
+                case plog::EVENT_OPENED_BY_CODE:
+                    $e_details['detailX']['code'] = $row[plog::COLUMN_CODE];
+                    break;
+
+                case plog::EVENT_OPENED_GATES_BY_CALL:
+                    $e_details['detailX']['phoneFrom'] = $row[plog::COLUMN_USER_PHONE];
+                    $e_details['detailX']['phoneTo'] = $row[plog::COLUMN_GATE_PHONE];
+                    break;
+            }
+            if ((int)$row[plog::COLUMN_PREVIEW]) {
+                // TODO переделать на монго
+                $date = explode('-', explode(' ', $row[plog::COLUMN_DATE])[0]);
+                $img = $row[plog::COLUMN_IMAGE_UUID];
+                $image_url_prefix = $events->getImageUrlPrefix();
+                $url = "$image_url_prefix/$date[0]-$date[1]-$date[2]/$img[0]/$img[1]/$img[2]/$img[3]/$img.jpg";
+                $e_details['preview'] = $url;
+            }
+
+            $events_details[] = $e_details;
+        }
+        response(200, $events_details);
     } else {
         response();
     }
 } catch (\Throwable $e)  {
+    response(200, $e->getMessage());
     response(500, false, 'Внутренняя ошибка сервера');
 }
     

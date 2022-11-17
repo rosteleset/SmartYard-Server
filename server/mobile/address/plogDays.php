@@ -39,7 +39,7 @@ if (!$f) {
     response(404);
 }
 
-$events = loadBackend("events");
+$events = loadBackend("plog");
 
 if (!$events) {
     response(403);

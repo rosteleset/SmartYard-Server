@@ -14,6 +14,61 @@
          */
         abstract class plog extends backend
         {
+            //типы событий
+            const EVENT_UNANSWERED_CALL = 1;
+            const EVENT_ANSWERED_CALL = 2;
+            const EVENT_OPENED_BY_KEY = 3;
+            const EVENT_OPENED_BY_APP = 4;
+            const EVENT_OPENED_BY_FACE = 5;
+            const EVENT_OPENED_BY_CODE = 6;
+            const EVENT_OPENED_GATES_BY_CALL = 7;
 
+            //колонки событий
+            const COLUMN_DATE = 'date';
+            const COLUMN_EVENT_UUID = 'event_uuid';
+            const COLUMN_HIDDEN = 'hidden';
+            const COLUMN_IMAGE_UUID = 'image_uuid';
+            const COLUMN_FLAT_ID = 'flat_id';
+            const COLUMN_DOMOPHONE_ID = 'domophone_id';
+            const COLUMN_DOMOPHONE_OUTPUT = 'domophone_output';
+            const COLUMN_DOMOPHONE_OUTPUT_DESCRIPTION = 'domophone_output_description';
+            const COLUMN_EVENT = 'event';
+            const COLUMN_OPENED = 'opened';
+            const COLUMN_FACE = 'face';
+            const COLUMN_RFID = 'rfid';
+            const COLUMN_CODE = 'code';
+            const COLUMN_USER_PHONE = 'user_phone';
+            const COLUMN_GATE_PHONE = 'gate_phone';
+            const COLUMN_PREVIEW = 'preview';
+
+            /**
+             * Получить список дней с событиями
+             * @param int $flat_id идентификатор квартиры
+             * @param array $filter_events фильтр типов событий
+             * @return false|array
+             */
+            abstract public function getEventsDays(int $flat_id, $filter_events);
+
+            /**
+             * Получить детальный список событий
+             * @param int $flat_id идентификатор квартиры
+             * @param string $day день событий
+             * @return false|array
+             */
+            abstract public function getDetailEventsByDay(int $flat_id, string $date);
+
+            /**
+             * Записать данные событий в базу
+             * @param array $event_data данные событий
+             */
+            abstract public function writeEventData($event_data);
+
+            /**
+             * Получить кадр события с устройства на дату
+             * @param string $ip адрес устройства
+             * @param false|string $date дата и время события
+             * @return false|object
+             */
+            abstract public function getCamshot($ip, $date = false);
         }
     }
