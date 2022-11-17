@@ -813,7 +813,6 @@
                     "server" => "server",
                     "url" => "url",
                     "credentials" => "credentials",
-                    "caller_id" => "callerId",
                     "dtmf" => "dtmf",
                     "first_time" => "firstTime",
                     "nat" => "nat",
