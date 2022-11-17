@@ -1346,6 +1346,13 @@
                 $p = false;
 
                 switch ($by) {
+                    case "id":
+                        if (!checkInt($params)) {
+                            return [];
+                        }
+                        $q = "select camera_id from cameras where camera_id = $params";
+                        break;
+
                     case "house":
                         if (!checkInt($params)) {
                             return [];
