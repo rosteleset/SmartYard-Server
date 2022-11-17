@@ -5,11 +5,12 @@
 
         $households = loadBackend('households');
         $addresses = loadBackend('addresses');
+        $configs = loadBackend('configs');
 
         $domophone = $households->getDomophone($domophoneId);
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
-        $asterisk_server = $households->getAsteriskServer($domophoneId);
-        $cmses = $households->getCmses();
+        $asterisk_server = $configs->getAsteriskServer($domophoneId);
+        $cmses = $configs->getCMSes();
 
         try {
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $firstTime);

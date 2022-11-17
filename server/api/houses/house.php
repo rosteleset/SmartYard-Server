@@ -19,6 +19,7 @@
             public static function GET($params)
             {
                 $households = loadBackend("households");
+                $configs = loadBackend("configs");
 
                 if (!$households) {
                     return api::ERROR();
@@ -27,8 +28,8 @@
                         "flats" => $households->getFlats("house", $params["_id"]),
                         "entrances" => $households->getEntrances("house", $params["_id"]),
                         "cameras" => $households->getCameras("house", $params["_id"]),
-                        "domophoneModels" => $households->getModels(),
-                        "cmses" => $households->getCMSes(),
+                        "domophoneModels" => $configs->getDomophonesModels(),
+                        "cmses" => $configs->getCMSes(),
                     ];
 
                     $house = ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?$house:false;

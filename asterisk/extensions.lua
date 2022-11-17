@@ -454,9 +454,12 @@ extensions = {
             if domophoneId and flatId and flatNumber then
                 log_debug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
 
-                local domophone = dm("domophone", domophoneId)
+                local entrance = dm("entrance", {
+                    domophoneId = domophoneId,
+                })
+                log_debug("entrance: " .. inspect(entrance))
 
-                channel.CALLERID("name"):set(domophone.callerId .. ", " .. math.tointeger(flatNumber))
+                channel.CALLERID("name"):set(entrance.callerId .. ", " .. math.tointeger(flatNumber))
 
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
                     local dest = ""

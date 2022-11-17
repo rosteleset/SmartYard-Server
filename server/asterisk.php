@@ -276,11 +276,13 @@
                 case "log":
                     logMsg($params);
                     error_log($params);
+
                     break;
 
                 case "debug":
                     debugMsg($params);
                     error_log($params);
+
                     break;
 
                 case "autoopen":
@@ -294,6 +296,7 @@
                     $rabbit = (int)$flat["whiteRabbit"];
 
                     echo json_encode(strtotime($flat["autoOpen"]) > time() || ($rabbit && strtotime($flat["lastOpened"]) + $rabbit * 60 > time()));
+
                     break;
 
                 case "flat":
@@ -306,24 +309,34 @@
                     $households = loadBackend("households");
 
                     echo json_encode($households->getFlats("flatIdByPrefix", $params));
+
                     break;
 
                 case "subscribers":
                     $households = loadBackend("households");
 
                     echo json_encode($households->getSubscribers("flat", (int)$params));
+
                     break;
 
                 case "domophone":
                     $households = loadBackend("households");
 
                     echo json_encode($households->getDomophone((int)$params));
+
                     break;
 
                 case "entrance":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getEntrances("domophoneId", [ "domophoneId" => (int)$params, "output" => "0" ]));
+                    $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => (int)$params, "output" => "0" ]);
+
+                    if ($entrances) {
+                        echo json_encode($entrances[0]);
+                    } else {
+                        echo json_encode(false);
+                    }
+
                     break;
 
                 case "camshot":
@@ -333,16 +346,16 @@
                         $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
                         if ($entrances && $entrances[0]) {
-                            $camera = $households->getCamera($entrances[0]["cameraId"]);
+                            $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
-                            if ($camera) {
-                                $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
+                            if ($cameras && $cameras[0]) {
+                                $model = loadCamera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
                                 $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                                 $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                                    "model" => $camera["model"],
-                                    "url" => $camera["url"],
-                                    "credentials" => $camera["credentials"],
+                                    "model" => $cameras[0]["model"],
+                                    "url" => $cameras[0]["url"],
+                                    "credentials" => $cameras[0]["credentials"],
                                 ]));
 
                                 echo $params["hash"];

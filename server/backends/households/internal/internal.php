@@ -190,7 +190,7 @@
              */
             function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
-                if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
+                if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
 
@@ -203,10 +203,6 @@
                 }
 
                 if (!checkStr($callerId)) {
-                    return false;
-                }
-
-                if (!checkInt($plog)) {
                     return false;
                 }
 
@@ -259,7 +255,7 @@
              */
             function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
             {
-                if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType)) {
+                if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
 
@@ -284,10 +280,6 @@
                     ]) !== false;
                 } else {
                     $r1 = $this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") !== false;
-                }
-
-                if (!checkInt($plog)) {
-                    return false;
                 }
 
                 return
@@ -601,7 +593,6 @@
                     "server" => "server",
                     "url" => "url",
                     "credentials" => "credentials",
-                    "caller_id" => "callerId",
                     "dtmf" => "dtmf",
                     "first_time" => "firstTime",
                     "nat" => "nat",
@@ -654,14 +645,15 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $callerId, $dtmf, $nat, $comment)
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comment)
             {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
                 }
 
-                $models = $this->getModels();
+                $configs = loadBackend("configs");
+                $models = $configs->getDomophonesModels();
 
                 if (!@$models[$model]) {
                     setLastError("modelUnknown");
@@ -687,13 +679,12 @@
                     return false;
                 }
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :nat, :comment)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
                     "url" => $url,
                     "credentials" => $credentials,
-                    "caller_id" => $callerId,
                     "dtmf" => $dtmf,
                     "nat" => $nat,
                     "comment" => $comment,
@@ -711,7 +702,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -728,7 +719,8 @@
                     return false;
                 }
 
-                $models = $this->getModels();
+                $configs = loadBackend("configs");
+                $models = $configs->getDomophonesModels();
 
                 if (!@$models[$model]) {
                     setLastError("modelUnknown");
@@ -760,13 +752,12 @@
                     return false;
                 }
 
-                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
+                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
                     "url" => $url,
                     "credentials" => $credentials,
-                    "caller_id" => $callerId,
                     "dtmf" => $dtmf,
                     "first_time" => $firstTime,
                     "nat" => $nat,
@@ -804,42 +795,6 @@
                     &&
                     $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
                 ;
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getModels()
-            {
-                $files = scandir(__DIR__ . "/../../../hw/domophones/models");
-
-                $models = [];
-
-                foreach ($files as $file) {
-                    if (substr($file, -5) === ".json") {
-                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $file), true);
-                    }
-                }
-
-                return $models;
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getCMSes()
-            {
-                $files = scandir(__DIR__ . "/../../../hw/domophones/cmses");
-
-                $cmses = [];
-
-                foreach ($files as $file) {
-                    if (substr($file, -5) === ".json") {
-                        $cmses[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/cmses/" . $file), true);
-                    }
-                }
-
-                return $cmses;
             }
 
             /**
@@ -1287,7 +1242,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -1343,12 +1298,12 @@
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, plog, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                         break;
                 }
 
                 if (!$q) {
-                    $q = "select address_house_id, plog, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
+                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
                 return $this->db->get($q,
@@ -1373,35 +1328,6 @@
                         "locks_disabled" => "locksDisabled",
                     ]
                 );
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getCamera($cameraId)
-            {
-                if (!checkInt($cameraId)) {
-                    return false;
-                }
-
-                $camera = $this->db->get("select * from cameras where camera_id = $cameraId", false, [
-                    "camera_id" => "domophoneId",
-                    "enabled" => "enabled",
-                    "model" => "model",
-                    "url" => "url",
-                    "credentials" => "credentials",
-                    "comment" => "comment"
-                ], [
-                    "singlify"
-                ]);
-
-                if ($camera) {
-                    $camera["json"] = json_decode(file_get_contents("hw/cameras/models/" . $camera["model"]), true);
-
-                    return $camera;
-                } else {
-                    return false;
-                }
             }
 
             /**

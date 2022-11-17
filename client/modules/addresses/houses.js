@@ -403,21 +403,25 @@
                                 }
                             },
                             {
-                                id: "lon",
+                                id: "geo",
                                 type: "text",
-                                title: i18n("addresses.lon"),
-                                placeholder: i18n("addresses.lon"),
-                            },
-                            {
-                                id: "lat",
-                                type: "text",
-                                title: i18n("addresses.lat"),
-                                placeholder: i18n("addresses.lat"),
+                                title: i18n("addresses.geo"),
+                                placeholder: "0,0",
+                                hint: i18n("addresses.lon") + "," + i18n("addresses.lat"),
+                                value: "0.0,0.0",
+                                validate: v => {
+                                    const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
+
+                                    return regex.exec(v) !== null;
+                                },
                             },
                             {
                                 id: "callerId",
                                 type: "text",
                                 title: i18n("addresses.callerId"),
+                                validate: (v) => {
+                                    return $.trim(v) !== "";
+                                },
                             },
                             {
                                 id: "cameraId",
@@ -498,18 +502,8 @@
                             },
                             {
                                 id: "plog",
-                                type: "select",
+                                type: "yesno",
                                 title: i18n("addresses.plog"),
-                                options: [
-                                    {
-                                        id: "0",
-                                        text: i18n("addresses.plogNone"),
-                                    },
-                                    {
-                                        id: "1",
-                                        text: i18n("addresses.plogEnabled"),
-                                    }
-                                ]
                             },
                             {
                                 id: "prefix",
@@ -524,6 +518,9 @@
                             },
                         ],
                         callback: result => {
+                            let g = result.geo.split(",");
+                            result.lon = g[0];
+                            result.lat = g[1];
                             if (parseInt(result.domophoneOutput) > 0) {
                                 result.cms = 0;
                                 result.shared = 0;
@@ -949,24 +946,26 @@
                                 value: entrance.entrance,
                             },
                             {
-                                id: "lon",
+                                id: "geo",
                                 type: "text",
-                                title: i18n("addresses.lon"),
-                                placeholder: i18n("addresses.lon"),
-                                value: parseFloat(entrance.lon)?entrance.lon:"",
-                            },
-                            {
-                                id: "lat",
-                                type: "text",
-                                title: i18n("addresses.lat"),
-                                placeholder: i18n("addresses.lat"),
-                                value: parseFloat(entrance.lat)?entrance.lat:"",
+                                title: i18n("addresses.geo"),
+                                placeholder: "0,0",
+                                hint: i18n("addresses.lon") + "," + i18n("addresses.lat"),
+                                value: entrance.lon + "," + entrance.lat,
+                                validate: v => {
+                                    const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
+
+                                    return regex.exec(v) !== null;
+                                },
                             },
                             {
                                 id: "callerId",
                                 type: "text",
                                 title: i18n("addresses.callerId"),
                                 value: entrance.callerId,
+                                validate: (v) => {
+                                    return $.trim(v) !== "";
+                                },
                             },
                             {
                                 id: "cameraId",
@@ -1089,6 +1088,9 @@
                             if (result.delete === "yes") {
                                 modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
                             } else {
+                                let g = result.geo.split(",");
+                                result.lon = g[0];
+                                result.lat = g[1];
                                 if (parseInt(result.domophoneOutput) > 0) {
                                     result.cms = 0;
                                     result.shared = 0;

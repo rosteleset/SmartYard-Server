@@ -169,50 +169,17 @@
             abstract public function getDomophones($by = "all", $query = -1);
 
             /**
-             * @return mixed
-             */
-            public function getAsteriskServers() {
-                return $this->config["asterisk_servers"];
-            }
-
-            /**
-             * @return false|array
-             */
-            public function getAsteriskServer($domophoneId) {
-                $server_ip = $this->getDomophone($domophoneId)['server'];
-
-                foreach ($this->config["asterisk_servers"] as $server) {
-                    if (in_array($server_ip, $server)) {
-                        return $server;
-                    }
-                }
-
-                return false;
-            }
-
-            /**
-             * @return false|array
-             */
-            abstract public function getModels();
-
-            /**
-             * @return false|array
-             */
-            abstract public function getCMSes();
-
-            /**
              * @param $enabled
              * @param $model
              * @param $server
              * @param $url
              * @param $credentials
-             * @param $callerId
              * @param $dtmf
              * @param $nat
              * @param $comment
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $nat, $comment);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comment);
 
             /**
              * @param $domophoneId
@@ -221,7 +188,6 @@
              * @param $server
              * @param $url
              * @param $credentials
-             * @param $callerId
              * @param $dtmf
              * @param $firstTime
              * @param $nat
@@ -229,7 +195,7 @@
              * @param $comment
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $locksAreOpen, $comment);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comment);
 
             /**
              * @param $domophoneId
@@ -242,12 +208,6 @@
              * @return false|array
              */
             abstract public function getDomophone($domophoneId);
-
-            /**
-             * @param $cameraId
-             * @return false|array
-             */
-            abstract public function getCamera($cameraId);
 
             /**
              * @param $by - "id", "mobile", "flat", "...?"

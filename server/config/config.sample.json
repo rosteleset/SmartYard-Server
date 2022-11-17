@@ -113,6 +113,10 @@
             "host": "127.0.0.1",
             "port": 8123,
             "database": "default"
+        },
+
+        "configs": {
+            "backend": "json"
         }
     },
 
@@ -130,6 +134,13 @@
             "stun_server": "stun:127.0.0.1:3478",
             "incoming_title": "Входящий вызов",
             "call_failed_title": "Пропущенный вызов"
+        }
+    ],
+
+    "frs_servers": [
+        {
+            "title": "First server",
+            "ip": "127.0.0.1"
         }
     ],
 
