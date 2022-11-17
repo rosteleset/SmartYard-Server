@@ -346,16 +346,16 @@
                         $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
                         if ($entrances && $entrances[0]) {
-                            $camera = $households->getCamera($entrances[0]["cameraId"]);
+                            $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
-                            if ($camera) {
-                                $model = loadCamera($camera["model"], $camera["url"], $camera["credentials"]);
+                            if ($cameras && $cameras[0]) {
+                                $model = loadCamera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
                                 $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                                 $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                                    "model" => $camera["model"],
-                                    "url" => $camera["url"],
-                                    "credentials" => $camera["credentials"],
+                                    "model" => $cameras[0]["model"],
+                                    "url" => $cameras[0]["url"],
+                                    "credentials" => $cameras[0]["credentials"],
                                 ]));
 
                                 echo $params["hash"];

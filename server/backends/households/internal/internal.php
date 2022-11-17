@@ -1333,35 +1333,6 @@
             /**
              * @inheritDoc
              */
-            public function getCamera($cameraId)
-            {
-                if (!checkInt($cameraId)) {
-                    return false;
-                }
-
-                $camera = $this->db->get("select * from cameras where camera_id = $cameraId", false, [
-                    "camera_id" => "domophoneId",
-                    "enabled" => "enabled",
-                    "model" => "model",
-                    "url" => "url",
-                    "credentials" => "credentials",
-                    "comment" => "comment"
-                ], [
-                    "singlify"
-                ]);
-
-                if ($camera) {
-                    $camera["json"] = json_decode(file_get_contents("hw/cameras/models/" . $camera["model"]), true);
-
-                    return $camera;
-                } else {
-                    return false;
-                }
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function getCameras($by, $params)
             {
 
