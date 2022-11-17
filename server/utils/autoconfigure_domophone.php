@@ -9,8 +9,10 @@
 
         $domophone = $households->getDomophone($domophoneId);
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
-        $asterisk_server = $configs->getAsteriskServer($domophoneId);
+        $asterisk_server = $configs->getAsteriskServer($domophone['server']);
         $cmses = $configs->getCMSes();
+
+        $panel_text = $entrances[0]['callerId'];
 
         try {
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $firstTime);
@@ -97,7 +99,7 @@
                     return $entrance['domophoneId'] == $domophoneId;
                 });
 
-                if  ($flat_entrances) {
+                if ($flat_entrances) {
                     $apartment = $flat['flat'];
                     $apartment_levels = $cms_levels;
 
@@ -138,7 +140,7 @@
         }
 
         $panel->configure_md();
-        $panel->set_display_text($domophone['callerId']);
-        $panel->set_video_overlay($domophone['callerId']);
+        $panel->set_display_text($panel_text);
+        $panel->set_video_overlay($panel_text);
         $panel->keep_doors_unlocked($entrances[0]['locksDisabled']);
     }
