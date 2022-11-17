@@ -593,7 +593,6 @@
                     "server" => "server",
                     "url" => "url",
                     "credentials" => "credentials",
-                    "caller_id" => "callerId",
                     "dtmf" => "dtmf",
                     "first_time" => "firstTime",
                     "nat" => "nat",
@@ -646,7 +645,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $callerId, $dtmf, $nat, $comment)
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comment)
             {
                 if (!$model) {
                     setLastError("moModel");
@@ -679,13 +678,12 @@
                     return false;
                 }
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, caller_id, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :caller_id, :dtmf, :nat, :comment)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comment)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
                     "url" => $url,
                     "credentials" => $credentials,
-                    "caller_id" => $callerId,
                     "dtmf" => $dtmf,
                     "nat" => $nat,
                     "comment" => $comment,
@@ -703,7 +701,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $callerId, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -752,13 +750,12 @@
                     return false;
                 }
 
-                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, caller_id = :caller_id, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
+                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
                     "url" => $url,
                     "credentials" => $credentials,
-                    "caller_id" => $callerId,
                     "dtmf" => $dtmf,
                     "first_time" => $firstTime,
                     "nat" => $nat,

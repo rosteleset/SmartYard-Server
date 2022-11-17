@@ -111,15 +111,6 @@
                     }
                 },
                 {
-                    id: "callerId",
-                    type: "text",
-                    title: i18n("addresses.callerId"),
-                    placeholder: i18n("addresses.callerId"),
-                    validate: v => {
-                        return $.trim(v) !== "" && $.trim(v).length <= 32;
-                    },
-                },
-                {
                     id: "dtmf",
                     type: "text",
                     title: i18n("addresses.dtmf"),
@@ -241,16 +232,6 @@
                         }
                     },
                     {
-                        id: "callerId",
-                        type: "text",
-                        title: i18n("addresses.callerId"),
-                        placeholder: i18n("addresses.callerId"),
-                        value: domophone.callerId,
-                        validate: v => {
-                            return $.trim(v) !== "" && $.trim(v).length <= 32;
-                        },
-                    },
-                    {
                         id: "dtmf",
                         type: "text",
                         title: i18n("addresses.dtmf"),
@@ -344,9 +325,6 @@
                         title: i18n("addresses.url"),
                     },
                     {
-                        title: i18n("addresses.callerId"),
-                    },
-                    {
                         title: i18n("addresses.comment"),
                         fullWidth: true,
                     },
@@ -366,11 +344,8 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].callerId,
-                                    nowrap: true,
-                                },
-                                {
                                     data: modules.addresses.domophones.meta.domophones[i].comment,
+                                    nowrap: true,
                                 },
                             ],
                         });
