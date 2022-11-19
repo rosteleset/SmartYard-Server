@@ -9,6 +9,8 @@
             public $user = 'root';
             protected $def_pass = '123456';
 
+            protected $rfid_keys = [];
+
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $resource;
 
@@ -34,8 +36,24 @@
                 return json_decode($res, true);
             }
 
+            protected function get_raw_rfids() {
+                return $this->api_call('/key/store');
+            }
+
+            protected function merge_rfids() {
+                $this->api_call('/key/store/merge', 'PUT', $this->rfid_keys);
+            }
+
+            public function __destruct() {
+                parent::__destruct();
+
+                if ($this->rfid_keys) {
+                    $this->merge_rfids();
+                }
+            }
+
             public function add_rfid(string $code, int $apartment = 0) {
-                // TODO: Implement add_rfid() method.
+                $this->rfid_keys[] = [ 'uuid' => $code ];
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -43,7 +61,11 @@
             }
 
             public function clear_rfid(string $code = '') {
-                // TODO: Implement clear_rfid() method.
+                if ($code) {
+                    $this->api_call("/key/store/$code", 'DELETE');
+                } else {
+                    $this->api_call('/key/store/clear', 'DELETE');
+                }
             }
 
             public function configure_apartment(
@@ -135,8 +157,16 @@
             }
 
             public function get_rfids(): array {
-                // TODO: Implement get_rfids() method.
-                return [];
+                $rfid_keys = [];
+                $raw_keys = $this->get_raw_rfids();
+
+                if ($raw_keys) {
+                    foreach ($raw_keys as $key) {
+                        $rfid_keys[] = $key['uuid'];
+                    }
+                }
+
+                return $rfid_keys;
             }
 
             public function get_sysinfo(): array {
