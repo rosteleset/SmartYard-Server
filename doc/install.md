@@ -92,7 +92,7 @@ apidoc -c apidoc.json -i server -o api
 phpDocumentor.phar --sourcecode -t doc -s graphs.enabled=true
 ```
 
-initializing internal db
+initializing internal db (note: even if you use postgreSQL database, you also should do this)
 
 ```
 php server/cli.php --init-db
