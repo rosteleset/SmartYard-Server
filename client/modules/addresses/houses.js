@@ -558,10 +558,10 @@
                 for (let j in response.entrances) {
                     let house = "";
 
-                    if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
-                        for (let i in modules["addresses"].meta.houses) {
-                            if (modules["addresses"].meta.houses[i].houseId == response.entrances[j].houseId) {
-                                house = modules["addresses"].meta.houses[i].houseFull;
+                    if (modules && modules.addresses && modules.addresses.meta && modules.addresses.meta.houses) {
+                        for (let i in modules.addresses.meta.houses) {
+                            if (modules.addresses.meta.houses[i].houseId == response.entrances[j].houseId) {
+                                house = modules.addresses.meta.houses[i].houseFull;
                             }
                         }
                     }
@@ -1439,17 +1439,17 @@
 
     loadHouse: function(houseId, callback) {
         GET("addresses", "addresses").
-        done(modules["addresses"].addresses).
+        done(modules.addresses.addresses).
         fail(FAILPAGE).
         done(() => {
-            if (modules["addresses"] && modules["addresses"].meta && modules["addresses"].meta.houses) {
+            if (modules && modules.addresses && modules.addresses.meta && modules.addresses.meta.houses) {
                 let f = false;
-                for (let i in modules["addresses"].meta.houses) {
-                    if (modules["addresses"].meta.houses[i].houseId == houseId) {
+                for (let i in modules.addresses.meta.houses) {
+                    if (modules.addresses.meta.houses[i].houseId == houseId) {
                         if (!modules.addresses.houses.meta) {
                             modules.addresses.houses.meta = {};
                         }
-                        modules.addresses.houses.meta.house = modules["addresses"].meta.houses[i];
+                        modules.addresses.houses.meta.house = modules.addresses.meta.houses[i];
                         subTop(modules.addresses.houses.meta.house.houseFull);
                         f = true;
                     }
