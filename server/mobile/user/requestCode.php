@@ -25,7 +25,7 @@
 
     if (strlen($user_phone) == 11 && ctype_digit($user_phone)) {
 
-        $confirmMethod = @$config["backends"]["isdn"]["confirmMethod"] ?: "smsCode";
+        $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "smsCode";
         
         switch ($confirmMethod) {
             case 'outgoingCall':

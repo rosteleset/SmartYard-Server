@@ -29,24 +29,24 @@
     // отвечает за отображение раздела оплаты и городских камер
 
     $response = [
-        "cityCams" => @$config["mobile"]["cityCams"] ? "t" : "f",
+        "cityCams" => @$config["mobile"]["city_cams"] ? "t" : "f",
         "payments" => @$config["mobile"]["payments"] ? "t" : "f"
         ];
         
-        if (@$config["mobile"]["supportPhone"]) {
-            $response["supportPhone"] = $config["mobile"]["supportPhone"];
+        if (@$config["mobile"]["support_phone"]) {
+            $response["supportPhone"] = $config["mobile"]["support_phone"];
         }
 
-        if (@$config["mobile"]["paymentsUrl"]) {
-            $response["paymentsUrl"] = $config["mobile"]["paymentsUrl"];
+        if (@$config["mobile"]["payments_url"]) {
+            $response["paymentsUrl"] = $config["mobile"]["payments_url"];
         }
 
-        if (@$config["mobile"]["talkMe_id"] && @$config["mobile"]["talkMe_domain"] && @$config["mobile"]["talkMe_token"]) {
+        if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
             $response["chat"] = "t";
             $response["chatOptions"] = [
-                "id" => $config["mobile"]["talkMe_id"],
-                "domain" => $config["mobile"]["talkMe_domain"],
-                "token" => $config["mobile"]["talkMe_token"]
+                "id" => $config["mobile"]["talk_me_id"],
+                "domain" => $config["mobile"]["talk_me_domain"],
+                "token" => $config["mobile"]["talk_me_token"]
             ];
         } else {
             $response["chat"] = "f";

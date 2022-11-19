@@ -71,4 +71,4 @@
     // помечаем все сообщения как прочитанные
     $inbox->markMessageAsReaded($subscriber_id);
 
-    response(200, [ 'basePath' => $config['mobile']['webServerBasePath'], 'code' => trim($html) ]);
+    response(200, [ 'basePath' => $config['mobile']['web_server_base_path'], 'code' => trim($html) ]);
