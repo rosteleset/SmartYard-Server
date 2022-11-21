@@ -140,7 +140,8 @@
     "nimble_servers": [
         {
             "title": "Local server",
-            "ip": "127.0.0.1",
+            "management_ip": "127.0.0.1",
+	    "management_port": "8086",
             "management_token": "<!-- management token -->"
         }
     ],
