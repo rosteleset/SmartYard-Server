@@ -59,6 +59,14 @@
             /**
              * @inheritDoc
              */
+            public function getNimbleServers()
+            {
+                return $this->config["nimble_servers"];
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getFRSServers()
             {
                 return $this->config["frs_servers"];

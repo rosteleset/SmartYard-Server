@@ -31,6 +31,11 @@
             /**
              * @return mixed
              */
+            abstract public function getNimbleServers();
+
+            /**
+             * @return mixed
+             */
             public function getAsteriskServer($ip) {
                 $asterisks = $this->getAsteriskServers();
 

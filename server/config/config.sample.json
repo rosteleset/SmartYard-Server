@@ -137,6 +137,14 @@
         }
     ],
 
+    "nimble_servers": [
+        {
+            "title": "Local server",
+            "ip": "127.0.0.1",
+            "management_token": "<!-- management token -->"
+        }
+    ],
+
     "frs_servers": [
         {
             "title": "First server",
