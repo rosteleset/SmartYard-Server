@@ -203,6 +203,5 @@ namespace backends\cameras
                 return true;
             }
         }
-
     }
 }
