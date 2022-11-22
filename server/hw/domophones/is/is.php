@@ -10,12 +10,16 @@
             protected $def_pass = '123456';
 
             protected $rfid_keys = [];
+            protected $apartments = [];
 
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $resource;
 
-                echo $req . PHP_EOL; // TODO: delete later
-                echo json_encode($payload) . PHP_EOL; // TODO: delete later
+                // TODO: delete later
+                echo $method . PHP_EOL;
+                echo $req . PHP_EOL;
+                echo 'Payload: ' . json_encode($payload) . PHP_EOL;
+                echo '---------------------------------' . PHP_EOL;
 
                 $ch = curl_init($req);
 
@@ -34,6 +38,33 @@
                 curl_close($ch);
 
                 return json_decode($res, true);
+            }
+
+            protected function add_open_code($code, $apartment) {
+                $this->api_call('/openCode', 'POST', [
+                    'code' => $code,
+                    'panelCode' => $apartment
+                ]);
+            }
+
+            protected function delete_open_code($apartment) {
+                // TODO: doesn't work
+                $this->api_call("/openCode/$apartment", 'DELETE');
+            }
+
+            protected function get_apartments() {
+                $apartments = [];
+                $raw_apartments = $this->get_raw_apartments();
+
+                foreach ($raw_apartments as $raw_apartment) {
+                    $apartments[] = $raw_apartment['panelCode'];
+                }
+
+                return $apartments;
+            }
+
+            protected function get_raw_apartments() {
+                return $this->api_call('/panelCode');
             }
 
             protected function get_raw_rfids() {
@@ -57,7 +88,13 @@
             }
 
             public function clear_apartment(int $apartment = -1) {
-                // TODO: Implement clear_apartment() method.
+                if ($apartment === -1) {
+                    $this->api_call('/panelCode/clear', 'DELETE');
+                    $this->api_call('/openCode/clear', 'DELETE');
+                } else {
+                    $this->api_call("/panelCode/$apartment", 'DELETE');
+                    $this->delete_open_code($apartment);
+                }
             }
 
             public function clear_rfid(string $code = '') {
@@ -76,7 +113,39 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
-                // TODO: Implement configure_apartment() method.
+                if (!$this->apartments) {
+                    $this->apartments = $this->get_apartments();
+                }
+
+                if (in_array($apartment, $this->apartments)) {
+                    $method = 'PUT';
+                    $endpoint = "/$apartment";
+                    $this->delete_open_code($apartment);
+                } else {
+                    $method = 'POST';
+                    $endpoint = '';
+                }
+
+                $payload = [
+                    'panelCode' => $apartment,
+                    'callsEnabled' => [
+                        'handset' => $cms_handset_enabled,
+                        'sip' => (bool) $sip_numbers,
+                    ],
+                ];
+
+                if (count($levels) == 2) { // TODO: doesn't work
+                    $payload['resistances'] = [
+                        'answer' => $levels[0],
+                        'quiescent' => $levels[1],
+                    ];
+                }
+
+                $this->api_call('/panelCode' . $endpoint, $method, $payload);
+
+                if ($private_code_enabled) {
+                    $this->add_open_code($private_code, $apartment);
+                }
             }
 
             public function configure_cms(int $apartment, int $offset) {
@@ -197,7 +266,8 @@
             }
 
             public function set_admin_password(string $password) {
-                // TODO: Implement set_admin_password() method.
+                // TODO: doesn't work
+                $this->api_call('/user/change_password', 'PUT', [ 'newPassword' => $password ]);
             }
 
             public function set_audio_levels(array $levels) {
