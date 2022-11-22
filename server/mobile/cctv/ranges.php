@@ -52,7 +52,7 @@ if (!$cam) {
 }
 
 $configs = loadBackend("configs");
-$nimble_servers = $configs->getNimbleServers();
+$dvr_servers = $configs->getDVRServers();
 
 $host = parse_url($cam['flussonic'], PHP_URL_HOST);
 $port = parse_url($cam['flussonic'], PHP_URL_PORT);
@@ -61,25 +61,24 @@ $path = parse_url($cam['flussonic'], PHP_URL_PATH);
 if ( $path[0] == '/' ) $path = substr($path,1);
 
 $stream = $path;
-$management_token = false;
 
-foreach ($nimble_servers as $nimble) {
-    if ( $nimble['host'] == $host.":".$port ) {
-        $management_token = $nimble['management_token'];
-        $management_ip = $nimble['management_ip'];
-        $management_port = $nimble['management_port'];
+foreach ($dvr_servers as $server) {
+    if ( $server['url'] == $host || $server['url'] == $host.":".$port ) {
+        $management_token = $server['management_token'];
+        $management_ip = $server['management_ip'];
+        $management_port = $server['management_port'];
+        $dvr_type = $server['type'];
         break;
     }
 }
 
-if ($management_token) {
+if ($dvr_type == 'nimble') {
     // Nimble Server
     $ranges = getRangesForNimble( $management_ip, $management_port, $stream, $management_token );
 } else {
     // Flussonic Server
     $flussonic_token = $cam['credentials'];
     $request_url = "https://$host:$port/$stream/recording_status.json?from=1525186456&token=$flussonic_token";
-    // response(200, $request_url);
     $ranges = json_decode(file_get_contents($request_url), true);
 }
 

@@ -31,7 +31,7 @@
             /**
              * @return mixed
              */
-            abstract public function getNimbleServers();
+            abstract public function geDVRServers();
 
             /**
              * @return mixed
