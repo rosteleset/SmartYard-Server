@@ -29,12 +29,12 @@ function getRangesForNimble($host, $port, $stream, $token) {
     $result = [
         [
         "stream" => $stream,
-        "range" => []
+        "ranges" => []
         ]
     ];
 
     foreach( $data[0]["timeline"] as $range) {
-        $result[0]["range"][] = ["from" => $range["start"], "duration" => $range["duration"]];
+        $result[0]["ranges"][] = ["from" => $range["start"], "duration" => $range["duration"]];
     }
 
     return $result;
@@ -47,12 +47,12 @@ $camera_id = (int)@$postdata['cameraId'];
 $cameras = loadBackend("cameras");
 
 $cam = $cameras->getCamera($camera_id);
-if (!cam) {
+if (!$cam) {
     response(404);
 }
 
 $configs = loadBackend("configs");
-$nimble_servers = $configs->getNimbleServers();
+$dvr_servers = $configs->getDVRServers();
 
 $host = parse_url($cam['dvrStream'], PHP_URL_HOST);
 $port = parse_url($cam['dvrStream'], PHP_URL_PORT);
@@ -61,18 +61,18 @@ $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
 if ( $path[0] == '/' ) $path = substr($path,1);
 
 $stream = $path;
-$management_token = false;
 
-foreach ($nimble_servers as $nimble) {
-    if ( $nimble['management_ip'] == $host ) {
-        $management_token = $nimble['management_token'];
-        $management_ip = $host;
-        $management_port = $nimble['management_port'];
+foreach ($dvr_servers as $server) {
+    if ( $server['url'] == $host || $server['url'] == $host.":".$port ) {
+        $management_token = $server['management_token'];
+        $management_ip = $server['management_ip'];
+        $management_port = $server['management_port'];
+        $dvr_type = $server['type'];
         break;
     }
 }
 
-if ($management_token) {
+if ($dvr_type == 'nimble') {
     // Nimble Server
     $ranges = getRangesForNimble( $management_ip, $management_port, $stream, $management_token );
 } else {

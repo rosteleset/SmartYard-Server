@@ -59,9 +59,9 @@
             /**
              * @inheritDoc
              */
-            public function getNimbleServers()
+            public function getDVRServers()
             {
-                return $this->config["nimble_servers"];
+                return $this->config["dvr_servers"];
             }
 
             /**
