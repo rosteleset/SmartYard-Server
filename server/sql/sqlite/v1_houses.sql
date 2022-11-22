@@ -11,6 +11,7 @@ CREATE TABLE houses_domophones
     first_time integer default 1,
     nat integer,
     locks_are_open integer default 1,
+    ip text,
     comment text
 );
 CREATE UNIQUE INDEX domophones_ip_port on houses_domophones(url);

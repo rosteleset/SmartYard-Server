@@ -182,5 +182,25 @@ namespace backends\cameras
 
             return $this->db->modify("delete from cameras where camera_id = $cameraId");
         }
+
+        /**
+         * @inheritDoc
+         */
+        public function cron($part) {
+            if ($part === "hourly") {
+                $cameras = $this->db->get("select camera_id, url from cameras");
+
+                foreach ($cameras as $camera) {
+                    $ip = gethostbyname(parse_url($camera['url'], PHP_URL_HOST));
+
+                    if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+                        $this->db->modify("update cameras set ip = :ip where camera_id = " . $camera['camera_id']);
+                    }
+                }
+
+                return true;
+            }
+        }
+
     }
 }

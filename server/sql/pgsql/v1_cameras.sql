@@ -21,6 +21,7 @@ CREATE TABLE cameras
     md_width integer,
     md_height integer,
     common integer,
+    ip text,
     comment character varying
 );
 CREATE INDEX cameras_url on cameras(url);
