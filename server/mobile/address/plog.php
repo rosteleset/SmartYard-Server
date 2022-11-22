@@ -22,7 +22,7 @@
  * @apiSuccess {string} -.mechanizmaDescription описание нагрузки (двери)
  * @apiSuccess {integer="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)"} -.event тип события
  * @apiSuccess {string} [-.preview] url картинки
- * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - flussonic, 2 - FRS)
+ * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - DVR, 2 - FRS)
  * @apiSuccess {string} [-.detail] непонятная фигня
  * @apiSuccess {object} [-.detailX] детализация события
  * @apiSuccess {string="t","f"} [-.detailX.opened] открыли или нет (1, 2)

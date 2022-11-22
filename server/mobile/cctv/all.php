@@ -76,7 +76,7 @@ foreach($houses as $house_key => $h) {
             "id" => $camera['cameraId'],
             "name" => $camera['name'],
             "lat" => strval($camera['lat']),
-            "url" => $camera['flussonic'],
+            "url" => $camera['dvrStream'],
             "token" => "empty",
             "lon" => strval($camera['lon'])
         ];
