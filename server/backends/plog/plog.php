@@ -60,8 +60,9 @@
             /**
              * Записать данные событий в базу
              * @param array $event_data данные событий
+             * @param array $flat_list список идентификаторов квартир
              */
-            abstract public function writeEventData($event_data);
+            abstract public function writeEventData($event_data, $flat_list = []);
 
             /**
              * Получить кадр события с устройства или от FRS на дату (по идентификатору события)
