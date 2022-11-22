@@ -32,7 +32,6 @@ namespace backends\cameras
          * @param $stream
          * @param $credentials
          * @param $name
-         * @param $publish
          * @param $dvrStream
          * @param $lat
          * @param $lon
@@ -48,7 +47,7 @@ namespace backends\cameras
          * @param $comment
          * @return false|integer
          */
-        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $name, $publish, $dvrStream, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comment);
+        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comment);
 
         /**
          * @param $cameraId
@@ -58,7 +57,6 @@ namespace backends\cameras
          * @param $stream
          * @param $credentials
          * @param $name
-         * @param $publish
          * @param $dvrStream
          * @param $lat
          * @param $lon
@@ -74,7 +72,7 @@ namespace backends\cameras
          * @param $comment
          * @return boolean
          */
-        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $publish, $dvrStream, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comment);
+        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comment);
 
         /**
          * @param $cameraId

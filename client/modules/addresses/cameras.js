@@ -133,24 +133,6 @@
                     placeholder: i18n("addresses.cameraName"),
                 },
                 {
-                    id: "publish",
-                    type: "text",
-                    title: i18n("addresses.publish"),
-                    placeholder: "rtmp://",
-                    validate: v => {
-                        if (v) {
-                            try {
-                                new URL(v);
-                                return true;
-                            } catch (_) {
-                                return false;
-                            }
-                        } else {
-                            return true;
-                        }
-                    },
-                },
-                {
                     id: "dvrStream",
                     type: "text",
                     title: i18n("addresses.dvrStream"),
@@ -371,25 +353,6 @@
                         title: i18n("addresses.cameraName"),
                         placeholder: i18n("addresses.cameraName"),
                         value: camera.name,
-                    },
-                    {
-                        id: "publish",
-                        type: "text",
-                        title: i18n("addresses.publish"),
-                        placeholder: "rtmp://",
-                        value: camera.publish,
-                        validate: v => {
-                            if (v) {
-                                try {
-                                    new URL(v);
-                                    return true;
-                                } catch (_) {
-                                    return false;
-                                }
-                            } else {
-                                return true;
-                            }
-                        },
                     },
                     {
                         id: "dvrStream",
