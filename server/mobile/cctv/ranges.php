@@ -29,12 +29,12 @@ function getRangesForNimble($host, $port, $stream, $token) {
     $result = [
         [
         "stream" => $stream,
-        "range" => []
+        "ranges" => []
         ]
     ];
 
     foreach( $data[0]["timeline"] as $range) {
-        $result[0]["range"][] = ["from" => $range["start"], "duration" => $range["duration"]];
+        $result[0]["ranges"][] = ["from" => $range["start"], "duration" => $range["duration"]];
     }
 
     return $result;
@@ -47,7 +47,7 @@ $camera_id = (int)@$postdata['cameraId'];
 $cameras = loadBackend("cameras");
 
 $cam = $cameras->getCamera($camera_id);
-if (!cam) {
+if (!$cam) {
     response(404);
 }
 
@@ -64,9 +64,9 @@ $stream = $path;
 $management_token = false;
 
 foreach ($nimble_servers as $nimble) {
-    if ( $nimble['management_ip'] == $host ) {
+    if ( $nimble['host'] == $host.":".$port ) {
         $management_token = $nimble['management_token'];
-        $management_ip = $host;
+        $management_ip = $nimble['management_ip'];
         $management_port = $nimble['management_port'];
         break;
     }
@@ -79,6 +79,7 @@ if ($management_token) {
     // Flussonic Server
     $flussonic_token = $cam['credentials'];
     $request_url = "https://$host:$port/$stream/recording_status.json?from=1525186456&token=$flussonic_token";
+    // response(200, $request_url);
     $ranges = json_decode(file_get_contents($request_url), true);
 }
 
