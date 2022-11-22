@@ -134,11 +134,8 @@ try {
                     break;
             }
             if ((int)$row[plog::COLUMN_PREVIEW]) {
-                // TODO переделать на монго
-                $date = explode('-', explode(' ', $row[plog::COLUMN_DATE])[0]);
                 $img = $row[plog::COLUMN_IMAGE_UUID];
-                $image_url_prefix = $events->getImageUrlPrefix();
-                $url = "$image_url_prefix/$date[0]-$date[1]-$date[2]/$img[0]/$img[1]/$img[2]/$img[3]/$img.jpg";
+                $url =@$config["api"]["mobile"] . "/image/camshot/$img";
                 $e_details['preview'] = $url;
             }
 

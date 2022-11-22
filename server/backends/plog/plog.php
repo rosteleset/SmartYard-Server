@@ -10,7 +10,7 @@
         use backends\backend;
 
         /**
-         * base inbox class
+         * base plog class
          */
         abstract class plog extends backend
         {
@@ -64,11 +64,19 @@
             abstract public function writeEventData($event_data);
 
             /**
-             * Получить кадр события с устройства на дату
+             * Получить кадр события с устройства или от FRS на дату (по идентификатору события)
              * @param string $ip адрес устройства
              * @param false|string $date дата и время события
+             * @param false|int $event_id идентификатор события FRS
              * @return false|object
              */
-            abstract public function getCamshot($ip, $date = false);
+            abstract public function getCamshot($ip, $date, $event_id = false);
+
+            /**
+             * Получить кадр события из коллекции
+             * @param string $image_uuid UUID кадра
+             * @return object
+             */
+            abstract public function getEventImage($image_uuid);
         }
     }

@@ -6,12 +6,16 @@
 
     namespace backends\plog
     {
+
+        use backends\files\files;
+
         /**
          * clickhouse archive class
          */
         class clickhouse extends plog
         {
             private $clickhouse;
+            private $time_shift;  // сдвиг по времени в секундах от текущего
 
             function __construct($config, $db, $redis)
             {
@@ -26,14 +30,8 @@
                     $config['backends']['plog']['password'],
                     $config['backends']['plog']['database']
                 );
-                $this->image_url_prefix = $config['backends']['plog']['image_url_prefix'];
-            }
 
-            // TODO переделать на монго
-            private $image_url_prefix;
-            public function getImageUrlPrefix()
-            {
-                return $this->image_url_prefix;
+                $this->time_shift = $config['backends']['plog']['timeShift'];
             }
 
             /**
@@ -43,7 +41,7 @@
             {
                 echo("__cron\n");
                 if ($part == '5min') {
-                    $this->processSysLog();
+                    $this->processEvents();
                     $this->db->modify("delete from plog_door_open where expire < " . time());
                     $this->db->modify("delete from plog_call_done where expire < " . time());
                 } else {
@@ -51,24 +49,108 @@
                 }
             }
 
-            //получение кадра события на указанную дату+время и ip устройства
-            public function getCamshot($ip, $date = false)
+            //получение кадра события на указанную дату+время и ip устройства или от FRS
+            /**
+             * @inheritDoc
+             */
+            public function getCamshot($ip, $date, $event_id = false)
             {
+                $mongo = loadBackend('files');
+                $camshot_data = [];
 
+                if ($event_id === false) {
+                    //для теста
+                    //$image_url = "http://192.168.13.173/cgi-bin/images_cgi?channel=0&user=admin&pwd=shoo8mo1";
+
+                    //получение кадра из флюсоника
+                    $households = loadBackend("households");
+
+                    $domophone_id = 1;  // TODO: сделать получение domophone_id из бэкенда
+
+                    $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone_id, "output" => "0" ]);
+                    if ($entrances && $entrances[0]) {
+                        $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
+                        if ($cameras && $cameras[0]) {
+                            $prefix = $cameras[0]["flussonic"];
+                            if ($prefix) {
+                                $ts_event = strtotime($date) - 3;  // вычитаем три секунды для получения кадра с флюсоника
+                                $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
+                                system("ffmpeg -y -i $prefix/index-$ts_event-10.m3u8 -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile("filename", file_get_contents($filename)));
+                                system("rm $filename");
+                                $camshot_data[self::COLUMN_PREVIEW] = 1;
+                            }
+                        }
+                    }
+                } else {
+                    // TODO: получение кадра события от FRS
+                }
+
+                return $camshot_data;
             }
 
+            //получение кадра события из коллекции файлов
+            /**
+             * @inheritDoc
+             */
+            public function getEventImage($image_uuid)
+            {
+                $mongo = loadBackend('files');
+                try {
+                    $id = substr(str_replace('-', '', $image_uuid), 8);
+                    return $mongo->getFile($id)['contents'];
+                } catch (\Exception $e) {
+
+                }
+
+                return [];
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function writeEventData($event_data)
             {
-                echo("call writeEventData\n");
+                echo("__call writeEventData\n");
                 $this->clickhouse->insert("plog", [$event_data]);
             }
 
+            /**
+             * @inheritDoc
+             */
             public function getEventsDays(int $flat_id, $filter_events)
             {
                 if ($filter_events) {
-                    $query = "select toYYYYMMDD(date) as day, count(date) as events from plog where not hidden and flat_id = $flat_id and event in ($filter_events) group by toYYYYMMDD(date) order by toYYYYMMDD(date) desc";
+                    $query = <<< __SQL__
+                        select
+                            toYYYYMMDD(date) as day,
+                            count(date) as events
+                        from
+                            plog
+                        where
+                            not hidden
+                            and flat_id = $flat_id
+                            and event in ($filter_events)
+                        group by
+                            toYYYYMMDD(date)
+                        order by
+                            toYYYYMMDD(date) desc
+                    __SQL__;
                 } else {
-                    $query = "select toYYYYMMDD(date) as day, count(date) as events from plog where not hidden and flat_id = $flat_id group by toYYYYMMDD(date) order by toYYYYMMDD(date) desc";
+                    $query = <<< __SQL__
+                        select
+                            toYYYYMMDD(date) as day,
+                            count(date) as events
+                        from
+                            plog
+                        where
+                            not hidden
+                            and flat_id = $flat_id
+                        group by
+                            toYYYYMMDD(date)
+                        order by
+                            toYYYYMMDD(date) desc
+                    __SQL__;
                 }
 
                 $result = $this->clickhouse->select($query);
@@ -82,41 +164,72 @@
                 return false;
             }
 
+            /**
+             * @inheritDoc
+             */
             public function getDetailEventsByDay(int $flat_id, string $date)
-            {
-                $query = "select date, event_uuid, hidden, image_uuid, flat_id, domophone_id, domophone_output, domophone_output_description, event, opened, toJSONString(face) face, rfid, code, user_phone, gate_phone, preview from plog where not hidden and toYYYYMMDD(date) = '$date' and flat_id = $flat_id order by date desc";
-                return $this->clickhouse->select($query);
-            }
-
-            //начальная дата обработки syslog
-            private function getStartDate(): string
-            {
-                // TODO переделать получение начальной даты (Redis, по самому позднему событию в plog или как-то ещё)
-                $query = 'select max(date) max_date from plog';
-                $result = $this->clickhouse->select($query);
-                if ($result) {
-                    return $result[0]['max_date'];
-                }
-                return "2022-11-15 17:00:00";
-            }
-
-            //получение flat_id по RFID ключу
-            private function getFlatIdByRfid($rfid)
             {
                 $query = <<< __SQL__
                     select
-                        f.house_flat_id
+                        date,
+                        event_uuid,
+                        hidden,
+                        image_uuid,
+                        flat_id,
+                        domophone_id,
+                        domophone_output,
+                        domophone_output_description,
+                        event,
+                        opened,
+                        toJSONString(face) face,
+                        rfid,
+                        code,
+                        user_phone,
+                        gate_phone,
+                        preview
                     from
-                        houses_rfids r
-                    inner join houses_entrances_flats f
-                        on r.access_to = f.house_flat_id
+                        plog
                     where
-                        r.rfid = '$rfid'
+                        not hidden
+                        and toYYYYMMDD(date) = '$date'
+                        and flat_id = $flat_id
+                    order by
+                        date desc
                 __SQL__;
 
+                return $this->clickhouse->select($query);
+            }
+
+            private function BSONToGUIDv4($bson)
+            {
+                $hex = '00000000' . $bson;
+                return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split($hex, 4));
+            }
+
+            //получение flat_id по RFID ключу на устройстве
+            private function getFlatIdByRfid($rfid, $ip)
+            {
+                $query = <<< __SQL__
+                    select
+                        r.access_to flat_id
+                    from
+                        houses_rfids r
+                        inner join houses_entrances_flats hef
+                            on hef.house_flat_id = r.access_to
+                        inner join houses_entrances he
+                            on he.house_entrance_id = hef.house_entrance_id
+                        inner join houses_domophones hd
+                            on hd.house_domophone_id = he.house_domophone_id
+                            and hd.url like '%/$ip/%' or hd.url like '%/$ip'
+                    where
+                        r.rfid = '$rfid'
+                        and r.access_type = 2
+                __SQL__;
+
+                // TODO: учесть случаи с несколькими квартирами
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
-                    return $result[0]['house_flat_id'];
+                    return $result[0]['flat_id'];
                 }
 
                 return false;
@@ -129,18 +242,19 @@
                     select
                         hf.house_flat_id
                     from
-                        houses_domophones d
+                        houses_domophones hd
                         inner join houses_entrances he
-                            on d.house_domophone_id = he.house_domophone_id
+                            on hd.house_domophone_id = he.house_domophone_id
                         inner join houses_entrances_flats hef
                             on he.house_entrance_id = hef.house_entrance_id
                         inner join houses_flats hf
                             on hef.house_flat_id = hf.house_flat_id
                             and hf.open_code = '$code'
                         where
-                            d.url like '%$ip%';
+                            hd.url like '%/$ip/%' or hd.url like '%/$ip'
                 __SQL__;
 
+                // TODO: учесть случаи с несколькими квартирами
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
                     return $result[0]['house_flat_id'];
@@ -149,7 +263,7 @@
                 return false;
             }
 
-            private function updateRfidLastSeen($rfid, $date)
+            private function updateRfidLastSeen($flat_id, $rfid, $date)
             {
                 $query = <<< __SQL__
                     update
@@ -157,7 +271,9 @@
                     set
                         last_seen = '$date'
                     where
-                        rfid = '$rfid'
+                        access_type = 2
+                        and access_to = $flat_id
+                        and rfid = '$rfid'
                 __SQL__;
 
                 $this->db->query($query);
@@ -177,84 +293,87 @@
                 $this->db->query($query);
             }
 
-            private function processSysLog()
+            private function processEvents()
             {
-                $start_date = $this->getStartDate();
-                $end_date = date('Y-m-d H:i:s', time() - 5);  // на всякий случай, отнимаем 5 секунд от текущего времени
-                $query = "select * from syslog where date > '$start_date' and date <= '$end_date' order by date";
-                $result = $this->clickhouse->select($query);
-                if (!$result) {
-                    echo "no events\n";
-                    return;
-                }
+                $end_date = date('Y-m-d H:i:s', time() - $this->time_shift);  //крайняя дата обработки
+
+                //обработка таблицы plog_door_open
+                $query = <<< __SQL__
+                    select
+                        *
+                    from
+                        plog_door_open
+                    where
+                        date <= '$end_date'
+                    order by
+                        date
+                __SQL__;
+                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
 
                 foreach ($result as $row) {
-                    $log_date = $row["date"];
+                    $event_data = [];
+                    $event_id = false;
+
+                    $plog_date = $row['date'];
                     $ip = $row["ip"];
-                    $msg = $row["msg"];
-                    //echo("$log_date    $ip    $msg\n");
+                    $event_type = (int)$row['event'];
 
-                    //обработка начала событий
-                    $pattern_start_events = [
-                        //pattern       event       is instant
-                        ["Opening door by RFID ",self::EVENT_OPENED_BY_KEY, true],
-                        ["Opening door by code ", self::EVENT_OPENED_BY_CODE, true],
-                        ["Unable to call CMS apartment ", self::EVENT_UNANSWERED_CALL, false],
-                        ["CMS handset call started for apartment ", self::EVENT_UNANSWERED_CALL, false],
-                        ["Calling sip:", self::EVENT_UNANSWERED_CALL, false],
-                    ];
-                    foreach ($pattern_start_events as [$pattern, $event_type, $is_instant]) {
-                        if (strpos($msg, $pattern) !== false) {  //есть событие
-                            $event_data = [];
-                            $event_data[self::COLUMN_DATE] = $log_date;
-                            $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
-                            $event_data[self::COLUMN_IMAGE_UUID] = GUIDv4();
-                            $event_data[self::COLUMN_EVENT] = $event_type;
+                    $event_data[self::COLUMN_DATE] = $plog_date;
+                    $event_data[self::COLUMN_EVENT] = $event_type;
+                    $event_data[self::COLUMN_DOMOPHONE_OUTPUT] = $row['door'];
+                    $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
 
-                            //обработка мгновенных событий
-                            if ($is_instant) {
-                                if ($event_type == self::EVENT_OPENED_BY_KEY) {
-                                    $event_data[self::COLUMN_OPENED] = 1;
+                    if ($event_type == self::EVENT_OPENED_BY_KEY) {
+                        $event_data[self::COLUMN_OPENED] = 1;
+                        $rfid_key = $row['detail'];
+                        $event_data[self::COLUMN_RFID] = $rfid_key;
+                        $flat_id = $this->getFlatIdByRfid($rfid_key, $ip);
+                        if (!$flat_id) {
+                            continue;
+                        }
+                        $event_data[plog::COLUMN_FLAT_ID] = $flat_id;
+                        $this->updateRfidLastSeen($flat_id, $rfid_key, $event_data[self::COLUMN_DATE]);
+                    }
 
-                                    //парсим RFID ключ
-                                    $p1 = strpos($msg, $pattern);
-                                    $p2 = strpos($msg, ",", $p1 + strlen($pattern));
-                                    $rfid_key = substr($msg, strlen($pattern), $p2 -$p1 - strlen($pattern));
-                                    $event_data[self::COLUMN_RFID] = $rfid_key;
-                                    $flat_id = $this->getFlatIdByRfid($rfid_key);
-                                    if (!$flat_id) {
-                                        break;
-                                    }
-                                    $event_data[plog::COLUMN_FLAT_ID] = $flat_id;
-                                    $this->updateRfidLastSeen($rfid_key, $log_date);
-                                }
-
-                                if ($event_type == self::EVENT_OPENED_BY_CODE) {
-                                    $event_data[self::COLUMN_OPENED] = 1;
-
-                                    //парсим код открытия
-                                    $p1 = strpos($msg, $pattern);
-                                    $p2 = strpos($msg, ",", $p1 + strlen($pattern));
-                                    $open_code = substr($msg, strlen($pattern), $p2 -$p1 - strlen($pattern));
-                                    $event_data[self::COLUMN_CODE] = $open_code;
-                                    $flat_id = $this->getFlatIdByCode($open_code, $ip);
-                                    if (!$flat_id) {
-                                        break;
-                                    }
-                                }
-
-                                if ($event_data[self::COLUMN_OPENED] === 1) {
-                                    $this->updateFlatLastOpened($event_data[plog::COLUMN_FLAT_ID], $log_date);
-                                }
-                                $this->writeEventData($event_data);
-                            } else {
-                                //обработка длительных событий
-                            }
-
-                            break;
+                    if ($event_type == self::EVENT_OPENED_BY_CODE) {
+                        $event_data[self::COLUMN_OPENED] = 1;
+                        $open_code = $row['detail'];
+                        $event_data[self::COLUMN_CODE] = $open_code;
+                        $flat_id = $this->getFlatIdByCode($open_code, $ip);
+                        if (!$flat_id) {
+                            continue;
                         }
                     }
+
+                    if ($event_type == self::EVENT_OPENED_BY_APP) {
+                        $event_data[self::COLUMN_OPENED] = 1;
+                        $user_phone = $row['detail'];
+                        $event_data[self::COLUMN_USER_PHONE] = $user_phone;
+                    }
+
+                    if ($event_type == self::EVENT_OPENED_BY_FACE) {
+                        $event_data[self::COLUMN_OPENED] = 1;
+                        $event_id = $row['detail'];
+                    }
+
+                    //получение кадра события
+                    $image_data = $this->getCamshot($ip, $plog_date, $event_id);
+                    if ($image_data) {
+                        $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
+                        $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
+                    }
+                    $this->writeEventData($event_data);
                 }
+
+                //удаление данных из таблицы plog_door_open
+                $query = <<< __SQL__
+                    delete
+                    from
+                        plog_door_open
+                    where
+                        date <= '$end_date'
+                __SQL__;
+                $this->db->query($query);
             }
         }
     }
