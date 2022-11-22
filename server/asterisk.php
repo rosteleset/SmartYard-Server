@@ -382,8 +382,8 @@
                         "type" => $params["tokenType"],
                         "hash" => $params["hash"],
                         "extension" => $params["extension"],
-                        "server" => $config["asterisk_servers"][0]["ip"],
-                        "port" => $config["asterisk_servers"][0]["sip_tcp_port"],
+                        "server" => $config["sip_servers"][0]["ip"],
+                        "port" => $config["sip_servers"][0]["sip_tcp_port"],
                         "transport" => 'tcp',
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
@@ -392,9 +392,9 @@
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
                         "flatNumber" => $params["flatNumber"],
-                        "stun" => $config["asterisk_servers"][0]["stun_server"],
+                        "stun" => $config["sip_servers"][0]["stun_server"],
                         "stunTransport" => "udp",
-                        "title" => $config["asterisk_servers"][0]["incoming_title"],
+                        "title" => $config["sip_servers"][0]["incoming_title"],
                     ]);
 
                     break;

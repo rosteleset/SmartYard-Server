@@ -9,7 +9,7 @@
 
         $domophone = $households->getDomophone($domophoneId);
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
-        $asterisk_server = $configs->getAsteriskServer($domophone['server']);
+        $asterisk_server = $configs->getSIPServer($domophone['server']);
         $cmses = $configs->getCMSes();
 
         $panel_text = $entrances[0]['callerId'];

@@ -51,9 +51,9 @@
             /**
              * @inheritDoc
              */
-            public function getAsteriskServers()
+            public function getSIPServers()
             {
-                return @$this->config["asterisk_servers"]?:[];
+                return @$this->config["sip_servers"]?:[];
             }
 
             /**

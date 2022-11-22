@@ -120,9 +120,10 @@
         }
     },
 
-    "asterisk_servers": [
+    "sip_servers": [
         {
             "title": "First server",
+            "type": "asterisk",
             "ip": "127.0.0.1",
             "sip_tcp_port": 5060,
             "sip_udp_port": 5060,
@@ -141,9 +142,9 @@
         {
             "title": "Local server",
             "type": "nimble",
-	    "url": "video.server.hostname:8443",
+	        "url": "video.server.hostname:8443",
             "management_ip": "127.0.0.1",
-	    "management_port": "8086",
+	        "management_port": "8086",
             "management_token": "<!-- management token -->"
         }
     ],

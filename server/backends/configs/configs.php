@@ -26,7 +26,7 @@
             /**
              * @return mixed
              */
-            abstract public function getAsteriskServers();
+            abstract public function getSIPServers();
 
             /**
              * @return mixed
@@ -36,8 +36,8 @@
             /**
              * @return mixed
              */
-            public function getAsteriskServer($ip) {
-                $asterisks = $this->getAsteriskServers();
+            public function getSIPServer($ip) {
+                $asterisks = $this->getSIPServers();
 
                 foreach ($asterisks as $server) {
                     if (in_array($ip, $server)) {
