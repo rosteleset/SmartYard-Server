@@ -31,7 +31,7 @@
             /**
              * @return mixed
              */
-            abstract public function geDVRServers();
+            abstract public function getDVRServers();
 
             /**
              * @return mixed

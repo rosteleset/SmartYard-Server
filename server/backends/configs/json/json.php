@@ -53,7 +53,7 @@
              */
             public function getAsteriskServers()
             {
-                return $this->config["asterisk_servers"];
+                return @$this->config["asterisk_servers"]?:[];
             }
 
             /**
@@ -61,7 +61,7 @@
              */
             public function getDVRServers()
             {
-                return $this->config["dvr_servers"];
+                return @$this->config["dvr_servers"]?:[];
             }
 
             /**
@@ -69,7 +69,7 @@
              */
             public function getFRSServers()
             {
-                return $this->config["frs_servers"];
+                return @$this->config["frs_servers"]?:[];
             }
 
             /**
