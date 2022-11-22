@@ -1461,7 +1461,9 @@
                         $ip = gethostbyname(parse_url($domophone['url'], PHP_URL_HOST));
 
                         if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
-                            $this->db->modify("update houses_domophones set ip = :ip where house_domophone_id = " . $domophone['house_domophone_id']);
+                            $this->db->modify("update houses_domophones set ip = :ip where house_domophone_id = " . $domophone['house_domophone_id'], [
+                                "ip" => $ip,
+                            ]);
                         }
                     }
 

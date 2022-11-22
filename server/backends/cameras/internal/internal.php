@@ -194,7 +194,9 @@ namespace backends\cameras
                     $ip = gethostbyname(parse_url($camera['url'], PHP_URL_HOST));
 
                     if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
-                        $this->db->modify("update cameras set ip = :ip where camera_id = " . $camera['camera_id']);
+                        $this->db->modify("update cameras set ip = :ip where camera_id = " . $camera['camera_id'], [
+                            "ip" => $ip,
+                        ]);
                     }
                 }
 
