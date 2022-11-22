@@ -51,9 +51,17 @@
             /**
              * @inheritDoc
              */
-            public function getAsteriskServers()
+            public function getSIPServers()
             {
-                return $this->config["asterisk_servers"];
+                return @$this->config["sip_servers"]?:[];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getDVRServers()
+            {
+                return @$this->config["dvr_servers"]?:[];
             }
 
             /**
@@ -61,7 +69,7 @@
              */
             public function getFRSServers()
             {
-                return $this->config["frs_servers"];
+                return @$this->config["frs_servers"]?:[];
             }
 
             /**

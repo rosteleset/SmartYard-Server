@@ -133,27 +133,9 @@
                     placeholder: i18n("addresses.cameraName"),
                 },
                 {
-                    id: "publish",
+                    id: "dvrStream",
                     type: "text",
-                    title: i18n("addresses.publish"),
-                    placeholder: "rtmp://",
-                    validate: v => {
-                        if (v) {
-                            try {
-                                new URL(v);
-                                return true;
-                            } catch (_) {
-                                return false;
-                            }
-                        } else {
-                            return true;
-                        }
-                    },
-                },
-                {
-                    id: "flussonic",
-                    type: "text",
-                    title: i18n("addresses.flussonic"),
+                    title: i18n("addresses.dvrStream"),
                     placeholder: "https://",
                     validate: v => {
                         if (v) {
@@ -373,30 +355,11 @@
                         value: camera.name,
                     },
                     {
-                        id: "publish",
+                        id: "dvrStream",
                         type: "text",
-                        title: i18n("addresses.publish"),
-                        placeholder: "rtmp://",
-                        value: camera.publish,
-                        validate: v => {
-                            if (v) {
-                                try {
-                                    new URL(v);
-                                    return true;
-                                } catch (_) {
-                                    return false;
-                                }
-                            } else {
-                                return true;
-                            }
-                        },
-                    },
-                    {
-                        id: "flussonic",
-                        type: "text",
-                        title: i18n("addresses.flussonic"),
+                        title: i18n("addresses.dvrStream"),
                         placeholder: "https://",
-                        value: camera.flussonic,
+                        value: camera.dvrStream,
                         validate: v => {
                             if (v) {
                                 try {

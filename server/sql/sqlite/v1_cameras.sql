@@ -8,8 +8,7 @@ CREATE TABLE cameras
     stream text,
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     name text,
-    publish text,
-    flussonic text,
+    dvr_stream text,
     lat real,
     lon real,
     direction real,
@@ -21,6 +20,7 @@ CREATE TABLE cameras
     md_width integer,
     md_height integer,
     common integer,
+    ip text,
     comment text
 );
 CREATE INDEX cameras_url on cameras(url);

@@ -7,14 +7,14 @@
     },
 
     "mobile": {
-        "webServerBasePath": "<!-- put base path to your static web-content here --!>",
+        "web_server_base_path": "<!-- put base path to your static web-content here --!>",
         "payments": true,
-        "paymentsUrl": "https://dm.lanta.me/app_static/payments/template.html",
-        "cityCams": false,
-        "supportPhone": "+7(4752)429999",
-        "talkMe_id": "<!-- put your talkMe chat id here --!>",
-        "talkMe_domain": "<!-- put your talkMe chat domain id here --!>",
-        "talkMe_token": "<!-- put your talkMe chat rest Api Token here --!>"
+        "payments_url": "https://dm.lanta.me/app_static/payments/template.html",
+        "city_cams": false,
+        "support_phone": "+7(4752)429999",
+        "talk_me_id": "<!-- put your talkMe chat id here --!>",
+        "talk_me_domain": "<!-- put your talkMe chat domain id here --!>",
+        "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>"
     },
 
     "db": {
@@ -89,7 +89,7 @@
             "flash_call_secret": "<-- your FlashCall secret here -->",
             "sms_secret": "<-- your SMS secret here -->",
             "common_secret": "<-- your common (PUSH and incoming call) secret here -->",
-            "confirmMethod": "outgoingCall|smsCode|flashCall"
+            "confirm_method": "outgoingCall|smsCode|flashCall"
         },
 
         "providers": {
@@ -120,9 +120,10 @@
         }
     },
 
-    "asterisk_servers": [
+    "sip_servers": [
         {
             "title": "First server",
+            "type": "asterisk",
             "ip": "127.0.0.1",
             "sip_tcp_port": 5060,
             "sip_udp_port": 5060,
@@ -137,10 +138,21 @@
         }
     ],
 
+    "dvr_servers": [
+        {
+            "title": "Local server",
+            "type": "nimble",
+	        "url": "video.server.hostname:8443",
+            "management_ip": "127.0.0.1",
+	        "management_port": "8086",
+            "management_token": "<!-- management token -->"
+        }
+    ],
+
     "frs_servers": [
         {
             "title": "First server",
-            "ip": "127.0.0.1"
+            "url": "http://127.0.0.1"
         }
     ],
 

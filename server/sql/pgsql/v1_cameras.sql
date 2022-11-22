@@ -8,8 +8,7 @@ CREATE TABLE cameras
     stream character varying,
     credentials character varying not null,                                                                             -- plaintext:login:password, token:token, or something else
     name character varying,
-    publish character varying,
-    flussonic character varying,
+    dvr_stream character varying,
     lat real,
     lon real,
     direction real,
@@ -21,6 +20,7 @@ CREATE TABLE cameras
     md_width integer,
     md_height integer,
     common integer,
+    ip text,
     comment character varying
 );
 CREATE INDEX cameras_url on cameras(url);
