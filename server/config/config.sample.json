@@ -137,19 +137,19 @@
         }
     ],
 
-    "nimble_servers": [
+    "dvr_servers": [
         {
             "title": "Local server",
-            "management_ip": "127.0.0.1",
-	    "management_port": "8086",
-            "management_token": "<!-- management token -->"
+            "type": "nimble",
+            "url": "http://127.0.0.1:8086",
+            "token": "<!-- management token -->"
         }
     ],
 
     "frs_servers": [
         {
             "title": "First server",
-            "ip": "127.0.0.1"
+            "url": "http://127.0.0.1"
         }
     ],
 
