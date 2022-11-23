@@ -14,10 +14,69 @@
  * @apiSuccess {String} -.url url камеры
  * @apiSuccess {String} -.token токен
  * @apiSuccess {String="t","f"} -.frs подключен FRS
+ * @apiSuccess {String="nimble","flussonic"} [-.serverType] тип видео-сервера ('flussonic' by default)
  */
-
 auth();
-response();
+
+$ret = [];
+
+$house_id = (int)@$postdata['houseId'];
+$households = loadBackend("households");
+$cameras = loadBackend("cameras");
+
+$houses = [];
+$cameras = [];
+
+foreach($subscriber['flats'] as $flat) {
+    $houseId = $flat['addressHouseId'];
+    
+    if (array_key_exists($houseId, $houses)) {
+        $house = &$houses[$houseId];
+        
+    } else {
+        $houses[$houseId] = [];
+        $house = &$houses[$houseId];
+        $house['houseId'] = strval($houseId);
+        $house['doors'] = [];
+    }
+    
+    $flatDetail = $households->getFlat($flat['flatId']);
+    foreach ($flatDetail['entrances'] as $entrance) {
+        if (in_array($entrance['entranceId'], $house['doors'])) {
+            continue;
+        }
+        
+        $e = $households->getEntrance($entrance['entranceId']);
+        
+        if ($e['cameraId'] && !array_key_exists($e["cameraId"], $cameras)) {
+            $cam = $cameras->getCamera($e["cameraId"]);
+            $cameras[$e["cameraId"]] = $cam;
+        }
+        
+        $house['doors'][] = $entrance['entranceId'];
+        
+    }
+    
+}
+$ret = [];
+
+foreach($cameras as $entrance_id => $cam) {
+    $e = $households->getEntrance($entrance_id);
+    $ret[] = [
+        'id' => strval($e['domophoneId']),
+        'url' => $cam['dvrStream'],
+        'token' => strval($cam['credentials']),
+        'frs' => 'f', // TODO: добавить FRS
+        'serverType' => getDVRServerType($cam['dvrStream'])
+    ];
+}
+
+if (count($ret)) {
+    response(200, $ret);
+} else {
+    response();
+}
+
 
 /*
 $server_map = [

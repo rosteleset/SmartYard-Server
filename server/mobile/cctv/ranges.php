@@ -64,4 +64,3 @@ if ($dvr_type == 'nimble') {
 }
 
 response(200, $ranges);
-?>

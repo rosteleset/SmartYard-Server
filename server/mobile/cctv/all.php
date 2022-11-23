@@ -77,13 +77,19 @@ foreach($houses as $house_key => $h) {
             "name" => $camera['name'],
             "lat" => strval($camera['lat']),
             "url" => $camera['dvrStream'],
-            "token" => "empty",
-            "lon" => strval($camera['lon'])
+            "token" => strval($camera['credentials']),
+            "lon" => strval($camera['lon']),
+            "serverType" => getDVRServerType($camera['dvrStream'])
         ];
     }
 }
 
-// response();
+if (count($ret)) {
+    response(200, $ret);
+} else {
+    response();
+}
+
 /*$ret = [
     [
         "id" => 1,
@@ -95,7 +101,6 @@ foreach($houses as $house_key => $h) {
     ]
 ];
 */
-response(200, $ret);
 
 /*
 all_cctv();
