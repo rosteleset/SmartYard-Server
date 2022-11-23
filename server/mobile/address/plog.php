@@ -70,17 +70,31 @@ if (!@$postdata['day']) {
     response(404);
 }
 
-$events = loadBackend("plog");
+$plog = loadBackend("plog");
 
-if (!$events) {
+if (!$plog) {
     response(403);
 }
 
-// TODO сделать проверку на доступность и видимость событий
+//проверка на доступность событий
+$flat_owner = false;
+foreach ($subscriber['flats'] as $flat) {
+    if ($flat['flatId'] == $flat_id) {
+        $flat_owner = ($flat['role'] == 0);
+        break;
+    }
+}
+
+$flat_details = $households->getFlat($flat_id);
+$plog_access = $flat_details['plog'];
+if ($plog_access == $plog::ACCESS_DENIED || $plog_access == $plog::ACCESS_RESTRICTED_BY_ADMIN
+    || $plog_access == $plog::ACCESS_OWNER_ONLY && !$flat_owner) {
+    response(403);
+}
 
 try {
     $date = date('Ymd', strtotime(@$postdata['day']));
-    $result = $events->getDetailEventsByDay($flat_id, $date);
+    $result = $plog->getDetailEventsByDay($flat_id, $date);
     if ($result) {
         $events_details = [];
         foreach ($result as &$row) {
@@ -134,8 +148,8 @@ try {
                     break;
             }
             if ((int)$row[plog::COLUMN_PREVIEW]) {
-                $img = $row[plog::COLUMN_IMAGE_UUID];
-                $url =@$config["api"]["mobile"] . "/image/camshot/$img";
+                $img_uuid = $row[plog::COLUMN_IMAGE_UUID];
+                $url =@$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
                 $e_details['preview'] = $url;
             }
 

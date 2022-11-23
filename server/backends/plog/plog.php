@@ -41,6 +41,12 @@
             const COLUMN_GATE_PHONE = 'gate_phone';
             const COLUMN_PREVIEW = 'preview';
 
+            //типы доступа к журналу событий
+            const ACCESS_DENIED = 0;
+            const ACCESS_ALL = 1;
+            const ACCESS_OWNER_ONLY = 2;
+            const ACCESS_RESTRICTED_BY_ADMIN = 3;
+
             /**
              * Получить список дней с событиями
              * @param int $flat_id идентификатор квартиры

@@ -39,16 +39,29 @@ if (!$f) {
     response(404);
 }
 
-$events = loadBackend("plog");
+$plog = loadBackend("plog");
 
-if (!$events) {
+if (!$plog) {
     response(403);
 }
 
-//TODO сделать проверку на доступность и видимость событий
+//проверка на доступность событий
+$flat_owner = false;
+foreach ($subscriber['flats'] as $flat) {
+    if ($flat['flatId'] == $flat_id) {
+        $flat_owner = ($flat['role'] == 0);
+        break;
+    }
+}
+
+$flat_details = $households->getFlat($flat_id);
+$plog_access = $flat_details['plog'];
+if ($plog_access == $plog::ACCESS_DENIED || $plog_access == $plog::ACCESS_RESTRICTED_BY_ADMIN
+    || $plog_access == $plog::ACCESS_OWNER_ONLY && !$flat_owner) {
+    response(403);
+}
 
 $filter_events = false;
-
 if (@$postdata['events']) {
     //фильтр событий
 
@@ -65,7 +78,7 @@ if (@$postdata['events']) {
 }
 
 try {
-    $result = $events->getEventsDays($flat_id, $filter_events);
+    $result = $plog->getEventsDays($flat_id, $filter_events);
     if ($result) {
         response(200, $result);
     } else {

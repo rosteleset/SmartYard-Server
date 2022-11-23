@@ -8,6 +8,7 @@
     {
 
         use backends\files\files;
+        use MongoDB\BSON\UTCDateTime;
 
         /**
          * clickhouse archive class
@@ -17,7 +18,8 @@
             private $clickhouse;
             private $time_shift;  // сдвиг по времени в секундах от текущего
             private $max_call_length;  // максимальная длительность звонка в секундах
-            private $expire_shift;  // значение, которое прибавляется к текущему времени для получения expire
+            private $ttl_temp_record;  // значение, которое прибавляется к текущему времени для получения expire
+            private $ttl_camshot_days;  // время жизни кадра события
 
             function __construct($config, $db, $redis)
             {
@@ -35,7 +37,8 @@
 
                 $this->time_shift = $config['backends']['plog']['time_shift'];
                 $this->max_call_length = $config['backends']['plog']['max_call_length'];
-                $this->expire_shift = $config['backends']['plog']['expire_shift'];
+                $this->ttl_temp_record = $config['backends']['plog']['ttl_temp_record'];
+                $this->ttl_camshot_days = $config['backends']['plog']['ttl_camshot_days'];
             }
 
             /**
@@ -80,7 +83,14 @@
                                 $ts_event = strtotime($date) - 3;  // вычитаем три секунды для получения кадра
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
                                 system("ffmpeg -y -i $prefix/index-$ts_event-10.m3u8 -vframes 1 $filename 1>/dev/null 2>/dev/null");
-                                $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile("filename", file_get_contents($filename)));
+                                $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile(
+                                    "camshot",
+                                    file_get_contents($filename),
+                                    [
+                                        ["contentType" => "image/jpeg"],
+                                        ["expire" => new UTCDateTime((time() + $this->ttl_camshot_days * 86400) * 1000)],
+                                    ]
+                                ));
                                 system("rm $filename");
                                 $camshot_data[self::COLUMN_PREVIEW] = 1;
                             }
@@ -102,7 +112,7 @@
                 $mongo = loadBackend('files');
                 try {
                     $id = substr(str_replace('-', '', $image_uuid), 8);
-                    return $mongo->getFile($id)['contents'];
+                    return $mongo->getFile($id);
                 } catch (\Exception $e) {
 
                 }
@@ -139,7 +149,7 @@
                     return false;
                 }
 
-                $expire = time() + $this->expire_shift;
+                $expire = time() + $this->ttl_temp_record;
 
                 $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
                 return $this->db->insert($query, [
