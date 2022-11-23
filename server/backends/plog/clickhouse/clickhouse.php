@@ -482,8 +482,11 @@
                     $call_id = $row['call_id'];
                     $domophone_id = $this->getDomophone($row["ip"]);  // TODO: сделать получение domophone_id из бэкенда
                     $flat_id = false;
+                    $call_start_found = false;
+                    $call_start_lost = false;
 
                     $event_data = [];
+                    $event_data[self::COLUMN_DATE] = $row['date'];
                     $event_data[self::COLUMN_EVENT] = self::EVENT_UNANSWERED_CALL;
                     $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
 
@@ -504,8 +507,6 @@
                             date desc
                     __SQL__;
                     $result = $this->clickhouse->select($query);
-
-                    $call_start_found = false;
                     foreach ($result as $row) {
                         $msg = $row['msg'];
 
@@ -533,16 +534,45 @@
                                         $p2 = strpos($msg, ",", $p1 + strlen($pattern));
                                     }
                                     $flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 -$p1 - strlen($pattern)));
-                                    $q = substr($msg, strlen($pattern), $p2 -$p1 - strlen($pattern));
                                     $flat_id = $this->getFlatIdByNumber($flat_number, $domophone_id);
                                 }
 
-                                $call_start_found = true;
                                 $event_data[self::COLUMN_DATE] = $row['date'];
-                                $event_data[self::COLUMN_FLAT_ID] = $flat_id;
+                                $call_start_found = true;
+                                break;
                             }
                         }
                         if ($call_start_found) {
+                            break;
+                        }
+
+                        //обработка "маркеров" звонка
+                        $pattern_markers_call = [
+                            "SIP call | state ",
+                        ];
+                        foreach ($pattern_markers_call as $index => $pattern) {
+                            $parts = explode("|", $pattern);
+                            $matched = true;
+                            foreach ($parts as $p) {
+                                $matched = $matched && (strpos($msg, $p) !== false);
+                            }
+                            if ($matched) {
+                                if ($index == 0 && $call_id >= 0) {
+                                    //проверяем, если есть, call_id
+                                    $p1 = strpos($msg, $parts[0]);
+                                    $p2 = strpos($msg, $parts[1], $p1 + strlen($parts[0]));
+                                    $t = intval(substr($msg, $p1 + strlen($parts[0]), $p2 -$p1 - strlen($parts[0])));
+                                    if ($t != $call_id) {
+                                        //потеряно начало звонка
+                                        $call_start_lost = true;
+                                        break;
+                                    }
+                                }
+
+                                $event_data[self::COLUMN_DATE] = $row['date'];
+                            }
+                        }
+                        if ($call_start_lost) {
                             break;
                         }
 
@@ -550,15 +580,27 @@
                         $pattern_answered_call = [
                             "CMS handset talk started for apartment",
                             "SIP talk started for apartment",
-                            "SIP call|CONFIRMED",
+                            "SIP call |CONFIRMED",
                         ];
-                        foreach ($pattern_answered_call as $pattern) {
+                        foreach ($pattern_answered_call as $index => $pattern) {
                             $parts = explode("|", $pattern);
                             $matched = true;
                             foreach ($parts as $p) {
                                 $matched = $matched && (strpos($msg, $p) !== false);
                             }
                             if ($matched) {
+                                if ($index == 2 && $call_id >= 0) {
+                                    //проверяем, если есть, call_id
+                                    $p1 = strpos($msg, $parts[0]);
+                                    $p2 = strpos($msg, " ", $p1 + strlen($parts[0]));
+                                    $t = intval(substr($msg, $p1 + strlen($parts[0]), $p2 -$p1 - strlen($parts[0])));
+                                    if ($t != $call_id) {
+                                        //потеряно начало звонка
+                                        $call_start_lost = true;
+                                        break;
+                                    }
+                                }
+                                $event_data[self::COLUMN_DATE] = $row['date'];
                                 $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
                             }
                         }
@@ -568,14 +610,53 @@
                             "Opening door by CMS handset for apartment",
                             "Opening door by DTMF command",
                         ];
-                        foreach ($pattern_call_opened as $index => $pattern) {
+                        foreach ($pattern_call_opened as $pattern) {
                             if (strpos($msg, $pattern) !== false) {
+                                $event_data[self::COLUMN_DATE] = $row['date'];
                                 $event_data[self::COLUMN_OPENED] = 1;
                             }
                         }
+
+                        //обработка конца звонка
+                        $pattern_end_call = [
+                            "All calls are done for apartment ",
+                            "SIP call | is DISCONNECTED",
+                        ];
+                        foreach ($pattern_end_call as $index => $pattern) {
+                            $parts = explode("|", $pattern);
+                            $matched = true;
+                            foreach ($parts as $p) {
+                                $matched = $matched && (strpos($msg, $p) !== false);
+                            }
+                            if ($matched) {
+                                if ($index == 0) {
+                                    //парсим номер квартиры
+                                    $p1 = strpos($msg, $pattern);
+                                    $flat_number = intval(substr($msg, $p1 + strlen($pattern)));
+                                    $flat_id = $this->getFlatIdByNumber($flat_number, $domophone_id);
+                                    $event_data[self::COLUMN_DATE] = $row['date'];
+                                }
+                                if ($index == 1 && $call_id >= 0) {
+                                    //проверяем, если есть, call_id
+                                    $p1 = strpos($msg, $parts[0]);
+                                    $p2 = strpos($msg, $parts[1], $p1 + strlen($parts[0]));
+                                    $t = intval(substr($msg, $p1 + strlen($parts[0]), $p2 -$p1 - strlen($parts[0])));
+                                    if ($t != $call_id) {
+                                        //потеряно начало звонка
+                                        $call_start_lost = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if ($call_start_lost) {
+                            break;
+                        }
                     }
 
-                    if ($call_start_found) {
+                    if ($flat_id) {
+                        $event_data[self::COLUMN_FLAT_ID] = $flat_id;
+
                         //получение кадра события
                         $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DATE]);
                         if ($image_data) {
@@ -583,6 +664,7 @@
                             $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
                             // TODO: доделать для случая наличия инфы о лице
                         }
+
                         $this->writeEventData($event_data);
                         $this->updateFlatLastOpened([$event_data[self::COLUMN_FLAT_ID]], $event_data[self::COLUMN_DATE]);
                     }
