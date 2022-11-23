@@ -8,6 +8,7 @@
      */
 
     function getDVRServerType($url) {
+        global $redis;
 
         // trying to fetch response from the local redis cache
         $result = $redis->get("cam_dvr_type_".$url);

@@ -51,6 +51,10 @@ if (!$cam) {
     response(404);
 }
 
+$path = parse_url($cam['dvrStream'], PHP_URL_PATH);
+if ( $path[0] == '/' ) $path = substr($path,1);
+$stream = $path;
+
 $drv_type = getDVRServerType($cam['dvrStream']);
 
 if ($dvr_type == 'nimble') {
