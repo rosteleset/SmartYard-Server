@@ -211,8 +211,7 @@
             }
 
             public function get_audio_levels(): array {
-                // TODO: Implement get_audio_levels() method.
-                return [];
+                return array_values($this->api_call('/levels')['volumes']);
             }
 
             public function get_cms_allocation(): array {
@@ -257,8 +256,9 @@
                 }
             }
 
-            public function line_diag(int $apartment) {
+            public function line_diag(int $apartment): int {
                 // TODO: Implement line_diag() method.
+                return $this->api_call("/panelCode/$apartment/resist")['panelCode']['resist'];
             }
 
             public function open_door(int $door_number = 0) {
@@ -266,16 +266,24 @@
             }
 
             public function set_admin_password(string $password) {
-                // TODO: doesn't work
                 $this->api_call('/user/change_password', 'PUT', [ 'newPassword' => $password ]);
             }
 
             public function set_audio_levels(array $levels) {
-                // TODO: Implement set_audio_levels() method.
+                $this->api_call('/levels', 'PUT', [
+                    'volumes' => [
+                        'panelCall' => $levels[0],
+                        'panelTalk' => $levels[1],
+                        'thTalk' => $levels[2],
+                        'thCall' => $levels[3],
+                        'uartFrom' => $levels[4],
+                        'uartTo' => $levels[5],
+                    ],
+                ]);
             }
 
             public function set_call_timeout(int $timeout) {
-                // TODO: Implement set_call_timeout() method.
+                $this->api_call('/sip/options', 'PUT', [ 'ringDuration' => $timeout ]);
             }
 
             public function set_cms_levels(array $levels) {
@@ -291,7 +299,7 @@
             }
 
             public function set_display_text(string $text = '') {
-                // TODO: Implement set_display_text() method.
+                // TODO: ???
             }
 
             public function set_public_code(int $code) {
@@ -299,7 +307,6 @@
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
-                // TODO: doesn't work
                 $this->api_call('/sip/options', 'PUT', [
                     'dtmf' => [
                         '1' => (string) $relay_1,
@@ -315,7 +322,7 @@
             }
 
             public function set_talk_timeout(int $timeout) {
-                // TODO: Implement set_talk_timeout() method.
+                $this->api_call('/sip/options', 'PUT', [ 'talkDuration' => $timeout ]);
             }
 
             public function set_unlock_time(int $time) {
@@ -331,7 +338,7 @@
             }
 
             public function set_language(string $lang) {
-                // TODO: Implement set_language() method.
+                // не используется
             }
 
             public function write_config() {
