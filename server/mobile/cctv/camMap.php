@@ -25,7 +25,7 @@ $households = loadBackend("households");
 $cameras = loadBackend("cameras");
 
 $houses = [];
-$cameras = [];
+$cams = [];
 
 foreach($subscriber['flats'] as $flat) {
     $houseId = $flat['addressHouseId'];
@@ -48,9 +48,9 @@ foreach($subscriber['flats'] as $flat) {
         
         $e = $households->getEntrance($entrance['entranceId']);
         
-        if ($e['cameraId'] && !array_key_exists($e["cameraId"], $cameras)) {
+        if ($e['cameraId'] && !array_key_exists($e["cameraId"], $cams)) {
             $cam = $cameras->getCamera($e["cameraId"]);
-            $cameras[$e["cameraId"]] = $cam;
+            $cams[$e["cameraId"]] = $cam;
         }
         
         $house['doors'][] = $entrance['entranceId'];
@@ -60,7 +60,7 @@ foreach($subscriber['flats'] as $flat) {
 }
 $ret = [];
 
-foreach($cameras as $entrance_id => $cam) {
+foreach($cams as $entrance_id => $cam) {
     $e = $households->getEntrance($entrance_id);
     $ret[] = [
         'id' => strval($e['domophoneId']),
