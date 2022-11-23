@@ -7,21 +7,22 @@
      * @return string
      */
 
-    function getDVRServerType($url) {
-        global $redis;
+    function getDVRServer($url) {
+        global $redis, $dvr_servers;
 
         // trying to fetch response from the local redis cache
-        $result = $redis->get("cam_dvr_type_".$url);
-        if ($result) return $result;
-        
-        if (!array_key_exists('dvr_servers', $GLOBALS)) {
-            $configs = loadBackend("configs");
-            $GLOBALS['dvr_servers'] = $configs->getDVRServers();
+        $result = json_decode($redis->get("cam_dvr_type_".$url), true);
+	
+        if ($result) {
+	        return $result;
+	    }
+
+        if (!isset($dvr_servers)) {
+	        $configs = loadBackend("configs");
+            $dvr_servers = $configs->getDVRServers();
         }
         
-        $dvr_servers = $GLOBALS['dvr_servers'];
-
-        $scheme = parse_url($url, PHP_URL_SCHEME) ?: 'http';
+	    $scheme = parse_url($url, PHP_URL_SCHEME) ?: 'http';
         $user = parse_url($url, PHP_URL_USER) ?: '';
         $pass = parse_url($url, PHP_URL_PASS) ?: '';
         $host = parse_url($url, PHP_URL_HOST);
@@ -42,12 +43,12 @@
                 ($u['host'] == $host) &&
                 (!$u['port'] || $u['port'] == $port)
             ) {
-                $result = $server['type'];
+                $result = $server;
                 break;
             }
         }
 
         // store response in the local redis cache
-        $redis->setex("cam_dvr_type_".$url, 300, $result);
+        $redis->setex("cam_dvr_type_".$url, 300, json_encode($result));
         return $result;
     }

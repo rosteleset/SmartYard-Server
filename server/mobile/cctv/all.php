@@ -79,7 +79,7 @@ foreach($houses as $house_key => $h) {
             "url" => $camera['dvrStream'],
             "token" => strval($camera['credentials']),
             "lon" => strval($camera['lon']),
-            "serverType" => getDVRServerType($camera['dvrStream'])
+            "serverType" => getDVRServer($camera['dvrStream'])['type']
         ];
     }
 }
