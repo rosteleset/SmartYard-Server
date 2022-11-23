@@ -17,6 +17,7 @@
             private $clickhouse;
             private $time_shift;  // сдвиг по времени в секундах от текущего
             private $max_call_length;  // максимальная длительность звонка в секундах
+            private $expire_shift;  // значение, которое прибавляется к текущему времени для получения expire
 
             function __construct($config, $db, $redis)
             {
@@ -34,6 +35,7 @@
 
                 $this->time_shift = $config['backends']['plog']['time_shift'];
                 $this->max_call_length = $config['backends']['plog']['max_call_length'];
+                $this->expire_shift = $config['backends']['plog']['expire_shift'];
             }
 
             /**
@@ -122,6 +124,32 @@
                 } else {
                     $this->clickhouse->insert("plog", [$event_data]);
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addDoorOpenData($date, $domophone_id, $event_type, $door, $detail)
+            {
+                $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
+                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                if (count($result)) {
+                    $ip =  $result[0]['ip'];
+                } else {
+                    return false;
+                }
+
+                $expire = time() + $this->expire_shift;
+
+                $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
+                return $this->db->insert($query, [
+                    ":date" => $date,
+                    ":ip" => $ip,
+                    ":event" => $event_type,
+                    ":door" => $door,
+                    ":detail" => $detail,
+                    ":expire" => $expire,
+                ]);
             }
 
             /**

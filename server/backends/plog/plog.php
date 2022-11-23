@@ -79,5 +79,15 @@
              * @return object
              */
             abstract public function getEventImage($image_uuid);
+
+            /**
+             * Добавить данные открытия двери для последующего формирования события
+             * @param string $date дата+время события
+             * @param int $domophone_id идентификатор устройства
+             * @param int $event_type тип события
+             * @param int $door "выход" устройства
+             * @param string $detail детали события в зависимости от типа
+             */
+            abstract public function addDoorOpenData($date, $domophone_id, $event_type, $door, $detail);
         }
     }
