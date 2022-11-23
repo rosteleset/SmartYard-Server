@@ -31,7 +31,7 @@
         if (!$port && $scheme == 'http') $port = 80;
         if (!$port && $scheme == 'https') $port = 443;
         
-        $result = 'flussonic'; // result by default if server not found in dvr_servers settings
+        $result = ['type' => 'flussonic']; // result by default if server not found in dvr_servers settings
 
         foreach ($dvr_servers as $server) {
             $u = parse_url($server['url']);
