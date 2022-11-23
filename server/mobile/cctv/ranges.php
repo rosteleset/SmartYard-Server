@@ -51,32 +51,13 @@ if (!$cam) {
     response(404);
 }
 
-$configs = loadBackend("configs");
-$dvr_servers = $configs->getDVRServers();
-
-$host = parse_url($cam['dvrStream'], PHP_URL_HOST);
-$port = parse_url($cam['dvrStream'], PHP_URL_PORT);
-$path = parse_url($cam['dvrStream'], PHP_URL_PATH);
-
-if ( $path[0] == '/' ) $path = substr($path,1);
-
-$stream = $path;
-
-foreach ($dvr_servers as $server) {
-    if ( $server['url'] == $host || $server['url'] == $host.":".$port ) {
-        $management_token = $server['management_token'];
-        $management_ip = $server['management_ip'];
-        $management_port = $server['management_port'];
-        $dvr_type = $server['type'];
-        break;
-    }
-}
+$drv_type = getDVRServerType($cam['dvrStream']);
 
 if ($dvr_type == 'nimble') {
     // Nimble Server
     $ranges = getRangesForNimble( $management_ip, $management_port, $stream, $management_token );
 } else {
-    // DVR Server
+    // Flussonic Server by default
     $flussonic_token = $cam['credentials'];
     $request_url = "https://$host:$port/$stream/recording_status.json?from=1525186456&token=$flussonic_token";
     $ranges = json_decode(file_get_contents($request_url), true);

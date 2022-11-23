@@ -142,7 +142,7 @@
         {
             "title": "Local server",
             "type": "nimble",
-	        "url": "video.server.hostname:8443",
+	        "url": "https://video.server.hostname:8443",
             "management_ip": "127.0.0.1",
 	        "management_port": "8086",
             "management_token": "<!-- management token -->"
