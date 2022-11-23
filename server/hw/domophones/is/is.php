@@ -171,7 +171,10 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                // TODO: Implement configure_ntp() method.
+                $this->api_call('/system/settings', 'PUT', [
+                    'tz' => 'Europe/Moscow',
+                    'ntp' => [ $server ],
+                ]);
             }
 
             public function configure_sip(
@@ -199,11 +202,11 @@
             }
 
             public function configure_user_account(string $password) {
-                // TODO: Implement configure_user_account() method.
+                // не используется
             }
 
             public function configure_video_encoding() {
-                // TODO: Implement configure_video_encoding() method.
+                // не используется
             }
 
             public function enable_public_code(bool $enabled = true) {
@@ -238,12 +241,13 @@
             }
 
             public function get_sysinfo(): array {
-                $res = $this->api_call('/system/info');
+                $info = $this->api_call('/system/info');
+                $versions = $this->api_call('/v2/system/versions')['opt'];
 
-                $sysinfo['DeviceID'] = $res['chipId'];
-                $sysinfo['DeviceModel'] = $res['model'];
-                $sysinfo['HardwareVersion'] = $res['hw'];
-                $sysinfo['SoftwareVersion'] = $res['sw'];
+                $sysinfo['DeviceID'] = $info['chipId'];
+                $sysinfo['DeviceModel'] = $info['model'];
+                $sysinfo['HardwareVersion'] = $versions['versions']['hw']['name'];
+                $sysinfo['SoftwareVersion'] = $versions['name'];
 
                 return $sysinfo;
             }
@@ -257,8 +261,14 @@
             }
 
             public function line_diag(int $apartment): int {
-                // TODO: Implement line_diag() method.
-                return $this->api_call("/panelCode/$apartment/resist")['panelCode']['resist'];
+                // TODO: check
+                $res = $this->api_call("/panelCode/$apartment/resist");
+
+                if ($res['errors']) {
+                    return 0;
+                }
+
+                return $res['panelCode']['resist'];
             }
 
             public function open_door(int $door_number = 0) {
@@ -292,6 +302,29 @@
 
             public function set_cms_model(string $model = '') {
                 // TODO: Implement set_cms_model() method.
+                switch ($model) {
+                    case 'BK-100M':
+                        $id = 1; // ВИЗИТ
+                        break;
+                    case 'KMG-100':
+                        $id = 2; // ЦИФРАЛ
+                        break;
+                    case 'KM100-7.1':
+                    case 'KM100-7.5':
+                        $id = 3; // ЭЛТИС
+                        break;
+                    case 'COM-100U':
+                    case 'COM-220U':
+                        $id = 4; // МЕТАКОМ
+                        break;
+                    case 'QAD-100':
+                        $id = 5; // Цифровые
+                        break;
+                    default:
+                        $id = 0; // Отключен
+                }
+
+                $this->api_call('/switch/settings', 'PUT', [ 'id' => $id ]);
             }
 
             public function set_concierge_number(int $number) {
@@ -300,6 +333,10 @@
 
             public function set_display_text(string $text = '') {
                 // TODO: ???
+                $this->api_call('/panelDisplay/settings', 'PUT', [
+                    'strDisplayOff' => !$text,
+                    'imgStr' => $text,
+                ]);
             }
 
             public function set_public_code(int $code) {
