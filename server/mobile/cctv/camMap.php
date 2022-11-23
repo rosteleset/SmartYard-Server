@@ -48,9 +48,9 @@ foreach($subscriber['flats'] as $flat) {
         
         $e = $households->getEntrance($entrance['entranceId']);
         
-        if ($e['cameraId'] && !array_key_exists($e["cameraId"], $cams)) {
+        if ($e['cameraId'] && !array_key_exists($entrance['entranceId'], $cams)) {
             $cam = $cameras->getCamera($e["cameraId"]);
-            $cams[$e["cameraId"]] = $cam;
+            $cams[$entrance['entranceId']] = $cam;
         }
         
         $house['doors'][] = $entrance['entranceId'];
