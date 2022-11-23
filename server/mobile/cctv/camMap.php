@@ -10,7 +10,7 @@
  * @apiHeader {String} authorization токен авторизации
  *
  * @apiSuccess {Object[]} - массив c настройками
- * @apiSuccess {Number} -.id id домофона
+ * @apiSuccess {String} -.id id домофона
  * @apiSuccess {String} -.url url камеры
  * @apiSuccess {String} -.token токен
  * @apiSuccess {String="t","f"} -.frs подключен FRS
