@@ -5,9 +5,9 @@
 
     class Access
     {
-        private static $allowedHosts = ["127.0.0.1"];
+        private static array $allowedHosts = ["127.0.0.1", "192.168.15.81"];
 
-        public static  function getIp()
+        public static function getIp()
         {
             if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
                 $ip_address = $_SERVER['HTTP_CLIENT_IP'];
@@ -24,14 +24,14 @@
             return $ip_address;
         }
 
-        public static function check()
+        public static function check(): void
         {
             $ip = self::getIp();
             $hosts = self::$allowedHosts;
             $access = !in_array($ip, $hosts);
 
             if ($access) {
-                Response::res(403, "Forbidden", "Access denied for this host: ".$ip);
+                Response::res(403, "Forbidden", "Access denied for this host: ". $ip);
                 exit();
             }
         }

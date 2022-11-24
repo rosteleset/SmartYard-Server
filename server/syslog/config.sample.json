@@ -1,0 +1,21 @@
+{
+  "clickhouse": {
+    "host": "127.0.0.1",
+    "port": 8123,
+    "database": "default",
+    "username": "default",
+    "password": "default_password"
+  },
+  "hw": {
+    "beward": [
+      "syslog.udp:127.0.0.1:45450"
+    ],
+    "qtech": [
+      "syslog.udp:127.0.0.1:45451"
+    ],
+    "hikvision": [
+      "syslog.udp:127.0.0.1:45452"
+    ]
+  },
+  "plog_expire_days": 10
+}

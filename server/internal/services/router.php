@@ -6,9 +6,9 @@
 
     class Router
     {
-        private static $routes = [];
+        private static array $routes = [];
 
-        public static function get($uri, $class, $method)
+        public static function get($uri, $class, $method): void
         {
             self::$routes[] = [
                 "uri" => $uri,
@@ -17,7 +17,7 @@
             ];
         }
 
-        public static function post($uri, $class, $method)
+        public static function post($uri, $class, $method): void
         {
             self::$routes[] = [
                 "uri" => $uri,
@@ -27,7 +27,7 @@
             ];
         }
 
-        public static function run()
+        public static function run(): void
         {
             Access::check();
             $query = $_SERVER['PATH_INFO'];
