@@ -47,6 +47,26 @@
                 ]);
             }
 
+            protected function clear_cms($cms_model) {
+                for ($i = 1; $i <= 3; $i++) {
+                    if ($cms_model == 'FACTORIAL 8x8') {
+                        $capacity = 64;
+                        $matrix = array_fill(0, 8, array_fill(0, 8, null));
+                    } else if ($cms_model == 'COM-220U') {
+                        $capacity = 220;
+                        $matrix = array_fill(0, 10, array_fill(0, 22, null));
+                    } else {
+                        $capacity = 100;
+                        $matrix = array_fill(0, 10, array_fill(0, 10, null));
+                    }
+
+                    $this->api_call("/switch/matrix/$i", 'PUT', [
+                        "capacity" => $capacity,
+                        "matrix" => $matrix,
+                    ]);
+                }
+            }
+
             protected function delete_open_code($apartment) {
                 // TODO: doesn't work
                 $this->api_call("/openCode/$apartment", 'DELETE');
@@ -304,27 +324,28 @@
                 // TODO: Implement set_cms_model() method.
                 switch ($model) {
                     case 'BK-100M':
-                        $id = 1; // ВИЗИТ
+                        $id = 'VISIT'; // ВИЗИТ
                         break;
                     case 'KMG-100':
-                        $id = 2; // ЦИФРАЛ
+                        $id = 'CYFRAL'; // ЦИФРАЛ
                         break;
                     case 'KM100-7.1':
                     case 'KM100-7.5':
-                        $id = 3; // ЭЛТИС
+                        $id = 'ELTIS'; // ЭЛТИС
                         break;
                     case 'COM-100U':
                     case 'COM-220U':
-                        $id = 4; // МЕТАКОМ
+                        $id = 'METAKOM'; // МЕТАКОМ
                         break;
-                    case 'QAD-100':
-                        $id = 5; // Цифровые
+                    case 'FACTORIAL 8x8':
+                        $id = 'FACTORIAL'; // ФАКТОРИАЛ
                         break;
                     default:
-                        $id = 0; // Отключен
+                        $id = 'CYFRAL'; // Отключен
                 }
 
-                $this->api_call('/switch/settings', 'PUT', [ 'id' => $id ]);
+                $this->api_call('/switch/settings', 'PUT', [ 'modelId' => $id ]);
+                $this->clear_cms($model);
             }
 
             public function set_concierge_number(int $number) {
