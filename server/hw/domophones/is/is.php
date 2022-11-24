@@ -68,7 +68,6 @@
             }
 
             protected function delete_open_code($apartment) {
-                // TODO: doesn't work
                 $this->api_call("/openCode/$apartment", 'DELETE');
             }
 
@@ -154,7 +153,7 @@
                     ],
                 ];
 
-                if (count($levels) == 2) { // TODO: doesn't work
+                if (count($levels) == 2) {
                     $payload['resistances'] = [
                         'answer' => $levels[0],
                         'quiescent' => $levels[1],
@@ -321,7 +320,6 @@
             }
 
             public function set_cms_model(string $model = '') {
-                // TODO: Implement set_cms_model() method.
                 switch ($model) {
                     case 'BK-100M':
                         $id = 'VISIT'; // ВИЗИТ
@@ -349,7 +347,8 @@
             }
 
             public function set_concierge_number(int $number) {
-                // TODO: Implement set_concierge_number() method.
+                // TODO: check
+                $this->api_call('/panelCode/settings', 'PUT', [ 'consiergeRoom' => (string) $number ]);
             }
 
             public function set_display_text(string $text = '') {
@@ -375,7 +374,7 @@
             }
 
             public function set_sos_number(int $number) {
-                // TODO: apartment, not number
+                // TODO: check
                 $this->api_call('/panelCode/settings', 'PUT', [ 'sosRoom' => (string) $number ]);
             }
 
