@@ -6,6 +6,11 @@
     "outputs": 1,
     "camera": "is",
     "cmses": [
-
+        "bk-100m",
+        "com-100u",
+        "km100-7.1",
+        "km100-7.5",
+        "kmg-100",
+        "factorial_8x8"
     ]
 }

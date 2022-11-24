@@ -10,12 +10,16 @@
             protected $def_pass = '123456';
 
             protected $rfid_keys = [];
+            protected $apartments = [];
 
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $resource;
 
-                echo $req . PHP_EOL; // TODO: delete later
-                echo json_encode($payload) . PHP_EOL; // TODO: delete later
+                // TODO: delete later
+                echo $method . PHP_EOL;
+                echo $req . PHP_EOL;
+                echo 'Payload: ' . json_encode($payload) . PHP_EOL;
+                echo '---------------------------------' . PHP_EOL;
 
                 $ch = curl_init($req);
 
@@ -34,6 +38,33 @@
                 curl_close($ch);
 
                 return json_decode($res, true);
+            }
+
+            protected function add_open_code($code, $apartment) {
+                $this->api_call('/openCode', 'POST', [
+                    'code' => $code,
+                    'panelCode' => $apartment
+                ]);
+            }
+
+            protected function delete_open_code($apartment) {
+                // TODO: doesn't work
+                $this->api_call("/openCode/$apartment", 'DELETE');
+            }
+
+            protected function get_apartments() {
+                $apartments = [];
+                $raw_apartments = $this->get_raw_apartments();
+
+                foreach ($raw_apartments as $raw_apartment) {
+                    $apartments[] = $raw_apartment['panelCode'];
+                }
+
+                return $apartments;
+            }
+
+            protected function get_raw_apartments() {
+                return $this->api_call('/panelCode');
             }
 
             protected function get_raw_rfids() {
@@ -57,7 +88,13 @@
             }
 
             public function clear_apartment(int $apartment = -1) {
-                // TODO: Implement clear_apartment() method.
+                if ($apartment === -1) {
+                    $this->api_call('/panelCode/clear', 'DELETE');
+                    $this->api_call('/openCode/clear', 'DELETE');
+                } else {
+                    $this->api_call("/panelCode/$apartment", 'DELETE');
+                    $this->delete_open_code($apartment);
+                }
             }
 
             public function clear_rfid(string $code = '') {
@@ -76,7 +113,39 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
-                // TODO: Implement configure_apartment() method.
+                if (!$this->apartments) {
+                    $this->apartments = $this->get_apartments();
+                }
+
+                if (in_array($apartment, $this->apartments)) {
+                    $method = 'PUT';
+                    $endpoint = "/$apartment";
+                    $this->delete_open_code($apartment);
+                } else {
+                    $method = 'POST';
+                    $endpoint = '';
+                }
+
+                $payload = [
+                    'panelCode' => $apartment,
+                    'callsEnabled' => [
+                        'handset' => $cms_handset_enabled,
+                        'sip' => (bool) $sip_numbers,
+                    ],
+                ];
+
+                if (count($levels) == 2) { // TODO: doesn't work
+                    $payload['resistances'] = [
+                        'answer' => $levels[0],
+                        'quiescent' => $levels[1],
+                    ];
+                }
+
+                $this->api_call('/panelCode' . $endpoint, $method, $payload);
+
+                if ($private_code_enabled) {
+                    $this->add_open_code($private_code, $apartment);
+                }
             }
 
             public function configure_cms(int $apartment, int $offset) {
@@ -102,7 +171,10 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                // TODO: Implement configure_ntp() method.
+                $this->api_call('/system/settings', 'PUT', [
+                    'tz' => 'Europe/Moscow',
+                    'ntp' => [ $server ],
+                ]);
             }
 
             public function configure_sip(
@@ -130,11 +202,11 @@
             }
 
             public function configure_user_account(string $password) {
-                // TODO: Implement configure_user_account() method.
+                // не используется
             }
 
             public function configure_video_encoding() {
-                // TODO: Implement configure_video_encoding() method.
+                // не используется
             }
 
             public function enable_public_code(bool $enabled = true) {
@@ -142,8 +214,7 @@
             }
 
             public function get_audio_levels(): array {
-                // TODO: Implement get_audio_levels() method.
-                return [];
+                return array_values($this->api_call('/levels')['volumes']);
             }
 
             public function get_cms_allocation(): array {
@@ -170,12 +241,13 @@
             }
 
             public function get_sysinfo(): array {
-                $res = $this->api_call('/system/info');
+                $info = $this->api_call('/system/info');
+                $versions = $this->api_call('/v2/system/versions')['opt'];
 
-                $sysinfo['DeviceID'] = $res['chipId'];
-                $sysinfo['DeviceModel'] = $res['model'];
-                $sysinfo['HardwareVersion'] = $res['hw'];
-                $sysinfo['SoftwareVersion'] = $res['sw'];
+                $sysinfo['DeviceID'] = $info['chipId'];
+                $sysinfo['DeviceModel'] = $info['model'];
+                $sysinfo['HardwareVersion'] = $versions['versions']['hw']['name'];
+                $sysinfo['SoftwareVersion'] = $versions['name'];
 
                 return $sysinfo;
             }
@@ -188,8 +260,15 @@
                 }
             }
 
-            public function line_diag(int $apartment) {
-                // TODO: Implement line_diag() method.
+            public function line_diag(int $apartment): int {
+                // TODO: check
+                $res = $this->api_call("/panelCode/$apartment/resist");
+
+                if ($res['errors']) {
+                    return 0;
+                }
+
+                return $res['panelCode']['resist'];
             }
 
             public function open_door(int $door_number = 0) {
@@ -197,15 +276,24 @@
             }
 
             public function set_admin_password(string $password) {
-                // TODO: Implement set_admin_password() method.
+                $this->api_call('/user/change_password', 'PUT', [ 'newPassword' => $password ]);
             }
 
             public function set_audio_levels(array $levels) {
-                // TODO: Implement set_audio_levels() method.
+                $this->api_call('/levels', 'PUT', [
+                    'volumes' => [
+                        'panelCall' => $levels[0],
+                        'panelTalk' => $levels[1],
+                        'thTalk' => $levels[2],
+                        'thCall' => $levels[3],
+                        'uartFrom' => $levels[4],
+                        'uartTo' => $levels[5],
+                    ],
+                ]);
             }
 
             public function set_call_timeout(int $timeout) {
-                // TODO: Implement set_call_timeout() method.
+                $this->api_call('/sip/options', 'PUT', [ 'ringDuration' => $timeout ]);
             }
 
             public function set_cms_levels(array $levels) {
@@ -214,6 +302,29 @@
 
             public function set_cms_model(string $model = '') {
                 // TODO: Implement set_cms_model() method.
+                switch ($model) {
+                    case 'BK-100M':
+                        $id = 1; // ВИЗИТ
+                        break;
+                    case 'KMG-100':
+                        $id = 2; // ЦИФРАЛ
+                        break;
+                    case 'KM100-7.1':
+                    case 'KM100-7.5':
+                        $id = 3; // ЭЛТИС
+                        break;
+                    case 'COM-100U':
+                    case 'COM-220U':
+                        $id = 4; // МЕТАКОМ
+                        break;
+                    case 'QAD-100':
+                        $id = 5; // Цифровые
+                        break;
+                    default:
+                        $id = 0; // Отключен
+                }
+
+                $this->api_call('/switch/settings', 'PUT', [ 'id' => $id ]);
             }
 
             public function set_concierge_number(int $number) {
@@ -221,7 +332,11 @@
             }
 
             public function set_display_text(string $text = '') {
-                // TODO: Implement set_display_text() method.
+                // TODO: ???
+                $this->api_call('/panelDisplay/settings', 'PUT', [
+                    'strDisplayOff' => !$text,
+                    'imgStr' => $text,
+                ]);
             }
 
             public function set_public_code(int $code) {
@@ -229,7 +344,6 @@
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
-                // TODO: doesn't work
                 $this->api_call('/sip/options', 'PUT', [
                     'dtmf' => [
                         '1' => (string) $relay_1,
@@ -245,7 +359,7 @@
             }
 
             public function set_talk_timeout(int $timeout) {
-                // TODO: Implement set_talk_timeout() method.
+                $this->api_call('/sip/options', 'PUT', [ 'talkDuration' => $timeout ]);
             }
 
             public function set_unlock_time(int $time) {
@@ -261,7 +375,7 @@
             }
 
             public function set_language(string $lang) {
-                // TODO: Implement set_language() method.
+                // не используется
             }
 
             public function write_config() {
