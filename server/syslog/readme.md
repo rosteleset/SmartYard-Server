@@ -1,3 +1,8 @@
+edit config
+```
+cp ./config.sample.json ./config.json
+```
+
 install 
 
 ```
@@ -8,3 +13,4 @@ start
 ```
 npm run start
 ```
+

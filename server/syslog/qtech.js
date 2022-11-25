@@ -1,6 +1,6 @@
 const syslog = new (require("syslog-server"))();
-const {syslog_servers: { qtech }} = require("../config/config.json");
-const thisMoment = require("./utils/thisMoment");
+const {hw: { qtech }} = require("./config.json");
+const thisMoment = require("./utils/formatDate");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
 const { port } = urlParser(qtech);
@@ -17,7 +17,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
     return;
   }
 
-  console.log(qtMsg);
+  console.log(`${new Date(date).toLocaleString("RU-ru")} || ${host} || ${qtMsg}`);
 
   /**
    * Отправка соощения в syslog

@@ -14,6 +14,7 @@
     use internal\services\Response;
 
     $config = false;
+    $db = false;
 
     try {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
@@ -28,14 +29,14 @@
         exit();
     }
 
-    try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (Exception $e) {
-        error_log(print_r($e, true));
-        Response::res(555, "Error", [
-            "error" => "PDO",
-        ]);
-    }
+//    try {
+//        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+//        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+//    } catch (Exception $e) {
+//        error_log(print_r($e, true));
+//        Response::res(555, "Error", [
+//            "error" => "PDO",
+//        ]);
+//    }
 
     Router::run();

@@ -11,6 +11,7 @@
 
             protected $rfid_keys = [];
             protected $apartments = [];
+            protected $matrix = [];
 
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $resource;
@@ -47,8 +48,27 @@
                 ]);
             }
 
+            protected function clear_cms($cms_model) {
+                for ($i = 1; $i <= 3; $i++) {
+                    if ($cms_model == 'FACTORIAL 8x8') {
+                        $capacity = 64;
+                        $matrix = array_fill(0, 8, array_fill(0, 8, null));
+                    } else if ($cms_model == 'COM-220U') {
+                        $capacity = 220;
+                        $matrix = array_fill(0, 10, array_fill(0, 22, null));
+                    } else {
+                        $capacity = 100;
+                        $matrix = array_fill(0, 10, array_fill(0, 10, null));
+                    }
+
+                    $this->api_call("/switch/matrix/$i", 'PUT', [
+                        "capacity" => $capacity,
+                        "matrix" => $matrix,
+                    ]);
+                }
+            }
+
             protected function delete_open_code($apartment) {
-                // TODO: doesn't work
                 $this->api_call("/openCode/$apartment", 'DELETE');
             }
 
@@ -63,12 +83,31 @@
                 return $apartments;
             }
 
+            protected function get_matrix() {
+                $matrix = [];
+
+                for ($i = 1; $i <= 3; $i++) {
+                    $matrix[] = $this->api_call("/switch/matrix/$i")['matrix'];
+                }
+
+                return $matrix;
+            }
+
             protected function get_raw_apartments() {
                 return $this->api_call('/panelCode');
             }
 
             protected function get_raw_rfids() {
                 return $this->api_call('/key/store');
+            }
+
+            protected function merge_matrix() {
+                for ($i = 0; $i <= 2; $i++) {
+                    $this->api_call('/switch/matrix/' . ($i + 1), 'PUT', [
+                        'capacity' => 100, // TODO: get real value
+                        'matrix' => $this->matrix[$i]
+                    ]);
+                }
             }
 
             protected function merge_rfids() {
@@ -80,6 +119,10 @@
 
                 if ($this->rfid_keys) {
                     $this->merge_rfids();
+                }
+
+                if ($this->matrix) {
+                    $this->merge_matrix();
                 }
             }
 
@@ -134,7 +177,7 @@
                     ],
                 ];
 
-                if (count($levels) == 2) { // TODO: doesn't work
+                if (count($levels) == 2) {
                     $payload['resistances'] = [
                         'answer' => $levels[0],
                         'quiescent' => $levels[1],
@@ -149,11 +192,15 @@
             }
 
             public function configure_cms(int $apartment, int $offset) {
-                // TODO: Implement configure_cms() method.
+                // не используется
             }
 
             public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
-                // TODO: Implement configure_cms_raw() method.
+                if (!$this->matrix) {
+                    $this->matrix = $this->get_matrix();
+                }
+
+                $this->matrix[$index][$dozens][$units] = $apartment;
             }
 
             public function configure_gate(array $links) {
@@ -218,13 +265,11 @@
             }
 
             public function get_cms_allocation(): array {
-                // TODO: Implement get_cms_allocation() method.
                 return [];
             }
 
             public function get_cms_levels(): array {
-                // TODO: Implement get_cms_levels() method.
-                return [];
+                return array_values($this->api_call('/levels')['resistances']);
             }
 
             public function get_rfids(): array {
@@ -280,16 +325,18 @@
             }
 
             public function set_audio_levels(array $levels) {
-                $this->api_call('/levels', 'PUT', [
-                    'volumes' => [
-                        'panelCall' => $levels[0],
-                        'panelTalk' => $levels[1],
-                        'thTalk' => $levels[2],
-                        'thCall' => $levels[3],
-                        'uartFrom' => $levels[4],
-                        'uartTo' => $levels[5],
-                    ],
-                ]);
+                if (count($levels) === 6) {
+                    $this->api_call('/levels', 'PUT', [
+                        'volumes' => [
+                            'panelCall' => $levels[0],
+                            'panelTalk' => $levels[1],
+                            'thTalk' => $levels[2],
+                            'thCall' => $levels[3],
+                            'uartFrom' => $levels[4],
+                            'uartTo' => $levels[5],
+                        ],
+                    ]);
+                }
             }
 
             public function set_call_timeout(int $timeout) {
@@ -297,38 +344,49 @@
             }
 
             public function set_cms_levels(array $levels) {
-                // TODO: Implement set_cms_levels() method.
+                if (count($levels) === 4) {
+                    $this->api_call('/levels', 'PUT', [
+                        'resistances' => [
+                            'error' => $levels[0],
+                            'break' => $levels[1],
+                            'quiescent' => $levels[2],
+                            'answer' => $levels[3],
+                        ],
+                    ]);
+                }
             }
 
             public function set_cms_model(string $model = '') {
-                // TODO: Implement set_cms_model() method.
                 switch ($model) {
                     case 'BK-100M':
-                        $id = 1; // ВИЗИТ
+                        $id = 'VISIT'; // ВИЗИТ
                         break;
                     case 'KMG-100':
-                        $id = 2; // ЦИФРАЛ
+                        $id = 'CYFRAL'; // ЦИФРАЛ
                         break;
                     case 'KM100-7.1':
                     case 'KM100-7.5':
-                        $id = 3; // ЭЛТИС
+                        $id = 'ELTIS'; // ЭЛТИС
                         break;
                     case 'COM-100U':
                     case 'COM-220U':
-                        $id = 4; // МЕТАКОМ
+                        $id = 'METAKOM'; // МЕТАКОМ
                         break;
-                    case 'QAD-100':
-                        $id = 5; // Цифровые
+                    case 'FACTORIAL 8x8':
+                        $id = 'FACTORIAL'; // ФАКТОРИАЛ
                         break;
                     default:
-                        $id = 0; // Отключен
+                        $id = 'CYFRAL'; // Отключен
                 }
 
-                $this->api_call('/switch/settings', 'PUT', [ 'id' => $id ]);
+                $this->api_call('/switch/settings', 'PUT', [ 'modelId' => $id ]);
+                $this->clear_cms($model);
             }
 
             public function set_concierge_number(int $number) {
-                // TODO: Implement set_concierge_number() method.
+                // TODO: apartment, not number
+                $this->api_call('/panelCode/settings', 'PUT', [ 'consiergeRoom' => (string) $number ]);
+                $this->configure_apartment($number, false, false, [ $number ]);
             }
 
             public function set_display_text(string $text = '') {
@@ -356,6 +414,7 @@
             public function set_sos_number(int $number) {
                 // TODO: apartment, not number
                 $this->api_call('/panelCode/settings', 'PUT', [ 'sosRoom' => (string) $number ]);
+                // $this->configure_apartment($number, false, false, [ $number ]);
             }
 
             public function set_talk_timeout(int $timeout) {
