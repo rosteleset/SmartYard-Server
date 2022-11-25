@@ -87,7 +87,7 @@
                 $matrix = [];
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $matrix[] = $this->api_call("/switch/matrix/$i")['matrix'];
+                    $matrix[] = $this->api_call("/switch/matrix/$i");
                 }
 
                 return $matrix;
@@ -104,8 +104,8 @@
             protected function merge_matrix() {
                 for ($i = 0; $i <= 2; $i++) {
                     $this->api_call('/switch/matrix/' . ($i + 1), 'PUT', [
-                        'capacity' => 100, // TODO: get real value
-                        'matrix' => $this->matrix[$i]
+                        'capacity' => $this->matrix[$i]['capacity'],
+                        'matrix' => $this->matrix[$i]['matrix'],
                     ]);
                 }
             }
@@ -200,7 +200,7 @@
                     $this->matrix = $this->get_matrix();
                 }
 
-                $this->matrix[$index][$dozens][$units] = $apartment;
+                $this->matrix[$index]['matrix'][$dozens][$units] = $apartment;
             }
 
             public function configure_gate(array $links) {
@@ -308,7 +308,7 @@
             public function line_diag(int $apartment): int {
                 $res = $this->api_call("/panelCode/$apartment/resist");
 
-                if (!$res || $res['errors']) {
+                if (!$res || isset($res['errors'])) {
                     return 0;
                 }
 
