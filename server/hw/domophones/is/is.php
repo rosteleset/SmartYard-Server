@@ -215,6 +215,18 @@
                 int $height = 576
             ) {
                 // TODO: Implement configure_md() method.
+                $this->api_call('/camera/md', 'PUT', [
+                    'md_enable' => true,
+                    'md_frame_shift' => 1,
+                    'md_area_thr' => 100000, // значение из мануала
+                    'md_rect_color' => '0xFF0000',
+                    'md_frame_int' => 30,
+                    'md_rects_enable' => true,
+                    'md_logs_enable' => true,
+                    'md_send_snapshot_enable' => true,
+                    'md_send_snapshot_interval' => 1,
+                    'snap_send_url' => '',
+                ]);
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
