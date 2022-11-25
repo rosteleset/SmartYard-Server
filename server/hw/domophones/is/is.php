@@ -306,14 +306,13 @@
             }
 
             public function line_diag(int $apartment): int {
-                // TODO: check
                 $res = $this->api_call("/panelCode/$apartment/resist");
 
-                if ($res['errors']) {
+                if (!$res || $res['errors']) {
                     return 0;
                 }
 
-                return $res['panelCode']['resist'];
+                return $res['resist'];
             }
 
             public function open_door(int $door_number = 0) {
