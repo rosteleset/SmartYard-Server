@@ -57,6 +57,10 @@
         try {
             $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
             $model->open_door($door_id);
+            $plog = loadBackend("plog");
+            if ($plog) {
+                $plog->addDoorOpenData(date('Y-m-d H:i:s'), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $subscriber['mobile']);
+            }
         }
         catch (\Exception $e) {
             response(404, false, 'Ошибка', 'Домофон недоступен');

@@ -52,8 +52,7 @@
             $house = &$houses[$houseId];
             $house['houseId'] = strval($houseId);
             $house['address'] = $flat['house']['houseFull'];
-            // TODO: добавить журнал событий.
-            $house['hasPlog'] = 'f';
+            $house['hasPlog'] = 't';
             $house['cameras'] = $households->getCameras("house", $houseId);
             $house['doors'] = [];
         }

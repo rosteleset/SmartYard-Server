@@ -50,8 +50,119 @@
  * 424 неверный токен
  */
 
-    auth(3);
-    response(200);
+use backends\plog\plog;
+
+auth();
+$households = loadBackend("households");
+$flat_id = (int)@$postdata['flatId'];
+
+if (!$flat_id) {
+    response(422);
+}
+
+$flatIds = array_map( function($item) { return $item['flatId']; }, $subscriber['flats']);
+$f = in_array($flat_id, $flatIds);
+if (!$f) {
+    response(404);
+}
+
+if (!@$postdata['day']) {
+    response(404);
+}
+
+$plog = loadBackend("plog");
+
+if (!$plog) {
+    response(403);
+}
+
+//проверка на доступность событий
+$flat_owner = false;
+foreach ($subscriber['flats'] as $flat) {
+    if ($flat['flatId'] == $flat_id) {
+        $flat_owner = ($flat['role'] == 0);
+        break;
+    }
+}
+
+$flat_details = $households->getFlat($flat_id);
+$plog_access = $flat_details['plog'];
+if ($plog_access == $plog::ACCESS_DENIED || $plog_access == $plog::ACCESS_RESTRICTED_BY_ADMIN
+    || $plog_access == $plog::ACCESS_OWNER_ONLY && !$flat_owner) {
+    response(403);
+}
+
+try {
+    $date = date('Ymd', strtotime(@$postdata['day']));
+    $result = $plog->getDetailEventsByDay($flat_id, $date);
+    if ($result) {
+        $events_details = [];
+        foreach ($result as &$row) {
+            $e_details = [];
+            $e_details['date'] = $row[plog::COLUMN_DATE];
+            $e_details['uuid'] = $row[plog::COLUMN_EVENT_UUID];
+            $e_details['image'] = $row[plog::COLUMN_IMAGE_UUID];
+            $e_details['previewType'] = $row[plog::COLUMN_PREVIEW];
+            $e_details['objectId'] = $row[plog::COLUMN_DOMOPHONE_ID];
+            $e_details['objectType'] = 0;
+            $e_details['objectMechanizma'] = $row[plog::COLUMN_DOMOPHONE_OUTPUT];
+            $e_details['mechanizmaDescription'] = $row[plog::COLUMN_DOMOPHONE_OUTPUT_DESCRIPTION];
+            $e_details['event'] = $row[plog::COLUMN_EVENT];
+            $face = json_decode($row[plog::COLUMN_FACE]);
+            if ($face->width && $face->height) {
+                $e_details['detailX']['face'] = [
+                    'left' => $face->left,
+                    'top' => $face->top,
+                    'width' => $face->width,
+                    'height' => $face->height
+                ];
+            }
+            if ($face->faceId) {
+                $e_details['detailX']['faceId'] = $face->faceId;
+            }
+
+            switch ((int)$row[plog::COLUMN_EVENT]) {
+                case plog::EVENT_UNANSWERED_CALL:
+                case plog::EVENT_ANSWERED_CALL:
+                    $e_details['detailX']['opened'] = ($row[plog::COLUMN_OPENED] == 1) ? 't' : 'f';
+                    break;
+
+                case plog::EVENT_OPENED_BY_KEY:
+                    $e_details['detailX']['key'] = $row[plog::COLUMN_RFID];
+                    break;
+
+                case plog::EVENT_OPENED_BY_APP:
+                    $e_details['detailX']['phone'] = $row[plog::COLUMN_USER_PHONE];
+                    break;
+
+                case plog::EVENT_OPENED_BY_FACE:
+                    break;
+
+                case plog::EVENT_OPENED_BY_CODE:
+                    $e_details['detailX']['code'] = $row[plog::COLUMN_CODE];
+                    break;
+
+                case plog::EVENT_OPENED_GATES_BY_CALL:
+                    $e_details['detailX']['phoneFrom'] = $row[plog::COLUMN_USER_PHONE];
+                    $e_details['detailX']['phoneTo'] = $row[plog::COLUMN_GATE_PHONE];
+                    break;
+            }
+            if ((int)$row[plog::COLUMN_PREVIEW]) {
+                $img_uuid = $row[plog::COLUMN_IMAGE_UUID];
+                $url =@$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
+                $e_details['preview'] = $url;
+            }
+
+            $events_details[] = $e_details;
+        }
+        response(200, $events_details);
+    } else {
+        response();
+    }
+} catch (\Throwable $e)  {
+    response(200, $e->getMessage());
+    response(500, false, 'Внутренняя ошибка сервера');
+}
     
     /*
      * Disclaimer: использование "иерархии" владелец\не владелец считаю в данном случае избыточным и вредоносным,
