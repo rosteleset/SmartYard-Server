@@ -514,7 +514,6 @@
                         // TODO: доделать для случая наличия инфы о лице
                     }
                     $this->writeEventData($event_data, $flat_list);
-                    $this->updateFlatLastOpened($flat_list, $plog_date);
                 }
 
                 //удаление данных из таблицы plog_door_open
