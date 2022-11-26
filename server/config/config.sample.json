@@ -108,11 +108,15 @@
 
         "plog": {
             "backend": "clickhouse",
-            "username": "default",
-            "password": "qqq",
             "host": "127.0.0.1",
             "port": 8123,
-            "database": "default"
+            "username": "default",
+            "password": "qqq",
+            "database": "default",
+            "time_shift": "<-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) -->",
+            "max_call_length": "<-- your max call length in seconds for backward processing call events (hint 120) -->",
+            "ttl_temp_record": "<-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) -->",
+            "ttl_camshot_days": "<-- your time to live in days for camshots (hint 180 - approx. half year) -->",
         },
 
         "configs": {

@@ -72,12 +72,12 @@
 
             /**
              * Получить кадр события с устройства или от FRS на дату (по идентификатору события)
-             * @param string $ip адрес устройства
+             * @param int $domophone_id идентификатор устройства
              * @param false|string $date дата и время события
              * @param false|int $event_id идентификатор события FRS
              * @return false|object
              */
-            abstract public function getCamshot($ip, $date, $event_id = false);
+            abstract public function getCamshot(int $domophone_id, $date, $event_id = false);
 
             /**
              * Получить кадр события из коллекции
@@ -95,5 +95,12 @@
              * @param string $detail детали события в зависимости от типа
              */
             abstract public function addDoorOpenData($date, $domophone_id, $event_type, $door, $detail);
+
+            /**
+             * @param string $date дата+время события
+             * @param int $domophone_id идентификатор устройства
+             * @param int $call_id идентификатор звонка
+             */
+            abstract public function addCallDoneData($date, $domophone_id, $call_id);
         }
     }
