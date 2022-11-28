@@ -67,7 +67,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   }
   // Открытие двери по коду квартиры
   if (bw_msg.indexOf("Opening door by code") >= 0) {
-    let code = parseInt(bw_msg.split("code")[1].split(",")[0]);
+    const code = parseInt(bw_msg.split("code")[1].split(",")[0]);
     if (code) {
       await API.openDoor({ date:now, ip:host, detail: code, type: "code", expire });
     }
@@ -75,7 +75,8 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   //Открытие двери через DTMF
   if (bw_msg.indexOf("Opening door by DTMF command")>= 0){
-    await API.openDoor({ date:now, ip:host, detail: code, type: "dtmf", expire });
+    const flatNumber = parseInt(bw_msg.split(" ")[8]);
+    await API.openDoor({ date:now, ip:host, detail: flatNumber, type: "dtmf", expire });
   }
 
   // Дектектор движения: старт

@@ -1,7 +1,7 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
 const axios = require("axios");
 const https = require("https");
-const {formatDate} = require("./formatDate.js")
+const {getTimestamp} = require("./formatDate.js")
 const events = require("./events.json");
 const {
     api: {internal}, frs_servers:[first_frs_server]
@@ -57,7 +57,7 @@ class API {
 
             await axios(config);
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| sendLog error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| sendLog error: ", error.message);
         }
     }
 
@@ -81,7 +81,7 @@ class API {
                     }
                 });
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| motionDetection error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| motionDetection error: ", error.message);
         }
 
     }
@@ -97,7 +97,7 @@ class API {
         try {
             return await internalAPI.post("/callFinished", {date, ip, call_id, expire});
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| callFinished error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message);
         }
     }
 
@@ -109,7 +109,7 @@ class API {
         try {
             return await internalAPI.post("/setRabbitGates", {host, gate_rabbits});
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| setRabbitGates error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| setRabbitGates error: ", error.message);
         }
     }
 
@@ -134,7 +134,7 @@ class API {
                     }
                 });
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| stopFRS error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| stopFRS error: ", error.message);
         }
     }
 
@@ -179,7 +179,7 @@ class API {
                     });
             }
         } catch (error) {
-            console.error(formatDate(new Date()),"||", ip, "|| openDoor error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message);
         }
     }
 }
