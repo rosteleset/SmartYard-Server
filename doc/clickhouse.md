@@ -17,7 +17,7 @@ CREATE TABLE default.syslog
     INDEX syslog_unit unit TYPE set(100) GRANULARITY 1024
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMMDD(FROM_UNIXTIME(date))
+PARTITION BY (toYYYYMMDD(FROM_UNIXTIME(date)), unit, ip)
 ORDER BY date
 TTL FROM_UNIXTIME(date) + toIntervalDay(31)
 SETTINGS index_granularity = 8192;
