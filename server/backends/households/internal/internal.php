@@ -325,7 +325,7 @@
              */
             function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
-                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog)) {
+                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
                     $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
 
                     if ($openCode == "!") {
@@ -413,10 +413,6 @@
 
                     if (@$params["code"] == "!") {
                         $params["code"] = md5(GUIDv4());
-                    }
-
-                    if (array_key_exists("autoOpen", $params)) {
-                        $params["autoOpen"] = date('Y-m-d H:i:s', strtotime($params["autoOpen"]));
                     }
 
                     if (@$params["openCode"] == "!") {
@@ -931,7 +927,7 @@
                         "mobile" => $mobile,
                         "subscriber_name" => $name,
                         "subscriber_patronymic" => $patronymic,
-                        "registered" => $this->db->now(),
+                        "registered" => time(),
                     ]);
                 } else {
                     $this->modifySubscriber($subscriberId, [
@@ -1110,7 +1106,7 @@
                     }
                 }
 
-                if ($this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => $this->db->now() ]) === false) {
+                if ($this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => time() ]) === false) {
                     return false;
                 }
 

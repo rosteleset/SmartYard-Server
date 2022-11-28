@@ -2,7 +2,7 @@
 CREATE TABLE plog_door_open
 (
     plog_door_open_id integer not null primary key autoincrement,
-    date text,
+    date integer,                                                                                                       -- UNIX timestamp
     ip text,
     event integer,
     door integer,
@@ -16,7 +16,7 @@ CREATE INDEX plog_door_open_expire on plog_door_open (expire);
 CREATE TABLE plog_call_done
 (
     plog_call_done_id integer not null primary key autoincrement,
-    date text,
+    date integer,                                                                                                       -- UNIX timestamp
     ip text,
     call_id integer,
     expire integer

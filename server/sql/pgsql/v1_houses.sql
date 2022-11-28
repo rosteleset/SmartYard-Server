@@ -78,7 +78,7 @@ CREATE TABLE houses_flats
     manual_block integer,                                                                                               -- 1/0 manaul blocking (by abonent?)
     auto_block integer,                                                                                                 -- 1/0 auto block (by billing system?)
     open_code character varying,                                                                                        -- door open code
-    auto_open timestamp,                                                                                                -- "YYYY-MM-DD HH:MM:SS.SSS"
+    auto_open integer,                                                                                                  -- UNIX timestamp
     white_rabbit integer,                                                                                               -- 1/0
     sip_enabled integer,                                                                                                -- 0 - disabled, 1 - classic sip, 2 - webrtc
     sip_password character varying,                                                                                     -- sip password
@@ -108,7 +108,7 @@ CREATE TABLE houses_rfids
     rfid character varying not null,
     access_type integer not null,                                                                                       -- 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house
     access_to integer not null,                                                                                         -- 0 - universal, > 0 - subscriber_id, flat_id, ...
-    last_seen timestamp,                                                                                                -- "YYYY-MM-DD HH:MM:SS.SSS"
+    last_seen integer,                                                                                                  -- UNIX timestamp
     comments character varying
 );
 CREATE UNIQUE INDEX houses_rfids_uniq on houses_rfids(rfid, access_type, access_to);
@@ -123,8 +123,8 @@ CREATE TABLE houses_subscribers_mobile
     push_token character varying,
     push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - apple (dev), 3 - huawei
     voip_token character varying,                                                                                       -- iOs only
-    registered timestamp,                                                                                               -- "YYYY-MM-DD HH:MM:SS.SSS"
-    last_seen timestamp,                                                                                                -- "YYYY-MM-DD HH:MM:SS.SSS"
+    registered integer,                                                                                                 -- UNIX timestamp
+    last_seen integer,                                                                                                  -- UNIX timestamp
     subscriber_name character varying,
     subscriber_patronymic character varying,
     voip_enabled integer

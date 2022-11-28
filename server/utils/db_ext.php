@@ -144,12 +144,4 @@
                 return false;
             }
         }
-
-        function now($with_millis = true) {
-            if ($with_millis) {
-                return date("Y-m-d H:i:s.000");
-            } else {
-                return date("Y-m-d H:i:s");
-            }
-        }
     }

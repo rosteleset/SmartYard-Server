@@ -90,7 +90,7 @@
             $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
                 "pid" => getmypid(),
                 "ppid" => $script_parent_pid,
-                "start" => $db->now(),
+                "start" => time(),
                 "process" => "cli.php",
                 "params" => $params,
                 "expire" => time() + 24 * 60 * 60,
@@ -103,7 +103,7 @@
 
         if (@$db) {
             $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                "done" => $db->now(),
+                "done" => time(),
                 "result" => $script_result,
                 "running_process_id" => $script_process_id,
             ]);
@@ -122,7 +122,7 @@
             foreach ($pids as $process) {
                 if (!file_exists( "/proc/{$process['pid']}")) {
                     $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                        "done" => $db->now(),
+                        "done" => time(),
                         "result" => "unknown",
                         "running_process_id" => $process['id'],
                     ]);

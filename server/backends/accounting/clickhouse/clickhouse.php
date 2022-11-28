@@ -48,7 +48,7 @@
                     $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}";
                 }
 
-                $this->clickhouse->insert("syslog", [ [ "date" => $this->db->now(false), "ip" => $params["_ip"], "unit" => "frontend", "msg" => $msg ] ]);
+                $this->raw($params["_ip"], "frontend", $msg);
             }
 
             /**
@@ -56,7 +56,7 @@
              */
             public function raw($ip, $unit, $msg)
             {
-                $this->clickhouse->insert("syslog", [ [ "date" => $this->db->now(false), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
+                $this->clickhouse->insert("syslog", [ [ "date" => date("Y-m-d H:i:s"), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
             }
         }
     }

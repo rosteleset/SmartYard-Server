@@ -2,7 +2,7 @@
 CREATE TABLE plog_door_open
 (
     plog_door_open_id serial primary key,
-    date timestamp,
+    date integer,                                                                                                       -- UNIX timestamp
     ip character varying,
     event integer,
     door integer,
@@ -16,7 +16,7 @@ CREATE INDEX plog_door_open_expire on plog_door_open (expire);
 CREATE TABLE plog_call_done
 (
     plog_call_done_id serial primary key,
-    date timestamp,
+    date integer,                                                                                                       -- UNIX timestamp
     ip character varying,
     call_id integer,
     expire integer

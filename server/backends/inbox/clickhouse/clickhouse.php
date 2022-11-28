@@ -36,7 +36,7 @@
                     $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, null)", [
                         "id" => $subscriber["id"],
                         "house_subscriber_id" => $subscriberId,
-                        "date" => $this->db->now(),
+                        "date" => time(),
                         "title" => $title,
                         "msg" => $msg,
                         "action" => $action,

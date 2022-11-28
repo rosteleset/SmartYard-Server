@@ -295,7 +295,7 @@
 
                     $rabbit = (int)$flat["whiteRabbit"];
 
-                    echo json_encode(strtotime($flat["autoOpen"]) > time() || ($rabbit && $flat["lastOpened"] + $rabbit * 60 > time()));
+                    echo json_encode($flat["autoOpen"] > time() || ($rabbit && $flat["lastOpened"] + $rabbit * 60 > time()));
 
                     break;
 

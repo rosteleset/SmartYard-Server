@@ -110,10 +110,10 @@ CREATE TABLE core_running_processes
     running_process_id integer not null primary key autoincrement,
     pid integer,
     ppid integer,
-    start text,
+    start integer,                                                                                                      -- UNIX timestamp
     process text,
     params text,
-    done text,
+    done integer,                                                                                                       -- UNIX timestamp
     result text,
     expire integer
 );
