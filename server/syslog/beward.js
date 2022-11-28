@@ -1,13 +1,13 @@
 const syslog = new (require("syslog-server"))();
 const {hw: { beward }} = require("./config.json");
-const {formatDate, getExpire} = require("./utils/formatDate");
+const {getTimestamp, getExpire} = require("./utils/formatDate");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
 const { port } = urlParser(beward);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
-  const now = formatDate(date);
+  const now = getTimestamp(date);
   const expire = getExpire(date); //TODO: вероятно expire лучше считать на строне php api endpoint.
   const bw_msg = message.split(" - - ")[1].trim();
 

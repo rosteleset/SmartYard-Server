@@ -29,12 +29,12 @@
         case $events['OPEN_BY_CODE']:
             //TODO: переделать.  Использовать метод "insert_plog_door_open" для работы с backend plog
             $plogDoorOpen = $db->insert("insert into plog_door_open (date, ip, event, door, detail, expire) values (:date, :ip, :event, :door, :detail, :expire)", [
-                "date" => $date,
-                "ip" => $ip,
-                "event" => $event,
-                "door" => $door,
-                "detail" => $detail,
-                "expire" => $expire,
+                "date" => (int)$date,
+                "ip" => (string)$ip,
+                "event" => (int)$event,
+                "door" => (int)$door,
+                "detail" => (string)$detail,
+                "expire" => (int)$expire,
             ]);
             response(201, ["id" => $plogDoorOpen]);
             break;
