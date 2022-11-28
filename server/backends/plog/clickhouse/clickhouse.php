@@ -139,7 +139,7 @@
             /**
              * @inheritDoc
              */
-            public function addCallDoneData($date, $ip, $call_id)
+            public function addCallDoneData($date, $ip, $call_id = null)
             {
                 $expire = $date + $this->ttl_temp_record;
 

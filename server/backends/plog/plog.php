@@ -109,7 +109,7 @@
             /**
              * @param int $date timestamp события
              * @param string $ip адрес устройства
-             * @param int $call_id идентификатор звонка
+             * @param (int | null) $call_id идентификатор звонка (beward only)
              */
             abstract public function addCallDoneData($date, $ip, $call_id);
         }
