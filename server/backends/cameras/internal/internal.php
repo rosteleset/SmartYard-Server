@@ -184,6 +184,32 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
+        public function addDownloadRecord($cameraId, $subscriberId, $start, $finish)
+        {
+            $dvr_files_path = @$this->config["backends"]["cameras"]["dvr_files_path"] ?: false;
+            $dvr_files_location_prefix = @$this->config["backends"]["cameras"]["dvr_files_location_prefix"] ?: false;
+            $dvr_files_ttl = @$this->config["backends"]["cameras"]["dvr_files_ttl"] ?: 259200;
+
+            if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish) || !$dvr_files_path || !$dvr_files_location_prefix) {
+                return false;
+            }
+
+            $filename = GUIDv4() . '.mp4';
+            
+            return $this->db->insert("insert into camera_records (camera_id, subscriber_id, start, finish, filename, expire, state) values (:camera_id, :subscriber_id, :start, :finish, :filename, :expire, :state)", [
+                "camera_id" => (int)$cameraId,
+                "subscriber_id" => (int)$subscriberId,
+                "start" => (int)$start,
+                "finish" => (int)$finish,
+                "filename" => $filename,
+                "expire" => time() + $dvr_files_ttl,
+                "state" => 0 //0 = created, 1 = in progress, 2 = completed, 3 = error
+            ]);
+        }
+        
+        /**
+         * @inheritDoc
+         */
         public function cron($part) {
             if ($part === "hourly") {
                 $cameras = $this->db->get("select camera_id, url from cameras");
@@ -197,6 +223,16 @@ namespace backends\cameras
                         ]);
                     }
                 }
+
+                return true;
+            }
+            if ($part === "minutely") {
+                // TODO: загрузка записей DVR для загрузки и уведомление пользователя.
+
+                return true;
+            }
+            if ($part === "daily") {
+                // TODO: очистка старых записей из списка загрузки DVR-роликов
 
                 return true;
             }

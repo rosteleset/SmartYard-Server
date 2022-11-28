@@ -81,7 +81,10 @@
         },
 
         "cameras": {
-            "backend": "internal"
+            "backend": "internal",
+            "dvr_files_path": "/path/to/dvr/files/on/your/local/filesystem ",
+            "dvr_files_location_prefix": "https://your.server.hostname/path/to/temp/dvr/files/",
+            "dvr_files_ttl": 259200
         },
 
         "isdn": {
