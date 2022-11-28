@@ -4,7 +4,7 @@ CREATE TABLE inbox
     msg_id integer not null primary key autoincrement,
     house_subscriber_id integer,
     id test not null,                                                                                                   -- phone number
-    date test,                                                                                                          -- send date
+    date integer,                                                                                                       -- send date, UNIX timestamp
     title text,                                                                                                         -- title (subject)
     msg text not null,                                                                                                  -- message
     action text,                                                                                                        -- application action (money, new_address, ...)

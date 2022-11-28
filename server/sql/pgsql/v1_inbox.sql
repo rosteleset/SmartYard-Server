@@ -4,7 +4,7 @@ CREATE TABLE inbox
     msg_id serial primary key,
     house_subscriber_id integer,
     id character varying not null,                                                                                      -- phone number
-    date timestamp,                                                                                                     -- send date
+    date integer,                                                                                                       -- send date, UNIX timestamp
     title character varying,                                                                                            -- title (subject)
     msg character varying not null,                                                                                     -- message
     action character varying,                                                                                           -- application action (money, new_address, ...)
