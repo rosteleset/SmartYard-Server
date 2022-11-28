@@ -1228,7 +1228,7 @@
                 }
 
                 return $this->db->modify("update houses_flats set last_opened = :now where house_flat_id = $flatId", [
-                    "now" => $this->db->now(),
+                    "now" => time(),
                 ]);
             }
 
