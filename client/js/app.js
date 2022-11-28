@@ -317,8 +317,9 @@ function initAll() {
         $.cookie("_cookie", "1", { expires: 36500 });
     }
 
-    if (window.location.protocol === 'http:') {
+    if (!$.cookie("_https") && window.location.protocol === 'http:') {
         warning(i18n("httpsWarning"), false, 3600);
+        $.cookie("_https", "1", { expires: 36500 });
     }
 
     if (config.logo) {
