@@ -139,43 +139,9 @@
             /**
              * @inheritDoc
              */
-            public function addDoorOpenData($date, $domophone_id, $event_type, $door, $detail)
+            public function addCallDoneData($date, $ip, $call_id)
             {
-                $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    $ip =  $result[0]['ip'];
-                } else {
-                    return false;
-                }
-
-                $expire = time() + $this->ttl_temp_record;
-
-                $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
-                return $this->db->insert($query, [
-                    ":date" => $date,
-                    ":ip" => $ip,
-                    ":event" => $event_type,
-                    ":door" => $door,
-                    ":detail" => $detail,
-                    ":expire" => $expire,
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addCallDoneData($date, $domophone_id, $call_id)
-            {
-                $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    $ip =  $result[0]['ip'];
-                } else {
-                    return false;
-                }
-
-                $expire = time() + $this->ttl_temp_record;
+                $expire = $date + $this->ttl_temp_record;
 
                 $query = "insert into plog_call_done(date, ip, call_id, expire) values(:date, :ip, :call_id, :expire)";
                 return $this->db->insert($query, [
@@ -184,6 +150,22 @@
                     ":call_id" => $call_id,
                     ":expire" => $expire,
                 ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
+            {
+                $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
+                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                if (count($result)) {
+                    $ip =  $result[0]['ip'];
+                } else {
+                    return false;
+                }
+
+                return $this->addDoorOpenData($date, $ip, $event_type, $door, $detail);
             }
 
             /**

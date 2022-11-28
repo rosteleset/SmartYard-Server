@@ -88,19 +88,29 @@
 
             /**
              * Добавить данные открытия двери для последующего формирования события
-             * @param string $date дата+время события
+             * @param int $date timestamp события
+             * @param string $ip адрес устройства
+             * @param int $event_type тип события
+             * @param int $door "выход" устройства
+             * @param string $detail детали события в зависимости от типа
+             */
+            abstract public function addDoorOpenData($date, $ip, $event_type, $door, $detail);
+
+            /**
+             * Добавить данные открытия двери для последующего формирования события
+             * @param int $date timestamp события
              * @param int $domophone_id идентификатор устройства
              * @param int $event_type тип события
              * @param int $door "выход" устройства
              * @param string $detail детали события в зависимости от типа
              */
-            abstract public function addDoorOpenData($date, $domophone_id, $event_type, $door, $detail);
+            abstract public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail);
 
             /**
-             * @param string $date дата+время события
-             * @param int $domophone_id идентификатор устройства
+             * @param int $date timestamp события
+             * @param string $ip адрес устройства
              * @param int $call_id идентификатор звонка
              */
-            abstract public function addCallDoneData($date, $domophone_id, $call_id);
+            abstract public function addCallDoneData($date, $ip, $call_id);
         }
     }
