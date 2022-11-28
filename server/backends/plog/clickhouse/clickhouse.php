@@ -155,6 +155,24 @@
             /**
              * @inheritDoc
              */
+            public function addDoorOpenData($date, $ip, $event_type, $door, $detail)
+            {
+                $expire = time() + $this->ttl_temp_record;
+
+                $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
+                return $this->db->insert($query, [
+                    ":date" => $date,
+                    ":ip" => $ip,
+                    ":event" => $event_type,
+                    ":door" => $door,
+                    ":detail" => $detail,
+                    ":expire" => $expire,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
             {
                 $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
@@ -423,7 +441,7 @@
 
             private function processEvents()
             {
-                $end_date = date('Y-m-d H:i:s', time() - $this->time_shift);  //крайняя дата обработки
+                $end_date = time() - $this->time_shift;  //крайняя дата обработки
 
                 //обработка данных из таблицы plog_door_open
                 $query = <<< __SQL__
@@ -540,7 +558,7 @@
 
                     //забираем данные из сислога для звонка
                     $query_end_date = $row['date'];
-                    $query_start_date = date('Y-m-d H:i:s', strtotime($query_end_date) - $this->max_call_length);
+                    $query_start_date = $query_end_date - $this->max_call_length;
                     $query = <<< __SQL__
                         select
                             date,

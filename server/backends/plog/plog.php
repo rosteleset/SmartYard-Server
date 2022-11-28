@@ -58,7 +58,7 @@
             /**
              * Получить детальный список событий
              * @param int $flat_id идентификатор квартиры
-             * @param string $day день событий
+             * @param string $date день событий
              * @return false|array
              */
             abstract public function getDetailEventsByDay(int $flat_id, string $date);
