@@ -328,7 +328,6 @@
                 $autoOpen = (int)strtotime($autoOpen);
 
                 if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
-                    $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
 
                     if ($openCode == "!") {
                         // TODO add unique check !!!

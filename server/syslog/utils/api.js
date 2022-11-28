@@ -141,12 +141,12 @@ class API {
     /** Логирование события открытия двери
      * @param {string} date дата события;
      * @param {string} ip ip address вызывной панели;
-     * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2;
+     * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2. По-умолчанию 0 (главная дверь с вызывной панелью)
      * @param {string} detail код или sn ключа квартиры.
      * @param {"rfid"|"code"} type
      * @param {timestamp} expire
      */
-    async openDoor({date, ip, door, detail, type, expire}) {
+    async openDoor({date, ip, door=0, detail, type, expire}) {
         // console.log(date,ip,door,detail,type,expire);
         try {
             switch (type) {
@@ -168,9 +168,18 @@ class API {
                         detail,
                         expire
                     });
+                case "dtmf":
+                    return await internalAPI.post("/openDoor", {
+                        date,
+                        ip,
+                        event: events.OPEN_BY_CALL,
+                        door,
+                        detail,
+                        expire
+                    });
             }
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| openDoor error: ", error.message);
+            console.error(formatDate(new Date()),"||", ip, "|| openDoor error: ", error.message);
         }
     }
 }
