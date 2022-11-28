@@ -22,15 +22,15 @@ $cameraId = (int)@$postdata['id'];
 $from = strtotime(@$postdata['from']);
 $to = strtotime(@$postdata['to']);
 
-if (!$id || !$from || !$to) {
+if (!$cameraId || !$from || !$to) {
     response(404);
 }
 
 $cameras = loadBackend("cameras");
 
 $check = $cameras->checkDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
-if ($check) {
-    response(200, $check);
+if (@$check['id']) {
+    response(200, $check['id']);
 }
 
 $res = $cameras->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
