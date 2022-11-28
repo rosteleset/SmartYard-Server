@@ -9,7 +9,7 @@ sudo ./clickhouse install
 ```
 CREATE TABLE default.syslog
 (
-    `date` DateTime,
+    `date` UInt32,
     `ip` IPv4,
     `unit` String,
     `msg` String,
@@ -17,25 +17,25 @@ CREATE TABLE default.syslog
     INDEX syslog_unit unit TYPE set(100) GRANULARITY 1024
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMMDD(date)
+PARTITION BY toYYYYMMDD(FROM_UNIXTIME(date))
 ORDER BY date
-TTL date + toIntervalDay(31)
+TTL FROM_UNIXTIME(date) + toIntervalDay(31)
 SETTINGS index_granularity = 8192
 ```
 
 ```
 CREATE TABLE default.inbox
 (
-    `date` DateTime,
+    `date` UInt32,
     `id` String,
     `msg` String,
     `action` String,
     `code` String
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMM(date)
+PARTITION BY toYYYYMM(FROM_UNIXTIME(date))
 ORDER BY date
-TTL date + toIntervalYear(1)
+TTL FROM_UNIXTIME(date) + toIntervalYear(1)
 SETTINGS index_granularity = 8192
 ```
 
@@ -46,7 +46,7 @@ SET allow_experimental_object_type = 1;
 ```
 CREATE TABLE default.plog
 (
-    `date` DateTime,
+    `date` UInt32,
     `event_uuid` UUID,
     `hidden` Int8,
     `image_uuid` UUID,
@@ -65,8 +65,8 @@ CREATE TABLE default.plog
     INDEX plog_flat_id flat_id TYPE set(100) GRANULARITY 1024
 )
 ENGINE = MergeTree
-PARTITION BY toYYYYMMDD(date)
+PARTITION BY toYYYYMMDD(FROM_UNIXTIME(date))
 ORDER BY date
-TTL date + toIntervalMonth(6)
+TTL FROM_UNIXTIME(date) + toIntervalMonth(6)
 SETTINGS index_granularity = 1024;
 ```
