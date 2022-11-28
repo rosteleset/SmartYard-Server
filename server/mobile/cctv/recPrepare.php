@@ -17,7 +17,16 @@
  */
 
 auth();
-response();
+
+$cameraId = (int)@$postdata['id'];
+$from = strtotime(@$postdata['from']);
+$to = strtotime(@$postdata['to']);
+
+$cameras = loadBackend("cameras");
+
+$res = $cameras->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
+
+response(200, $res);
 
 /*
 $cam = (int)@$postdata['id'];
