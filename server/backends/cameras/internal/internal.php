@@ -206,6 +206,31 @@ namespace backends\cameras
                 "state" => 0 //0 = created, 1 = in progress, 2 = completed, 3 = error
             ]);
         }
+
+        /**
+         * @inheritDoc
+         */
+        public function checkDownloadRecord($cameraId, $subscriberId, $start, $finish)
+        {
+            if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish)) {
+                return false;
+            }
+            return $this->db->get(
+                "select record_id from camera_records where camera_id = :camera_id and subscriber_id = :subscriber_id AND start = :start AND finish = :finish",
+                [
+                    ":camera_id" => (int)$cameraId,
+                    ":subscriber_id" => (int)$subscriberId,
+                    ":start" => (int)$start,
+                    ":finish" => (int)$finish
+                ],
+                [
+                    "record_id" => "id",
+                ],
+                [
+                    "singlify"
+                ]
+            );
+        }
         
         /**
          * @inheritDoc

@@ -88,5 +88,14 @@ namespace backends\cameras
          * @return boolean
          */
         abstract public function addDownloadRecord($cameraId, $subscriberId, $start, $finish);
+
+         /**
+         * @param $cameraId
+         * @param $subscriberId
+         * @param $start
+         * @param $finish
+         * @return id|false
+         */
+        abstract public function checkDownloadRecord($cameraId, $subscriberId, $start, $finish);
     }
 }
