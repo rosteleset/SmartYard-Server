@@ -8,7 +8,7 @@ let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = formatDate(date);
-  const expire = getExpire(date);
+  const expire = getExpire(date); //TODO: вероятно expire лучше считать на строне php api endpoint.
   const bw_msg = message.split(" - - ")[1].trim();
 
   //Фильтр сообщений не несущих смысловой нагрузки
@@ -71,6 +71,11 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
     if (code) {
       await API.openDoor({ date:now, ip:host, detail: code, type: "code", expire });
     }
+  }
+
+  //Открытие двери через DTMF
+  if (bw_msg.indexOf("Opening door by DTMF command")>= 0){
+    await API.openDoor({ date:now, ip:host, detail: code, type: "dtmf", expire });
   }
 
   // Дектектор движения: старт
