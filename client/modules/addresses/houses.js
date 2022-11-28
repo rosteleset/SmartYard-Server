@@ -1272,7 +1272,7 @@
                         type: "text",
                         title: i18n("addresses.autoOpen"),
                         placeholder: date("Y-m-d H:i"),
-                        value: date("Y-m-d H:i", strtotime(flat.autoOpen)),
+                        value: date("Y-m-d H:i", flat.autoOpen),
                     },
                     {
                         id: "whiteRabbit",

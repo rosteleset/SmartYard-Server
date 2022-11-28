@@ -325,6 +325,8 @@
              */
             function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
+                $autoOpen = (int)strtotime($autoOpen);
+
                 if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
                     $autoOpen = date('Y-m-d H:i:s', strtotime($autoOpen));
 
@@ -409,6 +411,10 @@
                     if (array_key_exists("plog", $params) && !checkInt($params["plog"])) {
                         setLastError("invalidParams");
                         return false;
+                    }
+
+                    if (array_key_exists("autoOpen", $params)) {
+                        $params["autoOpen"] = (int)strtotime($params["autoOpen"]);
                     }
 
                     if (@$params["code"] == "!") {
