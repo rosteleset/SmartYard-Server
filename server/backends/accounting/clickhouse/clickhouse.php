@@ -25,11 +25,11 @@
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
                 $this->clickhouse = new \clickhouse(
-                    $config['backends']['accounting']['host'],
-                    $config['backends']['accounting']['port'],
-                    $config['backends']['accounting']['username'],
-                    $config['backends']['accounting']['password'],
-                    $config['backends']['accounting']['database']
+                    @$config['backends']['accounting']['host']?:'127.0.0.1',
+                    @$config['backends']['accounting']['port']?:8123,
+                    @$config['backends']['accounting']['username']?:'default',
+                    @$config['backends']['accounting']['password']?:'qqq',
+                    @$config['backends']['accounting']['database']?:'default'
                 );
             }
 
@@ -56,7 +56,7 @@
              */
             public function raw($ip, $unit, $msg)
             {
-                $this->clickhouse->insert("syslog", [ [ "date" => date("Y-m-d H:i:s"), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
+                $this->clickhouse->insert("syslog", [ [ "date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
             }
         }
     }

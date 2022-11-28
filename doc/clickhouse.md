@@ -20,7 +20,7 @@ ENGINE = MergeTree
 PARTITION BY toYYYYMMDD(FROM_UNIXTIME(date))
 ORDER BY date
 TTL FROM_UNIXTIME(date) + toIntervalDay(31)
-SETTINGS index_granularity = 8192
+SETTINGS index_granularity = 8192;
 ```
 
 ```
@@ -36,7 +36,7 @@ ENGINE = MergeTree
 PARTITION BY toYYYYMM(FROM_UNIXTIME(date))
 ORDER BY date
 TTL FROM_UNIXTIME(date) + toIntervalYear(1)
-SETTINGS index_granularity = 8192
+SETTINGS index_granularity = 8192;
 ```
 
 ```
