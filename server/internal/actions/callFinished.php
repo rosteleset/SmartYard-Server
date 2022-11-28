@@ -13,13 +13,20 @@
         exit();
     }
 
-    //TODO: переделать.  Использовать метода "insert_plog_call_done" для работы с backend plog
-    $callFinished = $db->insert("insert into plog_call_done (date, ip, call_id, expire) values (:date, :ip, :call_id, :expire)", [
-            "date" => (int)$date,
-            "ip" => (string)$ip,
-            "call_id" => (int)$call_id,
-            "expire" => (int)$expire,
-        ]);
+    $plog = loadBackend("plog");
+    if($plog){
+        $res = $plog->addCallDoneData($date,$ip);
+        response(201, ["id"=> $res]);
+        die();
+    }
 
-    response(201, ["id" => $callFinished]);
+    //TODO: переделать.  Использовать метод "insert_plog_call_done" для работы с backend plog
+//    $callFinished = $db->insert("insert into plog_call_done (date, ip, call_id, expire) values (:date, :ip, :call_id, :expire)", [
+//            "date" => (int)$date,
+//            "ip" => (string)$ip,
+//            "call_id" => (int)$call_id,
+//            "expire" => (int)$expire,
+//        ]);
+//
+//    response(201, ["id" => $callFinished]);
     exit();
