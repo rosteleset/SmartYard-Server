@@ -284,7 +284,7 @@ namespace backends\cameras
                         $host = $dvr['management_ip'];
                         $port = $dvr['management_port'];
                         $start = $task['start'];
-                        $end = $task['stop'];
+                        $end = $task['finish'];
                 
                         $salt= rand(0, 1000000);
                         $str2hash = $salt . "/". $token;
