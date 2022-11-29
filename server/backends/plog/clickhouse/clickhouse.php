@@ -139,16 +139,24 @@
             /**
              * @inheritDoc
              */
-            public function addDoorOpenData($date, $domophone_id, $event_type, $door, $detail)
+            public function addCallDoneData($date, $ip, $call_id = null)
             {
-                $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    $ip =  $result[0]['ip'];
-                } else {
-                    return false;
-                }
+                $expire = $date + $this->ttl_temp_record;
 
+                $query = "insert into plog_call_done(date, ip, call_id, expire) values(:date, :ip, :call_id, :expire)";
+                return $this->db->insert($query, [
+                    ":date" => $date,
+                    ":ip" => $ip,
+                    ":call_id" => $call_id,
+                    ":expire" => $expire,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addDoorOpenData($date, $ip, $event_type, $door, $detail)
+            {
                 $expire = time() + $this->ttl_temp_record;
 
                 $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
@@ -165,7 +173,7 @@
             /**
              * @inheritDoc
              */
-            public function addCallDoneData($date, $domophone_id, $call_id)
+            public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
             {
                 $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
@@ -175,15 +183,7 @@
                     return false;
                 }
 
-                $expire = time() + $this->ttl_temp_record;
-
-                $query = "insert into plog_call_done(date, ip, call_id, expire) values(:date, :ip, :call_id, :expire)";
-                return $this->db->insert($query, [
-                    ":date" => $date,
-                    ":ip" => $ip,
-                    ":call_id" => $call_id,
-                    ":expire" => $expire,
-                ]);
+                return $this->addDoorOpenData($date, $ip, $event_type, $door, $detail);
             }
 
             /**
@@ -441,7 +441,7 @@
 
             private function processEvents()
             {
-                $end_date = date('Y-m-d H:i:s', time() - $this->time_shift);  //крайняя дата обработки
+                $end_date = time() - $this->time_shift;  //крайняя дата обработки
 
                 //обработка данных из таблицы plog_door_open
                 $query = <<< __SQL__
@@ -558,7 +558,7 @@
 
                     //забираем данные из сислога для звонка
                     $query_end_date = $row['date'];
-                    $query_start_date = date('Y-m-d H:i:s', strtotime($query_end_date) - $this->max_call_length);
+                    $query_start_date = $query_end_date - $this->max_call_length;
                     $query = <<< __SQL__
                         select
                             date,

@@ -206,14 +206,10 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $m = explode('/', $_SERVER["REQUEST_URI"]);
-
         if (count($m) == 5 && !$m[0] && $m[1] == 'internal') {
-//            echo 123
             $module = $m[2];
             $method = $m[3];
             $param = $m[4];
-//            echo "/internal2/{$module}/{$method}.php";
-//            die();
             require_once __DIR__ . "/internal/{$module}/{$method}.php";
         }
 
