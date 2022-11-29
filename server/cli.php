@@ -413,8 +413,11 @@
     if (count($args) == 1 && array_key_exists("--run-record-download", $args) && isset($args["--run-record-download"])) {
         $recordId = (int)$args["--run-record-download"];
         $cameras = @loadBackend("cameras");
-        if ($cameras) $cameras->runDownloadRecordTask($recordId);
-        exit(0);
+        if ($cameras) {
+            $result = $cameras->runDownloadRecordTask($recordId);
+            exit($result);
+        }
+        exit(1);
     }
 
     usage();

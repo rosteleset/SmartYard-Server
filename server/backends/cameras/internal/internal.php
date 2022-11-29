@@ -299,14 +299,29 @@ namespace backends\cameras
                         $duration = (int)$task['finish'] - (int)$task['start'];
                         $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
                     }
+                    $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
+                    echo "Record download task with id = $recordId was started\n";
                     echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . ".mp4\n";
-                    echo "curl \"{$request_url}\" -o " . $dvr_files_path . $task['filename'];
+                    echo "curl \"{$request_url}\" -o " . $dvr_files_path . $task['filename'] . "\n";
                     exec("curl \"{$request_url}\" -o " . $dvr_files_path . $task['filename'], $out, $code);
+                    if ($code === 0) {
+                        $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
+                        echo "Record download task with id = $recordId was successfully finished!\n";
+                    } else {
+                        $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
+                        echo "Record download task with id = $recordId was finished with error code = $code!\n";
+                    }
+                    
+                    return $code;
+                } else {
+                    echo "Task with id = $recordId was not found\n";
+                    return 1;
                 }
                 
-                echo "Record download task with id = $recordId was started\n";
+                
             } catch (Exception $e) {
                 echo "Record download task with id = $recordId was failed to start\n";
+                return 1;
             }
         }
         
