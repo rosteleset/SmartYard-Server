@@ -300,8 +300,8 @@ namespace backends\cameras
                         $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4&token=$flussonic_token";
                     }
                     echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . ".mp4\n";
-                    echo "curl {$request_url} -o " . $dvr_files_path . $task['filename'];
-                    exec("curl {$request_url} -o " . $dvr_files_path . $task['filename'], $out, $code);
+                    echo "curl \"{$request_url}\" -o " . $dvr_files_path . $task['filename'];
+                    exec("curl \"{$request_url}\" -o " . $dvr_files_path . $task['filename'], $out, $code);
                 }
                 
                 echo "Record download task with id = $recordId was started\n";
