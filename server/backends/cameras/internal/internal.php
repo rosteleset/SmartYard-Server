@@ -186,11 +186,9 @@ namespace backends\cameras
          */
         public function addDownloadRecord($cameraId, $subscriberId, $start, $finish)
         {
-            $dvr_files_path = @$this->config["backends"]["cameras"]["dvr_files_path"] ?: false;
-            $dvr_files_location_prefix = @$this->config["backends"]["cameras"]["dvr_files_location_prefix"] ?: false;
             $dvr_files_ttl = @$this->config["backends"]["cameras"]["dvr_files_ttl"] ?: 259200;
 
-            if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish) || !$dvr_files_path || !$dvr_files_location_prefix) {
+            if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish)) {
                 return false;
             }
 
@@ -230,6 +228,85 @@ namespace backends\cameras
                     "singlify"
                 ]
             );
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function runDownloadRecordTask($recordId)
+        {
+            $config = $this->config;
+
+            try {
+                $task = $this->db->get(
+                    "select camera_id, subscriber_id, start, finish, filename, expire, state from camera_records where record_id = :record_id AND state = 0",
+                    [
+                        ":record_id" => $recordId,
+                    ],
+                    [
+                        "camera_id" => "cameraId",
+                        "subscriber_id" => "subscriberId",
+                        "start" => "start",
+                        "finish" => "finish",
+                        "filename" => "filename",
+                        "expire" => "expire",
+                        "state" => "state" //0 = created, 1 = in progress, 2 = completed, 3 = error
+                    ],
+                    [
+                        "singlify"
+                    ]
+                );
+                if ($task) {
+                    $dvr_files_path = @$config["backends"]["cameras"]["dvr_files_path"] ?: false;
+                    if ( $dvr_files_path && substr($dvr_files_path, -1) != '/' ) $dvr_files_path = $dvr_files_path . '/';
+    
+                    $dvr_files_location_prefix = @$config["backends"]["cameras"]["dvr_files_location_prefix"] ?: false;
+                    if ( $dvr_files_location_prefix && substr($dvr_files_location_prefix, -1) != '/' ) $dvr_files_location_prefix = $dvr_files_location_prefix . '/';
+                
+                    $cameras = loadBackend("cameras");
+                    $cam = $cameras->getCamera($task['cameraId']);
+    
+                    if (!$cam) {
+                        echo "Camera with id = " . $task['cameraId'] . " was not found\n";
+                        exit(0);
+    
+                    }
+
+                    require_once __DIR__."/../../../utils/get_dvr_server_type.php";
+                    $dvr = getDVRServer($cam['dvrStream']);
+                    
+                    if ($dvr['type'] == 'nimble') {
+                        // Nimble Server
+                        $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
+                        if ( $path[0] == '/' ) $path = substr($path,1);
+                        $stream = $path;
+                        $token = $dvr['management_token'];
+                        $host = $dvr['management_ip'];
+                        $port = $dvr['management_port'];
+                        $start = $task['start'];
+                        $stop = $task['stop'];
+                
+                        $salt= rand(0, 1000000);
+                        $str2hash = $salt . "/". $token;
+                        $md5raw = md5($str2hash, true);
+                        $base64hash = base64_encode($md5raw);
+                        $request_url = "http://$host:$port/manage/dvr/export_mp4/$stream?start=$start&end=$end&salt=$salt&hash=$base64hash";
+                        
+                    } else {
+                        // Flussonic Server by default
+                        $flussonic_token = $cam['credentials'];
+                        $from = $task['start'];
+                        $duration = (int)$task['finish'] - (int)$task['start'];
+                        $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4&token=$flussonic_token";
+                    }
+                    echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . ".mp4\n";
+                    exec("curl {$request_url} -o " . $dvr_files_path . $task['filename']  . ".mp4", $out, $code);
+                }
+                
+                echo "Record download task with id = $recordId was started\n";
+            } catch (Exception $e) {
+                echo "Record download task with id = $recordId was failed to start\n";
+            }
         }
         
         /**
