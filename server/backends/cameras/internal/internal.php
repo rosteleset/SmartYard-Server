@@ -297,7 +297,7 @@ namespace backends\cameras
                         $flussonic_token = $cam['credentials'];
                         $from = $task['start'];
                         $duration = (int)$task['finish'] - (int)$task['start'];
-                        $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4&token=$flussonic_token";
+                        $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
                     }
                     echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . ".mp4\n";
                     echo "curl \"{$request_url}\" -o " . $dvr_files_path . $task['filename'];
