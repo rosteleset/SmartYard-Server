@@ -173,7 +173,7 @@
         $postdata = json_decode($raw_postdata, true);
 
         if (!isset($postdata)) {
-            response(405, ["errror"=>"bost body"]);
+            response(405, ["error"=>"post body"]);
         }
 
         $path = explode("?", $_SERVER["REQUEST_URI"])[0];

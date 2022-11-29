@@ -5,11 +5,10 @@
         "ip" => $ip,
         "event" => $event,
         "door" => $door,
-        "detail" => $detail, 
-        "expire" => $expire
+        "detail" => $detail
     ] = $postdata;
 
-    if (!isset($date, $ip, $event, $door, $detail, $expire)) {
+    if (!isset($date, $ip, $event, $door, $detail)) {
         response(406, "Invalid payload");
         exit();
     }
