@@ -38,8 +38,8 @@
             
             if ( 
                 ($u['scheme'] == $scheme) &&
-                (!$u['user'] || $u['user'] == $user) &&
-                (!$u['pass'] || $u['pass'] == $pass) &&
+                (!array_key_exists('user', $u) || $u['user'] == $user) &&
+                (!array_key_exists('pass', $u) || $u['pass'] == $pass) &&
                 ($u['host'] == $host) &&
                 (!$u['port'] || $u['port'] == $port)
             ) {
