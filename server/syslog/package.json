@@ -4,12 +4,14 @@
   "description": "Intercom Syslog service",
   "type": "commonjs",
   "scripts": {
-    "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:qtech\"",
-    "start": "concurrently -k \"npm run start:beward\" \"npm run start:qtech\"",
+    "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:qtech\" \"npm run dev:is\"",
+    "start": "concurrently -k \"npm run start:beward\" \"npm run start:qtech\" \"npm run start:is\"",
     "start:beward": "node beward.js",
     "start:qtech": "node qtech.js",
+    "start:is": "node is.js",
     "dev:beward": "nodemon beward.js",
-    "dev:qtech": "nodemon qtech.js"
+    "dev:qtech": "nodemon qtech.js",
+    "dev:is": "nodemon is.js"
   },
   "keywords": [],
   "author": "",
