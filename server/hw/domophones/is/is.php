@@ -444,7 +444,71 @@
             }
 
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                $this->api_call('/v2/camera/osd', 'PUT', [
+                    [
+                        'size' => 1,
+                        'text' => '',
+                        'color' => '0xFFFFFF',
+                        'date' => [
+                            'enable' => true,
+                            'format'=> '%d-%m-%Y',
+                        ],
+                        'time' => [
+                            'enable' => true,
+                            'format' => '%H:%M:%S',
+                        ],
+                        'position' => [
+                            'x' => 10,
+                            'y' => 10,
+                        ],
+                        'background' => [
+                            'enable' => true,
+                            'color' => '0x000000',
+                        ],
+                    ],
+                    [
+                        'size' => 1,
+                        'text' => $title,
+                        'color' => '0xFFFFFF',
+                        'date' => [
+                            'enable' => false,
+                            'format'=> '%d-%m-%Y',
+                        ],
+                        'time' => [
+                            'enable' => false,
+                            'format' => '%H:%M:%S',
+                        ],
+                        'position' => [
+                            'x' => 10,
+                            'y' => 693,
+                        ],
+                        'background' => [
+                            'enable' => true,
+                            'color' => '0x000000',
+                        ],
+                    ],
+                    [
+                        'size' => 1,
+                        'text' => '',
+                        'color' => '0xFFFFFF',
+                        'date' => [
+                            'enable' => false,
+                            'format'=> '%d-%m-%Y',
+                        ],
+                        'time' => [
+                            'enable' => false,
+                            'format' => '%H:%M:%S',
+                        ],
+                        'position' => [
+                            'x' => 10,
+                            'y' => 693,
+                        ],
+                        'background' => [
+                            'enable' => false,
+                            'color' => '0x000000',
+                        ],
+                    ],
+                ]);
             }
 
             public function set_language(string $lang) {
