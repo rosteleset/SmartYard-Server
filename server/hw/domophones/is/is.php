@@ -204,7 +204,10 @@
             }
 
             public function configure_gate(array $links) {
-                // TODO: Implement configure_gate() method.
+                $this->api_call('/gate/settings', 'PUT', [
+                    'gateMode' => (bool) $links,
+                    'prefixHouse' => (bool) $links,
+                ]);
             }
 
             public function configure_md(
@@ -221,11 +224,11 @@
                     'md_area_thr' => 100000, // значение из мануала
                     'md_rect_color' => '0xFF0000',
                     'md_frame_int' => 30,
-                    'md_rects_enable' => true,
+                    'md_rects_enable' => false,
                     'md_logs_enable' => true,
                     'md_send_snapshot_enable' => true,
                     'md_send_snapshot_interval' => 1,
-                    'snap_send_url' => '',
+                    'snap_send_url' => '192.168.13.60:8080/snapshot' // test,
                 ]);
             }
 
@@ -441,7 +444,71 @@
             }
 
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                $this->api_call('/v2/camera/osd', 'PUT', [
+                    [
+                        'size' => 1,
+                        'text' => '',
+                        'color' => '0xFFFFFF',
+                        'date' => [
+                            'enable' => true,
+                            'format'=> '%d-%m-%Y',
+                        ],
+                        'time' => [
+                            'enable' => true,
+                            'format' => '%H:%M:%S',
+                        ],
+                        'position' => [
+                            'x' => 10,
+                            'y' => 10,
+                        ],
+                        'background' => [
+                            'enable' => true,
+                            'color' => '0x000000',
+                        ],
+                    ],
+                    [
+                        'size' => 1,
+                        'text' => $title,
+                        'color' => '0xFFFFFF',
+                        'date' => [
+                            'enable' => false,
+                            'format'=> '%d-%m-%Y',
+                        ],
+                        'time' => [
+                            'enable' => false,
+                            'format' => '%H:%M:%S',
+                        ],
+                        'position' => [
+                            'x' => 10,
+                            'y' => 693,
+                        ],
+                        'background' => [
+                            'enable' => true,
+                            'color' => '0x000000',
+                        ],
+                    ],
+                    [
+                        'size' => 1,
+                        'text' => '',
+                        'color' => '0xFFFFFF',
+                        'date' => [
+                            'enable' => false,
+                            'format'=> '%d-%m-%Y',
+                        ],
+                        'time' => [
+                            'enable' => false,
+                            'format' => '%H:%M:%S',
+                        ],
+                        'position' => [
+                            'x' => 10,
+                            'y' => 693,
+                        ],
+                        'background' => [
+                            'enable' => false,
+                            'color' => '0x000000',
+                        ],
+                    ],
+                ]);
             }
 
             public function set_language(string $lang) {

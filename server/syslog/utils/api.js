@@ -1,7 +1,7 @@
 //TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
 const axios = require("axios");
 const https = require("https");
-const {formatDate} = require("./formatDate.js")
+const {getTimestamp} = require("./formatDate.js")
 const events = require("./events.json");
 const {
     api: {internal}, frs_servers:[first_frs_server]
@@ -57,7 +57,7 @@ class API {
 
             await axios(config);
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| sendLog error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| sendLog error: ", error.message);
         }
     }
 
@@ -81,7 +81,7 @@ class API {
                     }
                 });
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| motionDetection error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| motionDetection error: ", error.message);
         }
 
     }
@@ -91,13 +91,12 @@ class API {
      * @param {Date} date
      * @param {string} ip
      * @param {number|null} call_id
-     * @param {number} expire
      * */
-    async callFinished({date,ip, call_id, expire}) {
+    async callFinished({date,ip, call_id}) {
         try {
-            return await internalAPI.post("/callFinished", {date, ip, call_id, expire});
+            return await internalAPI.post("/actions/callFinished", {date, ip, call_id});
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| callFinished error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message);
         }
     }
 
@@ -109,7 +108,7 @@ class API {
         try {
             return await internalAPI.post("/setRabbitGates", {host, gate_rabbits});
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| setRabbitGates error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| setRabbitGates error: ", error.message);
         }
     }
 
@@ -134,43 +133,48 @@ class API {
                     }
                 });
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| stopFRS error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", host, "|| stopFRS error: ", error.message);
         }
     }
 
     /** Логирование события открытия двери
      * @param {string} date дата события;
      * @param {string} ip ip address вызывной панели;
-     * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2;
+     * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2. По-умолчанию 0 (главная дверь с вызывной панелью)
      * @param {string} detail код или sn ключа квартиры.
-     * @param {"rfid"|"code"} type
-     * @param {timestamp} expire
+     * @param {string:{"rfid","code","dtmf"}} type
      */
-    async openDoor({date, ip, door, detail, type, expire}) {
+    async openDoor({date, ip, door=0, detail, type}) {
         // console.log(date,ip,door,detail,type,expire);
         try {
             switch (type) {
                 case "code":
-                    return await internalAPI.post("/openDoor", {
+                    return await internalAPI.post("/actions/openDoor", {
                         date,
                         ip,
                         event: events.OPEN_BY_CODE,
                         door,
-                        detail,
-                        expire
+                        detail
                     });
                 case "rfid":
-                    return await internalAPI.post("/openDoor", {
+                    return await internalAPI.post("/actions/openDoor", {
                         date,
                         ip,
                         event: events.OPEN_BY_KEY,
                         door,
-                        detail,
-                        expire
+                        detail
+                    });
+                case "dtmf":
+                    return await internalAPI.post("/actions/openDoor", {
+                        date,
+                        ip,
+                        event: events.OPEN_BY_CALL,
+                        door,
+                        detail
                     });
             }
         } catch (error) {
-            console.error(formatDate(new Date()),"||", host, "|| openDoor error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message);
         }
     }
 }

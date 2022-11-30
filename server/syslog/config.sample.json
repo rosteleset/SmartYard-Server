@@ -15,7 +15,9 @@
     ],
     "hikvision": [
       "syslog.udp:127.0.0.1:45452"
+    ],
+    "is": [
+      "syslog.udp:127.0.0.1:45453"
     ]
-  },
-  "plog_expire_days": 10
+  }
 }
