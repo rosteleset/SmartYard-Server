@@ -67,9 +67,6 @@
                 $camshot_data = [];
 
                 if ($event_id === false) {
-                    //для теста
-                    //$image_url = "http://192.168.13.173/cgi-bin/images_cgi?channel=0&user=admin&pwd=shoo8mo1";
-
                     // TODO: получение кадра события от FRS по дате
 
                     //получение кадра с DVR-серевера, если нет кадра от FRS
@@ -80,7 +77,7 @@
                         if ($cameras && $cameras[0]) {
                             $prefix = $cameras[0]["dvrStream"];
                             if ($prefix) {
-                                $ts_event = strtotime($date) - 3;  // вычитаем три секунды для получения кадра
+                                $ts_event = $date - 3;  // вычитаем три секунды для получения кадра
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
                                 system("ffmpeg -y -i $prefix/index-$ts_event-10.m3u8 -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                 $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile(
@@ -88,10 +85,10 @@
                                     file_get_contents($filename),
                                     [
                                         ["contentType" => "image/jpeg"],
-                                        ["expire" => new UTCDateTime((time() + $this->ttl_camshot_days * 86400) * 1000)],
+                                        ["expire" => time() + $this->ttl_camshot_days * 86400],
                                     ]
                                 ));
-                                system("rm $filename");
+                                unlink($filename);
                                 $camshot_data[self::COLUMN_PREVIEW] = 1;
                             }
                         }
@@ -194,8 +191,8 @@
                 if ($filter_events) {
                     $query = <<< __SQL__
                         select
-                            toYYYYMMDD(date) as day,
-                            count(date) as events
+                            toYYYYMMDD(FROM_UNIXTIME(date)) as day,
+                            count(day) as events
                         from
                             plog
                         where
@@ -203,24 +200,24 @@
                             and flat_id = $flat_id
                             and event in ($filter_events)
                         group by
-                            toYYYYMMDD(date)
+                            day
                         order by
-                            toYYYYMMDD(date) desc
+                            day desc
                     __SQL__;
                 } else {
                     $query = <<< __SQL__
                         select
-                            toYYYYMMDD(date) as day,
-                            count(date) as events
+                            toYYYYMMDD(FROM_UNIXTIME(date)) as day,
+                            count(day) as events
                         from
                             plog
                         where
                             not hidden
                             and flat_id = $flat_id
                         group by
-                            toYYYYMMDD(date)
+                            day
                         order by
-                            toYYYYMMDD(date) desc
+                            day desc
                     __SQL__;
                 }
 
@@ -247,22 +244,19 @@
                         hidden,
                         image_uuid,
                         flat_id,
-                        domophone_id,
-                        domophone_output,
-                        domophone_output_description,
+                        toJSONString(domophone) domophone,
                         event,
                         opened,
                         toJSONString(face) face,
                         rfid,
                         code,
-                        user_phone,
-                        gate_phone,
+                        toJSONString(phones) phones,
                         preview
                     from
                         plog
                     where
                         not hidden
-                        and toYYYYMMDD(date) = '$date'
+                        and toYYYYMMDD(FROM_UNIXTIME(date)) = '$date'
                         and flat_id = $flat_id
                     order by
                         date desc
@@ -291,6 +285,25 @@
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
                     return $result[0]['house_domophone_id'];
+                }
+
+                return false;
+            }
+
+            private function getDomophoneDescription($domophone_id, $domophone_output)
+            {
+                $query = <<< __SQL__
+                    select
+                        he.entrance description
+                    from
+                        houses_entrances he
+                    where
+                        he.house_domophone_id = $domophone_id and he.domophone_output = $domophone_output
+                __SQL__;
+
+                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                if (count($result)) {
+                    return $result[0]['description'];
                 }
 
                 return false;
@@ -414,7 +427,7 @@
                     update
                         houses_rfids
                     set
-                        last_seen = '$date'
+                        last_seen = $date
                     where
                         access_type = 2
                         and access_to in ($fl)
@@ -431,7 +444,7 @@
                     update
                         houses_flats
                     set
-                        last_opened = '$date'
+                        last_opened = $date
                     where
                         house_flat_id in ($fl)
                 __SQL__;
@@ -450,7 +463,7 @@
                     from
                         plog_door_open
                     where
-                        date <= '$end_date'
+                        date <= $end_date
                     order by
                         date
                 __SQL__;
@@ -466,7 +479,12 @@
 
                     $event_data[self::COLUMN_DATE] = $plog_date;
                     $event_data[self::COLUMN_EVENT] = $event_type;
-                    $event_data[self::COLUMN_DOMOPHONE_OUTPUT] = $row['door'];
+                    $event_data[self::COLUMN_DOMOPHONE]['domophone_id'] = $domophone_id;
+                    $event_data[self::COLUMN_DOMOPHONE]['domophone_output'] = $row['door'];
+                    $event_data[self::COLUMN_DOMOPHONE]['domophone_description'] = $this->getDomophoneDescription(
+                        $event_data[self::COLUMN_DOMOPHONE]['domophone_id'],
+                        $event_data[self::COLUMN_DOMOPHONE]['domophone_output']
+                    );
                     $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
 
                     if ($event_type == self::EVENT_OPENED_BY_KEY) {
@@ -493,7 +511,7 @@
                     if ($event_type == self::EVENT_OPENED_BY_APP) {
                         $event_data[self::COLUMN_OPENED] = 1;
                         $user_phone = $row['detail'];
-                        $event_data[self::COLUMN_USER_PHONE] = $user_phone;
+                        $event_data[self::COLUMN_PHONES]['user_phone'] = $user_phone;
                         $flat_list = $this->getFlatIdByUserPhone($user_phone, $domophone_id);
                         if (!$flat_list) {
                             continue;
@@ -522,7 +540,7 @@
                     from
                         plog_door_open
                     where
-                        date <= '$end_date'
+                        date <= $end_date
                 __SQL__;
                 $this->db->query($query);
 
@@ -533,7 +551,7 @@
                     from
                         plog_call_done
                     where
-                        date <= '$end_date'
+                        date <= $end_date
                     order by
                         date
                 __SQL__;
@@ -545,6 +563,12 @@
                     $event_data = [];
                     $event_data[self::COLUMN_DATE] = $row['date'];
                     $event_data[self::COLUMN_EVENT] = self::EVENT_UNANSWERED_CALL;
+                    $event_data[self::COLUMN_DOMOPHONE]['domophone_id'] = $domophone_id;
+                    $event_data[self::COLUMN_DOMOPHONE]['domophone_output'] = 0;
+                    $event_data[self::COLUMN_DOMOPHONE]['domophone_description'] = $this->getDomophoneDescription(
+                        $event_data[self::COLUMN_DOMOPHONE]['domophone_id'],
+                        $event_data[self::COLUMN_DOMOPHONE]['domophone_output']
+                    );
                     $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
 
                     unset($has_cms);
@@ -552,6 +576,7 @@
                     if ($call_id == 0) {
                         unset($call_id);
                     }
+                    unset($sip_call_id);
                     unset($flat_id);
                     unset($flat_number);
                     $call_start_found = false;
@@ -567,8 +592,8 @@
                             syslog s
                         where
                             IPv4NumToString(s.ip) = '$ip'
-                            and s.date > '$query_start_date'
-                            and s.date <= '$query_end_date'
+                            and s.date > $query_start_date
+                            and s.date <= $query_end_date
                         order by
                             date desc
                     __SQL__;
@@ -578,6 +603,7 @@
 
                         //обработка звонка
                         $patterns_call = [
+                            //pattern         start  talk  open   finish
                             ["Calling sip: ", true, false, false, false],
                             ["Unable to call CMS apartment ", true, false, false, false],
                             ["CMS handset call started for apartment ", true, false, false, false],
@@ -595,6 +621,7 @@
                             unset($now_flat_id);
                             unset($now_flat_number);
                             unset($now_call_id);
+                            unset($now_sip_call_id);
 
                             $parts = explode("|", $pattern);
                             $matched = true;
@@ -604,6 +631,14 @@
 
                             if ($matched) {
                                 $now_has_cms = (strpos($msg, 'CMS') != false);
+
+                                if (strpos($msg, "[") !== false) {
+                                    //парсим call_id
+                                    $p1 = strpos($msg, "[");
+                                    $p2 = strpos($msg, "]", $p1 + 1);
+                                    $now_call_id = intval(substr($msg, $p1 + 1, $p2 -$p1 - 1));
+                                }
+
                                 if (strpos($pattern, "apartment") !== false) {
                                     //парсим номер квартиры
                                     $p1 = strpos($msg, $pattern);
@@ -623,14 +658,15 @@
                                 }
 
                                 if (strpos($pattern, "SIP call ") !== false) {
-                                    //парсим call_id
+                                    //парсим sip_call_id
                                     $p1 = strpos($msg, $parts[0]);
                                     $p2 = strpos($msg, " ", $p1 + strlen($parts[0]));
-                                    $now_call_id = intval(substr($msg, $p1 + strlen($pattern), $p2 -$p1 - strlen($pattern)));
+                                    $now_sip_call_id = intval(substr($msg, $p1 + strlen($parts[0]), $p2 -$p1 - strlen($parts[0])));
                                 }
 
                                 $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
                                     || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
+                                    || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
                                     || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
 
                                 if ($call_start_lost) {
@@ -644,6 +680,9 @@
                                 }
                                 if (isset($now_call_id) && !isset($call_id)) {
                                     $call_id = $now_call_id;
+                                }
+                                if (isset($now_sip_call_id) && !isset($sip_call_id)) {
+                                    $sip_call_id = $now_sip_call_id;
                                 }
                                 if (isset($now_flat_number) && !isset($flat_number)) {
                                     $flat_number = $now_flat_number;
@@ -681,7 +720,6 @@
                         }
 
                         $this->writeEventData($event_data);
-                        $this->updateFlatLastOpened([$event_data[self::COLUMN_FLAT_ID]], $event_data[self::COLUMN_DATE]);
                     }
                 }
 
@@ -691,7 +729,7 @@
                     from
                         plog_call_done
                     where
-                        date <= '$end_date'
+                        date <= $end_date
                 __SQL__;
                 $this->db->query($query);
             }
