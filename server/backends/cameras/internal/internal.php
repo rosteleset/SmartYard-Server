@@ -36,7 +36,6 @@ namespace backends\cameras
                 "stream" => "stream",
                 "credentials" => "credentials",
                 "name" => "name",
-                "publish" => "publish",
                 "dvr_stream" => "dvrStream",
                 "lat" => "lat",
                 "lon" => "lon",
