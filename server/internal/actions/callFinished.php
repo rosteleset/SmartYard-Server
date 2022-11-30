@@ -4,29 +4,16 @@
     [
         "date" => $date,
         "ip" => $ip,
-        "call_id" => $call_id,
-        "expire" => $expire
+        "call_id" => $call_id
     ] = $postdata;
 
-    if (!isset($date, $ip, $expire)) {
+    if (!isset($date, $ip)) {
         response(406, "Invalid payload");
         exit();
     }
 
     $plog = loadBackend("plog");
-    if($plog){
-        $res = $plog->addCallDoneData($date,$ip);
-        response(201, ["id"=> $res]);
-        die();
-    }
 
-    //TODO: переделать.  Использовать метод "insert_plog_call_done" для работы с backend plog
-//    $callFinished = $db->insert("insert into plog_call_done (date, ip, call_id, expire) values (:date, :ip, :call_id, :expire)", [
-//            "date" => (int)$date,
-//            "ip" => (string)$ip,
-//            "call_id" => (int)$call_id,
-//            "expire" => (int)$expire,
-//        ]);
-//
-//    response(201, ["id" => $callFinished]);
+    $callDone = $plog->addCallDoneData($date,$ip,$call_id);
+    response(201, ["id"=> $callDone]);
     exit();

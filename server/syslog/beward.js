@@ -1,6 +1,6 @@
 const syslog = new (require("syslog-server"))();
 const {hw: { beward }} = require("./config.json");
-const {getTimestamp, getExpire} = require("./utils/formatDate");
+const {getTimestamp} = require("./utils/formatDate");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
 const { port } = urlParser(beward);
@@ -8,7 +8,6 @@ let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = getTimestamp(date);
-  const expire = getExpire(date); //TODO: вероятно expire лучше считать на строне php api endpoint.
   const bw_msg = message.split(" - - ")[1].trim();
 
   //Фильтр сообщений не несущих смысловой нагрузки
@@ -39,7 +38,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   ) {
     let rfid = bw_msg.split("RFID")[1].split(",")[0].trim();
     let door = bw_msg.indexOf("external") >= 0 ? "1" : "0";
-    await API.openDoor({ date:now, ip:host, door, detail: rfid, type: "rfid" ,expire});
+    await API.openDoor({ date:now, ip:host, door, detail: rfid, type: "rfid"});
   }
 
   // домофон в режиме калитки на несколько домов
@@ -63,20 +62,20 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   if (bw_msg.indexOf("All calls are done for apartment") >= 0) {
     let call_id = parseInt(bw_msg.split("[")[1].split("]")[0]);
     let flat_id =parseInt(bw_msg.split(" ")[7])
-    if (call_id && flat_id) await API.callFinished({date: now, ip: host, call_id, expire});
+    if (call_id && flat_id) await API.callFinished({date: now, ip: host, call_id});
   }
   // Открытие двери по коду квартиры
   if (bw_msg.indexOf("Opening door by code") >= 0) {
     const code = parseInt(bw_msg.split("code")[1].split(",")[0]);
     if (code) {
-      await API.openDoor({ date:now, ip:host, detail: code, type: "code", expire });
+      await API.openDoor({ date:now, ip:host, detail: code, type: "code" });
     }
   }
 
   //Открытие двери через DTMF
   if (bw_msg.indexOf("Opening door by DTMF command")>= 0){
     const flatNumber = parseInt(bw_msg.split(" ")[8]);
-    await API.openDoor({ date:now, ip:host, detail: flatNumber, type: "dtmf", expire });
+    await API.openDoor({ date:now, ip:host, detail: flatNumber, type: "dtmf" });
   }
 
   // Дектектор движения: старт

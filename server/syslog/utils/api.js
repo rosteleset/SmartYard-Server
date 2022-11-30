@@ -91,11 +91,10 @@ class API {
      * @param {Date} date
      * @param {string} ip
      * @param {number|null} call_id
-     * @param {number} expire
      * */
-    async callFinished({date,ip, call_id, expire}) {
+    async callFinished({date,ip, call_id}) {
         try {
-            return await internalAPI.post("/callFinished", {date, ip, call_id, expire});
+            return await internalAPI.post("/actions/callFinished", {date, ip, call_id});
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message);
         }
@@ -143,39 +142,35 @@ class API {
      * @param {string} ip ip address вызывной панели;
      * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2. По-умолчанию 0 (главная дверь с вызывной панелью)
      * @param {string} detail код или sn ключа квартиры.
-     * @param {"rfid"|"code"} type
-     * @param {timestamp} expire
+     * @param {string:{"rfid","code","dtmf"}} type
      */
-    async openDoor({date, ip, door=0, detail, type, expire}) {
+    async openDoor({date, ip, door=0, detail, type}) {
         // console.log(date,ip,door,detail,type,expire);
         try {
             switch (type) {
                 case "code":
-                    return await internalAPI.post("/openDoor", {
+                    return await internalAPI.post("/actions/openDoor", {
                         date,
                         ip,
                         event: events.OPEN_BY_CODE,
                         door,
-                        detail,
-                        expire
+                        detail
                     });
                 case "rfid":
-                    return await internalAPI.post("/openDoor", {
+                    return await internalAPI.post("/actions/openDoor", {
                         date,
                         ip,
                         event: events.OPEN_BY_KEY,
                         door,
-                        detail,
-                        expire
+                        detail
                     });
                 case "dtmf":
-                    return await internalAPI.post("/openDoor", {
+                    return await internalAPI.post("/actions/openDoor", {
                         date,
                         ip,
                         event: events.OPEN_BY_CALL,
                         door,
-                        detail,
-                        expire
+                        detail
                     });
             }
         } catch (error) {
