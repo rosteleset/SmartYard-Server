@@ -91,7 +91,7 @@ namespace backends\cameras
                 return false;
             }
 
-            if (!checkInt($md_left) || !checkInt($md_top) || !checkInt($md_width) || !checkInt($md_height)) {
+            if (!checkInt($mdLeft) || !checkInt($mdTop) || !checkInt($mdWidth) || !checkInt($mdHeight)) {
                 return false;
             }
 
