@@ -30,7 +30,8 @@
 
     $response = [
         "cityCams" => @$config["mobile"]["city_cams"] ? "t" : "f",
-        "payments" => @$config["mobile"]["payments"] ? "t" : "f"
+        "payments" => @$config["mobile"]["payments"] ? "t" : "f",
+        "chat" => @$config["mobile"]["chat"] ? "t" : "f"
         ];
         
         if (@$config["mobile"]["support_phone"]) {
@@ -41,14 +42,19 @@
             $response["paymentsUrl"] = $config["mobile"]["payments_url"];
         }
 
-        if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
-            $response["chat"] = "t";
-            $response["chatOptions"] = [
-                "id" => $config["mobile"]["talk_me_id"],
-                "domain" => $config["mobile"]["talk_me_domain"],
-                "token" => $config["mobile"]["talk_me_token"]
-            ];
+        if (@$config["mobile"]["chat_url"]) {
+            $response["chatUrl"] = $config["mobile"]["chat_url"];
         } else {
-            $response["chat"] = "f";
+            if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
+                $response["chat"] = "t";
+                $response["chatOptions"] = [
+                    "id" => $config["mobile"]["talk_me_id"],
+                    "domain" => $config["mobile"]["talk_me_domain"],
+                    "token" => $config["mobile"]["talk_me_token"]
+                ];
+            } else {
+                $response["chat"] = "f";
+            }
         }
+
     response(200, $response);
