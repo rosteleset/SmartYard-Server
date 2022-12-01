@@ -3,9 +3,7 @@ const axios = require("axios");
 const https = require("https");
 const {getTimestamp} = require("./formatDate.js")
 const events = require("./events.json");
-const {
-    api: {internal}, frs_servers:[first_frs_server]
-} = require("../../config/config.json"); //https://host:port/internal
+const {api: {internal}} = require("../../config/config.json"); //https://host:port/internal
 const {clickhouse} = require("../config.json")
 const agent = new https.Agent({rejectUnauthorized: false});
 
@@ -26,12 +24,6 @@ const internalAPI = axios.create({
 // const internalApi = axios.create({
 //   baseURL: internal,
 // });
-
-/**Шаблон для работы с FRS
- */
-const frsAPI = axios.create({
-    baseURL: first_frs_server.url,
-});
 
 class API {
 
@@ -57,29 +49,18 @@ class API {
 
             await axios(config);
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", host, "|| sendLog error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| sendLog error: ", error.message);
         }
     }
 
-    /** Запрос к FRS по событию детектор движения домофона
-     * @param {Date} date
-     * @param {string} host ip address
-     * @param {boolean} start start/stop face detection
+    /** Сообщаем InternalAPI  о ссобыти "детектекция движения"
+     * @param {integer} date timestamp unixtime.
+     * @param {string} ip ipAddress
+     * @param {boolean} motionStart start/stop "детектекция движения"
      */
-    async motionDetection(date, host, start) {
+    async motionDetection({date, ip, motionStart}) {
         try {
-            return await internalAPI
-                .post("/getStreamID", {host})
-                .then(async ({frs_server, stream_id}) => {
-                    if (frs_server && stream_id) {
-                        await axios.post(`${frs_server}/motionDetection`, {
-                            stream_id,
-                            start: start ? "t" : "f",
-                        });
-                    } else {
-                        throw new Error("Невозможно выполнить запрос к FRS");
-                    }
-                });
+            return await internalAPI.post("/actions/motionDetection",{date,ip,motionStart})
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", host, "|| motionDetection error: ", error.message);
         }
@@ -101,14 +82,16 @@ class API {
     }
 
     /**
-     * @param  {string} host - ip address intercom device
-     * @param {object} gate_rabbits
+     * @param {number} date
+     * @param {string} ip - ip address intercom device
+     * @param {number} prefix префикс при наборе квартиры
+     * @param {number} apartment номер квартиры
      */
-    async setRabbitGates({host, gate_rabbits}) {
+    async setRabbitGates({date,ip,prefix,apartment}) {
         try {
-            return await internalAPI.post("/setRabbitGates", {host, gate_rabbits});
+            return await internalAPI.post("/actions/setRabbitGates", {date,ip,prefix,apartment});
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", host, "|| setRabbitGates error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message);
         }
     }
 
@@ -116,63 +99,32 @@ class API {
     async incomingDTMF() {
     }
 
-    /** Сообщаем FRS что кто то вышел из подьезда и сейчас не требуется откртие двери по распознанному лицу.
-     * Получить frs_server, stream_id из RBT (internal.php), отправить запрос на FRS
-     * @param {string} host ip address вызывной панели
-     * @param {number:{0,1,2}} door основная или дополнительная двери
-     */
-    async stopFRS(host, door) {
-        try {
-           return await internalAPI
-                .post("/getStreamID", {host, door})
-                .then(async ({frs_server, stream_id}) => {
-                    if (frs_server && stream_id) {
-                        await axios.post(`${frs_server}/doorIsOpen`, {stream_id});
-                    } else {
-                        throw new Error("Невозможно выполнить запрос к FRS");
-                    }
-                });
-        } catch (error) {
-            console.error(getTimestamp(new Date()),"||", host, "|| stopFRS error: ", error.message);
-        }
-    }
-
     /** Логирование события открытия двери
      * @param {string} date дата события;
      * @param {string} ip ip address вызывной панели;
      * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2. По-умолчанию 0 (главная дверь с вызывной панелью)
      * @param {string} detail код или sn ключа квартиры.
-     * @param {string:{"rfid","code","dtmf"}} type
+     * @param {"rfid"|"code"|"dtmf"|"button"} by тип события отерыьтия двери
      */
-    async openDoor({date, ip, door=0, detail, type}) {
+    async openDoor({date, ip, door=0, detail, by}) {
         // console.log(date,ip,door,detail,type,expire);
+        let payload = {date, ip, door, event: null, detail}
         try {
-            switch (type) {
+            switch (by) {
                 case "code":
-                    return await internalAPI.post("/actions/openDoor", {
-                        date,
-                        ip,
-                        event: events.OPEN_BY_CODE,
-                        door,
-                        detail
-                    });
+                    payload.event = events.OPEN_BY_CODE
+                    break;
                 case "rfid":
-                    return await internalAPI.post("/actions/openDoor", {
-                        date,
-                        ip,
-                        event: events.OPEN_BY_KEY,
-                        door,
-                        detail
-                    });
+                    payload.event = events.OPEN_BY_KEY;
+                    break;
                 case "dtmf":
-                    return await internalAPI.post("/actions/openDoor", {
-                        date,
-                        ip,
-                        event: events.OPEN_BY_CALL,
-                        door,
-                        detail
-                    });
+                    payload.event = events.OPEN_BY_CALL;
+                    break;
+                case "button":
+                    payload.event = events.OPEN_BY_BUTTON
+                    break;
             }
+            return await internalAPI.post("/actions/openDoor", payload);
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message);
         }
