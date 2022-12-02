@@ -7,14 +7,20 @@
  *
  * @apiGroup Ext
  *
- * @apiHeader {string} authorization токен авторизации
+ * @apiHeader {String} authorization токен авторизации
  *
- * @apiSuccess {string="t","f"} [cityCams="f"] городские камеры
- * @apiSuccess {string="t","f"} [issues="f"] заявки
- * @apiSuccess {string="t","f"} [payments="f"] оплата за услуги
- * @apiSuccess {string} [paymentsUrl] URL платёжной системы
- * @apiSuccess {string} [supportPhone] номер телефона техподдержки
- * @apiSuccess {string="t","f"} [chat="f"] чат talkMe
+ * @apiSuccess {String="t","f"} [cityCams="f"] городские камеры
+ * @apiSuccess {String="t","f"} [issues="f"] заявки
+ * @apiSuccess {String="t","f"} [payments="f"] вкладка оплата
+ * @apiSuccess {String} [paymentsUrl] URL платёжной системы (версия web-расширений 2). Если отсутствует, то будет нативная поддержка платежей через /user/getPaymentsList
+ * @apiSuccess {String="t","f"} [chat="f"] вкладка чат
+ * @apiSuccess {String} [chatUrl] URL страницы чата (версия web-расширений 2). Если отсутствует, то будет нативная поддержка meTalk с chatOptions
+ * @apiSuccess {Object} [chatOptions] Опции для meTalk
+ * @apiSuccess {String} chatOptions.id id чата meTalk
+ * @apiSuccess {String} chatOptions.domain domain чата meTalk
+ * @apiSuccess {String} chatOptions.token token чата meTalk
+ * @apiSuccess {String} [supportPhone] номер телефона техподдержки
+ * @apiSuccess {String="t","f"} [chat="f"] чат talkMe
  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
