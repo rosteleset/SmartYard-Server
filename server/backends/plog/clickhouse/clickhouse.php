@@ -79,7 +79,7 @@
                             if ($prefix) {
                                 $ts_event = $date - 3;  // вычитаем три секунды для получения кадра
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                                system("ffmpeg -y -i $prefix/index-$ts_event-10.m3u8 -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                system("ffmpeg -y -i $prefix/$ts_event-preview.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                 $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile(
                                     "camshot",
                                     file_get_contents($filename),
@@ -420,6 +420,58 @@
                 return false;
             }
 
+            //получение flat_id по префиксу калитки и номеру квартиры
+            private function getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id)
+            {
+                $query = <<< __SQL__
+                    select
+                        hef.house_flat_id flat_id
+                    from
+                        houses_entrances he
+                        inner join houses_houses_entrances hhe
+                            on he.house_entrance_id = hhe.house_entrance_id
+                            and hhe.prefix = $prefix
+                        inner join houses_entrances_flats hef
+                            on he.house_entrance_id = hef.house_entrance_id
+                            and hef.apartment = $flat_number
+                        inner join houses_flats hf
+                            on hef.house_flat_id = hf.house_flat_id
+                            and hf.address_house_id = hhe.address_house_id
+                    where
+                        he.house_domophone_id = $domophone_id
+                        and he.domophone_output = 0
+                __SQL__;
+
+                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                if (count($result)) {
+                    return $result[0]['flat_id'];
+                }
+
+                return false;
+            }
+
+            private function getEntranceCount($flat_id)
+            {
+                $query = <<< __SQL__
+                    select
+                        count(*) entrance_count
+                    from
+                        houses_entrances_flats hef
+                        inner join houses_entrances he
+                            on hef.house_entrance_id = he.house_entrance_id
+                            and he.domophone_output = 0
+                    where
+                        hef.house_flat_id = $flat_id
+                __SQL__;
+                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+
+                if ($result && count($result)) {
+                    return $result[0]['entrance_count'];
+                }
+
+                return 0;
+            }
+
             private function updateRfidLastSeen($flat_list, $rfid, $date)
             {
                 $fl = implode(",", $flat_list);
@@ -579,6 +631,8 @@
                     unset($sip_call_id);
                     unset($flat_id);
                     unset($flat_number);
+                    unset($prefix);
+                    $call_from_panel = 0;
                     $call_start_found = false;
 
                     //забираем данные из сислога для звонка
@@ -587,7 +641,8 @@
                     $query = <<< __SQL__
                         select
                             date,
-                            msg
+                            msg,
+                            unit
                         from
                             syslog s
                         where
@@ -600,127 +655,177 @@
                     $result = $this->clickhouse->select($query);
                     foreach ($result as $row) {
                         $msg = $row['msg'];
+                        $unit = $row['unit'];
+
 
                         //обработка звонка
-                        $patterns_call = [
-                            //pattern         start  talk  open   finish
-                            ["Calling sip: ", true, false, false, false],
-                            ["Unable to call CMS apartment ", true, false, false, false],
-                            ["CMS handset call started for apartment ", true, false, false, false],
-                            ["SIP call | state ", false, false, false, false],
-                            ["CMS handset talk started for apartment ", false, true, false, false],
-                            ["SIP talk started for apartment ", false, true, false, false],
-                            ["SIP call | CONFIRMED", false, true, false, false],
-                            ["Opening door by CMS handset for apartment ", false, false, true, false],
-                            ["Opening door by DTMF command", false, false, true, false],
-                            ["All calls are done", false, false, false, true],
-                            ["SIP call | DISCONNECTED", false, false, false, true],
-                        ];
-                        foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $flag_finish]) {
-                            unset($now_has_cms);
-                            unset($now_flat_id);
-                            unset($now_flat_number);
-                            unset($now_call_id);
-                            unset($now_sip_call_id);
+                        if ($unit == 'beward') {
+                            $patterns_call = [
+                                //pattern         start  talk  open   call_from_panel
+                                ["Calling sip:", true, false, false, 1],
+                                ["Unable to call CMS apartment ", true, false, false, 0],
+                                ["CMS handset call started for apartment ", true, false, false, 0],
+                                ["SIP call | state ", false, false, false, 0],
+                                ["CMS handset talk started for apartment ", false, true, false, 0],
+                                ["SIP talk started for apartment ", false, true, false, 1],
+                                ["SIP call | CONFIRMED", false, true, false, 0],
+                                ["Opening door by CMS handset for apartment ", false, false, true, 0],
+                                ["Opening door by DTMF command", false, false, true, 0],
+                                ["All calls are done", false, false, false, 0],
+                                ["SIP call | DISCONNECTED", false, false, false, 0],
+                                ["SIP call | CALLING", false, false, false, 1],
+                                ["Incoming DTMF ", false, false, false, 1],
+                                ["Send DTMF ", false, false, false, -1],
+                            ];
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_has_cms);
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
 
-                            $parts = explode("|", $pattern);
-                            $matched = true;
-                            foreach ($parts as $p) {
-                                $matched = $matched && (strpos($msg, $p) !== false);
-                            }
-
-                            if ($matched) {
-                                $now_has_cms = (strpos($msg, 'CMS') != false);
-
-                                if (strpos($msg, "[") !== false) {
-                                    //парсим call_id
-                                    $p1 = strpos($msg, "[");
-                                    $p2 = strpos($msg, "]", $p1 + 1);
-                                    $now_call_id = intval(substr($msg, $p1 + 1, $p2 -$p1 - 1));
+                                $parts = explode("|", $pattern);
+                                $matched = true;
+                                foreach ($parts as $p) {
+                                    $matched = $matched && (strpos($msg, $p) !== false);
                                 }
 
-                                if (strpos($pattern, "apartment") !== false) {
-                                    //парсим номер квартиры
-                                    $p1 = strpos($msg, $pattern);
-                                    $p2 = strpos($msg, ".", $p1 + strlen($pattern));
-                                    if (!$p2)
-                                        $p2 = strpos($msg, ",", $p1 + strlen($pattern));
-                                    if (!$p2)
-                                        $p2 = strlen($msg);
-                                    $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 -$p1 - strlen($pattern)));
-                                }
+                                if ($matched) {
+                                    $now_has_cms = (strpos($msg, 'CMS') != false);
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    } elseif ($now_call_from_panel < 0) {
+                                        $call_from_panel = -1;
+                                        break;
+                                    }
 
-                                if (strpos($pattern, "Calling sip:") !== false) {
-                                    //парсим flat_id
-                                    $p1 = strpos($msg, $pattern);
-                                    $p2 = strpos($msg, "@", $p1 + strlen($pattern));
-                                    $now_flat_id = intval(substr($msg, $p1 + strlen($pattern) + 1, $p2 -$p1 - strlen($pattern) - 1));
-                                }
+                                    if (strpos($msg, "[") !== false) {
+                                        //парсим call_id
+                                        $p1 = strpos($msg, "[");
+                                        $p2 = strpos($msg, "]", $p1 + 1);
+                                        $now_call_id = intval(substr($msg, $p1 + 1, $p2 -$p1 - 1));
+                                    }
 
-                                if (strpos($pattern, "SIP call ") !== false) {
-                                    //парсим sip_call_id
-                                    $p1 = strpos($msg, $parts[0]);
-                                    $p2 = strpos($msg, " ", $p1 + strlen($parts[0]));
-                                    $now_sip_call_id = intval(substr($msg, $p1 + strlen($parts[0]), $p2 -$p1 - strlen($parts[0])));
-                                }
+                                    if (strpos($pattern, "apartment") !== false) {
+                                        //парсим номер квартиры
+                                        $p1 = strpos($msg, $pattern);
+                                        $p2 = strpos($msg, ".", $p1 + strlen($pattern));
+                                        if (!$p2)
+                                            $p2 = strpos($msg, ",", $p1 + strlen($pattern));
+                                        if (!$p2)
+                                            $p2 = strlen($msg);
+                                        $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 -$p1 - strlen($pattern)));
+                                    }
 
-                                $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
-                                    || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
-                                    || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
-                                    || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+                                    if (strpos($pattern, "Calling sip:") !== false) {
+                                        $p1 = strpos($msg, $pattern);
+                                        $p2 = strpos($msg, "@", $p1 + strlen($pattern));
+                                        $sip = substr($msg, $p1 + strlen($pattern), $p2 -$p1 - strlen($pattern));
+                                        if ($sip[0] == "1") {
+                                            //звонок с панели, имеющей КМС, доп. панели или калитки без префикса
+                                            //парсим flat_id
+                                            $p1 = strpos($msg, $pattern);
+                                            $p2 = strpos($msg, "@", $p1 + strlen($pattern));
+                                            $now_flat_id = intval(substr($msg, $p1 + strlen($pattern) + 1, $p2 -$p1 - strlen($pattern) - 1));
+                                        } else {
+                                            //звонок с префиксом, первые четыре цифры - префикс с лидирующими нулями, остальные - номер квартиры (калитка)
+                                            $prefix = intval(substr($sip, 0, 4));
+                                            $now_flat_number = intval(substr($sip, 4));
+                                        }
+                                    }
 
-                                if ($call_start_lost) {
-                                    break;
-                                }
+                                    if (strpos($pattern, "SIP call ") !== false) {
+                                        //парсим sip_call_id
+                                        $p1 = strpos($msg, $parts[0]);
+                                        $p2 = strpos($msg, " ", $p1 + strlen($parts[0]));
+                                        $now_sip_call_id = intval(substr($msg, $p1 + strlen($parts[0]), $p2 -$p1 - strlen($parts[0])));
+                                    }
 
-                                $event_data[self::COLUMN_DATE] = $row['date'];
+                                    $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
+                                        || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
+                                        || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
+                                        || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
 
-                                if ($now_has_cms && !isset($has_cms)) {
-                                    $has_cms = true;
-                                }
-                                if (isset($now_call_id) && !isset($call_id)) {
-                                    $call_id = $now_call_id;
-                                }
-                                if (isset($now_sip_call_id) && !isset($sip_call_id)) {
-                                    $sip_call_id = $now_sip_call_id;
-                                }
-                                if (isset($now_flat_number) && !isset($flat_number)) {
-                                    $flat_number = $now_flat_number;
-                                }
-                                if ($flag_talk_started) {
-                                    $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
-                                }
-                                if ($flag_door_opened) {
-                                    $event_data[self::COLUMN_OPENED] = 1;
-                                }
-                                if ($flag_start) {
-                                    $call_start_found = true;
-                                    break;
+                                    if ($call_start_lost) {
+                                        break;
+                                    }
+
+                                    $event_data[self::COLUMN_DATE] = $row['date'];
+
+                                    if ($now_has_cms && !isset($has_cms)) {
+                                        $has_cms = true;
+                                    }
+                                    if (isset($now_call_id) && !isset($call_id)) {
+                                        $call_id = $now_call_id;
+                                    }
+                                    if (isset($now_sip_call_id) && !isset($sip_call_id)) {
+                                        $sip_call_id = $now_sip_call_id;
+                                    }
+                                    if (isset($now_flat_number) && !isset($flat_number)) {
+                                        $flat_number = $now_flat_number;
+                                    }
+                                    if ($flag_talk_started) {
+                                        $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                    }
+                                    if ($flag_door_opened) {
+                                        $event_data[self::COLUMN_OPENED] = 1;
+                                    }
+                                    if ($flag_start) {
+                                        $call_start_found = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
+
                         if ($call_start_found) {
+                            break;
+                        }
+
+                        if ($call_from_panel < 0) {
                             break;
                         }
                     }
 
+                    if ($call_from_panel < 0) {
+                        //начало звонка было точно не с этой панели - игнорируем звонок
+                        break;
+                    }
+
                     if (isset($flat_id)) {
                         $event_data[self::COLUMN_FLAT_ID] = $flat_id;
-                    } else if (isset($flat_number)) {
+                    } elseif (isset($prefix) && isset($flat_number)) {
+                        $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id);
+                    } elseif (isset($flat_number)) {
                         $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByNumber($flat_number, $domophone_id);
                     }
 
-                    if (isset($event_data[self::COLUMN_FLAT_ID])) {
-                        //получение кадра события
-                        $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DATE]);
-                        if ($image_data) {
-                            $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
-                            $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
-                            // TODO: доделать для случая наличия инфы о лице
-                        }
-
-                        $this->writeEventData($event_data);
+                    if (!isset($event_data[self::COLUMN_FLAT_ID])) {
+                        //не удалось получить flat_id - игнорируем звонок
+                        break;
                     }
+
+                    if ($call_from_panel == 0) {
+                        //нет точных данных о том, что начало звонка было с этой панели
+                        //проверяем, мог ли звонок идти с другой панели
+                        $entrance_count = $this->getEntranceCount($event_data[self::COLUMN_FLAT_ID]);
+                        if ($entrance_count > 1) {
+                            //в квартиру можно позвонить с нескольких домофонов,
+                            //в данном случае считаем, что начальный звонок был с другого домофона - игнорируем звонок
+                            break;
+                        }
+                    }
+
+                    //получение кадра события
+                    $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DATE]);
+                    if ($image_data) {
+                        $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
+                        $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
+                        // TODO: доделать для случая наличия инфы о лице
+                    }
+
+                    //сохраняем событие
+                    $this->writeEventData($event_data);
                 }
 
                 //удаление данных из таблицы plog_call_done
