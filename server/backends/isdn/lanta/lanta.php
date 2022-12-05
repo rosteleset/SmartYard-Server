@@ -43,7 +43,7 @@
             function confirmNumbers()
             {
                 return [
-                    "+74752429949"
+                    "88002220374"
                 ];
             }
 
