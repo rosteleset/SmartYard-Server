@@ -7,14 +7,20 @@
  *
  * @apiGroup Ext
  *
- * @apiHeader {string} authorization токен авторизации
+ * @apiHeader {String} authorization токен авторизации
  *
- * @apiSuccess {string="t","f"} [cityCams="f"] городские камеры
- * @apiSuccess {string="t","f"} [issues="f"] заявки
- * @apiSuccess {string="t","f"} [payments="f"] оплата за услуги
- * @apiSuccess {string} [paymentsUrl] URL платёжной системы
- * @apiSuccess {string} [supportPhone] номер телефона техподдержки
- * @apiSuccess {string="t","f"} [chat="f"] чат talkMe
+ * @apiSuccess {String="t","f"} [cityCams="f"] городские камеры
+ * @apiSuccess {String="t","f"} [issues="f"] заявки
+ * @apiSuccess {String="t","f"} [payments="f"] вкладка оплата
+ * @apiSuccess {String} [paymentsUrl] URL платёжной системы (версия web-расширений 2). Если отсутствует, то будет нативная поддержка платежей через /user/getPaymentsList
+ * @apiSuccess {String="t","f"} [chat="f"] вкладка чат
+ * @apiSuccess {String} [chatUrl] URL страницы чата (версия web-расширений 2). Если отсутствует, то будет нативная поддержка meTalk с chatOptions
+ * @apiSuccess {Object} [chatOptions] Опции для meTalk
+ * @apiSuccess {String} chatOptions.id id чата meTalk
+ * @apiSuccess {String} chatOptions.domain domain чата meTalk
+ * @apiSuccess {String} chatOptions.token token чата meTalk
+ * @apiSuccess {String} [supportPhone] номер телефона техподдержки
+ * @apiSuccess {String="t","f"} [chat="f"] чат talkMe
  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
@@ -30,7 +36,8 @@
 
     $response = [
         "cityCams" => @$config["mobile"]["city_cams"] ? "t" : "f",
-        "payments" => @$config["mobile"]["payments"] ? "t" : "f"
+        "payments" => @$config["mobile"]["payments"] ? "t" : "f",
+        "chat" => @$config["mobile"]["chat"] ? "t" : "f"
         ];
         
         if (@$config["mobile"]["support_phone"]) {
@@ -41,14 +48,19 @@
             $response["paymentsUrl"] = $config["mobile"]["payments_url"];
         }
 
-        if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
-            $response["chat"] = "t";
-            $response["chatOptions"] = [
-                "id" => $config["mobile"]["talk_me_id"],
-                "domain" => $config["mobile"]["talk_me_domain"],
-                "token" => $config["mobile"]["talk_me_token"]
-            ];
+        if (@$config["mobile"]["chat_url"]) {
+            $response["chatUrl"] = $config["mobile"]["chat_url"];
         } else {
-            $response["chat"] = "f";
+            if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
+                $response["chat"] = "t";
+                $response["chatOptions"] = [
+                    "id" => $config["mobile"]["talk_me_id"],
+                    "domain" => $config["mobile"]["talk_me_domain"],
+                    "token" => $config["mobile"]["talk_me_token"]
+                ];
+            } else {
+                $response["chat"] = "f";
+            }
         }
+
     response(200, $response);

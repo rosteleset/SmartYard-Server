@@ -99,17 +99,26 @@ try {
         $events_details = [];
         foreach ($result as &$row) {
             $e_details = [];
-            $e_details['date'] = $row[plog::COLUMN_DATE];
+            $e_details['date'] = date('Y-m-d H:i:s', $row[plog::COLUMN_DATE]);
             $e_details['uuid'] = $row[plog::COLUMN_EVENT_UUID];
             $e_details['image'] = $row[plog::COLUMN_IMAGE_UUID];
             $e_details['previewType'] = $row[plog::COLUMN_PREVIEW];
-            $e_details['objectId'] = $row[plog::COLUMN_DOMOPHONE_ID];
-            $e_details['objectType'] = 0;
-            $e_details['objectMechanizma'] = $row[plog::COLUMN_DOMOPHONE_OUTPUT];
-            $e_details['mechanizmaDescription'] = $row[plog::COLUMN_DOMOPHONE_OUTPUT_DESCRIPTION];
+
+            $domophone = json_decode($row[plog::COLUMN_DOMOPHONE]);
+            if (isset($domophone->domophone_id) && isset($domophone->domophone_output)) {
+                $e_details['objectId'] = $domophone->domophone_id;
+                $e_details['objectType'] = 0;
+                $e_details['objectMechanizma'] = $domophone->domophone_output;
+                if (isset($domophone->domophone_description)) {
+                    $e_details['mechanizmaDescription'] = $domophone->domophone_description;
+                } else {
+                    $e_details['mechanizmaDescription'] = '';
+                }
+            }
+
             $e_details['event'] = $row[plog::COLUMN_EVENT];
             $face = json_decode($row[plog::COLUMN_FACE]);
-            if ($face->width && $face->height) {
+            if (isset($face->width) && $face->width > 0 && isset($face->height) && $face->height > 0) {
                 $e_details['detailX']['face'] = [
                     'left' => $face->left,
                     'top' => $face->top,
@@ -117,9 +126,11 @@ try {
                     'height' => $face->height
                 ];
             }
-            if ($face->faceId) {
+            if (isset($face->faceId)) {
                 $e_details['detailX']['faceId'] = $face->faceId;
             }
+
+            $phones = json_decode($row[plog::COLUMN_PHONES]);
 
             switch ((int)$row[plog::COLUMN_EVENT]) {
                 case plog::EVENT_UNANSWERED_CALL:
@@ -132,7 +143,9 @@ try {
                     break;
 
                 case plog::EVENT_OPENED_BY_APP:
-                    $e_details['detailX']['phone'] = $row[plog::COLUMN_USER_PHONE];
+                    if ($phones->user_phone) {
+                        $e_details['detailX']['phone'] = $phones->user_phone;
+                    }
                     break;
 
                 case plog::EVENT_OPENED_BY_FACE:
@@ -143,8 +156,12 @@ try {
                     break;
 
                 case plog::EVENT_OPENED_GATES_BY_CALL:
-                    $e_details['detailX']['phoneFrom'] = $row[plog::COLUMN_USER_PHONE];
-                    $e_details['detailX']['phoneTo'] = $row[plog::COLUMN_GATE_PHONE];
+                    if ($phones->user_phone) {
+                        $e_details['detailX']['phoneFrom'] = $phones->user_phone;
+                    }
+                    if ($phones->gate_phone) {
+                        $e_details['detailX']['phoneTo'] = $phones->gate_phone;
+                    }
                     break;
             }
             if ((int)$row[plog::COLUMN_PREVIEW]) {

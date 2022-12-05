@@ -12,6 +12,8 @@
         "payments_url": "https://dm.lanta.me/app_static/payments/template.html",
         "city_cams": false,
         "support_phone": "+7(4752)429999",
+        "chat": true,
+        "chat_url": "<!-- your chat url or remove it and use talkMe by default with options below--!>",
         "talk_me_id": "<!-- put your talkMe chat id here --!>",
         "talk_me_domain": "<!-- put your talkMe chat domain id here --!>",
         "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>"

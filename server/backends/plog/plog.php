@@ -29,16 +29,13 @@
             const COLUMN_HIDDEN = 'hidden';
             const COLUMN_IMAGE_UUID = 'image_uuid';
             const COLUMN_FLAT_ID = 'flat_id';
-            const COLUMN_DOMOPHONE_ID = 'domophone_id';
-            const COLUMN_DOMOPHONE_OUTPUT = 'domophone_output';
-            const COLUMN_DOMOPHONE_OUTPUT_DESCRIPTION = 'domophone_output_description';
+            const COLUMN_DOMOPHONE = 'domophone';
             const COLUMN_EVENT = 'event';
             const COLUMN_OPENED = 'opened';
             const COLUMN_FACE = 'face';
             const COLUMN_RFID = 'rfid';
             const COLUMN_CODE = 'code';
-            const COLUMN_USER_PHONE = 'user_phone';
-            const COLUMN_GATE_PHONE = 'gate_phone';
+            const COLUMN_PHONES = 'phones';
             const COLUMN_PREVIEW = 'preview';
 
             //типы доступа к журналу событий

@@ -4,7 +4,7 @@ const {getTimestamp} = require("./utils/formatDate");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
 const { port } = urlParser(beward);
-let gate_rabbits = {};
+let gate_rabbits = [];
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
   const now = getTimestamp(date);
@@ -31,75 +31,76 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   await API.sendLog({ date: now, ip: host, unit:"beward", msg: bw_msg });
 
   //Действия:
-  //1 Открытие по ключу
+  // Открытие по ключу основной или дополнительной двери оборудованной считывателем
   if (
     /^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(bw_msg) ||
     /^Opening door by external RFID [a-fA-F0-9]+, apartment \d+$/.test(bw_msg)
   ) {
-    let rfid = bw_msg.split("RFID")[1].split(",")[0].trim();
-    let door = bw_msg.indexOf("external") >= 0 ? "1" : "0";
-    await API.openDoor({ date:now, ip:host, door, detail: rfid, type: "rfid"});
+    const rfid = bw_msg.split("RFID")[1].split(",")[0].trim();
+    const door = bw_msg.indexOf("external") >= 0 ? "1" : "0";
+    await API.openDoor({ date:now, ip:host, door, detail: rfid, by: "rfid"});
   }
 
   // домофон в режиме калитки на несколько домов
   if (bw_msg.indexOf("Redirecting CMS call to") >= 0) {
-    let dst = bw_msg.split(" to ")[1].split(" for ")[0];
-    gate_rabbits[host] = {
+    const dst = bw_msg.split(" to ")[1].split(" for ")[0];
+    gate_rabbits = {
+      ip:host,
       prefix: parseInt(dst.substring(0, 4)),
       apartment: parseInt(dst.substring(4)),
-      expire: new Date().getTime() + 5 * 60 * 1000,
     };
   }
 
-  // домофон в режиме калитки на несколько домов
+  // Домофон в режиме калитки на несколько домов, установка функционала "белый кролик".
   if (bw_msg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
-    if (gate_rabbits[host]) {
-      await API.setRabbitGates({host, gate_rabbits});
+    if (gate_rabbits.ip === host) {
+      await API.setRabbitGates({date: now, ...gate_rabbits});
     }
   }
 
   // Нестабильное поведение с сислогами и пропущенными и отвеченными звонками, может сломаться в любой момент
   if (bw_msg.indexOf("All calls are done for apartment") >= 0) {
-    let call_id = parseInt(bw_msg.split("[")[1].split("]")[0]);
-    let flat_id =parseInt(bw_msg.split(" ")[7])
+    const call_id = parseInt(bw_msg.split("[")[1].split("]")[0]);
+    const flat_id = parseInt(bw_msg.split(" ")[7]);// TODO: столит ли передавать номер квартиры в случае если отсутствет "call_id"
     if (call_id && flat_id) await API.callFinished({date: now, ip: host, call_id});
   }
-  // Открытие двери по коду квартиры
+
+  // Открытие главной двери по коду квартиры
   if (bw_msg.indexOf("Opening door by code") >= 0) {
     const code = parseInt(bw_msg.split("code")[1].split(",")[0]);
     if (code) {
-      await API.openDoor({ date:now, ip:host, detail: code, type: "code" });
+      await API.openDoor({date: now, ip: host, detail: code, by: "code"});
     }
   }
 
-  //Открытие двери через DTMF
+  //?Не используется. Открытие двери через DTMF
   if (bw_msg.indexOf("Opening door by DTMF command")>= 0){
     const flatNumber = parseInt(bw_msg.split(" ")[8]);
-    await API.openDoor({ date:now, ip:host, detail: flatNumber, type: "dtmf" });
+    await API.openDoor({date: now, ip: host, detail: flatNumber, by: "dtmf"});
   }
 
   // Дектектор движения: старт
   if (bw_msg.indexOf("SS_MAINAPI_ReportAlarmHappen") >= 0) {
-    await API.motionDetection(now,host, true);
+    await API.motionDetection({date: now, ip: host, motionStart: true});
   }
 
   // Дектектор движения: стоп
   if (bw_msg.indexOf("SS_MAINAPI_ReportAlarmFinish") >= 0) {
-    await API.motionDetection(now, host, false);
+    await API.motionDetection({date: now, ip: host, motionStart: false});
   }
 
-  // Нажатие физической кнопки открытия главной двари
+  // Игнорируем распознование лица на основном входе. Нажатие физической кнопки открытия главной двари.
   if (
       bw_msg.indexOf("Main door button pressed") >= 0 // DKS15122 rev3.2.1
   ) {
-    await API.stopFRS(host, "main");
+    await API.openDoor({date: now, ip: host, door: 0, detail: "main", by: "button"});
   }
 
-  // Нажатие физической кнопки открытия дополнительной двери
+  // Игнорируем распознование лица на дополнительном входе. Нажатие физической кнопки открытия дополнительной двери.
   if (
       bw_msg.indexOf("Additional door button pressed") >= 0
   ) {
-    await API.stopFRS(host, "additional");
+    await API.openDoor({date:now,ip:host,door:1,detail:"additional",by:"button"});
   }
 });
 
