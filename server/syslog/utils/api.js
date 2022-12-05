@@ -1,4 +1,3 @@
-//TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
 const axios = require("axios");
 const https = require("https");
 const {getTimestamp} = require("./formatDate.js")
@@ -62,7 +61,7 @@ class API {
         try {
             return await internalAPI.post("/actions/motionDetection",{date,ip,motionStart})
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", host, "|| motionDetection error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message);
         }
 
     }
@@ -93,10 +92,6 @@ class API {
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message);
         }
-    }
-
-    // домофон в режиме калитки на несколько домов
-    async incomingDTMF() {
     }
 
     /** Логирование события открытия двери
