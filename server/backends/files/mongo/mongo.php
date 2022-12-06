@@ -96,7 +96,7 @@
             /**
              * @inheritDoc
              */
-            public function getFileStream($uuid)
+            public function getFileByStream($uuid)
             {
                 $collection = $this->collection;
 

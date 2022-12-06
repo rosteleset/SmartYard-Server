@@ -52,7 +52,7 @@
              * @param $uuid
              * @return object file, filename, metadata
              */
-            abstract public function getFileStream($uuid);
+            abstract public function getFileByStream($uuid);
 
             /**
              * @param $uuid
