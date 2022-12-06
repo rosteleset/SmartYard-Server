@@ -58,6 +58,25 @@
             /**
              * @inheritDoc
              */
+            public function addFileByStream($realFileName, $stream, $meta = [])
+            {
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
+
+                $fileId = $bucket->uploadFromStream($realFileName, $stream);
+
+                $fsFiles = "fs.files";
+                $_collection = $this->mongo->$collection->$fsFiles;
+
+                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
+
+                return $fileId;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getFile($uuid)
             {
                 $collection = $this->collection;
@@ -72,6 +91,14 @@
                     "meta" => $bucket->getFileDocumentForStream($stream),
                     "contents" => stream_get_contents($stream),
                 ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getFileStream($uuid)
+            {
+                // TODO: Implement getFileStream() method.
             }
 
             /**
@@ -134,6 +161,5 @@
 
                 return true;
             }
-
         }
     }

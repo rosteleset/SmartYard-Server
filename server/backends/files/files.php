@@ -27,12 +27,32 @@
             abstract public function addFile($realFileName, $fileContent, $meta = []);
 
             /**
+             * add file to storage
+             *
+             * $meta["expire"] (optional) expire filetime (unix timestamp)
+             *
+             * @param string $realFileName
+             * @param $stream
+             * @param array $meta
+             * @return string uuid
+             */
+            abstract public function addFileByStream($realFileName, $stream, $meta = []);
+
+            /**
              * get file from storage
              *
              * @param $uuid
              * @return object file, filename, metadata
              */
             abstract public function getFile($uuid);
+
+            /**
+             * get file from storage
+             *
+             * @param $uuid
+             * @return object file, filename, metadata
+             */
+            abstract public function getFileStream($uuid);
 
             /**
              * @param $uuid
