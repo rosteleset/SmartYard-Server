@@ -16,10 +16,11 @@
         class clickhouse extends plog
         {
             private $clickhouse;
-            private $time_shift;  // сдвиг по времени в секундах от текущего
+            private $time_shift;  // сдвиг по времени в секундах от текущего для обработки событий
             private $max_call_length;  // максимальная длительность звонка в секундах
             private $ttl_temp_record;  // значение, которое прибавляется к текущему времени для получения expire
             private $ttl_camshot_days;  // время жизни кадра события
+            private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
 
             function __construct($config, $db, $redis)
             {
@@ -39,6 +40,7 @@
                 $this->max_call_length = $config['backends']['plog']['max_call_length'];
                 $this->ttl_temp_record = $config['backends']['plog']['ttl_temp_record'];
                 $this->ttl_camshot_days = $config['backends']['plog']['ttl_camshot_days'];
+                $this->back_time_shift_video_shot = $config['backends']['plog']['back_time_shift_video_shot'];
             }
 
             /**
@@ -77,9 +79,15 @@
                         if ($cameras && $cameras[0]) {
                             $prefix = $cameras[0]["dvrStream"];
                             if ($prefix) {
-                                $ts_event = $date - 3;  // вычитаем три секунды для получения кадра
+                                require_once __DIR__ . '/../../../utils/get_dvr_server_type.php';
+
+                                $ts_event = $date - $this->back_time_shift_video_shot;
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                                system("ffmpeg -y -i $prefix/$ts_event-preview.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                if (getDVRServer($prefix)['type'] == 'nimble') {
+                                    system("ffmpeg -y -i $prefix/dvr_thumbnail_$ts_event.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                } else {
+                                    system("ffmpeg -y -i $prefix/$ts_event-preview.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                }
                                 $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile(
                                     "camshot",
                                     file_get_contents($filename),
@@ -657,7 +665,6 @@
                         $msg = $row['msg'];
                         $unit = $row['unit'];
 
-
                         //обработка звонка
                         if ($unit == 'beward') {
                             $patterns_call = [
@@ -764,6 +771,9 @@
                                     if (isset($now_flat_number) && !isset($flat_number)) {
                                         $flat_number = $now_flat_number;
                                     }
+                                    if (isset($now_flat_id) && !isset($flat_id)) {
+                                        $flat_id = $now_flat_id;
+                                    }
                                     if ($flag_talk_started) {
                                         $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
                                     }
@@ -789,7 +799,7 @@
 
                     if ($call_from_panel < 0) {
                         //начало звонка было точно не с этой панели - игнорируем звонок
-                        break;
+                        continue;
                     }
 
                     if (isset($flat_id)) {
@@ -802,7 +812,7 @@
 
                     if (!isset($event_data[self::COLUMN_FLAT_ID])) {
                         //не удалось получить flat_id - игнорируем звонок
-                        break;
+                        continue;
                     }
 
                     if ($call_from_panel == 0) {
@@ -812,7 +822,7 @@
                         if ($entrance_count > 1) {
                             //в квартиру можно позвонить с нескольких домофонов,
                             //в данном случае считаем, что начальный звонок был с другого домофона - игнорируем звонок
-                            break;
+                            continue;
                         }
                     }
 

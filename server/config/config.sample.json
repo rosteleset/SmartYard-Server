@@ -122,6 +122,7 @@
             "max_call_length": "<-- your max call length in seconds for backward processing call events (hint 120) -->",
             "ttl_temp_record": "<-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) -->",
             "ttl_camshot_days": "<-- your time to live in days for camshots (hint 180 - approx. half year) -->",
+            "back_time_shift_video_shot": "<-- your back time shift in seconds for receiving video shot from media server (hint 3) -->"
         },
 
         "configs": {
