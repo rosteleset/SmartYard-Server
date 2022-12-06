@@ -665,7 +665,6 @@
                         $msg = $row['msg'];
                         $unit = $row['unit'];
 
-
                         //обработка звонка
                         if ($unit == 'beward') {
                             $patterns_call = [
@@ -800,7 +799,7 @@
 
                     if ($call_from_panel < 0) {
                         //начало звонка было точно не с этой панели - игнорируем звонок
-                        break;
+                        continue;
                     }
 
                     if (isset($flat_id)) {
@@ -813,7 +812,7 @@
 
                     if (!isset($event_data[self::COLUMN_FLAT_ID])) {
                         //не удалось получить flat_id - игнорируем звонок
-                        break;
+                        continue;
                     }
 
                     if ($call_from_panel == 0) {
@@ -823,7 +822,7 @@
                         if ($entrance_count > 1) {
                             //в квартиру можно позвонить с нескольких домофонов,
                             //в данном случае считаем, что начальный звонок был с другого домофона - игнорируем звонок
-                            break;
+                            continue;
                         }
                     }
 
