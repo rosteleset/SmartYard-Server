@@ -98,7 +98,18 @@
              */
             public function getFileStream($uuid)
             {
-                // TODO: Implement getFileStream() method.
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
+
+                $fileId = new \MongoDB\BSON\ObjectId($uuid);
+
+                $stream = $bucket->openDownloadStream($fileId);
+
+                return [
+                    "meta" => $bucket->getFileDocumentForStream($stream),
+                    "stream" => $stream,
+                ];
             }
 
             /**
