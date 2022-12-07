@@ -1,9 +1,12 @@
 const syslog = new (require("syslog-server"))();
-const {hw: { beward }} = require("./config.json");
-const {getTimestamp} = require("./utils/formatDate");
-const { urlParser } = require("./utils/url_parser");
+const hwVer = process.argv.length === 3 && process.argv[2].split("=")[0] === '--config' ? process.argv[2].split("=")[1] : null;
+const {hw} = require("./config.json");
+const board = hw[hwVer]
 const API = require("./utils/api");
-const { port } = urlParser(beward);
+const {getTimestamp} = require("./utils/formatDate");
+const {urlParser} = require("./utils/url_parser");
+const {port} = urlParser(board);
+
 let gate_rabbits = [];
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
@@ -21,7 +24,8 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
     bw_msg.indexOf("Param Change Save To Disk Finish") >= 0 ||
     bw_msg.indexOf(bw_msg.match(/User Mifare CLASSIC key ([a-fA-F0-9]+) is unprotected/g)) >= 0 || //User Mifare CLASSIC key 0000003375EACE is unprotected
     bw_msg.indexOf("is User Mifare CLASSIC key") >= 0 || //RFID 0000003375EACE is User Mifare CLASSIC key, CiphID=0, Code=0, Apt=0
-    bw_msg.indexOf("Exits doWriteLoop") >= 0 //Exits doWriteLoop(1368110272)!!!!!
+    bw_msg.indexOf("Exits doWriteLoop") >= 0 ||//Exits doWriteLoop(1368110272)!!!!!
+    bw_msg.indexOf("busybox-lib: udhcpc:")>=0 //BEWARD_DS продление аренды ip адреса
   ) {
     return;
   }
@@ -44,7 +48,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   // домофон в режиме калитки на несколько домов
   if (bw_msg.indexOf("Redirecting CMS call to") >= 0) {
     const dst = bw_msg.split(" to ")[1].split(" for ")[0];
-    gate_rabbits = {
+    gate_rabbits[host] = {
       ip:host,
       prefix: parseInt(dst.substring(0, 4)),
       apartment: parseInt(dst.substring(4)),
@@ -53,16 +57,23 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   // Домофон в режиме калитки на несколько домов, установка функционала "белый кролик".
   if (bw_msg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
-    if (gate_rabbits.ip === host) {
-      await API.setRabbitGates({date: now, ...gate_rabbits});
+    if (gate_rabbits[host]) {
+      await API.setRabbitGates({date: now, ...gate_rabbits[host]});
     }
   }
 
   // Нестабильное поведение с сислогами и пропущенными и отвеченными звонками, может сломаться в любой момент
   if (bw_msg.indexOf("All calls are done for apartment") >= 0) {
     const call_id = parseInt(bw_msg.split("[")[1].split("]")[0]);
-    const flat_id = parseInt(bw_msg.split(" ")[7]);// TODO: столит ли передавать номер квартиры в случае если отсутствет "call_id"
-    if (call_id && flat_id) await API.callFinished({date: now, ip: host, call_id});
+    if (call_id) {
+      await API.callFinished({date: now, ip: host, call_id});
+    }
+  }
+
+  // Только для Beward DS06A: Формируем событие "Завершение звонка".
+  if (hwVer === "beward_ds" &&
+      (/^SIP call \d+ is DISCONNECTED\ .*$/.test(bw_msg) || /^EVENT:\d+:SIP call \d+ is DISCONNECTED\ .*$/.test(bw_msg)) ) {
+    await API.callFinished({date: now, ip: host});
   }
 
   // Открытие главной двери по коду квартиры
@@ -100,7 +111,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   if (
       bw_msg.indexOf("Additional door button pressed") >= 0
   ) {
-    await API.openDoor({date:now,ip:host,door:1,detail:"additional",by:"button"});
+    await API.openDoor({date: now, ip: host, door: 1, detail: "additional", by: "button"});
   }
 });
 
@@ -109,5 +120,5 @@ syslog.on("error", (err) => {
 });
 
 syslog.start({ port }, () => {
-  console.log(`Start BEWARD syslog service on port ${port}`);
+  console.log(`Start ${hwVer.toUpperCase()} syslog service on port ${port}`);
 });

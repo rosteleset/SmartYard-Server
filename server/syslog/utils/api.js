@@ -67,12 +67,11 @@ class API {
     }
 
     /**Обновление информации о завершении звонка.
-     * call_id присутствует только у BEWARD?!
-     * @param {Date} date
+     * @param {number} date
      * @param {string} ip
-     * @param {number|null} call_id
+     * @param {number|null} call_id call_id присутствует только у BEWARD?!
      * */
-    async callFinished({date,ip, call_id}) {
+    async callFinished({date,ip, call_id = null}) {
         try {
             return await internalAPI.post("/actions/callFinished", {date, ip, call_id});
         } catch (error) {
