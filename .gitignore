@@ -39,3 +39,4 @@ RBT/RBT.xcodeproj/
 package.json
 package-lock.json
 !/server/syslog/package.json
+/test.php
