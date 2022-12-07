@@ -23,13 +23,13 @@
     $subscriber_id = (int)$subscriber['subscriberId'];
     $msgs = array_map(function($item) {
         return ['msgId' => $item['msgId'], 'date' => $item['date'], 'msg' => $item['msg']];
-    }, $inbox->getMessages($subscriber_id, "dates", ["dateFrom" => '2000-01-01', "dateTo" => "3000-01-01"]));
+    }, $inbox->getMessages($subscriber_id, "dates", ["dateFrom" => 946684800, "dateTo" => 2147483646]));
 
     usort($msgs, function ($a, $b) {
-        if (strtotime($a['date']) > strtotime($b['date'])) {
+        if ($a['date'] > $b['date']) {
             return -1;
         } else
-            if (strtotime($a['date']) < strtotime($b['date'])) {
+            if ($a['date'] < $b['date']) {
                 return 1;
             } else {
                 return 0;
@@ -41,8 +41,8 @@
     $formatter = new IntlDateFormatter('ru_RU.UTF-8', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
     $h = '';
     foreach ($msgs as $row) {
-        $dd = strtotime($row['date']);
-        $rd = $formatter->format($dd); 
+        $dd = $row['date'];
+        $rd = $formatter->format($dd);
         if ($nd != $rd) {
             $nd = $rd;
             $h .= "<span class=\"inbox-date\">$rd</span><div class=\"inbox-message-primary\"><i class=\"inbox-message-icon icon-avatar\"></i><div class=\"inbox-message-content\">";
