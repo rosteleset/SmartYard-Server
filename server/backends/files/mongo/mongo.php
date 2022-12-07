@@ -157,6 +157,28 @@
             /**
              * @inheritDoc
              */
+            public function uuidToGUIDv4($uuid)
+            {
+                // 6390 05ed 5bc9 6a70 6b08 3ec1
+                // 5469 6742 4b44 47fb b0e1 eb86 cf20 5128
+
+                $uuid = "10001000" . $uuid;
+
+                $hyphen = chr(45);
+                return substr($uuid,  0,  8) . $hyphen . substr($uuid,  8,  4) . $hyphen . substr($uuid, 12,  4) . $hyphen . substr($uuid, 16,  4) . $hyphen . substr($uuid, 20, 12);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function GUIDv4ToUuid($guidv4)
+            {
+                return str_replace("-", "", substr($guidv4, 8));
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cron($part)
             {
                 $collection = $this->collection;

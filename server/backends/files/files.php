@@ -73,5 +73,17 @@
              * @return boolean
              */
             abstract public function deleteFile($uuid);
+
+            /**
+             * @param $uuid
+             * @return mixed
+             */
+            abstract public function uuidToGUIDv4($uuid);
+
+            /**
+             * @param $guidv4
+             * @return mixed
+             */
+            abstract public function GUIDv4ToUuid($guidv4);
         }
     }
