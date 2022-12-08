@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\"",
     "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\"",
-    "start:beward": "node beward.js --confighw=beward",
+    "start:beward": "node beward.js --config=beward",
     "start:beward_ds": "node beward.js --config=beward_ds",
     "start:qtech": "node qtech.js",
     "start:is": "node is.js",
