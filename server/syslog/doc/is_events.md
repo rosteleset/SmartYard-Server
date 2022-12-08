@@ -72,13 +72,19 @@ SendSnapshotHTTP: get response with code 200
 
 ## Звонки
 ### Начало звонка
+#### Обычный режим
 ```
 Calling to 12 flat...
+```
+#### Режим калитки с префиксом
+```
+Calling to 1 house 12 flat...
 ```
 ### Все вызовы завершены
 ```
 All calls are done for apartment 12
 ```
+Данного события не будет, если звонок сброшен с панели или не был отвечен
 ### Аналог
 #### Квартира существует, трубка подключена, начало звонка
 ```
@@ -122,5 +128,3 @@ SIP call done for apartment 12, handset is down
 Baresip event CALL_INCOMING
 Incoming call to sip:12@192.168.13.137:5060 (12)
 ```
-
-## To be continued...
