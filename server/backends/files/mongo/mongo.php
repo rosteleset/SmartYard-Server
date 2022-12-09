@@ -142,6 +142,25 @@
             /**
              * @inheritDoc
              */
+            public function searchFilesBy($metadataField, $fieldValue)
+            {
+                $collection = $this->collection;
+                $fsFiles = "fs.files";
+
+                $cursor = $this->mongo->$collection->$fsFiles->find([ "metadata.$metadataField" => [ '$eq' => $fieldValue ] ]);
+
+                $files = [];
+
+                foreach ($cursor as $document) {
+                    $files[] = (string)$document->_id;
+                }
+
+                return $files;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function deleteFile($uuid)
             {
                 $collection = $this->collection;

@@ -79,6 +79,13 @@
             abstract public function getFileMetadata($uuid);
 
             /**
+             * @param $metadataField
+             * @param $fieldValue
+             * @return mixed
+             */
+            abstract public function searchFilesBy($metadataField, $fieldValue);
+
+            /**
              * delete file
              *
              * @param $uuid
