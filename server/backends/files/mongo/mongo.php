@@ -34,7 +34,7 @@
             /**
              * @inheritDoc
              */
-            public function addFile($realFileName, $fileContent, $meta = [])
+            public function addFile($realFileName, $fileContent, $metadata = [])
             {
                 $collection = $this->collection;
 
@@ -50,7 +50,7 @@
                 $fsFiles = "fs.files";
                 $_collection = $this->mongo->$collection->$fsFiles;
 
-                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
+                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $metadata ] ]);
 
                 return $id;
             }
@@ -58,7 +58,7 @@
             /**
              * @inheritDoc
              */
-            public function addFileByStream($realFileName, $stream, $meta = [])
+            public function addFileByStream($realFileName, $stream, $metadata = [])
             {
                 $collection = $this->collection;
 
@@ -69,7 +69,7 @@
                 $fsFiles = "fs.files";
                 $_collection = $this->mongo->$collection->$fsFiles;
 
-                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
+                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $metadata ] ]);
 
                 return $fileId;
             }
@@ -88,7 +88,7 @@
                 $stream = $bucket->openDownloadStream($fileId);
 
                 return [
-                    "meta" => $bucket->getFileDocumentForStream($stream),
+                    "fileInfo" => $bucket->getFileDocumentForStream($stream),
                     "contents" => stream_get_contents($stream),
                 ];
             }
@@ -96,7 +96,7 @@
             /**
              * @inheritDoc
              */
-            public function getFileByStream($uuid)
+            public function getFileStream($uuid)
             {
                 $collection = $this->collection;
 
@@ -107,7 +107,7 @@
                 $stream = $bucket->openDownloadStream($fileId);
 
                 return [
-                    "meta" => $bucket->getFileDocumentForStream($stream),
+                    "fileInfo" => $bucket->getFileDocumentForStream($stream),
                     "stream" => $stream,
                 ];
             }
@@ -115,7 +115,7 @@
             /**
              * @inheritDoc
              */
-            public function getContents($uuid)
+            public function getFileContents($uuid)
             {
                 $collection = $this->collection;
 
@@ -129,7 +129,7 @@
             /**
              * @inheritDoc
              */
-            public function getMeta($uuid)
+            public function getFileInfo($uuid)
             {
                 $collection = $this->collection;
 
@@ -143,7 +143,7 @@
             /**
              * @inheritDoc
              */
-            public function setMetadata($uuid, $meta)
+            public function setFileMetadata($uuid, $metadata)
             {
                 $fsFiles = "fs.files";
                 $collection = $this->collection;

@@ -21,10 +21,10 @@
              *
              * @param string $realFileName
              * @param string $fileContent
-             * @param string $meta
+             * @param array $metadata
              * @return string uuid
              */
-            abstract public function addFile($realFileName, $fileContent, $meta = []);
+            abstract public function addFile($realFileName, $fileContent, $metadata = []);
 
             /**
              * add file to storage
@@ -33,16 +33,16 @@
              *
              * @param string $realFileName
              * @param $stream
-             * @param array $meta
+             * @param array $metadata
              * @return string uuid
              */
-            abstract public function addFileByStream($realFileName, $stream, $meta = []);
+            abstract public function addFileByStream($realFileName, $stream, $metadata = []);
 
             /**
              * get file from storage
              *
              * @param $uuid
-             * @return object file, filename, metadata
+             * @return object file, filename, fileInfo
              */
             abstract public function getFile($uuid);
 
@@ -52,26 +52,26 @@
              * @param $uuid
              * @return object file, filename, metadata
              */
-            abstract public function getFileByStream($uuid);
+            abstract public function getFileStream($uuid);
 
             /**
              * @param $uuid
              * @return mixed
              */
-            abstract public function getContents($uuid);
+            abstract public function getFileContents($uuid);
 
             /**
              * @param $uuid
              * @return mixed
              */
-            abstract public function getMeta($uuid);
+            abstract public function getFileInfo($uuid);
 
             /**
              * @param $uuid
-             * @param $meta
+             * @param $metadata
              * @return mixed
              */
-            abstract public function setMetadata($uuid, $meta);
+            abstract public function setFileMetadata($uuid, $metadata);
 
             /**
              * delete file
