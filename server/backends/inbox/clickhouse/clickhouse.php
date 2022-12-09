@@ -166,6 +166,23 @@
             /**
              * @inheritDoc
              */
+            public function markMessageAsDelivered($subscriberId, $msgId = false)
+            {
+                if ($msgId) {
+                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                        "msg_id" => $msgId,
+                    ]);
+                } else {
+                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function unreaded($subscriberId)
             {
                 if (!checkInt($subscriberId)) {
