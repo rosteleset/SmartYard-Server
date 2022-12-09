@@ -42,7 +42,7 @@
              * get file from storage
              *
              * @param $uuid
-             * @return object file, filename, fileInfo
+             * @return object contents, fileInfo
              */
             abstract public function getFile($uuid);
 
@@ -50,7 +50,7 @@
              * get file from storage
              *
              * @param $uuid
-             * @return object file, filename, metadata
+             * @return object stream, fileInfo
              */
             abstract public function getFileStream($uuid);
 
