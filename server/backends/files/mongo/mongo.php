@@ -34,7 +34,7 @@
             /**
              * @inheritDoc
              */
-            public function addFile($realFileName, $fileContent, $metadata = [])
+            public function addFileByContent($realFileName, $fileContent, $metadata = [])
             {
                 $collection = $this->collection;
 
@@ -77,7 +77,7 @@
             /**
              * @inheritDoc
              */
-            public function getFile($uuid)
+            public function getFile($uuid, $stream = false)
             {
                 $collection = $this->collection;
 
@@ -87,29 +87,17 @@
 
                 $stream = $bucket->openDownloadStream($fileId);
 
-                return [
-                    "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                    "contents" => stream_get_contents($stream),
-                ];
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getFileStream($uuid)
-            {
-                $collection = $this->collection;
-
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
-
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
-
-                $stream = $bucket->openDownloadStream($fileId);
-
-                return [
-                    "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                    "stream" => $stream,
-                ];
+                if ($stream) {
+                    return [
+                        "fileInfo" => $bucket->getFileDocumentForStream($stream),
+                        "stream" => $stream,
+                    ];
+                } else {
+                    return [
+                        "fileInfo" => $bucket->getFileDocumentForStream($stream),
+                        "contents" => stream_get_contents($stream),
+                    ];
+                }
             }
 
             /**

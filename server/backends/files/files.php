@@ -24,7 +24,7 @@
              * @param array $metadata
              * @return string uuid
              */
-            abstract public function addFile($realFileName, $fileContent, $metadata = []);
+            abstract public function addFileByContent($realFileName, $fileContent, $metadata = []);
 
             /**
              * add file to storage
@@ -42,17 +42,10 @@
              * get file from storage
              *
              * @param $uuid
-             * @return object contents, fileInfo
+             * @param bool $stream
+             * @return object contents, fileInfo | stream, fileInfo
              */
-            abstract public function getFile($uuid);
-
-            /**
-             * get file from storage
-             *
-             * @param $uuid
-             * @return object stream, fileInfo
-             */
-            abstract public function getFileStream($uuid);
+            abstract public function getFile($uuid, $stream = false);
 
             /**
              * @param $uuid
