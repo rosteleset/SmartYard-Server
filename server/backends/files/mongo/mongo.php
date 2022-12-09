@@ -34,25 +34,22 @@
             /**
              * @inheritDoc
              */
-            public function addFileByContent($realFileName, $fileContent, $metadata = [])
+            public function addFileByContents($realFileName, $fileContents, $metadata = [])
             {
                 $collection = $this->collection;
 
                 $bucket = $this->mongo->$collection->selectGridFSBucket();
 
                 $stream = $bucket->openUploadStream($realFileName);
-                fwrite($stream, $fileContent);
+                fwrite($stream, $fileContents);
                 $id = $bucket->getFileIdForStream($stream);
                 fclose($stream);
 
-                $fileId = new \MongoDB\BSON\ObjectId($id);
+                if ($metadata) {
+                    $this->setFileMetadata($id, $metadata);
+                }
 
-                $fsFiles = "fs.files";
-                $_collection = $this->mongo->$collection->$fsFiles;
-
-                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $metadata ] ]);
-
-                return $id;
+                return (string)$id;
             }
 
             /**
@@ -64,14 +61,13 @@
 
                 $bucket = $this->mongo->$collection->selectGridFSBucket();
 
-                $fileId = $bucket->uploadFromStream($realFileName, $stream);
+                $id = $bucket->uploadFromStream($realFileName, $stream);
 
-                $fsFiles = "fs.files";
-                $_collection = $this->mongo->$collection->$fsFiles;
+                if ($metadata) {
+                    $this->setFileMetadata($id, $metadata);
+                }
 
-                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $metadata ] ]);
-
-                return $fileId;
+                return (string)$id;
             }
 
             /**
@@ -95,7 +91,7 @@
                 } else {
                     return [
                         "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                        "content" => stream_get_contents($stream),
+                        "contents" => stream_get_contents($stream),
                     ];
                 }
             }
@@ -103,12 +99,12 @@
             /**
              * @inheritDoc
              */
-            public function getFileContent($uuid, $stream = false)
+            public function getFileContents($uuid, $stream = false)
             {
                 if ($stream) {
                     return $this->getFile($uuid, true)["stream"];
                 } else {
-                    return $this->getFile($uuid, true)["content"];
+                    return $this->getFile($uuid, true)["contents"];
                 }
             }
 

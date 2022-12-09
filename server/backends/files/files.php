@@ -20,11 +20,11 @@
              * $meta["expire"] (optional) expire filetime (unix timestamp)
              *
              * @param string $realFileName
-             * @param string $fileContent
+             * @param string $fileContents
              * @param array $metadata
              * @return string uuid
              */
-            abstract public function addFileByContent($realFileName, $fileContent, $metadata = []);
+            abstract public function addFileByContents($realFileName, $fileContents, $metadata = []);
 
             /**
              * add file to storage
@@ -52,7 +52,7 @@
              * @param bool $stream
              * @return mixed
              */
-            abstract public function getFileContent($uuid, $stream = false);
+            abstract public function getFileContents($uuid, $stream = false);
 
             /**
              * @param $uuid
