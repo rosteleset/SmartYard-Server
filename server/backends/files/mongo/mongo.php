@@ -99,13 +99,17 @@
             /**
              * @inheritDoc
              */
-            public function getFileContents($uuid, $stream = false)
+            public function getFileContents($uuid)
             {
-                if ($stream) {
-                    return $this->getFile($uuid, true)["stream"];
-                } else {
-                    return $this->getFile($uuid, true)["contents"];
-                }
+                return $this->getFile($uuid, true)["contents"];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getFileStream($uuid)
+            {
+                return $this->getFile($uuid, true)["stream"];
             }
 
             /**
