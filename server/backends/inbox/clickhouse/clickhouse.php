@@ -123,6 +123,7 @@
                     "msg" => "msg",
                     "action" => "action",
                     "expire" => "expire",
+                    "delivered" => "delivered",
                     "readed" => "readed",
                     "code" => "code",
                 ]);
