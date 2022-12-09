@@ -445,10 +445,6 @@
                 );
             }
 
-            public function enable_public_code(bool $enabled = true) {
-                // не используется
-            }
-
             public function get_audio_levels(): array {
                 $audio_in = $this->api_call('System/Audio/AudioIn/channels/1');
                 $audio_out = $this->api_call('System/Audio/AudioOut/channels/1');
@@ -604,7 +600,7 @@
                 // не используется
             }
 
-            public function set_public_code(int $code) {
+            public function set_public_code(int $code = 0) {
                 // не используется
             }
 

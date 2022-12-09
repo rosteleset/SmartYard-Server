@@ -512,13 +512,6 @@
                 $this->set_params($second_stream);
             }
 
-            public function enable_public_code(bool $enabled = true) {
-                $params = $this->params_to_str([
-                    'Config.DoorSetting.PASSWORD.PublicKeyEnable' => (int) $enabled,
-                ]);
-                $this->set_params($params);
-            }
-
             public function get_audio_levels(): array {
                 $mic_vol = $this->get_param('Config.Settings.HANDFREE.MicVol');
                 $mic_vol_mp = $this->get_param('Config.Settings.HANDFREE.MicVolByMp');
@@ -705,8 +698,9 @@
                 $this->set_params($params);
             }
 
-            public function set_public_code(int $code) {
+            public function set_public_code(int $code = 0) {
                 $params = $this->params_to_str([
+                    'Config.DoorSetting.PASSWORD.PublicKeyEnable' => $code ? 1 : 0,
                     'Config.DoorSetting.PASSWORD.PublicKey' => $code,
 
                     // Отключение кода для реле B и C

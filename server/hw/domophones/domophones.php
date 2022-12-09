@@ -136,9 +136,6 @@
             /** Настроить видеопоток(-и) */
             abstract public function configure_video_encoding();
 
-            /** Включить/выключить публичный код доступа */
-            abstract public function enable_public_code(bool $enabled = true);
-
             /** Получить уровни аудио */
             abstract public function get_audio_levels(): array;
 
@@ -185,7 +182,7 @@
             abstract public function set_display_text(string $text = '');
 
             /** Задать публичный код доступа */
-            abstract public function set_public_code(int $code);
+            abstract public function set_public_code(int $code = 0);
 
             /** Задать DTMF-коды для открытия дверей */
             abstract public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3);
@@ -232,7 +229,7 @@
             ) {
                 $this->keep_doors_unlocked();
                 $this->set_unlock_time(5);
-                $this->enable_public_code(false);
+                $this->set_public_code();
                 $this->set_call_timeout(45);
                 $this->set_talk_timeout(90);
                 $this->set_language('RU');
