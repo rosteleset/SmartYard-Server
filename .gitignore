@@ -40,3 +40,4 @@ package.json
 package-lock.json
 !/server/syslog/package.json
 /client/SmartYard-web/
+/server/test.php

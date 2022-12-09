@@ -29,8 +29,7 @@ CREATE TABLE default.inbox
     `date` UInt32,
     `id` String,
     `msg` String,
-    `action` String,
-    `code` String
+    `action` String
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMM(FROM_UNIXTIME(date))

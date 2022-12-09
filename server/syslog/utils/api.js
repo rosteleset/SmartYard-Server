@@ -1,4 +1,3 @@
-//TODO: добавить в конфиг секции с URL FRS, syslog(internal.php). временно указаны заглушки из Webhook Tester https://docs.webhook.site/
 const axios = require("axios");
 const https = require("https");
 const {getTimestamp} = require("./formatDate.js")
@@ -62,18 +61,17 @@ class API {
         try {
             return await internalAPI.post("/actions/motionDetection",{date,ip,motionStart})
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", host, "|| motionDetection error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message);
         }
 
     }
 
     /**Обновление информации о завершении звонка.
-     * call_id присутствует только у BEWARD?!
-     * @param {Date} date
+     * @param {number} date
      * @param {string} ip
-     * @param {number|null} call_id
+     * @param {number|null} call_id call_id присутствует только у BEWARD?!
      * */
-    async callFinished({date,ip, call_id}) {
+    async callFinished({date,ip, call_id = null}) {
         try {
             return await internalAPI.post("/actions/callFinished", {date, ip, call_id});
         } catch (error) {
@@ -93,10 +91,6 @@ class API {
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message);
         }
-    }
-
-    // домофон в режиме калитки на несколько домов
-    async incomingDTMF() {
     }
 
     /** Логирование события открытия двери

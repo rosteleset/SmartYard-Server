@@ -123,6 +123,7 @@
                     "msg" => "msg",
                     "action" => "action",
                     "expire" => "expire",
+                    "delivered" => "delivered",
                     "readed" => "readed",
                     "code" => "code",
                 ]);
@@ -166,6 +167,23 @@
             /**
              * @inheritDoc
              */
+            public function markMessageAsDelivered($subscriberId, $msgId = false)
+            {
+                if ($msgId) {
+                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                        "msg_id" => $msgId,
+                    ]);
+                } else {
+                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and house_subscriber_id = :house_subscriber_id", [
+                        "house_subscriber_id" => $subscriberId,
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function unreaded($subscriberId)
             {
                 if (!checkInt($subscriberId)) {
@@ -176,12 +194,33 @@
                 return $this->db->get("select count(*) as unreaded from inbox where house_subscriber_id = :house_subscriber_id and readed = 0", [
                     "house_subscriber_id" => $subscriberId,
                 ],
-                [
-                    "unreaded" => "unreaded",
+                    [
+                        "unreaded" => "unreaded",
+                    ],
+                    [
+                        "fieldlify"
+                    ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function undelivered($subscriberId)
+            {
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidSubscriberId");
+                    return false;
+                }
+
+                return $this->db->get("select count(*) as undelivered from inbox where house_subscriber_id = :house_subscriber_id and delivered = 0", [
+                    "house_subscriber_id" => $subscriberId,
                 ],
-                [
-                    "fieldlify"
-                ]);
+                    [
+                        "undelivered" => "undelivered",
+                    ],
+                    [
+                        "fieldlify"
+                    ]);
             }
 
             /**

@@ -1,5 +1,6 @@
 <?php
     mb_internal_encoding("UTF-8");
+    require_once "utils/loader.php";
     require_once "backends/backend.php";
     require_once "utils/loader.php";
     require_once "utils/db_ext.php";
@@ -165,6 +166,27 @@
     echo json_encode($ret, JSON_UNESCAPED_UNICODE);
     exit;
 }
+
+
+    /**Тестовая обертка для работы с FRS API
+     * @param {string} url
+     * @param {object} payload
+     */
+    function apiExec ($url, $payload){
+        $curl = curl_init();
+        $data = json_encode($payload);
+        $options = [
+            CURLOPT_URL => $url,
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS=> $data,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HTTPHEADER => ['Accept: application/json', 'Content-Type: application/json']
+        ];
+        curl_setopt_array($curl,$options);
+        $response = curl_exec($curl);
+        curl_close($curl);
+        return $response;
+    }
 
     Access::check();
 

@@ -34,31 +34,46 @@
             /**
              * @inheritDoc
              */
-            public function addFile($realFileName, $fileContent, $meta = [])
+            public function addFileByContents($realFileName, $fileContents, $metadata = [])
             {
                 $collection = $this->collection;
 
                 $bucket = $this->mongo->$collection->selectGridFSBucket();
 
                 $stream = $bucket->openUploadStream($realFileName);
-                fwrite($stream, $fileContent);
+                fwrite($stream, $fileContents);
                 $id = $bucket->getFileIdForStream($stream);
                 fclose($stream);
 
-                $fileId = new \MongoDB\BSON\ObjectId($id);
+                if ($metadata) {
+                    $this->setFileMetadata($id, $metadata);
+                }
 
-                $fsFiles = "fs.files";
-                $_collection = $this->mongo->$collection->$fsFiles;
-
-                $_collection->updateOne([ "_id" => $fileId ], [ '$set' => [ "metadata" => $meta ] ]);
-
-                return $id;
+                return (string)$id;
             }
 
             /**
              * @inheritDoc
              */
-            public function getFile($uuid)
+            public function addFileByStream($realFileName, $stream, $metadata = [])
+            {
+                $collection = $this->collection;
+
+                $bucket = $this->mongo->$collection->selectGridFSBucket();
+
+                $id = $bucket->uploadFromStream($realFileName, $stream);
+
+                if ($metadata) {
+                    $this->setFileMetadata($id, $metadata);
+                }
+
+                return (string)$id;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getFile($uuid, $stream = false)
             {
                 $collection = $this->collection;
 
@@ -68,38 +83,78 @@
 
                 $stream = $bucket->openDownloadStream($fileId);
 
-                return [
-                    "meta" => $bucket->getFileDocumentForStream($stream),
-                    "contents" => stream_get_contents($stream),
-                ];
+                if ($stream) {
+                    return [
+                        "fileInfo" => $bucket->getFileDocumentForStream($stream),
+                        "stream" => $stream,
+                    ];
+                } else {
+                    return [
+                        "fileInfo" => $bucket->getFileDocumentForStream($stream),
+                        "contents" => stream_get_contents($stream),
+                    ];
+                }
             }
 
             /**
              * @inheritDoc
              */
-            public function getContents($uuid)
+            public function getFileContents($uuid)
             {
-                $collection = $this->collection;
-
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
-
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
-
-                return stream_get_contents($bucket->openDownloadStream($fileId));
+                return $this->getFile($uuid)["contents"];
             }
 
             /**
              * @inheritDoc
              */
-            public function getMeta($uuid)
+            public function getFileStream($uuid)
             {
+                return $this->getFile($uuid, true)["stream"];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getFileInfo($uuid)
+            {
+                return $this->getFile($uuid, true)["fileInfo"];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function setFileMetadata($uuid, $metadata)
+            {
+                $fsFiles = "fs.files";
                 $collection = $this->collection;
 
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
+                return $this->mongo->$collection->$fsFiles->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $metadata ]]);
+            }
 
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
+            /**
+             * @inheritDoc
+             */
+            public function getFileMetadata($uuid)
+            {
+                return $this->getFileInfo($uuid)->metadata;
+            }
 
-                return $bucket->getFileDocumentForStream($bucket->openDownloadStream($fileId));
+            /**
+             * @inheritDoc
+             */
+            public function searchFilesBy($metadataField, $fieldValue)
+            {
+                $fsFiles = "fs.files";
+                $collection = $this->collection;
+
+                $cursor = $this->mongo->$collection->$fsFiles->find([ "metadata.$metadataField" => [ '$eq' => $fieldValue ] ]);
+
+                $files = [];
+                foreach ($cursor as $document) {
+                    $files[] = $document;
+                }
+
+                return $files;
             }
 
             /**
@@ -114,6 +169,25 @@
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
                 $bucket->delete($fileId);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function toGUIDv4($uuid)
+            {
+                $uuid = "10001000" . $uuid;
+
+                $hyphen = chr(45);
+                return substr($uuid,  0,  8) . $hyphen . substr($uuid,  8,  4) . $hyphen . substr($uuid, 12,  4) . $hyphen . substr($uuid, 16,  4) . $hyphen . substr($uuid, 20, 12);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function fromGUIDv4($guidv4)
+            {
+                return str_replace("-", "", substr($guidv4, 8));
             }
 
             /**
@@ -134,6 +208,5 @@
 
                 return true;
             }
-
         }
     }

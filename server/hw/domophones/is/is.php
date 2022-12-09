@@ -260,7 +260,11 @@
             }
 
             public function configure_syslog(string $server, int $port) {
-                // TODO: Implement configure_syslog() method.
+                // TODO: API!
+                $template = file_get_contents(__DIR__ . '/templates/rsyslogd.conf');
+                $template .= "*.*;cron.none     @$server:$port;ProxyForwardFormat";
+                $host = parse_url($this->url)['host'];
+                exec(__DIR__ . "/scripts/syslog $host $this->user $this->pass '$template'");
             }
 
             public function configure_user_account(string $password) {

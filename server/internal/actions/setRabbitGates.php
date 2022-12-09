@@ -7,7 +7,6 @@
         "apartment" => $apartment
     ] = $postdata;
 
-
     $query = 'UPDATE houses_flats SET last_opened = :last_opened 
         WHERE  flat= :flat AND white_rabbit > 0 AND address_house_id = (
         SELECT address_house_id from houses_houses_entrances 

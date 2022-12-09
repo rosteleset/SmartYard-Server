@@ -28,7 +28,7 @@
         case $events['OPEN_BY_KEY']:
         //Прочие действия предпологаемые для соьытия "открытие двери по коду"
         case $events['OPEN_BY_CODE']:
-            $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $event, $door,$detail);
+            $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $event, $door, $detail);
             response(201, ["id" => $plogDoorOpen]);
             break;
 
@@ -38,13 +38,23 @@
             response(200);
             break;
         case $events['OPEN_BY_BUTTON']:
-            /*TODO: открытие входной двери или калитки из нутри.
-             * Отправляем событие FRS сереру для игнорирования детекции движения в момент когда человек
-             * будет выходить из двери или калитки.
-             * 'https://frs-server.dev/doorIsOpen' payload:{stream_id}
-             * "Alt door opened by button press" - проверяем оборудована ли дополнительная дверь устройством детекции движения (камера)
-             * "104:Main door opened by button press."
-            */
+            // "Host-->FRS | Уведомление об открытии двери"
+            [0 => [
+                "camera_id" => $streamId,
+                "frs" => $frsUrl
+            ]] = $db->get('SELECT frs, camera_id FROM cameras 
+                        WHERE camera_id = (
+                        SELECT camera_id FROM houses_domophones 
+                        LEFT JOIN houses_entrances USING (house_domophone_id)
+                        WHERE ip = :ip AND domophone_output = :door)',
+                ["ip" => $ip, "door" => $door],
+                []);
+
+            if (isSet($frsUrl)){
+                $apiResponse = apiExec($frsUrl . "/api/doorIsOpen", ["streamId" => strval($streamId)]);
+                response(201,$apiResponse);
+            }
+
             response(200);
             break;
     }
