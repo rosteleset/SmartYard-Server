@@ -49,9 +49,10 @@
 
             /**
              * @param $uuid
+             * @param bool $stream
              * @return mixed
              */
-            abstract public function getFileContents($uuid);
+            abstract public function getFileContent($uuid, $stream = false);
 
             /**
              * @param $uuid

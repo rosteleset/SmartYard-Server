@@ -95,7 +95,7 @@
                 } else {
                     return [
                         "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                        "contents" => stream_get_contents($stream),
+                        "content" => stream_get_contents($stream),
                     ];
                 }
             }
@@ -103,15 +103,13 @@
             /**
              * @inheritDoc
              */
-            public function getFileContents($uuid)
+            public function getFileContent($uuid, $stream = false)
             {
-                $collection = $this->collection;
-
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
-
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
-
-                return stream_get_contents($bucket->openDownloadStream($fileId));
+                if ($stream) {
+                    return $this->getFile($uuid, true)["stream"];
+                } else {
+                    return $this->getFile($uuid, true)["content"];
+                }
             }
 
             /**
@@ -119,13 +117,7 @@
              */
             public function getFileInfo($uuid)
             {
-                $collection = $this->collection;
-
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
-
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
-
-                return $bucket->getFileDocumentForStream($bucket->openDownloadStream($fileId));
+                return $this->getFile($uuid, true)["fileInfo"];
             }
 
             /**
