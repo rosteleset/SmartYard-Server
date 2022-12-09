@@ -193,12 +193,33 @@
                 return $this->db->get("select count(*) as unreaded from inbox where house_subscriber_id = :house_subscriber_id and readed = 0", [
                     "house_subscriber_id" => $subscriberId,
                 ],
-                [
-                    "unreaded" => "unreaded",
+                    [
+                        "unreaded" => "unreaded",
+                    ],
+                    [
+                        "fieldlify"
+                    ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function undelivered($subscriberId)
+            {
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidSubscriberId");
+                    return false;
+                }
+
+                return $this->db->get("select count(*) as undelivered from inbox where house_subscriber_id = :house_subscriber_id and delivered = 0", [
+                    "house_subscriber_id" => $subscriberId,
                 ],
-                [
-                    "fieldlify"
-                ]);
+                    [
+                        "undelivered" => "undelivered",
+                    ],
+                    [
+                        "fieldlify"
+                    ]);
             }
 
             /**

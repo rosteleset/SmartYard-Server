@@ -56,5 +56,11 @@
              * @return mixed
              */
             abstract public function unreaded($subscriberId);
+
+            /**
+             * @param $subscriberId
+             * @return mixed
+             */
+            abstract public function undelivered($subscriberId);
         }
     }
