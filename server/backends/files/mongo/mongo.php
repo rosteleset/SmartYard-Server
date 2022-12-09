@@ -148,7 +148,7 @@
                 $fsFiles = "fs.files";
                 $collection = $this->collection;
 
-                return $this->mongo->$collection->$fsFiles->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $meta ]]);
+                return $this->mongo->$collection->$fsFiles->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $metadata ]]);
             }
 
             /**
