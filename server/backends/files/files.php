@@ -71,7 +71,7 @@
              * @param $meta
              * @return mixed
              */
-            abstract public function setMeta($uuid, $meta);
+            abstract public function setMetadata($uuid, $meta);
 
             /**
              * delete file

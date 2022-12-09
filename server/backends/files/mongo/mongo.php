@@ -143,12 +143,12 @@
             /**
              * @inheritDoc
              */
-            public function setMeta($uuid, $meta)
+            public function setMetadata($uuid, $meta)
             {
                 $fsFiles = "fs.files";
                 $collection = $this->collection;
 
-                $this->mongo->$collection->$fsFiles->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $meta ]]);
+                return $this->mongo->$collection->$fsFiles->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $meta ]]);
             }
 
             /**
@@ -170,9 +170,6 @@
              */
             public function uuidToGUIDv4($uuid)
             {
-                // 6390 05ed 5bc9 6a70 6b08 3ec1
-                // 5469 6742 4b44 47fb b0e1 eb86 cf20 5128
-
                 $uuid = "10001000" . $uuid;
 
                 $hyphen = chr(45);
