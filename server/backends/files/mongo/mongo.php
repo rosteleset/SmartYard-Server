@@ -168,7 +168,7 @@
             /**
              * @inheritDoc
              */
-            public function uuidToGUIDv4($uuid)
+            public function ToGUIDv4($uuid)
             {
                 $uuid = "10001000" . $uuid;
 
@@ -179,7 +179,7 @@
             /**
              * @inheritDoc
              */
-            public function GUIDv4ToUuid($guidv4)
+            public function fromGUIDv4($guidv4)
             {
                 return str_replace("-", "", substr($guidv4, 8));
             }

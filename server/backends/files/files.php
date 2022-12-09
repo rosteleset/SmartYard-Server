@@ -85,12 +85,12 @@
              * @param $uuid
              * @return mixed
              */
-            abstract public function uuidToGUIDv4($uuid);
+            abstract public function toGUIDv4($uuid);
 
             /**
              * @param $guidv4
              * @return mixed
              */
-            abstract public function GUIDv4ToUuid($guidv4);
+            abstract public function fromGUIDv4($guidv4);
         }
     }
