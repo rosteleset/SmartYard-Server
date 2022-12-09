@@ -174,7 +174,7 @@
             /**
              * @inheritDoc
              */
-            public function ToGUIDv4($uuid)
+            public function toGUIDv4($uuid)
             {
                 $uuid = "10001000" . $uuid;
 
