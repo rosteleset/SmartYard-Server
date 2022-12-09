@@ -142,6 +142,14 @@
             /**
              * @inheritDoc
              */
+            public function getFileMetadata($uuid)
+            {
+                return $this->getFileInfo($uuid)->metadata;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function deleteFile($uuid)
             {
                 $collection = $this->collection;

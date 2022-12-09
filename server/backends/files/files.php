@@ -67,6 +67,12 @@
             abstract public function setFileMetadata($uuid, $metadata);
 
             /**
+             * @param $uuid
+             * @return mixed
+             */
+            abstract public function getFileMetadata($uuid);
+
+            /**
              * delete file
              *
              * @param $uuid
