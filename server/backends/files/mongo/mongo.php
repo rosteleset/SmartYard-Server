@@ -143,6 +143,17 @@
             /**
              * @inheritDoc
              */
+            public function setMeta($uuid, $meta)
+            {
+                $fsFiles = "fs.files";
+                $collection = $this->collection;
+
+                $this->mongo->$collection->$fsFiles->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $meta ]]);
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function deleteFile($uuid)
             {
                 $collection = $this->collection;

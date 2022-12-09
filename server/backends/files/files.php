@@ -67,6 +67,13 @@
             abstract public function getMeta($uuid);
 
             /**
+             * @param $uuid
+             * @param $meta
+             * @return mixed
+             */
+            abstract public function setMeta($uuid, $meta);
+
+            /**
              * delete file
              *
              * @param $uuid
