@@ -101,7 +101,7 @@
              */
             public function getFileContents($uuid)
             {
-                return $this->getFile($uuid, true)["contents"];
+                return $this->getFile($uuid)["contents"];
             }
 
             /**
@@ -145,6 +145,7 @@
             public function searchFilesBy($metadataField, $fieldValue)
             {
                 $collection = $this->collection;
+
                 $fsFiles = "fs.files";
 
                 $cursor = $this->mongo->$collection->$fsFiles->find([ "metadata.$metadataField" => [ '$eq' => $fieldValue ] ]);
@@ -152,7 +153,7 @@
                 $files = [];
 
                 foreach ($cursor as $document) {
-                    $files[] = (string)$document->_id;
+                    $files[] = $document;
                 }
 
                 return $files;
