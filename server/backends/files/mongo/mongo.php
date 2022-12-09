@@ -144,14 +144,12 @@
              */
             public function searchFilesBy($metadataField, $fieldValue)
             {
-                $collection = $this->collection;
-
                 $fsFiles = "fs.files";
+                $collection = $this->collection;
 
                 $cursor = $this->mongo->$collection->$fsFiles->find([ "metadata.$metadataField" => [ '$eq' => $fieldValue ] ]);
 
                 $files = [];
-
                 foreach ($cursor as $document) {
                     $files[] = $document;
                 }
