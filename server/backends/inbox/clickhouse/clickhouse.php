@@ -64,9 +64,11 @@
                             "sound" => "default",
                             "action" => $action,
                         ]);
-                        if ($this->db->modify("update inbox set code = :code where msg_id = :msg_id", [
+                        $result = explode(":", $result);
+                        if ($this->db->modify("update inbox set code = :code, push_message_id = :push_message_id where msg_id = :msg_id", [
                             "msg_id" => $msgId,
-                            "code" => $result,
+                            "code" => $result[0],
+                            "push_message_id" => $result[0]?:"unknown",
                         ])) {
                             return $msgId;
                         } else {
@@ -123,6 +125,7 @@
                     "msg" => "msg",
                     "action" => "action",
                     "expire" => "expire",
+                    "push_message_id" => "pushMessageId",
                     "delivered" => "delivered",
                     "readed" => "readed",
                     "code" => "code",
