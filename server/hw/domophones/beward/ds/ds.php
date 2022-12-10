@@ -275,10 +275,6 @@
                 sleep($this->reboot_time);
             }
 
-            public function enable_public_code(bool $enabled = true) {
-                // не используется
-            }
-
             public function get_audio_levels(): array {
                 $params = $this->parse_param_value($this->api_call('cgi-bin/audio_cgi', [ 'action' => 'get' ]));
 
@@ -364,7 +360,7 @@
                 // не используется
             }
 
-            public function set_public_code(int $code) {
+            public function set_public_code(int $code = 0) {
                 // не используется
             }
 

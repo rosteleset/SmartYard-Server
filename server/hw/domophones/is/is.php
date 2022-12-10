@@ -275,10 +275,6 @@
                 // не используется
             }
 
-            public function enable_public_code(bool $enabled = true) {
-                // TODO: Implement enable_public_code() method.
-            }
-
             public function get_audio_levels(): array {
                 return array_values($this->api_call('/levels')['volumes']);
             }
@@ -415,8 +411,12 @@
                 ]);
             }
 
-            public function set_public_code(int $code) {
-                // TODO: Implement set_public_code() method.
+            public function set_public_code(int $code = 0) {
+                if ($code) {
+                    $this->add_open_code($code, 0);
+                } else {
+                    $this->delete_open_code(0);
+                }
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
