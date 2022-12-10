@@ -72,7 +72,7 @@
                         ])) {
                             return $msgId;
                         } else {
-                            setLastError("errorSendingPush: " . $result);
+                            setLastError("errorSendingPush: " . $result[1]?$result[1]:$result[0]);
                             return false;
                         }
                     } else {
