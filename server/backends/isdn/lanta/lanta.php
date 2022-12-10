@@ -18,7 +18,7 @@
              */
             function flashCall($id)
             {
-                return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=flashCall&mobile=$id&secret=" . $this->config["backends"]["isdn"]["flash_call_secret"]);
+                return trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=flashCall&mobile=$id&secret=" . $this->config["backends"]["isdn"]["flash_call_secret"]));
             }
 
             /**
@@ -26,7 +26,7 @@
              */
             function getCode($id)
             {
-                return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkFlash&mobile=$id&secret=" . $this->config["backends"]["isdn"]["flash_call_secret"]);
+                return trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkFlash&mobile=$id&secret=" . $this->config["backends"]["isdn"]["flash_call_secret"]));
             }
 
             /**
@@ -34,7 +34,7 @@
              */
             function sendCode($id)
             {
-                return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=sendCode&mobile=$id&secret=" . $this->config["backends"]["isdn"]["sms_secret"]);
+                return trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=sendCode&mobile=$id&secret=" . $this->config["backends"]["isdn"]["sms_secret"]));
             }
 
             /**
@@ -52,7 +52,7 @@
              */
             function checkIncoming($id)
             {
-                return file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkIncoming&mobile=$id&secret=" . $this->config["backends"]["isdn"]["common_secret"]);
+                return trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkIncoming&mobile=$id&secret=" . $this->config["backends"]["isdn"]["common_secret"]));
             }
 
             /**
