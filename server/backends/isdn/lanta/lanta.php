@@ -70,9 +70,9 @@
                     $query = substr($query, 0, -1);
                 }
 
-                $result = file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["common_secret"] . "&" . $query);
+                $result = trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["common_secret"] . "&" . $query));
 
-                if (strtolower(trim($result).split(":", 0)) !== "ok") {
+                if (strtolower(explode(":", $result)[0]) !== "ok") {
                     loadBackend("households")->dismissToken($push["token"]);
                 }
 
