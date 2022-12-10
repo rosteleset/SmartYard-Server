@@ -33,7 +33,7 @@
                 }
 
                 if ($subscriber) {
-                    $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, null)", [
+                    $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, delivered, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
                         "id" => $subscriber["id"],
                         "house_subscriber_id" => $subscriberId,
                         "date" => time(),
