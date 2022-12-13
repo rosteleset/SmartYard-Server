@@ -29,7 +29,7 @@ class API {
     /** Отправка syslog messages в clickhouse.
      * @param {number} date
      * @param {string} ip
-     * @param {"beward" | "qtech"} unit
+     * @param {"beward" | "qtech" | "is"} unit
      * @param {string} msg
      */
     async sendLog({date, ip, unit, msg}) {
