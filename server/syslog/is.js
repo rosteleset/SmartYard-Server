@@ -7,7 +7,7 @@ const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
 const { port } = urlParser(is);
 
-let gate_rabbits = [];
+const gate_rabbits = [];
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
     const now = parseInt(getTimestamp(date));
@@ -68,6 +68,16 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
     if (is_msg.indexOf("Opening door by code") >= 0) {
         const code = parseInt(is_msg.split("code")[1].split(",")[0]);
         await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
+    }
+
+    // Открытие двери кнопкой
+    if (is_msg.indexOf("Main door button press") >= 0) {
+        await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
+    }
+
+    // Все вызовы завершены (только отвеченные звонки)
+    if (is_msg.indexOf("All calls are done for apartment") >= 0) {
+        await API.callFinished({ date: now, ip: host });
     }
 });
 
