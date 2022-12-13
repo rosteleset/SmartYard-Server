@@ -27,9 +27,9 @@ const internalAPI = axios.create({
 class API {
 
     /** Отправка syslog messages в clickhouse.
-     * @param {string} date
+     * @param {number} date
      * @param {string} ip
-     * @param {"beward" | "qtech"} unit
+     * @param {"beward" | "qtech" | "is"} unit
      * @param {string} msg
      */
     async sendLog({date, ip, unit, msg}) {
@@ -53,13 +53,13 @@ class API {
     }
 
     /** Сообщаем InternalAPI  о ссобыти "детектекция движения"
-     * @param {integer} date timestamp unixtime.
+     * @param {number} date timestamp unixtime.
      * @param {string} ip ipAddress
      * @param {boolean} motionStart start/stop "детектекция движения"
      */
     async motionDetection({date, ip, motionStart}) {
         try {
-            return await internalAPI.post("/actions/motionDetection",{date,ip,motionStart})
+            return await internalAPI.post("/actions/motionDetection",{ date, ip, motionStart })
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message);
         }
@@ -94,10 +94,10 @@ class API {
     }
 
     /** Логирование события открытия двери
-     * @param {string} date дата события;
+     * @param {number} date дата события;
      * @param {string} ip ip address вызывной панели;
      * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2. По-умолчанию 0 (главная дверь с вызывной панелью)
-     * @param {string} detail код или sn ключа квартиры.
+     * @param {string|number|null} detail код или sn ключа квартиры.
      * @param {"rfid"|"code"|"dtmf"|"button"} by тип события отерыьтия двери
      */
     async openDoor({date, ip, door=0, detail, by}) {
