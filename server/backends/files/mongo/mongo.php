@@ -81,17 +81,17 @@
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
-                $stream = $bucket->openDownloadStream($fileId);
+                $dstream = $bucket->openDownloadStream($fileId);
 
                 if ($stream) {
                     return [
-                        "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                        "stream" => $stream,
+                        "fileInfo" => $bucket->getFileDocumentForStream($dstream),
+                        "stream" => $dstream,
                     ];
                 } else {
                     return [
-                        "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                        "contents" => stream_get_contents($stream),
+                        "fileInfo" => $bucket->getFileDocumentForStream($dstream),
+                        "contents" => stream_get_contents($dstream),
                     ];
                 }
             }
