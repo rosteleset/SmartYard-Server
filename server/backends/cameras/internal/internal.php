@@ -185,7 +185,7 @@ namespace backends\cameras
          */
         public function addDownloadRecord($cameraId, $subscriberId, $start, $finish)
         {
-            $dvr_files_ttl = @$this->config["backends"]["cameras"]["dvr_files_ttl"] ?: 259200;
+            $dvr_files_ttl = @$this->config["backends"]["cameras"]["dvr_files_ttl"] ?: 259200; // 3 days
 
             if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish)) {
                 return false;
@@ -298,11 +298,41 @@ namespace backends\cameras
                         $duration = (int)$task['finish'] - (int)$task['start'];
                         $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
                     }
+                    
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
+
                     echo "Record download task with id = $recordId was started\n";
                     echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . ".mp4\n";
-                    echo "curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'] . "\n";
-                    exec("curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'], $out, $code);
+                    // echo "curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'] . "\n";
+                    // exec("curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'], $out, $code);
+                    
+                    $fh = fopen($dvr_files_path . $task['filename'], 'w');
+                    $ch = curl_init('$request_url');
+                    curl_setopt($ch, CURLOPT_FILE, $fh);
+                    curl_exec($ch);
+                    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+                    fclose($fh);
+                    echo "$code\n\n";
+                    /*
+                    $files = loadBackend("files");
+
+                    $file = fopen($dvr_files_path . $task['filename'], "r");
+
+                    $fileId = $files->addFileByStream($task['filename'], $file, []);
+
+                    fclose($file);
+
+                    $stream = $files->getFileByStream($fileId)["stream"];
+
+                    while (!feof($stream)) {
+                        echo fread($stream, 1024);
+                    }
+
+                    echo "\n\n";
+                    */
+                    return $code;
+
                     if ($code === 0) {
                         $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                         echo "Record download task with id = $recordId was successfully finished!\n";
