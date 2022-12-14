@@ -178,11 +178,17 @@
         "beward": [
             "syslog.udp:127.0.0.1:45450"
         ],
-        "qtech": [
+        "beward_ds": [
             "syslog.udp:127.0.0.1:45451"
         ],
-        "hikvision": [
+        "qtech": [
             "syslog.udp:127.0.0.1:45452"
+        ],
+        "is": [
+            "syslog.udp:127.0.0.1:45453"
+        ],
+        "hikvision": [
+            "syslog.udp:127.0.0.1:45454"
         ]
     },
 

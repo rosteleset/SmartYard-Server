@@ -3,6 +3,7 @@
     "vendor": "IS",
     "model": "ISCOM X1",
     "class": "iscomx1",
+    "syslog": "is",
     "outputs": 1,
     "camera": "is",
     "cmses": [

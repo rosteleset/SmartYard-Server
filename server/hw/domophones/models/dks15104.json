@@ -3,6 +3,7 @@
     "vendor": "BEWARD",
     "model": "DKS15104",
     "class": "dks15104",
+    "syslog": "beward",
     "outputs": 2,
     "camera": "beward",
     "cmses": [

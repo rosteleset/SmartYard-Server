@@ -3,6 +3,7 @@
     "vendor": "HIKVISION",
     "model": "DS-KV6113",
     "class": "kv6113",
+    "syslog": "hikvision",
     "outputs": 1,
     "camera": "hikvision",
     "cmses": [
