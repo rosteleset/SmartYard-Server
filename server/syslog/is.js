@@ -7,7 +7,9 @@ const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
 const { port } = urlParser(is);
 
-const gate_rabbits = [];
+const gateRabbits = [];
+
+let lastCallsDone = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
     const now = parseInt(getTimestamp(date));
@@ -43,7 +45,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
         const house = is_msg.split("to")[1].split("house")[0].trim();
         const flat = is_msg.split("house")[1].split("flat")[0].trim();
 
-        gate_rabbits[host] = {
+        gateRabbits[host] = {
             ip: host,
             prefix: house,
             apartment: flat,
@@ -52,8 +54,8 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
     // Открытие двери DTMF кодом
     if (is_msg.indexOf("Open main door by DTMF") >= 0) {
-        if (gate_rabbits[host]) {
-            const {ip, prefix, apartment} = gate_rabbits[host];
+        if (gateRabbits[host]) {
+            const {ip, prefix, apartment} = gateRabbits[host];
             await API.setRabbitGates({ date: now, ip, prefix, apartment });
         }
     }
@@ -75,9 +77,12 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
         await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
     }
 
-    // Все вызовы завершены (только отвеченные звонки)
-    if (is_msg.indexOf("All calls are done for apartment") >= 0) {
-        await API.callFinished({ date: now, ip: host });
+    // Все вызовы завершены
+    if (is_msg.indexOf("All calls are done for apartment") >= 0 || is_msg.indexOf("UART_EVENT_BYE") >= 0) {
+        if (!lastCallsDone[host] || now - lastCallsDone[host] > 1) {
+            lastCallsDone[host] = now
+            await API.callFinished({ date: now, ip: host });
+        }
     }
 });
 
