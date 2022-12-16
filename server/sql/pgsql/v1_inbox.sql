@@ -9,6 +9,7 @@ CREATE TABLE inbox
     msg character varying not null,                                                                                     -- message
     action character varying,                                                                                           -- application action (money, new_address, ...)
     expire integer,                                                                                                     -- when need to delete (time()) unsended message
+    push_message_id text,
     delivered integer,                                                                                                  -- delivered
     readed integer,                                                                                                     -- readed
     code character varying                                                                                              -- result code from google, smssending, etc...

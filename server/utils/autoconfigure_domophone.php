@@ -30,7 +30,7 @@
         $ntp_server = $ntp['host'];
         $ntp_port = $ntp['port'] ?? 123;
 
-        $syslogs = $config['syslog_servers'][strtolower($domophone['json']['vendor'])];
+        $syslogs = $config['syslog_servers'][$domophone['json']['syslog']];
         $syslog = parseURI($syslogs[array_rand($syslogs)]);
         $syslog_server = $syslog['host'];
         $syslog_port = $syslog['port'] ?? 514;

@@ -3,6 +3,7 @@
     "vendor": "BEWARD",
     "model": "DS06A(P)",
     "class": "ds06ap",
+    "syslog": "beward_ds",
     "outputs": 3,
     "camera": "beward",
     "cmses": [

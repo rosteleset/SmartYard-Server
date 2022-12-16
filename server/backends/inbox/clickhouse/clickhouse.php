@@ -33,7 +33,7 @@
                 }
 
                 if ($subscriber) {
-                    $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, null)", [
+                    $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, delivered, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
                         "id" => $subscriber["id"],
                         "house_subscriber_id" => $subscriberId,
                         "date" => time(),
@@ -64,13 +64,15 @@
                             "sound" => "default",
                             "action" => $action,
                         ]);
-                        if ($this->db->modify("update inbox set code = :code where msg_id = :msg_id", [
+                        $result = explode(":", $result);
+                        if ($this->db->modify("update inbox set code = :code, push_message_id = :push_message_id where msg_id = :msg_id", [
                             "msg_id" => $msgId,
-                            "code" => $result,
+                            "code" => $result[0],
+                            "push_message_id" => $result[0]?:"unknown",
                         ])) {
                             return $msgId;
                         } else {
-                            setLastError("errorSendingPush: " . $result);
+                            setLastError("errorSendingPush: " . $result[1]?$result[1]:$result[0]);
                             return false;
                         }
                     } else {
@@ -123,6 +125,7 @@
                     "msg" => "msg",
                     "action" => "action",
                     "expire" => "expire",
+                    "push_message_id" => "pushMessageId",
                     "delivered" => "delivered",
                     "readed" => "readed",
                     "code" => "code",

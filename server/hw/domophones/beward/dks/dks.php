@@ -415,10 +415,6 @@
                 sleep(60);
             }
 
-            public function enable_public_code(bool $enabled = true) {
-                $this->set_intercom('DoorCodeActive', $enabled ? 'on' : 'off');
-            }
-
             public function get_audio_levels(): array {
                 $params = $this->parse_param_value($this->api_call('cgi-bin/audio_cgi', [ 'action' => 'get' ]));
                 return [
@@ -607,8 +603,13 @@
                 ]);
             }
 
-            public function set_public_code(int $code) {
-                $this->set_intercom('DoorCode', $code);
+            public function set_public_code(int $code = 0) {
+                if ($code) {
+                    $this->set_intercom('DoorCode', $code);
+                    $this->set_intercom('DoorCodeActive', 'on');
+                } else {
+                    $this->set_intercom('DoorCodeActive', 'off');
+                }
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {

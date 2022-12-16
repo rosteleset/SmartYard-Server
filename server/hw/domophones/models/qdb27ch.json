@@ -3,6 +3,7 @@
     "vendor": "QTECH",
     "model": "QDB-27C-H",
     "class": "qdb27ch",
+    "syslog": "qtech",
     "outputs": 3,
     "camera": "qtech",
     "cmses": [
