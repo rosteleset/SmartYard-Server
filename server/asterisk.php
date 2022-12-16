@@ -66,7 +66,8 @@
         // domophone panel
         if ($extension[0] === "1" && strlen($extension) === 6) {
             $domophones = loadBackend("households");
-            $panel = $domophones->getDomophone((int)substr($extension, 1));
+            $domophone_id = (int)substr($extension, 1);
+            $panel = $domophones->getDomophone($domophone_id);
 
             switch ($section) {
                 case "aors":
@@ -93,12 +94,14 @@
 
                 case "endpoints":
                     if ($panel && $panel["credentials"]) {
+                        $entrances = @$domophones->getEntrances('domophoneId', [ 'domophoneId' => $domophone_id, 'output' => '0' ]);
+                        $panel_text = @$entrances[0]['callerId'] ?: "not found";
                         return [
                             "id" => $extension,
                             "auth" => $extension,
                             "outbound_auth" => $extension,
                             "aors" => $extension,
-                            "callerid" => $panel["callerId"],
+                            "callerid" => $panel_text,
                             "context" => "default",
                             "disallow" => "all",
                             "allow" => "alaw,h264",
