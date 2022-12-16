@@ -16,7 +16,7 @@ redis = redis.connect({
     port = redis_server_port
 })
 
-if redis_server_auth and redis_server.auth ~= nil then
+if redis_server_auth and redis_server_auth ~= nil then
     redis:auth(redis_server_auth)
 end
 
