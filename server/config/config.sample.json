@@ -83,10 +83,7 @@
         },
 
         "cameras": {
-            "backend": "internal",
-            "dvr_files_path": "/path/to/dvr/files/on/your/local/filesystem ",
-            "dvr_files_location_prefix": "https://your.server.hostname/path/to/temp/dvr/files/",
-            "dvr_files_ttl": 259200
+            "backend": "internal"
         },
 
         "isdn": {
@@ -127,6 +124,27 @@
 
         "configs": {
             "backend": "json"
+        },
+
+        "dvr": {
+            "backend": "internal",
+            "servers": [
+                {
+                    "title": "Local server",
+                    "type": "nimble",
+                    "url": "https://video.server.hostname:8443",
+                    "management_ip": "127.0.0.1",
+                    "management_port": "8086",
+                    "management_token": "<!-- management token -->"
+                }
+            ]
+        },
+
+        "dvr_exports": {
+            "backend": "filesystem",
+            "dvr_files_path": "/path/to/dvr/files/on/your/local/filesystem",
+            "dvr_files_location_prefix": "https://your.server.hostname/path/to/temp/dvr/files/",
+            "dvr_files_ttl": 259200
         }
     },
 
@@ -145,17 +163,6 @@
             "stun_server": "stun:127.0.0.1:3478",
             "incoming_title": "Входящий вызов",
             "call_failed_title": "Пропущенный вызов"
-        }
-    ],
-
-    "dvr_servers": [
-        {
-            "title": "Local server",
-            "type": "nimble",
-	        "url": "https://video.server.hostname:8443",
-            "management_ip": "127.0.0.1",
-	        "management_port": "8086",
-            "management_token": "<!-- management token -->"
         }
     ],
 
