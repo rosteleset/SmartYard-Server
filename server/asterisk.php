@@ -98,7 +98,7 @@
                             "auth" => $extension,
                             "outbound_auth" => $extension,
                             "aors" => $extension,
-                            "callerid" => $panel["callerId"],
+                            "callerid" => $extension,
                             "context" => "default",
                             "disallow" => "all",
                             "allow" => "alaw,h264",
