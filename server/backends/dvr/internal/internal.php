@@ -8,6 +8,21 @@
     {
         class internal extends dvr
         {
-//
+
+            /**
+             * @inheritDoc
+             */
+            public function serverType($url)
+            {
+                // TODO: Implement serverType() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getDVRServers()
+            {
+                // TODO: Implement getDVRServers() method.
+            }
         }
     }

@@ -14,6 +14,16 @@
          */
         abstract class dvr extends backend
         {
-//
+
+            /**
+             * @param $url
+             * @return mixed
+             */
+            abstract public function serverType($url);
+
+            /**
+             * @return mixed
+             */
+            abstract public function getDVRServers();
         }
     }
