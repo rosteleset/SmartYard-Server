@@ -53,12 +53,6 @@ function dm(action, request)
     return result
 end
 
--- print("****************************")
--- print(dm("get", {
---     data = false,
--- }).a)
--- print("****************************")
-
 function log_debug(v)
     local m = ""
 
