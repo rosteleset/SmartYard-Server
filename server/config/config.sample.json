@@ -153,6 +153,7 @@
                 {
                     "title": "First server",
                     "type": "asterisk",
+                    "trunk": "first",
                     "ip": "127.0.0.1",
                     "sip_tcp_port": 5060,
                     "sip_udp_port": 5060,
