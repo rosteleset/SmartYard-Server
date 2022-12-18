@@ -145,33 +145,39 @@
             "dvr_files_path": "/path/to/dvr/files/on/your/local/filesystem",
             "dvr_files_location_prefix": "https://your.server.hostname/path/to/temp/dvr/files/",
             "dvr_files_ttl": 259200
+        },
+
+        "sip": {
+            "backend": "internal",
+            "servers": [
+                {
+                    "title": "First server",
+                    "type": "asterisk",
+                    "ip": "127.0.0.1",
+                    "sip_tcp_port": 5060,
+                    "sip_udp_port": 5060,
+                    "ami_port": 5038,
+                    "ami_password": "<!-- your very secret password here -->",
+                    "http_port": 8088,
+                    "ari_username": "domophone",
+                    "ari_password": "<!-- your very secret password here -->",
+                    "stun_server": "stun:127.0.0.1:3478",
+                    "incoming_title": "Входящий вызов",
+                    "call_failed_title": "Пропущенный вызов"
+                }
+            ]
+        },
+
+        "frs": {
+            "backend": "internal",
+            "servers": [
+                {
+                    "title": "First server",
+                    "url": "http://127.0.0.1"
+                }
+            ]
         }
     },
-
-    "sip_servers": [
-        {
-            "title": "First server",
-            "type": "asterisk",
-            "ip": "127.0.0.1",
-            "sip_tcp_port": 5060,
-            "sip_udp_port": 5060,
-            "ami_port": 5038,
-            "ami_password": "<!-- your very secret password here -->",
-            "http_port": 8088,
-            "ari_username": "domophone",
-            "ari_password": "<!-- your very secret password here -->",
-            "stun_server": "stun:127.0.0.1:3478",
-            "incoming_title": "Входящий вызов",
-            "call_failed_title": "Пропущенный вызов"
-        }
-    ],
-
-    "frs_servers": [
-        {
-            "title": "First server",
-            "url": "http://127.0.0.1"
-        }
-    ],
 
     "email": {
         "server": "127.0.0.1",
