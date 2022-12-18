@@ -242,6 +242,10 @@ function flat_call(flatId)
     --
 end
 
+function neighbour(extension)
+    --
+end
+
 extensions = {
 
     [ "default" ] = {

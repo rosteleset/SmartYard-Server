@@ -373,6 +373,15 @@
 
                     break;
 
+                case "server":
+                    $sip = loadBackend("sip");
+
+                    if ($sip) {
+
+                    }
+
+                    break;
+
                 case "push":
                     $isdn = loadBackend("isdn");
 
