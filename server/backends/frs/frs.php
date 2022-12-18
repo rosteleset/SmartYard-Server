@@ -10,7 +10,7 @@
         use backends\backend;
 
         /**
-         * base dvr_exports class
+         * base frs class
          */
         abstract class frs extends backend
         {

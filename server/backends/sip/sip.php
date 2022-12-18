@@ -10,7 +10,7 @@
         use backends\backend;
 
         /**
-         * base dvr_exports class
+         * base sip class
          */
         abstract class sip extends backend
         {
