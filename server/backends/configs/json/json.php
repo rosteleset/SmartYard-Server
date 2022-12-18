@@ -59,14 +59,6 @@
             /**
              * @inheritDoc
              */
-            public function getDVRServers()
-            {
-                return @$this->config["dvr_servers"]?:[];
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function getFRSServers()
             {
                 return @$this->config["frs_servers"]?:[];

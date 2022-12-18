@@ -10,7 +10,6 @@ require_once "utils/checkstr.php";
 require_once "utils/purifier.php";
 require_once "utils/error.php";
 require_once "utils/apache_request_headers.php";
-require_once "utils/get_dvr_server_type.php";
 
 
 $LanTa_services = [

@@ -31,11 +31,6 @@
             /**
              * @return mixed
              */
-            abstract public function getDVRServers();
-
-            /**
-             * @return mixed
-             */
             public function getSIPServer($ip) {
                 $asterisks = $this->getSIPServers();
 
