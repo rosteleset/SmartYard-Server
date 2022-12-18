@@ -99,5 +99,15 @@
 
                 return $fd;
             }
+
+            /**
+             * @param $fd
+             * @return false|string
+             */
+            public function streamToContents($fd) {
+                fseek($fd, 0);
+
+                return stream_get_contents($fd);
+            }
         }
     }
