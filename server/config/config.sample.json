@@ -66,8 +66,7 @@
         },
 
         "files": {
-            "backend": "mongo",
-            "uri": "<-- optional -->"
+            "backend": "mongo"
         },
 
         "addresses": {
