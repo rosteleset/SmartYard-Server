@@ -14,6 +14,12 @@
          */
         abstract class sip extends backend
         {
-//
+
+            /**
+             * @param $by
+             * @param $query
+             * @return mixed
+             */
+            abstract public function sipServer($by, $query);
         }
     }
