@@ -301,12 +301,12 @@ namespace backends\cameras
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
 
                     echo "Record download task with id = $recordId was started\n";
-                    echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . ".mp4\n";
+                    echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . "\n";
                     // echo "curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'] . "\n";
                     // exec("curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'], $out, $code);
                     
                     $fh = fopen($dvr_files_path . $task['filename'], 'w');
-                    $ch = curl_init('$request_url');
+                    $ch = curl_init($request_url);
                     curl_setopt($ch, CURLOPT_FILE, $fh);
                     curl_exec($ch);
                     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -330,7 +330,7 @@ namespace backends\cameras
 
                     echo "\n\n";
                     */
-                    return $code;
+                    // return $code;
 
                     if ($code === 0) {
                         $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
