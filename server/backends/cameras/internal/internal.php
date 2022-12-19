@@ -297,11 +297,9 @@ namespace backends\cameras
                         $duration = (int)$task['finish'] - (int)$task['start'];
                         $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
                     }
-                    $this->disconnect_db();
-                    $this->connect_db();
+                    echo "PDO Timeout = " . $this->db->getAttribute(PDO::ATTR_TIMEOUT);
+                    $this->db->setAttribute(PDO::ATTR_TIMEOUT, 0);
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
-                    $this->disconnect_db();
-                    $this->connect_db();
                     
                     echo "Record download task with id = $recordId was started\n";
                     echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . "\n";

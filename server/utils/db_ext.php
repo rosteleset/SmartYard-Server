@@ -41,9 +41,7 @@
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
-                    $result = $sth->rowCount(); 
-                    $sth = NULL;
-                    return $result;
+                    return $sth->rowCount();
                 } else {
                     return false;
                 }
@@ -73,7 +71,6 @@
                                 $mod = true;
                             }
                         }
-                        $sth = NULL;
                     }
                 }
                 return $mod;
