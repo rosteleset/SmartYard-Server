@@ -131,6 +131,19 @@
         }
     }
 
+    function connect_db() {
+        try {
+            $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        } catch (Exception $e) {
+            echo "can't open database " . $config["db"]["dsn"] . "\n";
+            exit(1);
+        }
+    }
+
+    function disconnect_db() {
+        $db = null;
+    }
+
     register_shutdown_function('shutdown');
 
     if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
@@ -191,12 +204,7 @@
         exit(1);
     }
 
-    try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-    } catch (Exception $e) {
-        echo "can't open database " . $config["db"]["dsn"] . "\n";
-        exit(1);
-    }
+    connect_db();
 
     try {
         $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
