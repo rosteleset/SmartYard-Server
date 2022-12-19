@@ -17,11 +17,12 @@
             public static function GET($params) {
                 $cameras = loadBackend("cameras");
                 $configs = loadBackend("configs");
+                $frs = loadBackend("frs");
 
                 $response = [
                     "cameras" => $cameras->getCameras(),
                     "models" => $configs->getCamerasModels(),
-                    "frsServers" => $configs->getFRSServers(),
+                    "frsServers" => $frs->servers(),
                 ];
 
                 return api::ANSWER($response, "cameras");
