@@ -332,7 +332,7 @@ namespace backends\cameras
                     */
                     // return $code;
 
-                    if ($code === 0) {
+                    if ($code === 200) {
                         $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                         echo "Record download task with id = $recordId was successfully finished!\n";
                     } else {
