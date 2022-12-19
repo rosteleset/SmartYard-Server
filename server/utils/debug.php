@@ -15,6 +15,8 @@
     function debugMsg($msg) {
         global $script_debug;
 
+        error_log(">>>>>>>>>>>> " . $msg);
+
         if ($script_debug) {
             $accounting = loadBackend('accounting');
             if ($accounting) {

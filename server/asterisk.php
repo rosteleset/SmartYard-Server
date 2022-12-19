@@ -280,7 +280,6 @@
 
                 case "debug":
                     debugMsg($params);
-                    error_log($params);
 
                     break;
 
@@ -302,6 +301,7 @@
                     $households = loadBackend("households");
 
                     echo json_encode($households->getFlat((int)$params));
+
                     break;
 
                 case "flatIdByPrefix":
