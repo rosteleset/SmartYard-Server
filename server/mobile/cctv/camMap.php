@@ -67,7 +67,7 @@ foreach($cams as $entrance_id => $cam) {
         'url' => $cam['dvrStream'],
         'token' => strval($cam['credentials']),
         'frs' => 'f', // TODO: добавить FRS
-        'serverType' => getDVRServer($cam['dvrStream'])['type']
+        'serverType' => loadBackend("dvr")->serverType($cam['dvrStream'])['type']
     ];
 }
 
