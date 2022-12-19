@@ -8,6 +8,13 @@
     {
         class internal extends frs
         {
-//
+
+            /**
+             * @inheritDoc
+             */
+            public function servers()
+            {
+                return $this->config["backends"]["frs"]["servers"];
+            }
         }
     }

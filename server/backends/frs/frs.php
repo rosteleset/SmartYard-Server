@@ -14,6 +14,10 @@
          */
         abstract class frs extends backend
         {
-//
+
+            /**
+             * @return mixed
+             */
+            abstract public function servers();
         }
     }

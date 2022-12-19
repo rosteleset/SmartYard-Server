@@ -15,10 +15,10 @@
         class configs extends api {
 
             public static function GET($params) {
-                $configs = loadBackend("configs");
+                $frs = loadBackend("frs");
 
                 $sections = [
-                    "FRSServers" => $configs->getFRSServers(),
+                    "FRSServers" => $frs->servers(),
                 ];
 
                 return api::ANSWER($sections, ($sections !== false)?"sections":false);

@@ -51,14 +51,6 @@
             /**
              * @inheritDoc
              */
-            public function getFRSServers()
-            {
-                return @$this->config["frs_servers"]?:[];
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function getCMSes()
             {
                 $files = scandir(__DIR__ . "/../../../hw/domophones/cmses");

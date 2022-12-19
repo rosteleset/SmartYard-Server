@@ -24,23 +24,6 @@
             abstract public function getCamerasModels();
 
             /**
-             * @return mixed
-             */
-            abstract public function getFRSServers();
-
-            public function getFRSServer($ip) {
-                $frss = $this->getFRSServers();
-
-                foreach ($frss as $server) {
-                    if (in_array($ip, $server)) {
-                        return $server;
-                    }
-                }
-
-                return false;
-            }
-
-            /**
              * @return false|array
              */
             abstract public function getCMSes();
