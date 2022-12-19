@@ -312,35 +312,31 @@ namespace backends\cameras
                     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                     curl_close($ch);
                     fclose($fh);
-                    echo "$code\n\n";
-                    /*
-                    $files = loadBackend("files");
-
-                    $file = fopen($dvr_files_path . $task['filename'], "r");
-
-                    $fileId = $files->addFileByStream($task['filename'], $file, []);
-
-                    fclose($file);
-
-                    $stream = $files->getFileByStream($fileId)["stream"];
-
-                    while (!feof($stream)) {
-                        echo fread($stream, 1024);
-                    }
-
-                    echo "\n\n";
-                    */
-                    // return $code;
-
+                    
                     if ($code === 200) {
                         $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                         echo "Record download task with id = $recordId was successfully finished!\n";
+                    
+                        $files = loadBackend("files");
+                        $file = fopen($dvr_files_path . $task['filename'], "r");
+                        $fileId = $files->addFile($task['filename'], $file, []);
+                        
+                        echo $fileId;
+                        echo "\n\n";
+
+                        fclose($file);
+
+                        echo $files->getFile($fileId)["fileInfo"];
+                        echo "\n\n";
+                        
+                        
+                        return 0;
+
                     } else {
                         $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
                         echo "Record download task with id = $recordId was finished with error code = $code!\n";
+                        return 1;
                     }
-                    
-                    return $code;
                 } else {
                     echo "Task with id = $recordId was not found\n";
                     return 1;
