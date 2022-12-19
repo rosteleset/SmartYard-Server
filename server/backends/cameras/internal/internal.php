@@ -325,7 +325,7 @@ namespace backends\cameras
 
                         fclose($file);
 
-                        echo $files->getFile($fileId)["fileInfo"];
+                        print_r($files->getFile($fileId)["fileInfo"]);
                         echo "\n\n";
                         
                         
