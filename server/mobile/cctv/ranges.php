@@ -51,7 +51,7 @@ if (!$cam) {
     response(404);
 }
 
-$dvr = getDVRServer($cam['dvrStream']);
+$dvr = loadBackend("dvr")->serverType($cam['dvrStream']);
 
 if ($dvr['type'] == 'nimble') {
     // Nimble Server

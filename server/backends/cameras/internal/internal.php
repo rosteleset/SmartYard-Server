@@ -271,8 +271,7 @@ namespace backends\cameras
     
                     }
 
-                    require_once __DIR__."/../../../utils/get_dvr_server_type.php";
-                    $dvr = getDVRServer($cam['dvrStream']);
+                    $dvr = loadBackend("dvr")->serverType($cam['dvrStream']);
                     
                     if ($dvr['type'] == 'nimble') {
                         // Nimble Server
