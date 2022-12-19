@@ -17,6 +17,7 @@
             public static function GET($params) {
                 $households = loadBackend("households");
                 $configs = loadBackend("configs");
+                $sip = loadBackend("sip");
 
                 if (!$households) {
                     return api::ERROR();
@@ -24,7 +25,7 @@
                     $response = [
                         "domophones" => $households->getDomophones(),
                         "models" => $configs->getDomophonesModels(),
-                        "servers" => $configs->getSIPServers(),
+                        "servers" => $sip->servers("all"),
                     ];
 
                     return api::ANSWER($response, "domophones");

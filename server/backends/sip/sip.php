@@ -20,6 +20,6 @@
              * @param $query
              * @return mixed
              */
-            abstract public function sipServer($by, $query);
+            abstract public function server($by, $query = false);
         }
     }

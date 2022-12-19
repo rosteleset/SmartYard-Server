@@ -6,10 +6,11 @@
         $households = loadBackend('households');
         $addresses = loadBackend('addresses');
         $configs = loadBackend('configs');
+        $sip = loadBackend("sip");
 
         $domophone = $households->getDomophone($domophoneId);
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
-        $asterisk_server = $configs->getSIPServer($domophone['server']);
+        $asterisk_server = $sip->server("ip", $domophone['server']);
         $cmses = $configs->getCMSes();
 
         $panel_text = $entrances[0]['callerId'];

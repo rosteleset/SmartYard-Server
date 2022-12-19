@@ -26,26 +26,6 @@
             /**
              * @return mixed
              */
-            abstract public function getSIPServers();
-
-            /**
-             * @return mixed
-             */
-            public function getSIPServer($ip) {
-                $asterisks = $this->getSIPServers();
-
-                foreach ($asterisks as $server) {
-                    if (in_array($ip, $server)) {
-                        return $server;
-                    }
-                }
-
-                return false;
-            }
-
-            /**
-             * @return mixed
-             */
             abstract public function getFRSServers();
 
             public function getFRSServer($ip) {

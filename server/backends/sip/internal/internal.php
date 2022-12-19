@@ -12,14 +12,11 @@
             /**
              * @inheritDoc
              */
-            public function sipServer($by, $query)
+            public function server($by, $query = false)
             {
                 switch ($by) {
                     case "all":
                         return $this->config["backends"]["sip"]["servers"];
-
-                    case "":
-                        break;
 
                     default:
                         return $this->config["backends"]["sip"]["servers"][0];
