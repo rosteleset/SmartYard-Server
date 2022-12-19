@@ -1,7 +1,6 @@
 {
     "1": [
         "v1_core.sql",
-        "v1_attachments.sql",
         "v1_addresses.sql",
         "v1_houses.sql",
         "v1_cameras.sql",
