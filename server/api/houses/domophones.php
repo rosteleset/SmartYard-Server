@@ -25,7 +25,7 @@
                     $response = [
                         "domophones" => $households->getDomophones(),
                         "models" => $configs->getDomophonesModels(),
-                        "servers" => $sip->servers("all"),
+                        "servers" => $sip->server("all"),
                     ];
 
                     return api::ANSWER($response, "domophones");
