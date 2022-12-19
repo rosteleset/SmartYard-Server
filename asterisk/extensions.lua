@@ -53,12 +53,6 @@ function dm(action, request)
     return result
 end
 
--- print("****************************")
--- print(dm("get", {
---     data = false,
--- }).a)
--- print("****************************")
-
 function log_debug(v)
     local m = ""
 
@@ -245,6 +239,10 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
 end
 
 function flat_call(flatId)
+    --
+end
+
+function neighbour(extension)
     --
 end
 

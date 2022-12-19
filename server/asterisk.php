@@ -98,7 +98,7 @@
                             "auth" => $extension,
                             "outbound_auth" => $extension,
                             "aors" => $extension,
-                            "callerid" => $panel["callerId"],
+                            "callerid" => $extension,
                             "context" => "default",
                             "disallow" => "all",
                             "allow" => "alaw,h264",
@@ -275,7 +275,6 @@
             switch ($path[1]) {
                 case "log":
                     logMsg($params);
-                    error_log($params);
 
                     break;
 
@@ -370,6 +369,15 @@
                         ]));
 
                         echo $params["hash"];
+                    }
+
+                    break;
+
+                case "server":
+                    $sip = loadBackend("sip");
+
+                    if ($sip) {
+
                     }
 
                     break;

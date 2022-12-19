@@ -79,8 +79,6 @@
                         if ($cameras && $cameras[0]) {
                             $prefix = $cameras[0]["dvrStream"];
                             if ($prefix) {
-                                require_once __DIR__ . '/../../../utils/get_dvr_server_type.php';
-
                                 $ts_event = $date - $this->back_time_shift_video_shot;
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
                                 if (getDVRServer($prefix)['type'] == 'nimble') {

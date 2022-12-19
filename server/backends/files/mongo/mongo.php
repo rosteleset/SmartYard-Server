@@ -34,28 +34,7 @@
             /**
              * @inheritDoc
              */
-            public function addFileByContents($realFileName, $fileContents, $metadata = [])
-            {
-                $collection = $this->collection;
-
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
-
-                $stream = $bucket->openUploadStream($realFileName);
-                fwrite($stream, $fileContents);
-                $id = $bucket->getFileIdForStream($stream);
-                fclose($stream);
-
-                if ($metadata) {
-                    $this->setFileMetadata($id, $metadata);
-                }
-
-                return (string)$id;
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addFileByStream($realFileName, $stream, $metadata = [])
+            public function addFile($realFileName, $stream, $metadata = [])
             {
                 $collection = $this->collection;
 
@@ -73,7 +52,7 @@
             /**
              * @inheritDoc
              */
-            public function getFile($uuid, $stream = false)
+            public function getFile($uuid)
             {
                 $collection = $this->collection;
 
@@ -81,27 +60,12 @@
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
-                $dstream = $bucket->openDownloadStream($fileId);
+                $stream = $bucket->openDownloadStream($fileId);
 
-                if ($stream) {
-                    return [
-                        "fileInfo" => $bucket->getFileDocumentForStream($dstream),
-                        "stream" => $dstream,
-                    ];
-                } else {
-                    return [
-                        "fileInfo" => $bucket->getFileDocumentForStream($dstream),
-                        "contents" => stream_get_contents($dstream),
-                    ];
-                }
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getFileContents($uuid)
-            {
-                return $this->getFile($uuid)["contents"];
+                return [
+                    "fileInfo" => $bucket->getFileDocumentForStream($stream),
+                    "stream" => $stream,
+                ];
             }
 
             /**
@@ -109,7 +73,7 @@
              */
             public function getFileStream($uuid)
             {
-                return $this->getFile($uuid, true)["stream"];
+                return $this->getFile($uuid)["stream"];
             }
 
             /**
@@ -117,7 +81,7 @@
              */
             public function getFileInfo($uuid)
             {
-                return $this->getFile($uuid, true)["fileInfo"];
+                return $this->getFile($uuid)["fileInfo"];
             }
 
             /**
