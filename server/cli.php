@@ -132,6 +132,7 @@
     }
 
     function connect_db() {
+        global $db, $config;
         try {
             $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
         } catch (Exception $e) {
@@ -141,6 +142,7 @@
     }
 
     function disconnect_db() {
+        global $db;
         $db = null;
     }
 
