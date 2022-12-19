@@ -192,7 +192,7 @@
     }
 
     try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], [PDO_EXT::ATTR_TIMEOUT => 1]);
+    $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]/*[PDO_EXT::ATTR_TIMEOUT => 1]*/);
     } catch (Exception $e) {
         echo "can't open database " . $config["db"]["dsn"] . "\n";
         exit(1);
