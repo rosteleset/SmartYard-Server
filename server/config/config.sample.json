@@ -61,10 +61,6 @@
             "token": "<!-- your dadata token here --!>"
         },
 
-        "tt": {
-            "backend": "internal"
-        },
-
         "files": {
             "backend": "mongo"
         },
