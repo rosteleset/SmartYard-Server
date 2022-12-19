@@ -185,7 +185,7 @@ namespace backends\cameras
          */
         public function addDownloadRecord($cameraId, $subscriberId, $start, $finish)
         {
-            $dvr_files_ttl = @$this->config["backends"]["cameras"]["dvr_files_ttl"] ?: 259200; // 3 days
+            $dvr_files_ttl = @$this->config["backends"]["dvr_exports"]["dvr_files_ttl"] ?: 259200; // 3 days
 
             if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish)) {
                 return false;
@@ -256,10 +256,10 @@ namespace backends\cameras
                     ]
                 );
                 if ($task) {
-                    $dvr_files_path = @$config["backends"]["cameras"]["dvr_files_path"] ?: false;
+                    $dvr_files_path = @$config["backends"]["dvr_exports"]["dvr_files_path"] ?: false;
                     if ( $dvr_files_path && substr($dvr_files_path, -1) != '/' ) $dvr_files_path = $dvr_files_path . '/';
     
-                    $dvr_files_location_prefix = @$config["backends"]["cameras"]["dvr_files_location_prefix"] ?: false;
+                    $dvr_files_location_prefix = @$config["backends"]["dvr_exports"]["dvr_files_location_prefix"] ?: false;
                     if ( $dvr_files_location_prefix && substr($dvr_files_location_prefix, -1) != '/' ) $dvr_files_location_prefix = $dvr_files_location_prefix . '/';
                 
                     $cameras = loadBackend("cameras");
