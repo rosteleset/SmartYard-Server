@@ -22,5 +22,17 @@
                         return $this->config["backends"]["sip"]["servers"][0];
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function stun($extension)
+            {
+                if (@$this->config["backends"]["sip"]["stuns"]) {
+                    return $this->config["backends"]["sip"]["stuns"][rand(0, count($this->config["backends"]["sip"]["stuns"]) - 1)];
+                } else {
+                    return false;
+                }
+            }
         }
     }

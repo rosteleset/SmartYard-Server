@@ -384,14 +384,17 @@
 
                 case "push":
                     $isdn = loadBackend("isdn");
+                    $sip = loadBackend("sip");
+                    $server = $sip->server("extension", $params["extension"]);
+                    $stun = $sip->stun($params["extension"]);
 
-                    $isdn->push([
+                    $params = [
                         "token" => $params["token"],
                         "type" => $params["tokenType"],
                         "hash" => $params["hash"],
                         "extension" => $params["extension"],
-                        "server" => $config["sip_servers"][0]["ip"],
-                        "port" => $config["sip_servers"][0]["sip_tcp_port"],
+                        "server" => $server["ip"],
+                        "port" => $server["sip_tcp_port"],
                         "transport" => 'tcp',
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
@@ -400,10 +403,15 @@
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
                         "flatNumber" => $params["flatNumber"],
-                        "stun" => $config["sip_servers"][0]["stun_server"],
-                        "stunTransport" => "udp",
-                        "title" => $config["sip_servers"][0]["incoming_title"],
-                    ]);
+                        "title" => $server["incoming_title"],
+                    ];
+
+                    if ($stun) {
+                        $params["stun"] = $stun;
+                        $params["stunTransport"] = "udp";
+                    }
+
+                    $isdn->push($params);
 
                     break;
             }
