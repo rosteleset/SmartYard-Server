@@ -9,11 +9,11 @@
  *
  * @apiParam {String} id идентификатор файла
  */
-$fileName = $param;
 $contentType = "application/octet-stream";
 $files = loadBackend("files");
-$stream = $files->getFileStream($fileName);
-$info = $files->getFileInfo($fileName);
+$stream = $files->getFileStream($param);
+$info = $files->getFileInfo($param);
+$fileName = $info['filename'];
 
 header("Content-type: $contentType");
 header("Content-Disposition: attachment; filename=$fileName");
