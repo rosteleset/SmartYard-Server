@@ -86,16 +86,20 @@
                                 } else {
                                     system("ffmpeg -y -i $prefix/$ts_event-preview.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                 }
-                                $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile(
-                                    "camshot",
-                                    file_get_contents($filename),
-                                    [
-                                        ["contentType" => "image/jpeg"],
-                                        ["expire" => time() + $this->ttl_camshot_days * 86400],
-                                    ]
-                                ));
-                                unlink($filename);
-                                $camshot_data[self::COLUMN_PREVIEW] = 1;
+                                if (file_exists($filename)) {
+                                    $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile(
+                                        "camshot",
+                                        fopen($filename, 'rb'),
+                                        [
+                                            "contentType" => "image/jpeg",
+                                            "expire" => time() + $this->ttl_camshot_days * 86400,
+                                        ]
+                                    ));
+                                    unlink($filename);
+                                    $camshot_data[self::COLUMN_PREVIEW] = 1;
+                                } else {
+                                    $camshot_data[self::COLUMN_PREVIEW] = 0;
+                                }
                             }
                         }
                     }
@@ -585,7 +589,9 @@
                     //получение кадра события
                     $image_data = $this->getCamshot($domophone_id, $plog_date, $event_id);
                     if ($image_data) {
-                        $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
+                        if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
+                            $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
+                        }
                         $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
                         // TODO: доделать для случая наличия инфы о лице
                     }
@@ -827,7 +833,9 @@
                     //получение кадра события
                     $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DATE]);
                     if ($image_data) {
-                        $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
+                        if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
+                            $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
+                        }
                         $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
                         // TODO: доделать для случая наличия инфы о лице
                     }

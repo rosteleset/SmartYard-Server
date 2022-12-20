@@ -3,14 +3,11 @@
     $img = $plog->getEventImage($param);
     if ($img) {
         $content_type = "image/jpeg";
-        $q = json_decode(MongoDB\BSON\toJSON(MongoDB\BSON\fromPHP($img['fileInfo']['metadata'])));
-        foreach ($q->metadata as $item) {
-            if ($item->contentType) {
-                $content_type = $item->contentType;
-                break;
-            }
+        $meta_data = json_decode(MongoDB\BSON\toJSON(MongoDB\BSON\fromPHP($img['fileInfo']['metadata'])));
+        if (isset($meta_data->contentType)) {
+            $content_type = $meta_data->contentType;
         }
         header("Content-Type: $content_type");
-        echo $img['contents'];
+        echo(stream_get_contents($img['stream']));
         exit;
     }
