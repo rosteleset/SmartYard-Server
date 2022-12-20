@@ -7,7 +7,6 @@
     namespace backends\files {
 
         use backends\backend;
-        use http\Encoding\Stream;
 
         /**
          * file storage backend
