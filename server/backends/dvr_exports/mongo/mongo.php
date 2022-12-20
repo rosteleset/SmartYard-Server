@@ -99,68 +99,30 @@
                             exit(0);
         
                         }
-
-                        $dvr = loadBackend("dvr")->serverType($cam['dvrStream']);
+                        $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['start'], $task['finish']);
                         
-                        if ($dvr['type'] == 'nimble') {
-                            // Nimble Server
-                            $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
-                            if ( $path[0] == '/' ) $path = substr($path,1);
-                            $stream = $path;
-                            $token = $dvr['management_token'];
-                            $host = $dvr['management_ip'];
-                            $port = $dvr['management_port'];
-                            $start = $task['start'];
-                            $end = $task['finish'];
-                    
-                            $salt= rand(0, 1000000);
-                            $str2hash = $salt . "/". $token;
-                            $md5raw = md5($str2hash, true);
-                            $base64hash = base64_encode($md5raw);
-                            $request_url = "http://$host:$port/manage/dvr/export_mp4/$stream?start=$start&end=$end&salt=$salt&hash=$base64hash";
-                            
-                        } else {
-                            // Flussonic Server by default
-                            $flussonic_token = $cam['credentials'];
-                            $from = $task['start'];
-                            $duration = (int)$task['finish'] - (int)$task['start'];
-                            $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
-                        }
                         $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
                         
                         echo "Record download task with id = $recordId was started\n";
                         echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . "\n";
-                        // echo "curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'] . "\n";
-                        // exec("curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'], $out, $code);
                         
-                        $fh = fopen($dvr_files_path . $task['filename'], 'w');
-                        $ch = curl_init($request_url);
-                        curl_setopt($ch, CURLOPT_FILE, $fh);
-                        curl_exec($ch);
-                        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                        curl_close($ch);
-                        fclose($fh);
-                        
-                        if ($code === 200) {
+                        $files = loadBackend("files");
+                        $file = fopen($request_url, "r");
+                        $fileId = $files->addFile($task['filename'], $file, [
+                            // "contentType" => "image/jpeg",
+                            "camId" => $task['cameraId'],
+                            "expire" => time() + 3 * 86400 // file storing period - 3 days 
+                        ]);
+                            
+                        if ($file ) {
                             $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                             echo "Record download task with id = $recordId was successfully finished!\n";
-                        
-                            $files = loadBackend("files");
-                            $file = fopen($dvr_files_path . $task['filename'], "r");
-                            $fileId = $files->addFile($task['filename'], $file, []);
-                            
-                            echo $fileId;
-                            echo "\n\n";
-
                             fclose($file);
-
                             print_r($files->getFile($fileId)["fileInfo"]);
                             echo "\n\n";
-                            
-                            
                             return 0;
-
                         } else {
+
                             $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
                             echo "Record download task with id = $recordId was finished with error code = $code!\n";
                             return 1;

@@ -25,5 +25,13 @@
              * @return mixed
              */
             abstract public function getDVRServers();
+
+            /**
+             * @param object $cam Camera object
+             * @param integer $start unixtime of start 
+             * @param integer $end unixtime of end
+             * @return string URL with DVR archive on a DVR-server
+             */
+            abstract public function getUrlOfRecord($cam, $start, $finish);
         }
     }
