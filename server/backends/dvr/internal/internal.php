@@ -78,7 +78,7 @@
              * @inheritDoc
              */
             public function getUrlOfRecord($cam, $start, $finish) {
-                $dvr = serverType($cam['dvrStream']);
+                $dvr = $this->serverType($cam['dvrStream']);
                         
                 if ($dvr['type'] == 'nimble') {
                     // Nimble Server
@@ -111,7 +111,7 @@
              * @inheritDoc
              */
             public function getRanges($cam) {
-                $dvr = serverType($cam['dvrStream']);
+                $dvr = $this->serverType($cam['dvrStream']);
 
                 if ($dvr['type'] == 'nimble') {
                     // Nimble Server
