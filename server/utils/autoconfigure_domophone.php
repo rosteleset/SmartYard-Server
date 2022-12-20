@@ -42,7 +42,7 @@
 
         $nat = (bool) $domophone['nat'];
 
-        $stun = parseURI($asterisk_server['stun_server']);
+        $stun = parseURI($sip->stun(''));
         $stun_server = $stun['host'];
         $stun_port = $stun['port'] ?? 3478;
 
