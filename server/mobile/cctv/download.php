@@ -45,14 +45,13 @@ $chunksize = 1024*1024; //you may want to change this
 $bytes_send = 0;
 if ($stream) {
     if (isset($_SERVER['HTTP_RANGE'])) {
-        fseek($stream, $range);
+        fseek($stream, $begin);
     }
 
     while (!feof($stream) && (!connection_aborted()) && ($bytes_send < $new_length) ) {
         $buffer = fread($stream, $chunksize);
         echo($buffer);
         flush();
-        usleep($this->sec * 1000000);
         $bytes_send += strlen($buffer);
     }
     fclose($stream);
