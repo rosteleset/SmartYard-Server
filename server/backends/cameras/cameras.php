@@ -80,28 +80,5 @@ namespace backends\cameras
          */
         abstract public function deleteCamera($cameraId);
 
-        /**
-         * @param $cameraId
-         * @param $subscriberId
-         * @param $start
-         * @param $finish
-         * @return boolean
-         */
-        abstract public function addDownloadRecord($cameraId, $subscriberId, $start, $finish);
-
-         /**
-         * @param $cameraId
-         * @param $subscriberId
-         * @param $start
-         * @param $finish
-         * @return id|false
-         */
-        abstract public function checkDownloadRecord($cameraId, $subscriberId, $start, $finish);
-
-        /**
-         * @param $recordId
-         * @return url|false
-         */
-        abstract public function runDownloadRecordTask($recordId);
     }
 }

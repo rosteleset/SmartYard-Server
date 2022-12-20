@@ -412,9 +412,9 @@
 
     if (count($args) == 1 && array_key_exists("--run-record-download", $args) && isset($args["--run-record-download"])) {
         $recordId = (int)$args["--run-record-download"];
-        $cameras = @loadBackend("cameras");
-        if ($cameras) {
-            $result = $cameras->runDownloadRecordTask($recordId);
+        $dvr_exports = @loadBackend("dvr_exports");
+        if ($dvr_exports) {
+            $result = $dvr_exports->runDownloadRecordTask($recordId);
             exit($result);
         }
         exit(1);

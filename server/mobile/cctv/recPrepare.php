@@ -29,16 +29,16 @@ if (!$cameraId || !$from || !$to) {
     response(404);
 }
 
-$cameras = loadBackend("cameras");
+$dvr_exports = loadBackend("dvr_exports");
 
 // проверяем, не был ли уже запрошен данный кусок из архива.
-$check = $cameras->checkDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
+$check = $dvr_exports->checkDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
 if (@$check['id']) {
     response(200, $check['id']);
 }
 
 // если такой кусок ещё не запрашивали, то добавляем запрос на скачивание.
-$res = (int)$cameras->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
+$res = (int)$dvr_exports->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
 
 response(200, $res);
 
