@@ -51,14 +51,13 @@ if (!$cam) {
     response(404);
 }
 
-$path = parse_url($cam['dvrStream'], PHP_URL_PATH);
-if ( $path[0] == '/' ) $path = substr($path,1);
-$stream = $path;
-
-$dvr = getDVRServer($cam['dvrStream']);
+$dvr = loadBackend("dvr")->serverType($cam['dvrStream']);
 
 if ($dvr['type'] == 'nimble') {
     // Nimble Server
+    $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
+    if ( $path[0] == '/' ) $path = substr($path,1);
+    $stream = $path;
     $ranges = getRangesForNimble( $dvr['management_ip'], $dvr['management_port'], $stream, $dvr['management_token'] );
 } else {
     // Flussonic Server by default

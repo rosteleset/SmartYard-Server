@@ -30,8 +30,8 @@
 
                     if (
                         ($u['scheme'] == $scheme) &&
-                        (!$u['user'] || $u['user'] == $url["user"]) &&
-                        (!$u['pass'] || $u['pass'] == $url["pass"]) &&
+                        (!@$u['user'] || @$u['user'] == @$url["user"]) &&
+                        (!@$u['pass'] || @$u['pass'] == @$url["pass"]) &&
                         ($u['host'] == $url["host"]) &&
                         (!$u['port'] || $u['port'] == $port)
                     ) {

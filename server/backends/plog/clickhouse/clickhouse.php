@@ -81,7 +81,7 @@
                             if ($prefix) {
                                 $ts_event = $date - $this->back_time_shift_video_shot;
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                                if (getDVRServer($prefix)['type'] == 'nimble') {
+                                if (loadBackend("dvr")->serverType($prefix)['type'] == 'nimble') {
                                     system("ffmpeg -y -i $prefix/dvr_thumbnail_$ts_event.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                 } else {
                                     system("ffmpeg -y -i $prefix/$ts_event-preview.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
