@@ -9,7 +9,7 @@
  *
  * @apiParam {String} id идентификатор файла
  */
-$filename = $param;
+$fileName = $param;
 $contentType = "application/octet-stream";
 $files = loadBackend("files");
 $stream = $files->getFileStream($fileName);
