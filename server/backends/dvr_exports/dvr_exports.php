@@ -35,7 +35,7 @@
 
             /**
              * @param $recordId
-             * @return url|false
+             * @return oid|false file id
              */
             abstract public function runDownloadRecordTask($recordId);
 

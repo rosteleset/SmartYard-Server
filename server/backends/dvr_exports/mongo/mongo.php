@@ -64,6 +64,7 @@
             public function runDownloadRecordTask($recordId)
             {
                 $config = $this->config;
+                // TODO: добавить удаление старых заданий на скачивание.
 
                 try {
                     $task = $this->db->get(
@@ -85,18 +86,12 @@
                         ]
                     );
                     if ($task) {
-                        $dvr_files_path = @$config["backends"]["dvr_exports"]["dvr_files_path"] ?: false;
-                        if ( $dvr_files_path && substr($dvr_files_path, -1) != '/' ) $dvr_files_path = $dvr_files_path . '/';
-        
-                        $dvr_files_location_prefix = @$config["backends"]["dvr_exports"]["dvr_files_location_prefix"] ?: false;
-                        if ( $dvr_files_location_prefix && substr($dvr_files_location_prefix, -1) != '/' ) $dvr_files_location_prefix = $dvr_files_location_prefix . '/';
-                    
                         $cameras = loadBackend("cameras");
                         $cam = $cameras->getCamera($task['cameraId']);
         
                         if (!$cam) {
                             echo "Camera with id = " . $task['cameraId'] . " was not found\n";
-                            exit(0);
+                           return false;
         
                         }
                         $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['start'], $task['finish']);
@@ -109,33 +104,35 @@
                         $files = loadBackend("files");
                         $file = fopen($request_url, "r");
                         $fileId = $files->addFile($task['filename'], $file, [
-                            // "contentType" => "image/jpeg",
                             "camId" => $task['cameraId'],
-                            "expire" => time() + 3 * 86400 // file storing period - 3 days 
+                            "start" => $task['start'],
+                            "finish" => $task['finish'],
+                            "subscriberId" => $task['subscriberId'],
+                            "expire" => $task['expire']  
                         ]);
                             
                         if ($file ) {
                             $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                             echo "Record download task with id = $recordId was successfully finished!\n";
                             fclose($file);
-                            print_r($files->getFile($fileId)["fileInfo"]);
-                            echo "\n\n";
-                            return 0;
+                            // print_r($files->getFile($fileId)["fileInfo"]);
+                            // echo "\n\n";
+                            return $fileId;
                         } else {
 
                             $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
                             echo "Record download task with id = $recordId was finished with error code = $code!\n";
-                            return 1;
+                            return false;
                         }
                     } else {
                         echo "Task with id = $recordId was not found\n";
-                        return 1;
+                        return false;
                     }
                     
                     
                 } catch (Exception $e) {
                     echo "Record download task with id = $recordId was failed to start\n";
-                    return 1;
+                    return false;
                 }
             }
         }
