@@ -157,6 +157,48 @@
                         ];
                         break;
 
+                    case "openCode":
+                        $q = "
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                open_code = :code
+                        ";
+                        $p = [
+                            "code" => $params["openCode"]
+                        ];
+                        break;
+
+                    case "rfId":
+                        $q = "
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                house_flat_id in (select access_to from houses_rfids where access_type = 2 and rfid = :code)
+                        ";
+                        $p = [
+                            "code" => $params["rfId"]
+                        ];
+                        break;
+
+                    case "subscriber":
+                        $q = "
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select house_subscriber_id from houses_subscribers_mobile where id = :id))
+                        ";
+                        $p = [
+                            "id" => $params["id"]
+                        ];
+                        break;
+
                     case "house":
                         $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id order by flat";
                         $p = [
