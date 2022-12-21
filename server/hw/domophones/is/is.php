@@ -68,8 +68,12 @@
                 }
             }
 
-            protected function delete_open_code($apartment) {
+            protected function delete_open_code(int $apartment) {
                 $this->api_call("/openCode/$apartment", 'DELETE');
+            }
+
+            protected function enable_echo_cancellation(bool $enabled = true) {
+                $this->api_call('/sip/options', 'PUT', [ 'echoD' => $enabled ]);
             }
 
             protected function get_apartments() {
@@ -529,6 +533,11 @@
 
             public function reset() {
                 $this->api_call('/system/factory-reset', 'PUT');
+            }
+
+            public function prepare() {
+                parent::prepare();
+                $this->enable_echo_cancellation(false);
             }
 
         }
