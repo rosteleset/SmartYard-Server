@@ -196,7 +196,7 @@
             public function getEventsDays(int $flat_id, $filter_events)
             {
                 if ($filter_events) {
-                    $query = <<< __SQL__
+                    $query = "
                         select
                             toYYYYMMDD(FROM_UNIXTIME(date)) as day,
                             count(day) as events
@@ -210,9 +210,9 @@
                             day
                         order by
                             day desc
-                    __SQL__;
+                    ";
                 } else {
-                    $query = <<< __SQL__
+                    $query = "
                         select
                             toYYYYMMDD(FROM_UNIXTIME(date)) as day,
                             count(day) as events
@@ -225,7 +225,7 @@
                             day
                         order by
                             day desc
-                    __SQL__;
+                    ";
                 }
 
                 $result = $this->clickhouse->select($query);
@@ -244,7 +244,7 @@
              */
             public function getDetailEventsByDay(int $flat_id, string $date)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         date,
                         event_uuid,
@@ -267,7 +267,7 @@
                         and flat_id = $flat_id
                     order by
                         date desc
-                __SQL__;
+                ";
 
                 return $this->clickhouse->select($query);
             }
@@ -280,14 +280,14 @@
 
             public function getDomophoneId($ip)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         hd.house_domophone_id
                     from
                         houses_domophones hd
                     where
                         hd.ip = '$ip'
-                __SQL__;
+                ";
 
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
@@ -299,14 +299,14 @@
 
             private function getDomophoneDescription($domophone_id, $domophone_output)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         he.entrance description
                     from
                         houses_entrances he
                     where
                         he.house_domophone_id = $domophone_id and he.domophone_output = $domophone_output
-                __SQL__;
+                ";
 
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
@@ -319,7 +319,7 @@
             //получение списка flat_id по RFID ключу на домофоне
             private function getFlatIdByRfid($rfid, $domophone_id)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         r.access_to flat_id
                     from
@@ -334,7 +334,7 @@
                     where
                         r.rfid = '$rfid'
                         and r.access_type = 2
-                __SQL__;
+                ";
 
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
@@ -349,7 +349,7 @@
             //получение списка flat_id по коду открытия на устройстве
             private function getFlatIdByCode($code, $domophone_id)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         hf.house_flat_id flat_id
                     from
@@ -363,7 +363,7 @@
                             and hf.open_code = '$code'
                         where
                             hd.house_domophone_id = $domophone_id
-                __SQL__;
+                ";
 
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
@@ -378,7 +378,7 @@
             //получение списка flat_id по телефону пользователя на устройстве
             private function getFlatIdByUserPhone($user_phone, $domophone_id)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         hfs.house_flat_id flat_id
                     from
@@ -392,7 +392,7 @@
                             and he.house_domophone_id = $domophone_id
                         where
                             hsm.id = '$user_phone'
-                __SQL__;
+                ";
 
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
@@ -407,7 +407,7 @@
             //получение flat_id по номеру квартиры на устройстве
             private function getFlatIdByNumber($flat_number, $domophone_id)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                     hef.house_flat_id flat_id
                     from
@@ -417,7 +417,7 @@
                     where
                         he.house_domophone_id = $domophone_id
                         and hef.apartment = $flat_number
-                __SQL__;
+                ";
 
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
@@ -430,7 +430,7 @@
             //получение flat_id по префиксу калитки и номеру квартиры
             private function getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         hef.house_flat_id flat_id
                     from
@@ -447,7 +447,7 @@
                     where
                         he.house_domophone_id = $domophone_id
                         and he.domophone_output = 0
-                __SQL__;
+                ";
 
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($result)) {
@@ -459,7 +459,7 @@
 
             private function getEntranceCount($flat_id)
             {
-                $query = <<< __SQL__
+                $query = "
                     select
                         count(*) entrance_count
                     from
@@ -469,7 +469,7 @@
                             and he.domophone_output = 0
                     where
                         hef.house_flat_id = $flat_id
-                __SQL__;
+                ";
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
 
                 if ($result && count($result)) {
@@ -482,7 +482,7 @@
             private function updateRfidLastSeen($flat_list, $rfid, $date)
             {
                 $fl = implode(",", $flat_list);
-                $query = <<< __SQL__
+                $query = "
                     update
                         houses_rfids
                     set
@@ -491,7 +491,7 @@
                         access_type = 2
                         and access_to in ($fl)
                         and rfid = '$rfid'
-                __SQL__;
+                ";
 
                 $this->db->query($query);
             }
@@ -499,14 +499,14 @@
             private function updateFlatLastOpened($flat_list, $date)
             {
                 $fl = implode(",", $flat_list);
-                $query = <<< __SQL__
+                $query = "
                     update
                         houses_flats
                     set
                         last_opened = $date
                     where
                         house_flat_id in ($fl)
-                __SQL__;
+                ";
 
                 $this->db->query($query);
             }
@@ -516,7 +516,7 @@
                 $end_date = time() - $this->time_shift;  //крайняя дата обработки
 
                 //обработка данных из таблицы plog_door_open
-                $query = <<< __SQL__
+                $query = "
                     select
                         *
                     from
@@ -525,7 +525,7 @@
                         date <= $end_date
                     order by
                         date
-                __SQL__;
+                ";
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $event_data = [];
@@ -596,17 +596,17 @@
                 }
 
                 //удаление данных из таблицы plog_door_open
-                $query = <<< __SQL__
+                $query = "
                     delete
                     from
                         plog_door_open
                     where
                         date <= $end_date
-                __SQL__;
+                ";
                 $this->db->query($query);
 
                 //обработка данных из таблицы plog_call_done
-                $query = <<< __SQL__
+                $query = "
                     select
                         *
                     from
@@ -615,7 +615,7 @@
                         date <= $end_date
                     order by
                         date
-                __SQL__;
+                ";
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $ip = $row['ip'];
@@ -647,7 +647,7 @@
                     //забираем данные из сислога для звонка
                     $query_end_date = $row['date'];
                     $query_start_date = $query_end_date - $this->max_call_length;
-                    $query = <<< __SQL__
+                    $query = "
                         select
                             date,
                             msg,
@@ -660,7 +660,7 @@
                             and s.date <= $query_end_date
                         order by
                             date desc
-                    __SQL__;
+                    ";
                     $result = $this->clickhouse->select($query);
                     foreach ($result as $row) {
                         $msg = $row['msg'];
@@ -842,13 +842,13 @@
                 }
 
                 //удаление данных из таблицы plog_call_done
-                $query = <<< __SQL__
+                $query = "
                     delete
                     from
                         plog_call_done
                     where
                         date <= $end_date
-                __SQL__;
+                ";
                 $this->db->query($query);
             }
         }
