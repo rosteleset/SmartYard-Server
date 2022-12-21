@@ -25,9 +25,9 @@
                     return api::ERROR();
                 } else {
                     $house = [
-                        "flats" => $households->getFlats("house", $params["_id"]),
-                        "entrances" => $households->getEntrances("house", $params["_id"]),
-                        "cameras" => $households->getCameras("house", $params["_id"]),
+                        "flats" => $households->getFlats("houseId", $params["_id"]),
+                        "entrances" => $households->getEntrances("houseId", $params["_id"]),
+                        "cameras" => $households->getCameras("houseId", $params["_id"]),
                         "domophoneModels" => $configs->getDomophonesModels(),
                         "cmses" => $configs->getCMSes(),
                     ];

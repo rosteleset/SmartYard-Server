@@ -53,11 +53,11 @@
             $house['houseId'] = strval($houseId);
             $house['address'] = $flat['house']['houseFull'];
             $house['hasPlog'] = 't';
-            $house['cameras'] = $households->getCameras("house", $houseId);
+            $house['cameras'] = $households->getCameras("houseId", $houseId);
             $house['doors'] = [];
         }
         
-        $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flat", $flat['flatId']));
+        $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
         $house['cctv'] = count($house['cameras']);
 
         $flatDetail = $households->getFlat($flat['flatId']);

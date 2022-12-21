@@ -83,7 +83,7 @@
         $offset = 0;
 
         foreach ($entrances as $entrance) {
-            $flats = $households->getFlats('house', $entrance['houseId']);
+            $flats = $households->getFlats('houseId', $entrance['houseId']);
 
             $begin = reset($flats)['flat'];
             $end = end($flats)['flat'];

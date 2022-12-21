@@ -31,7 +31,7 @@ $households = loadBackend("households");
 $ret = [];
 
 
-if ($households->getFlats('house', $house_id)) {
+if ($households->getFlats('houseId', $house_id)) {
     $s = $LanTa_services['domophone'];
     $s['byDefault'] = 't';
     $ret[] = $s;

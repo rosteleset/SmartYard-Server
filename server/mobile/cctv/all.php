@@ -42,11 +42,11 @@ foreach($subscriber['flats'] as $flat) {
         $house = &$houses[$houseId];
         $house['houseId'] = strval($houseId);
         // TODO: добавить журнал событий.
-        $house['cameras'] = $households->getCameras("house", $houseId);
+        $house['cameras'] = $households->getCameras("houseId", $houseId);
         $house['doors'] = [];
     }
     
-    $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flat", $flat['flatId']));
+    $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
 
     $flatDetail = $households->getFlat($flat['flatId']);
     foreach ($flatDetail['entrances'] as $entrance) {

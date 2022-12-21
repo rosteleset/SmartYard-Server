@@ -1347,14 +1347,14 @@
                         ];
                         break;
 
-                    case "house":
+                    case "houseId":
                         if (!checkInt($query)) {
                             return false;
                         }
                         $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                         break;
 
-                    case "flat":
+                    case "flatId":
                         if (!checkInt($query)) {
                             return false;
                         }
@@ -1413,21 +1413,21 @@
                         $q = "select camera_id from cameras where camera_id = $params";
                         break;
 
-                    case "house":
+                    case "houseId":
                         if (!checkInt($params)) {
                             return [];
                         }
                         $q = "select camera_id from houses_cameras_houses where address_house_id = $params";
                         break;
 
-                    case "flat":
+                    case "flatId":
                         if (!checkInt($params)) {
                             return [];
                         }
                         $q = "select camera_id from houses_cameras_flats where house_flat_id = $params";
                         break;
 
-                    case "subscriber":
+                    case "subscriberId":
                         if (!checkInt($params)) {
                             return [];
                         }
