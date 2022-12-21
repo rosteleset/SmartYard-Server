@@ -79,11 +79,9 @@
                             if ($prefix) {
                                 $ts_event = $date - $this->back_time_shift_video_shot;
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                                if (loadBackend("dvr")->serverType($prefix)['type'] == 'nimble') {
-                                    system("ffmpeg -y -i $prefix/dvr_thumbnail_$ts_event.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
-                                } else {
-                                    system("ffmpeg -y -i $prefix/$ts_event-preview.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
-                                }
+                                
+                                system("ffmpeg -y -i " . loadBackend("dvr")->getUrlOfMP4Screenshot($cameras[0], $ts_event) . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                
                                 if (file_exists($filename)) {
                                     $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
                                         "camshot",
