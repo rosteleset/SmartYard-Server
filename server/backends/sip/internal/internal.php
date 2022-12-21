@@ -17,7 +17,8 @@
                 switch ($by) {
                     case "all":
                         return $this->config["backends"]["sip"]["servers"];
-
+//                  case "extension":
+//                  case "ip":
                     default:
                         return $this->config["backends"]["sip"]["servers"][0];
                 }
