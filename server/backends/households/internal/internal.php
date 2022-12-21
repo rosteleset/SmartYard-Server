@@ -824,7 +824,8 @@
                     "first_time" => "firstTime",
                     "nat" => "nat",
                     "locks_are_open" => "locksAreOpen",
-                    "comment" => "comment"
+                    "comment" => "comment",
+                    "ip" => "ip"
                 ], [
                     "singlify"
                 ]);
