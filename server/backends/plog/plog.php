@@ -77,13 +77,6 @@
             abstract public function getCamshot(int $domophone_id, $date, $event_id = false);
 
             /**
-             * Получить кадр события из коллекции
-             * @param string $image_uuid UUID кадра
-             * @return object
-             */
-            abstract public function getEventImage($image_uuid);
-
-            /**
              * Добавить данные открытия двери для последующего формирования события
              * @param int $date timestamp события
              * @param string $ip адрес устройства

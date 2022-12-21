@@ -62,13 +62,14 @@
              */
             public function getCamshot($domophone_id, $date, $event_id = false)
             {
-                $mongo = loadBackend('files');
+                $files = loadBackend('files');
                 $camshot_data = [];
 
                 if ($event_id === false) {
                     // TODO: получение кадра события от FRS по дате
 
                     //получение кадра с DVR-серевера, если нет кадра от FRS
+                    // TODO переделать на получение кадра из бэкенда dvr
                     $households = loadBackend("households");
                     $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone_id, "output" => "0" ]);
                     if ($entrances && $entrances[0]) {
@@ -84,7 +85,7 @@
                                     system("ffmpeg -y -i $prefix/$ts_event-preview.mp4 -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                 }
                                 if (file_exists($filename)) {
-                                    $camshot_data[self::COLUMN_IMAGE_UUID] = $this->BSONToGUIDv4($mongo->addFile(
+                                    $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
                                         "camshot",
                                         fopen($filename, 'rb'),
                                         [
@@ -105,23 +106,6 @@
                 }
 
                 return $camshot_data;
-            }
-
-            //получение кадра события из коллекции файлов
-            /**
-             * @inheritDoc
-             */
-            public function getEventImage($image_uuid)
-            {
-                $mongo = loadBackend('files');
-                try {
-                    $id = substr(str_replace('-', '', $image_uuid), 8);
-                    return $mongo->getFile($id);
-                } catch (\Exception $e) {
-
-                }
-
-                return [];
             }
 
             /**
@@ -179,13 +163,8 @@
              */
             public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
             {
-                $query = "select ip from houses_domophones where house_domophone_id = $domophone_id";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    $ip =  $result[0]['ip'];
-                } else {
-                    return false;
-                }
+                $households = loadBackend('households');
+                $ip = $households->getDomophone($domophone_id)['ip'];
 
                 return $this->addDoorOpenData($date, $ip, $event_type, $door, $detail);
             }
@@ -272,26 +251,12 @@
                 return $this->clickhouse->select($query);
             }
 
-            private function BSONToGUIDv4($bson)
-            {
-                $hex = '00000000' . $bson;
-                return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split($hex, 4));
-            }
-
             public function getDomophoneId($ip)
             {
-                $query = "
-                    select
-                        hd.house_domophone_id
-                    from
-                        houses_domophones hd
-                    where
-                        hd.ip = '$ip'
-                ";
-
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    return $result[0]['house_domophone_id'];
+                $households = loadBackend('households');
+                $result = $households->getDomophones('ip', $ip);
+                if ($result && $result[0]) {
+                    return $result[0]['domophoneId'];
                 }
 
                 return false;
@@ -299,106 +264,46 @@
 
             private function getDomophoneDescription($domophone_id, $domophone_output)
             {
-                $query = "
-                    select
-                        he.entrance description
-                    from
-                        houses_entrances he
-                    where
-                        he.house_domophone_id = $domophone_id and he.domophone_output = $domophone_output
-                ";
-
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    return $result[0]['description'];
+                $households = loadBackend('households');
+                $result = $households->getEntrances('domophoneId', ['domophoneId' => $domophone_id, 'output' => $domophone_output]);
+                if ($result && $result[0]) {
+                    return $result[0]['entrance'];
                 }
 
                 return false;
+            }
+
+            private function getFlatId($item) {
+                return $item['flatId'];
             }
 
             //получение списка flat_id по RFID ключу на домофоне
             private function getFlatIdByRfid($rfid, $domophone_id)
             {
-                $query = "
-                    select
-                        r.access_to flat_id
-                    from
-                        houses_rfids r
-                        inner join houses_entrances_flats hef
-                            on hef.house_flat_id = r.access_to
-                        inner join houses_entrances he
-                            on he.house_entrance_id = hef.house_entrance_id
-                        inner join houses_domophones hd
-                            on hd.house_domophone_id = he.house_domophone_id
-                            and hd.house_domophone_id = $domophone_id
-                    where
-                        r.rfid = '$rfid'
-                        and r.access_type = 2
-                ";
-
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    return array_map(function ($row) {
-                        return $row['flat_id'];
-                    }, $result);
-                }
-
-                return false;
+                $households = loadBackend('households');
+                $flats1 = array_map('self::getFlatId', $households->getFlats('rfId', ['rfId' => $rfid]));
+                $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $domophone_id));
+                return array_intersect($flats1, $flats2);
             }
 
             //получение списка flat_id по коду открытия на устройстве
             private function getFlatIdByCode($code, $domophone_id)
             {
-                $query = "
-                    select
-                        hf.house_flat_id flat_id
-                    from
-                        houses_domophones hd
-                        inner join houses_entrances he
-                            on hd.house_domophone_id = he.house_domophone_id
-                        inner join houses_entrances_flats hef
-                            on he.house_entrance_id = hef.house_entrance_id
-                        inner join houses_flats hf
-                            on hef.house_flat_id = hf.house_flat_id
-                            and hf.open_code = '$code'
-                        where
-                            hd.house_domophone_id = $domophone_id
-                ";
-
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    return array_map(function ($row) {
-                        return $row['flat_id'];
-                    }, $result);
-                }
-
-                return false;
+                $households = loadBackend('households');
+                $flats1 = array_map('self::getFlatId', $households->getFlats('openCode', ['openCode' => $code]));
+                $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $domophone_id));
+                return array_intersect($flats1, $flats2);
             }
 
             //получение списка flat_id по телефону пользователя на устройстве
             private function getFlatIdByUserPhone($user_phone, $domophone_id)
             {
-                $query = "
-                    select
-                        hfs.house_flat_id flat_id
-                    from
-                        houses_subscribers_mobile hsm
-                        inner join houses_flats_subscribers hfs
-                            on hsm.house_subscriber_id = hfs.house_subscriber_id
-                        inner join houses_entrances_flats hef
-                            on hfs.house_flat_id = hef.house_flat_id
-                        inner join houses_entrances he
-                            on hef.house_entrance_id = he.house_entrance_id
-                            and he.house_domophone_id = $domophone_id
-                        where
-                            hsm.id = '$user_phone'
-                ";
-
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    return array_map(function ($row) {
-                        return $row['flat_id'];
-                    }, $result);
+                $households = loadBackend('households');
+                $result = $households->getSubscribers('mobile', $user_phone);
+                if ($result && $result[0]) {
+                    $flats1 = array_map('self::getFlatId', $households->getFlats('subscriberId', ['id' => $user_phone]));
+                    $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $domophone_id));
+                    return array_intersect($flats1, $flats2);
                 }
 
                 return false;
@@ -407,21 +312,10 @@
             //получение flat_id по номеру квартиры на устройстве
             private function getFlatIdByNumber($flat_number, $domophone_id)
             {
-                $query = "
-                    select
-                    hef.house_flat_id flat_id
-                    from
-                        houses_entrances he
-                        inner join houses_entrances_flats hef
-                            on he.house_entrance_id = hef.house_entrance_id
-                    where
-                        he.house_domophone_id = $domophone_id
-                        and hef.apartment = $flat_number
-                ";
-
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    return $result[0]['flat_id'];
+                $households = loadBackend('households');
+                $result = $households->getFlats('apartment', ['domophoneId' => $domophone_id, 'flatNumber' => $flat_number]);
+                if ($result && $result[0]) {
+                    return $result[0]['flatId'];
                 }
 
                 return false;
@@ -430,28 +324,14 @@
             //получение flat_id по префиксу калитки и номеру квартиры
             private function getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id)
             {
-                $query = "
-                    select
-                        hef.house_flat_id flat_id
-                    from
-                        houses_entrances he
-                        inner join houses_houses_entrances hhe
-                            on he.house_entrance_id = hhe.house_entrance_id
-                            and hhe.prefix = $prefix
-                        inner join houses_entrances_flats hef
-                            on he.house_entrance_id = hef.house_entrance_id
-                            and hef.apartment = $flat_number
-                        inner join houses_flats hf
-                            on hef.house_flat_id = hf.house_flat_id
-                            and hf.address_house_id = hhe.address_house_id
-                    where
-                        he.house_domophone_id = $domophone_id
-                        and he.domophone_output = 0
-                ";
-
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-                if (count($result)) {
-                    return $result[0]['flat_id'];
+                $households = loadBackend('households');
+                $result = $households->getFlats('flatIdByPrefix', [
+                    'prefix' => $prefix,
+                    'flatNumber' => $flat_number,
+                    'domophoneId' => $domophone_id,
+                ]);
+                if ($result && $result[0]) {
+                    return $result[0]['flatId'];
                 }
 
                 return false;
@@ -459,56 +339,9 @@
 
             private function getEntranceCount($flat_id)
             {
-                $query = "
-                    select
-                        count(*) entrance_count
-                    from
-                        houses_entrances_flats hef
-                        inner join houses_entrances he
-                            on hef.house_entrance_id = he.house_entrance_id
-                            and he.domophone_output = 0
-                    where
-                        hef.house_flat_id = $flat_id
-                ";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
-
-                if ($result && count($result)) {
-                    return $result[0]['entrance_count'];
-                }
-
-                return 0;
-            }
-
-            private function updateRfidLastSeen($flat_list, $rfid, $date)
-            {
-                $fl = implode(",", $flat_list);
-                $query = "
-                    update
-                        houses_rfids
-                    set
-                        last_seen = $date
-                    where
-                        access_type = 2
-                        and access_to in ($fl)
-                        and rfid = '$rfid'
-                ";
-
-                $this->db->query($query);
-            }
-
-            private function updateFlatLastOpened($flat_list, $date)
-            {
-                $fl = implode(",", $flat_list);
-                $query = "
-                    update
-                        houses_flats
-                    set
-                        last_opened = $date
-                    where
-                        house_flat_id in ($fl)
-                ";
-
-                $this->db->query($query);
+                $households = loadBackend('households');
+                $result = $households->getEntrances('flatId', $flat_id);
+                return count($result);
             }
 
             private function processEvents()
@@ -533,7 +366,7 @@
                     $flat_list = [];
 
                     $plog_date = $row['date'];
-                    $domophone_id = $this->getDomophoneId($row["ip"]);  // TODO: сделать получение domophone_id из бэкенда
+                    $domophone_id = $this->getDomophoneId($row["ip"]);
                     $event_type = (int)$row['event'];
 
                     $event_data[self::COLUMN_DATE] = $plog_date;
@@ -554,7 +387,6 @@
                         if (!$flat_list) {
                             continue;
                         }
-                        $this->updateRfidLastSeen($flat_list, $rfid_key, $plog_date);
                     }
 
                     if ($event_type == self::EVENT_OPENED_BY_CODE) {
@@ -619,7 +451,7 @@
                 $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $ip = $row['ip'];
-                    $domophone_id = $this->getDomophoneId($row["ip"]);  // TODO: сделать получение domophone_id из бэкенда
+                    $domophone_id = $this->getDomophoneId($row["ip"]);
 
                     $event_data = [];
                     $event_data[self::COLUMN_DATE] = $row['date'];
@@ -826,6 +658,8 @@
                             continue;
                         }
                     }
+
+                    $this->getEntranceCount($event_data[self::COLUMN_FLAT_ID]);
 
                     //получение кадра события
                     $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DATE]);
