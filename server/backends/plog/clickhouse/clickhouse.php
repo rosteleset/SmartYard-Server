@@ -7,9 +7,6 @@
     namespace backends\plog
     {
 
-        use backends\files\files;
-        use MongoDB\BSON\UTCDateTime;
-
         /**
          * clickhouse archive class
          */
