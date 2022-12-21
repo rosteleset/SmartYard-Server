@@ -5,3 +5,4 @@ redis_server_port = 6379
 redis_server_auth = false
 log.outfile = false
 trunk = "first"
+lang = "ru"

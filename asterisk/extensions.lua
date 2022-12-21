@@ -123,8 +123,8 @@ function blacklist(flatId)
         log_debug("blacklist: yes")
         app.Answer()
         app.Wait(2)
-        app.Playback("ru/sorry")
-        app.Playback("ru/feature-not-avail-line")
+        app.Playback(lang .. "/sorry")
+        app.Playback(lang .. "/feature-not-avail-line")
         app.Wait(1)
         return true
     end
