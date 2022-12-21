@@ -419,7 +419,7 @@
 
             $metadata = $files->getFileMetadata($uuid);
 
-            echo $msgId = $inbox->sendMessage($metadata['subscriberId'], "Видео готово к загрузке", $config['api']['mobile']."/$uuid\nВнимание! Файлы на сервере будут доступны в течение 3 суток.");
+            $msgId = $inbox->sendMessage($metadata['subscriberId'], "Видео готово к загрузке", $config['api']['mobile']."/cctv/download/$uuid\nВнимание! Файлы на сервере будут доступны в течение 3 суток.");
             
             exit(0);
         }
