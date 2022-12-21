@@ -25,7 +25,7 @@
 
         echo "usage: {$argv[0]}
         common parts:
-            [--parent-pid=pid]
+            [--parent-pid=<pid>]
             [--debug]
         demo server:
             [--run-demo-server]
@@ -45,6 +45,8 @@
             [--cron=<minutely|5min|hourly|daily|monthly>]
             [--install-crontabs]
             [--uninstall-crontabs]
+        dvr:
+            [--run-record-download=<id>]
         \n";
 
         exit(1);
