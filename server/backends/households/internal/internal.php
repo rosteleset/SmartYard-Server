@@ -226,7 +226,7 @@
                         ];
                         break;
 
-                    case "subscriber":
+                    case "subscriberId":
                         $q = "
                             select
                                 house_flat_id
@@ -240,14 +240,14 @@
                         ];
                         break;
 
-                    case "house":
+                    case "houseId":
                         $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id order by flat";
                         $p = [
                             "address_house_id" => $params,
                         ];
                         break;
 
-                    case "domophone":
+                    case "domophoneId":
                         $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id order by flat";
                         $p = [
                             "house_domophone_id" => $params,
