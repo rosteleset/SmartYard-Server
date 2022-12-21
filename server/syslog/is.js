@@ -18,6 +18,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
     // Фильтр сообщений, не несущих смысловой нагрузки
     if (
+        !is_msg ||
         is_msg.indexOf("STM32.DEBUG") >= 0 ||
         is_msg.indexOf("Вызов метода") >= 0 ||
         is_msg.indexOf("Тело запроса") >= 0 ||
