@@ -17,7 +17,31 @@
  */
 
 auth();
-response();
+
+$cameraId = (int)@$postdata['id'];
+
+// приложение везде при работе с архивом передаёт время по часовому поясу Москвы.
+date_default_timezone_set('Europe/Moscow');
+$from = strtotime(@$postdata['from']);
+$to = strtotime(@$postdata['to']);
+
+if (!$cameraId || !$from || !$to) {
+    response(404);
+}
+
+$dvr_exports = loadBackend("dvr_exports");
+
+// проверяем, не был ли уже запрошен данный кусок из архива.
+$check = $dvr_exports->checkDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
+if (@$check['id']) {
+    response(200, $check['id']);
+}
+
+// если такой кусок ещё не запрашивали, то добавляем запрос на скачивание.
+$res = (int)$dvr_exports->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
+exec("php ". __DIR__."/../../cli.php --run-record-download=$res >/dev/null 2>/dev/null &");
+
+response(200, $res);
 
 /*
 $cam = (int)@$postdata['id'];

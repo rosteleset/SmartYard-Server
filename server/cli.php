@@ -410,4 +410,20 @@
         exit(0);
     }
 
+    if (count($args) == 1 && array_key_exists("--run-record-download", $args) && isset($args["--run-record-download"])) {
+        $recordId = (int)$args["--run-record-download"];
+        $dvr_exports = @loadBackend("dvr_exports");
+        if ($dvr_exports && ($uuid = $dvr_exports->runDownloadRecordTask($recordId))) {
+            $inbox = loadBackend("inbox");
+            $files = loadBackend("files");
+
+            $metadata = $files->getFileMetadata($uuid);
+
+            $msgId = $inbox->sendMessage($metadata['subscriberId'], "Видео готово к загрузке", $config['api']['mobile']."/cctv/download/$uuid\nВнимание! Файлы на сервере будут доступны в течение 3 суток.");
+            
+            exit(0);
+        }
+        exit(1);
+    }
+
     usage();
