@@ -9,7 +9,7 @@ cjson = require "cjson"
 md5 = (require 'md5').sumhexa
 redis = require "redis"
 
-dofile("config.lua")
+require "config"
 
 redis = redis.connect({
     host = redis_server_host,
