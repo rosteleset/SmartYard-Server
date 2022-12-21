@@ -5,7 +5,7 @@ const mdStorage = {};
 const mdStop = async (host) => {
     const now = Math.round((Date.now() / 1000));
     await API.motionDetection({ date: now, ip: host, motionStart: false });
-    delete mdStorage.host;
+    delete mdStorage[host];
 }
 
 const mdTimer = (host, delay) => {
