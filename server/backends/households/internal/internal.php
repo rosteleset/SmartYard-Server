@@ -598,7 +598,8 @@
                     "first_time" => "firstTime",
                     "nat" => "nat",
                     "locks_are_open" => "locksAreOpen",
-                    "comment" => "comment"
+                    "comment" => "comment",
+                    "ip" => "ip",
                 ];
 
                 if (!checkInt($query)) {
@@ -627,6 +628,11 @@
                                   select house_entrance_id from houses_entrances_flats where house_flat_id = $query
                                 ) group by house_domophone_id
                               ) order by house_domophone_id";
+                        break;
+
+                    case "ip":
+                        $query = long2ip(ip2long($query));
+                        $q = "select * from houses_domophones where ip = '$query'";
                         break;
 
                     case "subscriber":
