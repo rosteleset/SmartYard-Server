@@ -3,11 +3,14 @@ const {hw: { qtech }} = require("./config.json");
 const thisMoment = require("./utils/formatDate");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
+const { getTimestamp } = require("./utils/formatDate");
+const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(qtech);
 let gate_rabbits = {};
 
 syslog.on("message", async ({ date, host, protocol, message }) => {
-  const now = thisMoment();
+  const now = parseInt(getTimestamp(date));
+
   let qtMsg = message.split(" - - - ")[1].trim();
   let qtMsgParts = qtMsg.split(":").filter(Boolean);
 
@@ -58,7 +61,8 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
 
   //Детектор движения
   if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Send Photo") {
-    await API.motionDetection(host, true);
+    await API.motionDetection({ date: now, ip: host, motionStart: true });
+    await mdTimer(host, 5000);
   }
 
   /**Открытие двери используя кнопку*/

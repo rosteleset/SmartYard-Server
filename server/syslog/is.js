@@ -5,6 +5,7 @@ const { hw: { is } } = require("./config.json");
 const { getTimestamp } = require("./utils/formatDate");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
+const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(is);
 
 const gateRabbits = [];
@@ -25,7 +26,8 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
         is_msg.indexOf("DDNS") >= 0 ||
         is_msg.indexOf("Загружена конфигурация") >= 0 ||
         is_msg.indexOf("Interval") >= 0 ||
-        is_msg.indexOf("[Server]") >= 0
+        is_msg.indexOf("[Server]") >= 0 ||
+        is_msg.indexOf("Proguard start") >= 0
     ) {
         return;
     }
@@ -38,6 +40,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
     // Детектор движения: старт
     if (is_msg.indexOf("EVENT: Detected motion") >= 0) {
         await API.motionDetection({ date: now, ip: host, motionStart: true });
+        await mdTimer(host, 5000);
     }
 
     // Вызов квартиры в режиме калитки с префиксом
