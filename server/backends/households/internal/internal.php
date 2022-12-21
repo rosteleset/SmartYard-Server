@@ -602,13 +602,10 @@
                     "ip" => "ip",
                 ];
 
-                if (!checkInt($query)) {
-                    setLastError("query");
-                    return false;
-                }
-
                 switch ($by) {
                     case "house":
+                        $query = (int)$query;
+
                         $q = "select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
                                   select house_entrance_id from houses_houses_entrances where address_house_id = $query
@@ -617,12 +614,16 @@
                         break;
 
                     case "entrance":
+                        $query = (int)$query;
+
                         $q = "select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id = $query group by house_domophone_id
                               ) order by house_domophone_id";
                         break;
 
                     case "flat":
+                        $query = (int)$query;
+
                         $q = "select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
                                   select house_entrance_id from houses_entrances_flats where house_flat_id = $query
@@ -632,10 +633,13 @@
 
                     case "ip":
                         $query = long2ip(ip2long($query));
+
                         $q = "select * from houses_domophones where ip = '$query'";
                         break;
 
                     case "subscriber":
+                        $query = (int)$query;
+
                         $q = "select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
                                   select house_entrance_id from houses_entrances_flats where house_flat_id in (
