@@ -66,7 +66,7 @@
         $h .= "<span class=\"inbox-message-time\">".date("H:i", $dd)."</span></div></div>";
     //        $h .= "<script type=\"application/javascript\">scrollingElement = (document.scrollingElement || document.body);scrollingElement.scrollTop = scrollingElement.scrollHeight;</script>";
     }
-    $html = str_replace("%c", $h, file_get_contents(__DIR__ . "/../../templates/inbox.html"));
+    $html = str_replace("%c", $h, file_get_contents(__DIR__ . "/../../mobile/templates/inbox.html"));
 
     // помечаем все сообщения как прочитанные
     $inbox->markMessageAsReaded($subscriber_id);
