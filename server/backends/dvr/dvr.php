@@ -33,10 +33,10 @@
              * @return string URL with DVR archive on a DVR-server
              */
             abstract public function getUrlOfRecord($cam, $start, $finish);
-            
+
             /**
              * @param object $cam Camera object
-             * @param integer $time unixtime of screenshot 
+             * @param integer $time unixtime of screenshot
              * @return string URL with mp4-screenshot on a DVR-server
              */
             abstract public function getUrlOfMP4Screenshot($cam, $time = false);
