@@ -387,7 +387,6 @@
                     $isdn = loadBackend("isdn");
                     $sip = loadBackend("sip");
                     $server = $sip->server("extension", $params["extension"]);
-                    $stun = $sip->stun($params["extension"]);
 
                     $params = [
                         "token" => $params["token"],
@@ -407,6 +406,7 @@
                         "title" => i18n($config["language"], "sip", "incomingTitle"),
                     ];
 
+                    $stun = $sip->stun($params["extension"]);
                     if ($stun) {
                         $params["stun"] = $stun;
                         $params["stunTransport"] = "udp";
