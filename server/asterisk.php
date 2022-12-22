@@ -404,7 +404,7 @@
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
                         "flatNumber" => $params["flatNumber"],
-                        "title" => $server["incoming_title"],
+                        "title" => i18n($config["language"], "sip", "incomingTitle"),
                     ];
 
                     if ($stun) {
