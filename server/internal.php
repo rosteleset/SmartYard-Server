@@ -4,6 +4,7 @@
     require_once "backends/backend.php";
     require_once "utils/loader.php";
     require_once "utils/db_ext.php";
+    require_once "utils/i18n.php";
 
     $config = false;
 

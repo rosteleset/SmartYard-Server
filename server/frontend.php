@@ -31,6 +31,7 @@
     require_once "utils/max_upload_size.php";
     require_once "utils/db_ext.php";
     require_once "utils/debug.php";
+    require_once "utils/i18n.php";
 
     require_once "backends/backend.php";
 

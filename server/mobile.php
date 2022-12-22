@@ -10,6 +10,7 @@ require_once "utils/checkstr.php";
 require_once "utils/purifier.php";
 require_once "utils/error.php";
 require_once "utils/apache_request_headers.php";
+require_once "utils/i18n.php";
 
 
 $LanTa_services = [

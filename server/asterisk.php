@@ -8,6 +8,7 @@
     require_once "utils/checkint.php";
     require_once "utils/db_ext.php";
     require_once "utils/debug.php";
+    require_once "utils/i18n.php";
 
     require_once "backends/backend.php";
 
