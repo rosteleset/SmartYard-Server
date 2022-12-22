@@ -115,9 +115,9 @@
                 if (!$time) $time = now();
 
                 if (loadBackend("dvr")->serverType($prefix)['type'] == 'nimble') {
-                    return "$prefix/dvr_thumbnail_$ts_event.mp4";
+                    return "$prefix/dvr_thumbnail_$time.mp4";
                 } else {
-                    return "$prefix/$ts_event-preview.mp4";
+                    return "$prefix/$time-preview.mp4";
                 }
             }
 
