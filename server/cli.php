@@ -422,7 +422,7 @@
 
             $metadata = $files->getFileMetadata($uuid);
 
-            $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n($config["language"], "dvr.videoReady"), i18n($config["language"], "dvr.threeDays", $config['api']['mobile'], $uuid));
+            $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $config['api']['mobile'], $uuid));
         }
         exit(0);
     }
