@@ -85,6 +85,10 @@
         foreach ($entrances as $entrance) {
             $flats = $households->getFlats('houseId', $entrance['houseId']);
 
+            if (!$flats) {
+                continue;
+            }
+
             $begin = reset($flats)['flat'];
             $end = end($flats)['flat'];
 
