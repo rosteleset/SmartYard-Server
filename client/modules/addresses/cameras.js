@@ -151,6 +151,13 @@
                     },
                 },
                 {
+                    id: "frs",
+                    type: "select2",
+                    title: i18n("addresses.frs"),
+                    value: "-",
+                    options: frss,
+                },
+                {
                     id: "geo",
                     type: "text",
                     title: i18n("addresses.geo"),
@@ -164,39 +171,24 @@
                     },
                 },
                 {
-                    id: "direction",
+                    id: "posision",
                     type: "text",
-                    title: i18n("addresses.direction"),
-                    placeholder: "0.0",
-                    value: "0.0",
-                },
-                {
-                    id: "angle",
-                    type: "text",
-                    title: i18n("addresses.angle"),
-                    placeholder: "0.0",
-                    value: "0.0",
-                },
-                {
-                    id: "distance",
-                    type: "text",
-                    title: i18n("addresses.distance"),
-                    placeholder: "0.0",
-                    value: "0.0",
-                },
-                {
-                    id: "frs",
-                    type: "select2",
-                    title: i18n("addresses.frs"),
-                    value: "-",
-                    options: frss,
+                    title: i18n("addresses.position"),
+                    placeholder: "0,0,0",
+                    hint: i18n("addresses.direction") + ", " + i18n("addresses.angle") + ", " + i18n("addresses.distance"),
+                    value: "0,0,0",
+                    validate: v => {
+                        const regex = new RegExp('^\\d+,\\d+,\\d+$', 'gm');
+
+                        return regex.exec(v) !== null;
+                    },
                 },
                 {
                     id: "md",
                     type: "text",
                     title: i18n("addresses.md"),
                     placeholder: "0,0,0,0",
-                    hint: "Left,Top,Width,Height",
+                    hint: i18n("addresses.left") + ", " + i18n("addresses.right") + ", " + i18n("addresses.width") + ", " + i18n("addresses.height"),
                     placeholder: "0,0,0,0",
                     value: "0,0,0,0",
                     validate: v => {
@@ -223,13 +215,17 @@
             ],
             callback: result => {
                 let g = result.geo.split(",");
-                result.lon = g[0];
-                result.lat = g[1];
+                result.lon = $.trim(g[0]);
+                result.lat = $.trim(g[1]);
+                let p = result.position.cplit(",")
+                result.direction = $.trim(p[0]);
+                result.angle = $.trim(p[1]);
+                result.distance = $.trim(p[2]);
                 let m = result.md.split(",");
-                result.mdLeft = m[0];
-                result.mdTop = m[1];
-                result.mdWidth = m[2];
-                result.mdHeight = m[3];
+                result.mdLeft = $.trim(m[0]);
+                result.mdTop = $.trim(m[1]);
+                result.mdWidth = $.trim(m[2]);
+                result.mdHeight = $.trim(m[3]);
                 modules.addresses.cameras.doAddCamera(result);
             },
         });
@@ -374,11 +370,18 @@
                         },
                     },
                     {
+                        id: "frs",
+                        type: "select2",
+                        title: i18n("addresses.frs"),
+                        value: camera.frs,
+                        options: frss,
+                    },
+                    {
                         id: "geo",
                         type: "text",
                         title: i18n("addresses.geo"),
                         placeholder: "0,0",
-                        hint: i18n("addresses.lon") + "," + i18n("addresses.lat"),
+                        hint: i18n("addresses.lon") + ", " + i18n("addresses.lat"),
                         value: camera.lon + "," + camera.lat,
                         validate: v => {
                             const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
@@ -387,40 +390,25 @@
                         },
                     },
                     {
-                        id: "direction",
+                        id: "position",
                         type: "text",
-                        title: i18n("addresses.direction"),
-                        placeholder: "0.0",
-                        value: camera.direction,
-                    },
-                    {
-                        id: "angle",
-                        type: "text",
-                        title: i18n("addresses.angle"),
-                        placeholder: "0.0",
-                        value: camera.angle,
-                    },
-                    {
-                        id: "distance",
-                        type: "text",
-                        title: i18n("addresses.distance"),
-                        placeholder: "0.0",
-                        value: camera.distance,
-                    },
-                    {
-                        id: "frs",
-                        type: "select2",
-                        title: i18n("addresses.frs"),
-                        value: camera.frs,
-                        options: frss,
+                        title: i18n("addresses.position"),
+                        placeholder: "0,0.0",
+                        value: camera.direction + "," + camera.angle + "," + camera.distance,
+                        hint: i18n("addresses.direction") + ", " + i18n("addresses.angle") + ", " + i18n("addresses.distance"),
+                        validate: v => {
+                            const regex = new RegExp('^\\d+,\\d+,\\d+$', 'gm');
+
+                            return regex.exec(v) !== null;
+                        },
                     },
                     {
                         id: "md",
                         type: "text",
                         title: i18n("addresses.md"),
                         placeholder: "0,0,0,0",
-                        hint: "Left,Top,Width,Height",
-                        value: camera.mdLeft + "," + camera.mdTop + "," + camera.mdWidth + "," + camera.mdHeight,
+                        hint: i18n("addresses.left") + ", " + i18n("addresses.right") + ", " + i18n("addresses.width") + ", " + i18n("addresses.height"),
+                        value: camera.mdLeft + ", " + camera.mdTop + ", " + camera.mdWidth + ", " + camera.mdHeight,
                         validate: v => {
                             const regex = new RegExp('^\\d+,\\d+,\\d+,\\d+$', 'gm');
 
@@ -447,13 +435,17 @@
                 ],
                 callback: result => {
                     let g = result.geo.split(",");
-                    result.lon = g[0];
-                    result.lat = g[1];
+                    result.lon = $.trim(g[0]);
+                    result.lat = $.trim(g[1]);
+                    let p = result.position.cplit(",")
+                    result.direction = $.trim(p[0]);
+                    result.angle = $.trim(p[1]);
+                    result.distance = $.trim(p[2]);
                     let m = result.md.split(",");
-                    result.mdLeft = m[0];
-                    result.mdTop = m[1];
-                    result.mdWidth = m[2];
-                    result.mdHeight = m[3];
+                    result.mdLeft = $.trim(m[0]);
+                    result.mdTop = $.trim(m[1]);
+                    result.mdWidth = $.trim(m[2]);
+                    result.mdHeight = $.trim(m[3]);
                     if (result.delete === "yes") {
                         modules.addresses.cameras.deleteCamera(cameraId);
                     } else {
