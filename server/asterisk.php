@@ -395,7 +395,7 @@
                         "extension" => $params["extension"],
                         "server" => $server["ip"],
                         "port" => $server["sip_tcp_port"],
-                        "transport" => 'tcp',
+                        "transport" => "tcp",
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
                         "ttl" => 30,
