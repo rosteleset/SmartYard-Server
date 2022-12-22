@@ -4,14 +4,13 @@
 
         public function __construct($dsn, $username = null, $password = null, $options = null)
         {
-            $db = parent::__construct($dsn, $username, $password, $options);
+            parent::__construct($dsn, $username, $password, $options);
 
-            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            return $db;
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
 
-        function trimParams($map) {
+        function trimParams($map)
+        {
             $remap = [];
 
             foreach ($map as $key => $value) {
@@ -25,7 +24,8 @@
             return $remap;
         }
 
-        function insert($query, $params = [], $options = []) {
+        function insert($query, $params = [], $options = [])
+        {
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -46,7 +46,8 @@
             }
         }
 
-        function modify($query, $params = [], $options = []) {
+        function modify($query, $params = [], $options = [])
+        {
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -67,7 +68,8 @@
             }
         }
 
-        function modifyEx($query, $map, $params, $options = []) {
+        function modifyEx($query, $map, $params, $options = [])
+        {
             $mod = false;
             try {
                 foreach ($map as $db => $param) {
@@ -96,7 +98,8 @@
             }
         }
 
-        function get($query, $params = [], $map = [], $options = []) {
+        function get($query, $params = [], $map = [], $options = [])
+        {
             try {
                 if ($params) {
                     $sth = $this->prepare($query);
