@@ -110,6 +110,20 @@
             /**
              * @inheritDoc
              */
+            public function getUrlOfMP4Screenshot($cam, $time = false) {
+                $prefix = $cam['dvrStream'];
+                if (!$time) $time = now();
+
+                if (loadBackend("dvr")->serverType($prefix)['type'] == 'nimble') {
+                    return "$prefix/dvr_thumbnail_$time.mp4";
+                } else {
+                    return "$prefix/$time-preview.mp4";
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getRanges($cam) {
                 $dvr = $this->serverType($cam['dvrStream']);
 
