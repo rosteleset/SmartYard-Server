@@ -15,7 +15,7 @@
 
     //TODO:вынести куда-нибудь коды событий для последующего переиспользования.
     try {
-        $events = @json_decode(file_get_contents(__DIR__ . "../../../syslog/utils/events.json"), true);
+        $events = @json_decode(file_get_contents(__DIR__ . "/../../../syslog/utils/events.json"), true);
     } catch (Exception $e) {
         error_log(print_r($e, true));
         response(555, [
