@@ -1,9 +1,10 @@
 <?php
-    $plog = loadBackend('plog');
-    $img = $plog->getEventImage($param);
+    $files = loadBackend('files');
+    $uuid = $files->fromGUIDv4($param);
+    $img = $files->getFile($uuid);
     if ($img) {
         $content_type = "image/jpeg";
-        $meta_data = json_decode(MongoDB\BSON\toJSON(MongoDB\BSON\fromPHP($img['fileInfo']['metadata'])));
+        $meta_data = $files->getFileMetadata($uuid);
         if (isset($meta_data->contentType)) {
             $content_type = $meta_data->contentType;
         }
