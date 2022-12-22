@@ -35,6 +35,7 @@
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         echo "can't open database " . $config["db"]["dsn"] . "\n";
+        echo $e->getMessage() . "\n";
         exit(1);
     }
 
