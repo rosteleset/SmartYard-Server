@@ -422,10 +422,8 @@
             $metadata = $files->getFileMetadata($uuid);
 
             $msgId = $inbox->sendMessage($metadata['subscriberId'], "Видео готово к загрузке", $config['api']['mobile']."/cctv/download/$uuid\nВнимание! Файлы на сервере будут доступны в течение 3 суток.");
-            
-            exit(0);
         }
-        exit(1);
+        exit(0);
     }
 
     usage();
