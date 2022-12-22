@@ -2,6 +2,15 @@
 
     class PDO_EXT extends PDO {
 
+        public function __construct($dsn, $username = null, $password = null, $options = null)
+        {
+            $db = parent::__construct($dsn, $username, $password, $options);
+
+            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            return $db;
+        }
+
         function trimParams($map) {
             $remap = [];
 
