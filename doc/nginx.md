@@ -1,0 +1,68 @@
+```
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        server_name rbt.example.org;
+
+        location / {
+                root /opt/rbt/client;
+                try_files $uri $uri/ =404;
+        }
+
+        location /frontend {
+                rewrite ^.*$ /frontend.php last;
+        }
+
+        location = /frontend.php {
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /asterisk {
+                rewrite ^.*$ /asterisk.php last;
+        }
+
+        location = /asterisk.php {
+                allow 127.0.0.1;
+                deny all;
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /internal {
+                rewrite ^.*$ /internal.php last;
+        }
+
+        location = /internal.php {
+                allow 127.0.0.1;
+                deny all;
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /mobile {
+                rewrite ^.*$ /mobile.php last;
+        }
+
+        location = /mobile.php {
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /wss {
+                proxy_pass http://127.0.0.1:8088/ws;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_read_timeout 43200000;
+        }
+}
+```
