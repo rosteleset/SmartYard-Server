@@ -1,15 +1,22 @@
 asterisk
 
 ```
-wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-18-current.tar.gz -O - | gzip -dc | tar -xvf -
+wget https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-18-current.tar.gz -O - | gzip -dc | tar -xvf -
 
 cd asterisk-18-...
 
 ./configure --with-jansson-bundled
 
+make menuconfig
+
 make
 
 make install
+```
+
+```
+groupadd asterisk
+useradd -g asterisk -s /bin/true asterisk
 ```
 
 /etc/systemd/system/asterisk.service
