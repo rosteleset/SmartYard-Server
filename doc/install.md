@@ -26,10 +26,9 @@ edit db, redis and email settings (email - optional)
 
 ```
 cp server/config/config.sample.json server/config/config.json
-vi server/config/config.json
 ```
 
-initializing db
+initialize db
 
 ```
 php server/cli.php --init-db
