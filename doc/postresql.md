@@ -1,4 +1,9 @@
 ```
+su -l postrgresql
+psql
+```
+
+```
 DROP DATABASE rbt;
 DROP USER rbt;
 CREATE DATABASE rbt;
