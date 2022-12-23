@@ -3,7 +3,13 @@ server {
         listen 80 default_server;
         listen [::]:80 default_server;
 
-        server_name rbt.example.org;
+# SSL        
+#        listen 443 ssl http2 default_server;
+#        listen [::]:443 ssl http2 default_server;
+#        ssl_certificate /etc/ssl/cert.pem;
+#        ssl_certificate_key /etc/ssl/key.pem;
+
+        server_name example.com;
 
         location / {
                 root /opt/rbt/client;
