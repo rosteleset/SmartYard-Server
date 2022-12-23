@@ -11,14 +11,11 @@ echo "extension=mongodb.so" >/etc/php/8.1/mods-available/mongodb.ini
 ln -sf /etc/php/8.1/mods-available/mongodb.ini /etc/php/8.1/cli/conf.d/30-mongodb.ini
 ln -sf /etc/php/8.1/mods-available/mongodb.ini /etc/php/8.1/fpm/conf.d/30-mongodb.ini
 
-apt-get purge lua-sec lua-socket
+apt-get purge -y lua-sec lua-socket
 
 luarocks-5.4 install luasec
-
 luarocks-5.4 install inspect
-
 luarocks-5.4 install luasocket
-
 luarocks-5.4 install lua-cjson 2.1.0-1
 
 wget http://ftp.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1o-1_amd64.deb
