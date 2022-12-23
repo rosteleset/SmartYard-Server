@@ -9,7 +9,7 @@
     function i18n($msg, ...$args) {
         $lang = language();
         try {
-            $lang = json_decode(file_get_contents(__DIR__ . "../i18n/$lang.json"), true);
+            $lang = json_decode(file_get_contents(__DIR__ . "/../i18n/$lang.json"), true);
         } catch (\Exception $e) {
             $lang = [];
         }

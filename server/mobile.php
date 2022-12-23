@@ -248,6 +248,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //                $response_data_source = 'cache';
 //                header("X-Dm-Api-Data-Source: $response_data_source");
 //                response($cache['code'], $cache['data']);
+                $response_data_source = 'db';
+                $response_cache_ttl = 60;
+                header("X-Dm-Api-Data-Source: $response_data_source");
+                require_once __DIR__ . "/mobile/{$module}/{$method}.php";
             } else {
                 if (array_key_exists('X-Dm-Api-Refresh', apache_request_headers())) {
                     // $redis->incr('cache-force-miss');
