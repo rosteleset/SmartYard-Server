@@ -380,6 +380,7 @@
                         $id = 'VISIT'; // ВИЗИТ
                         break;
                     case 'KMG-100':
+                    case 'KKM-100S2':
                         $id = 'CYFRAL'; // ЦИФРАЛ
                         break;
                     case 'KM100-7.1':

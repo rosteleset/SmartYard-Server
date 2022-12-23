@@ -10,9 +10,10 @@
         "bk-100m",
         "com-100u",
         "com-220u",
+        "factorial_8x8",
+        "kkm-100s2",
         "km100-7.1",
         "km100-7.5",
-        "kmg-100",
-        "factorial_8x8"
+        "kmg-100"
     ]
 }
