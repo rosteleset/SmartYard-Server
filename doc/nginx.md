@@ -70,5 +70,9 @@ server {
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_read_timeout 43200000;
         }
+        
+        location /.well-known {
+                root /var/www/html;
+        }
 }
 ```
