@@ -7,10 +7,6 @@ git clone https://github.com/ezyang/htmlpurifier
 git clone -b 1.7.x https://github.com/erusev/parsedown
 ```
 
-```
-sudo pecl install mongodb
-```
-
 download client libs
 
 ```
