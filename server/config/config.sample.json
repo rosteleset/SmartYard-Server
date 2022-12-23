@@ -28,14 +28,9 @@
         "options": null
     },
 
-    "db (!devel only!)": {
-        "dsn": "sqlite:/<!-- path to your internal.db -->"
-    },
-
     "redis": {
         "host": "127.0.0.1",
         "port": 6379,
-        "password": "<!-- optional -->",
         "cache_ttl": 3600,
         "max_allowed_tokens": 15,
         "token_idle_ttl": 3600
