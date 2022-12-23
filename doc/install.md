@@ -24,19 +24,19 @@ git clone https://github.com/loadingio/loading-bar
 git clone https://github.com/ajaxorg/ace-builds/
 ```
 
-copy client config
+create client config
 
 ```
 cp /opt/rbt/client/config/config.sample.json /opt/rbt/client/config/config.json
 ```
 
-copy server config
+create server config
 
 ```
 cp /opt/rbt/server/config/config.sample.json /opt/rbt/server/config/config.json
 ```
 
-after copying client and server config, modify it to your realms
+after copying client and server configs, modify it to your realms
 
 initialize db
 
