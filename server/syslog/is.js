@@ -1,5 +1,3 @@
-// Домофоная панель от Интерсвязь
-
 const syslog = new (require("syslog-server"))();
 const { hw: { is } } = require("./config.json");
 const { getTimestamp } = require("./utils/formatDate");
@@ -12,7 +10,7 @@ const gateRabbits = [];
 
 let lastCallsDone = {};
 
-syslog.on("message", async ({ date, host, protocol, message }) => {
+syslog.on("message", async ({ date, host, message }) => {
     const now = parseInt(getTimestamp(date));
     const is_msg = message.split(" - - ")[1].trim();
 
@@ -94,4 +92,4 @@ syslog.on("error", (err) => {
     console.error(err.message);
 });
 
-syslog.start({port}).then(() => console.log(`Start INTERSVIAZ syslog service on port ${port}`));
+syslog.start({port}).then(() => console.log(`IS syslog server running on port ${port}`));
