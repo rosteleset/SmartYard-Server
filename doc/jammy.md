@@ -20,4 +20,7 @@ luarocks-5.4 install inspect
 luarocks-5.4 install luasocket
 
 luarocks-5.4 install lua-cjson 2.1.0-1
+
+wget http://ftp.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1o-1_amd64.deb
+dpkg --install libssl1.1_1.1.1o-1_amd64.deb
 ```
