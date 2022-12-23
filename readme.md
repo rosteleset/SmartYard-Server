@@ -1,2 +1,1 @@
-RoBoT - RBT - Полностью автономная серверная часть для быстрого запуска своего сервиса домофонии и видеонаблюдения
-
+RoBoT - RBT - Fully autonomous server part for quick launch of your intercom and video surveillance service
