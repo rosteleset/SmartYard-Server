@@ -1,3 +1,5 @@
+download RBT
+
 ```
 cd /opt
 git clone https://github.com/rosteleset/rbt
@@ -22,16 +24,19 @@ git clone https://github.com/loadingio/loading-bar
 git clone https://github.com/ajaxorg/ace-builds/
 ```
 
-edit client config
+copy client config
+
 ```
 cp /opt/rbt/client/config/config.sample.json /opt/rbt/client/config/config.json
 ```
 
-edit db, redis and email settings
+copy server config
 
 ```
 cp /opt/rbt/server/config/config.sample.json /opt/rbt/server/config/config.json
 ```
+
+after copying client and server config, modify it to your realms
 
 initialize db
 
