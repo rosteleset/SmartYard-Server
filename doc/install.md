@@ -1,12 +1,3 @@
-```
-sudo zypper in -t pattern devel_basis
-sudo zypper in php-cli php-redis redis php-mbstring php-curl php-pecl php-devel
-```
-
-```
-sudo pecl install mongodb
-```
-
 download server libs
 
 ```
@@ -49,11 +40,6 @@ sudo cp /etc/redis/default.conf.example /etc/redis/redis.conf
 sudo chown redis:redis /etc/redis/redis.conf
 ```
 
-if you want to use authorized connection to redis run
-```
-sudo sh -c "echo requirepass <your very secret passphrase> >>/etc/redis/redis.conf"
-```
-
 creating redis systemd unit (if needed)
 
 ```
@@ -85,13 +71,6 @@ sudo systemctl start redis
 sudo systemctl enable redis
 ```
 
-generating api and server documentation (optional)
-
-```
-apidoc -c apidoc.json -i server -o api
-phpDocumentor.phar --sourcecode -t doc -s graphs.enabled=true
-```
-
 initializing internal db (note: even if you use postgreSQL database, you also should do this)
 
 ```
@@ -103,12 +82,6 @@ php server/cli.php --reindex
 if you are using sqlite and standalone (not built-in) web-server (nginx)
 set valid rights and ownership for web server to 
 file server/db/internal.db and folder server/db 
-
-optionally
-
-```
-php server/cli.php --check-mail=<your email address>
-```
 
 run local (built-in) server (not for production!)
 
