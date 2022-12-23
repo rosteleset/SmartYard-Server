@@ -29,7 +29,7 @@ cp server/config/config.sample.json server/config/config.json
 vi server/config/config.json
 ```
 
-initializing internal db (note: even if you use postgreSQL database, you also should do this)
+initializing db
 
 ```
 php server/cli.php --init-db
