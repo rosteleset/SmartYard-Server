@@ -15,3 +15,40 @@ run (without auth and clustering, localhost only)
 ```
 ./mongod --dbpath ../data --directoryperdb
 ```
+
+group, user and directories
+
+```
+groupadd mongodb
+useradd -g mongodb -s /bin/true mongodb
+
+mkdir /var/lib/mongodb
+chown mongodb.mongodb /var/lib/mongodb
+
+mkdir /var/run/mongodb
+chown mongodb.mongodb /var/run/mongodb
+```
+
+/etc/systemd/system/mongodb.service
+
+```
+[Unit]
+Description=MongoDB NoSQL database.
+After=network.target
+
+[Service]
+Type=simple
+Environment=HOME=/var/lib/mongodb
+WorkingDirectory=/var/lib/mongodb
+User=mongodb
+Group=mongodb
+ExecStart=/opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongodb.pid
+LimitCORE=infinity
+Restart=always
+RestartSec=4
+StandardOutput=null
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+```
