@@ -4,6 +4,9 @@ apt install postgresql
 
 ```
 su -l postgres
+```
+
+```
 psql
 ```
 
