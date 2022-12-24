@@ -189,7 +189,34 @@ function showForgotPasswordForm() {
     $("#forgotBoxEMail").focus();
 }
 
+function ping(server) {
+    return jQuery.ajax({
+        url: server + "/server/ping",
+        type: "POST",
+        contentType: "json",
+        success: response => {
+            if (response != "pong") {
+                loadingDone(true);
+                error(i18n("errors.serverUnavailable"), i18n("error"), 30);
+            }
+        },
+        error: () => {
+            loadingDone(true);
+            error(i18n("errors.serverUnavailable"), i18n("error"), 30);
+        }
+    });
+}
+
 function login() {
+    let test = md5(new Date());
+
+    $.cookie("_test", test, { expires: 3650 });
+
+    if ($.cookie("_test") != test) {
+        error(i18n("errors.cantStoreCookie"), i18n("error"), 30);
+        return;
+    }
+
     loadingStart();
 
     let login = $.trim($("#loginBoxLogin").val());
@@ -211,38 +238,40 @@ function login() {
         $.cookie("_server", server);
     }
 
-    return jQuery.ajax({
-        url: server + "/authentication/login",
-        type: "POST",
-        contentType: "json",
-        data: JSON.stringify({
-            login: login,
-            password: password,
-            rememberMe: rememberMe === "on",
-            ua: $.cookie("_ua"),
-            did: $.cookie("_did"),
-        }),
-        success: response => {
-            if (response && response.token) {
-                if (rememberMe === "on") {
-                    $.cookie("_token", response.token, { expires: 3650 });
+    ping(server).then(() => {
+        return jQuery.ajax({
+            url: server + "/authentication/login",
+            type: "POST",
+            contentType: "json",
+            data: JSON.stringify({
+                login: login,
+                password: password,
+                rememberMe: rememberMe === "on",
+                ua: $.cookie("_ua"),
+                did: $.cookie("_did"),
+            }),
+            success: response => {
+                if (response && response.token) {
+                    if (rememberMe === "on") {
+                        $.cookie("_token", response.token, { expires: 3650 });
+                    } else {
+                        $.cookie("_token", response.token);
+                    }
+                    location.reload();
                 } else {
-                    $.cookie("_token", response.token);
+                    error(i18n("errors.unknown"), i18n("error"), 30);
                 }
-                location.reload();
-            } else {
-                error(i18n("errors.unknown"), i18n("error"), 30);
+            },
+            error: response => {
+                loadingDone(true);
+                $("#loginBoxLogin").focus();
+                if (response && response.responseJSON && response.responseJSON.error) {
+                    error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
+                } else {
+                    error(i18n("errors.unknown"), i18n("error"), 30);
+                }
             }
-        },
-        error: response => {
-            loadingDone(true);
-            $("#loginBoxLogin").focus();
-            if (response && response.responseJSON && response.responseJSON.error) {
-                error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
-            } else {
-                error(i18n("errors.unknown"), i18n("error"), 30);
-            }
-        }
+        });
     });
 }
 

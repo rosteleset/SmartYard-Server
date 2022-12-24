@@ -221,6 +221,9 @@
     if ($api == "accounts" && $method == "forgot") {
         // do nothing
     } else
+    if ($api == "server" && $method == "ping") {
+        response(200, "pong");
+    } else
     if ($api == "authentication" && $method == "login") {
         if  (!@$params["login"] || !@$params["password"]) {
             $params["_login"] = @$params["login"]?:"-";
