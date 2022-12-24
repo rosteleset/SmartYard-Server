@@ -1,84 +1,79 @@
 const syslog = new (require("syslog-server"))();
-const {hw: { qtech }} = require("./config.json");
-const thisMoment = require("./utils/formatDate");
+const { hw: { qtech } } = require("./config.json");
+const { getTimestamp } = require("./utils/formatDate");
 const { urlParser } = require("./utils/url_parser");
 const API = require("./utils/api");
-const { getTimestamp } = require("./utils/formatDate");
 const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(qtech);
-let gate_rabbits = {};
 
-syslog.on("message", async ({ date, host, protocol, message }) => {
-  const now = parseInt(getTimestamp(date));
+const gateRabbits = [];
 
-  let qtMsg = message.split(" - - - ")[1].trim();
-  let qtMsgParts = qtMsg.split(":").filter(Boolean);
+syslog.on("message", async ({ date, host, message }) => {
+    const now = parseInt(getTimestamp(date));
 
-  //Фиьтр сообщений не несущих смысловой нагрузки
-  if (qtMsg.indexOf("Heart Beat") >= 0 ||
-      qtMsg.indexOf("IP CHANGED") >= 0 ) {
-    return;
-  }
+    const qtMsg = message.split(" - - - ")[1].trim();
+    const qtMsgParts = qtMsg.split(":").filter(Boolean).map(part => part.trim());
 
-  console.log(`${new Date(date).toLocaleString("RU-ru")} || ${host} || ${qtMsg}`);
+    // Фильтр сообщений, не несущих смысловой нагрузки
+    if (qtMsg.indexOf("Heart Beat") >= 0 || qtMsg.indexOf("IP CHANGED") >= 0) {
+        return;
+    }
 
-  /**
-   * Отправка соощения в syslog
-   */
-  await API.sendLog({ date: now, ip: host, unit:"qtech", msg: qtMsg });
+    console.log(`${new Date(date).toLocaleString("RU-ru")} || ${host} || ${qtMsg}`);
 
-  //Открытие двери по ключу
-  if (
-    qtMsgParts[1] === "101" &&
-    qtMsgParts[1] === "Open Door By Card, RFID Key"
-  ) {
-    await API.openDoor({ host, detail: rfid, type: "rfid" });
-  }
+    // Отправка сообщения в syslog storage
+    await API.sendLog({ date: now, ip: host, unit: "qtech", msg: qtMsg });
 
-  /**
-   * Попытка открытия двери не зарегистрированным ключем.
-   * пока не используется
-   */
-  if (
-    qtMsgParts[1] === "201" &&
-    qtMsgParts[3] === "Open Door By Card Failed! RF Card Number"
-  ) {
-    console.log(":: Open Door By Card Failed!");
-  }
+    //Открытие двери по ключу
+    if (
+        qtMsgParts[1] === "101" &&
+        qtMsgParts[1] === "Open Door By Card, RFID Key"
+    ) {
+        await API.openDoor({host, detail: rfid, type: "rfid"});
+    }
 
-  //TODO: разобратсья что передать в callFinished  по аналогии с beward
-  if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Finished Call") {
-    console.log(":: Finished Call");
-    await API.callFinished();
-  }
+    /**
+     * Попытка открытия двери не зарегистрированным ключем.
+     * пока не используется
+     */
+    if (
+        qtMsgParts[1] === "201" &&
+        qtMsgParts[3] === "Open Door By Card Failed! RF Card Number"
+    ) {
+        console.log(":: Open Door By Card Failed!");
+    }
 
-  //Отктыие двери используя персональный код квартиры
-  if (qtMsgParts[1] === "400" && qtMsgParts[4] === "Open Door By Code, Code") {
-    console.log(":: Отктыие двери используя персональный код квартиры");
-    const code = qtMsgParts[2];
-    await API.openDoor({ host, detail: code, type: "code" });
-  }
+    //TODO: разобратсья что передать в callFinished  по аналогии с beward
+    if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Finished Call") {
+        console.log(":: Finished Call");
+        await API.callFinished();
+    }
 
-  //Детектор движения
-  if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Send Photo") {
-    await API.motionDetection({ date: now, ip: host, motionStart: true });
-    await mdTimer(host, 5000);
-  }
+    //Отктыие двери используя персональный код квартиры
+    if (qtMsgParts[1] === "400" && qtMsgParts[4] === "Open Door By Code, Code") {
+        console.log(":: Отктыие двери используя персональный код квартиры");
+        const code = qtMsgParts[2];
+        await API.openDoor({host, detail: code, type: "code"});
+    }
 
-  /**Открытие двери используя кнопку*/
-  if (
-    qtMsgParts[1] === "102" &&
-    qtMsgParts[2] === "INPUTA" &&
-    qtMsgParts[3] === "Exit button pressed,INPUTA"
-  ) {
-    await API.doorIsOpen(host);
-  }
+    //Детектор движения
+    if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Send Photo") {
+        await API.motionDetection({date: now, ip: host, motionStart: true});
+        await mdTimer(host, 5000);
+    }
+
+    /**Открытие двери используя кнопку*/
+    if (
+        qtMsgParts[1] === "102" &&
+        qtMsgParts[2] === "INPUTA" &&
+        qtMsgParts[3] === "Exit button pressed,INPUTA"
+    ) {
+        await API.doorIsOpen(host);
+    }
 });
 
 syslog.on("error", (err) => {
-  console.error(err.message);
+    console.error(err.message);
 });
 
-syslog.start({ port }, () => {
-  console.log(`Start QTECH syslog service on port ${port}`);
-});
+syslog.start({port}).then(() => console.log(`QTECH syslog server running on port ${port}`));
