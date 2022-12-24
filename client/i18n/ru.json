@@ -56,7 +56,12 @@
         "notFound": "Ничего не найдено",
         "noGravatar": "Gravatar не найден",
         "unknown": "Неизвестная ошибка",
-        "cantReadNfcTag": "Невозможно прочитать метку"
+        "cantReadNfcTag": "Невозможно прочитать метку",
+        "serverUnavailable": "Сервер недоступен",
+        "cantStoreCookie": "Неврзможно сохранить cookie",
+        "noCredentials": "Нет учетных данных",
+        "tokenNotFound": "Token не найден",
+        "noToken": "Token не указан"
     },
     "methods": {
         "accounts": {
