@@ -10,13 +10,7 @@ or direct download from
 wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-6.0.3.tgz
 ```
 
-run (without auth and clustering, localhost only)
-
-```
-./mongod --dbpath ../data --directoryperdb
-```
-
-group, user and directories
+unpack to /opt/mongodb, create group, user and directories
 
 ```
 groupadd mongodb
