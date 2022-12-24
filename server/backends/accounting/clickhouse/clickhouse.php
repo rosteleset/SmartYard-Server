@@ -7,7 +7,7 @@
     namespace backends\accounting {
 
         /**
-         * "silent" accounting (logging) class
+         * clickhouse accounting (logging) class
          */
 
         class clickhouse extends accounting {
