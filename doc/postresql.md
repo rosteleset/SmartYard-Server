@@ -1,5 +1,8 @@
 ```
 apt install postgresql
+```
+
+```
 su -l postrgres
 psql
 ```

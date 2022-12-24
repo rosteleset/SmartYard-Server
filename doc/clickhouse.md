@@ -7,6 +7,10 @@ apt-get install -y clickhouse-server clickhouse-client
 ```
 
 ```
+clickhouse-client --ask
+```
+
+```
 CREATE TABLE default.syslog
 (
     `date` UInt32,
