@@ -2,10 +2,10 @@
     "language": "ru",
 
     "api": {
-        "frontend": "http://127.0.0.1:8000/server/frontend.php",
-        "asterisk": "http://127.0.0.1:8000/server/asterisk.php",
-        "internal": "http://127.0.0.1:8000/server/internal.php",
-        "mobile": "http://127.0.0.1:8000/server/mobile.php"
+        "frontend": "https://example.com/frontend",
+        "asterisk": "http://127.0.0.1/asterisk",
+        "internal": "http://127.0.0.1/internal",
+        "mobile": "https://example.com/mobile"
     },
 
     "mobile": {
