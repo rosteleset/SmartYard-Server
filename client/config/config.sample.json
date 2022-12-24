@@ -9,8 +9,6 @@
         "asterisk",
         "addresses",
         "users",
-        "groups",
-        "permissions",
         "about"
     ],
     "defaultRoute": "#about",
