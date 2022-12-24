@@ -71,6 +71,11 @@ server {
                 proxy_read_timeout 43200000;
         }
         
+        location /static {
+                root /opt/rbt;
+                try_files $uri $uri/ =404;
+        }
+        
         location /.well-known {
                 root /var/www/html;
         }
