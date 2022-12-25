@@ -99,7 +99,7 @@
                         $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
                         
                         echo "Record download task with id = $recordId was started\n";
-                        echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . "\n";
+                        echo "Fetching record form {$request_url} to " . $task['filename']  . "\n";
                         
                         $files = loadBackend("files");
                         $file = fopen($request_url, "r");
