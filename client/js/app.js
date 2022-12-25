@@ -130,7 +130,7 @@ function pageError(error) {
 }
 
 function changeLanguage() {
-    $.cookie("_lang", $("#loginBoxLang").val(), { expires: 3650 });
+    $.cookie("_lang", $("#loginBoxLang").val(), { expires: 3650, insecure: config.insecureCookie });
     location.reload();
 }
 
@@ -210,7 +210,7 @@ function ping(server) {
 function login() {
     let test = md5(new Date());
 
-    $.cookie("_test", test, { expires: 3650 });
+    $.cookie("_test", test, { expires: 3650, insecure: config.insecureCookie });
 
     if ($.cookie("_test") != test) {
         error(i18n("errors.cantStoreCookie"), i18n("error"), 30);
@@ -228,11 +228,11 @@ function login() {
         server = server.substring(0, server.length - 1);
     }
 
-    $.cookie("_rememberMe", rememberMe, { expires: 3650 });
+    $.cookie("_rememberMe", rememberMe, { expires: 3650, insecure: config.insecureCookie });
 
     if (rememberMe === "on") {
-        $.cookie("_login", login, { expires: 3650 });
-        $.cookie("_server", server, { expires: 3650 });
+        $.cookie("_login", login, { expires: 3650, insecure: config.insecureCookie });
+        $.cookie("_server", server, { expires: 3650, insecure: config.insecureCookie });
     } else {
         $.cookie("_login", login);
         $.cookie("_server", server);
@@ -253,7 +253,7 @@ function login() {
             success: response => {
                 if (response && response.token) {
                     if (rememberMe === "on") {
-                        $.cookie("_token", response.token, { expires: 3650 });
+                        $.cookie("_token", response.token, { expires: 3650, insecure: config.insecureCookie });
                     } else {
                         $.cookie("_token", response.token);
                     }
@@ -343,12 +343,12 @@ function whoAmI(force) {
 function initAll() {
     if (!$.cookie("_cookie")) {
         warning(i18n("cookieWarning"), false, 3600);
-        $.cookie("_cookie", "1", { expires: 36500 });
+        $.cookie("_cookie", "1", { expires: 36500, insecure: config.insecureCookie });
     }
 
     if (!$.cookie("_https") && window.location.protocol === 'http:') {
         warning(i18n("httpsWarning"), false, 3600);
-        $.cookie("_https", "1", { expires: 36500 });
+        $.cookie("_https", "1", { expires: 36500, insecure: config.insecureCookie });
     }
 
     if (config.logo) {
@@ -361,18 +361,18 @@ function initAll() {
     $(document.body).css("background-color", '#e9ecef');
 
     if (!$.cookie("_ua")) {
-        $.cookie("_ua", $.browser.ua, { expires: 36500 });
+        $.cookie("_ua", $.browser.ua, { expires: 36500, insecure: config.insecureCookie });
     }
 
     if (!$.cookie("_did")) {
-        $.cookie("_did", guid(), { expires: 36500 });
+        $.cookie("_did", guid(), { expires: 36500, insecure: config.insecureCookie });
     }
 
     loadingStart();
 
     $("#leftSideToggler").parent().parent().on("click", () => {
         setTimeout(() => {
-            $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 36500 });
+            $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 36500, insecure: config.insecureCookie });
         }, 100);
     });
 

@@ -73,16 +73,23 @@ jQuery.cookie = function (key, value, options) {
         }
         
         value = String(value);
-        
-        return (document.cookie = [
+
+        let c = [
             encodeURIComponent(key), '=',
             options.raw ? value : encodeURIComponent(value),
             options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
             options.path ? '; path=' + options.path : '',
             options.domain ? '; domain=' + options.domain : '',
-            true ? '; Secure' : '',
-            true ? '; SameSite=None' : '',
-        ].join(''));
+        ];
+
+        if (options.insecure) {
+            c.push('; SameSite=Lax');
+        } else {
+            c.push('; Secure');
+            c.push('; SameSite=None');
+        }
+
+        return (document.cookie = c.join(''));
     }
 
     // key and possibly options given, get cookie...
