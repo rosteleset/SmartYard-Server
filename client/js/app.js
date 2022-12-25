@@ -208,9 +208,9 @@ function ping(server) {
 }
 
 function login() {
-    let test = md5(new Date());
+    let test = md5(new Date() + Math.random());
 
-    $.cookie("_test", test, { expires: 3650, insecure: config.insecureCookie });
+    $.cookie("_test", test, { insecure: config.insecureCookie });
 
     if ($.cookie("_test") != test) {
         error(i18n("errors.cantStoreCookie"), i18n("error"), 30);
