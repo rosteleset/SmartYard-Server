@@ -61,7 +61,8 @@
         "cantStoreCookie": "Невозможно сохранить cookie",
         "noCredentials": "Нет учетных данных",
         "tokenNotFound": "Token не найден",
-        "noToken": "Token не указан"
+        "noToken": "Token не указан",
+        "userNotFound": "Пользователь не найден"
     },
     "methods": {
         "accounts": {
