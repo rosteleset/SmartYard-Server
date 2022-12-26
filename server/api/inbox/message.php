@@ -20,7 +20,7 @@
                 if (@$params["messageId"]) {
                     $messages = $inbox->getMessages($params["_id"], "id", $params["messageId"]);
                 } else {
-                    $messages = $inbox->getMessages($params["_id"], "dates", [ "dateFrom" => "0000-00-00 00:00:00.000", "dateTo" => $params["_db"]->now() ]);
+                    $messages = $inbox->getMessages($params["_id"], "dates", [ "dateFrom" => 0, "dateTo" => time() ]);
                 }
 
                 return api::ANSWER($messages, ($messages !== false)?"messages":"notAcceptable");
