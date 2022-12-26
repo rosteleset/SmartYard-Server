@@ -51,7 +51,7 @@
 
     class Access
     {
-        private static array $allowedHosts = ["127.0.0.1", "192.168.15.81"];
+        private static array $allowedHosts = ["127.0.0.1", "192.168.15.81", "172.28.0.1"];
 
         public static function getIp()
         {
@@ -77,7 +77,7 @@
             $access = !in_array($ip, $hosts);
 
             if ($access) {
-                response(403);
+                response(403, null,"Access denied","Access denied for this host: $ip");
 //                Response::res(403, "Forbidden", "Access denied for this host: ". $ip);
                 exit();
             }
@@ -166,7 +166,6 @@
     echo json_encode($ret, JSON_UNESCAPED_UNICODE);
     exit;
 }
-
 
     /**Тестовая обертка для работы с FRS API
      * @param {string} url
