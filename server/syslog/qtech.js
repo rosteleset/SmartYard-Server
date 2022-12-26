@@ -24,51 +24,48 @@ syslog.on("message", async ({ date, host, message }) => {
     // Отправка сообщения в syslog storage
     await API.sendLog({ date: now, ip: host, unit: "qtech", msg: qtMsg });
 
-    //Открытие двери по ключу
-    if (
-        qtMsgParts[1] === "101" &&
-        qtMsgParts[1] === "Open Door By Card, RFID Key"
-    ) {
-        await API.openDoor({host, detail: rfid, type: "rfid"});
-    }
-
-    /**
-     * Попытка открытия двери не зарегистрированным ключем.
-     * пока не используется
-     */
-    if (
-        qtMsgParts[1] === "201" &&
-        qtMsgParts[3] === "Open Door By Card Failed! RF Card Number"
-    ) {
-        console.log(":: Open Door By Card Failed!");
-    }
-
-    //TODO: разобратсья что передать в callFinished  по аналогии с beward
-    if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Finished Call") {
-        console.log(":: Finished Call");
-        await API.callFinished();
-    }
-
-    //Отктыие двери используя персональный код квартиры
-    if (qtMsgParts[1] === "400" && qtMsgParts[4] === "Open Door By Code, Code") {
-        console.log(":: Отктыие двери используя персональный код квартиры");
-        const code = qtMsgParts[2];
-        await API.openDoor({host, detail: code, type: "code"});
-    }
-
-    //Детектор движения
+    // Детектор движения: старт
     if (qtMsgParts[1] === "000" && qtMsgParts[3] === "Send Photo") {
-        await API.motionDetection({date: now, ip: host, motionStart: true});
+        await API.motionDetection({ date: now, ip: host, motionStart: true });
         await mdTimer(host, 5000);
     }
 
-    /**Открытие двери используя кнопку*/
+    // Вызов квартиры в режиме калитки с префиксом
+    if ('') {
+
+    }
+
+    // Открытие двери DTMF кодом
+    if ('') {
+
+    }
+
+    // Открытие двери RFID ключом
+    // TODO: доп. считыватель
+    if (qtMsgParts[1] === "101" && qtMsgParts[3] === "Open Door By Card, RFID Key") {
+        const rfid = qtMsgParts[4].split(',')[0].padStart(14, 0);
+        await API.openDoor({ date: now, ip: host, detail: rfid, by: "rfid" });
+    }
+
+    // Открытие двери персональным кодом
+    if (qtMsgParts[1] === "400" && qtMsgParts[4] === "Open Door By Code, Code") {
+        const code = qtMsgParts[2];
+        await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
+    }
+
+    // Открытие двери кнопкой
+    // TODO: INPUTB, INPUTC
     if (
         qtMsgParts[1] === "102" &&
         qtMsgParts[2] === "INPUTA" &&
         qtMsgParts[3] === "Exit button pressed,INPUTA"
     ) {
-        await API.doorIsOpen(host);
+        await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
+    }
+
+    // Все вызовы завершены
+    if (qtMsgParts[1] === "000" && qtMsgParts[2] === "Finished Call") {
+        await API.callFinished({ date: now, ip: host });
     }
 });
 
