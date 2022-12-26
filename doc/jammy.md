@@ -1,5 +1,3 @@
-packages
-
 ```
 apt-get update && apt-get -y install -f && apt-get -y full-upgrade && apt-get -y autoremove && apt-get -y autoclean && apt-get -y clean
 
