@@ -72,14 +72,15 @@ foreach($houses as $house_key => $h) {
     $houses[$house_key]['doors'] = array_values($h['doors']);
     unset( $houses[$house_key]['cameras']);
     foreach($h['cameras'] as $camera) {
+        $dvr = loadBackend("dvr")->getDVRServerByStream($camera['dvrStream']);
         $ret[] = [
             "id" => $camera['cameraId'],
             "name" => $camera['name'],
             "lat" => strval($camera['lat']),
             "url" => $camera['dvrStream'],
-            "token" => strval($camera['credentials']),
+            "token" => strval(@$dvr['token'] ?: ''),
             "lon" => strval($camera['lon']),
-            "serverType" => loadBackend("dvr")->serverType($camera['dvrStream'])['type']
+            "serverType" => $dvr['type']
         ];
     }
 }

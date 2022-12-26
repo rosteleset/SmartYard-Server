@@ -35,7 +35,7 @@
             /**
              * @inheritDoc
              */
-            public function serverType($url)
+            public function getDVRServerByStream($url)
             {
                 $dvr_servers = $this->getDVRServers();
 
@@ -46,7 +46,7 @@
                 if (!$port && $scheme == 'http') $port = 80;
                 if (!$port && $scheme == 'https') $port = 443;
 
-                $result = [ 'type' => 'flussonic' ]; // result by default if server not found in dvr_servers settings
+                $result = [ 'type' => 'flussonic', 'token' => '' ]; // result by default if server not found in dvr_servers settings
 
                 foreach ($dvr_servers as $server) {
                     $u = parse_url($server['url']);
@@ -78,7 +78,7 @@
              * @inheritDoc
              */
             public function getUrlOfRecord($cam, $start, $finish) {
-                $dvr = $this->serverType($cam['dvrStream']);
+                $dvr = $this->getDVRServerByStream($cam['dvrStream']);
                         
                 if ($dvr['type'] == 'nimble') {
                     // Nimble Server
@@ -99,7 +99,7 @@
                     
                 } else {
                     // Flussonic Server by default
-                    $flussonic_token = $cam['credentials'];
+                    $flussonic_token = @$dvr['token'] ?: '';
                     $from = $start;
                     $duration = (int)$finish - (int)$start;
                     $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
@@ -114,7 +114,7 @@
                 $prefix = $cam['dvrStream'];
                 if (!$time) $time = now();
 
-                if (loadBackend("dvr")->serverType($prefix)['type'] == 'nimble') {
+                if (loadBackend("dvr")->getDVRServerByStream($prefix)['type'] == 'nimble') {
                     return "$prefix/dvr_thumbnail_$time.mp4";
                 } else {
                     return "$prefix/$time-preview.mp4";
@@ -125,7 +125,7 @@
              * @inheritDoc
              */
             public function getRanges($cam) {
-                $dvr = $this->serverType($cam['dvrStream']);
+                $dvr = $this->getDVRServerByStream($cam['dvrStream']);
 
                 if ($dvr['type'] == 'nimble') {
                     // Nimble Server
@@ -135,7 +135,7 @@
                     $ranges = $this->getRangesForNimble( $dvr['management_ip'], $dvr['management_port'], $stream, $dvr['management_token'] );
                 } else {
                     // Flussonic Server by default
-                    $flussonic_token = $cam['credentials'];
+                    $flussonic_token = @$dvr['token'] ?: '';
                     $request_url = $cam['dvrStream']."/recording_status.json?from=1525186456&token=$flussonic_token";
                     $ranges = json_decode(file_get_contents($request_url), true);
                 }

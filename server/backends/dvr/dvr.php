@@ -19,7 +19,7 @@
              * @param $url
              * @return mixed
              */
-            abstract public function serverType($url);
+            abstract public function getDVRServerByStream($url);
 
             /**
              * @return mixed
