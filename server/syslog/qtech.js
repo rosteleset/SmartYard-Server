@@ -41,10 +41,15 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Открытие двери RFID ключом
-    // TODO: доп. считыватель
     if (qtMsgParts[1] === "101" && qtMsgParts[3] === "Open Door By Card, RFID Key") {
+        let door = 0;
         const rfid = qtMsgParts[4].split(',')[0].padStart(14, 0);
-        await API.openDoor({ date: now, ip: host, detail: rfid, by: "rfid" });
+
+        if (rfid[6] === '0' && rfid[7] === '0') {
+            door = 1;
+        }
+
+        await API.openDoor({ date: now, ip: host, door: door, detail: rfid, by: "rfid" });
     }
 
     // Открытие двери персональным кодом
@@ -54,13 +59,22 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Открытие двери кнопкой
-    // TODO: INPUTB, INPUTC
-    if (
-        qtMsgParts[1] === "102" &&
-        qtMsgParts[2] === "INPUTA" &&
-        qtMsgParts[3] === "Exit button pressed,INPUTA"
-    ) {
-        await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
+    if (qtMsgParts[1] === "102" && qtMsgParts[3].indexOf("Exit button pressed") >= 0) {
+        let door = 0;
+        let detail = "main";
+
+        switch (qtMsgParts[2]) {
+            case "INPUTB":
+                door = 1;
+                detail = "second";
+                break;
+            case "INPUTC":
+                door = 2;
+                detail = "third";
+                break;
+        }
+
+        await API.openDoor({ date: now, ip: host, door: door, detail: detail, by: "button" });
     }
 
     // Все вызовы завершены
