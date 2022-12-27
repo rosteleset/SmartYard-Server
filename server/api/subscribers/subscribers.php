@@ -22,7 +22,7 @@ namespace api\subscribers
 
             $flat = [
                 "subscribers" => $households->getSubscribers(@$params["by"], @$params["query"]),
-                "cameras" => $households->getCameras(@$params["by"], $params["query"]),
+                "cameras" => $households->getCameras(@$params["by"], @$params["query"]),
                 "keys" => $households->getKeys(@$params["by"], @$params["query"]),
             ];
 
