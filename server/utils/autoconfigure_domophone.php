@@ -127,7 +127,7 @@
                         $apartment_levels
                     );
 
-                    $keys = $households->getKeys('flat', $flat['flatId']);
+                    $keys = $households->getKeys('flatId', $flat['flatId']);
 
                     foreach ($keys as $key) {
                         $panel->add_rfid($key['rfId']);
