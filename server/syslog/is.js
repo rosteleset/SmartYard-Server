@@ -57,7 +57,7 @@ syslog.on("message", async ({ date, host, message }) => {
     // Открытие двери DTMF кодом
     if (is_msg.indexOf("Open main door by DTMF") >= 0) {
         if (gateRabbits[host]) {
-            const {ip, prefix, apartment} = gateRabbits[host];
+            const { ip, prefix, apartment } = gateRabbits[host];
             await API.setRabbitGates({ date: now, ip, prefix, apartment });
         }
     }
