@@ -8,7 +8,6 @@
     "modules": [
         "asterisk",
         "addresses",
-        "users",
         "about"
     ],
     "defaultRoute": "#about",
