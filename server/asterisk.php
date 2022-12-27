@@ -404,7 +404,7 @@
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
                         "flatNumber" => $params["flatNumber"],
-                        "title" => i18n("sip", "incomingTitle"),
+                        "title" => i18n("sip.incomingTitle"),
                     ];
 
                     $stun = $sip->stun($params["extension"]);

@@ -3,7 +3,12 @@
     function language() {
         global $config;
 
-        return $config["language"];
+        return @$config["language"]?:"ru";
+    }
+
+    function isAssoc($array)
+    {
+        return ($array !== array_values($array));
     }
 
     function i18n($msg, ...$args) {
@@ -27,8 +32,8 @@
                 $loc = $lang[$t[0]];
             }
             if ($loc) {
-                if (is_array($loc)) {
-                    $loc = nl2br(implode(".", $loc));
+                if (is_array($loc) && !isAssoc($loc)) {
+                    $loc = nl2br(implode("\n", $loc));
                 }
                 $loc = sprintf($loc, ...$args);
             }
