@@ -350,8 +350,8 @@
 
                 if (trim($cityWithType) && trim($city)) {
                     return $this->db->insert("insert into addresses_cities (address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city) values (:address_region_id, :address_area_id, :city_uuid, :city_with_type, :city_type, :city_type_full, :city)", [
-                        ":address_region_id" => $regionId,
-                        ":address_area_id" => $areaId,
+                        ":address_region_id" => (int)$regionId,
+                        ":address_area_id" => (int)$areaId,
                         ":city_uuid" => $cityUuid,
                         ":city_with_type" => $cityWithType,
                         ":city_type" => $cityType,
