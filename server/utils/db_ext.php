@@ -29,7 +29,11 @@
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
-                    return @$this->lastInsertId();
+                    try {
+                        return $this->lastInsertId();
+                    } catch (\Exception $e) {
+                        return -1;
+                    }
                 } else {
                     return false;
                 }
