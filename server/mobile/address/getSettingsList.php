@@ -39,7 +39,7 @@
     auth(3600);
     $households = loadBackend("households");
     $flats = [];
-    //response(200, $subscriber);
+//    response(200, $subscriber);
 
     foreach($subscriber['flats'] as $flat) {
         $f = [];
@@ -66,7 +66,7 @@
         // $f['contractName'] = '-';
         // $f['clientId'] = '0';
         
-        $subscribers = $households->getSubscribers('flat',  $f['flatId']);
+        $subscribers = $households->getSubscribers('flatId',  $f['flatId']);
         $rms = [];
         foreach($subscribers as $s) {
             if ($subscriber['subscriberId'] == $s['subscriberId']) {
