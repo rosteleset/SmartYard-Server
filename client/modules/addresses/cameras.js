@@ -217,7 +217,7 @@
                 let g = result.geo.split(",");
                 result.lon = $.trim(g[0]);
                 result.lat = $.trim(g[1]);
-                let p = result.position.cplit(",")
+                let p = result.position.split(",")
                 result.direction = $.trim(p[0]);
                 result.angle = $.trim(p[1]);
                 result.distance = $.trim(p[2]);
@@ -437,7 +437,7 @@
                     let g = result.geo.split(",");
                     result.lon = $.trim(g[0]);
                     result.lat = $.trim(g[1]);
-                    let p = result.position.cplit(",")
+                    let p = result.position.split(",")
                     result.direction = $.trim(p[0]);
                     result.angle = $.trim(p[1]);
                     result.distance = $.trim(p[2]);
