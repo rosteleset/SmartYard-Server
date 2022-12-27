@@ -171,7 +171,7 @@
                     },
                 },
                 {
-                    id: "posision",
+                    id: "position",
                     type: "text",
                     title: i18n("addresses.position"),
                     placeholder: "0,0,0",
