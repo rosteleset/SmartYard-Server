@@ -146,7 +146,7 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "127.0.0.1",
+                    "ip": "<!-- your sipDomain or ip here -->",
                     "sip_tcp_port": 5060,
                     "sip_udp_port": 5060,
                     "ami_port": 5038,
@@ -157,7 +157,7 @@
                 }
             ],
             "stuns": [
-                "stun:127.0.0.1:3478"
+                "<!-- valid stun/turn server address here -->"
             ]
         },
 
