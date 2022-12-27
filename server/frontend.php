@@ -222,6 +222,8 @@
         // do nothing
     } else
     if ($api == "server" && $method == "ping") {
+        $params["_login"] = @$params["login"]?:"-";
+        $params["_ip"] = $ip;
         response(200, "pong");
     } else
     if ($api == "authentication" && $method == "login") {
