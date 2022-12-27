@@ -933,25 +933,24 @@
                 $p = false;
 
                 switch ($by) {
-                    case "flat":
                     case "flatId":
                         $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id = :house_flat_id)";
                         $p = [
-                            "house_flat_id" => $query,
+                            "house_flat_id" => (int)$query,
                         ];
                         break;
 
                     case "mobile":
                         $q = "select * from houses_subscribers_mobile where id = :id";
                         $p = [
-                            "id" => $query,
+                            "id" => (int)$query,
                         ];
                         break;
 
                     case "id":
                         $q = "select * from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id";
                         $p = [
-                            "house_subscriber_id" => $query,
+                            "house_subscriber_id" => (int)$query,
                         ];
                         break;
 
@@ -1249,11 +1248,10 @@
                 $p = false;
 
                 switch ($by) {
-                    case "flat":
                     case "flatId":
                         $q = "select * from houses_rfids where access_to = :flat_id and access_type = 2";
                         $p = [
-                            "flat_id" => $query,
+                            "flat_id" => (int)$query,
                         ];
                         break;
                 }
