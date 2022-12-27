@@ -49,7 +49,7 @@ syslog.on("message", async ({ date, host, protocol, message }) => {
   if (bw_msg.indexOf("Redirecting CMS call to") >= 0) {
     const dst = bw_msg.split(" to ")[1].split(" for ")[0];
     gate_rabbits[host] = {
-      ip:host,
+      ip: host,
       prefix: parseInt(dst.substring(0, 4)),
       apartment: parseInt(dst.substring(4)),
     };
