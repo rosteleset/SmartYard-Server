@@ -59,7 +59,7 @@
 
         for (let i in modules.addresses.cameras.meta.frsServers) {
             frss.push({
-                value: modules.addresses.cameras.meta.frsServers[i].ip,
+                value: modules.addresses.cameras.meta.frsServers[i].url,
                 text: modules.addresses.cameras.meta.frsServers[i].title,
             });
         }
@@ -263,7 +263,7 @@
 
         for (let i in modules.addresses.cameras.meta.frsServers) {
             frss.push({
-                value: modules.addresses.cameras.meta.frsServers[i].ip,
+                value: modules.addresses.cameras.meta.frsServers[i].url,
                 text: modules.addresses.cameras.meta.frsServers[i].title,
             });
         }
@@ -408,7 +408,7 @@
                         title: i18n("addresses.md"),
                         placeholder: "0,0,0,0",
                         hint: i18n("addresses.left") + ", " + i18n("addresses.right").toLowerCase() + ", " + i18n("addresses.width").toLowerCase() + ", " + i18n("addresses.height").toLowerCase(),
-                        value: camera.mdLeft + ", " + camera.mdTop + ", " + camera.mdWidth + ", " + camera.mdHeight,
+                        value: camera.mdLeft + "," + camera.mdTop + "," + camera.mdWidth + "," + camera.mdHeight,
                         validate: v => {
                             const regex = new RegExp('^\\d+,\\d+,\\d+,\\d+$', 'gm');
 
