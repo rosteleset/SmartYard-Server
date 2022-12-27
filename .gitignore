@@ -40,3 +40,5 @@ package.json
 package-lock.json
 !/server/syslog/package.json
 /server/test.php
+/asterisk/config.lua
+/asterisk/extconfig.conf
