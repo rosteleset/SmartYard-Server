@@ -199,7 +199,7 @@
 
                 if (trim($areaWithType) && trim($area)) {
                     return $this->db->insert("insert into addresses_areas (address_region_id, area_uuid, area_with_type, area_type, area_type_full, area) values (:address_region_id, :area_uuid, :area_with_type, :area_type, :area_type_full, :area)", [
-                        ":address_region_id" => $regionId,
+                        ":address_region_id" => $regionId?:null,
                         ":area_uuid" => $areaUuid,
                         ":area_with_type" => $areaWithType,
                         ":area_type" => $areaType,
@@ -502,8 +502,8 @@
 
                 if (trim($settlementWithType) && trim($settlement)) {
                     return $this->db->insert("insert into addresses_settlements (address_area_id, address_city_id, settlement_uuid, settlement_with_type, settlement_type, settlement_type_full, settlement) values (:address_area_id, :address_city_id, :settlement_uuid, :settlement_with_type, :settlement_type, :settlement_type_full, :settlement)", [
-                        ":address_area_id" => $areaId,
-                        ":address_city_id" => $cityId,
+                        ":address_area_id" => $areaId?:null,
+                        ":address_city_id" => $cityId?:null,
                         ":settlement_uuid" => $settlementUuid,
                         ":settlement_with_type" => $settlementWithType,
                         ":settlement_type" => $settlementType,
@@ -653,8 +653,8 @@
 
                 if (trim($streetWithType) && trim($street)) {
                     return $this->db->insert("insert into addresses_streets (address_city_id, address_settlement_id, street_uuid, street_with_type, street_type, street_type_full, street) values (:address_city_id, :address_settlement_id, :street_uuid, :street_with_type, :street_type, :street_type_full, :street)", [
-                        ":address_city_id" => $cityId,
-                        ":address_settlement_id" => $settlementId,
+                        ":address_city_id" => $cityId?:null,
+                        ":address_settlement_id" => $settlementId?:null,
                         ":street_uuid" => $streetUuid,
                         ":street_with_type" => $streetWithType,
                         ":street_type" => $streetType,
@@ -805,8 +805,8 @@
 
                 if (trim($houseFull) && trim($house)) {
                     return $this->db->insert("insert into addresses_houses (address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house) values (:address_settlement_id, :address_street_id, :house_uuid, :house_type, :house_type_full, :house_full, :house)", [
-                        ":address_settlement_id" => $settlementId,
-                        ":address_street_id" => $streetId,
+                        ":address_settlement_id" => $settlementId?:null,
+                        ":address_street_id" => $streetId?:null,
                         ":house_uuid" => $houseUuid,
                         ":house_type" => $houseType,
                         ":house_type_full" => $houseTypeFull,
