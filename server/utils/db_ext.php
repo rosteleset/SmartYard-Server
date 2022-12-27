@@ -29,7 +29,7 @@
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
-                    return $this->lastInsertId();
+                    return @$this->lastInsertId();
                 } else {
                     return false;
                 }
