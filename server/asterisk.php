@@ -316,7 +316,7 @@
                 case "subscribers":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getSubscribers("flat", (int)$params));
+                    echo json_encode($households->getSubscribers("flatId", (int)$params));
 
                     break;
 
