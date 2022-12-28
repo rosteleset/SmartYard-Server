@@ -8,8 +8,7 @@ Environment=HOME=/var/lib/asterisk
 WorkingDirectory=/var/lib/asterisk
 User=asterisk
 Group=asterisk
-Before=chown -R asterisk:asterisk /var/{lib,log,run,spool}/asterisk
-ExecStart=/usr/sbin/asterisk -mqf -C /etc/asterisk/asterisk.conf
+ExecStart=/bin/chown -R asterisk:asterisk /var/{lib,log,run,spool}/asterisk ; /usr/sbin/asterisk -mqf -C /etc/asterisk/asterisk.conf
 ExecReload=/usr/sbin/asterisk -rx 'core reload'
 LimitCORE=infinity
 Restart=always

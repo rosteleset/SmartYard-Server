@@ -8,8 +8,7 @@ Environment=HOME=/var/lib/mongodb
 WorkingDirectory=/var/lib/mongodb
 User=mongodb
 Group=mongodb
-Before=chown -R mongodb:mongodb /var/{lib,run}/mongodb
-ExecStart=/opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongodb.pid
+ExecStart=/bin/chown -R mongodb:mongodb /var/{lib,run}/mongodb ; /opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongodb.pid
 LimitCORE=infinity
 Restart=always
 RestartSec=4
