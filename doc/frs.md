@@ -1,36 +1,36 @@
-### Требования к системе
-В системе должны быть установлены docker и docker-compose 1.28.0+.  Запуск приводимых ниже скриптов предполагает, что вы находитесь в директории *docker* исходного кода проекта. Все инструкции приведены на примере ОС Ubuntu 20.04.
-Получение исходников:
+### System requirements
+Docker and Docker-compose 1.28.0+ must be installed. All scripts here are supposed to be run in *docker* directory of the FRS project. We use Ubuntu 20.04 as an example.
+Get the source code of FRS:
 ```bash
 cd ~
 git clone --recurse-submodules https://github.com/rosteleset/frs.git
 cd ~/frs/docker
 ```
 
-### Установка драйверов NVIDIA (если используется GPU)
-На хост-сервер необходимо установить драйвера GPU. Можно использовать [описание](https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html#ubuntu-lts) или выпполнить команду:
+### Install NVIDIA drivers (if you are using GPU)
+NVIDIA drivers should be installed on the host. Steps are described [here](https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html#ubuntu-lts) or you may run:
 
 ```bash
 $ sudo ./setup_nvidia_drivers.sh
 ```
-Перезагрузить систему.
+Reboot.
 
-### Установка NVIDIA Container Toolkit
-Можно воспользоваться инструкцией [здесь](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#getting-started) или выполнить команду:
+### Install NVIDIA Container Toolkit
+Steps are described [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#getting-started) or just run:
 ```bash
 sudo ./setup_nvidia_container_toolkit.sh
 ```
 
-### Подготовка конфигурации
-Используются переменные окружения:
-* FRS_HOST_WORKDIR - рабочая директория FRS на хост-сервере;
-* MYSQL_DB - название базы данных внутри контейнера MySQL;
-* MYSQL_PORT - порт внутри контейнера MySQL;
-* MYSQLX_PORT - порт для X плагина MySQL;
-* MYSQL_PASSWORD - пароль для пользователя root внутри контейнера MySQL.
-* WITH_GPU - признак использования GPU.
+### Create configuration
+Set environment variables:
+* FRS_HOST_WORKDIR - working directory on the host;
+* MYSQL_DB - database name of a running MySQL container;
+* MYSQL_PORT - MySQL port of a running container;
+* MYSQLX_PORT - port for MySQL X plugin;
+* MYSQL_PASSWORD - root password of a running MySQL container.
+* WITH_GPU - GPU using flag.
 
-Например:
+And run *prepare_config.sh* script, for a example:
 ```bash
 sudo \
 FRS_HOST_WORKDIR=/opt/frs \
@@ -41,23 +41,23 @@ MYSQL_PASSWORD=123123 \
 WITH_GPU=1 \
 ./prepare_config.sh
 ```
-Если используется GPU, то необходимо создать TensorRT планы для работы нейронных сетей с помощью команды:
+You should create TensorRT plans of models if you are using GPU:
 ```bash
 sudo ./tensorrt_plans.sh
 ```
-После выполнения этих команд в директории */opt/frs* хост-сервера появятся необходимые файлы для работы FRS.
+After these steps directory */opt/frs* should contain all necessary files for running FRS.
 
-### Сборка контйнера FRS
+### Build FRS container
 ```bash
 sudo ./build_frs.sh
 ```
 
-### Запуск FRS
-* С использованием GPU:
+### Run FRS
+* With GPU:
 ```bash
 sudo docker-compose -f /opt/frs/docker-compose-gpu.yml up
 ```
-* Без GPU:
+* Without GPU:
 ```bash
 sudo docker-compose -f /opt/frs/docker-compose-cpu.yml up
 ```
