@@ -14,7 +14,7 @@ Restart=always
 RestartSec=4
 StandardOutput=null
 PrivateTmp=true
-ExecStartPre=+/bin/bash -c '/bin/mkdir /var/run/mongodb && /bin/chown -R mongodb:mongodb /var/{lib,run}/mongodb'
+ExecStartPre=+/bin/bash -c '[ ! -d "/var/run/mongodb" ] && /bin/mkdir /var/run/mongodb ; /bin/chown -R mongodb:mongodb /var/{lib,run}/mongodb'
 
 [Install]
 WantedBy=multi-user.target

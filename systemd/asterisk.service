@@ -15,7 +15,7 @@ Restart=always
 RestartSec=4
 StandardOutput=null
 PrivateTmp=true
-ExecStartPre=+/bin/bash -c '/bin/mkdir /var/run/asterisk && /bin/chown -R asterisk:asterisk /var/{lib,log,run,spool}/asterisk'
+ExecStartPre=+/bin/bash -c '[ ! -d "/var/run/asterisk" ] && /bin/mkdir /var/run/asterisk ; /bin/chown -R asterisk:asterisk /var/{lib,log,run,spool}/asterisk'
 
 [Install]
 WantedBy=multi-user.target
