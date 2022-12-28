@@ -15,6 +15,8 @@ Restart=always
 RestartSec=4
 StandardOutput=null
 PrivateTmp=true
+ExecStartPre=/bin/chown -R asterisk:asterisk /var/{lib,log,run,spool}/asterisk
+PermissionsStartOnly=true
 
 [Install]
 WantedBy=multi-user.target
