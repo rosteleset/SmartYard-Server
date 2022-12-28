@@ -187,7 +187,6 @@
                     id: "md",
                     type: "text",
                     title: i18n("addresses.md"),
-                    placeholder: "0,0,0,0",
                     hint: i18n("addresses.left") + "," + i18n("addresses.right").toLowerCase() + "," + i18n("addresses.width").toLowerCase() + "," + i18n("addresses.height").toLowerCase(),
                     placeholder: "0,0,0,0",
                     value: "0,0,0,0",
