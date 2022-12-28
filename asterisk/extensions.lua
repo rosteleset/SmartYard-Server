@@ -246,8 +246,6 @@ function neighbour(extension)
     --
 end
 
-log_debug("startup")
-
 extensions = {
 
     [ "default" ] = {
