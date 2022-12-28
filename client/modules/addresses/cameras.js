@@ -475,9 +475,6 @@
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
 
-            console.log(params);
-            console.log(modules.addresses.cameras.meta);
-
             cardTable({
                 target: "#mainForm",
                 title: {
