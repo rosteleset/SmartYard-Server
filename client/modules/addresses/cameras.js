@@ -175,7 +175,7 @@
                     type: "text",
                     title: i18n("addresses.position"),
                     placeholder: "0,0,0",
-                    hint: i18n("addresses.direction") + ", " + i18n("addresses.angle").toLowerCase() + ", " + i18n("addresses.distance").toLowerCase(),
+                    hint: i18n("addresses.direction") + "," + i18n("addresses.angle").toLowerCase() + "," + i18n("addresses.distance").toLowerCase(),
                     value: "0,0,0",
                     validate: v => {
                         const regex = new RegExp('^\\d+,\\d+,\\d+$', 'gm');
@@ -188,7 +188,7 @@
                     type: "text",
                     title: i18n("addresses.md"),
                     placeholder: "0,0,0,0",
-                    hint: i18n("addresses.left") + ", " + i18n("addresses.right").toLowerCase() + ", " + i18n("addresses.width").toLowerCase() + ", " + i18n("addresses.height").toLowerCase(),
+                    hint: i18n("addresses.left") + "," + i18n("addresses.right").toLowerCase() + "," + i18n("addresses.width").toLowerCase() + "," + i18n("addresses.height").toLowerCase(),
                     placeholder: "0,0,0,0",
                     value: "0,0,0,0",
                     validate: v => {
@@ -381,7 +381,7 @@
                         type: "text",
                         title: i18n("addresses.geo"),
                         placeholder: "0,0",
-                        hint: i18n("addresses.lon") + ", " + i18n("addresses.lat").toLowerCase(),
+                        hint: i18n("addresses.lon") + "," + i18n("addresses.lat").toLowerCase(),
                         value: camera.lon + "," + camera.lat,
                         validate: v => {
                             const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
@@ -395,7 +395,7 @@
                         title: i18n("addresses.position"),
                         placeholder: "0,0.0",
                         value: camera.direction + "," + camera.angle + "," + camera.distance,
-                        hint: i18n("addresses.direction") + ", " + i18n("addresses.angle").toLowerCase() + ", " + i18n("addresses.distance").toLowerCase(),
+                        hint: i18n("addresses.direction") + "," + i18n("addresses.angle").toLowerCase() + "," + i18n("addresses.distance").toLowerCase(),
                         validate: v => {
                             const regex = new RegExp('^\\d+,\\d+,\\d+$', 'gm');
 
@@ -407,7 +407,7 @@
                         type: "text",
                         title: i18n("addresses.md"),
                         placeholder: "0,0,0,0",
-                        hint: i18n("addresses.left") + ", " + i18n("addresses.right").toLowerCase() + ", " + i18n("addresses.width").toLowerCase() + ", " + i18n("addresses.height").toLowerCase(),
+                        hint: i18n("addresses.left") + "," + i18n("addresses.right").toLowerCase() + "," + i18n("addresses.width").toLowerCase() + "," + i18n("addresses.height").toLowerCase(),
                         value: camera.mdLeft + "," + camera.mdTop + "," + camera.mdWidth + "," + camera.mdHeight,
                         validate: v => {
                             const regex = new RegExp('^\\d+,\\d+,\\d+,\\d+$', 'gm');
