@@ -94,7 +94,7 @@
                            return false;
         
                         }
-                        $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['start'], $task['finish']);
+                        $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
                         
                         $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
                         

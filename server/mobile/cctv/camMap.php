@@ -66,7 +66,7 @@ foreach($cams as $entrance_id => $cam) {
     $ret[] = [
         'id' => strval($e['domophoneId']),
         'url' => $cam['dvrStream'],
-        'token' => loadBackend("dvr")->getDVRTokenForCam($cam),
+        'token' => loadBackend("dvr")->getDVRTokenForCam($cam, $subscriber['subscriberId']),
         'frs' => 'f', // TODO: добавить FRS
         'serverType' => $dvr['type']
     ];

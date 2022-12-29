@@ -27,6 +27,6 @@ if (!$cam) {
     response(404);
 }
 
-$ranges = loadBackend("dvr")->getRanges($cam);
+$ranges = loadBackend("dvr")->getRanges($cam, $subscriber['subscriberId']);
 
 response(200, $ranges);
