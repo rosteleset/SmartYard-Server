@@ -12,8 +12,8 @@
             public function getDVRTokenForCam($cam, $subscriberId)
             {
                 // Custom realisation
-                $subscriber = loadBackend("subscribers")->getSubscribers("id",$subscriberId)[0];
-                
+                $subscriber = loadBackend("households")->getSubscribers("id", $subscriberId)[0];
+
                 return 'your custom token for number ' . $subscriber['mobile'];
             }
 
