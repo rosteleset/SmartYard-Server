@@ -46,7 +46,7 @@
                 if (!$port && $scheme == 'http') $port = 80;
                 if (!$port && $scheme == 'https') $port = 443;
 
-                $result = [ 'type' => 'flussonic', 'token' => '' ]; // result by default if server not found in dvr_servers settings
+                $result = [ 'type' => 'flussonic' ]; // result by default if server not found in dvr_servers settings
 
                 foreach ($dvr_servers as $server) {
                     $u = parse_url($server['url']);
@@ -61,6 +61,25 @@
                         $result = $server;
                         break;
                     }
+                }
+
+                return $result;
+            }
+            
+            /**
+             * @inheritDoc
+             */
+            public function getDVRTokenForCam($cam)
+            {
+                // Implemetnation for static token for dvr server written in config
+                // You should override this method, if you have dynamic tokens or have unique static tokens for every subscriber
+
+                $dvrServer = $this->getDVRServerByStream($cam['dvrStream']);
+
+                $result = '';
+
+                if ($dvrServer) {
+                    $result = strval(@$dvrServer['token'] ?: '');
                 }
 
                 return $result;
@@ -99,7 +118,7 @@
                     
                 } else {
                     // Flussonic Server by default
-                    $flussonic_token = @$dvr['token'] ?: '';
+                    $flussonic_token = $this->getDVRTokenForCam($cam);
                     $from = $start;
                     $duration = (int)$finish - (int)$start;
                     $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
@@ -135,7 +154,7 @@
                     $ranges = $this->getRangesForNimble( $dvr['management_ip'], $dvr['management_port'], $stream, $dvr['management_token'] );
                 } else {
                     // Flussonic Server by default
-                    $flussonic_token = @$dvr['token'] ?: '';
+                    $flussonic_token = $this->getDVRTokenForCam($cam);
                     $request_url = $cam['dvrStream']."/recording_status.json?from=1525186456&token=$flussonic_token";
                     $ranges = json_decode(file_get_contents($request_url), true);
                 }

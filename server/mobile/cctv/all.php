@@ -78,7 +78,7 @@ foreach($houses as $house_key => $h) {
             "name" => $camera['name'],
             "lat" => strval($camera['lat']),
             "url" => $camera['dvrStream'],
-            "token" => strval(@$dvr['token'] ?: ''),
+            "token" => loadBackend("dvr")->getDVRTokenForCam($camera),
             "lon" => strval($camera['lon']),
             "serverType" => $dvr['type']
         ];
