@@ -1,6 +1,6 @@
 <?php
-    //Наполняем событиями с панели домофона в таблицу internal.plog_call_done
-    //event: "All calls are done for apartment 123"
+    //store events to db plog_call_done
+    //example event: "All calls are done for apartment 123"
     [
         "date" => $date,
         "ip" => $ip,
@@ -14,6 +14,6 @@
 
     $plog = loadBackend("plog");
 
-    $callDone = $plog->addCallDoneData($date,$ip,$call_id);
-    response(201, ["id"=> $callDone]);
+    $callDone = $plog->addCallDoneData($date, $ip, $call_id);
+    response(201, ["id" => $callDone]);
     exit();

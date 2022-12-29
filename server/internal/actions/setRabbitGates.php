@@ -1,5 +1,5 @@
 <?php
-//Находим домофонную панель в режиме калитки, устанавливаем временную метку открытия двери для запрошенной квартиры
+    //Find the intercom panel in the gate mode, we find the timestamp of the door opening for the requested apartment
     [
         "date" => $date,
         "ip" => $ip,

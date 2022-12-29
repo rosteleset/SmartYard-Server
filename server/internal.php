@@ -168,7 +168,7 @@
     exit;
 }
 
-    /**Тестовая обертка для работы с FRS API
+    /**Test wrapper for FRS API request
      * @param {string} url
      * @param {object} payload
      */
