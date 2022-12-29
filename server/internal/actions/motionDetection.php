@@ -1,7 +1,6 @@
 <?php
-    /** Получаем ip устройства имеющего функционал "детекция движения", находим stream_id видеопотока
-     * и frs url. Отправляем POST запрос к FRS о начале или окончании движения.
-     * "Host-->FRS | Уведомление о детекции движения"
+    /** Get ip motion detection device, find stream_id and frs url.
+     * Send POST request to FRS.
      */
     [
         "date" => $date,

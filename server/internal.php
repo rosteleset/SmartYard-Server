@@ -1,9 +1,10 @@
 <?php
     mb_internal_encoding("UTF-8");
-    require_once "utils/loader.php";
+
     require_once "backends/backend.php";
     require_once "utils/loader.php";
     require_once "utils/db_ext.php";
+    require_once "utils/error.php";
     require_once "utils/i18n.php";
 
     $config = false;
@@ -167,7 +168,7 @@
     exit;
 }
 
-    /**Тестовая обертка для работы с FRS API
+    /**Test wrapper for FRS API request
      * @param {string} url
      * @param {object} payload
      */

@@ -1,5 +1,7 @@
 <?php
-    //Наполняем событиями с  панели  домофона таблицу internal.plog_door_open
+    /*Store events to db plog_door_open.
+     "freeze motion detection" request for SRS
+    */
     [
         "date" => $date,
         "ip" => $ip,
@@ -13,7 +15,7 @@
         exit();
     }
 
-    //TODO:вынести куда-нибудь коды событий для последующего переиспользования.
+    //TODO: refactor events code?
     try {
         $events = @json_decode(file_get_contents(__DIR__ . "/../../syslog/utils/events.json"), true);
     } catch (Exception $e) {
@@ -26,19 +28,22 @@
 
     switch ($event) {
         case $events['OPEN_BY_KEY']:
-        //Прочие действия предпологаемые для соьытия "открытие двери по коду"
         case $events['OPEN_BY_CODE']:
+            //Store event to db
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $event, $door, $detail);
             response(201, ["id" => $plogDoorOpen]);
             break;
 
         case $events['OPEN_BY_CALL']:
-            /* Пример события: "[49704] Opening door by DTMF command for apartment 1"
+            /* not used
+            example event: "[49704] Opening door by DTMF command for apartment 1"
              */
             response(200);
             break;
         case $events['OPEN_BY_BUTTON']:
-            // "Host-->FRS | Уведомление об открытии двери"
+            /* "Host-->FRS | Event: open door by button.
+            send request to FRS for "freeze motion detection" on this entry"
+            */
             [0 => [
                 "camera_id" => $streamId,
                 "frs" => $frsUrl
