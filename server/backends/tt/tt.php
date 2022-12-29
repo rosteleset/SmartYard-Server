@@ -33,7 +33,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $base = dirname(__FILE__) . "/" . $class . "/workflows/";
+                $base = __DIR__ . "/" . $class . "/workflows/";
                 $dir = scandir($base);
 
                 $w = [];
@@ -46,7 +46,7 @@
                     }
                 }
 
-                $base = dirname(__FILE__) . "/" . $class . "/customWorkflows/";
+                $base = __DIR__ . "/" . $class . "/customWorkflows/";
 
                 if (file_exists($base)) {
                     $dir = scandir($base);
@@ -107,8 +107,8 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . ".php";
-                $customDir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $file = __DIR__ . "/" . $class . "/workflows/" . $workflow . ".php";
+                $customDir = __DIR__ . "/" . $class . "/customWorkflows";
                 $fileCustom = $customDir . "/" . $workflow . ".php";
 
                 if (file_exists($customDir) && file_exists($fileCustom)) {
@@ -143,8 +143,8 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = dirname(__FILE__) . "/" . $class . "/workflows/" . $workflow . ".php";
-                $customDir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $file = __DIR__ . "/" . $class . "/workflows/" . $workflow . ".php";
+                $customDir = __DIR__ . "/" . $class . "/customWorkflows";
                 $fileCustom = $customDir . "/" . $workflow . ".php";
 
                 if (file_exists($customDir) && file_exists($fileCustom)) {
@@ -178,7 +178,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $dir = __DIR__ . "/" . $class . "/customWorkflows";
                 $fileCustom = $dir . "/" . $workflow . ".php";
 
                 try {
@@ -213,7 +213,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = dirname(__FILE__) . "/" . $class . "/customWorkflows";
+                $dir = __DIR__ . "/" . $class . "/customWorkflows";
                 $fileCustom = $dir . "/" . $workflow . ".php";
 
                 try {
@@ -459,7 +459,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $filters = glob(dirname(__FILE__) . "/" . $class . "/filters/*.json");
+                $filters = glob(__DIR__ . "/" . $class . "/filters/*.json");
 
                 $list = [];
 
@@ -496,7 +496,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = dirname(__FILE__) . "/" . $class . "/filters/" . $filter . ".json";
+                $file = __DIR__ . "/" . $class . "/filters/" . $filter . ".json";
 
                 if (file_exists($file)) {
                     return file_get_contents($file);
@@ -525,7 +525,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = dirname(__FILE__) . "/" . $class . "/filters";
+                $dir = __DIR__ . "/" . $class . "/filters";
                 $file = $dir . "/" . $filter . ".json";
 
                 try {
@@ -559,7 +559,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = dirname(__FILE__) . "/" . $class . "/filters";
+                $dir = __DIR__ . "/" . $class . "/filters";
                 $fileCustom = $dir . "/" . $filter . ".json";
 
                 try {

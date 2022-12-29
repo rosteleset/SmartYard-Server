@@ -2,7 +2,7 @@
 
 // command line client
 
-    chdir(dirname(__FILE__));
+    chdir(__DIR__);
 
     require_once "utils/error.php";
     require_once "utils/response.php";
@@ -141,7 +141,7 @@
         if (is_executable_pathenv(PHP_BINARY)) {
             echo "open in your browser:\n\n";
             echo "http://localhost:8000/client/index.html\n\n";
-            chdir(dirname(__FILE__) . "/..");
+            chdir(__DIR__ . "/..");
             passthru(PHP_BINARY . " -S 0.0.0.0:8000");
         } else {
             echo "no php interpreter found in path\n";
