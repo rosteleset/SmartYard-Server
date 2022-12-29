@@ -113,12 +113,19 @@
 
 
 6. Запуск Intercom syslog  сервисов
-    ````
-    sudo systemctl daemon-reload
+   ````
+   systemctl daemon-reload
     
-    sudo systemctl enable syslog_intercom_beward.service && sudo systemctl start syslog_intercom_beward.service
-    sudo systemctl enable syslog_intercom_beward_ds06a.service && sudo systemctl start syslog_intercom_beward_ds06a.service
-    sudo systemctl enable syslog_intercom_qtech.service $$ sudo systemctl start syslog_intercom_qtech.service
-    sudo systemctl enable syslog_intercom_is.service && sudo systemctl enable syslog_intercom_is.service
+   systemctl enable syslog_intercom_beward.service
+   systemctl start syslog_intercom_beward.service
+   
+   systemctl enable syslog_intercom_beward_ds06a.service
+   systemctl start syslog_intercom_beward_ds06a.service
+   
+   systemctl enable syslog_intercom_qtech.service
+   systemctl start syslog_intercom_qtech.service
+   
+   systemctl enable syslog_intercom_is.service
+   systemctl enable syslog_intercom_is.service
     
-    ````
+   ````
