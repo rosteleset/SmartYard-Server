@@ -1,13 +1,13 @@
-1. Выполнить установку зависимостей
+1. Install the dependencies
     ```
-    cp /opt/rbt/server/syslog/
+    cd /opt/rbt/server/syslog/
     npm install
     ```
-2. Создать и отредактировать конфиг:
+2. Create config file:
     ```
     cp ./config.sample.json ./config.json
     ```
-3. Добавить пользователя для запуска cервиса Intercom syslog:
+3. Add user for run "Intercom syslog" service:
     ````
     groupadd isyslog
     useradd -g isyslog -s /bin/true -d /dev/null isyslog
@@ -15,7 +15,7 @@
     директория для logfiles
     /var/log/syslog_intercom/ 
     ````
-4. Logrotate для локального хранения сообщений
+4. Config logrotate. Optional for local log storage
     ````
     echo '/var/log/syslog_intercom/*.log {
             daily
@@ -26,7 +26,7 @@
     }' > /etc/logrotate.d/syslog_intercom
     ````
 
-5. Добавить сервисы systemd в соответствии с импользуемыми моделями домофонов (Beward, QTECH, Интерсвязь - Сокол )
+5. Add systemd services by used intercom model (Beward, QTECH, Intersviaz - Sokol )
     ###### BEWARD
     ````
     echo '[Unit]
@@ -48,7 +48,7 @@
     WantedBy=multi-user.target' > /etc/systemd/system/syslog_intercom_beward.service
     ````
 
-    ###### BEWARD, только для модели DS06A
+    ###### BEWARD, only model DS06A
     ````
     echo '[Unit]
     Description=Intercom syslog service for Beward DS06A
@@ -73,7 +73,7 @@
     ````
     echo '[Unit]
     Description=Intercom syslog service for QTECH
-    Documentation=https://github.com/rosteleset/rbt/tree/main/doc
+    Documentation=https://github.com/rosteleset/rbt/tree/main/doc/
     After=network.target
     
     [Service]
@@ -90,7 +90,7 @@
     WantedBy=multi-user.target' > /etc/systemd/system/syslog_intercom_qtech.service
     ````
 
-    ###### Интерсвязь (Сокол)
+    ###### Intersviaz (Sokol)
     ````
     echo '[Unit]
     Description=Intercom syslog service for Intersviaz
@@ -112,7 +112,7 @@
     ````
 
 
-6. Запуск Intercom syslog  сервисов
+6. Run created systemd services
    ````
    systemctl daemon-reload
     
