@@ -22,6 +22,12 @@
             abstract public function getDVRServerByStream($url);
 
             /**
+             * @param $url
+             * @return mixed
+             */
+            abstract public function getDVRTokenForCam($cam);
+
+            /**
              * @return mixed
              */
             abstract public function getDVRServers();
@@ -40,5 +46,7 @@
              * @return string URL with mp4-screenshot on a DVR-server
              */
             abstract public function getUrlOfMP4Screenshot($cam, $time = false);
+
+
         }
     }
