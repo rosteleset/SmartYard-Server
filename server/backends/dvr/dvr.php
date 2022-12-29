@@ -25,7 +25,7 @@
              * @param $url
              * @return mixed
              */
-            abstract public function getDVRTokenForCam($cam);
+            abstract public function getDVRTokenForCam($cam, $subscriberId);
 
             /**
              * @return mixed
@@ -38,7 +38,7 @@
              * @param integer $end unixtime of end
              * @return string URL with DVR archive on a DVR-server
              */
-            abstract public function getUrlOfRecord($cam, $start, $finish);
+            abstract public function getUrlOfRecord($cam, $subscriberId, $start, $finish);
 
             /**
              * @param object $cam Camera object
