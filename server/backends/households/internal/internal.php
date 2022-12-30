@@ -1564,6 +1564,7 @@
              */
             public function cleanup() {
                 $cameras = loadBackend("cameras");
+                $addresses = loadBackend("addresses");
 
                 $n = 0;
 
@@ -1600,6 +1601,25 @@
                         if (!in_array($ci["camera_id"], $cl)) {
                             $this->db->modify("delete from houses_cameras_subscribers where camera_id = :camera_id", [
                                 "camera_id" => $ci["camera_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+                }
+
+                if ($addresses) {
+                    $hi = [];
+
+                    $houses = $addresses->getHouses();
+                    foreach ($houses as $house) {
+                        $hi[] = $house["houseId"];
+                    }
+
+                    $fl = $this->db->get("select house_flat_id from houses_flats");
+                    foreach ($fl as $fi) {
+                        if (!in_array($fi["house_flat_id"], $hi)) {
+                            $this->db->modify("delete from houses_flats where house_flat_id = :house_flat_id", [
+                                "house_flat_id" => $fi["house_flat_id"],
                             ]);
                             $n++;
                         }
