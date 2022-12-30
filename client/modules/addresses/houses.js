@@ -407,7 +407,7 @@
                                 type: "text",
                                 title: i18n("addresses.geo"),
                                 placeholder: "0.0,0.0",
-                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon"),
+                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon").toLowerCase(),
                                 value: "0.0,0.0",
                                 validate: v => {
                                     const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
@@ -950,7 +950,7 @@
                                 type: "text",
                                 title: i18n("addresses.geo"),
                                 placeholder: "0.0,0.0",
-                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon"),
+                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon").toLowerCase(),
                                 value: entrance.lat + "," + entrance.lon,
                                 validate: v => {
                                     const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
