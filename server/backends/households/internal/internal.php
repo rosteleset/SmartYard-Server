@@ -1555,6 +1555,56 @@
             /**
              * @inheritDoc
              */
+            public function cleanup() {
+                $cameras = loadBackend("cameras");
+
+                $n = 0;
+
+                if ($cameras) {
+                    $cl = [];
+
+                    $cameras = $cameras->getCameras();
+                    foreach ($cameras as $camera) {
+                        $cl[] = $camera["cameraId"];
+                    }
+
+                    $hc = $this->db->get("select camera_id from houses_cameras_houses");
+                    foreach ($hc as $ci) {
+                        if (!in_array($ci["camera_id"], $cl)) {
+                            $this->db->modify("delete from houses_cameras_houses where camera_id = :camera_id", [
+                                "camera_id" => $ci["camera_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+
+                    $fc = $this->db->get("select camera_id from houses_cameras_flats");
+                    foreach ($fc as $ci) {
+                        if (!in_array($ci["camera_id"], $cl)) {
+                            $this->db->modify("delete from houses_cameras_flats where camera_id = :camera_id", [
+                                "camera_id" => $ci["camera_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+
+                    $sc = $this->db->get("select camera_id from houses_cameras_subscribers");
+                    foreach ($sc as $ci) {
+                        if (!in_array($ci["camera_id"], $cl)) {
+                            $this->db->modify("delete from houses_cameras_subscribers where camera_id = :camera_id", [
+                                "camera_id" => $ci["camera_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+                }
+
+                return $n;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cron($part) {
                 if ($part === "hourly") {
                     $domophones = $this->db->get("select house_domophone_id, url from houses_domophones");
@@ -1568,6 +1618,8 @@
                             ]);
                         }
                     }
+
+                    $this->cleanup();
 
                     return true;
                 }

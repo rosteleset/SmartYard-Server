@@ -606,18 +606,18 @@
                         uid: list[i].cameraId,
                         cols: [
                             {
-                                data: list[i].cameraId,
-                                click: "#addresses.cameras&filter=" + list[i].cameraId,
+                                data: list[i].cameraId?list[i].cameraId:i18n("addresses.deleted"),
+                                click: list[i].cameraId?("#addresses.cameras&filter=" + list[i].cameraId):false,
                             },
                             {
-                                data: list[i].url,
+                                data: list[i].url?list[i].url:"",
                             },
                             {
-                                data: list[i].name,
+                                data: list[i].name?list[i].name:"",
                                 nowrap: true,
                             },
                             {
-                                data: list[i].comment,
+                                data: list[i].comment?list[i].comment:"",
                                 nowrap: true,
                             },
                         ],
@@ -627,6 +627,7 @@
                                     icon: "fas fa-trash-alt",
                                     title: i18n("users.delete"),
                                     class: "text-warning",
+                                    disabled: !list[i].cameraId,
                                     click: cameraId => {
                                         mConfirm(i18n("addresses.confirmDeleteCamera", cameraId), i18n("confirm"), `danger:${i18n("addresses.deleteCamera")}`, () => {
                                             modules.addresses.subscribers.doDeleteCamera(cameraId, params.flatId);

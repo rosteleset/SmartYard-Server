@@ -4,10 +4,16 @@
         global $config;
 
         foreach ($config["backends"] as $backend => $_) {
-            $n = loadBackend($backend)->cleanup();
+            $b = loadBackend($backend);
 
-            if ($n !== false) {
-                echo "$backend: $n items cleaned\n";
+            if ($b) {
+                $n = $b->cleanup();
+
+                if ($n !== false) {
+                    echo "$backend: $n items cleaned\n";
+                }
+            } else {
+                echo "$backend: not found\n";
             }
         }
     }
