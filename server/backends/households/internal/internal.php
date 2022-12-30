@@ -301,7 +301,7 @@
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
-                    ":camera_id" => $cameraId,
+                    ":camera_id" => $cameraId ? : null,
                     ":locks_disabled" => (int)$locksDisabled,
                     ":cms_levels" => $cmsLevels,
                 ]);
@@ -380,7 +380,7 @@
                         ":domophone_output" => (int)$domophoneOutput,
                         ":cms" => $cms,
                         ":cms_type" => $cmsType,
-                        ":camera_id" => (int)$cameraId,
+                        ":camera_id" => (int)$cameraId ? : null,
                         ":locks_disabled" => (int)$locksDisabled,
                         ":cms_levels" => $cmsLevels,
                     ]) !== false;
@@ -1647,6 +1647,7 @@
                 $n += $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)");
                 $n += $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)");
                 $n += $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)");
+                $n += $this->db->modify("delete from houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances)");
 
                 return $n;
             }
