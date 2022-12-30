@@ -1,16 +1,14 @@
-edit config
+Copy and edit config
 ```
 cp ./config.sample.json ./config.json
 ```
 
-install 
-
+Install dependencies
 ```
 npm i
 ```
-start 
 
+Start syslog servers
 ```
 npm run start
 ```
-
