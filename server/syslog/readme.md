@@ -1,14 +1,2 @@
-Copy and edit config
-```
-cp ./config.sample.json ./config.json
-```
-
-Install dependencies
-```
-npm i
-```
-
-Start syslog servers
-```
-npm run start
-```
+[Go to install guide](https://github.com/rosteleset/rbt/blob/main/doc/11.syslog.md)  
+[Intercom events](https://github.com/rosteleset/rbt/tree/main/server/syslog/doc)
