@@ -998,5 +998,47 @@
                     return false;
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+            function cleanup()
+            {
+                $n = 0;
+
+                $n += $this->db->modify("delete from addresses_houses where address_settlement_id is not null and address_settlement_id not in (select address_settlement_id from addresses_settlements)");
+                $n += $this->db->modify("delete from addresses_houses where address_street_id is not null and address_street_id not in (select address_street_id from addresses_streets)");
+                $n += $this->db->modify("delete from addresses_houses where address_street_id is null and address_settlement_id is null");
+
+                $n += $this->db->modify("delete from addresses_streets where address_city_id is not null and address_city_id not in (select address_city_id from addresses_cities)");
+                $n += $this->db->modify("delete from addresses_streets where address_settlement_id is not null and address_settlement_id not in (select address_settlement_id from addresses_settlements)");
+                $n += $this->db->modify("delete from addresses_streets where address_settlement_id is null and address_city_id is null");
+
+                $n += $this->db->modify("delete from addresses_settlements where address_area_id is not null and address_area_id not in (select address_area_id from addresses_areas)");
+                $n += $this->db->modify("delete from addresses_settlements where address_city_id is not null and address_city_id not in (select address_city_id from addresses_cities)");
+                $n += $this->db->modify("delete from addresses_settlements where address_area_id is null and address_city_id is null");
+
+                $n += $this->db->modify("delete from addresses_cities where address_region_id is not null and address_region_id not in (select address_region_id from addresses_regions)");
+                $n += $this->db->modify("delete from addresses_cities where address_area_id is not null and address_area_id not in (select address_area_id from addresses_areas)");
+                $n += $this->db->modify("delete from addresses_cities where address_region_id is null and address_area_id is null");
+
+                $n += $this->db->modify("delete from addresses_areas where address_region_id is not null and address_region_id not in (select address_region_id from addresses_regions)");
+                $n += $this->db->modify("delete from addresses_areas where address_region_id is null");
+
+                return $n;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function cron($part)
+            {
+                if ($part === "5min") {
+                    $this->cleanup();
+
+                    return true;
+                }
+            }
+
         }
     }
