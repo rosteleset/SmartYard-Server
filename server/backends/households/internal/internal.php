@@ -1624,6 +1624,16 @@
                             $n++;
                         }
                     }
+
+                    $el = $this->db->get("select address_house_id from houses_houses_entrances");
+                    foreach ($el as $ei) {
+                        if (!in_array($ei["address_house_id"], $hi)) {
+                            $this->db->modify("delete from houses_houses_entrances where address_house_id = :address_house_id", [
+                                "house_flat_id" => $ei["address_house_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
                 }
 
                 $n += $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers union select house_subscriber_id from houses_cameras_subscribers) and last_seen + (31 * 24 * 60 * 60) < " . time());
@@ -1634,7 +1644,9 @@
                 $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2");
 
                 $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id not in (select camera_id from cameras)");
-                $n += $this->db->modify("update houses_entrances set house_domophone_id = null, domophone_output = null where house_domophone_id not in (select house_domophone_id from houses_domophones)");
+                $n += $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)");
+                $n += $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)");
+                $n += $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)");
 
                 return $n;
             }
