@@ -1633,6 +1633,9 @@
                 $n += $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2");
 
+                $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id not in (select camera_id from cameras)");
+                $n += $this->db->modify("update houses_entrances set house_domophone_id = null, domophone_output = null where house_domophone_id not in (select house_domophone_id from houses_domophones)");
+
                 return $n;
             }
 
