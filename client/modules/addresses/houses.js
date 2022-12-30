@@ -407,7 +407,7 @@
                                 type: "text",
                                 title: i18n("addresses.geo"),
                                 placeholder: "0,0",
-                                hint: i18n("addresses.lon") + "," + i18n("addresses.lat"),
+                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon"),
                                 value: "0.0,0.0",
                                 validate: v => {
                                     const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
@@ -950,8 +950,8 @@
                                 type: "text",
                                 title: i18n("addresses.geo"),
                                 placeholder: "0,0",
-                                hint: i18n("addresses.lon") + "," + i18n("addresses.lat"),
-                                value: entrance.lon + "," + entrance.lat,
+                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon"),
+                                value: entrance.lat + "," + entrance.lon,
                                 validate: v => {
                                     const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
 
@@ -1089,8 +1089,8 @@
                                 modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
                             } else {
                                 let g = result.geo.split(",");
-                                result.lon = g[0];
-                                result.lat = g[1];
+                                result.lat = g[0];
+                                result.lon = g[1];
                                 if (parseInt(result.domophoneOutput) > 0) {
                                     result.cms = 0;
                                     result.shared = 0;

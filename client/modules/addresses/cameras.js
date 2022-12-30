@@ -164,7 +164,7 @@
                     type: "text",
                     title: i18n("addresses.geo"),
                     placeholder: "0,0",
-                    hint: i18n("addresses.lon") + "," + i18n("addresses.lat").toLowerCase(),
+                    hint: i18n("addresses.lat") + "," + i18n("addresses.lon").toLowerCase(),
                     value: "0.0,0.0",
                     validate: v => {
                         const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
@@ -216,8 +216,8 @@
             ],
             callback: result => {
                 let g = result.geo.split(",");
-                result.lon = $.trim(g[0]);
-                result.lat = $.trim(g[1]);
+                result.lat = $.trim(g[0]);
+                result.lon = $.trim(g[1]);
                 let p = result.position.split(",")
                 result.direction = $.trim(p[0]);
                 result.angle = $.trim(p[1]);
@@ -383,7 +383,7 @@
                         title: i18n("addresses.geo"),
                         placeholder: "0,0",
                         hint: i18n("addresses.lon") + "," + i18n("addresses.lat").toLowerCase(),
-                        value: camera.lon + "," + camera.lat,
+                        value: camera.lat + "," + camera.lon,
                         validate: v => {
                             const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
 
