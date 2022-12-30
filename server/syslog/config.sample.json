@@ -1,26 +1,27 @@
 {
-  "clickhouse": {
-    "host": "127.0.0.1",
-    "port": 8123,
-    "database": "default",
-    "username": "default",
-    "password": "default_password"
-  },
-  "hw": {
-    "beward": [
-      "syslog.udp:127.0.0.1:45450"
-    ],
-    "beward_ds": [
-      "syslog.udp:127.0.0.1:45451"
-    ],
-    "qtech": [
-      "syslog.udp:127.0.0.1:45452"
-    ],
-    "is": [
-      "syslog.udp:127.0.0.1:45453"
-    ],
-    "hikvision": [
-      "syslog.udp:127.0.0.1:45454"
-    ]
-  }
+    "clickhouse": {
+        "host": "127.0.0.1",
+        "port": 8123,
+        "database": "default",
+        "username": "default",
+        "password": "default_password"
+    },
+
+    "hw": {
+        "beward": [
+            "syslog.udp:127.0.0.1:45450"
+        ],
+        "beward_ds": [
+            "syslog.udp:127.0.0.1:45451"
+        ],
+        "qtech": [
+            "syslog.udp:127.0.0.1:45452"
+        ],
+        "is": [
+            "syslog.udp:127.0.0.1:45453"
+        ],
+        "hikvision": [
+            "syslog.udp:127.0.0.1:45454"
+        ]
+    }
 }

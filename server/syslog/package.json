@@ -1,33 +1,33 @@
 {
-  "name": "syslog",
-  "version": "1.0.0",
-  "description": "Intercom Syslog service",
-  "type": "commonjs",
-  "scripts": {
-    "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\"",
-    "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\"",
-    "start:beward": "node beward.js --config=beward",
-    "start:beward_ds": "node beward.js --config=beward_ds",
-    "start:qtech": "node qtech.js",
-    "start:is": "node is.js",
-    "dev:beward": "nodemon beward.js --config=beward",
-    "dev:beward_ds": "nodemon beward.js --config=beward_ds",
-    "dev:qtech": "nodemon qtech.js",
-    "dev:is": "nodemon is.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^1.1.0",
-    "concurrently": "^7.4.0",
-    "syslog-server": "^1.0.1"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.20"
-  },
-  "engines": {
-    "npm": ">=8.0.0",
-    "node": ">=18.0.0"
-  }
+    "name": "syslog",
+    "version": "1.0.0",
+    "description": "Intercom Syslog service",
+    "type": "commonjs",
+    "scripts": {
+        "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\"",
+        "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\"",
+        "start:beward": "node beward.js --config=beward",
+        "start:beward_ds": "node beward.js --config=beward_ds",
+        "start:qtech": "node qtech.js",
+        "start:is": "node is.js",
+        "dev:beward": "nodemon beward.js --config=beward",
+        "dev:beward_ds": "nodemon beward.js --config=beward_ds",
+        "dev:qtech": "nodemon qtech.js",
+        "dev:is": "nodemon is.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^1.1.0",
+        "concurrently": "^7.4.0",
+        "syslog-server": "^1.0.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.20"
+    },
+    "engines": {
+        "npm": ">=8.0.0",
+        "node": ">=18.0.0"
+    }
 }
