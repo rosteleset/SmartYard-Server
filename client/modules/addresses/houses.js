@@ -406,7 +406,7 @@
                                 id: "geo",
                                 type: "text",
                                 title: i18n("addresses.geo"),
-                                placeholder: "0,0",
+                                placeholder: "0.0,0.0",
                                 hint: i18n("addresses.lat") + "," + i18n("addresses.lon"),
                                 value: "0.0,0.0",
                                 validate: v => {
@@ -519,8 +519,8 @@
                         ],
                         callback: result => {
                             let g = result.geo.split(",");
-                            result.lon = g[0];
-                            result.lat = g[1];
+                            result.lat = g[0];
+                            result.lon = g[1];
                             if (parseInt(result.domophoneOutput) > 0) {
                                 result.cms = 0;
                                 result.shared = 0;
@@ -949,7 +949,7 @@
                                 id: "geo",
                                 type: "text",
                                 title: i18n("addresses.geo"),
-                                placeholder: "0,0",
+                                placeholder: "0.0,0.0",
                                 hint: i18n("addresses.lat") + "," + i18n("addresses.lon"),
                                 value: entrance.lat + "," + entrance.lon,
                                 validate: v => {
