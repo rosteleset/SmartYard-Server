@@ -625,7 +625,7 @@
                             items: [
                                 {
                                     icon: "fas fa-trash-alt",
-                                    title: i18n("users.delete"),
+                                    title: i18n("addresses.deleteCamera"),
                                     class: "text-warning",
                                     disabled: !list[i].cameraId,
                                     click: cameraId => {

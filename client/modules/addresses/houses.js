@@ -1723,18 +1723,18 @@
                                 uid: modules.addresses.houses.meta.cameras[i].cameraId,
                                 cols: [
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].cameraId,
-                                        click: "#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId,
+                                        data: modules.addresses.houses.meta.cameras[i].cameraId?modules.addresses.houses.meta.cameras[i].cameraId:i18n("addresses.deleted"),
+                                        click: modules.addresses.houses.meta.cameras[i].cameraId?("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId):false,
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].url,
+                                        data: modules.addresses.houses.meta.cameras[i].url?modules.addresses.houses.meta.cameras[i].url:"",
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].name,
+                                        data: modules.addresses.houses.meta.cameras[i].name?modules.addresses.houses.meta.cameras[i].name:"",
                                         nowrap: true,
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].comment,
+                                        data: modules.addresses.houses.meta.cameras[i].comment?modules.addresses.houses.meta.cameras[i].comment:"",
                                         nowrap: true,
                                     },
                                 ],
@@ -1742,8 +1742,9 @@
                                     items: [
                                         {
                                             icon: "fas fa-trash-alt",
-                                            title: i18n("users.delete"),
+                                            title: i18n("addresses.deleteCamera"),
                                             class: "text-warning",
+                                            disabled: !modules.addresses.houses.meta.cameras[i].cameraId,
                                             click: cameraId => {
                                                 mConfirm(i18n("addresses.confirmDeleteCamera", cameraId), i18n("confirm"), `danger:${i18n("addresses.deleteCamera")}`, () => {
                                                     modules.addresses.houses.doDeleteCamera(cameraId, houseId);
