@@ -38,7 +38,7 @@
                     if (modules.users.meta[j].uid == project.users[i].uid && !project.users[i].byGroup) {
                         p.push({
                             id: project.users[i].uid,
-                            text: modules.users.meta[j].realName,
+                            text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
                         });
                     }
                 }
