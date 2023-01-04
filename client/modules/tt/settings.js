@@ -1291,7 +1291,7 @@
                 let users = {};
                 for (let i in response.users) {
                     if (response.users[i].uid) {
-                        users[response.users[i].uid] = $.trim(response.users[i].realName + " [" + response.users[i].login + "]");
+                        users[response.users[i].uid] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
                     }
                 }
 
