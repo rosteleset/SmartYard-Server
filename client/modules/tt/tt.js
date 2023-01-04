@@ -160,12 +160,6 @@
                         mimeTypes: JSON.parse(project.allowedMimeTypes),
                         maxSize: project.maxFileSize,
                     };
-
-                case "plans":
-                    break;
-
-                case "checklist":
-                    break;
             }
         } else {
             // custom field
