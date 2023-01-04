@@ -112,5 +112,6 @@
     "customFieldEditorCalc": "Калькулятор",
     "customFieldEditorDate": "Дата",
     "customFieldEditorTime": "Время",
-    "customFieldEditorDateTime": "Дата и время"
+    "customFieldEditorDateTime": "Дата и время",
+    "addWorkflow": "Добавить рабочий процесс"
 }
