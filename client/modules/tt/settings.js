@@ -253,7 +253,7 @@
         fail(FAIL).
         fail(loadingDone).
         done(() => {
-            message(i18n("tt.projectWasChanged"));
+            message(i18n("tt.roleWasChanged"));
         }).
         done(modules.tt.settings.renderRoles);
     },
