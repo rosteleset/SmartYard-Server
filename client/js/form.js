@@ -320,7 +320,7 @@ function cardForm(params) {
                 if ($(`#${_prefix}${params.fields[i].id}`).summernote("isEmpty") || $.trim($(rich).text()) === "") {
                     return "";
                 } else {
-                    return rich;
+                    return rich.replace('<p>', '<p style="margin: 0px">');
                 }
 
             case "code":
