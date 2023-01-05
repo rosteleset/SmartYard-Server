@@ -144,7 +144,7 @@
                 }
 
                 $file = __DIR__ . "/workflows/" . $workflow . ".php";
-                $customDir = __DIR__ . "/customWorkflows";
+                $customDir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $customDir . "/" . $workflow . ".php";
 
                 if (file_exists($customDir) && file_exists($fileCustom)) {
