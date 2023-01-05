@@ -26,13 +26,14 @@
 
                 require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
 
-                if (@$config["backends"]["files"]["uri"]) {
-                    $this->mongo = new \MongoDB\Client($config["backends"]["files"]["uri"]);
+                if (@$config["backends"]["tt"]["uri"]) {
+                    $this->mongo = new \MongoDB\Client($config["backends"]["tt"]["uri"]);
                 } else {
                     $this->mongo = new \MongoDB\Client();
                 }
 
-                $this->collection = $this->mongo->tt->issues;
+                $collection = @$config["backends"]["tt"]["collection"]?:"tt";
+                $this->collection = $this->mongo->tt->$collection;
             }
 
             /**
