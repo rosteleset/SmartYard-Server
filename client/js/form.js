@@ -254,9 +254,9 @@ function cardForm(params) {
                 break;
 
             case "files":
-                h += `<button id="${_prefix}${params.fields[i].id}-add" class="btn btn-primary" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}">${i18n("add")}</button><br/>`;
+//                h += `<button id="${_prefix}${params.fields[i].id}-add" class="btn btn-primary" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}">${i18n("add")}</button><br/>`;
                 h += `<select id="${_prefix}${params.fields[i].id}" class="form-control mt-2" multiple="multiple"></select>`;
-                h += `<span class="text-secondary text-xs">${i18n("dblClickToRemove")}</span>`;
+                h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}">+${i18n("add")}</span> <span class="text-secondary text-xs">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
                 break;
         }
 
