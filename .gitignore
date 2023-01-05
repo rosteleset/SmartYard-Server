@@ -29,6 +29,7 @@ __pycache__
 /server/config/config.json
 /server/vendor
 /server/backends/tt/customWorkflows/
+/server/backends/tt/workflowsCustom/
 /server/backends/tt/filters/
 /server/syslog/config.json
 /api/
