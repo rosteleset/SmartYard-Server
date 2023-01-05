@@ -34,5 +34,37 @@
 
                 $this->collection = $this->mongo->tt->issues;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function createIssue($issue)
+            {
+                // TODO: Implement createIssue() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyIssue($issue)
+            {
+                // TODO: Implement modifyIssue() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteIssue($issue)
+            {
+                // TODO: Implement deleteIssue() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getIssues($query)
+            {
+                // TODO: Implement getIssues() method.
+            }
         }
     }

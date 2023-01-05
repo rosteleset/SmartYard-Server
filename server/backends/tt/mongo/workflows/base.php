@@ -7,8 +7,8 @@
             /**
              * @inheritDoc
              */
-            public function __construct($config, $db, $redis) {
-                parent::__construct($config, $db, $redis);
+            public function __construct($config, $db, $redis, $tt) {
+                parent::__construct($config, $db, $redis, $tt);
             }
 
             /**

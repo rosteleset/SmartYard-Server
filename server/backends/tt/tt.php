@@ -82,7 +82,7 @@
                 function workflow($self, $config, $db, $redis, $workflow) {
                     if (class_exists("tt\\workflow\\" . $workflow)) {
                         $className = "tt\\workflow\\" . $workflow;
-                        $w = new $className($config, $db, $redis);
+                        $w = new $className($config, $db, $redis, $self);
                         $self->workflows[$workflow] = $w;
                         return $w;
                     } else {
@@ -574,5 +574,29 @@
                     return false;
                 }
             }
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            abstract public function createIssue($issue);
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            abstract public function modifyIssue($issue);
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            abstract public function deleteIssue($issue);
+
+            /**
+             * @param $query
+             * @return mixed
+             */
+            abstract public function getIssues($query);
         }
     }
