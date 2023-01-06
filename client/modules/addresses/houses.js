@@ -1438,7 +1438,10 @@
     },
 
     loadHouse: function(houseId, callback) {
-        GET("addresses", "addresses").
+        QUERY("addresses", "addresses", {
+            houseId: houseId,
+            include: "houses",
+        }).
         done(modules.addresses.addresses).
         fail(FAILPAGE).
         done(() => {
