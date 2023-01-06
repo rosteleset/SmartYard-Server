@@ -14,7 +14,6 @@
     },
 
     addresses: function (addresses) {
-        console.log(addresses);
         modules.addresses.meta = addresses["addresses"];
     },
 
