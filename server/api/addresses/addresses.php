@@ -23,14 +23,34 @@
                 $settlementId = @(int)$params["settlementId"];
                 $streetId = @(int)$params["streetId"];
 
-                $r = [
-                    "regions" => $addresses->getRegions(),
-                    "areas" => $addresses->getAreas($regionId),
-                    "cities" => $addresses->getCities($regionId, $areaId),
-                    "settlements" => $addresses->getSettlements($areaId, $cityId),
-                    "streets" => $addresses->getStreets($cityId, $settlementId),
-                    "houses" => $addresses->getHouses($settlementId, $streetId),
-                ];
+                $include = @$params["include"];
+                $include = $include?:"regions,areas,cities,settlements,streets,houses";
+
+                $r = [];
+
+                if (strpos($include, "regions") !== false) {
+                    $r["regions"] = $addresses->getRegions();
+                }
+
+                if (strpos($include, "areas") !== false) {
+                    $r["areas"] = $addresses->getAreas($regionId);
+                }
+
+                if (strpos($include, "cities") !== false) {
+                    $r["cities"] = $addresses->getCities($regionId, $areaId);
+                }
+
+                if (strpos($include, "settlements") !== false) {
+                    $r["settlements"] = $addresses->getSettlements($areaId, $cityId);
+                }
+
+                if (strpos($include, "streets") !== false) {
+                    $r["streets"] = $addresses->getStreets($cityId, $settlementId);
+                }
+
+                if (strpos($include, "houses") !== false) {
+                    $r["houses"] = $addresses->getHouses($settlementId, $streetId);
+                }
 
                 return api::ANSWER($r, ($r !== false)?"addresses":"badRequest");
             }

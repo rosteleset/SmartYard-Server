@@ -1848,7 +1848,9 @@
 
     renderRegions: function () {
         loadingStart();
-        GET("addresses", "addresses", false, true).
+        QUERY("addresses", "addresses", {
+            include: "regions",
+        }, true).
         done(modules.addresses.addresses).
         done(() => {
             cardTable({
@@ -1902,6 +1904,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             regionId: regionId,
+            include: "regions,areas,cities",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
@@ -1976,6 +1979,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             areaId: areaId,
+            include: "regions,areas,cities,settlements",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
@@ -2006,6 +2010,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             cityId: cityId,
+            include: "regions,areas,cities,settlements,streets",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
@@ -2035,6 +2040,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             settlementId: settlementId,
+            include: "regions,areas,settlements,streets",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
@@ -2064,6 +2070,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             streetId: streetId,
+            include: "regions,areas,cities,settlements,streets,houses",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
