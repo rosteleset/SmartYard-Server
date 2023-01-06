@@ -258,18 +258,9 @@
         done(modules.tt.settings.renderRoles);
     },
 
-    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options, indexes, required) {
+    doModifyCustomField: function (customFieldId, field) {
         loadingStart();
-        PUT("tt", "customField", customFieldId, {
-            fieldDisplay: fieldDisplay,
-            fieldDescription: fieldDescription,
-            regex: regex,
-            format: format,
-            link: link,
-            options: options,
-            indexes: indexes,
-            required: required,
-        }).
+        PUT("tt", "customField", customFieldId, field).
         fail(FAIL).
         done(() => {
             message(i18n("tt.customFieldWasChanged"));
@@ -929,6 +920,10 @@
                             value: cf.editor,
                             options: [
                                 {
+                                    id: "string",
+                                    text: i18n("tt.customFieldEditorString"),
+                                },
+                                {
                                     id: "text",
                                     text: i18n("tt.customFieldEditorText"),
                                 },
@@ -973,7 +968,7 @@
                         {
                             id: "multiple",
                             type: "select",
-                            title: (cf.type === "Text")?i18n("tt.multiline"):i18n("tt.multiple"),
+                            title: i18n("tt.multiple"),
                             value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
                             options: [
                                 {
@@ -985,7 +980,7 @@
                                     text: i18n("no"),
                                 },
                             ],
-                            hidden: cf.type !== "Users" && cf.type !== "Select" && cf.type !== "Text",
+                            hidden: cf.type !== "Users" && cf.type !== "Select",
                         },
                         {
                             id: "usersAndGroups",
@@ -1062,7 +1057,7 @@
                                 }
                                 result.format = $.trim(result.format);
                             }
-                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes, result.required);
+                            modules.tt.settings.doModifyCustomField(customFieldId, result);
                         }
                     },
                     cancel: function () {
