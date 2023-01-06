@@ -17,13 +17,19 @@
             public static function GET($params) {
                 $addresses = loadBackend("addresses");
 
+                $regionId = @(int)$params["regionId"];
+                $areaId = @(int)$params["areaId"];
+                $cityId = @(int)$params["cityId"];
+                $settlementId = @(int)$params["settlementId"];
+                $streetId = @(int)$params["streetId"];
+
                 $r = [
                     "regions" => $addresses->getRegions(),
-                    "areas" => $addresses->getAreas(),
-                    "cities" => $addresses->getCities(),
-                    "settlements" => $addresses->getSettlements(),
-                    "streets" => $addresses->getStreets(),
-                    "houses" => $addresses->getHouses(),
+                    "areas" => $addresses->getAreas($regionId),
+                    "cities" => $addresses->getCities($regionId, $areaId),
+                    "settlements" => $addresses->getSettlements($areaId, $cityId),
+                    "streets" => $addresses->getStreets($cityId, $settlementId),
+                    "houses" => $addresses->getHouses($settlementId, $streetId),
                 ];
 
                 return api::ANSWER($r, ($r !== false)?"addresses":"badRequest");

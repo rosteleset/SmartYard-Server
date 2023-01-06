@@ -14,6 +14,7 @@
     },
 
     addresses: function (addresses) {
+        console.log(addresses);
         modules.addresses.meta = addresses["addresses"];
     },
 
@@ -1900,7 +1901,9 @@
 
     renderRegion: function (regionId) {
         loadingStart();
-        GET("addresses", "addresses", false, true).
+        QUERY("addresses", "addresses", {
+            regionId: regionId,
+        }, true).
         done(modules.addresses.addresses).
         done(() => {
             let region = false;
@@ -1972,7 +1975,9 @@
 
     renderArea: function (areaId) {
         loadingStart();
-        GET("addresses", "addresses", false, true).
+        QUERY("addresses", "addresses", {
+            areaId: areaId,
+        }, true).
         done(modules.addresses.addresses).
         done(() => {
             let area = false;
@@ -2000,7 +2005,9 @@
 
     renderCity: function (cityId) {
         loadingStart();
-        GET("addresses", "addresses", false, true).
+        QUERY("addresses", "addresses", {
+            cityId: cityId,
+        }, true).
         done(modules.addresses.addresses).
         done(() => {
             let f = false;
@@ -2027,7 +2034,9 @@
 
     renderSettlement: function (settlementId) {
         loadingStart();
-        GET("addresses", "addresses", false, true).
+        QUERY("addresses", "addresses", {
+            settlementId: settlementId,
+        }, true).
         done(modules.addresses.addresses).
         done(() => {
             let f = false;
@@ -2054,7 +2063,9 @@
 
     renderStreet: function (streetId) {
         loadingStart();
-        GET("addresses", "addresses", false, true).
+        QUERY("addresses", "addresses", {
+            streetId: streetId,
+        }, true).
         done(modules.addresses.addresses).
         done(() => {
             let f = false;
