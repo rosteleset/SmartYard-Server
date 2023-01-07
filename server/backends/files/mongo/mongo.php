@@ -11,7 +11,8 @@
          */
 
         class mongo extends files {
-            private $mongo, $collection;
+
+            private $mongo, $dbName;
 
             /**
              * @inheritDoc
@@ -22,7 +23,7 @@
 
                 parent::__construct($config, $db, $redis);
 
-                $this->collection = @$config["backends"]["files"]["collection"]?:"rbt";
+                $this->dbName = @$config["backends"]["files"]["db"]?:"rbt";
 
                 if (@$config["backends"]["files"]["uri"]) {
                     $this->mongo = new \MongoDB\Client($config["backends"]["files"]["uri"]);
@@ -36,9 +37,9 @@
              */
             public function addFile($realFileName, $stream, $metadata = [])
             {
-                $collection = $this->collection;
+                $db = $this->dbName;
 
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
+                $bucket = $this->mongo->$db->selectGridFSBucket();
 
                 $id = $bucket->uploadFromStream($realFileName, $stream);
 
@@ -54,9 +55,9 @@
              */
             public function getFile($uuid)
             {
-                $collection = $this->collection;
+                $db = $this->dbName;
 
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
+                $bucket = $this->mongo->$db->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
@@ -89,10 +90,10 @@
              */
             public function setFileMetadata($uuid, $metadata)
             {
-                $fsFiles = "fs.files";
-                $collection = $this->collection;
+                $collection = "fs.files";
+                $db = $this->dbName;
 
-                return $this->mongo->$collection->$fsFiles->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $metadata ]]);
+                return $this->mongo->$db->$collection->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $metadata ]]);
             }
 
             /**
@@ -108,10 +109,10 @@
              */
             public function searchFilesBy($metadataField, $fieldValue)
             {
-                $fsFiles = "fs.files";
-                $collection = $this->collection;
+                $collection = "fs.files";
+                $db = $this->dbName;
 
-                $cursor = $this->mongo->$collection->$fsFiles->find([ "metadata.$metadataField" => [ '$eq' => $fieldValue ] ]);
+                $cursor = $this->mongo->$db->$collection->find([ "metadata.$metadataField" => [ '$eq' => $fieldValue ] ]);
 
                 $files = [];
                 foreach ($cursor as $document) {
@@ -126,9 +127,9 @@
              */
             public function deleteFile($uuid)
             {
-                $collection = $this->collection;
+                $db = $this->dbName;
 
-                $bucket = $this->mongo->$collection->selectGridFSBucket();
+                $bucket = $this->mongo->$db->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
@@ -159,12 +160,12 @@
              */
             public function cron($part)
             {
-                $collection = $this->collection;
+                $collection = "fs.files";
+                $db = $this->dbName;
 
                 if ($part == '5min') {
-                    $fsFiles = "fs.files";
 
-                    $cursor = $this->mongo->$collection->$fsFiles->find([ "metadata.expire" => [ '$lt' => time() ] ]);
+                    $cursor = $this->mongo->$db->$collection->find([ "metadata.expire" => [ '$lt' => time() ] ]);
                     foreach ($cursor as $document) {
                         $this->deleteFile($document->_id);
                     }

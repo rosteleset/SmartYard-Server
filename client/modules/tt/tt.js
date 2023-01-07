@@ -166,7 +166,7 @@
             fieldId = fieldId.substring(4);
 
 /*
-            id: "String [format: multiple]",
+            id: "String",
             id: "Number",
             id: "Select [format: multiple]",
             id: "Users [format: multiple, users|groups|usersAndGroups]",
@@ -182,6 +182,15 @@
 
             if (cf) {
                 console.log(cf);
+                switch (cf.type) {
+                    case "Text":
+                        switch (cf.editor) {
+                            default:
+                                return {
+
+                                }
+                        }
+                }
             }
         }
     },

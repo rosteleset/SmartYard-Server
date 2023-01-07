@@ -14,9 +14,11 @@
 
         class mongo extends tt {
 
-            use db;
+            use db {
+                cleanup as public dbCleanup;
+            }
 
-            protected $mongo, $collection;
+            protected $mongo, $dbName;
 
             /**
              * @inheritDoc
@@ -26,14 +28,13 @@
 
                 require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
 
+                $this->dbName = @$config["backends"]["tt"]["db"]?:"tt";
+
                 if (@$config["backends"]["tt"]["uri"]) {
                     $this->mongo = new \MongoDB\Client($config["backends"]["tt"]["uri"]);
                 } else {
                     $this->mongo = new \MongoDB\Client();
                 }
-
-                $collection = @$config["backends"]["tt"]["collection"]?:"tt";
-                $this->collection = $this->mongo->tt->$collection;
             }
 
             /**
@@ -66,6 +67,13 @@
             public function getIssues($query)
             {
                 // TODO: Implement getIssues() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function cleanup() {
+                $this->dbCleanup();
             }
         }
     }

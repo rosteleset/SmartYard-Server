@@ -369,19 +369,19 @@
                     minimumResultsForSearch: Infinity,
                     options: [
                         {
-                            id: "Text",
+                            id: "text",
                             text: i18n("tt.customFieldTypeText"),
                         },
                         {
-                            id: "Number",
+                            id: "number",
                             text: i18n("tt.customFieldTypeNumber"),
                         },
                         {
-                            id: "Select",
+                            id: "select",
                             text: i18n("tt.customFieldTypeSelect"),
                         },
                         {
-                            id: "Users",
+                            id: "users",
                             text: i18n("tt.customFieldTypeUsers"),
                         },
                     ]
@@ -779,7 +779,7 @@
                         type: "text",
                         title: i18n("tt.customFieldType"),
                         readonly: true,
-                        value: i18n("tt.customFieldType" + cf.type),
+                        value: i18n("tt.customFieldType" + cf.type.charAt(0).toUpperCase() + cf.type.slice(1)),
                     },
                     {
                         id: "fieldDisplay",
@@ -875,7 +875,7 @@
                             type: "text",
                             title: i18n("tt.customFieldType"),
                             readonly: true,
-                            value: i18n("tt.customFieldType" + cf.type),
+                            value: i18n("tt.customFieldType" + cf.type.charAt(0).toUpperCase() + cf.type.slice(1)),
                         },
                         {
                             id: "fieldDisplay",
@@ -901,7 +901,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "Select" || cf.type === "Users",
+                            hidden: cf.type === "select" || cf.type === "users",
                         },
                         {
                             id: "format",
@@ -910,7 +910,7 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type !== "Number",
+                            hidden: cf.type !== "number",
                         },
                         {
                             id: "editor",
@@ -948,7 +948,7 @@
                                     text: i18n("tt.customFieldEditorDateTime"),
                                 },
                             ],
-                            hidden: cf.type !== "Number" && cf.type !== "Text",
+                            hidden: cf.type !== "number" && cf.type !== "text",
                         },
                         {
                             id: "link",
@@ -984,7 +984,7 @@
                                     text: i18n("no"),
                                 },
                             ],
-                            hidden: cf.type !== "Users" && cf.type !== "Select",
+                            hidden: cf.type !== "users" && cf.type !== "select",
                         },
                         {
                             id: "usersAndGroups",
@@ -1007,7 +1007,7 @@
                                     selected: cf.format && cf.format.split(" ").includes("usersAndGroups"),
                                 },
                             ],
-                            hidden: cf.type !== "Users",
+                            hidden: cf.type !== "users",
                         },
                         {
                             id: "indexes",
@@ -1051,12 +1051,12 @@
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
-                            if (cf.type === "Users" || cf.type === "Select" || cf.type === "Text") {
+                            if (cf.type === "users" || cf.type === "select" || cf.type === "text") {
                                 result.format = "";
                                 if (result.multiple === "1") {
                                     result.format += " multiple";
                                 }
-                                if (cf.type === "Users") {
+                                if (cf.type === "users") {
                                     result.format += " " + result.usersAndGroups;
                                 }
                                 result.format = $.trim(result.format);
@@ -2050,7 +2050,7 @@
                                     data: modules.tt.meta.customFields[i].field,
                                 },
                                 {
-                                    data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type),
+                                    data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type.charAt(0).toUpperCase() + modules.tt.meta.customFields[i].type.slice(1)),
                                     nowrap: true,
                                 },
                                 {

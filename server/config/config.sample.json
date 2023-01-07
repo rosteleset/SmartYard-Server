@@ -59,7 +59,8 @@
 
         "files": {
             "backend": "mongo",
-            "uri": "mongodb://username:password@host:27017"
+            "uri": "mongodb://username:password@host:27017",
+            "db": "rbt"
         },
 
         "addresses": {
