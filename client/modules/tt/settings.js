@@ -928,8 +928,12 @@
                                     text: i18n("tt.customFieldEditorText"),
                                 },
                                 {
-                                    id: "calc",
-                                    text: i18n("tt.customFieldEditorCalc"),
+                                    id: "email",
+                                    text: i18n("tt.customFieldEditorEmail"),
+                                },
+                                {
+                                    id: "tel",
+                                    text: i18n("tt.customFieldEditorTel"),
                                 },
                                 {
                                     id: "date",
