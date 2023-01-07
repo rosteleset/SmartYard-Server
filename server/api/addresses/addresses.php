@@ -24,8 +24,7 @@
                 $streetId = @(int)$params["streetId"];
                 $houseId = @(int)$params["houseId"];
 
-                $include = @$params["include"];
-                $include = $include?:"regions,areas,cities,settlements,streets,houses";
+                $include = @$params["include"]?:"regions,areas,cities,settlements,streets,houses";
 
                 $r = [];
 
