@@ -1229,7 +1229,7 @@
                                 text: i18n("addresses.plogOwner"),
                             },
                             {
-                                id: "2",
+                                id: "3",
                                 text: i18n("addresses.adminDisabled"),
                             },
                         ],
