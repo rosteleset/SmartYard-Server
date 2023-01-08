@@ -10,6 +10,8 @@
     beepAmplify: 500,
     
     init: function () {
+        moduleLoaded("asterisk", this);
+
         if (config.ws && config.ice && config.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
             $(`
                 <li class="nav-item">
@@ -52,8 +54,6 @@
 
             modules.asterisk.ua.start();
         }
-
-        moduleLoaded("asterisk", this);
     },
 
     newRTCSession: function (e) {
