@@ -2,7 +2,7 @@ const syslog = new (require("syslog-server"))();
 const hwVer = process.argv.length === 3 && process.argv[2].split("=")[0] === '--config' ? process.argv[2].split("=")[1] : null;
 const { hw } = require("./config.json");
 const board = hw[hwVer]
-const { getTimestamp } = require("./utils/formatDate");
+const { getTimestamp } = require("./utils/getTimestamp");
 const { urlParser } = require("./utils/urlParser");
 const API = require("./utils/api");
 const { port } = urlParser(board);

@@ -1,9 +1,10 @@
 const API = require("./api");
+const {getTimestamp} = require("./getTimestamp");
 
 const mdStorage = {};
 
 const mdStop = async (host) => {
-    const now = Math.round((Date.now() / 1000));
+    const now = getTimestamp(new Date());
     await API.motionDetection({ date: now, ip: host, motionActive: false });
     delete mdStorage[host];
 }

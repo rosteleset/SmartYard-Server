@@ -1,6 +1,6 @@
 const axios = require("axios");
 const https = require("https");
-const { getTimestamp } = require("./formatDate.js")
+const { getTimestamp } = require("./getTimestamp")
 const events = require("./events.json");
 const { api: { internal }} = require("../../config/config.json");
 const { clickhouse } = require("../config.json")

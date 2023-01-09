@@ -1,6 +1,6 @@
 const syslog = new (require("syslog-server"))();
 const { hw: { qtech } } = require("./config.json");
-const { getTimestamp } = require("./utils/formatDate");
+const { getTimestamp } = require("./utils/getTimestamp");
 const { urlParser } = require("./utils/urlParser");
 const API = require("./utils/api");
 const { mdTimer } = require("./utils/mdTimer");
@@ -19,7 +19,7 @@ syslog.on("message", async ({ date, host, message }) => {
         return;
     }
 
-    console.log(`${new Date(date).toLocaleString("RU-ru")} || ${host} || ${qtMsg}`);
+    console.log(`${now} || ${host} || ${qtMsg}`);
 
     // Send message to syslog storage
     await API.sendLog({ date: now, ip: host, unit: "qtech", msg: qtMsg });
