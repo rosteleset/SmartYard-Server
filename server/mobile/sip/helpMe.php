@@ -15,7 +15,7 @@
  * @apiSuccess {String="udp","tcp","tls"} -.transport тип подключения
  * @apiSuccess {String} -.extension внутренний номер (login)
  * @apiSuccess {String} -.pass пароль
- * @apiSuccess {String} -.dial="429999" куда звонить
+ * @apiSuccess {String} -.dial="8(800)555-49-15" куда звонить
  * @apiSuccess {String="stun:stun.l.google.com:19302"} [-.stun] stun сервер
  */
 
@@ -38,7 +38,7 @@ response(200, [
     'transport' => 'tcp',
     'extension' => (string)$extension,
     'pass' => $hash,
-    'dial' => '429999',
+    'dial' => '8(800)555-49-15',
     'stun' => 'stun:stun.l.google.com:19302',
     'stun_transport' => 'udp',
 //        'turn' => 'turn:37.235.209.140:3478',
