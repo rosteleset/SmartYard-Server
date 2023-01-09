@@ -102,7 +102,7 @@
     $ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
     $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
     $ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
-    $ret['autoOpen'] = $flat['autoOpen'];
+    $ret['autoOpen'] = date('Y-m-d H:i:s', strtotime($flat['autoOpen']));
     $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
 
     if ($ret) {

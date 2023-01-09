@@ -46,8 +46,7 @@
     $is_owner = ((int)$flat['role'] == 0);
 
     $guest_phone = @$postdata['guestPhone'];
-    $guest_phone[0] = '8';
-
+    
     if (array_key_exists('expire', $postdata)) {
         $expire = strtotime($postdata['expire']);
         if (!$expire) {

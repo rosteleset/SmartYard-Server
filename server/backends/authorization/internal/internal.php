@@ -355,9 +355,7 @@
                 ];
 
                 for ($i = 0; $i < count($c); $i++) {
-                    $del = $this->db->prepare($c[$i]);
-                    $del->execute();
-                    $n += $del->rowCount();
+                    $n += $this->db->modify($c[$i]);
                 }
 
                 return $n;

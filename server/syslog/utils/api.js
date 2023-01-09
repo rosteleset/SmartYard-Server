@@ -1,15 +1,11 @@
 const axios = require("axios");
 const https = require("https");
-const {getTimestamp} = require("./formatDate.js")
+const { getTimestamp } = require("./getTimestamp")
 const events = require("./events.json");
-const {api: {internal}} = require("../../config/config.json"); //https://host:port/internal
-const {clickhouse} = require("../config.json")
-const agent = new https.Agent({rejectUnauthorized: false});
+const { api: { internal }} = require("../../config/config.json");
+const { clickhouse } = require("../config.json")
+const agent = new https.Agent({ rejectUnauthorized: false });
 
-/**
- * Шаблон для работы с модифицированным https агнетом.
- * Используем только для работы с самоподписанным ssl
- */
 const internalAPI = axios.create({
     baseURL: internal,
     withCredentials: true,
@@ -17,22 +13,21 @@ const internalAPI = axios.create({
     httpsAgent: agent
 });
 
-/**
- * Актуальный шаблон для работы с internal API. Версия для корректного ssl
- */
-// const internalApi = axios.create({
+// const internalAPI = axios.create({
 //   baseURL: internal,
 // });
 
 class API {
 
-    /** Отправка syslog messages в clickhouse.
-     * @param {number} date
-     * @param {string} ip
-     * @param {"beward" | "qtech" | "is"} unit
-     * @param {string} msg
+    /**
+     * Send syslog message to ClickHouse
+     *
+     * @param {number} date event date in timestamp format
+     * @param {string} ip device IP address
+     * @param {"beward"|"qtech"|"is"} unit device vendor
+     * @param {string} msg syslog message
      */
-    async sendLog({date, ip, unit, msg}) {
+    async sendLog({ date, ip, unit, msg }) {
         try {
             const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${msg}');`;
             const config = {
@@ -48,79 +43,83 @@ class API {
 
             await axios(config);
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| sendLog error: ", error.message);
-        }
-    }
-
-    /** Сообщаем InternalAPI  о ссобыти "детектекция движения"
-     * @param {number} date timestamp unixtime.
-     * @param {string} ip ipAddress
-     * @param {boolean} motionStart start/stop "детектекция движения"
-     */
-    async motionDetection({date, ip, motionStart}) {
-        try {
-            return await internalAPI.post("/actions/motionDetection",{ date, ip, motionStart })
-        } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message);
-        }
-
-    }
-
-    /**Обновление информации о завершении звонка.
-     * @param {number} date
-     * @param {string} ip
-     * @param {number|null} call_id call_id присутствует только у BEWARD?!
-     * */
-    async callFinished({date,ip, call_id = null}) {
-        try {
-            return await internalAPI.post("/actions/callFinished", {date, ip, call_id});
-        } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| sendLog error: ", error.message); // TODO: hm
         }
     }
 
     /**
-     * @param {number} date
-     * @param {string} ip - ip address intercom device
-     * @param {number} prefix префикс при наборе квартиры
-     * @param {number} apartment номер квартиры
+     * Send motion detection info
+     *
+     * @param {number} date event date in timestamp format
+     * @param {string} ip device IP address
+     * @param {boolean} motionActive is motion active now
      */
-    async setRabbitGates({date,ip,prefix,apartment}) {
+    async motionDetection({ date, ip, motionActive }) {
         try {
-            return await internalAPI.post("/actions/setRabbitGates", {date,ip,prefix,apartment});
+            await internalAPI.post("/actions/motionDetection",{ date, ip, motionActive });
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message); // TODO: hm
         }
     }
 
-    /** Логирование события открытия двери
-     * @param {number} date дата события;
-     * @param {string} ip ip address вызывной панели;
-     * @param {number:{0,1,2}} door идентификатор двери, допустимые значения 0,1,2. По-умолчанию 0 (главная дверь с вызывной панелью)
-     * @param {string|number|null} detail код или sn ключа квартиры.
-     * @param {"rfid"|"code"|"dtmf"|"button"} by тип события отерыьтия двери
+    /**
+     * Send call done info
+     *
+     * @param {number} date event date in timestamp format
+     * @param {string} ip device IP address
+     * @param {number|null} callId unique callId if exists
      */
-    async openDoor({date, ip, door=0, detail, by}) {
-        // console.log(date,ip,door,detail,type,expire);
-        let payload = {date, ip, door, event: null, detail}
+    async callFinished({ date,ip, callId = null }) {
+        try {
+            await internalAPI.post("/actions/callFinished", { date, ip, callId });
+        } catch (error) {
+            console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message); // TODO: hm
+        }
+    }
+
+    /**
+     * Send white rabbit info
+     *
+     * @param {number} date event date in timestamp format
+     * @param {string} ip device IP address
+     * @param {number} prefix house prefix
+     * @param {number} apartment apartment number
+     */
+    async setRabbitGates({ date, ip, prefix, apartment }) {
+        try {
+            await internalAPI.post("/actions/setRabbitGates", { date, ip, prefix, apartment });
+        } catch (error) {
+            console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message); // TODO: hm
+        }
+    }
+
+    /**
+     * Send open door info
+     *
+     * @param {number} date event date in timestamp format
+     * @param {string} ip device IP address
+     * @param {number:{0,1,2}} door door ID (lock ID)
+     * @param {string|number|null} detail RFID key number or personal code number
+     * @param {"rfid"|"code"|"dtmf"|"button"} by event type
+     */
+    async openDoor({ date, ip, door=0, detail, by }) {
+        const payload = { date, ip, door, event: null, detail };
+
         try {
             switch (by) {
-                case "code":
-                    payload.event = events.OPEN_BY_CODE
-                    break;
                 case "rfid":
                     payload.event = events.OPEN_BY_KEY;
                     break;
-                case "dtmf":
-                    payload.event = events.OPEN_BY_CALL;
+                case "code":
+                    payload.event = events.OPEN_BY_CODE
                     break;
                 case "button":
                     payload.event = events.OPEN_BY_BUTTON
                     break;
             }
-            return await internalAPI.post("/actions/openDoor", payload);
+            await internalAPI.post("/actions/openDoor", payload);
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message);
+            console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message); // TODO: hm
         }
     }
 }

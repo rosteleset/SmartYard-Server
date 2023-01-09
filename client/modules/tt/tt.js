@@ -38,7 +38,7 @@
                     if (modules.users.meta[j].uid == project.users[i].uid && !project.users[i].byGroup) {
                         p.push({
                             id: project.users[i].uid,
-                            text: modules.users.meta[j].realName,
+                            text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
                         });
                     }
                 }
@@ -160,19 +160,13 @@
                         mimeTypes: JSON.parse(project.allowedMimeTypes),
                         maxSize: project.maxFileSize,
                     };
-
-                case "plans":
-                    break;
-
-                case "checklist":
-                    break;
             }
         } else {
             // custom field
             fieldId = fieldId.substring(4);
 
 /*
-            id: "String [format: multiple]",
+            id: "String",
             id: "Number",
             id: "Select [format: multiple]",
             id: "Users [format: multiple, users|groups|usersAndGroups]",
@@ -188,6 +182,15 @@
 
             if (cf) {
                 console.log(cf);
+                switch (cf.type) {
+                    case "Text":
+                        switch (cf.editor) {
+                            default:
+                                return {
+
+                                }
+                        }
+                }
             }
         }
     },

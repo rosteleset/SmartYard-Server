@@ -301,7 +301,7 @@
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
-                    ":camera_id" => $cameraId,
+                    ":camera_id" => $cameraId ? : null,
                     ":locks_disabled" => (int)$locksDisabled,
                     ":cms_levels" => $cmsLevels,
                 ]);
@@ -380,7 +380,7 @@
                         ":domophone_output" => (int)$domophoneOutput,
                         ":cms" => $cms,
                         ":cms_type" => $cmsType,
-                        ":camera_id" => (int)$cameraId,
+                        ":camera_id" => (int)$cameraId ? : null,
                         ":locks_disabled" => (int)$locksDisabled,
                         ":cms_levels" => $cmsLevels,
                     ]) !== false;
@@ -570,7 +570,14 @@
                 return
                     $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false
                     and
-                    $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
+                    $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false
+                    and
+                    $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)") !== false
+                    and
+                    $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false
+                    and
+                    $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2") !== false
+                    ;
             }
 
             /**
@@ -1555,6 +1562,99 @@
             /**
              * @inheritDoc
              */
+            public function cleanup() {
+                $cameras = loadBackend("cameras");
+                $addresses = loadBackend("addresses");
+
+                $n = 0;
+
+                if ($cameras) {
+                    $cl = [];
+
+                    $cameras = $cameras->getCameras();
+                    foreach ($cameras as $camera) {
+                        $cl[] = $camera["cameraId"];
+                    }
+
+                    $hc = $this->db->get("select camera_id from houses_cameras_houses");
+                    foreach ($hc as $ci) {
+                        if (!in_array($ci["camera_id"], $cl)) {
+                            $this->db->modify("delete from houses_cameras_houses where camera_id = :camera_id", [
+                                "camera_id" => $ci["camera_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+
+                    $fc = $this->db->get("select camera_id from houses_cameras_flats");
+                    foreach ($fc as $ci) {
+                        if (!in_array($ci["camera_id"], $cl)) {
+                            $this->db->modify("delete from houses_cameras_flats where camera_id = :camera_id", [
+                                "camera_id" => $ci["camera_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+
+                    $sc = $this->db->get("select camera_id from houses_cameras_subscribers");
+                    foreach ($sc as $ci) {
+                        if (!in_array($ci["camera_id"], $cl)) {
+                            $this->db->modify("delete from houses_cameras_subscribers where camera_id = :camera_id", [
+                                "camera_id" => $ci["camera_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+                }
+
+                if ($addresses) {
+                    $hi = [];
+
+                    $houses = $addresses->getHouses();
+                    foreach ($houses as $house) {
+                        $hi[] = $house["houseId"];
+                    }
+
+                    $fl = $this->db->get("select house_flat_id, address_house_id from houses_flats");
+                    foreach ($fl as $fi) {
+                        if (!in_array($fi["address_house_id"], $hi)) {
+                            $this->db->modify("delete from houses_flats where house_flat_id = :house_flat_id", [
+                                "house_flat_id" => $fi["house_flat_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+
+                    $el = $this->db->get("select address_house_id from houses_houses_entrances");
+                    foreach ($el as $ei) {
+                        if (!in_array($ei["address_house_id"], $hi)) {
+                            $this->db->modify("delete from houses_houses_entrances where address_house_id = :address_house_id", [
+                                "house_flat_id" => $ei["address_house_id"],
+                            ]);
+                            $n++;
+                        }
+                    }
+                }
+
+                $n += $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers union select house_subscriber_id from houses_cameras_subscribers) and last_seen + (31 * 24 * 60 * 60) < " . time());
+
+                $n += $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)");
+                $n += $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)");
+                $n += $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)");
+                $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2");
+
+                $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id not in (select camera_id from cameras)");
+                $n += $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)");
+                $n += $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)");
+                $n += $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)");
+                $n += $this->db->modify("delete from houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances)");
+
+                return $n;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cron($part) {
                 if ($part === "hourly") {
                     $domophones = $this->db->get("select house_domophone_id, url from houses_domophones");
@@ -1568,6 +1668,12 @@
                             ]);
                         }
                     }
+
+                    return true;
+                }
+
+                if ($part === "5min") {
+                    $this->cleanup();
 
                     return true;
                 }

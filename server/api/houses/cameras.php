@@ -22,7 +22,7 @@
 
                 $cameraId = $households->addCamera("house", $params["houseId"], $params["cameraId"]);
 
-                return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":"notAcceptable");
+                return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":false);
             }
 
             public static function DELETE($params)

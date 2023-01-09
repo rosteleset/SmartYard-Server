@@ -10,20 +10,19 @@
     beepAmplify: 500,
     
     init: function () {
-        // add icon-button to top-right menu
-        $(`
-            <li class="nav-item">
-                <span class="nav-link text-secondary" role="button" style="cursor: pointer" title="${i18n("asterisk.asterisk")}" id="asteriskMenuRight">
-                    <i class="fas fa-lg fa-fw fa-phone-square"></i>
-                </span>
-            </li>
-        `).insertAfter("#rightTopDynamic");
-
-        moduleLoaded("asterisk", this);
-
-        $("#asteriskMenuRight").off("click").on("click", modules.asterisk.asteriskMenuRight);
-
         if (config.ws && config.ice && config.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
+            moduleLoaded("asterisk", this);
+
+            $(`
+                <li class="nav-item">
+                    <span class="nav-link text-secondary" role="button" style="cursor: pointer" title="${i18n("asterisk.asterisk")}" id="asteriskMenuRight">
+                        <i class="fas fa-lg fa-fw fa-phone-square"></i>
+                    </span>
+                </li>
+            `).insertAfter("#rightTopDynamic");
+
+            $("#asteriskMenuRight").off("click").on("click", modules.asterisk.asteriskMenuRight);
+
             modules.asterisk.options = {
                 mediaConstraints: {
                     audio: true,
@@ -54,6 +53,8 @@
             modules.asterisk.ua.on('registrationFailed', modules.asterisk.onRegistrationFailed);
 
             modules.asterisk.ua.start();
+        } else {
+            moduleLoaded("asterisk");
         }
     },
 

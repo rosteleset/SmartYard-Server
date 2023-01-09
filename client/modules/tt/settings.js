@@ -253,23 +253,14 @@
         fail(FAIL).
         fail(loadingDone).
         done(() => {
-            message(i18n("tt.projectWasChanged"));
+            message(i18n("tt.roleWasChanged"));
         }).
         done(modules.tt.settings.renderRoles);
     },
 
-    doModifyCustomField: function (customFieldId, fieldDisplay, fieldDescription, regex, format, link, options, indexes, required) {
+    doModifyCustomField: function (customFieldId, field) {
         loadingStart();
-        PUT("tt", "customField", customFieldId, {
-            fieldDisplay: fieldDisplay,
-            fieldDescription: fieldDescription,
-            regex: regex,
-            format: format,
-            link: link,
-            options: options,
-            indexes: indexes,
-            required: required,
-        }).
+        PUT("tt", "customField", customFieldId, field).
         fail(FAIL).
         done(() => {
             message(i18n("tt.customFieldWasChanged"));
@@ -378,19 +369,19 @@
                     minimumResultsForSearch: Infinity,
                     options: [
                         {
-                            id: "Text",
+                            id: "text",
                             text: i18n("tt.customFieldTypeText"),
                         },
                         {
-                            id: "Number",
+                            id: "number",
                             text: i18n("tt.customFieldTypeNumber"),
                         },
                         {
-                            id: "Select",
+                            id: "select",
                             text: i18n("tt.customFieldTypeSelect"),
                         },
                         {
-                            id: "Users",
+                            id: "users",
                             text: i18n("tt.customFieldTypeUsers"),
                         },
                     ]
@@ -788,7 +779,7 @@
                         type: "text",
                         title: i18n("tt.customFieldType"),
                         readonly: true,
-                        value: i18n("tt.customFieldType" + cf.type),
+                        value: i18n("tt.customFieldType" + cf.type.charAt(0).toUpperCase() + cf.type.slice(1)),
                     },
                     {
                         id: "fieldDisplay",
@@ -884,7 +875,7 @@
                             type: "text",
                             title: i18n("tt.customFieldType"),
                             readonly: true,
-                            value: i18n("tt.customFieldType" + cf.type),
+                            value: i18n("tt.customFieldType" + cf.type.charAt(0).toUpperCase() + cf.type.slice(1)),
                         },
                         {
                             id: "fieldDisplay",
@@ -910,7 +901,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "Select" || cf.type === "Users",
+                            hidden: cf.type === "select" || cf.type === "users",
                         },
                         {
                             id: "format",
@@ -919,7 +910,7 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type !== "Number",
+                            hidden: cf.type !== "number",
                         },
                         {
                             id: "editor",
@@ -929,12 +920,20 @@
                             value: cf.editor,
                             options: [
                                 {
+                                    id: "string",
+                                    text: i18n("tt.customFieldEditorString"),
+                                },
+                                {
                                     id: "text",
                                     text: i18n("tt.customFieldEditorText"),
                                 },
                                 {
-                                    id: "calc",
-                                    text: i18n("tt.customFieldEditorCalc"),
+                                    id: "email",
+                                    text: i18n("tt.customFieldEditorEmail"),
+                                },
+                                {
+                                    id: "tel",
+                                    text: i18n("tt.customFieldEditorTel"),
                                 },
                                 {
                                     id: "date",
@@ -949,7 +948,7 @@
                                     text: i18n("tt.customFieldEditorDateTime"),
                                 },
                             ],
-                            hidden: cf.type !== "Number" && cf.type !== "Text",
+                            hidden: cf.type !== "number" && cf.type !== "text",
                         },
                         {
                             id: "link",
@@ -973,7 +972,7 @@
                         {
                             id: "multiple",
                             type: "select",
-                            title: (cf.type === "Text")?i18n("tt.multiline"):i18n("tt.multiple"),
+                            title: i18n("tt.multiple"),
                             value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
                             options: [
                                 {
@@ -985,7 +984,7 @@
                                     text: i18n("no"),
                                 },
                             ],
-                            hidden: cf.type !== "Users" && cf.type !== "Select" && cf.type !== "Text",
+                            hidden: cf.type !== "users" && cf.type !== "select",
                         },
                         {
                             id: "usersAndGroups",
@@ -1008,7 +1007,7 @@
                                     selected: cf.format && cf.format.split(" ").includes("usersAndGroups"),
                                 },
                             ],
-                            hidden: cf.type !== "Users",
+                            hidden: cf.type !== "users",
                         },
                         {
                             id: "indexes",
@@ -1052,17 +1051,17 @@
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
-                            if (cf.type === "Users" || cf.type === "Select" || cf.type === "Text") {
+                            if (cf.type === "users" || cf.type === "select" || cf.type === "text") {
                                 result.format = "";
                                 if (result.multiple === "1") {
                                     result.format += " multiple";
                                 }
-                                if (cf.type === "Users") {
+                                if (cf.type === "users") {
                                     result.format += " " + result.usersAndGroups;
                                 }
                                 result.format = $.trim(result.format);
                             }
-                            modules.tt.settings.doModifyCustomField(customFieldId, result.fieldDisplay, result.fieldDescription, result.regex, result.format, result.link, result.options, result.indexes, result.required);
+                            modules.tt.settings.doModifyCustomField(customFieldId, result);
                         }
                     },
                     cancel: function () {
@@ -1291,7 +1290,7 @@
                 let users = {};
                 for (let i in response.users) {
                     if (response.users[i].uid) {
-                        users[response.users[i].uid] = $.trim(response.users[i].realName + " [" + response.users[i].login + "]");
+                        users[response.users[i].uid] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
                     }
                 }
 
@@ -2051,7 +2050,7 @@
                                     data: modules.tt.meta.customFields[i].field,
                                 },
                                 {
-                                    data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type),
+                                    data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type.charAt(0).toUpperCase() + modules.tt.meta.customFields[i].type.slice(1)),
                                     nowrap: true,
                                 },
                                 {

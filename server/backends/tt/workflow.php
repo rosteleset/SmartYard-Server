@@ -10,7 +10,7 @@
              * @var object $redis link to redis object
              */
 
-            protected $config, $db, $redis;
+            protected $config, $db, $redis, $tt;
 
             /**
              * default constructor
@@ -22,10 +22,11 @@
              * @return void
              */
 
-            public function __construct($config, $db, $redis) {
+            public function __construct($config, $db, $redis, $tt) {
                 $this->config = $config;
                 $this->db = $db;
                 $this->redis = $redis;
+                $this->tt = $tt;
             }
 
             /**

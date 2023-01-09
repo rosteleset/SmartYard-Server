@@ -406,8 +406,8 @@
                                 id: "geo",
                                 type: "text",
                                 title: i18n("addresses.geo"),
-                                placeholder: "0,0",
-                                hint: i18n("addresses.lon") + "," + i18n("addresses.lat"),
+                                placeholder: "0.0,0.0",
+                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon").toLowerCase(),
                                 value: "0.0,0.0",
                                 validate: v => {
                                     const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
@@ -519,8 +519,8 @@
                         ],
                         callback: result => {
                             let g = result.geo.split(",");
-                            result.lon = g[0];
-                            result.lat = g[1];
+                            result.lat = g[0];
+                            result.lon = g[1];
                             if (parseInt(result.domophoneOutput) > 0) {
                                 result.cms = 0;
                                 result.shared = 0;
@@ -949,9 +949,9 @@
                                 id: "geo",
                                 type: "text",
                                 title: i18n("addresses.geo"),
-                                placeholder: "0,0",
-                                hint: i18n("addresses.lon") + "," + i18n("addresses.lat"),
-                                value: entrance.lon + "," + entrance.lat,
+                                placeholder: "0.0,0.0",
+                                hint: i18n("addresses.lat") + "," + i18n("addresses.lon").toLowerCase(),
+                                value: entrance.lat + "," + entrance.lon,
                                 validate: v => {
                                     const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
 
@@ -1089,8 +1089,8 @@
                                 modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
                             } else {
                                 let g = result.geo.split(",");
-                                result.lon = g[0];
-                                result.lat = g[1];
+                                result.lat = g[0];
+                                result.lon = g[1];
                                 if (parseInt(result.domophoneOutput) > 0) {
                                     result.cms = 0;
                                     result.shared = 0;
@@ -1229,7 +1229,7 @@
                                 text: i18n("addresses.plogOwner"),
                             },
                             {
-                                id: "2",
+                                id: "3",
                                 text: i18n("addresses.adminDisabled"),
                             },
                         ],
@@ -1438,7 +1438,10 @@
     },
 
     loadHouse: function(houseId, callback) {
-        GET("addresses", "addresses").
+        QUERY("addresses", "addresses", {
+            houseId: houseId,
+            include: "houses",
+        }).
         done(modules.addresses.addresses).
         fail(FAILPAGE).
         done(() => {
@@ -1723,18 +1726,18 @@
                                 uid: modules.addresses.houses.meta.cameras[i].cameraId,
                                 cols: [
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].cameraId,
-                                        click: "#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId,
+                                        data: modules.addresses.houses.meta.cameras[i].cameraId?modules.addresses.houses.meta.cameras[i].cameraId:i18n("addresses.deleted"),
+                                        click: modules.addresses.houses.meta.cameras[i].cameraId?("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId):false,
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].url,
+                                        data: modules.addresses.houses.meta.cameras[i].url?modules.addresses.houses.meta.cameras[i].url:"",
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].name,
+                                        data: modules.addresses.houses.meta.cameras[i].name?modules.addresses.houses.meta.cameras[i].name:"",
                                         nowrap: true,
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].comment,
+                                        data: modules.addresses.houses.meta.cameras[i].comment?modules.addresses.houses.meta.cameras[i].comment:"",
                                         nowrap: true,
                                     },
                                 ],
@@ -1742,8 +1745,9 @@
                                     items: [
                                         {
                                             icon: "fas fa-trash-alt",
-                                            title: i18n("users.delete"),
+                                            title: i18n("addresses.deleteCamera"),
                                             class: "text-warning",
+                                            disabled: !modules.addresses.houses.meta.cameras[i].cameraId,
                                             click: cameraId => {
                                                 mConfirm(i18n("addresses.confirmDeleteCamera", cameraId), i18n("confirm"), `danger:${i18n("addresses.deleteCamera")}`, () => {
                                                     modules.addresses.houses.doDeleteCamera(cameraId, houseId);

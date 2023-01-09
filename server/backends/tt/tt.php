@@ -33,7 +33,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $base = __DIR__ . "/" . $class . "/workflows/";
+                $base = __DIR__ . "/workflows/";
                 $dir = scandir($base);
 
                 $w = [];
@@ -46,7 +46,7 @@
                     }
                 }
 
-                $base = __DIR__ . "/" . $class . "/customWorkflows/";
+                $base = __DIR__ . "/workflowsCustom/";
 
                 if (file_exists($base)) {
                     $dir = scandir($base);
@@ -82,7 +82,7 @@
                 function workflow($self, $config, $db, $redis, $workflow) {
                     if (class_exists("tt\\workflow\\" . $workflow)) {
                         $className = "tt\\workflow\\" . $workflow;
-                        $w = new $className($config, $db, $redis);
+                        $w = new $className($config, $db, $redis, $self);
                         $self->workflows[$workflow] = $w;
                         return $w;
                     } else {
@@ -107,8 +107,8 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = __DIR__ . "/" . $class . "/workflows/" . $workflow . ".php";
-                $customDir = __DIR__ . "/" . $class . "/customWorkflows";
+                $file = __DIR__ . "/workflows/" . $workflow . ".php";
+                $customDir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $customDir . "/" . $workflow . ".php";
 
                 if (file_exists($customDir) && file_exists($fileCustom)) {
@@ -143,8 +143,8 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = __DIR__ . "/" . $class . "/workflows/" . $workflow . ".php";
-                $customDir = __DIR__ . "/" . $class . "/customWorkflows";
+                $file = __DIR__ . "/workflows/" . $workflow . ".php";
+                $customDir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $customDir . "/" . $workflow . ".php";
 
                 if (file_exists($customDir) && file_exists($fileCustom)) {
@@ -178,7 +178,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = __DIR__ . "/" . $class . "/customWorkflows";
+                $dir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $dir . "/" . $workflow . ".php";
 
                 try {
@@ -213,7 +213,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = __DIR__ . "/" . $class . "/customWorkflows";
+                $dir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $dir . "/" . $workflow . ".php";
 
                 try {
@@ -459,7 +459,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $filters = glob(__DIR__ . "/" . $class . "/filters/*.json");
+                $filters = glob(__DIR__ . "/filters/*.json");
 
                 $list = [];
 
@@ -496,7 +496,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $file = __DIR__ . "/" . $class . "/filters/" . $filter . ".json";
+                $file = __DIR__ . "/filters/" . $filter . ".json";
 
                 if (file_exists($file)) {
                     return file_get_contents($file);
@@ -525,7 +525,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = __DIR__ . "/" . $class . "/filters";
+                $dir = __DIR__ . "/filters";
                 $file = $dir . "/" . $filter . ".json";
 
                 try {
@@ -559,7 +559,7 @@
                     $class = substr($class, strlen($ns) + 1);
                 }
 
-                $dir = __DIR__ . "/" . $class . "/filters";
+                $dir = __DIR__ . "/filters";
                 $fileCustom = $dir . "/" . $filter . ".json";
 
                 try {
@@ -574,5 +574,29 @@
                     return false;
                 }
             }
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            abstract public function createIssue($issue);
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            abstract public function modifyIssue($issue);
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            abstract public function deleteIssue($issue);
+
+            /**
+             * @param $query
+             * @return mixed
+             */
+            abstract public function getIssues($query);
         }
     }

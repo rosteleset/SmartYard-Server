@@ -28,8 +28,9 @@ __pycache__
 /server/storage/
 /server/config/config.json
 /server/vendor
-/server/backends/tt/mongo/customWorkflows/
-/server/backends/tt/mongo/filters/
+/server/backends/tt/customWorkflows/
+/server/backends/tt/workflowsCustom/
+/server/backends/tt/filters/
 /server/syslog/config.json
 /api/
 /doc/
