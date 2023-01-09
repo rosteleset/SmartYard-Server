@@ -10,9 +10,9 @@
     beepAmplify: 500,
     
     init: function () {
-        moduleLoaded("asterisk", this);
-
         if (config.ws && config.ice && config.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
+            moduleLoaded("asterisk", this);
+
             $(`
                 <li class="nav-item">
                     <span class="nav-link text-secondary" role="button" style="cursor: pointer" title="${i18n("asterisk.asterisk")}" id="asteriskMenuRight">
@@ -53,6 +53,8 @@
             modules.asterisk.ua.on('registrationFailed', modules.asterisk.onRegistrationFailed);
 
             modules.asterisk.ua.start();
+        } else {
+            moduleLoaded("asterisk");
         }
     },
 
