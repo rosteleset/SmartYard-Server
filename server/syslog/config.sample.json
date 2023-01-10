@@ -9,7 +9,6 @@
     "api": {
            "internal": "https://rbt-example-host/internal"
     },
-
     "hw": {
         "beward": [
             "syslog.udp:127.0.0.1:45450"
