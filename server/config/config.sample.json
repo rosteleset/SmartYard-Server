@@ -18,7 +18,8 @@
         "chat_url": "<!-- your chat url or remove it and use talkMe by default with options below--!>",
         "talk_me_id": "<!-- put your talkMe chat id here --!>",
         "talk_me_domain": "<!-- put your talkMe chat domain id here --!>",
-        "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>"
+        "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>",
+        "phonePattern": "7 (###) ###-##-##"
     },
 
     "db": {
