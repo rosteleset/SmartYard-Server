@@ -5,7 +5,7 @@
     [
         "date" => $date,
         "ip" => $ip,
-        "motionStart" => $motionStart
+        "motionActive" => $motionActive
     ] = $postdata;
 
     $query = 'SELECT camera_id, frs FROM cameras WHERE ip = :ip';
@@ -16,7 +16,7 @@
         "frs" => $frsUrl
     ]] = $db->get($query, $params, []);
 
-    $payload = ["streamId" => $streamId, "start" => $motionStart ? "t" : "f"];
+    $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
 
     if (isset($frsUrl, $streamId)) {
         $apiResponse = apiExec($frsUrl . "/api/motionDetection", $payload);
