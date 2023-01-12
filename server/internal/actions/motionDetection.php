@@ -2,8 +2,12 @@
     /** Get ip motion detection device, find stream_id and frs url.
      * Send POST request to FRS.
      */
-    if (!isset($postdata["date"], $postdata["ip"], $postdata["motionActive"])) {
-        response(404);
+    if (!isset(
+        $postdata["date"],
+        $postdata["ip"],
+        $postdata["motionActive"]
+    )) {
+        response(406, "Invalid payload");
         exit();
     }
 
@@ -29,9 +33,7 @@
 
     $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
 
-    if (isset($frsUrl, $streamId)) {
-        $apiResponse = apiExec($frsUrl . "/api/motionDetection", $payload);
-        response(201, $apiResponse);
-    }
+   $apiResponse = apiExec($frsUrl . "/api/motionDetection", $payload);
+   response(201, $apiResponse);
 
     exit();
