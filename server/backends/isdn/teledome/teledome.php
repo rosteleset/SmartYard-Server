@@ -1,6 +1,15 @@
 <?php
 
-    namespace backends\tt {
+    /**
+     * backends isdn namespace
+     */
+
+    namespace backends\isdn {
+
+        /**
+         * teledome trait (common part)
+         */
+
         trait teledome {
             /**
              * @inheritDoc
