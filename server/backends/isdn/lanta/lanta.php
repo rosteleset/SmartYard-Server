@@ -7,8 +7,6 @@
     namespace backends\isdn
     {
 
-        use backends\tt\teledome;
-
         /**
          * LanTa's variant of flash calls and sms sending
          */
