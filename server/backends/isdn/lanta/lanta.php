@@ -15,6 +15,7 @@
 
         class lanta extends isdn
         {
+
             use teledome;
 
             /**
