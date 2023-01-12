@@ -7,11 +7,17 @@
     namespace backends\isdn
     {
 
+        use backends\tt\teledome;
+
         /**
          * LanTa's variant of flash calls and sms sending
          */
+
+        require_once __DIR__ . "/../teledome/teledome.php";
+
         class lanta extends isdn
         {
+            use teledome;
 
             /**
              * @inheritDoc
@@ -53,30 +59,6 @@
             function checkIncoming($id)
             {
                 return trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkIncoming&mobile=$id&secret=" . $this->config["backends"]["isdn"]["common_secret"]));
-            }
-
-            /**
-             * @inheritDoc
-             */
-            function push($push)
-            {
-                $query = "";
-                foreach ($push as $param => $value) {
-                    if ($param != "action" && $param != "secret") {
-                        $query = $query . $param . "=" . urlencode($value) . "&";
-                    }
-                }
-                if ($query) {
-                    $query = substr($query, 0, -1);
-                }
-
-                $result = trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["common_secret"] . "&" . $query));
-
-                if (strtolower(explode(":", $result)[0]) !== "ok") {
-                    loadBackend("households")->dismissToken($push["token"]);
-                }
-
-                return $result;
             }
         }
     }
