@@ -5,6 +5,7 @@
      */
 
     namespace backends\tt {
+
         /*
          * common part for all tt classes based on internal database storage for tt metadata
          */
