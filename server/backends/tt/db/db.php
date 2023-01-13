@@ -934,14 +934,6 @@
             /**
              * @inheritDoc
              */
-            public function availableFilters()
-            {
-                return parent::availableFilters();
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function addTag($projectId, $tag)
             {
                 if (!checkInt($projectId) || !checkStr($tag)) {
