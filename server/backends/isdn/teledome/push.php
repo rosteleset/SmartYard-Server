@@ -10,7 +10,7 @@
          * teledome trait (common part)
          */
 
-        trait teledome {
+        trait push {
             /**
              * @inheritDoc
              */
