@@ -4,13 +4,15 @@
      * backends isdn namespace
      */
 
-    namespace backends\isdn {
+    namespace backends\isdn
+    {
 
         /**
          * teledome trait (common part)
          */
 
-        trait push {
+        trait push
+        {
             /**
              * @inheritDoc
              */
