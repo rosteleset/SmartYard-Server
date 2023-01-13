@@ -595,8 +595,9 @@
 
             /**
              * @param $query
+             * @param $fields
              * @return mixed
              */
-            abstract public function getIssues($query);
+            abstract public function getIssues($query, $fields);
         }
     }

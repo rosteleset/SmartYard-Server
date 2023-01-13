@@ -4,7 +4,8 @@
      * backends tt namespace
      */
 
-    namespace backends\tt {
+    namespace backends\tt
+    {
 
         /**
          * internal.db + mongoDB tt class
@@ -12,10 +13,12 @@
 
         require_once __DIR__ . "/../db/db.php";
 
-        class mongo extends tt {
+        class mongo extends tt
+        {
 
-            use db {
-                cleanup as public dbCleanup;
+            use db
+            {
+                cleanup as private dbCleanup;
             }
 
             protected $mongo, $dbName;
@@ -23,7 +26,8 @@
             /**
              * @inheritDoc
              */
-            public function __construct($config, $db, $redis) {
+            public function __construct($config, $db, $redis)
+            {
                 parent::__construct($config, $db, $redis);
 
                 require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
@@ -64,7 +68,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($query)
+            public function getIssues($query, $fields)
             {
                 // TODO: Implement getIssues() method.
             }
