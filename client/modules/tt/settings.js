@@ -2072,7 +2072,11 @@
     },
 
     modifyFilter: function (fileName) {
+        console.log("modifyFilter");
+    },
 
+    addFilter: function () {
+        console.log("addFilter");
     },
 
     renderFilters: function () {
@@ -2121,7 +2125,7 @@
                                         title: i18n("tt.deleteFilter"),
                                         class: "text-warning",
                                         click: filterFileName => {
-                                            //
+                                            console.log("deleteFilter");
                                         },
                                     },
                                 ],

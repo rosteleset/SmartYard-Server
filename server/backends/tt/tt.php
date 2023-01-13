@@ -452,13 +452,6 @@
              * @return false|array
              */
             public function availableFilters() {
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
-                }
-
                 $filters = glob(__DIR__ . "/filters/*.json");
 
                 $list = [];
@@ -467,7 +460,7 @@
                     $filter = pathinfo($filter);
 
                     try {
-                        $f = $this->getFilter($filter["filename"]);
+                        $f = json_decode($this->getFilter($filter["filename"]), true);
                         $list[$filter["filename"]] = @$f["name"];
                     } catch (\Exception $e) {
                         $list[$filter["filename"]] = $filter["filename"];
@@ -487,13 +480,6 @@
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
                     return false;
-                }
-
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
                 }
 
                 $file = __DIR__ . "/filters/" . $filter . ".json";
@@ -516,13 +502,6 @@
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
                     return false;
-                }
-
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
                 }
 
                 $dir = __DIR__ . "/filters";
@@ -550,13 +529,6 @@
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
                     return false;
-                }
-
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
                 }
 
                 $dir = __DIR__ . "/filters";
