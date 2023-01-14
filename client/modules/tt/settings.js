@@ -808,7 +808,7 @@
                     },
                 ];
 
-                if (cf.type === "Select") {
+                if (cf.type === "select") {
                     fields.push({
                         id: "-",
                     });
@@ -836,7 +836,7 @@
                     fields: fields,
                     callback: function (result) {
                         let options = {};
-                        if (cf.type === "Select") {
+                        if (cf.type === "select") {
                             for (let i in result) {
                                 if (i.indexOf("_cfWorkflowOption_") === 0) {
                                     options[i.split("_cfWorkflowOption_")[1]] = result[i];
@@ -964,7 +964,7 @@
                             title: i18n("tt.customFieldOptions"),
                             placeholder: i18n("tt.customFieldOptions"),
                             value: options,
-                            hidden: cf.type !== "Select",
+                            hidden: cf.type !== "select",
                             validate: (v, prefix) => {
                                 return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                             }
