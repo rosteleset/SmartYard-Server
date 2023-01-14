@@ -60,20 +60,22 @@
                 $issue["created"] = time();
                 $issue["author"] = $params["_login"];
 
-                if ($attachments) {
-                    $files = loadBackend("files");
+                try {
+                    if ($attachments) {
+                        $files = loadBackend("files");
 
-                    foreach ($attachments as $attachment) {
-                        $issue["attachments"][] = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                            "date" => $attachment["date"],
-                            "type" => $attachment["type"],
-                        ]);
+                        foreach ($attachments as $attachment) {
+                            $issue["attachments"][] = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                                "date" => $attachment["date"],
+                                "type" => $attachment["type"],
+                            ]);
+                        }
                     }
+
+                    return (string)$this->mongo->$db->$acr->insertOne($issue)->getInsertedId();
+                } catch (\Exception $e) {
+                    return false;
                 }
-
-                $id = $this->mongo->$db->$acr->insertOne($issue)->getInsertedId();
-
-                return (string)$id;
             }
 
             /**
