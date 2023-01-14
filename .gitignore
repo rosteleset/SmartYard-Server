@@ -43,3 +43,4 @@ package-lock.json
 /server/test.php
 /asterisk/config.lua
 /asterisk/extconfig.conf
+/server/mzfc/mongodb/
