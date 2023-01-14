@@ -1662,6 +1662,7 @@
                                         icon: "fas fa-edit",
                                         title: i18n("tt.customFields"),
                                         click: modules.tt.settings.projectCustomFields,
+                                        disabled: modules.tt.meta.customFields.length <= 0,
                                     },
                                     {
                                         icon: "fas fa-tags",
