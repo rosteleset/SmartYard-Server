@@ -47,6 +47,7 @@
             public function createIssue($issue)
             {
                 $acr = $issue["project"];
+                $db = $this->dbName;
 
                 $aiid = $this->redis->incr("aiid_" . $acr);
                 $issue["issue_id"] = $acr . "-" . $aiid;
@@ -54,11 +55,16 @@
                 $attachments = $issue["attachments"];
                 $issue["attachments"] = [];
 
-                $files = loadBackend("files");
+                if ($attachments) {
+                    $files = loadBackend("files");
 
-                error_log(print_r($attachments, true));
-
-                $db = $this->dbName;
+                    foreach ($attachments as $attachment) {
+                        $issue["attachments"][] = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                            "date" => $attachment["date"],
+                            "type" => $attachment["type"],
+                        ]);
+                    }
+                }
 
                 $id = $this->mongo->$db->$acr->insertOne($issue)->getInsertedId();
 
