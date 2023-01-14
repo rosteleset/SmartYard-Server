@@ -46,6 +46,8 @@
              */
             public function createIssue($issue)
             {
+                global $params;
+
                 $acr = $issue["project"];
                 $db = $this->dbName;
 
@@ -54,6 +56,9 @@
 
                 $attachments = $issue["attachments"];
                 $issue["attachments"] = [];
+
+                $issue["created"] = time();
+                $issue["author"] = $params["_login"];
 
                 if ($attachments) {
                     $files = loadBackend("files");
