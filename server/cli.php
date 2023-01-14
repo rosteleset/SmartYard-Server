@@ -36,6 +36,7 @@
             [--reindex]
             [--clear-cache]
             [--cleanup]
+            [--init-mobile-issues-project]
         tests:
             [--check-mail=<your email address>]
             [--get-db-version]
@@ -266,6 +267,12 @@
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
         require_once "utils/cleanup.php";
         cleanup();
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--init-mobile-issues-project", $args) && !isset($args["--init-mobile-issues-project"])) {
+        require_once "utils/mobile_project.php";
+        init_mp();
         exit(0);
     }
 
