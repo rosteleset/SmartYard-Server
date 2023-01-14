@@ -122,5 +122,8 @@
     "projectWasAdded": "Проект добавлен",
     "projectWasDeleted": "Проект удален",
     "projectResolutions": "Резолюции проекта",
-    "projectCustomFields": "Настраиваемые поля"
+    "projectCustomFields": "Настраиваемые поля",
+    "filterSave": "Сохранить",
+    "filter": "Фильтр",
+    "filterDelete": "Удалить фильтр \"%s\"?"
 }
