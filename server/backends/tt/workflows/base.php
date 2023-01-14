@@ -29,7 +29,6 @@
                     "fields" => [
                         "subject",
                         "description",
-                        "[cf]usr",
                         "attachments",
                         "tags"
                     ],
