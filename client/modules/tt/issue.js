@@ -208,7 +208,7 @@
                         apply: "create",
                         fields: fields,
                         callback: function (result) {
-                            console.log(result);
+                            modules.tt.issue.doCreateIssue(result);
                         },
                         cancel: () => {
                             history.back();
@@ -222,6 +222,20 @@
                     history.back();
                 });
             });
+        });
+    },
+
+    doCreateIssue: function (issue) {
+        loadingStart();
+        POST("tt", "issue", false, {
+            issue: issue,
+        }).
+        done(result => {
+            console.log(result);
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
         });
     },
 

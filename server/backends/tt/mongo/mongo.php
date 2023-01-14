@@ -46,7 +46,16 @@
              */
             public function createIssue($issue)
             {
-                // TODO: Implement createIssue() method.
+                $acr = $issue["projectAcronym"];
+
+                $aiid = $this->redis->incr("aiid_" . $acr);
+                $issue["issue_id"] = $acr . "-" . $aiid;
+
+                $db = $this->dbName;
+
+                $id = $this->mongo->$db->$acr->insertOne($issue)->getInsertedId();
+
+                return (string)$id;
             }
 
             /**

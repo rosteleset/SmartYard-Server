@@ -20,8 +20,13 @@
             }
 
             public static function POST($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                $workflow = $tt->loadWorkflow($params["issue"]["workflow"]);
+
+                $id = $workflow->createIssue($params["issue"]);
+
+                return api::ANSWER($id, ($id !== false)?false:"notAcceptable");
             }
 
             public static function PUT($params) {
