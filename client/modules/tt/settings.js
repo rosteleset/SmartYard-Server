@@ -2072,12 +2072,75 @@
         always(loadingDone);
     },
 
-    modifyFilter: function (fileName) {
-        console.log("modifyFilter");
+    renderFilter: function (filter) {
+        loadingStart();
+        GET("tt", "filter", filter, true).
+        done(f => {
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("filterEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/json");
+            editor.setValue(f.body, -1);
+            editor.clearSelection();
+            editor.setFontSize(14);
+            $("#filterSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
+                fail(FAIL).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
+    deleteFilter: function (filter) {
+        mConfirm(i18n("tt.filterDelete", filter), i18n("confirm"), i18n("delete"), () => {
+            loadingStart();
+            DELETE("tt", "filter", filter, false).
+            fail(err => {
+                FAIL(err);
+                loadingDone();
+            }).
+            done(() => {
+                modules.tt.settings.renderFilters();
+            });
+        });
     },
 
     addFilter: function () {
-        console.log("addFilter");
+        cardForm({
+            title: i18n("tt.addFilter"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "file",
+                    type: "text",
+                    title: i18n("tt.filter"),
+                    placeholder: i18n("tt.filter"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: f => {
+                location.href = "#tt.settings&section=filter&filter=" + f.file;
+            },
+        }).show();
     },
 
     renderFilters: function () {
@@ -2104,7 +2167,9 @@
                         fullWidth: true,
                     },
                 ],
-                edit: modules.tt.settings.modifyFilter,
+                edit: filter => {
+                    location.href = "#tt.settings&section=filter&filter=" + filter;
+                },
                 rows: () => {
                     let rows = [];
 
@@ -2125,9 +2190,7 @@
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
                                         class: "text-warning",
-                                        click: filterFileName => {
-                                            console.log("deleteFilter");
-                                        },
+                                        click: modules.tt.settings.deleteFilter,
                                     },
                                 ],
                             },
@@ -2185,6 +2248,10 @@
 
             case "filters":
                 modules.tt.settings.renderFilters();
+                break;
+
+            case "filter":
+                modules.tt.settings.renderFilter(params["filter"]);
                 break;
 
             case "statuses":
