@@ -227,6 +227,10 @@
 
     doCreateIssue: function (issue) {
         loadingStart();
+        delete issue.projectName;
+        delete issue.workflowAlias;
+        issue.project = issue.projectAcronym;
+        delete issue.projectAcronym;
         POST("tt", "issue", false, {
             issue: issue,
         }).

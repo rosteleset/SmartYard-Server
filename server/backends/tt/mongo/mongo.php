@@ -46,10 +46,17 @@
              */
             public function createIssue($issue)
             {
-                $acr = $issue["projectAcronym"];
+                $acr = $issue["project"];
 
                 $aiid = $this->redis->incr("aiid_" . $acr);
                 $issue["issue_id"] = $acr . "-" . $aiid;
+
+                $attachments = $issue["attachments"];
+                $issue["attachments"] = [];
+
+                $files = loadBackend("files");
+
+                error_log(print_r($attachments, true));
 
                 $db = $this->dbName;
 
