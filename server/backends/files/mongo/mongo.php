@@ -19,7 +19,7 @@
              */
             public function __construct($config, $db, $redis)
             {
-                require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
+                require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
 
                 parent::__construct($config, $db, $redis);
 

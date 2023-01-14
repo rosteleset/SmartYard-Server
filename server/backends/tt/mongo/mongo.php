@@ -30,7 +30,7 @@
             {
                 parent::__construct($config, $db, $redis);
 
-                require_once __DIR__ . "/../../../mzfc/mongodb/mongodb.php";
+                require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
 
                 $this->dbName = @$config["backends"]["tt"]["db"]?:"tt";
 
@@ -54,7 +54,7 @@
                 $aiid = $this->redis->incr("aiid_" . $acr);
                 $issue["issue_id"] = $acr . "-" . $aiid;
 
-                $attachments = $issue["attachments"];
+                $attachments = @$issue["attachments"] ? : [];
                 $issue["attachments"] = [];
 
                 $issue["created"] = time();
