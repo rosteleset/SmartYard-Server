@@ -142,18 +142,34 @@
 
                     let fields = [
                         {
-                            id: "project",
+                            id: "projectName",
                             type: "text",
                             readonly: true,
                             title: i18n("tt.project"),
                             value: projectName,
                         },
                         {
-                            id: "workflow",
+                            id: "projectAcronym",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.project"),
+                            value: project.acronym,
+                            hidden: true,
+                        },
+                        {
+                            id: "workflowName",
                             type: "text",
                             readonly: true,
                             title: i18n("tt.workflow"),
                             value: workflowName,
+                        },
+                        {
+                            id: "workflow",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.workflow"),
+                            value: workflow,
+                            hidden: true,
                         },
                     ];
 
