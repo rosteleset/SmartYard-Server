@@ -133,10 +133,10 @@
                         }
                     }
 
-                    let workflowName = workflow;
+                    let workflowAlias = workflow;
                     for (let i in modules.tt.meta.workflowAliases) {
                         if (modules.tt.meta.workflowAliases[i].workflow == workflow) {
-                            workflowName = modules.tt.meta.workflowAliases[i].alias?$.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]"):workflow;
+                            workflowAlias = modules.tt.meta.workflowAliases[i].alias?$.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]"):workflow;
                         }
                     }
 
@@ -152,16 +152,16 @@
                             id: "projectAcronym",
                             type: "text",
                             readonly: true,
-                            title: i18n("tt.project"),
+                            title: i18n("tt.projectAcronym"),
                             value: project.acronym,
                             hidden: true,
                         },
                         {
-                            id: "workflowName",
+                            id: "workflowAlias",
                             type: "text",
                             readonly: true,
-                            title: i18n("tt.workflow"),
-                            value: workflowName,
+                            title: i18n("tt.workflowAlias"),
+                            value: workflowAlias,
                         },
                         {
                             id: "workflow",
