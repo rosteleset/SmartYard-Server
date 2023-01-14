@@ -208,7 +208,7 @@
                 <div class="dropdown mt-2">
                     <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
                     <ul class="dropdown-menu" aria-labelledby="ttFilter">
-                        <li class="pointer dropdown-item">1</li>
+                        <li class="pointer dropdown-item">Тестовый фильтр бла-бла-бла</li>
                         <li class="pointer dropdown-item">2</li>
                         <li class="pointer dropdown-item">3</li>
                         <li class="pointer dropdown-item">4</li>
