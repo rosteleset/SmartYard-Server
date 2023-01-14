@@ -22,9 +22,7 @@
             public static function POST($params) {
                 $tt = loadBackend("tt");
 
-                $workflow = $tt->loadWorkflow($params["issue"]["workflow"]);
-
-                $id = $workflow->createIssue($params["issue"]);
+                $id = $tt->loadWorkflow($params["issue"]["workflow"])->createIssue($params["issue"]);
 
                 return api::ANSWER($id, ($id !== false)?false:"notAcceptable");
             }
