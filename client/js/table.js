@@ -319,7 +319,9 @@ function cardTable(params) {
 
         if (typeof text !== "function" && text && text !== true) {
             rows = [];
-            let words = text.toString().toLowerCase().split(/\W+/);
+            let words = text.toString().trim().toLowerCase().split(/\s+/).filter((value, index, self) => {
+                return self.indexOf(value) === index;
+            });
             for (let i in allRows) {
                 if (match(allRows[i], words)) {
                     rows.push(allRows[i]);

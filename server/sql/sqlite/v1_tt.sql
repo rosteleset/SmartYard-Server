@@ -139,3 +139,15 @@ CREATE TABLE tt_tags
     tag text
 );
 CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);
+
+-- filters available
+CREATE TABLE tt_filters_available
+(
+    filter text,
+    uid integer,
+    gid integer
+);
+CREATE UNIQUE INDEX tt_filters_available_uniq on tt_filters_available (filter, uid, gid);
+CREATE INDEX tt_filters_available_filter on tt_filters_available (filter);
+CREATE INDEX tt_filters_available_uid on tt_filters_available (uid);
+CREATE INDEX tt_filters_available_gid on tt_filters_available (gid);

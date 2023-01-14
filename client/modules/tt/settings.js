@@ -2187,6 +2187,19 @@
                             dropDown: {
                                 items: [
                                     {
+                                        icon: "fas fa-user",
+                                        title: i18n("tt.users"),
+                                        click: modules.tt.settings.deleteFilter,
+                                    },
+                                    {
+                                        icon: "fas fa-users",
+                                        title: i18n("tt.groups"),
+                                        click: modules.tt.settings.deleteFilter,
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
                                         class: "text-warning",
