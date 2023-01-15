@@ -97,6 +97,24 @@
         });
     },
 
+    doAddFilterAvailable: function (filter, uid, gid) {
+        loadingStart();
+        POST("tt", "filterAvailable", filter, { uid, gid }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.filterWasChanged"));
+        }).
+        done(() => {
+            if (uid) {
+                modules.tt.settings.filterUsers(filter);
+            }
+            if (gid) {
+                modules.tt.settings.filterGroups(filter);
+            }
+        });
+    },
+
     doModifyProject: function (project) {
         loadingStart();
         PUT("tt", "project", project["projectId"], project).
@@ -281,6 +299,23 @@
         }).
         done(() => {
             modules.tt.settings.projectTags(projectId);
+        });
+    },
+
+    doDeleteFilterAvailable: function (filterAvailableId, filter, users) {
+        loadingStart();
+        DELETE("tt", "filterAvailable", filterAvailableId).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.filterWasChanged"));
+        }).
+        done(() => {
+            if (users) {
+                modules.tt.settings.filterUsers(filter);
+            } else {
+                modules.tt.settings.filterGroups(filter);
+            }
         });
     },
 
@@ -2164,16 +2199,22 @@
                     options: u,
                 },
             ],
-            callback: function (result) {
+            callback: result => {
                 modules.tt.settings.doAddFilterAvailable(filter, result.uid, 0);
             },
         }).show();
     },
 
+    filterDeleteUser: function (filterAvailableId, filter) {
+        mConfirm(i18n("users.confirmDelete", filterAvailableId.toString()), i18n("confirm"), `warning:${i18n("tt.removeUserFromFilter")}`, () => {
+            modules.tt.settings.doDeleteFilterAvailable(filterAvailableId, filter, true);
+        });
+    },
+
     filterUsers: function (filter) {
         loadingStart();
         GET("tt", "filterAvailable", filter, true).
-        done(available => {
+        done(filterAvailable => {
             GET("accounts", "users").
             done(response => {
                 let users = {};
@@ -2213,13 +2254,16 @@
                     rows: () => {
                         let rows = [];
 
-                        for (let i in available) {
-                            if (available[i].uid) {
+                        for (let i in filterAvailable.available) {
+                            if (filterAvailable.available[i].uid) {
                                 rows.push({
-                                    uid: available.filterAvailableId,
+                                    uid: filterAvailable.available[i].filterAvailableId,
                                     cols: [
                                         {
-                                            data: users[available.uid],
+                                            data: filterAvailable.available[i].filterAvailableId,
+                                        },
+                                        {
+                                            data: users[filterAvailable.available[i].uid],
                                         },
                                     ],
                                     dropDown: {

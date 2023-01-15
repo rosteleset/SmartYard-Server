@@ -1015,7 +1015,7 @@
             public function addFilterAvailable($filter, $uid, $gid)
             {
                 $uid = $uid ? : null;
-                $uid = $gid ? : null;
+                $gid = $gid ? : null;
 
                 return $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
                     "filter" => $filter,
