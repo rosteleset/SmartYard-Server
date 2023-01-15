@@ -2233,7 +2233,7 @@
                 cardTable({
                     target: "#altForm",
                     title: {
-                        caption: modules.tt.meta.filters[filter] + " " + i18n("tt.filterUsers"),
+                        caption: modules.tt.meta.filters[filter]?modules.tt.meta.filters[filter]:filter + " " + i18n("tt.filterUsers"),
                         button: {
                             caption: i18n("tt.addFilterUser"),
                             click: () => {
@@ -2348,7 +2348,7 @@
                 cardTable({
                     target: "#altForm",
                     title: {
-                        caption: modules.tt.meta.filters[filter] + " " + i18n("tt.filterGroups"),
+                        caption: modules.tt.meta.filters[filter]?modules.tt.meta.filters[filter]:filter + " " + i18n("tt.filterGroups"),
                         button: {
                             caption: i18n("tt.addFilterGroup"),
                             click: () => {
