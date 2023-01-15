@@ -204,7 +204,7 @@
         $("#altForm").hide();
 
         let filters = `
-            <span class="dropdown m-2">
+            <span class="dropdown m-2 ml-3 mr-3">
                 <li class="nav-item d-none d-sm-inline-block">
                     <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
                     <ul class="dropdown-menu" aria-labelledby="ttFilter">
@@ -235,6 +235,7 @@
         $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
+
         $("#mainForm").html(i18n("tt.tt"));
 
         loadingDone();
