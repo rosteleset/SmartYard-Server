@@ -9,10 +9,10 @@
         use api\api;
 
         /**
-         * filter method
+         * filterAvailable method
          */
 
-        class filter extends api {
+        class filterAvailable extends api {
 
             public static function GET($params) {
                 $tt = loadBackend("tt");

@@ -1000,6 +1000,55 @@
             /**
              * @inheritDoc
              */
+            public function filterAvailable($filter)
+            {
+                return $this->db->get("select uid, gid from tt_filters_available order by uid, gid", false, [
+                    "uid" => "uid",
+                    "gid" => "gid",
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addFilterAvailable($filter, $uid, $gid)
+            {
+                $uid = $uid ? : null;
+                $uid = $gid ? : null;
+
+                $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
+                    "filter" => $filter,
+                    "uid" => $uid,
+                    "gid" => $gid,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteFilterAvailable($filter, $uid, $gid)
+            {
+                $uid = (int)$uid;
+                $gid = (int)$gid;
+
+                if ($uid) {
+                    $this->db->modify("delete from tt_filters_available where filter = :filter and uid = :uid", [
+                        "filter" => $filter,
+                        "uid" => $uid,
+                    ]);
+                }
+
+                if ($gid) {
+                    $this->db->modify("delete from tt_filters_available where filter = :filter and gid = :gid", [
+                        "filter" => $filter,
+                        "gid" => $gid,
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");

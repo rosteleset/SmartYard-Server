@@ -364,6 +364,28 @@
             abstract public function setProjectCustomFields($projectId, $customFields);
 
             /**
+             * @param $filter
+             * @return mixed
+             */
+            abstract public function filterAvailable($filter);
+
+            /**
+             * @param $filter
+             * @param $uid
+             * @param $gid
+             * @return mixed
+             */
+            abstract public function addFilterAvailable($filter, $uid, $gid);
+
+            /**
+             * @param $filter
+             * @param $uid
+             * @param $gid
+             * @return mixed
+             */
+            abstract public function deleteFilterAvailable($filter, $uid, $gid);
+
+            /**
              * @param $projectId
              * @param $uid
              * @param $roleId
