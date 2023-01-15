@@ -125,5 +125,17 @@
     "projectCustomFields": "Настраиваемые поля",
     "filterSave": "Сохранить",
     "filter": "Фильтр",
-    "filterDelete": "Удалить фильтр \"%s\"?"
+    "filterDelete": "Удалить фильтр \"%s\"?",
+    "filterAvailableId": "#",
+    "filterUsers": "доступен для пользователей",
+    "filterUser": "Пользователь",
+    "addFilterUser": "Сделать доступным для",
+    "removeUserFromFilter": "Убрать фильтр у пользователя",
+    "filterGroups": "доступен для групп",
+    "filterGroup": "Группа",
+    "addFilterGroup": "Сделать доступным для",
+    "removeGroupFromFilter": "Убрать фильтр у группы",
+    "filterWasChanged": "Фильтр изменен",
+    "filterWasSaved": "Фильтр сохранен",
+    "workflowWasSaved": "Рабочий процесс сохранен"
 }

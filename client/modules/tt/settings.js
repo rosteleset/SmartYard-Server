@@ -1753,6 +1753,9 @@
                 loadingStart();
                 PUT("tt", "customWorkflow", workflow, { "body": $.trim(editor.getValue()) }).
                 fail(FAIL).
+                done(() => {
+                    message(i18n("tt.workflowWasSaved"));
+                }).
                 always(() => {
                     loadingDone();
                 });
@@ -2130,6 +2133,9 @@
                 loadingStart();
                 PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
                 fail(FAIL).
+                done(() => {
+                    message(i18n("tt.filterWasSaved"));
+                }).
                 always(() => {
                     loadingDone();
                 });
@@ -2227,7 +2233,7 @@
                 cardTable({
                     target: "#altForm",
                     title: {
-                        caption: i18n("tt.filterUsers") + " " + filter,
+                        caption: modules.tt.meta.filters[filter] + " " + i18n("tt.filterUsers"),
                         button: {
                             caption: i18n("tt.addFilterUser"),
                             click: () => {
@@ -2293,8 +2299,119 @@
         fail(loadingDone);
     },
 
-    filterGroups: function (filter) {
+    addFilterGroup: function (filter, groups) {
+        let g = [];
+        for (let i in groups) {
+            g.push({
+                id: i,
+                text: groups[i],
+            })
+        }
+        cardForm({
+            title: i18n("tt.addFilterGroup"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "gid",
+                    type: "select2",
+                    title: i18n("tt.filterGroup"),
+                    options: g,
+                },
+            ],
+            callback: result => {
+                modules.tt.settings.doAddFilterAvailable(filter, 0, result.gid);
+            },
+        }).show();
+    },
 
+    filterDeleteGroup: function (filterAvailableId, filter) {
+        mConfirm(i18n("groups.confirmDelete", filterAvailableId.toString()), i18n("confirm"), `warning:${i18n("tt.removeGroupFromFilter")}`, () => {
+            modules.tt.settings.doDeleteFilterAvailable(filterAvailableId, filter, false);
+        });
+    },
+
+    filterGroups: function (filter) {
+        loadingStart();
+        GET("tt", "filterAvailable", filter, true).
+        done(filterAvailable => {
+            GET("accounts", "groups").
+            done(response => {
+                let groups = {};
+                for (let i in response.groups) {
+                    if (response.groups[i].gid) {
+                        groups[response.groups[i].gid] = $.trim((response.groups[i].name?response.groups[i].name:response.groups[i].acronym) + " [" + response.groups[i].acronym + "]");
+                    }
+                }
+
+                cardTable({
+                    target: "#altForm",
+                    title: {
+                        caption: modules.tt.meta.filters[filter] + " " + i18n("tt.filterGroups"),
+                        button: {
+                            caption: i18n("tt.addFilterGroup"),
+                            click: () => {
+                                modules.tt.settings.addFilterGroup(filter, groups);
+                            },
+                        },
+                        altButton: {
+                            caption: i18n("close"),
+                            click: () => {
+                                $("#altForm").hide();
+                            },
+                        },
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.filterAvailableId"),
+                        },
+                        {
+                            title: i18n("tt.filterGroup"),
+                            nowrap: true,
+                            fullWidth: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in filterAvailable.available) {
+                            if (filterAvailable.available[i].gid) {
+                                rows.push({
+                                    uid: filterAvailable.available[i].filterAvailableId,
+                                    cols: [
+                                        {
+                                            data: filterAvailable.available[i].filterAvailableId,
+                                        },
+                                        {
+                                            data: groups[filterAvailable.available[i].gid],
+                                        },
+                                    ],
+                                    dropDown: {
+                                        items: [
+                                            {
+                                                icon: "fas fa-trash-alt",
+                                                title: i18n("groups.delete"),
+                                                class: "text-warning",
+                                                click: filterAvailableId => {
+                                                    modules.tt.settings.filterDeleteGroup(filterAvailableId, filter);
+                                                },
+                                            },
+                                        ],
+                                    },
+                                });
+                            }
+                        }
+
+                        return rows;
+                    },
+                }).show();
+            }).
+            fail(FAIL).
+            always(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
     },
 
     renderFilters: function () {
