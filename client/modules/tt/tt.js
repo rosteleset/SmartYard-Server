@@ -204,8 +204,8 @@
         $("#altForm").hide();
 
         let filters = `
-            <li class="nav-item d-none d-sm-inline-block">
-                <div class="dropdown mt-2">
+            <span class="dropdown m-2">
+                <li class="nav-item d-none d-sm-inline-block">
                     <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
                     <ul class="dropdown-menu" aria-labelledby="ttFilter">
                         <li class="pointer dropdown-item">Тестовый фильтр бла-бла-бла</li>
@@ -213,8 +213,8 @@
                         <li class="pointer dropdown-item">3</li>
                         <li class="pointer dropdown-item">4</li>
                     </ul>
-                </div>
-            </li>
+                </li>
+            </span>
         `;
 
         $("#leftTopDynamic").html(`
