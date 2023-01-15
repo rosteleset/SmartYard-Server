@@ -143,6 +143,7 @@ CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);
 -- filters available
 CREATE TABLE tt_filters_available
 (
+    filter_available_id integer not null primary key autoincrement,
     filter text,
     uid integer,
     gid integer

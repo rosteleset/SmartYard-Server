@@ -1002,7 +1002,8 @@
              */
             public function filterAvailable($filter)
             {
-                return $this->db->get("select uid, gid from tt_filters_available order by uid, gid", false, [
+                return $this->db->get("select filter_available_id, uid, gid from tt_filters_available order by uid, gid", false, [
+                    "filter_available_id" => "filterAvailableId",
                     "uid" => "uid",
                     "gid" => "gid",
                 ]);
@@ -1016,7 +1017,7 @@
                 $uid = $uid ? : null;
                 $uid = $gid ? : null;
 
-                $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
+                return $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
                     "filter" => $filter,
                     "uid" => $uid,
                     "gid" => $gid,
@@ -1026,24 +1027,13 @@
             /**
              * @inheritDoc
              */
-            public function deleteFilterAvailable($filter, $uid, $gid)
+            public function deleteFilterAvailable($filter_available_id)
             {
-                $uid = (int)$uid;
-                $gid = (int)$gid;
+                $filter_available_id = (int)$filter_available_id;
 
-                if ($uid) {
-                    $this->db->modify("delete from tt_filters_available where filter = :filter and uid = :uid", [
-                        "filter" => $filter,
-                        "uid" => $uid,
-                    ]);
-                }
-
-                if ($gid) {
-                    $this->db->modify("delete from tt_filters_available where filter = :filter and gid = :gid", [
-                        "filter" => $filter,
-                        "gid" => $gid,
-                    ]);
-                }
+                return $this->db->modify("delete from tt_filters_available where filter_available_id = :filter_available_id", [
+                    "filter_available_id" => $filter_available_id,
+                ]);
             }
 
             /**

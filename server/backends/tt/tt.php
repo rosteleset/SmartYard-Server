@@ -378,12 +378,10 @@
             abstract public function addFilterAvailable($filter, $uid, $gid);
 
             /**
-             * @param $filter
-             * @param $uid
-             * @param $gid
+             * @param $filter_available_id
              * @return mixed
              */
-            abstract public function deleteFilterAvailable($filter, $uid, $gid);
+            abstract public function deleteFilterAvailable($filter_available_id);
 
             /**
              * @param $projectId

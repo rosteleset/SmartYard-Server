@@ -2143,6 +2143,116 @@
         }).show();
     },
 
+    addFilterUser: function (filter, users) {
+        let u = [];
+        for (let i in users) {
+            u.push({
+                id: i,
+                text: users[i],
+            })
+        }
+        cardForm({
+            title: i18n("tt.addFilterUser"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "uid",
+                    type: "select2",
+                    title: i18n("tt.filterUser"),
+                    options: u,
+                },
+            ],
+            callback: function (result) {
+                modules.tt.settings.doAddFilterAvailable(filter, result.uid, 0);
+            },
+        }).show();
+    },
+
+    filterUsers: function (filter) {
+        loadingStart();
+        GET("tt", "filterAvailable", filter, true).
+        done(available => {
+            GET("accounts", "users").
+            done(response => {
+                let users = {};
+                for (let i in response.users) {
+                    if (response.users[i].uid) {
+                        users[response.users[i].uid] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
+                    }
+                }
+
+                cardTable({
+                    target: "#altForm",
+                    title: {
+                        caption: i18n("tt.filterUsers") + " " + filter,
+                        button: {
+                            caption: i18n("tt.addFilterUser"),
+                            click: () => {
+                                modules.tt.settings.addFilterUser(filter, users);
+                            },
+                        },
+                        altButton: {
+                            caption: i18n("close"),
+                            click: () => {
+                                $("#altForm").hide();
+                            },
+                        },
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.filterAvailableId"),
+                        },
+                        {
+                            title: i18n("tt.filterUser"),
+                            nowrap: true,
+                            fullWidth: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in available) {
+                            if (available[i].uid) {
+                                rows.push({
+                                    uid: available.filterAvailableId,
+                                    cols: [
+                                        {
+                                            data: users[available.uid],
+                                        },
+                                    ],
+                                    dropDown: {
+                                        items: [
+                                            {
+                                                icon: "fas fa-trash-alt",
+                                                title: i18n("users.delete"),
+                                                class: "text-warning",
+                                                click: filterAvailableId => {
+                                                    modules.tt.settings.filterDeleteUser(filterAvailableId, filter);
+                                                },
+                                            },
+                                        ],
+                                    },
+                                });
+                            }
+                        }
+
+                        return rows;
+                    },
+                }).show();
+            }).
+            fail(FAIL).
+            always(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
+    },
+
+    filterGroups: function (filter) {
+
+    },
+
     renderFilters: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -2189,12 +2299,12 @@
                                     {
                                         icon: "fas fa-user",
                                         title: i18n("tt.users"),
-                                        click: modules.tt.settings.deleteFilter,
+                                        click: modules.tt.settings.filterUsers,
                                     },
                                     {
                                         icon: "fas fa-users",
                                         title: i18n("tt.groups"),
-                                        click: modules.tt.settings.deleteFilter,
+                                        click: modules.tt.settings.filterGroups,
                                     },
                                     {
                                         title: "-",
