@@ -204,21 +204,18 @@
         $("#altForm").hide();
 
         let filters = `
-            <span class="dropdown m-2 ml-3 mr-3">
-                <li class="nav-item d-none d-sm-inline-block">
-                    <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
-                    <ul class="dropdown-menu" aria-labelledby="ttFilter">
-                        <li class="pointer dropdown-item">Тестовый фильтр бла-бла-бла</li>
-                        <li class="pointer dropdown-item">2</li>
-                        <li class="pointer dropdown-item">3</li>
-                        <li class="pointer dropdown-item">4</li>
-                    </ul>
-                </li>
+            <span class="dropdown">
+                <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
+                <ul class="dropdown-menu" aria-labelledby="ttFilter">
+                    <li class="pointer dropdown-item">Тестовый фильтр бла-бла-бла</li>
+                    <li class="pointer dropdown-item">2</li>
+                    <li class="pointer dropdown-item">3</li>
+                    <li class="pointer dropdown-item">4</li>
+                </ul>
             </span>
         `;
 
         $("#leftTopDynamic").html(`
-            ${filters}
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
             </li>
@@ -236,7 +233,60 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 
-        $("#mainForm").html(i18n("tt.tt"));
+        $("#mainForm").html(`
+            <div class="row m-1 mt-2">
+                <div class="col col-left">
+                    ${filters}
+                </div>
+                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
+            </div>
+            <div class="ml-2 mr-2" id="issuesList"></div>
+        `);
+
+        cardTable({
+            target: "#issuesList",
+            columns: [
+                {
+                    title: i18n("tt.issueId"),
+                },
+                {
+                    title: i18n("tt.subject"),
+                    nowrap: true,
+                    fullWidth: true,
+                },
+            ],
+            rows: () => {
+                let rows = [];
+
+                for (let i = 0; i < 100; i++) {
+                    rows.push({
+                        uid: i,
+                        cols: [
+                            {
+                                data: i,
+                            },
+                            {
+                                data: i,
+                            },
+                        ],
+                        dropDown: {
+                            items: [
+                                {
+                                    icon: "fas fa-trash-alt",
+                                    title: i18n("users.delete"),
+                                    class: "text-warning",
+                                    click: issueId => {
+                                        //
+                                    },
+                                },
+                            ],
+                        },
+                    });
+                }
+
+                return rows;
+            },
+        });
 
         loadingDone();
     }
