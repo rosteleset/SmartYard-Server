@@ -591,5 +591,10 @@
              * @return mixed
              */
             abstract public function getIssues($query, $fields);
+
+            /**
+             * @return mixed
+             */
+            abstract public function whoAmI();
         }
     }
