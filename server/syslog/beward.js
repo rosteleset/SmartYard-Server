@@ -10,9 +10,6 @@ const { port } = urlParser(board);
 const gateRabbits = [];
 
 syslog.on("message", async ({date, host, message}) => {
-    console.log("|| 0 || DEBUG: start ||");
-    console.log(gateRabbits);
-    
     const now = getTimestamp(date);
     const bwMsg = message.split("- -")[1].trim();
 
@@ -50,8 +47,6 @@ syslog.on("message", async ({date, host, message}) => {
     // Call in gate mode with prefix: potential white rabbit
     if (bwMsg.indexOf("Redirecting CMS call to") >= 0) {
         const dst = bwMsg.split("to")[1].split("for")[0];
-        console.log("|| DEBUG: Redirecting CMS ||");
-        console.log(gateRabbits);
         gateRabbits[host] = {
             ip: host,
             prefix: parseInt(dst.substring(0, 5)),
@@ -61,12 +56,10 @@ syslog.on("message", async ({date, host, message}) => {
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (bwMsg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
-        console.log("|| DEBUG: Incoming DTMF ||");
         console.log(gateRabbits);
         if (gateRabbits[host]) {
             const { ip, prefix, apartment } = gateRabbits[host];
-            const setRabbitRes = await API.setRabbitGates({ date: now, ip, prefix, apartment });
-            console.log(setRabbitRes.data);
+            await API.setRabbitGates({ date: now, ip, prefix, apartment });
         }
     }
 
