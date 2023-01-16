@@ -97,7 +97,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($query, $fields)
+            public function getIssues($query, $fields, $start, $limit)
             {
                 // TODO: Implement getIssues() method.
             }

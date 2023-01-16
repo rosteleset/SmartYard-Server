@@ -590,7 +590,7 @@
              * @param $fields
              * @return mixed
              */
-            abstract public function getIssues($query, $fields);
+            abstract public function getIssues($query, $fields, $start, $limit);
 
             /**
              * @return mixed
