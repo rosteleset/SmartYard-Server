@@ -1050,6 +1050,17 @@
             /**
              * @inheritDoc
              */
+            public function myFilters()
+            {
+                global $params;
+
+                $login = $params["_login"];
+                // TODO: Implement whoAmI() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");

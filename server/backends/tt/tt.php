@@ -596,5 +596,10 @@
              * @return mixed
              */
             abstract public function whoAmI();
+
+            /**
+             * @return mixed
+             */
+            abstract public function myFilters();
         }
     }
