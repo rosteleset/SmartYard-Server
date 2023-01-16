@@ -108,5 +108,13 @@
             public function cleanup() {
                 $this->dbCleanup();
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function reCreateIndexes()
+            {
+                // TODO: Implement reCreateIndexes() method.
+            }
         }
     }

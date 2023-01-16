@@ -289,5 +289,9 @@
         });
 
         loadingDone();
-    }
+    },
+
+    search: function (query) {
+
+    },
 }).init();
