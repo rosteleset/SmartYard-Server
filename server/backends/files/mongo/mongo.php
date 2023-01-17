@@ -107,12 +107,12 @@
             /**
              * @inheritDoc
              */
-            public function searchFilesBy($metadataField, $fieldValue)
+            public function searchFilesBy($query)
             {
                 $collection = "fs.files";
                 $db = $this->dbName;
 
-                $cursor = $this->mongo->$db->$collection->find([ "metadata.$metadataField" => [ '$eq' => $fieldValue ] ]);
+                $cursor = $this->mongo->$db->$collection->find($query);
 
                 $files = [];
                 foreach ($cursor as $document) {
