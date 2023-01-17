@@ -68,6 +68,8 @@
                             $issue["attachments"][] = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                                 "date" => $attachment["date"],
                                 "type" => $attachment["type"],
+                                "issue" => true,
+                                "issue_id" => $issue["issue_id"],
                             ]);
                         }
                     }
