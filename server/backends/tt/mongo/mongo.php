@@ -72,7 +72,7 @@
                         }
                     }
 
-                    return (string)$this->mongo->$db->$acr->insertOne($issue)->getInsertedId();
+                    return (string)$this->mongo->$db->issues->insertOne($issue)->getInsertedId();
                 } catch (\Exception $e) {
                     return false;
                 }
@@ -115,6 +115,46 @@
             public function reCreateIndexes()
             {
                 // TODO: Implement reCreateIndexes() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addComment($issue, $comment)
+            {
+                // TODO: Implement addComment() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyComment($issue, $comment)
+            {
+                // TODO: Implement modifyComment() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteComment($issue, $comment)
+            {
+                // TODO: Implement deleteComment() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addAttachment($issue, $file)
+            {
+                // TODO: Implement addAttachment() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteAttachment($issue, $file)
+            {
+                // TODO: Implement deleteAttachment() method.
             }
         }
     }

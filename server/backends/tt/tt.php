@@ -588,10 +588,46 @@
             /**
              * @param $query
              * @param $fields
+             * @param $start
+             * @param $limit
              * @return mixed
              */
             abstract public function getIssues($query, $fields, $start, $limit);
 
+            /**
+             * @param $issue
+             * @param $comment
+             * @return mixed
+             */
+            abstract public function addComment($issue, $comment);
+
+            /**
+             * @param $issue
+             * @param $comment
+             * @return mixed
+             */
+            abstract public function modifyComment($issue, $comment);
+
+            /**
+             * @param $issue
+             * @param $comment
+             * @return mixed
+             */
+            abstract public function deleteComment($issue, $comment);
+
+            /**
+             * @param $issue
+             * @param $file
+             * @return mixed
+             */
+            abstract public function addAttachment($issue, $file);
+
+            /**
+             * @param $issue
+             * @param $file
+             * @return mixed
+             */
+            abstract public function deleteAttachment($issue, $file);
             /**
              * @return mixed
              */
