@@ -35,7 +35,7 @@
                 $this->config = $config;
                 $this->db = $db;
                 $this->redis = $redis;
-                $this->login = $login ? : (array_key_exists("_login", $params) ? $params["_login"] : "-");
+                $this->login = $login ? : ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
             }
 
             /**
