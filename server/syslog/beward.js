@@ -47,16 +47,16 @@ syslog.on("message", async ({date, host, message}) => {
     // Call in gate mode with prefix: potential white rabbit
     if (bwMsg.indexOf("Redirecting CMS call to") >= 0) {
         const dst = bwMsg.split("to")[1].split("for")[0];
-
         gateRabbits[host] = {
             ip: host,
-            prefix: parseInt(dst.substring(0, 4)),
-            apartment: parseInt(dst.substring(4)),
+            prefix: parseInt(dst.substring(0, 5)),
+            apartment: parseInt(dst.substring(5)),
         };
     }
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (bwMsg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
+        console.log(gateRabbits);
         if (gateRabbits[host]) {
             const { ip, prefix, apartment } = gateRabbits[host];
             await API.setRabbitGates({ date: now, ip, prefix, apartment });

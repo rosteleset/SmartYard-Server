@@ -3,7 +3,6 @@
     if (!isset(
         $postdata["date"],
         $postdata["ip"],
-        $postdata["callId"],
     )) {
         response(406, "Invalid payload");
         exit();
