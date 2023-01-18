@@ -61,9 +61,7 @@
         },
 
         "files": {
-            "backend": "mongo",
-            "uri": "mongodb://username:password@host:27017",
-            "db": "rbt"
+            "backend": "mongo"
         },
 
         "addresses": {
@@ -84,24 +82,12 @@
 
         "isdn": {
             "backend": "lanta",
-            "flash_call_secret": "<-- your FlashCall secret here -->",
-            "sms_secret": "<-- your SMS secret here -->",
-            "common_secret": "<-- your common (PUSH and incoming call) secret here -->",
-            "confirm_method": "outgoingCall|smsCode|flashCall"
-        },
-
-        "providers": {
-            "backend": "lanta",
-            "providers.json": "<!-- path to providers.json -->"
+            "common_secret": "<-- your secret here -->",
+            "confirm_method": "outgoingCall"
         },
 
         "inbox": {
-            "backend": "clickhouse",
-            "username": "default",
-            "password": "qqq",
-            "host": "127.0.0.1",
-            "port": 8123,
-            "database": "default"
+            "backend": "clickhouse"
         },
 
         "plog": {
@@ -162,7 +148,7 @@
                 }
             ],
             "stuns": [
-                "<!-- valid stun/turn server address here -->"
+                "stun:stun.l.google.com:19302"
             ]
         },
 
