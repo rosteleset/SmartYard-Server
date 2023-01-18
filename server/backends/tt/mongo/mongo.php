@@ -191,5 +191,13 @@
                 $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
                 $this->redis->set("ttReCreateIndexes", true);
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getJournal()
+            {
+                // TODO: Implement getJournal() method.
+            }
         }
     }

@@ -642,5 +642,10 @@
              * @return mixed
              */
             abstract public function reCreateIndexes();
+
+            /**
+             * @return mixed
+             */
+            abstract public function getJournal();
         }
     }
