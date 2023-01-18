@@ -19,6 +19,9 @@
             use db
             {
                 cleanup as private dbCleanup;
+                addCustomField as private dbAddCustomField;
+                modifyCustomField as private dbModifyCustomField;
+                deleteCustomField as private dbDeleteCustomField;
             }
 
             protected $mongo, $dbName;
