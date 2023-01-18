@@ -28,7 +28,8 @@ class API {
      */
     async sendLog({ date, ip, unit, msg }) {
         try {
-            const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${msg}');`;
+            const processedMsg = msg.replace(/'/g, "\\'"); // escape single quotes
+            const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${processedMsg}');`;
             const config = {
                 method: "post",
                 url: `http://${clickhouse.host}:${clickhouse.port}`,
