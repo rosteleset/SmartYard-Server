@@ -48,8 +48,6 @@
              */
             public function createIssue($issue)
             {
-                global $params;
-
                 $acr = $issue["project"];
                 $db = $this->dbName;
 
@@ -60,7 +58,7 @@
                 $issue["attachments"] = [];
 
                 $issue["created"] = time();
-                $issue["author"] = $params["_login"];
+                $issue["author"] = $this->login;
 
                 try {
                     if ($attachments) {
@@ -72,6 +70,7 @@
                                 "type" => $attachment["type"],
                                 "issue" => true,
                                 "issue_id" => $issue["issue_id"],
+                                "attachman" => $issue["author"],
                             ]);
                         }
                     }
