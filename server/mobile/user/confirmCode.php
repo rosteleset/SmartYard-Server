@@ -27,7 +27,7 @@
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");
     $households = loadBackend("households");
-    $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "smsCode";
+    $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
 
     if (strlen($pin) == 4) {
         $pinreq = $redis->get("userpin_".$user_phone);
