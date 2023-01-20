@@ -950,7 +950,7 @@
                     case "mobile":
                         $q = "select * from houses_subscribers_mobile where id = :id";
                         $p = [
-                            "id" => (int)$query,
+                            "id" => $query,
                         ];
                         break;
 
