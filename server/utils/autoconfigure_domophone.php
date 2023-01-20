@@ -38,7 +38,7 @@
 
         $sip_username = sprintf("1%05d", $domophone['domophoneId']);
         $sip_server = $asterisk_server['ip'];
-        $sip_port = $asterisk_server['sip_tcp_port'];
+        $sip_port = $asterisk_server['sip_udp_port'] ?? 5060;
 
         $nat = (bool) $domophone['nat'];
 
