@@ -137,7 +137,7 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "<!-- your sipDomain or ip here -->"
+                    "ip": "<!-- your asterisk external ip here -->"
                 }
             ],
             "stuns": [
