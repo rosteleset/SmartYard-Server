@@ -1062,23 +1062,23 @@
 
                     $g = implode(",", $g);
 
-                    $groups = $this->db->get("select level, acronym from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g)", false, [
+                    $groups = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g)", false, [
                         "level" => "level",
-                        "acronym" => "acronym",
+                        "project_id" => "projectId",
                     ]);
 
                     foreach ($groups as $group) {
-                        $projects[$group["acronym"]] = max(@(int)$projects[$group["acronym"]], (int)$group["level"]);
+                        $projects[$group["projectId"]] = max(@(int)$projects[$group["projectId"]], (int)$group["level"]);
                     }
                 }
 
-                $levels = $this->db->get("select level, acronym from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = $uid", false, [
+                $levels = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = $uid", false, [
                     "level" => "level",
-                    "acronym" => "acronym",
+                    "project_id" => "projectId",
                 ]);
 
                 foreach ($levels as $level) {
-                    $projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
+                    $projects[$level["projectId"]] = min(@(int)$projects[$level["projectId"]], (int)$level["level"]);
                 }
 
                 return $projects;
