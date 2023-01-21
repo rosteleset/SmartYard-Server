@@ -644,6 +644,13 @@
             abstract public function reCreateIndexes();
 
             /**
+             * @param $issue
+             * @param $record
+             * @return mixed
+             */
+            abstract public function addJournalRecord($issue, $record);
+
+            /**
              * @return mixed
              */
             abstract public function getJournal();

@@ -198,5 +198,13 @@
             {
                 // TODO: Implement getJournal() method.
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function addJournalRecord($issue, $record)
+            {
+                // TODO: Implement addJournalRecord() method.
+            }
         }
     }
