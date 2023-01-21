@@ -117,7 +117,11 @@
                     }
                 }
 
-                $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
+                if ($query) {
+                    $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
+                } else {
+                    $query = [ "project" => [ '$in' => $projects ] ];
+                }
 
                 $projection = [];
 
@@ -125,20 +129,22 @@
                     $projection[$field] = 1;
                 }
 
-                $issues = $this->mongo->$db->issues->find($query, [ "projection" => $projection ]);
+                $issues = $this->mongo->$db->issues->find($query, [ "projection" => $projection, "skip" => $start, "limit" => $limit ]);
 
-                $count = $issues->count();
-                $page = $issues->skip($start)->limit($limit);
+                $i = [];
 
-                $issues = [];
-
-                foreach ($page as $issue) {
-                    $issues[] = json_decode(json_encode($issue), true);
+                foreach ($issues as $issue) {
+                    $x = json_decode(json_encode($issue), true);
+                    $x["id"] = $x["_id"]['$oid'];
+                    unset($x["_id"]);
+                    $i[] = $x;
                 }
 
                 return [
-                    "issues" => $issues,
-                    "count" => $count,
+                    "issues" => $i,
+                    "start" => $start,
+                    "limit" => $limit,
+                    "count" => $this->mongo->$db->issues->count($query),
                 ];
             }
 
