@@ -1054,8 +1054,31 @@
             {
                 global $params;
 
-                $login = $params["_login"];
-                // TODO: Implement whoAmI() method.
+                $uid = $params["_uid"];
+
+                $groups = loadBackend("groups");
+
+                if ($groups) {
+                    $groups = $groups->getGroups($uid);
+                }
+
+                if ($groups) {
+                    $g = [];
+                    foreach ($groups as $group) {
+                        $g[] = $group["gid"];
+                    }
+                    $g = implode(",", $g);
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = :uid or gid in ($g)");
+                } else {
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = :uid");
+                }
+
+                $f = [];
+                foreach ($filters as $filter) {
+                    $f[] = $this->getFilter($filter["filter"]);
+                }
+
+                return $f;
             }
 
             /**
