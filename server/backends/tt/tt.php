@@ -588,11 +588,12 @@
             /**
              * @param $query
              * @param $fields
-             * @param $start
+             * @param $sort
+             * @param $skip
              * @param $limit
              * @return mixed
              */
-            abstract public function getIssues($query, $fields, $start, $limit);
+            abstract public function getIssues($query, $fields, $sort, $skip, $limit);
 
             /**
              * @param $issue

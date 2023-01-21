@@ -100,7 +100,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($query, $fields, $start, $limit)
+            public function getIssues($query, $fields, $sort, $skip, $limit)
             {
                 $projects = [];
                 $db = $this->dbName;
@@ -129,7 +129,12 @@
                     $projection[$field] = 1;
                 }
 
-                $issues = $this->mongo->$db->issues->find($query, [ "projection" => $projection, "skip" => $start, "limit" => $limit ]);
+                $issues = $this->mongo->$db->issues->find($query, [
+                    "projection" => $projection,
+                    "skip" => $skip,
+                    "limit" => $limit,
+                    "sort" => $sort
+                ]);
 
                 $i = [];
 
@@ -142,7 +147,7 @@
 
                 return [
                     "issues" => $i,
-                    "start" => $start,
+                    "skip" => $skip,
                     "limit" => $limit,
                     "count" => $this->mongo->$db->issues->count($query),
                 ];
