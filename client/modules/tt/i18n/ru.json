@@ -137,5 +137,6 @@
     "removeGroupFromFilter": "Убрать фильтр у группы",
     "filterWasChanged": "Фильтр изменен",
     "filterWasSaved": "Фильтр сохранен",
-    "workflowWasSaved": "Рабочий процесс сохранен"
+    "workflowWasSaved": "Рабочий процесс сохранен",
+    "issueId": "#"
 }
