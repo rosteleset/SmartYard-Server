@@ -1068,9 +1068,13 @@
                         $g[] = $group["gid"];
                     }
                     $g = implode(",", $g);
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = :uid or gid in ($g)");
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid or gid in ($g)", false, [
+                        "filter" => "filter",
+                    ]);
                 } else {
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = :uid");
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid", false, [
+                        "filter" => "filter",
+                    ]);
                 }
 
                 $f = [];
