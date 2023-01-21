@@ -1043,8 +1043,45 @@
             {
                 global $params;
 
-                $login = $params["_login"];
-                // TODO: Implement whoAmI() method.
+                $uid = $params["_uid"];
+
+                $groups = loadBackend("groups");
+
+                if ($groups) {
+                    $groups = $groups->getGroups($uid);
+                }
+
+                $projects = [];
+
+                if ($groups) {
+                    $g = [];
+
+                    foreach ($groups as $group) {
+                        $g[] = $group["gid"];
+                    }
+
+                    $g = implode(",", $g);
+
+                    $groups = $this->db->get("select level, acronym from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g)", false, [
+                        "level" => "level",
+                        "acronym" => "acronym",
+                    ]);
+
+                    foreach ($groups as $group) {
+                        $projects[$group["acronym"]] = max(@(int)$projects[$group["acronym"]], (int)$group["level"]);
+                    }
+                }
+
+                $levels = $this->db->get("select level, acronym from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = $uid", false, [
+                    "level" => "level",
+                    "acronym" => "acronym",
+                ]);
+
+                foreach ($levels as $level) {
+                    $projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
+                }
+
+                return $projects;
             }
 
             /**
@@ -1064,10 +1101,13 @@
 
                 if ($groups) {
                     $g = [];
+
                     foreach ($groups as $group) {
                         $g[] = $group["gid"];
                     }
+
                     $g = implode(",", $g);
+
                     $filters = $this->db->get("select filter from tt_filters_available where uid = $uid or gid in ($g)", false, [
                         "filter" => "filter",
                     ]);
