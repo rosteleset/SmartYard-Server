@@ -102,7 +102,44 @@
              */
             public function getIssues($query, $fields, $start, $limit)
             {
-                // TODO: Implement getIssues() method.
+                $projects = [];
+                $db = $this->dbName;
+
+                $me = $this->whoAmI();
+
+                $allProjects = $this->getProjects();
+
+                foreach ($me as $i => $r) {
+                    foreach ($allProjects as $a) {
+                        if ($a["projectId"] == $i) {
+                            $projects[] = $a["acronym"];
+                        }
+                    }
+                }
+
+                $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
+
+                $projection = [];
+
+                foreach ($fields as $field) {
+                    $projection[$field] = 1;
+                }
+
+                $issues = $this->mongo->$db->issues->find($query, [ "projection" => $projection ]);
+
+                $count = $issues->count();
+                $page = $issues->skip($start)->limit($limit);
+
+                $issues = [];
+
+                foreach ($page as $issue) {
+                    $issues[] = json_decode(json_encode($issue), true);
+                }
+
+                return [
+                    "issues" => $issues,
+                    "count" => $count,
+                ];
             }
 
             /**
