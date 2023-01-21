@@ -28,7 +28,8 @@ class API {
      */
     async sendLog({ date, ip, unit, msg }) {
         try {
-            const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${msg}');`;
+            const processedMsg = msg.replace(/'/g, "\\'"); // escape single quotes
+            const query = `INSERT INTO syslog (date, ip, unit, msg) VALUES ('${date}', '${ip}', '${unit}', '${processedMsg}');`;
             const config = {
                 method: "post",
                 url: `http://${clickhouse.host}:${clickhouse.port}`,
@@ -40,7 +41,7 @@ class API {
                 data: query
             };
 
-            await axios(config);
+            return await axios(config);
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| sendLog error: ", error.message); // TODO: hm
         }
@@ -55,7 +56,7 @@ class API {
      */
     async motionDetection({ date, ip, motionActive }) {
         try {
-            await internalAPI.post("/actions/motionDetection",{ date, ip, motionActive });
+            return await internalAPI.post("/actions/motionDetection",{ date, ip, motionActive });
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message); // TODO: hm
         }
@@ -70,7 +71,7 @@ class API {
      */
     async callFinished({ date,ip, callId = null }) {
         try {
-            await internalAPI.post("/actions/callFinished", { date, ip, callId });
+            return await internalAPI.post("/actions/callFinished", { date, ip, callId });
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message); // TODO: hm
         }
@@ -86,7 +87,7 @@ class API {
      */
     async setRabbitGates({ date, ip, prefix, apartment }) {
         try {
-            await internalAPI.post("/actions/setRabbitGates", { date, ip, prefix, apartment });
+            return await internalAPI.post("/actions/setRabbitGates", { date, ip, prefix, apartment });
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message); // TODO: hm
         }
@@ -116,7 +117,7 @@ class API {
                     payload.event = events.OPEN_BY_BUTTON
                     break;
             }
-            await internalAPI.post("/actions/openDoor", payload);
+            return await internalAPI.post("/actions/openDoor", payload);
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message); // TODO: hm
         }

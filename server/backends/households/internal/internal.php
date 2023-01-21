@@ -950,7 +950,7 @@
                     case "mobile":
                         $q = "select * from houses_subscribers_mobile where id = :id";
                         $p = [
-                            "id" => (int)$query,
+                            "id" => $query,
                         ];
                         break;
 
@@ -984,6 +984,8 @@
                     "voip_enabled" => "voipEnabled",
                 ]);
 
+                $addresses = loadBackend("addresses");
+
                 foreach ($subscribers as &$subscriber) {
                     $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
                         [
@@ -996,7 +998,6 @@
                             "address_house_id" => "addressHouseId",
                         ]
                     );
-                    $addresses = loadBackend("addresses");
                     foreach ($flats as &$flat) {
                         $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
                     }

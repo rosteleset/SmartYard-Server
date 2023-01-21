@@ -17,7 +17,7 @@
              * @var object $redis link to redis object
              */
 
-            protected $config, $db, $redis;
+            protected $config, $db, $redis, $login;
 
             /**
              * default constructor
@@ -29,10 +29,13 @@
              * @return void
              */
 
-            public function __construct($config, $db, $redis) {
+            public function __construct($config, $db, $redis, $login = false) {
+                global $params;
+
                 $this->config = $config;
                 $this->db = $db;
                 $this->redis = $redis;
+                $this->login = $login ? : ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
             }
 
             /**

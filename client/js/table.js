@@ -52,7 +52,11 @@ function cardTable(params) {
         allRows = params.rows();
     }
 
-    doFilter(params.title.filter);
+    if (params && params.title) {
+        doFilter(params.title.filter);
+    } else {
+        doFilter();
+    }
 
     while (currentPage > Math.ceil(rows.length / pageLength) && currentPage > 1) {
         currentPage--;
@@ -319,7 +323,9 @@ function cardTable(params) {
 
         if (typeof text !== "function" && text && text !== true) {
             rows = [];
-            let words = text.toString().toLowerCase().split(/\W+/);
+            let words = text.toString().trim().toLowerCase().split(/\s+/).filter((value, index, self) => {
+                return self.indexOf(value) === index;
+            });
             for (let i in allRows) {
                 if (match(allRows[i], words)) {
                     rows.push(allRows[i]);
@@ -363,17 +369,17 @@ function cardTable(params) {
             $("#" + tfoot).hide();
         }
 
-        if (titleButton && params.title.button && typeof params.title.button.click === "function") {
+        if (titleButton && params && params.title && params.title.button && typeof params.title.button.click === "function") {
             $("#" + titleButton).off("click").on("click", params.title.button.click);
         }
 
-        if (altButton && params.title.altButton && typeof params.title.altButton.click === "function") {
+        if (altButton && params && params.title && params.title.altButton && typeof params.title.altButton.click === "function") {
             $("#" + altButton).off("click").on("click", params.title.altButton.click);
         }
 
         addHandlers();
 
-        if (params.title.filter) {
+        if (params && params.title && params.title.filter) {
             $("#" + filterInput).off("keyup").on("keyup", e => {
                 if (filterTimeout) {
                     clearTimeout(filterTimeout);
@@ -393,7 +399,7 @@ function cardTable(params) {
                     params.filterChange(f);
                 }
             });
-            if (params.title.filter && params.title.filter !== true) {
+            if (params && params.title && params.title.filter && params.title.filter !== true) {
                 $("#" + filterInput).val(params.title.filter);
                 doFilter(params.title.filter, true);
             }

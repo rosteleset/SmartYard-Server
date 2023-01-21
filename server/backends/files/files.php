@@ -60,11 +60,10 @@
             abstract public function getFileMetadata($uuid);
 
             /**
-             * @param $metadataField
-             * @param $fieldValue
+             * @param $query
              * @return mixed
              */
-            abstract public function searchFilesBy($metadataField, $fieldValue);
+            abstract public function searchFilesBy($query);
 
             /**
              * delete file

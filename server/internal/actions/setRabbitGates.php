@@ -1,5 +1,15 @@
 <?php
     //Find the intercom panel in the gate mode, we find the timestamp of the door opening for the requested apartment
+    if (!isset(
+        $postdata["date"],
+        $postdata["ip"],
+        $postdata["prefix"],
+        $postdata["apartment"],
+         )) {
+        response(406, "Invalid payload");
+        exit();
+    }
+
     [
         "date" => $date,
         "ip" => $ip,

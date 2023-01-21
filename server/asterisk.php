@@ -447,7 +447,7 @@
                         "hash" => $params["hash"],
                         "extension" => $params["extension"],
                         "server" => $server["ip"],
-                        "port" => $server["sip_tcp_port"],
+                        "port" => @$server["sip_tcp_port"] ? : 5060,
                         "transport" => "tcp",
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),

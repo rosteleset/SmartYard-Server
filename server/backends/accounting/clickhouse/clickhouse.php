@@ -58,5 +58,13 @@
             {
                 $this->clickhouse->insert("syslog", [ [ "date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function get($query)
+            {
+                // TODO: Implement get() method.
+            }
         }
     }

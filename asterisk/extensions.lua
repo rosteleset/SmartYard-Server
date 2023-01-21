@@ -94,8 +94,8 @@ end
 
 function checkin()
     local src = channel.CALLERID("num"):get()
-    if src.len == 10 then
-        local prefix = tonumber(src.sub(1, 1))
+    if src:len() == 10 then
+        local prefix = tonumber(src:sub(1, 1))
         if prefix == 4 or prefix == 2 then
             log_debug("abnormal call: yes")
             app.busy()

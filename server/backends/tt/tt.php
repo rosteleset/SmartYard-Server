@@ -364,6 +364,26 @@
             abstract public function setProjectCustomFields($projectId, $customFields);
 
             /**
+             * @param $filter
+             * @return mixed
+             */
+            abstract public function filterAvailable($filter);
+
+            /**
+             * @param $filter
+             * @param $uid
+             * @param $gid
+             * @return mixed
+             */
+            abstract public function addFilterAvailable($filter, $uid, $gid);
+
+            /**
+             * @param $filter_available_id
+             * @return mixed
+             */
+            abstract public function deleteFilterAvailable($filter_available_id);
+
+            /**
              * @param $projectId
              * @param $uid
              * @param $roleId
@@ -452,13 +472,6 @@
              * @return false|array
              */
             public function availableFilters() {
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
-                }
-
                 $filters = glob(__DIR__ . "/filters/*.json");
 
                 $list = [];
@@ -467,7 +480,7 @@
                     $filter = pathinfo($filter);
 
                     try {
-                        $f = $this->getFilter($filter["filename"]);
+                        $f = json_decode($this->getFilter($filter["filename"]), true);
                         $list[$filter["filename"]] = @$f["name"];
                     } catch (\Exception $e) {
                         $list[$filter["filename"]] = $filter["filename"];
@@ -487,13 +500,6 @@
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
                     return false;
-                }
-
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
                 }
 
                 $file = __DIR__ . "/filters/" . $filter . ".json";
@@ -516,13 +522,6 @@
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
                     return false;
-                }
-
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
                 }
 
                 $dir = __DIR__ . "/filters";
@@ -550,13 +549,6 @@
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
                     return false;
-                }
-
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
                 }
 
                 $dir = __DIR__ . "/filters";
@@ -595,8 +587,73 @@
 
             /**
              * @param $query
+             * @param $fields
+             * @param $sort
+             * @param $skip
+             * @param $limit
              * @return mixed
              */
-            abstract public function getIssues($query);
+            abstract public function getIssues($query, $fields, $sort, $skip, $limit);
+
+            /**
+             * @param $issue
+             * @param $comment
+             * @return mixed
+             */
+            abstract public function addComment($issue, $comment);
+
+            /**
+             * @param $issue
+             * @param $comment
+             * @return mixed
+             */
+            abstract public function modifyComment($issue, $comment);
+
+            /**
+             * @param $issue
+             * @param $comment
+             * @return mixed
+             */
+            abstract public function deleteComment($issue, $comment);
+
+            /**
+             * @param $issue
+             * @param $file
+             * @return mixed
+             */
+            abstract public function addAttachment($issue, $file);
+
+            /**
+             * @param $issue
+             * @param $file
+             * @return mixed
+             */
+            abstract public function deleteAttachment($issue, $file);
+            /**
+             * @return mixed
+             */
+            abstract public function whoAmI();
+
+            /**
+             * @return mixed
+             */
+            abstract public function myFilters();
+
+            /**
+             * @return mixed
+             */
+            abstract public function reCreateIndexes();
+
+            /**
+             * @param $issue
+             * @param $record
+             * @return mixed
+             */
+            abstract public function addJournalRecord($issue, $record);
+
+            /**
+             * @return mixed
+             */
+            abstract public function getJournal();
         }
     }

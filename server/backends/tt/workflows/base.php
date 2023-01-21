@@ -29,7 +29,6 @@
                     "fields" => [
                         "subject",
                         "description",
-                        "[cf]usr",
                         "attachments",
                         "tags"
                     ],
@@ -65,7 +64,7 @@
              */
             public function createIssue($issue)
             {
-                // TODO: Implement createIssue() method.
+                return $this->tt->createIssue($issue);
             }
         }
     }
