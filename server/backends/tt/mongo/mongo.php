@@ -55,7 +55,7 @@
                 $issue["issue_id"] = $acr . "-" . $aiid;
 
                 $attachments = @$issue["attachments"] ? : [];
-                $issue["attachments"] = [];
+                unset($issue["attachments"]);
 
                 $issue["created"] = time();
                 $issue["author"] = $this->login;
@@ -65,7 +65,7 @@
                         $files = loadBackend("files");
 
                         foreach ($attachments as $attachment) {
-                            $issue["attachments"][] = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                            $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                                 "date" => $attachment["date"],
                                 "type" => $attachment["type"],
                                 "issue" => true,
