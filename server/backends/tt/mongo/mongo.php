@@ -49,34 +49,42 @@
             public function createIssue($issue)
             {
                 $acr = $issue["project"];
-                $db = $this->dbName;
 
-                $aiid = $this->redis->incr("aiid_" . $acr);
-                $issue["issue_id"] = $acr . "-" . $aiid;
+                $me = $this->whoAmI();
 
-                $attachments = @$issue["attachments"] ? : [];
-                unset($issue["attachments"]);
+                if (@$me[$acr] >= 30) { // 30, 'participant.senior', can create issues
+                    $db = $this->dbName;
 
-                $issue["created"] = time();
-                $issue["author"] = $this->login;
+                    $aiid = $this->redis->incr("aiid_" . $acr);
+                    $issue["issue_id"] = $acr . "-" . $aiid;
 
-                try {
-                    if ($attachments) {
-                        $files = loadBackend("files");
+                    $attachments = @$issue["attachments"] ? : [];
+                    unset($issue["attachments"]);
 
-                        foreach ($attachments as $attachment) {
-                            $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                                "date" => $attachment["date"],
-                                "type" => $attachment["type"],
-                                "issue" => true,
-                                "issue_id" => $issue["issue_id"],
-                                "attachman" => $issue["author"],
-                            ]);
+                    $issue["created"] = time();
+                    $issue["author"] = $this->login;
+
+                    try {
+                        if ($attachments) {
+                            $files = loadBackend("files");
+
+                            foreach ($attachments as $attachment) {
+                                $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                                    "date" => $attachment["date"],
+                                    "type" => $attachment["type"],
+                                    "issue" => true,
+                                    "issue_id" => $issue["issue_id"],
+                                    "attachman" => $issue["author"],
+                                ]);
+                            }
                         }
-                    }
 
-                    return (string)$this->mongo->$db->issues->insertOne($issue)->getInsertedId();
-                } catch (\Exception $e) {
+                        return (string)$this->mongo->$db->issues->insertOne($issue)->getInsertedId();
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+                } else {
+                    setLastError("permissionDenied");
                     return false;
                 }
             }
