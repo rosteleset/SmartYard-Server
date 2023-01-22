@@ -36,7 +36,17 @@
                 $this->db = $db;
                 $this->redis = $redis;
                 $this->login = $login ? : ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
-                $this->uid = ($this->login === "-") ? -1 : loadBackend("users")->getUidByLogin($this->login);
+                switch ($this->login) {
+                    case "-":
+                        $this->uid = -1;
+                        break;
+                    case "admin":
+                        $this->uid = 0;
+                        break;
+                    default:
+                        $this->uid = loadBackend("users")->getUidByLogin($this->login);
+                        break;
+                }
             }
 
             /**
