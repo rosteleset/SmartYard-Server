@@ -21,7 +21,8 @@
         "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>",
         "phonePattern": "7 (###) ###-##-##",
         "tt_project": "TD",
-        "tt_workflow": "mobile"
+        "tt_workflow": "mobile",
+        "tt_user": "mobile"
     },
 
     "db": {

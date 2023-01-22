@@ -73,6 +73,7 @@
                                     "date" => $attachment["date"],
                                     "type" => $attachment["type"],
                                     "issue" => true,
+                                    "project" => $acr,
                                     "issue_id" => $issue["issue_id"],
                                     "attachman" => $issue["author"],
                                 ]);
