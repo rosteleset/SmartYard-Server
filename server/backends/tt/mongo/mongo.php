@@ -109,14 +109,8 @@
 
                 $me = $this->whoAmI();
 
-                $allProjects = $this->getProjects();
-
                 foreach ($me as $i => $r) {
-                    foreach ($allProjects as $a) {
-                        if ($a["projectId"] == $i) {
-                            $projects[] = $a["acronym"];
-                        }
-                    }
+                    $projects[] = $i;
                 }
 
                 if ($query) {
@@ -146,6 +140,8 @@
                     unset($x["_id"]);
                     $i[] = $x;
                 }
+
+                error_log(print_r($query, true));
 
                 return [
                     "issues" => $i,
