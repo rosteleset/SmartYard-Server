@@ -149,8 +149,6 @@
                     $i[] = $x;
                 }
 
-                error_log(print_r($query, true));
-
                 return [
                     "issues" => $i,
                     "skip" => $skip,
