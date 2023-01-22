@@ -1,0 +1,67 @@
+--- res_pjsip_session.c	2023-01-12 14:42:40.000000000 +0300
++++ res_pjsip_session.c.sendrecv	2023-01-21 07:38:18.528359671 +0300
+@@ -857,15 +857,7 @@
+ 
+ 			/* For backwards compatibility with the core the default audio stream is always sendrecv */
+ 			if (!ast_sip_session_is_pending_stream_default(session, stream) || strcmp(media, "audio")) {
+-				if (pjmedia_sdp_media_find_attr2(remote_stream, "sendonly", NULL)) {
+-					/* Stream state reflects our state of a stream, so in the case of
+-					 * sendonly and recvonly we store the opposite since that is what ours
+-					 * is.
+-					 */
+-					ast_stream_set_state(stream, AST_STREAM_STATE_RECVONLY);
+-				} else if (pjmedia_sdp_media_find_attr2(remote_stream, "recvonly", NULL)) {
+-					ast_stream_set_state(stream, AST_STREAM_STATE_SENDONLY);
+-				} else if (pjmedia_sdp_media_find_attr2(remote_stream, "inactive", NULL)) {
++				if (pjmedia_sdp_media_find_attr2(remote_stream, "inactive", NULL)) {
+ 					ast_stream_set_state(stream, AST_STREAM_STATE_INACTIVE);
+ 				} else {
+ 					ast_stream_set_state(stream, AST_STREAM_STATE_SENDRECV);
+@@ -984,11 +976,7 @@
+ 	 */
+ 	if (!ast_sip_session_is_pending_stream_default(session, asterisk_stream) || strcmp(media, "audio")) {
+ 		/* Determine the state of the stream based on our local SDP */
+-		if (pjmedia_sdp_media_find_attr2(local_stream, "sendonly", NULL)) {
+-			ast_stream_set_state(asterisk_stream, AST_STREAM_STATE_SENDONLY);
+-		} else if (pjmedia_sdp_media_find_attr2(local_stream, "recvonly", NULL)) {
+-			ast_stream_set_state(asterisk_stream, AST_STREAM_STATE_RECVONLY);
+-		} else if (pjmedia_sdp_media_find_attr2(local_stream, "inactive", NULL)) {
++		if (pjmedia_sdp_media_find_attr2(local_stream, "inactive", NULL)) {
+ 			ast_stream_set_state(asterisk_stream, AST_STREAM_STATE_INACTIVE);
+ 		} else {
+ 			ast_stream_set_state(asterisk_stream, AST_STREAM_STATE_SENDRECV);
+@@ -2658,15 +2646,7 @@
+ 
+ 		/* For backwards compatibility with the core the default audio stream is always sendrecv */
+ 		if (!ast_sip_session_is_pending_stream_default(session, stream) || strcmp(media, "audio")) {
+-			if (pjmedia_sdp_media_find_attr2(remote_stream, "sendonly", NULL)) {
+-				/* Stream state reflects our state of a stream, so in the case of
+-				 * sendonly and recvonly we store the opposite since that is what ours
+-				 * is.
+-				 */
+-				ast_stream_set_state(stream, AST_STREAM_STATE_RECVONLY);
+-			} else if (pjmedia_sdp_media_find_attr2(remote_stream, "recvonly", NULL)) {
+-				ast_stream_set_state(stream, AST_STREAM_STATE_SENDONLY);
+-			} else if (pjmedia_sdp_media_find_attr2(remote_stream, "inactive", NULL)) {
++			if (pjmedia_sdp_media_find_attr2(remote_stream, "inactive", NULL)) {
+ 				ast_stream_set_state(stream, AST_STREAM_STATE_INACTIVE);
+ 			} else {
+ 				ast_stream_set_state(stream, AST_STREAM_STATE_SENDRECV);
+@@ -5381,15 +5361,11 @@
+ 	 */
+ 	for (i = 0; i < offer->media_count; ++i) {
+ 		pjmedia_sdp_media *m = offer->media[i];
+-		pjmedia_sdp_attr *recvonly;
+ 		pjmedia_sdp_attr *inactive;
+-		pjmedia_sdp_attr *sendonly;
+ 
+-		recvonly = pjmedia_sdp_attr_find2(m->attr_count, m->attr, "recvonly", NULL);
+ 		inactive = pjmedia_sdp_attr_find2(m->attr_count, m->attr, "inactive", NULL);
+-		sendonly = pjmedia_sdp_attr_find2(m->attr_count, m->attr, "sendonly", NULL);
+-		if (recvonly || inactive || sendonly) {
+-			pjmedia_sdp_attr *to_remove = recvonly ?: inactive ?: sendonly;
++		if (inactive) {
++			pjmedia_sdp_attr *to_remove = inactive;
+ 			pjmedia_sdp_attr *sendrecv;
+ 
+ 			pjmedia_sdp_attr_remove(&m->attr_count, m->attr, to_remove);
