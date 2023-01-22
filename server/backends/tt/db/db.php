@@ -926,14 +926,6 @@
             /**
              * @inheritDoc
              */
-            public function searchIssues($by, $query)
-            {
-                // TODO: Implement searchIssues() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function addTag($projectId, $tag)
             {
                 if (!checkInt($projectId) || !checkStr($tag)) {
@@ -1041,14 +1033,10 @@
              */
             public function whoAmI()
             {
-                global $params;
-
-                $uid = $params["_uid"];
-
                 $groups = loadBackend("groups");
 
                 if ($groups) {
-                    $groups = $groups->getGroups($uid);
+                    $groups = $groups->getGroups($this->uid);
                 }
 
                 $projects = [];
@@ -1072,7 +1060,7 @@
                     }
                 }
 
-                $levels = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = $uid", false, [
+                $levels = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$this->uid}", false, [
                     "level" => "level",
                     "project_id" => "projectId",
                 ]);
@@ -1089,14 +1077,10 @@
              */
             public function myFilters()
             {
-                global $params;
-
-                $uid = $params["_uid"];
-
                 $groups = loadBackend("groups");
 
                 if ($groups) {
-                    $groups = $groups->getGroups($uid);
+                    $groups = $groups->getGroups($this->uid);
                 }
 
                 if ($groups) {
@@ -1108,11 +1092,11 @@
 
                     $g = implode(",", $g);
 
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid or gid in ($g)", false, [
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid} or gid in ($g)", false, [
                         "filter" => "filter",
                     ]);
                 } else {
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid", false, [
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid}", false, [
                         "filter" => "filter",
                     ]);
                 }

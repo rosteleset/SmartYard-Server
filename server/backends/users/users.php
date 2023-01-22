@@ -43,6 +43,12 @@
             abstract public function getUidByEMail($eMail);
 
             /**
+             * @param $login
+             * @return mixed
+             */
+            abstract public function getUidByLogin($login);
+
+            /**
              * add user
              *
              * @param string $login

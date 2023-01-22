@@ -94,7 +94,9 @@
              */
             public function deleteIssue($issue)
             {
-                // TODO: Implement deleteIssue() method.
+                $db = $this->dbName;
+
+                $this->mongo->$db->issues->deleteMany([]);
             }
 
             /**
@@ -242,7 +244,7 @@
             /**
              * @inheritDoc
              */
-            public function getJournal()
+            public function getJournal($issue)
             {
                 // TODO: Implement getJournal() method.
             }

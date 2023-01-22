@@ -8,7 +8,6 @@
 
         require_once "workflow.php";
 
-        use api\tt\customField;
         use backends\backend;
 
         /**
@@ -462,13 +461,6 @@
             abstract public function deleteTag($tagId);
 
             /**
-             * @param $by
-             * @param $query
-             * @return false|array
-             */
-            abstract public function searchIssues($by, $query);
-
-            /**
              * @return false|array
              */
             public function availableFilters() {
@@ -629,6 +621,7 @@
              * @return mixed
              */
             abstract public function deleteAttachment($issue, $file);
+
             /**
              * @return mixed
              */
@@ -654,6 +647,6 @@
             /**
              * @return mixed
              */
-            abstract public function getJournal();
+            abstract public function getJournal($issue);
         }
     }

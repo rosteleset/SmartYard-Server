@@ -267,12 +267,27 @@
                 ];
 
                 for ($i = 0; $i < count($c); $i++) {
-                    $del = $this->db->prepare($c[$i]);
-                    $del->execute();
-                    $n += $del->rowCount();
+                    $n += $this->db->modify($c[$i]);
                 }
 
                 return $n;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getUidByLogin($login)
+            {
+                try {
+                    $users = $this->db->get("select uid from core_users where login = :login");
+                    if (count($users)) {
+                        return (int)$users[0]["uid"];
+                    } else {
+                        return false;
+                    }
+                } catch (\Exception $e) {
+                    return false;
+                }
             }
         }
     }
