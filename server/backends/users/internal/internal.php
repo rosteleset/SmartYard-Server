@@ -278,7 +278,6 @@
              */
             public function getUidByLogin($login)
             {
-                error_log("\n\n\n$login\n\n");
                 try {
                     $users = $this->db->get("select uid from core_users where login = :login", [
                         "login" => $login,
