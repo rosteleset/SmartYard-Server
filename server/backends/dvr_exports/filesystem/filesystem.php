@@ -138,5 +138,29 @@
                     return 1;
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cron($part) {
+                if ($part == 'daily') {
+                    $dvrFileTtl = @$this->config["backends"]["dvr_exports"]["dvr_files_ttl"];
+                    $currentTime = time();
+                    $dvrExportsFolder = @$this->config["backends"]["dvr_exports"]["dvr_files_path"];
+                    $allFiles = scandir($dvrExportsFolder);
+                    foreach ($allFiles as $fileName) {
+                        if (is_file($dvrExportsFolder . "/" . $fileName) && ($fileName != ".") && ($fileName != "..")) {
+                            $fileTime = filemtime($dvrExportsFolder . $fileName);
+                            if (($currentTime - $fileTime) > $dvrFileTtl) {
+                                $pathToFile = "$dvrExportsFolder$fileName";
+                                unlink($pathToFile);
+                                $this->db->modify("delete from camera_records where filename = $fileName");
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
         }
     }
