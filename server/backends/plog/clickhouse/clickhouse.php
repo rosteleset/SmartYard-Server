@@ -617,6 +617,116 @@
                             }
                         }
 
+                        // Call processing for IS panel
+                        if ($unit == "is") { // TODO: check and refactor
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                ["Calling sip:", true, false, false, 1],
+                                ["Baresip event CALL_INCOMING", true, false, false, -1],
+                                ["Incoming call to sip:", true, false, false, -1],
+                                ["CMS handset is not connected for apartment ", true, false, false, 0],
+                                ["CMS handset call started for apartment ", true, false, false, 0],
+                                ["CMS handset talk started for apartment ", false, true, false, 0],
+                                ["Baresip event CALL_RINGING", true, false, false, 1],
+                                ["Baresip event CALL_ESTABLISHED", false, true, false, 0],
+                                ["Opening door by CMS handset for apartment ", false, false, true, 0],
+                                ["Open from handset!", false, false, true, 0],
+                                ["Open main door by DTMF", false, false, true, 1],
+                                ["Baresip event CALL_CLOSED", false, false, false, 0],
+                                ["SIP call done for apartment ", false, false, false, 1],
+                                ["All calls are done for apartment ", false, false, false, 1],
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_has_cms);
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
+
+                                $parts = explode("|", $pattern);
+                                $matched = true;
+                                foreach ($parts as $p) {
+                                    $matched = $matched && (strpos($msg, $p) !== false);
+                                }
+
+                                if ($matched) {
+                                    $now_has_cms = (strpos($msg, "CMS") != false);
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    } elseif ($now_call_from_panel < 0) {
+                                        $call_from_panel = -1;
+                                        break;
+                                    }
+
+                                    // Get flat number
+                                    if (strpos($pattern, "apartment") !== false) {
+                                        $p1 = strpos($msg, $pattern);
+                                        $p2 = strpos($msg, ".", $p1 + strlen($pattern));
+                                        if (!$p2)
+                                            $p2 = strpos($msg, ",", $p1 + strlen($pattern));
+                                        if (!$p2)
+                                            $p2 = strlen($msg);
+                                        $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern)));
+                                    }
+
+                                    // Get flat number and prefix
+                                    if (strpos($pattern, "Calling sip:") !== false) {
+                                        $p1 = strpos($msg, $pattern);
+                                        $p2 = strpos($msg, "@", $p1 + strlen($pattern));
+                                        $sip = substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern));
+                                        if (strlen($sip) < 5) {
+                                            // Call from panel with CMS, slave panel or gate panel without prefix
+                                            $p1 = strpos($msg, $pattern);
+                                            $p2 = strpos($msg, "@", $p1 + strlen($pattern));
+                                            $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern)));
+                                        } else {
+                                            // Call from gate panel with prefix
+                                            $prefix = intval(substr($sip, 0, 4));
+                                            $now_flat_number = intval(substr($sip, 4));
+                                        }
+                                    }
+
+                                    $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
+                                        || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
+                                        || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
+                                        || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+
+                                    if ($call_start_lost) {
+                                        break;
+                                    }
+
+                                    $event_data[self::COLUMN_DATE] = $row["date"];
+
+                                    if ($now_has_cms && !isset($has_cms)) {
+                                        $has_cms = true;
+                                    }
+                                    if (isset($now_call_id) && !isset($call_id)) {
+                                        $call_id = $now_call_id;
+                                    }
+                                    if (isset($now_sip_call_id) && !isset($sip_call_id)) {
+                                        $sip_call_id = $now_sip_call_id;
+                                    }
+                                    if (isset($now_flat_number) && !isset($flat_number)) {
+                                        $flat_number = $now_flat_number;
+                                    }
+                                    if (isset($now_flat_id) && !isset($flat_id)) {
+                                        $flat_id = $now_flat_id;
+                                    }
+                                    if ($flag_talk_started) {
+                                        $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                    }
+                                    if ($flag_door_opened) {
+                                        $event_data[self::COLUMN_OPENED] = 1;
+                                    }
+                                    if ($flag_start) {
+                                        $call_start_found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
                         if ($call_start_found) {
                             break;
                         }
@@ -654,8 +764,6 @@
                             continue;
                         }
                     }
-
-                    $this->getEntranceCount($event_data[self::COLUMN_FLAT_ID]);
 
                     //получение кадра события
                     $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DATE]);
