@@ -34,7 +34,7 @@
 
             public static function index() {
                 return [
-                    "GET" => "#common",
+                    "GET" => "#same(addresses,house,GET)",
                 ];
             }
         }

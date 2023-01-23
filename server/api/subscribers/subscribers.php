@@ -32,7 +32,7 @@ namespace api\subscribers
         public static function index()
         {
             return [
-                "GET" => "#same(subscribers,subscriber,GET)",
+                "GET" => "#same(addresses,house,GET)",
             ];
         }
     }
