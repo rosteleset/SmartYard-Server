@@ -297,11 +297,16 @@ function i18n(msg, ...args) {
     }
 }
 
+var separatorForNextItem = false;
+
 function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
-    if (separator && !mainSidebarFirst) {
+    if ((separator && !mainSidebarFirst) || separatorForNextItem) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
         `);
+
+        separator = false;
+        separatorForNextItem = false;
     }
 
     let [ route ] = hashParse();
@@ -316,6 +321,10 @@ function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
     `);
 
     mainSidebarFirst = false;
+
+    if (separator) {
+        separatorForNextItem = true;
+    }
 }
 
 function loadModule() {
