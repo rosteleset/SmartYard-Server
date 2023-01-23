@@ -83,9 +83,14 @@
 
                 if ($groups) {
                     if ($groups->capabilities()["mode"] === "rw") {
-                        return [ "GET", "PUT" ];
+                        return [
+                            "GET",
+                            "PUT"
+                        ];
                     } else {
-                        return [ "GET" ];
+                        return [
+                            "GET"
+                        ];
                     }
                 } else {
                     return [ ];

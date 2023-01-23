@@ -346,12 +346,14 @@ function loadModule() {
                 if (!lang.errors) {
                     lang.errors = {};
                 }
+                lang.errors = {...lang.errors, ...i18n.errors};
+                delete i18n.errors;
+            }
+            if (i18n.methods) {
                 if (!lang.methods) {
                     lang.methods = {};
                 }
-                lang.errors = {...lang.errors, ...i18n.errors};
                 lang.methods = {...lang.methods, ...i18n.methods};
-                delete i18n.errors;
                 delete i18n.methods;
             }
             lang[module] = i18n;
