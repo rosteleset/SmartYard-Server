@@ -159,6 +159,7 @@
                             }
                         }
                     }
+                    $this->db->modify("delete from camera_records where expire > :now",["now"=>time()]);
                 }
                 return true;
             }
