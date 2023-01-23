@@ -135,13 +135,6 @@
                     return false;
                 }
 
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
-                }
-
                 $file = __DIR__ . "/workflows/" . $workflow . ".php";
                 $customDir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $customDir . "/" . $workflow . ".php";
@@ -170,13 +163,6 @@
                     return false;
                 }
 
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
-                }
-
                 $dir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $dir . "/" . $workflow . ".php";
 
@@ -203,13 +189,6 @@
 
                 if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
                     return false;
-                }
-
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
                 }
 
                 $dir = __DIR__ . "/workflowsCustom";
