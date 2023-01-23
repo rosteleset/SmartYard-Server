@@ -205,7 +205,6 @@
 
         GET("tt", "myFilters").
         done(r_ => {
-            console.log(1);
             console.log(r_);
 
             let filters = `

@@ -369,7 +369,7 @@
             },
             columns: [
                 {
-                    title: group?i18n("groups.acronym"):i18n("users.login"),
+                    title: group?i18n("groups.group"):i18n("users.login"),
                     nowrap: true,
                 },
                 {
@@ -437,15 +437,19 @@
                                 cols: [
                                     {
                                         data: group?g[i].acronym:u[i].login,
+                                        nowrap: true,
                                     },
                                     {
                                         data: m[x[i][j]._aid].api_text,
+                                        nowrap: true,
                                     },
                                     {
                                         data: m[x[i][j][k]._aid].method_text,
+                                        nowrap: true,
                                     },
                                     {
                                         data: "<span class='text-monospace text-bold'>" + d + "</span>",
+                                        nowrap: true,
                                     },
                                 ],
                             });
