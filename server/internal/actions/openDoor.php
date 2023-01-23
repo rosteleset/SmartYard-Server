@@ -2,6 +2,17 @@
     /*Store events to db plog_door_open.
      "freeze motion detection" request for SRS
     */
+    if (!isset(
+        $postdata["date"],
+        $postdata["ip"],
+        $postdata["event"],
+        $postdata["door"],
+        $postdata["detail"],
+      )) {
+        response(406, "Invalid payload");
+        exit();
+    }
+
     [
         "date" => $date,
         "ip" => $ip,
@@ -15,7 +26,7 @@
         exit();
     }
 
-    //TODO: refactor events code?
+    //TODO: refactor events code ?!
     try {
         $events = @json_decode(file_get_contents(__DIR__ . "/../../syslog/utils/events.json"), true);
     } catch (Exception $e) {

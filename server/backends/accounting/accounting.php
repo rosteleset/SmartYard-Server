@@ -28,6 +28,12 @@
              * @return mixed
              */
             public abstract function raw($ip, $unit, $msg);
+
+            /**
+             * @param $query
+             * @return mixed
+             */
+            public abstract function get($query);
         }
     }
 

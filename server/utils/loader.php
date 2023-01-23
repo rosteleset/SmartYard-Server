@@ -7,7 +7,7 @@
      * @return false|object
      */
 
-    function loadBackend($backend) {
+    function loadBackend($backend, $login = false) {
         global $config, $db, $redis, $backends;
 
         if (@$backends[$backend]) {
@@ -21,7 +21,7 @@
                     if (file_exists(__DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php")) {
                         require_once __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
                         $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
-                        $backends[$backend] = new $className($config, $db, $redis);
+                        $backends[$backend] = new $className($config, $db, $redis, $login);
                         return $backends[$backend];
                     } else {
                         return false;

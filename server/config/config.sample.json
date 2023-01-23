@@ -9,16 +9,19 @@
     },
 
     "mobile": {
-        "web_server_base_path": "<!-- put base path to your static web-content here --!>",
+        "web_server_base_path": "https://example.com/static/",
         "payments": true,
-        "payments_url": "https://dm.lanta.me/app_static/payments/template.html",
+        "payments_url": "https://example.com/static/payments/template.html",
         "city_cams": false,
         "support_phone": "+7(4752)429999",
         "chat": true,
         "chat_url": "<!-- your chat url or remove it and use talkMe by default with options below--!>",
         "talk_me_id": "<!-- put your talkMe chat id here --!>",
         "talk_me_domain": "<!-- put your talkMe chat domain id here --!>",
-        "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>"
+        "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>",
+        "phonePattern": "7 (###) ###-##-##",
+        "tt_project": "TD",
+        "tt_workflow": "mobile"
     },
 
     "db": {
@@ -58,9 +61,7 @@
         },
 
         "files": {
-            "backend": "mongo",
-            "uri": "mongodb://username:password@host:27017",
-            "db": "rbt"
+            "backend": "mongo"
         },
 
         "addresses": {
@@ -81,24 +82,12 @@
 
         "isdn": {
             "backend": "lanta",
-            "flash_call_secret": "<-- your FlashCall secret here -->",
-            "sms_secret": "<-- your SMS secret here -->",
-            "common_secret": "<-- your common (PUSH and incoming call) secret here -->",
-            "confirm_method": "outgoingCall|smsCode|flashCall"
-        },
-
-        "providers": {
-            "backend": "lanta",
-            "providers.json": "<!-- path to providers.json -->"
+            "common_secret": "<-- your secret here -->",
+            "confirm_method": "outgoingCall"
         },
 
         "inbox": {
-            "backend": "clickhouse",
-            "username": "default",
-            "password": "qqq",
-            "host": "127.0.0.1",
-            "port": 8123,
-            "database": "default"
+            "backend": "clickhouse"
         },
 
         "plog": {
@@ -137,7 +126,7 @@
         "dvr_exports": {
             "backend": "filesystem",
             "dvr_files_path": "/path/to/dvr/files/on/your/local/filesystem",
-            "dvr_files_location_prefix": "https://your.server.hostname/path/to/temp/dvr/files/",
+            "dvr_files_location_prefix": "https://example.com/path/to/temp/dvr/files/",
             "dvr_files_ttl": 259200
         },
 
@@ -148,18 +137,11 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "<!-- your sipDomain or ip here -->",
-                    "sip_tcp_port": 5060,
-                    "sip_udp_port": 5060,
-                    "ami_port": 5038,
-                    "ami_password": "<!-- your very secret password here -->",
-                    "http_port": 8088,
-                    "ari_username": "domophone",
-                    "ari_password": "<!-- your very secret password here -->"
+                    "ip": "<!-- your asterisk external ip here -->"
                 }
             ],
             "stuns": [
-                "<!-- valid stun/turn server address here -->"
+                "stun:stun.l.google.com:19302"
             ]
         },
 

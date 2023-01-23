@@ -19,7 +19,8 @@ syslog.on("message", async ({date, host, message}) => {
         bwMsg.indexOf("DestroyClientSession") >= 0 ||
         bwMsg.indexOf("Request: /cgi-bin/images_cgi") >= 0 ||
         bwMsg.indexOf("GetOneVideoFrame") >= 0 ||
-        bwMsg.indexOf("SS_FLASH_SaveParam") >= 0 ||
+        bwMsg.indexOf("SS_FLASH") >= 0 ||
+        bwMsg.indexOf("SS_NOIPDDNS") >= 0 ||
         bwMsg.indexOf("Have Check Param Change Beg Save") >= 0 ||
         bwMsg.indexOf("Param Change Save To Disk Finish") >= 0 ||
         bwMsg.indexOf("User Mifare CLASSIC key") >= 0 ||
@@ -47,16 +48,16 @@ syslog.on("message", async ({date, host, message}) => {
     // Call in gate mode with prefix: potential white rabbit
     if (bwMsg.indexOf("Redirecting CMS call to") >= 0) {
         const dst = bwMsg.split("to")[1].split("for")[0];
-
         gateRabbits[host] = {
             ip: host,
-            prefix: parseInt(dst.substring(0, 4)),
-            apartment: parseInt(dst.substring(4)),
+            prefix: parseInt(dst.substring(0, 5)),
+            apartment: parseInt(dst.substring(5)),
         };
     }
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (bwMsg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
+        console.log(gateRabbits);
         if (gateRabbits[host]) {
             const { ip, prefix, apartment } = gateRabbits[host];
             await API.setRabbitGates({ date: now, ip, prefix, apartment });

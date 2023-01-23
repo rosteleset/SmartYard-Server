@@ -5,6 +5,7 @@
      */
 
     namespace backends\tt {
+
         /*
          * common part for all tt classes based on internal database storage for tt metadata
          */
@@ -250,7 +251,7 @@
                         ":workflow" => $workflow,
                     ]);
                 } catch (\Exception $e) {
-                    error_log(print_r($e, true));
+//                    error_log(print_r($e, true));
                 }
 
                 try {
@@ -933,14 +934,6 @@
             /**
              * @inheritDoc
              */
-            public function availableFilters()
-            {
-                return parent::availableFilters();
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function addTag($projectId, $tag)
             {
                 if (!checkInt($projectId) || !checkStr($tag)) {
@@ -1002,6 +995,134 @@
                 }
 
                 return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function filterAvailable($filter)
+            {
+                return $this->db->get("select filter_available_id, uid, gid from tt_filters_available order by uid, gid", false, [
+                    "filter_available_id" => "filterAvailableId",
+                    "uid" => "uid",
+                    "gid" => "gid",
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addFilterAvailable($filter, $uid, $gid)
+            {
+                $uid = $uid ? : null;
+                $gid = $gid ? : null;
+
+                return $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
+                    "filter" => $filter,
+                    "uid" => $uid,
+                    "gid" => $gid,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteFilterAvailable($filter_available_id)
+            {
+                $filter_available_id = (int)$filter_available_id;
+
+                return $this->db->modify("delete from tt_filters_available where filter_available_id = :filter_available_id", [
+                    "filter_available_id" => $filter_available_id,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function whoAmI()
+            {
+                global $params;
+
+                $uid = $params["_uid"];
+
+                $groups = loadBackend("groups");
+
+                if ($groups) {
+                    $groups = $groups->getGroups($uid);
+                }
+
+                $projects = [];
+
+                if ($groups) {
+                    $g = [];
+
+                    foreach ($groups as $group) {
+                        $g[] = $group["gid"];
+                    }
+
+                    $g = implode(",", $g);
+
+                    $groups = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g)", false, [
+                        "level" => "level",
+                        "project_id" => "projectId",
+                    ]);
+
+                    foreach ($groups as $group) {
+                        $projects[$group["projectId"]] = max(@(int)$projects[$group["projectId"]], (int)$group["level"]);
+                    }
+                }
+
+                $levels = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = $uid", false, [
+                    "level" => "level",
+                    "project_id" => "projectId",
+                ]);
+
+                foreach ($levels as $level) {
+                    $projects[$level["projectId"]] = min(@(int)$projects[$level["projectId"]], (int)$level["level"]);
+                }
+
+                return $projects;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function myFilters()
+            {
+                global $params;
+
+                $uid = $params["_uid"];
+
+                $groups = loadBackend("groups");
+
+                if ($groups) {
+                    $groups = $groups->getGroups($uid);
+                }
+
+                if ($groups) {
+                    $g = [];
+
+                    foreach ($groups as $group) {
+                        $g[] = $group["gid"];
+                    }
+
+                    $g = implode(",", $g);
+
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid or gid in ($g)", false, [
+                        "filter" => "filter",
+                    ]);
+                } else {
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid", false, [
+                        "filter" => "filter",
+                    ]);
+                }
+
+                $f = [];
+                foreach ($filters as $filter) {
+                    $f[] = $this->getFilter($filter["filter"]);
+                }
+
+                return $f;
             }
 
             /**

@@ -58,5 +58,13 @@
             {
                 syslog(LOG_INFO, "{$ip} [$unit] $msg");
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function get($query)
+            {
+                // TODO: Implement get() method.
+            }
         }
     }

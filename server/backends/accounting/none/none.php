@@ -29,5 +29,13 @@
             {
                 // do nothing
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function get($query)
+            {
+                // TODO: Implement get() method.
+            }
         }
     }

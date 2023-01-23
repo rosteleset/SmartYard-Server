@@ -133,27 +133,43 @@
                         }
                     }
 
-                    let workflowName = workflow;
+                    let workflowAlias = workflow;
                     for (let i in modules.tt.meta.workflowAliases) {
                         if (modules.tt.meta.workflowAliases[i].workflow == workflow) {
-                            workflowName = modules.tt.meta.workflowAliases[i].alias?$.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]"):workflow;
+                            workflowAlias = modules.tt.meta.workflowAliases[i].alias?$.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]"):workflow;
                         }
                     }
 
                     let fields = [
                         {
-                            id: "project",
+                            id: "projectName",
                             type: "text",
                             readonly: true,
                             title: i18n("tt.project"),
                             value: projectName,
                         },
                         {
+                            id: "projectAcronym",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.projectAcronym"),
+                            value: project.acronym,
+                            hidden: true,
+                        },
+                        {
+                            id: "workflowAlias",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.workflowAlias"),
+                            value: workflowAlias,
+                        },
+                        {
                             id: "workflow",
                             type: "text",
                             readonly: true,
                             title: i18n("tt.workflow"),
-                            value: workflowName,
+                            value: workflow,
+                            hidden: true,
                         },
                     ];
 
@@ -192,7 +208,7 @@
                         apply: "create",
                         fields: fields,
                         callback: function (result) {
-                            console.log(result);
+                            modules.tt.issue.doCreateIssue(result);
                         },
                         cancel: () => {
                             history.back();
@@ -206,6 +222,24 @@
                     history.back();
                 });
             });
+        });
+    },
+
+    doCreateIssue: function (issue) {
+        loadingStart();
+        delete issue.projectName;
+        delete issue.workflowAlias;
+        issue.project = issue.projectAcronym;
+        delete issue.projectAcronym;
+        POST("tt", "issue", false, {
+            issue: issue,
+        }).
+        done(result => {
+            console.log(result);
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
         });
     },
 

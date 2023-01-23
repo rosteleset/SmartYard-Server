@@ -23,9 +23,9 @@
     }
     $isdn = loadBackend("isdn");
 
-    if (strlen($user_phone) == 11 && ctype_digit($user_phone)) {
+    if (ctype_digit($user_phone)) {
 
-        $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "smsCode";
+        $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
         
         switch ($confirmMethod) {
             case 'outgoingCall':

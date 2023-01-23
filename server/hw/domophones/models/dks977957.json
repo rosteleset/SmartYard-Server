@@ -1,0 +1,23 @@
+{
+    "title": "BEWARD DKS977957",
+    "vendor": "BEWARD",
+    "model": "DKS977957",
+    "class": "dks977957",
+    "syslog": "beward",
+    "outputs": 2,
+    "camera": "beward",
+    "cmses": [
+        "bk-100",
+        "com-25u",
+        "com-100u",
+        "com-220u",
+        "factorial_8x8",
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105",
+        "kkm-108",
+        "km100-7.1",
+        "km100-7.5",
+        "kmg-100"
+    ]
+}

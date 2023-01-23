@@ -12,6 +12,25 @@
          */
         class clickhouse extends inbox
         {
+            private $clickhouse;
+
+            /**
+             * @inheritDoc
+             */
+            function __construct($config, $db, $redis)
+            {
+                parent::__construct($config, $db, $redis);
+
+                require_once __DIR__ . '/../../../utils/clickhouse.php';
+
+                $this->clickhouse = new \clickhouse(
+                    @$config['backends']['accounting']['host']?:'127.0.0.1',
+                    @$config['backends']['accounting']['port']?:8123,
+                    @$config['backends']['accounting']['username']?:'default',
+                    @$config['backends']['accounting']['password']?:'qqq',
+                    @$config['backends']['accounting']['database']?:'default'
+                );
+            }
 
             /**
              * @inheritDoc

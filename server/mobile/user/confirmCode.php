@@ -27,9 +27,9 @@
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");
     $households = loadBackend("households");
-    $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "smsCode";
+    $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
 
-    if (strlen($user_phone) == 11 && strlen($pin) == 4) {
+    if (strlen($pin) == 4) {
         $pinreq = $redis->get("userpin_".$user_phone);
 
         if ($confirmMethod == 'flashCall' && !$pinreq) {
