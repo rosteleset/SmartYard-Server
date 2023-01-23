@@ -138,5 +138,14 @@
     "filterWasChanged": "Фильтр изменен",
     "filterWasSaved": "Фильтр сохранен",
     "workflowWasSaved": "Рабочий процесс сохранен",
-    "issueId": "#"
+    "issueId": "#",
+    "methods": {
+        "tt": {
+            "_title": "Менеджер задач",
+            "tt": {
+                "_title": "Менеджер задач",
+                "GET": "Доступ"
+            }
+        }
+    }
 }
