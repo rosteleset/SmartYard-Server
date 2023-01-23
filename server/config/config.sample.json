@@ -20,7 +20,7 @@
         "talk_me_domain": "<!-- put your talkMe chat domain id here --!>",
         "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>",
         "phonePattern": "7 (###) ###-##-##",
-        "tt_project": "TD",
+        "tt_project": "TDM",
         "tt_workflow": "mobile",
         "tt_user": "mobile"
     },
