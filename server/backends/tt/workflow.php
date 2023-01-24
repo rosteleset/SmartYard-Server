@@ -80,7 +80,7 @@
             {
                 $ret = $this->sandbox->callFunction($name, ...$arguments);
 
-                if ($ret && $ret[0]) {
+                if (isset($ret) && is_array($ret) && isset($ret[0])) {
                     return $ret[0];
                 } else {
                     return $ret;
