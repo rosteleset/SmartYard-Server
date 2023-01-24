@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Готово</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=block" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/app_static/css/lanta.css?v=2">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="/app_static/js/lanta.js"></script>
+  <script>
+    showSuccess = function(amount) {
+      let realAmount = 0;
+      switch (amount) {
+        case '100':
+          realAmount = 100;
+          break;
+        case '200':
+          realAmount = 210;
+          break;
+        case '300':
+          realAmount = 330;
+          break;
+        default:
+          realAmount = 0;
+      } 
+
+      document.body.innerHTML = `<div class="popup-container">
+    <div class="title1">Готово!</div>
+    <div class="text14center">Обмен ` + amount + ` бонусов на ` + realAmount + ` рублей завершен</div>
+    <img src="/app_static/img/done_icon.png" class="img-big" >
+  </div>`;
+    }
+
+    showError = function(messsage) {
+      document.body.innerHTML = `<div class="popup-container">
+    <div class="title1">Ошибка!</div>
+    <div class="text14center">` + messsage + `</div>
+    <img src="/app_static/img/error_icon.png" class="img-big" >
+  </div>`;
+    }
+
+    window.onerror = function(error) {
+      alert(error); // Fire when errors occur. Just a test, not always do this.
+    }
+
+    window.onload = function() {
+
+    postLoadingStarted()
+    
+    let url = new URL(document.location.href);
+    let clientId = url.searchParams.get('client_id');
+    let amount = url.searchParams.get('amount');
+
+    $.ajax({
+    url: 'https://dm.lanta.me/api/pay/bonus',
+    headers: {
+        'Authorization':'Bearer ' + bearerToken(),
+        'Content-Type':'application/json',
+        'X-Dm-Api-Refresh':''
+    },
+    method: 'POST',
+    dataType: 'json',
+    data: JSON.stringify({
+        'clientId': clientId,
+        'amount': amount
+    }),
+    success: function(data){
+      window.userData = data;
+      showSuccess(amount);
+      postloadingFinished();
+      postRefreshParent(5);
+    },
+    error: function(error){
+      window.userError = error;
+      showError(error.responseJSON.message);
+      postloadingFinished();
+      postRefreshParent(5);
+    }
+  });
+
+    }
+  </script>
+</head>
+<body class="white-bg">
+</body>
+</html>

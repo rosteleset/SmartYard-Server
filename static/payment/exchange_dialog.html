@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Обменять</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=block" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../css/lanta.css?v=5">
+  
+</head>
+<body class="white-bg">
+<div class="popup-container" style="align-items: unset; margin: 44px 40px;">
+    <div>
+      <div style="margin: 0px 0px 0px; height: 44px; line-height: 44px; font-size: 24px; text-align: center; color: #28323e; font-weight: bold;">Пополнить баланс</div>
+      <div style="margin: 25px 0px 0px; font-size: 20px; text-align: center; color: #28323e; font-weight: bold;">№68992</div>
+      <div style="margin: 48px 0px 0px; font-size: 18px; color: #28323e; font-weight: 600;">Сумма:</div>
+      <div style="margin: 1px 0px 0px; font-size: 12px; color: #6d7a8a; font-weight: normal;">Рекомендуемая сумма - 480 рублей</div>
+    </div>
+    <div>
+      <form action="make_exchange.html" method="GET" target="_blank">
+        <div>
+          <input style="margin: 12px 0px 0px;height: 56px;width: 100%;font-size: 24px;font-family: Source Sans Pro;font-style: normal;font-weight: bold;" type="number" id="summ" name="amount" value="100.00">
+        </div>
+        <input type="hidden" id="client_id" name="client_id" value="">
+        <input style="margin: 20px 0px 0px;" type="submit" class="button" value="Оплатить">
+      </form>
+    </div>
+  </div>
+</body>
+</html>
