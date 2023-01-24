@@ -27,5 +27,6 @@ function doAction(issueId, action, fields)
 end
 
 function createIssue(issue)
---
+    utils.error_log(utils.print_r(issue))
+    return tt.createIssue(issue)
 end

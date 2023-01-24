@@ -52,7 +52,7 @@
 
                 $me = $this->whoAmI();
 
-                if (@$me[$acr] >= 30) { // 30, 'participant.senior', can create issues
+//                if (@$me[$acr] >= 30) { // 30, 'participant.senior', can create issues
                     $db = $this->dbName;
 
                     $aiid = $this->redis->incr("aiid_" . $acr);
@@ -80,14 +80,18 @@
                             }
                         }
 
-                        return (string)$this->mongo->$db->issues->insertOne($issue)->getInsertedId();
+                        if ($this->mongo->$db->issues->insertOne($issue)->getInsertedId()) {
+                            return $issue["issue_id"];
+                        } else {
+                            return false;
+                        }
                     } catch (\Exception $e) {
                         return false;
                     }
-                } else {
-                    setLastError("permissionDenied");
-                    return false;
-                }
+//                } else {
+//                    setLastError("permissionDenied");
+//                    return false;
+//                }
             }
 
             /**

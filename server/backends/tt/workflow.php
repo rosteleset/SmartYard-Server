@@ -20,6 +20,7 @@
              * @param object $redis link to redis object
              *
              * @return void
+             * @throws \Exception
              */
 
             public function __construct($config, $db, $redis, $tt, $workflow) {
@@ -29,7 +30,27 @@
                 $this->tt = $tt;
                 $this->sandbox = new \LuaSandbox;
 
-                $this->sandbox->registerLibrary("utils", [ "error_log" => "error_log" ]);
+                $this->sandbox->registerLibrary("utils", [
+                    "error_log" => function (...$args) {
+                        return [ error_log(...$args) ];
+                    },
+                    "print_r" => function (...$args) {
+                        $args[] = true;
+                        return [ print_r(...$args) ];
+                    },
+                ]);
+
+                $this->sandbox->registerLibrary("rbt", [
+                    "setLastError" => function (...$args) {
+                        return [ setLastError(...$args) ];
+                    },
+                ]);
+
+                $this->sandbox->registerLibrary("tt", [
+                    "createIssue" => function ($issue) {
+                        return [ $this->tt->createIssue($issue) ];
+                    },
+                ]);
 
                 $file = __DIR__ . "/workflows/" . $workflow . ".lua";
                 $customDir = __DIR__ . "/workflowsCustom";
@@ -46,13 +67,18 @@
                     $code = $this->sandbox->loadString(file_get_contents($file));
                     $code->call();
                 } else {
-                    throw new Exception("workflow not found");
+                    throw new \Exception("workflow not found");
                 }
             }
 
+            /**
+             * @param $name
+             * @param $arguments
+             * @return mixed
+             */
             public function __call($name, $arguments)
             {
-                $ret = @$this->sandbox->callFunction($name, ...$arguments);
+                $ret = $this->sandbox->callFunction($name, ...$arguments);
 
                 if ($ret && $ret[0]) {
                     return $ret[0];
