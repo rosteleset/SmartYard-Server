@@ -2489,6 +2489,10 @@
         always(loadingDone);
     },
 
+    renderCrontabs: function () {
+
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -2499,6 +2503,7 @@
             "projects",
             "workflows",
             "filters",
+            "crontabs",
             "statuses",
             "resolutions",
             "roles",
@@ -2536,6 +2541,10 @@
 
             case "filter":
                 modules.tt.settings.renderFilter(params["filter"]);
+                break;
+
+            case "crontabs":
+                modules.tt.settings.renderCrontabs();
                 break;
 
             case "statuses":

@@ -152,3 +152,15 @@ CREATE UNIQUE INDEX tt_filters_available_uniq on tt_filters_available (filter, u
 CREATE INDEX tt_filters_available_filter on tt_filters_available (filter);
 CREATE INDEX tt_filters_available_uid on tt_filters_available (uid);
 CREATE INDEX tt_filters_available_gid on tt_filters_available (gid);
+
+-- crons
+CREATE TABLE tt_cronworks
+(
+    cronwork_id serial not null primary key,
+    crontab character varying,
+    filter character varying,
+    uid integer,
+    action character varying
+);
+CREATE UNIQUE INDEX tt_cronworks_uniq on tt_cronworks(filter, uid, action);
+CREATE INDEX tt_cronworks_crontab on tt_cronworks(crontab);

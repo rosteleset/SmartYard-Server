@@ -139,6 +139,7 @@
     "filterWasSaved": "Фильтр сохранен",
     "workflowWasSaved": "Рабочий процесс сохранен",
     "issueId": "#",
+    "crontabs": "Расписание",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
