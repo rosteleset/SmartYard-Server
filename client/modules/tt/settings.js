@@ -2493,6 +2493,10 @@
 
     },
 
+    renderAutoclean: function () {
+
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -2504,6 +2508,7 @@
             "workflows",
             "filters",
             "crontabs",
+            "autoclean",
             "statuses",
             "resolutions",
             "roles",
@@ -2545,6 +2550,10 @@
 
             case "crontabs":
                 modules.tt.settings.renderCrontabs();
+                break;
+
+            case "autoclean":
+                modules.tt.settings.renderAutoclean();
                 break;
 
             case "statuses":

@@ -140,6 +140,7 @@
     "workflowWasSaved": "Рабочий процесс сохранен",
     "issueId": "#",
     "crontabs": "Расписание",
+    "autoclean": "Автоочистка",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
