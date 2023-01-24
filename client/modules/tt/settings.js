@@ -1745,7 +1745,7 @@
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
-            editor.session.setMode("ace/mode/php");
+            editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);

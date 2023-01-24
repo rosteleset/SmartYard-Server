@@ -27,7 +27,7 @@
                 $this->db = $db;
                 $this->redis = $redis;
                 $this->tt = $tt;
-                $sandbox = new LuaSandbox;
+                $this->sandbox = new \LuaSandbox;
 
                 $file = __DIR__ . "/workflows/" . $workflow . ".lua";
                 $customDir = __DIR__ . "/workflowsCustom";
@@ -41,9 +41,8 @@
                 }
 
                 if ($file) {
-                    $sandbox->loadString(file_get_contents($file))->call();
-                    $sandbox->call();
-                    $this->sandbox = $sandbox;
+                    $code = $this->sandbox->loadString(file_get_contents($file));
+                    $code->call();
                 } else {
                     throw new Exception("workflow not found");
                 }
@@ -55,7 +54,7 @@
              */
             public function initProject($projectId)
             {
-
+                return $this->sandbox->callFunction("initProject", $projectId);
             }
 
             /**
@@ -63,7 +62,7 @@
              */
             public function createIssueTemplate()
             {
-
+                return $this->sandbox->callFunction("createIssueTemplate")[0];
             }
 
             /**
