@@ -21,17 +21,10 @@
             /**
              * get available workflows
              *
-             * @return false|array
+             * @return array
              */
 
             public function getWorkflows() {
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
-                }
-
                 $base = __DIR__ . "/workflows/";
                 $dir = scandir($base);
 
@@ -39,7 +32,7 @@
                 foreach ($dir as $f) {
                     if ($f != "." && $f != ".." && file_exists($base . $f)) {
                         $f = pathinfo($f);
-                        if ($f['extension'] === "php") {
+                        if ($f['extension'] === "lua") {
                             $w[$f['filename']] = 'builtIn';
                         }
                     }
@@ -53,7 +46,7 @@
                     foreach ($dir as $f) {
                         if ($f != "." && $f != ".." && file_exists($base . $f)) {
                             $f = pathinfo($f);
-                            if ($f['extension'] === "php") {
+                            if ($f['extension'] === "lua") {
                                 $w[$f['filename']] = 'custom';
                             }
                         }
@@ -77,18 +70,6 @@
              */
 
             public function loadWorkflow($workflow) {
-
-                function workflow($self, $config, $db, $redis, $workflow) {
-                    if (class_exists("tt\\workflow\\" . $workflow)) {
-                        $className = "tt\\workflow\\" . $workflow;
-                        $w = new $className($config, $db, $redis, $self);
-                        $self->workflows[$workflow] = $w;
-                        return $w;
-                    } else {
-                        return false;
-                    }
-                }
-
                 $workflow = trim($workflow);
 
                 if (array_key_exists($workflow, $this->workflows)) {
@@ -99,25 +80,9 @@
                     return false;
                 }
 
-                $class = get_class($this);
-                $ns = __NAMESPACE__;
-
-                if (strpos($class, $ns) === 0) {
-                    $class = substr($class, strlen($ns) + 1);
-                }
-
-                $file = __DIR__ . "/workflows/" . $workflow . ".php";
-                $customDir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $customDir . "/" . $workflow . ".php";
-
-                if (file_exists($customDir) && file_exists($fileCustom)) {
-                    require_once $fileCustom;
-                    return workflow($this, $this->config, $this->db, $this->redis, $workflow);
-                } else
-                if (file_exists($file)) {
-                    require_once $file;
-                    return workflow($this, $this->config, $this->db, $this->redis, $workflow);
-                } else {
+                try {
+                    return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow);
+                } catch (\Exception $e) {
                     return false;
                 }
             }
@@ -135,9 +100,9 @@
                     return false;
                 }
 
-                $file = __DIR__ . "/workflows/" . $workflow . ".php";
+                $file = __DIR__ . "/workflows/" . $workflow . ".lua";
                 $customDir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $customDir . "/" . $workflow . ".php";
+                $fileCustom = $customDir . "/" . $workflow . ".lua";
 
                 if (file_exists($customDir) && file_exists($fileCustom)) {
                     return file_get_contents($fileCustom);
@@ -145,7 +110,7 @@
                 if (file_exists($file)) {
                     return file_get_contents($file);
                 } else {
-                    return "<?php\n\n";
+                    return "";
                 }
             }
 
@@ -164,7 +129,7 @@
                 }
 
                 $dir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $dir . "/" . $workflow . ".php";
+                $fileCustom = $dir . "/" . $workflow . ".lua";
 
                 try {
                     if (!file_exists($dir)) {
@@ -192,7 +157,7 @@
                 }
 
                 $dir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $dir . "/" . $workflow . ".php";
+                $fileCustom = $dir . "/" . $workflow . ".lua";
 
                 try {
                     if (file_exists($fileCustom)) {

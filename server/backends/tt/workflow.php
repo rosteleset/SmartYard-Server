@@ -2,7 +2,7 @@
 
     namespace tt\workflow {
 
-        abstract class workflow {
+        class workflow {
 
             /**
              * @var object $config link to config structute
@@ -10,7 +10,7 @@
              * @var object $redis link to redis object
              */
 
-            protected $config, $db, $redis, $tt;
+            protected $config, $db, $redis, $tt, $sandbox;
 
             /**
              * default constructor
@@ -22,36 +22,68 @@
              * @return void
              */
 
-            public function __construct($config, $db, $redis, $tt) {
+            public function __construct($config, $db, $redis, $tt, $workflow) {
                 $this->config = $config;
                 $this->db = $db;
                 $this->redis = $redis;
                 $this->tt = $tt;
+                $sandbox = new LuaSandbox;
+
+                $file = __DIR__ . "/workflows/" . $workflow . ".lua";
+                $customDir = __DIR__ . "/workflowsCustom";
+                $fileCustom = $customDir . "/" . $workflow . ".lua";
+
+                if (file_exists($customDir) && file_exists($fileCustom)) {
+                    $file = $fileCustom;
+                } else
+                if (!file_exists($file)) {
+                    $file = false;
+                }
+
+                if ($file) {
+                    $sandbox->loadString(file_get_contents($file))->call();
+                    $sandbox->call();
+                    $this->sandbox = $sandbox;
+                } else {
+                    throw new Exception("workflow not found");
+                }
             }
 
             /**
              * @param $projectId
              * @return boolean
              */
-            abstract public function initProject($projectId);
+            public function initProject($projectId)
+            {
+
+            }
 
             /**
              * @return false|array
              */
-            abstract public function createIssueTemplate();
+            public function createIssueTemplate()
+            {
+
+            }
 
             /**
              * @param $issueId
              * @return false|array
              */
-            abstract public function availableActions($issueId);
+            public function availableActions($issueId)
+            {
+
+            }
 
             /**
              * @param $issueId
              * @param $action
              * @return false|array
              */
-            abstract public function actionTemplate($issueId, $action);
+            public function actionTemplate($issueId, $action)
+            {
+
+            }
 
             /**
              * @param $issueId
@@ -59,12 +91,18 @@
              * @param $fields
              * @return boolean
              */
-            abstract public function doAction($issueId, $action, $fields);
+            public function doAction($issueId, $action, $fields)
+            {
+
+            }
 
             /**
              * @param $issue
              * @return false|string
              */
-            abstract public function createIssue($issue);
+            public function createIssue($issue)
+            {
+
+            }
         }
     }
