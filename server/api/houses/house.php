@@ -41,8 +41,7 @@
             public static function index()
             {
                 return [
-                    "GET",
-                    "PUT", // fake method, only for "same" permissions
+                    "GET" => "#same(addresses,house,GET)",
                 ];
             }
         }

@@ -58,7 +58,7 @@
             for (let i in modules.permissions.groups) {
                 g.push({
                     value: modules.permissions.groups[i].gid,
-                    text: modules.permissions.groups[i].acronym,
+                    text: modules.permissions.groups[i].name ? modules.permissions.groups[i].name : modules.permissions.groups[i].acronym,
                 });
             }
         } else {
@@ -88,11 +88,12 @@
             footer: true,
             borderless: true,
             topApply: true,
+            size: "lg",
             fields: [
                 {
                     id: group?"gid":"uid",
                     type: "select2",
-                    title: group?i18n("groups.acronym"):i18n("users.login"),
+                    title: group?i18n("groups.group"):i18n("users.login"),
                     options: group?g:u,
                 },
                 {
@@ -198,18 +199,19 @@
         }).show();
     },
 
-    editRights: function (group, acronym_login, api_name, method_name, allow, deny, options, guid, api, method) {
+    editRights: function (group, group_login, api_name, method_name, allow, deny, options, guid, api, method) {
         cardForm({
             title: i18n("permissions.edit"),
             footer: true,
             borderless: true,
             topApply: true,
+            size: "lg",
             fields: [
                 {
                     id: group?"gid":"uid",
                     type: "text",
-                    title: group?i18n("groups.acronym"):i18n("users.login"),
-                    value: acronym_login,
+                    title: group?i18n("groups.group"):i18n("users.login"),
+                    value: group_login,
                     readonly: true,
                 },
                 {
@@ -348,7 +350,7 @@
                 }
                 modules.permissions.editRights(
                     group,
-                    group?g[uid[0]].acronym:u[uid[0]].login,
+                    group?(g[uid[0]].name ? g[uid[0]].name : g[uid[0]].acronym):u[uid[0]].login,
                     (lang.methods[uid[1]] && lang.methods[uid[1]]["_title"])?lang.methods[uid[1]]["_title"]:uid[1],
                     (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]])?lang.methods[uid[1]][uid[2]]["_title"]:uid[2],
                     a,
@@ -369,7 +371,7 @@
             },
             columns: [
                 {
-                    title: group?i18n("groups.acronym"):i18n("users.login"),
+                    title: group?i18n("groups.group"):i18n("users.login"),
                     nowrap: true,
                 },
                 {
@@ -436,16 +438,20 @@
                                 uid: i.toString() + '-' + j + '-' + k,
                                 cols: [
                                     {
-                                        data: group?g[i].acronym:u[i].login,
+                                        data: group?(g[i].name ? g[i].name : g[i].acronym):u[i].login,
+                                        nowrap: true,
                                     },
                                     {
                                         data: m[x[i][j]._aid].api_text,
+                                        nowrap: true,
                                     },
                                     {
                                         data: m[x[i][j][k]._aid].method_text,
+                                        nowrap: true,
                                     },
                                     {
                                         data: "<span class='text-monospace text-bold'>" + d + "</span>",
+                                        nowrap: true,
                                     },
                                 ],
                             });

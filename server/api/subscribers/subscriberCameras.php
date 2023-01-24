@@ -37,8 +37,8 @@
             public static function index()
             {
                 return [
-                    "POST" => "#same(houses,house,PUT)",
-                    "DELETE" => "#same(houses,house,PUT)",
+                    "POST" => "#same(addresses,house,POST)",
+                    "DELETE" => "#same(addresses,house,DELETE)",
                 ];
             }
         }

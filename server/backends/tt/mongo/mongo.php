@@ -49,34 +49,47 @@
             public function createIssue($issue)
             {
                 $acr = $issue["project"];
-                $db = $this->dbName;
 
-                $aiid = $this->redis->incr("aiid_" . $acr);
-                $issue["issue_id"] = $acr . "-" . $aiid;
+                $me = $this->whoAmI();
 
-                $attachments = @$issue["attachments"] ? : [];
-                $issue["attachments"] = [];
+                if (@$me[$acr] >= 30) { // 30, 'participant.senior', can create issues
+                    $db = $this->dbName;
 
-                $issue["created"] = time();
-                $issue["author"] = $this->login;
+                    $aiid = $this->redis->incr("aiid_" . $acr);
+                    $issue["issue_id"] = $acr . "-" . $aiid;
 
-                try {
-                    if ($attachments) {
-                        $files = loadBackend("files");
+                    $attachments = @$issue["attachments"] ? : [];
+                    unset($issue["attachments"]);
 
-                        foreach ($attachments as $attachment) {
-                            $issue["attachments"][] = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                                "date" => $attachment["date"],
-                                "type" => $attachment["type"],
-                                "issue" => true,
-                                "issue_id" => $issue["issue_id"],
-                                "attachman" => $issue["author"],
-                            ]);
+                    $issue["created"] = time();
+                    $issue["author"] = $this->login;
+
+                    try {
+                        if ($attachments) {
+                            $files = loadBackend("files");
+
+                            foreach ($attachments as $attachment) {
+                                $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                                    "date" => $attachment["date"],
+                                    "type" => $attachment["type"],
+                                    "issue" => true,
+                                    "project" => $acr,
+                                    "issue_id" => $issue["issue_id"],
+                                    "attachman" => $issue["author"],
+                                ]);
+                            }
                         }
-                    }
 
-                    return (string)$this->mongo->$db->issues->insertOne($issue)->getInsertedId();
-                } catch (\Exception $e) {
+                        if ($this->mongo->$db->issues->insertOne($issue)->getInsertedId()) {
+                            return $issue["issue_id"];
+                        } else {
+                            return false;
+                        }
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+                } else {
+                    setLastError("permissionDenied");
                     return false;
                 }
             }
@@ -94,7 +107,9 @@
              */
             public function deleteIssue($issue)
             {
-                // TODO: Implement deleteIssue() method.
+                $db = $this->dbName;
+
+                $this->mongo->$db->issues->deleteMany([]);
             }
 
             /**
@@ -107,14 +122,8 @@
 
                 $me = $this->whoAmI();
 
-                $allProjects = $this->getProjects();
-
                 foreach ($me as $i => $r) {
-                    foreach ($allProjects as $a) {
-                        if ($a["projectId"] == $i) {
-                            $projects[] = $a["acronym"];
-                        }
-                    }
+                    $projects[] = $i;
                 }
 
                 if ($query) {
@@ -242,7 +251,7 @@
             /**
              * @inheritDoc
              */
-            public function getJournal()
+            public function getJournal($issue)
             {
                 // TODO: Implement getJournal() method.
             }

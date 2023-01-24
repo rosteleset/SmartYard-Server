@@ -926,14 +926,6 @@
             /**
              * @inheritDoc
              */
-            public function searchIssues($by, $query)
-            {
-                // TODO: Implement searchIssues() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function addTag($projectId, $tag)
             {
                 if (!checkInt($projectId) || !checkStr($tag)) {
@@ -1041,14 +1033,10 @@
              */
             public function whoAmI()
             {
-                global $params;
-
-                $uid = $params["_uid"];
-
                 $groups = loadBackend("groups");
 
                 if ($groups) {
-                    $groups = $groups->getGroups($uid);
+                    $groups = $groups->getGroups($this->uid);
                 }
 
                 $projects = [];
@@ -1062,23 +1050,31 @@
 
                     $g = implode(",", $g);
 
-                    $groups = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g)", false, [
+                    $groups = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g)", false, [
                         "level" => "level",
-                        "project_id" => "projectId",
+                        "acronym" => "acronym",
                     ]);
 
                     foreach ($groups as $group) {
-                        $projects[$group["projectId"]] = max(@(int)$projects[$group["projectId"]], (int)$group["level"]);
+                        if (@(int)$projects[$group["acronym"]]) {
+                            $projects[$group["acronym"]] = max(@(int)$projects[$group["acronym"]], (int)$group["level"]);
+                        } else {
+                            $projects[$group["acronym"]] = (int)$group["level"];
+                        }
                     }
                 }
 
-                $levels = $this->db->get("select project_id, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = $uid", false, [
+                $levels = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$this->uid}", false, [
                     "level" => "level",
-                    "project_id" => "projectId",
+                    "acronym" => "acronym",
                 ]);
 
                 foreach ($levels as $level) {
-                    $projects[$level["projectId"]] = min(@(int)$projects[$level["projectId"]], (int)$level["level"]);
+                    if (@(int)$projects[$level["acronym"]]) {
+                        $projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
+                    } else {
+                        $projects[$level["acronym"]] = (int)$level["level"];
+                    }
                 }
 
                 return $projects;
@@ -1089,14 +1085,10 @@
              */
             public function myFilters()
             {
-                global $params;
-
-                $uid = $params["_uid"];
-
                 $groups = loadBackend("groups");
 
                 if ($groups) {
-                    $groups = $groups->getGroups($uid);
+                    $groups = $groups->getGroups($this->uid);
                 }
 
                 if ($groups) {
@@ -1108,11 +1100,11 @@
 
                     $g = implode(",", $g);
 
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid or gid in ($g)", false, [
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid} or gid in ($g)", false, [
                         "filter" => "filter",
                     ]);
                 } else {
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = $uid", false, [
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid}", false, [
                         "filter" => "filter",
                     ]);
                 }

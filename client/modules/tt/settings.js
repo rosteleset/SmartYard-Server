@@ -1745,7 +1745,7 @@
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
-            editor.session.setMode("ace/mode/php");
+            editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
@@ -2489,6 +2489,14 @@
         always(loadingDone);
     },
 
+    renderCrontabs: function () {
+
+    },
+
+    renderAutoclean: function () {
+
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -2499,6 +2507,8 @@
             "projects",
             "workflows",
             "filters",
+            "crontabs",
+            "autoclean",
             "statuses",
             "resolutions",
             "roles",
@@ -2536,6 +2546,14 @@
 
             case "filter":
                 modules.tt.settings.renderFilter(params["filter"]);
+                break;
+
+            case "crontabs":
+                modules.tt.settings.renderCrontabs();
+                break;
+
+            case "autoclean":
+                modules.tt.settings.renderAutoclean();
                 break;
 
             case "statuses":

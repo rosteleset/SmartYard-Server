@@ -24,7 +24,7 @@
 
                 $id = $tt->loadWorkflow($params["issue"]["workflow"])->createIssue($params["issue"]);
 
-                return api::ANSWER($id, ($id !== false)?false:"notAcceptable");
+                return api::ANSWER($id, ($id !== false)?"id":false);
             }
 
             public static function PUT($params) {

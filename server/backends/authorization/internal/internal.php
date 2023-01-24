@@ -231,7 +231,7 @@
                             ", \PDO::FETCH_ASSOC)->fetchAll();
 
                             foreach ($same as $a) {
-                                if ($r[$a["permissions_same"]]) {
+                                if (@$r[$a["permissions_same"]]) {
                                     $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
                                 }
                             }
