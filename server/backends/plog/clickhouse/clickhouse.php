@@ -460,7 +460,6 @@
                     );
                     $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
 
-                    unset($has_cms);
                     $call_id = (int)$row['call_id'];
                     if ($call_id == 0) {
                         unset($call_id);
@@ -514,7 +513,6 @@
                                 ["Send DTMF ", false, false, false, -1],
                             ];
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
-                                unset($now_has_cms);
                                 unset($now_flat_id);
                                 unset($now_flat_number);
                                 unset($now_call_id);
@@ -527,7 +525,6 @@
                                 }
 
                                 if ($matched) {
-                                    $now_has_cms = (strpos($msg, 'CMS') != false);
                                     if ($now_call_from_panel > 0) {
                                         $call_from_panel = 1;
                                     } elseif ($now_call_from_panel < 0) {
@@ -588,9 +585,6 @@
 
                                     $event_data[self::COLUMN_DATE] = $row['date'];
 
-                                    if ($now_has_cms && !isset($has_cms)) {
-                                        $has_cms = true;
-                                    }
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
                                     }
@@ -618,7 +612,7 @@
                         }
 
                         // Call processing for IS panel
-                        if ($unit == "is") { // TODO: check and refactor
+                        if ($unit == "is") {
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
                                 ["Calling sip:", true, false, false, 1],
@@ -638,20 +632,13 @@
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
-                                unset($now_has_cms);
                                 unset($now_flat_id);
                                 unset($now_flat_number);
                                 unset($now_call_id);
                                 unset($now_sip_call_id);
 
-                                $parts = explode("|", $pattern);
-                                $matched = true;
-                                foreach ($parts as $p) {
-                                    $matched = $matched && (strpos($msg, $p) !== false);
-                                }
-
-                                if ($matched) {
-                                    $now_has_cms = (strpos($msg, "CMS") != false);
+                                if (strpos($msg, $pattern) !== false) {
+                                    // Check if call started from this panel
                                     if ($now_call_from_panel > 0) {
                                         $call_from_panel = 1;
                                     } elseif ($now_call_from_panel < 0) {
@@ -698,9 +685,6 @@
 
                                     $event_data[self::COLUMN_DATE] = $row["date"];
 
-                                    if ($now_has_cms && !isset($has_cms)) {
-                                        $has_cms = true;
-                                    }
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
                                     }
