@@ -29,6 +29,8 @@
                 $this->tt = $tt;
                 $this->sandbox = new \LuaSandbox;
 
+                $this->sandbox->registerLibrary("utils", [ "error_log" => "error_log" ]);
+
                 $file = __DIR__ . "/workflows/" . $workflow . ".lua";
                 $customDir = __DIR__ . "/workflowsCustom";
                 $fileCustom = $customDir . "/" . $workflow . ".lua";
@@ -50,9 +52,7 @@
 
             public function __call($name, $arguments)
             {
-                error_log("Calling lua method '$name' " . implode(', ', $arguments));
-
-                $ret = $this->sandbox->callFunction($name, $arguments);
+                $ret = @$this->sandbox->callFunction($name, ...$arguments);
 
                 if ($ret && $ret[0]) {
                     return $ret[0];

@@ -1,5 +1,6 @@
 function initProject(projectId)
-    return true;
+    utils.error_log(projectId)
+    return projectId
 end
 
 function createIssueTemplate()
