@@ -48,60 +48,17 @@
                 }
             }
 
-            /**
-             * @param $projectId
-             * @return boolean
-             */
-            public function initProject($projectId)
+            public function __call($name, $arguments)
             {
-                return $this->sandbox->callFunction("initProject", $projectId);
-            }
+                error_log("Calling lua method '$name' " . implode(', ', $arguments));
 
-            /**
-             * @return false|array
-             */
-            public function createIssueTemplate()
-            {
-                return $this->sandbox->callFunction("createIssueTemplate")[0];
-            }
+                $ret = $this->sandbox->callFunction($name, $arguments);
 
-            /**
-             * @param $issueId
-             * @return false|array
-             */
-            public function availableActions($issueId)
-            {
-
-            }
-
-            /**
-             * @param $issueId
-             * @param $action
-             * @return false|array
-             */
-            public function actionTemplate($issueId, $action)
-            {
-
-            }
-
-            /**
-             * @param $issueId
-             * @param $action
-             * @param $fields
-             * @return boolean
-             */
-            public function doAction($issueId, $action, $fields)
-            {
-
-            }
-
-            /**
-             * @param $issue
-             * @return false|string
-             */
-            public function createIssue($issue)
-            {
-
+                if ($ret && $ret[0]) {
+                    return $ret[0];
+                } else {
+                    return $ret;
+                }
             }
         }
     }
