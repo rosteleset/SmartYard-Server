@@ -52,7 +52,7 @@
 
                 $me = $this->whoAmI();
 
-//                if (@$me[$acr] >= 30) { // 30, 'participant.senior', can create issues
+                if (@$me[$acr] >= 30) { // 30, 'participant.senior', can create issues
                     $db = $this->dbName;
 
                     $aiid = $this->redis->incr("aiid_" . $acr);
@@ -88,10 +88,10 @@
                     } catch (\Exception $e) {
                         return false;
                     }
-//                } else {
-//                    setLastError("permissionDenied");
-//                    return false;
-//                }
+                } else {
+                    setLastError("permissionDenied");
+                    return false;
+                }
             }
 
             /**
