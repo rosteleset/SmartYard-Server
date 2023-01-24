@@ -4,7 +4,7 @@
      * crontab api
      */
 
-    namespace api\crontab {
+    namespace api\tt {
 
         use api\api;
 
