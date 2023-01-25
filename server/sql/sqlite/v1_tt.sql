@@ -43,12 +43,15 @@ INSERT INTO tt_issue_statuses (status, status_display) values ('closed', '');
 CREATE TABLE tt_issue_resolutions
 (
     issue_resolution_id integer not null primary key autoincrement,
-    resolution text
+    resolution text,
+    alias text,
+    protected integer default 0
 );
-CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(resolution);
-INSERT INTO tt_issue_resolutions (resolution) values ('fixed');
-INSERT INTO tt_issue_resolutions (resolution) values ('can''t fix');
-INSERT INTO tt_issue_resolutions (resolution) values ('duplicate');
+CREATE UNIQUE INDEX tt_issue_resolutions_uniq1 on tt_issue_resolutions(resolution);
+CREATE UNIQUE INDEX tt_issue_resolutions_uniq2 on tt_issue_resolutions(alias);
+INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('fixed', 'fixed', 1);
+INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('can''t fix', 'can''t fix', 1);
+INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('duplicate', 'duplicate', 1);
 
 -- projects <-> resolutions
 CREATE TABLE tt_projects_resolutions
@@ -164,10 +167,3 @@ CREATE TABLE tt_cronworks
 );
 CREATE UNIQUE INDEX tt_cronworks_uniq on tt_cronworks(filter, uid, action);
 CREATE INDEX tt_cronworks_crontab on tt_cronworks(crontab);
-
--- autodelete issues
-CREATE TABLE tt_autoclean
-(
-    autoclean_id integer not null primary key autoincrement,
-    filter text
-);

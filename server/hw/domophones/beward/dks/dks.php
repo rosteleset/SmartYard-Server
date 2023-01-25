@@ -520,13 +520,13 @@
             }
 
             public function set_admin_password(string $password) {
-                $this->api_call('webs/umanageCfgEx', [
-                    'uflag' => 0,
-                    'uname' => $this->user,
-                    'passwd' => $password,
-                    'passwd1' => $password,
-                    'newpassword' => '',
-                ], true, "http://$this->url/umanage.asp");
+//                $this->api_call('webs/umanageCfgEx', [
+//                    'uflag' => 0,
+//                    'uname' => $this->user,
+//                    'passwd' => $password,
+//                    'passwd1' => $password,
+//                    'newpassword' => '',
+//                ], true, "http://$this->url/umanage.asp");
 
                 $this->api_call('cgi-bin/pwdgrp_cgi', [
                     'action' => 'update',

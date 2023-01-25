@@ -701,10 +701,12 @@
 
     modifyResolution: function (resolutionId) {
         let resolution = '';
+        let protected = false;
 
         for (let i in modules.tt.meta.resolutions) {
             if (modules.tt.meta.resolutions[i].resolutionId == resolutionId) {
                 resolution = modules.tt.meta.resolutions[i].resolution;
+                protected = modules.tt.meta.resolutions[i].protected;
             }
         }
 
@@ -728,7 +730,7 @@
                     value: resolution,
                 },
             ],
-            delete: i18n("tt.resolutionDelete"),
+            delete: protected?false:i18n("tt.resolutionDelete"),
             callback: function (result) {
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteResolution(resolutionId);
@@ -2493,10 +2495,6 @@
 
     },
 
-    renderAutoclean: function () {
-
-    },
-
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -2508,7 +2506,6 @@
             "workflows",
             "filters",
             "crontabs",
-            "autoclean",
             "statuses",
             "resolutions",
             "roles",
@@ -2550,10 +2547,6 @@
 
             case "crontabs":
                 modules.tt.settings.renderCrontabs();
-                break;
-
-            case "autoclean":
-                modules.tt.settings.renderAutoclean();
                 break;
 
             case "statuses":
