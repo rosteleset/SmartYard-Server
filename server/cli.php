@@ -29,7 +29,7 @@
             [--parent-pid=<pid>]
             [--debug]
         demo server:
-            [--run-demo-server]
+            [--run-demo-server [--port=<port>]]
         initialization:
             [--init-db]
             [--admin-password=<password>]
@@ -137,13 +137,23 @@
 
     register_shutdown_function('shutdown');
 
-    if (count($args) == 1 && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
+    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
         $db = null;
         if (is_executable_pathenv(PHP_BINARY)) {
+            $port = 8000;
+
+            if (count($args) == 2) {
+                if (array_key_exists("--port", $args) && !empty($args["--port"])) {
+                    $port = $args["--port"];
+                } else {
+                    usage();
+                }
+            }
+
             echo "open in your browser:\n\n";
-            echo "http://localhost:8000/client/index.html\n\n";
+            echo "http://localhost:$port/client/index.html\n\n";
             chdir(__DIR__ . "/..");
-            passthru(PHP_BINARY . " -S 0.0.0.0:8000");
+            passthru(PHP_BINARY . " -S 0.0.0.0:$port");
         } else {
             echo "no php interpreter found in path\n";
         }
