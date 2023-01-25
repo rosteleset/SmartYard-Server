@@ -164,10 +164,3 @@ CREATE TABLE tt_cronworks
 );
 CREATE UNIQUE INDEX tt_cronworks_uniq on tt_cronworks(filter, uid, action);
 CREATE INDEX tt_cronworks_crontab on tt_cronworks(crontab);
-
--- autodelete issues
-CREATE TABLE tt_autoclean
-(
-    autoclean_id serial not null primary key,
-    filter character varying
-);
