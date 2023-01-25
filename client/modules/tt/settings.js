@@ -701,10 +701,12 @@
 
     modifyResolution: function (resolutionId) {
         let resolution = '';
+        let protected = false;
 
         for (let i in modules.tt.meta.resolutions) {
             if (modules.tt.meta.resolutions[i].resolutionId == resolutionId) {
                 resolution = modules.tt.meta.resolutions[i].resolution;
+                protected = modules.tt.meta.resolutions[i].protected;
             }
         }
 
@@ -728,7 +730,7 @@
                     value: resolution,
                 },
             ],
-            delete: i18n("tt.resolutionDelete"),
+            delete: protected?false:i18n("tt.resolutionDelete"),
             callback: function (result) {
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteResolution(resolutionId);
@@ -1745,7 +1747,7 @@
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
-            editor.session.setMode("ace/mode/php");
+            editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
@@ -2489,6 +2491,10 @@
         always(loadingDone);
     },
 
+    renderCrontabs: function () {
+
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -2499,6 +2505,7 @@
             "projects",
             "workflows",
             "filters",
+            "crontabs",
             "statuses",
             "resolutions",
             "roles",
@@ -2536,6 +2543,10 @@
 
             case "filter":
                 modules.tt.settings.renderFilter(params["filter"]);
+                break;
+
+            case "crontabs":
+                modules.tt.settings.renderCrontabs();
                 break;
 
             case "statuses":

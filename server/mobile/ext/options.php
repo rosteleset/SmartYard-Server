@@ -44,13 +44,14 @@
             $response["supportPhone"] = $config["mobile"]["support_phone"];
         }
 
-        if (@$config["mobile"]["payments_url"]) {
-            $response["paymentsUrl"] = $config["mobile"]["payments_url"];
-        }
-
-        if (@$config["mobile"]["chat_url"]) {
-            $response["chatUrl"] = $config["mobile"]["chat_url"];
-        } else {
+//        if (@$config["mobile"]["payments_url"]) {
+//            $response["paymentsUrl"] = $config["mobile"]["payments_url"];
+//        }
+//
+//        if (@$config["mobile"]["chat_url"]) {
+//            $response["chatUrl"] = $config["mobile"]["chat_url"];
+//        }
+        else {
             if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
                 $response["chat"] = "t";
                 $response["chatOptions"] = [

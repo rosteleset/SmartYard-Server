@@ -32,8 +32,8 @@
 
             public static function index() {
                 return [
-                    "GET",
-                    "PUT",
+                    "GET" => "#same(providers,provider,GET)",
+                    "PUT" => "#same(providers,provider,PUT)",
                 ];
             }
         }

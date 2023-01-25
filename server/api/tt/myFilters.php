@@ -27,7 +27,7 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET",
+                        "GET" => "#same(tt,tt,GET)",
                     ];
                 } else {
                     return false;

@@ -1,0 +1,164 @@
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Договор</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=block" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/app_static/css/lanta.css?v=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="/app_static/js/lanta.js"></script>
+  <script>
+    
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    
+    generateBonusItemContainer = function(item) {
+      return `
+      <div class="main-item-container main-carousel-item">
+        <div class="main-row-1">
+          <span class="level-part-1">Уровень:</span>
+          <span class="level-part-2">` + (item.bonusLevel < 10 ? item.bonusLevel : 10) + `/10</span>
+        </div>
+        <div class="main-row-2">
+          <div class="row-2-header">Ваш бонусный баланс</div>
+          <div class="row-2-content">
+            <span class="row-2-content-amount">` + item.bonus + `</span>
+            <span class="row-2-content-units">баллов</span>
+          </div>
+        </div>
+        <div class="main-row-3">
+          <div class="row-3-text">Обменяйте рубли на бонусы</div>
+          <img class="row-3-image" src="https://dm.lanta.me/app_static/img/exchange_bonuses.png">
+        </div>`+
+      function () {
+        if (item.bonus >= 100) {
+          return `<a class="main-row-4" href="/app_static/bonuses/exchange_dialog.html?client_id=` + item.clientId + `&bonus=` + item.bonus + `" target="_blank">Обменять</a>`;
+        } else {
+          return `<div class="main-row-4 disabled">Обменять</div>`;
+        }
+      }()
+      
+    +`</div>
+`;
+    }
+
+    showBonusesPage = function(items, selectedIndex = 0) {
+      document.body.innerHTML = `
+  <div class="page">
+    <div class="title" id="title">Бонусы</div>
+    <div class="main-carousel" id="carousel" onscroll="onscrollHandler()">` + function() {
+        return items.map( item => generateBonusItemContainer(item) ).join('\n');
+      }()+ `<div style="width: 16px; flex-shrink: 0;"></div>
+    </div>
+    <a class="menu-item-container" href="https://dm.lanta.me/app_static/bonuses/bonus_table.html" target="_blank">
+        <span class="item-text">Таблица зависимости процентов от уровней</span>
+        <img src="https://dm.lanta.me/app_static/img/right_arrow.png" class="item-arrow">
+    </a>
+    <a class="menu-item-container" href="https://dm.lanta.me/app_static/bonuses/bonus_agreement.html" target="_blank">
+      <span class="item-text">Условия бонусной программы</span>
+      <img src="https://dm.lanta.me/app_static/img/right_arrow.png" class="item-arrow">
+    </a>
+  </div>
+`;
+      // making scroll to selected page
+      const scrollStep = vw - 2 * 16 + 8;
+      const carousel = document.getElementById('carousel')
+      $(".main-carousel").css('scroll-behavior', 'auto');
+      carousel.scrollLeft = selectedIndex * scrollStep;
+      $(".main-carousel").css('scroll-behavior', 'smooth');
+
+      updateTitle(items[selectedIndex].address);
+    }
+
+    showSelectContractPage = function(items) {
+      document.body.innerHTML = `<div class="page"><div class="title">Выберите договор</div>` + 
+        items.map( item => `<a class="menu-item-container" href="index.html?client_id=` + item.clientId + `">
+        <span class="item-text">` + item.contractName + `<br>` + item.address + `</span>
+        <img src="/app_static/img/right_arrow.png" class="arrow">
+        </a>`).join('\n') + 
+        `</div>`;
+    }
+    
+    updateTitle = function(newTitle) {
+      const title = document.getElementById('title');
+      title.innerHTML = newTitle;
+    }
+
+    onscrollHandler = function() {
+      const scrollStep = vw - 2 * 16 + 8;
+      const carousel = document.getElementById('carousel')
+      
+      const index = Math.floor( ( carousel.scrollLeft + scrollStep / 2 ) / scrollStep ); 
+      if (index < items.length) {
+        updateTitle('');
+        updateTitle(items[index].address);
+      } 
+      
+
+    } 
+    
+    window.onerror = function(error) {
+      alert(error); // Fire when errors occur. Just a test, not always do this.
+    }
+
+    window.onload = function() {
+    postLoadingStarted()
+
+    let url = new URL(document.location.href);
+    let clientId = url.searchParams.get('client_id');
+    let forceRefresh = url.searchParams.get('forceRefresh');
+
+    var headers = {
+        'Authorization':'Bearer ' + bearerToken(),
+        'Content-Type':'application/json'
+    }
+    if (forceRefresh) {
+        Object.assign(headers,{'X-Dm-Api-Refresh':''});
+    }
+
+    $.ajax({
+    url: 'https://dm.lanta.me/api/user/getPaymentsList',
+    headers: headers,
+    method: 'POST',
+    dataType: 'json',
+    data: '',
+    success: function(data){
+      const response = data.data.flatMap(
+        function(item) { 
+            return item.accounts.map( 
+                function(account) {
+                    let newitem = account;
+                    newitem.address = item.address;
+                    newitem.flatId = item.flatId;
+                    newitem.houseId = item.houseId;
+                    return newitem;
+                  }
+              );
+          } 
+      );
+      
+      window.items = response;
+
+      if (clientId) {
+        showBonusesPage(response, response.findIndex( item => item.clientId == clientId) );
+        postloadingFinished(); 
+        return;
+      }
+
+      if (response.length == 1) {
+        showBonusesPage(response);
+      } else {
+        showSelectContractPage(response);
+      }
+      postloadingFinished();
+    }
+  });
+
+    }
+  </script>
+</head>
+<body>
+</body>
+</html>

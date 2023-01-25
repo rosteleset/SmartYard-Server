@@ -28,8 +28,7 @@
             public static function index()
             {
                 return [
-                    // !!! only one level is supported !!!
-                    "GET" => "#same(houses,house,GET)"
+                    "GET" => "#same(addresses,house,GET)"
                 ];
             }
         }

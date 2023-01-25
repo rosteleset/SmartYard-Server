@@ -1,6 +1,8 @@
 ({
     init: function () {
-        leftSide("fas fa-fw fa-video", i18n("addresses.cameras"), "#addresses.cameras");
+        if (AVAIL("addresses", "region", "PUT")) {
+            leftSide("fas fa-fw fa-video", i18n("addresses.cameras"), "#addresses.cameras");
+        }
         moduleLoaded("addresses.cameras", this);
     },
 

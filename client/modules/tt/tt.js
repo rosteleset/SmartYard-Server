@@ -3,7 +3,7 @@
 
     init: function () {
         if (AVAIL("tt", "tt")) {
-            leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt");
+            leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt", true);
         }
         loadSubModules("tt", [
             "issue",
@@ -203,7 +203,11 @@
         $("#subTop").html("");
         $("#altForm").hide();
 
-        let filters = `
+        GET("tt", "myFilters").
+        done(r_ => {
+            console.log(r_);
+
+            let filters = `
             <span class="dropdown">
                 <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
                 <ul class="dropdown-menu" aria-labelledby="ttFilter">
@@ -215,25 +219,27 @@
             </span>
         `;
 
-        $("#leftTopDynamic").html(`
+            $("#leftTopDynamic").html(`
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
             </li>
         `);
 
-        $("#rightTopDynamic").html(`
-            <li class="nav-item">
-                <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                    <i class="fas fa-lg fa-fw fa-cog"></i>
-                </a>
-            </li>
-        `);
+            if (myself && myself.uid === 0) {
+                $("#rightTopDynamic").html(`
+                <li class="nav-item">
+                    <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                        <i class="fas fa-lg fa-fw fa-cog"></i>
+                    </a>
+                </li>
+            `);
+            }
 
-        $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
+            $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
 
-        document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
+            document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 
-        $("#mainForm").html(`
+            $("#mainForm").html(`
             <div class="row m-1 mt-2">
                 <div class="col col-left">
                     ${filters}
@@ -243,52 +249,55 @@
             <div class="ml-2 mr-2" id="issuesList"></div>
         `);
 
-        cardTable({
-            target: "#issuesList",
-            columns: [
-                {
-                    title: i18n("tt.issueId"),
-                },
-                {
-                    title: i18n("tt.subject"),
-                    nowrap: true,
-                    fullWidth: true,
-                },
-            ],
-            rows: () => {
-                let rows = [];
+            cardTable({
+                target: "#issuesList",
+                columns: [
+                    {
+                        title: i18n("tt.issueId"),
+                    },
+                    {
+                        title: i18n("tt.subject"),
+                        nowrap: true,
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
 
-                for (let i = 0; i < 100; i++) {
-                    rows.push({
-                        uid: i,
-                        cols: [
-                            {
-                                data: i,
-                            },
-                            {
-                                data: i,
-                            },
-                        ],
-                        dropDown: {
-                            items: [
+                    for (let i = 0; i < 100; i++) {
+                        rows.push({
+                            uid: i,
+                            cols: [
                                 {
-                                    icon: "fas fa-trash-alt",
-                                    title: i18n("users.delete"),
-                                    class: "text-warning",
-                                    click: issueId => {
-                                        //
-                                    },
+                                    data: i,
+                                },
+                                {
+                                    data: i,
                                 },
                             ],
-                        },
-                    });
-                }
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("users.delete"),
+                                        class: "text-warning",
+                                        click: issueId => {
+                                            //
+                                        },
+                                    },
+                                ],
+                            },
+                        });
+                    }
 
-                return rows;
-            },
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
         });
-
-        loadingDone();
     },
 
     search: function (query) {

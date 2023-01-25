@@ -16,5 +16,15 @@
     "providerWasDeleted": "Провайдер удален",
     "addProvider": "Добавить провайдера",
     "modifyProvider": "Изменить параметры провайдера",
-    "hidden": "Скрытый"
+    "hidden": "Скрытый",
+    "methods": {
+        "providers": {
+            "_title": "Провайдеры",
+            "provider": {
+                "_title": "Провайдеры",
+                "GET": "Просмотр",
+                "PUT": "Редактирование"
+            }
+        }
+    }
 }

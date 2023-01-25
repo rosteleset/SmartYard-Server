@@ -40,9 +40,9 @@
 
             public static function index() {
                 return [
-                    "PUT",
-                    "POST",
-                    "DELETE",
+                    "PUT" => "#same(addresses,house,PUT)",
+                    "POST" => "#same(addresses,house,PUT)",
+                    "DELETE" => "#same(addresses,house,PUT)",
                 ];
             }
         }

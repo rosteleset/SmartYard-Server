@@ -264,5 +264,24 @@
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",
         "UNIQUE constraint failed: houses_entrances.domophone_id, houses_entrances.domophone_output": "Этот выход уже занят",
         "UNIQUE constraint failed: houses_cameras_houses.camera_id, houses_cameras_houses.address_house_id": "Эта камера уже добавлена для данного дома"
+    },
+    "methods": {
+        "geo": {
+            "_title": "Геокодер",
+            "suggestions": {
+                "_title": "Геоподсказки",
+                "GET": "Использование"
+            }
+        },
+        "addresses": {
+            "_title": "Адреса",
+            "house": {
+                "_title": "Адреса и пользователи",
+                "GET": "Просмотр",
+                "PUT": "Редактирование",
+                "POST": "Создание",
+                "DELETE": "Удаление"
+            }
+        }
     }
 }

@@ -1,0 +1,364 @@
+input[type=text], input[type=password], input[type=email], input[type=number], input[type=time], input[type=date], textarea {
+  -webkit-touch-callout: auto;
+  -webkit-user-select: auto;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background: #f3f4fa;
+  font-family: Source Sans Pro;
+  font-style: normal;
+  font-weight: normal;
+}
+
+a {
+  text-decoration: none;
+}
+
+table {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19,5px;
+  color: #28323e;
+}
+
+thead {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #28323e;
+}
+
+td {
+  height: 40px;
+  border-color: #f3f4fa;
+  border-width: 0px 0px 1px;
+  border-style: solid;
+}
+
+li {
+   margin-top: 16px;
+   padding-left: 8px;
+}
+
+.larger-text {
+  font-size: 32px;
+}
+
+.page {
+  padding: 12px 0px 2px;
+  min-width: 200px;
+  margin: 0px;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 32px;
+  color: #28323e;
+  margin: -5px 16px 28px;
+}
+
+.main-carousel {
+    overflow-x: scroll;
+    width: 100vw;
+    margin: 12px 0px;
+    display: flex;
+    flex-direction: row;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+}
+
+.main-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.main-item-container {
+  background: #ffffff;
+  backdrop-filter: blur(16px);
+  padding: 24px 24px;
+  margin: 0px 4px;
+  border-radius: 12px;
+}
+
+div.main-item-container:first-child {
+  margin-left: 16px;
+}
+
+div.main-item-container:last-child {
+  margin-right: 16px;
+}
+
+.main-carousel-item {
+  width: calc(100vw - 2 * (24px + 16px));
+  scroll-snap-align: center;
+  flex-shrink: 0;
+}
+
+.menu-item-container {
+  background: #ffffff;
+  backdrop-filter: blur(16px);
+  padding: 24px 20px;
+  margin: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-row-1 {
+  border-color: #f3f4fa;
+  border-width: 0px 0px 1px;
+  border-style: solid;
+  height: 43px;
+  align-items: top;
+  justify-content: center;
+  display: flex;
+}
+
+.main-row-2 {
+  border-color: #f3f4fa;
+  border-width: 0px 0px 1px;
+  border-style: solid;
+  height: 114px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+.main-row-3 {
+  height: 138px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.main-row-4 {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+  text-align: center;
+  color: #ffffff;
+  background: #298bff;
+}
+
+.level-part-1 {
+  margin: 2px 6px 0px 0px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+  color: #6d7a8a;
+}
+
+.level-part-2 {
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 22px;
+  color: #28323e;
+}
+
+.row-2-header {
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+    color: #6d7a8a;
+    margin: 0px 0px 8px;
+}
+
+.row-2-content {
+  display: flex;
+  align-items: flex-end;
+  color: #298bff;
+  font-weight: bold;
+  height: 55px;
+}
+
+.row-2-content-amount {
+  height: 55px;
+  font-size: 64px;
+  margin: 0px 2px 0px 0px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.row-2-content-units {
+  font-size: 28px;
+}
+
+.row-3-text {
+  margin: 16px 0px;
+  font-size: 14px;
+  line-height: 18px;
+  color: #28323e;
+}
+
+.row-3-image {
+  width: 174px;
+  height: 60px;
+}
+
+.item-text {
+  font-size: 14px;
+  line-height: 24px;
+  color: #28323e;
+}
+
+.item-arrow {
+  margin: 0px 4.5px 0px 14.5px;
+  width: 8px;
+  height: 13px;
+}
+
+
+.disabled {
+  background: #6d7a8a88;
+}
+
+.title1 {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 28px;
+  color: #28323e;
+  text-align: center;
+}
+
+.title2 {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+  color: #28323e;
+  text-align: center;
+}
+.title3 {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+  color: #28323e;
+  text-align: center;
+}
+
+
+.text14center {
+  font-size: 14px;
+  line-height: 18px;
+  color: #6D7A8A;
+  margin: 12px 0px;
+  text-align: center;
+}
+
+.img-big {
+  width: 100px;
+  height: 100px;
+  margin: 40px 0px 0px;
+}
+
+.popup-container {
+  display: flex;
+  margin: 44px 32px;
+  padding: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.white-bg {
+  background: #ffffff;
+}
+
+.popup-row {
+  border-color: #f3f4fa;
+  border-width: 0px 0px 1px;
+  border-style: solid;
+  align-items: top;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-row:last-child {
+  border-width: 0px;
+}
+
+.input-wrapper {
+  margin: 20px 0px;
+}
+
+.label-element {
+  font-size: 16px;
+  line-height: 22px;
+  color: #28323e;
+  padding: 0px 0px;
+  margin: 0px;
+  display: flex;
+}
+
+.hidden-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.hidden-checkbox+label::before {
+  content: '';
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+  background-image: url("/app_static/img/checkbox-unselected.png");
+  background-position-x: 0px;
+  background-position-y: 0px;
+
+  background-repeat: no-repeat;
+  background-size: 25px 25px;
+  margin-right: 12px;
+}
+
+.hidden-checkbox:checked+label::before {
+  content: '';
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+  background-image: url("/app_static/img/checkbox-selected.png");
+  background-position-x: 0px;
+  background-position-y: 0px;
+
+  background-repeat: no-repeat;
+  background-size: 25px 25px;
+  margin-right: 12px;
+}
+
+.button {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+  text-align: center;
+  color: #ffffff;
+  background: #298bff;
+  margin: 40px 0px 0px;
+  border-width: 0px;
+  width:100%; 
+}
+
+.img_big {
+  width: 100px;
+  height: 100px;
+  margin: 40px 0px 0px;
+}

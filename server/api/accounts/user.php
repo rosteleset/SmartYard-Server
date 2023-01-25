@@ -205,7 +205,9 @@
                         "DELETE"
                     ];
                 } else {
-                    return [ "GET" ];
+                    return [
+                        "GET"
+                    ];
                 }
             }
         }

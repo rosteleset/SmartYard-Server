@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Обменять</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=block" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/app_static/css/lanta.css?v=5">
+  <script>
+    
+    showDialog = function(clientId, bonus) {
+      document.body.innerHTML = `<div class="popup-container">
+    <div class="popup-row">
+      <div class="title2" style="margin: 0px 0px 20px;">Обменять бонусы на рубли</div>
+    </div>
+    <div class="popup-row">
+      <form action="make_exchange.html" method="GET" target="_blank">` + 
+        function() {
+          if (bonus >= 100) {
+            return `<div class="input-wrapper">
+          <input type="radio" id="option100" name="amount" value="100" class="hidden-checkbox" checked>
+          <label for="option100" class="label-element"><span>100 бонусов на 100 рублей</span></label>
+        </div>`;
+          }
+          return '';
+        }() + 
+        function() {
+          if (bonus >= 200) {
+            return `<div class="input-wrapper">
+          <input type="radio" id="option200" name="amount" value="200" class="hidden-checkbox">
+          <label for="option200" class="label-element"><span>200 бонусов на 210 рублей</span></label>
+        </div>`;
+          }
+          return '';
+        }() +
+        function() {
+          if (bonus >= 300) {
+            return `<div class="input-wrapper">
+          <input type="radio" id="option300" name="amount" value="300" class="hidden-checkbox">
+          <label for="option300" class="label-element"><span>300 бонусов на 330 рублей</span></label>
+        </div>`;
+          }
+          return '';
+        }() +
+        `<input type="hidden" id="client_id" name="client_id" value="">
+        <input type="submit" class="button" value="Обменять">
+      </form>
+    </div>
+  </div>`;
+    }
+
+    window.onerror = function(error) {
+      alert(error); // Fire when errors occur. Just a test, not always do this.
+    }
+
+    window.onload = function () {
+      let url = new URL(document.location.href);
+      let clientId = url.searchParams.get('client_id');
+      let bonus = url.searchParams.get('bonus');
+      showDialog(clientId, bonus);
+      document.getElementById('client_id').value = clientId;
+    }
+  </script>
+</head>
+<body class="white-bg">
+</body>
+</html>

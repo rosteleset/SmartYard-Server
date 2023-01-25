@@ -176,10 +176,17 @@
                 $groups = loadBackend("groups");
 
                 if ($groups && $groups->capabilities()["mode"] === "rw") {
-                    return [ "GET", "POST", "PUT", "DELETE" ];
+                    return [
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE"
+                    ];
                 }
                 if ($groups) {
-                    return [ "GET" ];
+                    return [
+                        "GET"
+                    ];
                 } else {
                     return [ ];
                 }

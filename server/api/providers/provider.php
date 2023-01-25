@@ -50,8 +50,8 @@
                 return [
                     "GET",
                     "PUT",
-                    "POST",
-                    "DELETE",
+                    "POST" => "#same(providers,provider,PUT)",
+                    "DELETE" => "#same(providers,provider,PUT)",
                 ];
             }
         }

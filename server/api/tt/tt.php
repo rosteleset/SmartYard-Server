@@ -38,7 +38,9 @@
 
             public static function index() {
                 if (loadBackend("tt")) {
-                    return [ "GET" ];
+                    return [
+                        "GET"
+                    ];
                 } else {
                     return false;
                 }
