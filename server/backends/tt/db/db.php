@@ -368,13 +368,15 @@
             public function getResolutions()
             {
                 try {
-                    $resolutions = $this->db->query("select issue_resolution_id, resolution from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
+                    $resolutions = $this->db->query("select issue_resolution_id, resolution, protected, alias from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
                     $_resolutions = [];
 
                     foreach ($resolutions as $resolution) {
                         $_resolutions[] = [
                             "resolutionId" => $resolution["issue_resolution_id"],
                             "resolution" => $resolution["resolution"],
+                            "protected" => $resolution["protected"],
+                            "alias" => $resolution["alias"],
                         ];
                     }
 
@@ -445,8 +447,8 @@
                 }
 
                 try {
-                    $this->db->exec("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId");
-                    $this->db->exec("delete from tt_projects_resolutions where issue_resolution_id = $resolutionId");
+                    $this->db->exec("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId and protected = 0");
+                    $this->db->exec("delete from tt_projects_resolutions where issue_resolution_id not in (select issue_resolution_id from tt_issue_resolutions)");
                     // TODO: delete all derivatives
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

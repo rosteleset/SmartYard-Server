@@ -141,6 +141,7 @@
     "issueId": "#",
     "crontabs": "Расписание",
     "autoclean": "Автоочистка",
+    "addResolution": "Добавить резолюцию",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
