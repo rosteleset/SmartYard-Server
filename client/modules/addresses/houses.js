@@ -356,9 +356,10 @@
                         if (first === false) first = response.domophones.domophones[i].domophoneId;
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                         let url = new URL(response.domophones.domophones[i].url);
+                        let comment = response.domophones.domophones[i].comment;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
-                            text:  url.host,
+                            text: comment?comment + ' | ' + url.host:url.host,
                         })
                     }
 
@@ -879,9 +880,10 @@
                 for (let i in response.domophones.domophones) {
                     modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                     let url = new URL(response.domophones.domophones[i].url);
+                    let comment = response.domophones.domophones[i].comment;
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
-                        text: url.host,
+                        text: comment?comment + ' | ' + url.host:url.host,
                     })
                 }
 
