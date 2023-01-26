@@ -359,7 +359,7 @@
                         let comment = response.domophones.domophones[i].comment;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
-                            text: comment?comment + ' | ' + url.host:url.host,
+                            text: comment?(comment + ' [' + url.host + ']'):url.host,
                         })
                     }
 
@@ -883,7 +883,7 @@
                     let comment = response.domophones.domophones[i].comment;
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
-                        text: comment?comment + ' | ' + url.host:url.host,
+                        text: comment?(comment + ' [' + url.host + ']'):url.host,
                     })
                 }
 
