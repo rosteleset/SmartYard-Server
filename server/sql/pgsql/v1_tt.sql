@@ -73,8 +73,9 @@ CREATE TABLE tt_issue_custom_fields
     field_description character varying,
     regex character varying,
     link character varying,
-    format text,
-    editor text,
+    format character varying,
+    editor character varying,
+    viewer character varying,
     indexes integer,                                                                                                    -- 0 - none, 1 - field index, 2 - full text search index
     required integer
 );

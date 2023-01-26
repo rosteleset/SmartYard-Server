@@ -701,12 +701,12 @@
 
     modifyResolution: function (resolutionId) {
         let resolution = '';
-        let protected = false;
+        let protcted = false;
 
         for (let i in modules.tt.meta.resolutions) {
             if (modules.tt.meta.resolutions[i].resolutionId == resolutionId) {
                 resolution = modules.tt.meta.resolutions[i].resolution;
-                protected = modules.tt.meta.resolutions[i].protected;
+                protcted = modules.tt.meta.resolutions[i].protected;
             }
         }
 
@@ -730,7 +730,7 @@
                     value: resolution,
                 },
             ],
-            delete: protected?false:i18n("tt.resolutionDelete"),
+            delete: protcted?false:i18n("tt.resolutionDelete"),
             callback: function (result) {
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteResolution(resolutionId);
@@ -986,6 +986,13 @@
                                 },
                             ],
                             hidden: cf.type !== "number" && cf.type !== "text",
+                        },
+                        {
+                            id: "viewer",
+                            type: "area",
+                            title: i18n("tt.customFieldViewer"),
+                            placeholder: i18n("tt.customFieldViewer"),
+                            value: cf.viewer,
                         },
                         {
                             id: "link",
