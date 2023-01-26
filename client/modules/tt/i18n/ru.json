@@ -142,6 +142,7 @@
     "crontabs": "Расписание",
     "autoclean": "Автоочистка",
     "addResolution": "Добавить резолюцию",
+    "customFieldViewer": "Функция форматирования",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

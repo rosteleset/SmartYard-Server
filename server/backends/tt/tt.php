@@ -374,9 +374,10 @@
              * @param $indexes
              * @param $required
              * @param $editor
+             * @param $viewer
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor, $viewer);
 
             /**
              * @param $customFieldId

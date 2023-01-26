@@ -509,7 +509,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, viewer, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -535,6 +535,7 @@
                             "link" => $customField["link"],
                             "format" => $customField["format"],
                             "editor" => $customField["editor"],
+                            "viewer" => $customField["viewer"],
                             "indexes" => $customField["indexes"],
                             "required" => $customField["required"],
                             "options" => $_options,
@@ -735,7 +736,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor, $viewer)
             {
                 if (!checkInt($customFieldId)) {
                     return false;
@@ -763,7 +764,8 @@
                                 set 
                                     field_display = :field_display,
                                     field_description = :field_description,
-                                    link = :link
+                                    link = :link,
+                                    viewer = :viewer
                                 where
                                     issue_custom_field_id = $customFieldId
                             ");
@@ -771,6 +773,7 @@
                             ":field_display" => $fieldDisplay,
                             ":field_description" => $fieldDescription,
                             ":link" => $link,
+                            ":viewer" => $viewer,
                         ]);
 
                         $upd = $this->db->prepare("update tt_issue_custom_fields_options set option_display = :display where issue_custom_field_id = $customFieldId and issue_custom_field_option_id = :option");
@@ -795,6 +798,7 @@
                                 link = :link,
                                 format = :format,
                                 editor = :editor,
+                                viewer = :viewer,
                                 indexes = :indexes,
                                 required = :required
                             where
@@ -808,6 +812,7 @@
                             ":link" => $link,
                             ":format" => $format,
                             ":editor" => $editor,
+                            ":viewer" => $viewer,
                             ":indexes" => $indexes,
                             ":required" => $required,
                         ]);

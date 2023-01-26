@@ -195,6 +195,10 @@
         }
     },
 
+    issueField2Html: function (issue, field) {
+
+    },
+
     tt: function (tt) {
         modules.tt.meta = tt["meta"];
     },
