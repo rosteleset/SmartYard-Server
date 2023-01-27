@@ -993,6 +993,7 @@
                             title: i18n("tt.customFieldViewer"),
                             placeholder: i18n("tt.customFieldViewer"),
                             value: cf.viewer,
+                            hint: i18n("tt.viewerFunction")
                         },
                         {
                             id: "link",

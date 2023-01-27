@@ -143,6 +143,7 @@
     "autoclean": "Автоочистка",
     "addResolution": "Добавить резолюцию",
     "customFieldViewer": "Функция форматирования",
+    "viewerFunction": "function (value, issue, field) { /* your code */ }",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
