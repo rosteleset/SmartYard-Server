@@ -132,6 +132,16 @@
                 }
             }
 
+            /** Enable dialplan-only use.
+             * If the called apartment isn't included to the dialplan, then the call is dropped immediately
+             */
+            protected function enable_dialplan_only(bool $enabled = true) {
+                $params = $this->params_to_str([
+                    'Config.DoorSetting.GENERAL.UseDialPlanOnly' => (int) $enabled,
+                ]);
+                $this->set_params($params);
+            }
+
             /** Разрешить подогрев дисплея */
             protected function enable_display_heat(bool $enabled = true) {
                 $params = $this->params_to_str([
@@ -454,7 +464,6 @@
                     'Config.Account1.STUN.Enable' => (int) $nat,
                     'Config.Account1.STUN.Server' => $stun_server,
                     'Config.Account1.STUN.Port' => $stun_port,
-                    'Config.DoorSetting.GENERAL.UseDialPlanOnly' => 1,
                     'Config.Account1.AUTO_ANSWER.Enable' => 0,
                 ]);
 
@@ -784,6 +793,7 @@
             public function prepare() {
                 parent::prepare();
                 $this->bind_inputs();
+                $this->enable_dialplan_only();
                 $this->enable_display_heat();
                 $this->enable_ftp(false);
                 $this->enable_internal_frs(false);
