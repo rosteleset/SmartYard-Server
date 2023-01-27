@@ -11,7 +11,7 @@ const gateRabbits = [];
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
 
-    const qtMsg = message.split("- - -")[1].trim();
+    const qtMsg = message.split(/- - - EVENT:[0-9]+:/)[1].trim();
     const qtMsgParts = qtMsg.split(/[,:]/).filter(Boolean).map(part => part.trim());
 
     // Spam messages filter
@@ -25,15 +25,15 @@ syslog.on("message", async ({ date, host, message }) => {
     await API.sendLog({ date: now, ip: host, unit: "qtech", msg: qtMsg });
 
     // Motion detection: start
-    if (qtMsgParts[3] === "Send Photo") {
+    if (qtMsgParts[1] === "Send Photo") {
         await API.motionDetection({ date: now, ip: host, motionActive: true });
         await mdTimer(host, 5000);
     }
 
     // Call in gate mode with prefix: potential white rabbit
-    if (qtMsgParts[4] === "Replace Number") {
-        if (qtMsgParts[5].length === 6) {
-            const number = qtMsgParts[5];
+    if (qtMsgParts[2] === "Replace Number") {
+        if (qtMsgParts[3].length === 6) {
+            const number = qtMsgParts[3];
 
             gateRabbits[host] = {
                 ip: host,
@@ -44,7 +44,7 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
-    if (qtMsgParts[4] === "Open Door By DTMF") {
+    if (qtMsgParts[2] === "Open Door By DTMF") {
         if (gateRabbits[host]) {
             const { ip, prefix, apartment } = gateRabbits[host];
             await API.setRabbitGates({ date: now, ip, prefix, apartment });
@@ -52,9 +52,9 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Opening door by RFID key
-    if (qtMsgParts[3] === "Open Door By Card") {
+    if (qtMsgParts[1] === "Open Door By Card") {
         let door = 0;
-        const rfid = qtMsgParts[5].padStart(14, 0);
+        const rfid = qtMsgParts[3].padStart(14, 0);
 
         if (rfid[6] === '0' && rfid[7] === '0') {
             door = 1;
@@ -64,17 +64,17 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Opening door by personal code
-    if (qtMsgParts[4] === "Open Door By Code") {
-        const code = parseInt(qtMsgParts[6]);
+    if (qtMsgParts[2] === "Open Door By Code") {
+        const code = parseInt(qtMsgParts[4]);
         await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
     }
 
     // Opening door by button pressed
-    if (qtMsgParts[3] === "Exit button pressed") {
+    if (qtMsgParts[1] === "Exit button pressed") {
         let door = 0;
         let detail = "main";
 
-        switch (qtMsgParts[4]) {
+        switch (qtMsgParts[2]) {
             case "INPUTB":
                 door = 1;
                 detail = "second";
@@ -89,7 +89,7 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // All calls are done
-    if (qtMsgParts[2] === "Finished Call") {
+    if (qtMsgParts[0] === "Finished Call") {
         await API.callFinished({ date: now, ip: host });
     }
 });
