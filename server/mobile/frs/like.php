@@ -70,7 +70,7 @@ if ($entrances && $entrances[0]) {
 
         $face_id = (int)$result[frs::P_FACE_ID];
         $subscriber_id = (int)$subscriber['subscriberId'];
-        $frs->attachFaceId($flat_id, $flat_id, $subscriber_id);
+        $frs->attachFaceId($face_id, $flat_id, $subscriber_id);
         response(200);
     }
 }
