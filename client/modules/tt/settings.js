@@ -991,7 +991,7 @@
                             id: "viewer",
                             type: "area",
                             title: i18n("tt.customFieldViewer"),
-                            placeholder: i18n("tt.customFieldViewer"),
+                            placeholder: i18n("tt.customFieldViewerCode"),
                             value: cf.viewer,
                             hint: i18n("tt.viewerFunction")
                         },
