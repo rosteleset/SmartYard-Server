@@ -116,7 +116,8 @@ try {
                 }
             }
 
-            $e_details['event'] = $row[plog::COLUMN_EVENT];
+            $event_type = (int)$row[plog::COLUMN_EVENT];
+            $e_details['event'] = $event_type;
             $face = json_decode($row[plog::COLUMN_FACE]);
             if (isset($face->width) && $face->width > 0 && isset($face->height) && $face->height > 0) {
                 $e_details['detailX']['face'] = [
@@ -125,14 +126,23 @@ try {
                     'width' => $face->width,
                     'height' => $face->height
                 ];
+                $e_details['detailX']['flags'] = ["canLike"];
+                if (isset($face->faceId) && $face->faceId > 0) {
+                    $e_details['detailX']['flags'][] = "canDislike";
+                    $subscriber_id = (int)$subscriber['subscriberId'];
+                    $frs = loadBackend("frs");
+                    if ($frs && $frs->isLikedFlag($flat_id, $subscriber_id, $face->faceId, $flat_owner)) {
+                        $e_details['detailX']['flags'][] = "liked";
+                    }
+                }
             }
-            if (isset($face->faceId)) {
+            if (isset($face->faceId) && $face->faceId > 0) {
                 $e_details['detailX']['faceId'] = $face->faceId;
             }
 
             $phones = json_decode($row[plog::COLUMN_PHONES]);
 
-            switch ((int)$row[plog::COLUMN_EVENT]) {
+            switch ($event_type) {
                 case plog::EVENT_UNANSWERED_CALL:
                 case plog::EVENT_ANSWERED_CALL:
                     $e_details['detailX']['opened'] = ($row[plog::COLUMN_OPENED] == 1) ? 't' : 'f';
@@ -166,7 +176,7 @@ try {
             }
             if ((int)$row[plog::COLUMN_PREVIEW]) {
                 $img_uuid = $row[plog::COLUMN_IMAGE_UUID];
-                $url =@$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
+                $url = @$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
                 $e_details['preview'] = $url;
             }
 

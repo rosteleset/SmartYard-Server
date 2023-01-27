@@ -148,10 +148,11 @@
 
         "frs": {
             "backend": "internal",
+            "open_door_timeout": 10,
             "servers": [
                 {
                     "title": "First server",
-                    "url": "http://127.0.0.1"
+                    "url": "http://127.0.0.1:9051"
                 }
             ]
         }

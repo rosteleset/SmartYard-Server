@@ -7,6 +7,8 @@
     namespace backends\plog
     {
 
+        use backends\frs\frs;
+
         /**
          * clickhouse archive class
          */
@@ -65,16 +67,49 @@
                 $files = loadBackend('files');
                 $camshot_data = [];
 
-                if ($event_id === false) {
-                    // TODO: получение кадра события от FRS по дате
+                $households = loadBackend("households");
+                $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone_id, "output" => "0" ]);
+                if ($entrances && $entrances[0]) {
+                    $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
+                    if ($cameras && $cameras[0]) {
+                        $frs = loadBackend("frs");
+                        if ($frs) {
+                            if ($event_id === false) {
+                                $response = $frs->bestQualityByDate($cameras[0], $date);
+                            } else {
+                                $response = $frs->bestQualityByEventId($cameras[0], $event_id);
+                            }
 
-                    //получение кадра с DVR-серевера, если нет кадра от FRS
-                    // TODO переделать на получение кадра из бэкенда dvr
-                    $households = loadBackend("households");
-                    $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone_id, "output" => "0" ]);
-                    if ($entrances && $entrances[0]) {
-                        $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
-                        if ($cameras && $cameras[0]) {
+                            if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
+                                $image_data = file_get_contents($response[frs::P_DATA][frs::P_SCREENSHOT]);
+                                if ($image_data) {
+                                    $headers = implode("\n", $http_response_header);
+                                    if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
+                                        $content_type = end($matches[1]);
+                                    }
+                                    if (!isset($content_type))
+                                        $content_type = "image/jpeg";
+                                    $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
+                                        "camshot",
+                                        $files->contentsToStream($image_data),
+                                        [
+                                            "contentType" => $content_type,
+                                            "expire" => time() + $this->ttl_camshot_days * 86400,
+                                        ]
+                                    ));
+                                    $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
+                                    $camshot_data[self::COLUMN_FACE] = [
+                                        frs::P_FACE_LEFT => $response[frs::P_DATA][frs::P_FACE_LEFT],
+                                        frs::P_FACE_TOP => $response[frs::P_DATA][frs::P_FACE_TOP],
+                                        frs::P_FACE_WIDTH => $response[frs::P_DATA][frs::P_FACE_WIDTH],
+                                        frs::P_FACE_HEIGHT => $response[frs::P_DATA][frs::P_FACE_HEIGHT],
+                                    ];
+                                }
+                            }
+                        }
+
+                        if (!$camshot_data) {
+                            //получение кадра с DVR-серевера, если нет кадра от FRS
                             $prefix = $cameras[0]["dvrStream"];
                             if ($prefix) {
                                 $ts_event = $date - $this->back_time_shift_video_shot;
@@ -90,15 +125,15 @@
                                         ]
                                     ));
                                     unlink($filename);
-                                    $camshot_data[self::COLUMN_PREVIEW] = 1;
+                                    $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_DVR;
                                 } else {
-                                    $camshot_data[self::COLUMN_PREVIEW] = 0;
+                                    $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                                 }
+                            } else {
+                                $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                             }
                         }
                     }
-                } else {
-                    // TODO: получение кадра события от FRS по event_id
                 }
 
                 return $camshot_data;
@@ -247,6 +282,35 @@
                 return $this->clickhouse->select($query);
             }
 
+            /**
+             * @inheritDoc
+             */
+            public function getEventDetails(string $uuid)
+            {
+                $query = "
+                    select
+                        date,
+                        event_uuid,
+                        hidden,
+                        image_uuid,
+                        flat_id,
+                        toJSONString(domophone) domophone,
+                        event,
+                        opened,
+                        toJSONString(face) face,
+                        rfid,
+                        code,
+                        toJSONString(phones) phones,
+                        preview
+                    from
+                        plog
+                    where
+                        event_uuid = '$uuid'
+                ";
+
+                return $this->clickhouse->select($query)[0];
+            }
+
             public function getDomophoneId($ip)
             {
                 $households = loadBackend('households');
@@ -360,6 +424,7 @@
                     $event_data = [];
                     $event_id = false;
                     $flat_list = [];
+                    unset($face_id);
 
                     $plog_date = $row['date'];
                     $domophone_id = $this->getDomophoneId($row["ip"]);
@@ -407,8 +472,20 @@
 
                     if ($event_type == self::EVENT_OPENED_BY_FACE) {
                         $event_data[self::COLUMN_OPENED] = 1;
-                        $event_id = $row['detail'];
-                        // TODO: доделать обработку
+                        $details = explode("|", $row['detail']);
+                        $face_id = $details[0];
+                        $event_id = $details[1];
+                        $households = loadBackend('households');
+                        $entrance = $households->getEntrances("domophoneId",[
+                            "domophoneId" => $domophone_id,
+                            "output" => $row['door']
+                        ])[0];
+                        $frs = loadBackend("frs");
+                        if ($frs)
+                            $flat_list = $frs->getFlatsByFaceId($face_id, $entrance["entranceId"]);
+                        if (!$flat_list) {
+                            continue;
+                        }
                     }
 
                     //получение кадра события
@@ -418,7 +495,12 @@
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
                         }
                         $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
-                        // TODO: доделать для случая наличия инфы о лице
+                        if (isset($image_data[self::COLUMN_FACE])) {
+                            $event_data[self::COLUMN_FACE] = $image_data[self::COLUMN_FACE];
+                            if (isset($face_id)) {
+                                $event_data[self::COLUMN_FACE][frs::P_FACE_ID] = $face_id;
+                            }
+                        }
                     }
                     $this->writeEventData($event_data, $flat_list);
                 }

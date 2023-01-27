@@ -44,6 +44,11 @@
             const ACCESS_OWNER_ONLY = 2;
             const ACCESS_RESTRICTED_BY_ADMIN = 3;
 
+            //preview type
+            const PREVIEW_NONE = 0;
+            const PREVIEW_DVR = 1;
+            const PREVIEW_FRS = 2;
+
             /**
              * Получить список дней с событиями
              * @param int $flat_id идентификатор квартиры
@@ -59,6 +64,13 @@
              * @return false|array
              */
             abstract public function getDetailEventsByDay(int $flat_id, string $date);
+
+            /**
+             * Get event's detail by UUID
+             * @param string $uuid
+             * @return false|array
+             */
+            abstract public function getEventDetails(string $uuid);
 
             /**
              * Записать данные событий в базу

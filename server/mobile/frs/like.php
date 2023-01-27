@@ -16,8 +16,66 @@
  * @apiSuccess {Number} -.faceId FaceId
  */
 
-    auth(5);
-    response();
+use backends\plog\plog;
+use backends\frs\frs;
+
+auth(5);
+
+$plog = loadBackend("plog");
+if (!$plog) {
+    response(422);
+}
+
+$frs = loadBackend("frs");
+if (!$frs) {
+    response(422);
+}
+
+$event_uuid = $postdata['event'];
+if (!$event_uuid) {
+    response(405, false, 'Событие не указано');
+}
+
+$event_data = $plog->getEventDetails($event_uuid);
+if (!$event_data) {
+    response(404, false, 'Событие не найдено');
+}
+
+if ($event_data[plog::COLUMN_PREVIEW] == plog::PREVIEW_NONE) {
+    response(403, false, 'Нет кадра события');
+}
+
+$flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
+$flat_id = (int)$event_data[plog::COLUMN_FLAT_ID];
+$f = in_array($flat_id, $flat_ids);
+if (!$f) {
+    response(403, false, 'Квартира не найдена');
+}
+
+// TODO: check if FRS allowed for flat_id
+
+$households = loadBackend("households");
+$domophone = json_decode($event_data[plog::COLUMN_DOMOPHONE]);
+$entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone->domophone_id, "output" => $domophone->domophone_output ]);
+if ($entrances && $entrances[0]) {
+    $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
+    if ($cameras && $cameras[0]) {
+        $img_uuid = $event_data[plog::COLUMN_IMAGE_UUID];
+        $url = @$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
+        $face = json_decode($event_data[plog::COLUMN_FACE]);
+        $result = $frs->registerFace($cameras[0], $event_uuid, $face->left, $face->top, $face->width, $face->height);
+        if (!isset($result[frs::P_FACE_ID])) {
+            response(406, $result[frs::P_MESSAGE]);
+        }
+
+        $face_id = (int)$result[frs::P_FACE_ID];
+        $subscriber_id = (int)$subscriber['subscriberId'];
+        $frs->attachFaceId($flat_id, $flat_id, $subscriber_id);
+        response(200);
+    }
+}
+
+response();
 
 /*
     $uuid = mysqli_escape_string($mysql, @$postdata['event']);

@@ -52,7 +52,7 @@
 
     class Access
     {
-        private static array $allowedHosts = ["127.0.0.1", "192.168.15.81", "172.28.0.1"];
+        private static array $allowedHosts = ["127.0.0.1", "192.168.15.81", "172.28.0.1", "192.168.13.39"];
 
         public static function getIp()
         {
