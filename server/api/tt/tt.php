@@ -28,6 +28,7 @@
                         "customFields" => $tt->getCustomFields(),
                         "roles" => $tt->getRoles(),
                         "tags" => $tt->getTags(),
+                        "viewers" => $tt->getViewers(),
                     ];
 
                     return api::ANSWER($meta, "meta");

@@ -128,6 +128,7 @@
                             "customFields" => $cf,
                             "users" => $u,
                             "groups" => $g,
+                            "viewers" => $this->getProjectViewers($project["project_id"]),
                         ];
                     }
 

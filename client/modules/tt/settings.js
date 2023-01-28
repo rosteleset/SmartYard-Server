@@ -988,14 +988,6 @@
                             hidden: cf.type !== "number" && cf.type !== "text",
                         },
                         {
-                            id: "viewer",
-                            type: "area",
-                            title: i18n("tt.customFieldViewer"),
-                            placeholder: i18n("tt.customFieldViewerCode"),
-                            value: cf.viewer,
-                            hint: i18n("tt.viewerFunction")
-                        },
-                        {
                             id: "link",
                             type: "text",
                             title: i18n("tt.customFieldLink"),
@@ -1708,6 +1700,12 @@
                                         title: i18n("tt.customFields"),
                                         click: modules.tt.settings.projectCustomFields,
                                         disabled: modules.tt.meta.customFields.length <= 0,
+                                    },
+                                    {
+                                        icon: "fas fa-eye",
+                                        title: i18n("tt.projectViewers"),
+                                        click: modules.tt.settings.projectViewers,
+                                        disabled: modules.tt.meta.viewers.length <= 0,
                                     },
                                     {
                                         icon: "fas fa-tags",
@@ -2503,6 +2501,10 @@
 
     },
 
+    renderViewers: function () {
+
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -2511,13 +2513,14 @@
 
         let sections = [
             "projects",
-            "workflows",
+            "workflowsMenu",
             "filters",
             "crontabs",
             "statuses",
             "resolutions",
             "roles",
-            "customFields",
+            "customFieldsMenu",
+            "viewersMenu",
         ];
 
         let section = params["section"]?params["section"]:"projects";
@@ -2537,7 +2540,7 @@
         $("#leftTopDynamic").html(top);
 
         switch (section) {
-            case "workflows":
+            case "workflowsMenu":
                 modules.tt.settings.renderWorkflows();
                 break;
 
@@ -2569,8 +2572,12 @@
                 modules.tt.settings.renderRoles();
                 break;
 
-            case "customFields":
+            case "customFieldsMenu":
                 modules.tt.settings.renderCustomFields();
+                break;
+
+            case "viewersMenu":
+                modules.tt.settings.renderViewers();
                 break;
 
             default:
