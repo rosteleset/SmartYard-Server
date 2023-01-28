@@ -1125,42 +1125,83 @@
              * @inheritDoc
              */
             public function addViewer($name, $field) {
+                if (!checkStr($name) || !checkStr($field)) {
+                    return false;
+                }
 
+                return $this->db->insert("insert into tt_viewers (name, field) values (:name, :field)", [
+                    "name" => $name,
+                    "field" => $field,
+                ]);
             }
 
             /**
              * @inheritDoc
              */
             public function modifyViewer($name, $code) {
+                if (!checkStr($name) || !checkStr($code)) {
+                    return false;
+                }
 
+                return $this->db->modify("update tt_viewers set code = :code where name = :name", [
+                    "name" => $name,
+                    "code" => $code,
+                ]);
             }
 
             /**
              * @inheritDoc
              */
             public function deleteViewer($name) {
+                if (!checkStr($name)) {
+                    return false;
+                }
 
+                return $this->db->modify("delete from tt_viewers where name = :name", [
+                    "name" => $name,
+                ]);
             }
 
             /**
              * @inheritDoc
              */
             public function getViewers() {
-
+                return $this->db->get("select * from tt_viewers order by name", false, [
+                    "name" => "name",
+                    "field" => "field",
+                    "code" => "code",
+                ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function getViewer($name) {
+            public function getProjectViewers($projectId) {
+                if (!checkInt($projectId)) {
+                    return false;
+                }
 
+                return $this->db->get("select name from tt_projects_viewers where project_id = $projectId order by name");
             }
 
             /**
              * @inheritDoc
              */
             public function setProjectViewers($projectId, $viewers) {
+                if (!checkInt($projectId)) {
+                    return false;
+                }
 
+                $n = $this->db->modify("delete from tt_projects_viewers where project_id = $projectId");
+
+                foreach ($viewers as $name) {
+                    $n += $this->db->insert("insert into tt_projects_viewers (project_id, name) values (:project_id, :name)", [
+                        "project_id" => $projectId,
+                        "name" => $name,
+                    ]);
+                }
+
+                return $n;
             }
 
             /**

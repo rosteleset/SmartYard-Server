@@ -529,10 +529,10 @@
             abstract public function getViewers();
 
             /**
-             * @param $name
+             * @param $projectId
              * @return mixed
              */
-            abstract public function getViewer($name);
+            abstract public function getProjectViewers($projectId);
 
             /**
              * @param $projectId

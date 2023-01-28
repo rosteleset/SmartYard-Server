@@ -171,17 +171,14 @@ CREATE INDEX tt_cronworks_crontab on tt_cronworks(crontab);
 -- viewers
 CREATE TABLE tt_viewers
 (
-    viewer_id integer not null primary key autoincrement,
+    name text not null primary key,
     field text,
-    name text,
-    viewer text
+    code text
 );
-CREATE UNIQUE INDEX tt_viewers_uniq on tt_viewers(name);
 
 -- projects viewers
 CREATE TABLE tt_projects_viewers
 (
-    project_viewer integer not null primary key autoincrement,
     project_id integer,
     name text
 );
