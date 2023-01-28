@@ -21,7 +21,7 @@
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indexes"], $params["required"], $params["editor"], $params["viewer"]);
+                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indexes"], $params["required"], $params["editor"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

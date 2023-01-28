@@ -374,10 +374,9 @@
              * @param $indexes
              * @param $required
              * @param $editor
-             * @param $viewer
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor, $viewer);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
 
             /**
              * @param $customFieldId
@@ -503,6 +502,44 @@
                     return false;
                 }
             }
+
+            /**
+             * @param $field
+             * @param $name
+             * @return mixed
+             */
+            abstract public function addViewer($field, $name);
+
+            /**
+             * @param $name
+             * @param $code
+             * @return mixed
+             */
+            abstract public function modifyViewer($name, $code);
+
+            /**
+             * @param $name
+             * @return mixed
+             */
+            abstract public function deleteViewer($name);
+
+            /**
+             * @return mixed
+             */
+            abstract public function getViewers();
+
+            /**
+             * @param $name
+             * @return mixed
+             */
+            abstract public function getViewer($name);
+
+            /**
+             * @param $projectId
+             * @param $viewers
+             * @return mixed
+             */
+            abstract public function setProjectViewers($projectId, $viewers);
 
             /**
              * @param $issue

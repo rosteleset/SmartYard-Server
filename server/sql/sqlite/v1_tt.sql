@@ -75,7 +75,6 @@ CREATE TABLE tt_issue_custom_fields
     link text,
     format text,
     editor text,
-    viewer text,
     indexes integer,                                                                                                    -- 0 - none, 1 - field index, 2 - full text search index
     required integer
 );
@@ -168,3 +167,22 @@ CREATE TABLE tt_cronworks
 );
 CREATE UNIQUE INDEX tt_cronworks_uniq on tt_cronworks(filter, uid, action);
 CREATE INDEX tt_cronworks_crontab on tt_cronworks(crontab);
+
+-- viewers
+CREATE TABLE tt_viewers
+(
+    viewer_id integer not null primary key autoincrement,
+    field text,
+    name text,
+    viewer text
+);
+CREATE UNIQUE INDEX tt_viewers_uniq on tt_viewers(name);
+
+-- projects viewers
+CREATE TABLE tt_projects_viewers
+(
+    project_viewer integer not null primary key autoincrement,
+    project_id integer,
+    name text
+);
+CREATE UNIQUE INDEX tt_projects_viewers_uniq on tt_projects_viewers(project_id, name);

@@ -509,7 +509,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, viewer, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -535,7 +535,6 @@
                             "link" => $customField["link"],
                             "format" => $customField["format"],
                             "editor" => $customField["editor"],
-                            "viewer" => $customField["viewer"],
                             "indexes" => $customField["indexes"],
                             "required" => $customField["required"],
                             "options" => $_options,
@@ -736,7 +735,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor, $viewer)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor)
             {
                 if (!checkInt($customFieldId)) {
                     return false;
@@ -764,8 +763,7 @@
                                 set 
                                     field_display = :field_display,
                                     field_description = :field_description,
-                                    link = :link,
-                                    viewer = :viewer
+                                    link = :link
                                 where
                                     issue_custom_field_id = $customFieldId
                             ");
@@ -773,7 +771,6 @@
                             ":field_display" => $fieldDisplay,
                             ":field_description" => $fieldDescription,
                             ":link" => $link,
-                            ":viewer" => $viewer,
                         ]);
 
                         $upd = $this->db->prepare("update tt_issue_custom_fields_options set option_display = :display where issue_custom_field_id = $customFieldId and issue_custom_field_option_id = :option");
@@ -798,7 +795,6 @@
                                 link = :link,
                                 format = :format,
                                 editor = :editor,
-                                viewer = :viewer,
                                 indexes = :indexes,
                                 required = :required
                             where
@@ -812,7 +808,6 @@
                             ":link" => $link,
                             ":format" => $format,
                             ":editor" => $editor,
-                            ":viewer" => $viewer,
                             ":indexes" => $indexes,
                             ":required" => $required,
                         ]);
@@ -907,10 +902,12 @@
                     return false;
                 } else {
                     try {
-                        $this->db->modify("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId");
-                        $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId");
-                        $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId");
-                        return true;
+                        return $this->db->modify("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId") +
+                            $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId") +
+                            $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId") +
+                            $this->db->modify("delete from tt_viewers where field = '[cf]' || :field", [
+                                "field" => $cf['field'],
+                            ]);
                     } catch (\Exception $e) {
                         error_log(print_r($e, true));
                         return false;
@@ -1127,9 +1124,54 @@
             /**
              * @inheritDoc
              */
+            public function addViewer($name, $field) {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyViewer($name, $code) {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteViewer($name) {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getViewers() {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getViewer($name) {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function setProjectViewers($projectId, $viewers) {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
+                $this->db->modify("delete from tt_viewers where field not in (select '[cf]' || field from tt_issue_custom_fields)");
+                $this->db->modify("delete from tt_projects_viewers where name not in (select name from tt_viewers)");
+                $this->db->modify("delete from tt_projects_viewers where project_id not in (select project_id from tt_projects)");
 
                 parent::cleanup();
             }
