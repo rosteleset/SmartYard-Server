@@ -161,5 +161,8 @@
                 "GET": "Доступ"
             }
         }
+    },
+    "errors": {
+        "UNIQUE constraint failed: tt_viewers.name": "Такая функция уже существует"
     }
 }

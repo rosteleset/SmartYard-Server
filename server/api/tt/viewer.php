@@ -23,7 +23,7 @@
             public static function POST($params) {
                 $success = loadBackend("tt")->addViewer($params['name'], $params['field']);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success);
             }
 
             public static function PUT($params) {
