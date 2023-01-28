@@ -207,6 +207,18 @@
         always(modules.tt.settings.renderProjects);
     },
 
+    doSetProjectViewers: function (projectId, viewers) {
+        loadingStart();
+        PUT("tt", "project", projectId, {
+            viewers: viewers,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        always(modules.tt.settings.renderProjects);
+    },
+
     doModifyStatus: function (statusId, display) {
         loadingStart();
         PUT("tt", "status", statusId, {
@@ -1641,6 +1653,45 @@
         }).
         fail(FAIL).
         fail(loadingDone);
+    },
+
+    projectViewers: function (projectId) {
+        let project = false;
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        let viewers = [];
+        for (let i in modules.tt.meta.viewers) {
+            viewers.push({
+                id: modules.tt.meta.viewers[i].name,
+                text: $.trim(modules.tt.meta.viewers[i].name + "(" + modules.tt.meta.viewers[i].field + ")"),
+            });
+        }
+
+        cardForm({
+            title: i18n("tt.projectViewers"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "viewers",
+                    type: "multiselect",
+                    title: i18n("tt.projectViewers"),
+                    options: viewers,
+                    value: project.viewers,
+                },
+            ],
+            callback: function (result) {
+                modules.tt.settings.doSetProjectViewers(projectId, result.viewers);
+            },
+        }).show();
     },
 
     renderProjects: function () {

@@ -1182,7 +1182,14 @@
                     return false;
                 }
 
-                return $this->db->get("select name from tt_projects_viewers where project_id = $projectId order by name");
+                $v = $this->db->get("select name from tt_projects_viewers where project_id = $projectId group by name order by name");
+                $r = [];
+
+                foreach ($v as $n) {
+                    $r[] = $n["name"];
+                }
+
+                return $r;
             }
 
             /**
