@@ -115,6 +115,16 @@
         });
     },
 
+    doAddViewer: function (viewer) {
+        loadingStart();
+        POST("tt", "viewer", false, viewer).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.viewerWasAdded"));
+        }).
+        always(modules.tt.settings.renderViewers);
+    },
+
     doModifyProject: function (project) {
         loadingStart();
         PUT("tt", "project", project["projectId"], project).
@@ -2502,45 +2512,71 @@
     },
 
     addViewer: function () {
-        cardForm({
-            title: i18n("tt.addViewer"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            let fields = [
                 {
-                    id: "name",
-                    type: "text",
-                    title: i18n("tt.viewerName"),
-                    placeholder: i18n("tt.viewerName"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
+                    id: "subject",
+                    text: i18n("tt.subject"),
                 },
                 {
-                    id: "field",
-                    type: "text",
-                    title: i18n("tt.viewerField"),
-                    placeholder: i18n("tt.viewerField"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
+                    id: "description",
+                    text: i18n("tt.description"),
                 },
-            ],
-            callback: function (result) {
-                modules.tt.settings.doAddViewer(result.name, result.field);
-            },
-        }).show();
+            ];
+
+            for (let i in modules.tt.meta.customFields) {
+                fields.push({
+                    id: "[cf]" + modules.tt.meta.customFields[i].field,
+                    text: modules.tt.meta.customFields[i].fieldDisplay,
+                });
+            }
+
+            cardForm({
+                title: i18n("tt.addViewer"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                fields: [
+                    {
+                        id: "name",
+                        type: "text",
+                        title: i18n("tt.viewerName"),
+                        placeholder: i18n("tt.viewerName"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "field",
+                        type: "select2",
+                        title: i18n("tt.viewerField"),
+                        placeholder: i18n("tt.viewerField"),
+                        options: fields,
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                ],
+                callback: function (result) {
+                    modules.tt.settings.doAddViewer(result);
+                },
+            }).show();
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     renderViewer: function (viewer) {
         loadingStart();
-        GET("tt", "viewers", false, true).
+        GET("tt", "viewer", false, true).
         done(v => {
             let code = '';
             for (let i in v.viewers) {
                 if (v.viewers[i].name == viewer) {
-                    code = v.viewers[i].code;
+                    code = v.viewers[i].code?v.viewers[i].code:`// function ${viewer} (value, issue, field) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
@@ -2561,7 +2597,7 @@
             editor.setFontSize(14);
             $("#viewerSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "viewer", viewer, { "body": $.trim(editor.getValue()) }).
+                PUT("tt", "viewer", viewer, { "code": $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));
@@ -2609,7 +2645,7 @@
 
                     for (let i in r.viewers) {
                         rows.push({
-                            uid: i,
+                            uid: r.viewers[i].name,
                             cols: [
                                 {
                                     data: r.viewers[i].name,

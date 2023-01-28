@@ -146,10 +146,13 @@
     "addResolution": "Добавить резолюцию",
     "projectViewers": "Функции форматирования",
     "viewersMenu": "Форматирование",
-    "viewers": "Функции форматирование",
-    "viewerName": "Наименование",
+    "viewers": "Функции форматирования",
+    "viewerName": "Функция",
     "viewerField": "Поле",
     "addViewer": "Добавить функцию",
+    "viewerSave": "Сохранить",
+    "viewerWasAdded": "Функция добавлена",
+    "viewerWasSaved": "Функция сохранена",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

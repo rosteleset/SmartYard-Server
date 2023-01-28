@@ -21,7 +21,7 @@
             }
 
             public static function POST($params) {
-                $success = loadBackend("tt")->addViewer($params['_id'], $params['field']);
+                $success = loadBackend("tt")->addViewer($params['name'], $params['field']);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

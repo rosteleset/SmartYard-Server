@@ -1140,7 +1140,7 @@
              * @inheritDoc
              */
             public function modifyViewer($name, $code) {
-                if (!checkStr($name) || !checkStr($code)) {
+                if (!checkStr($name)) {
                     return false;
                 }
 
