@@ -2501,8 +2501,144 @@
 
     },
 
-    renderViewers: function () {
+    addViewer: function () {
+        cardForm({
+            title: i18n("tt.addViewer"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "name",
+                    type: "text",
+                    title: i18n("tt.viewerName"),
+                    placeholder: i18n("tt.viewerName"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "field",
+                    type: "text",
+                    title: i18n("tt.viewerField"),
+                    placeholder: i18n("tt.viewerField"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules.tt.settings.doAddViewer(result.name, result.field);
+            },
+        }).show();
+    },
 
+    renderViewer: function (viewer) {
+        loadingStart();
+        GET("tt", "viewers", false, true).
+        done(v => {
+            let code = '';
+            for (let i in v.viewers) {
+                if (v.viewers[i].name == viewer) {
+                    code = v.viewers[i].code;
+                    break;
+                }
+            }
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="viewerEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("viewerEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/javascript");
+            editor.setValue(code, -1);
+            editor.clearSelection();
+            editor.setFontSize(14);
+            $("#viewerSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "viewer", viewer, { "body": $.trim(editor.getValue()) }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.viewerWasSaved"));
+                }).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
+    renderViewers: function () {
+        loadingStart();
+        GET("tt", "viewer", false, true).
+        done(r => {
+            console.log(r);
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("tt.addViewer"),
+                        click: modules.tt.settings.addViewer,
+                    },
+                    caption: i18n("tt.viewers"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.viewerName"),
+                    },
+                    {
+                        title: i18n("tt.viewerField"),
+                        fullWidth: true,
+                    },
+                ],
+                edit: name => {
+                    location.href = "#tt.settings&section=viewer&viewer=" + name;
+                },
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in r.viewers) {
+                        rows.push({
+                            uid: i,
+                            cols: [
+                                {
+                                    data: r.viewers[i].name,
+                                },
+                                {
+                                    data: r.viewers[i].field,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("tt.deleteFilter"),
+                                        class: "text-warning",
+                                        click: name => {
+                                            //
+                                        },
+                                    },
+                                ],
+                            },
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     route: function (params) {
@@ -2574,6 +2710,10 @@
 
             case "customFieldsMenu":
                 modules.tt.settings.renderCustomFields();
+                break;
+
+            case "viewer":
+                modules.tt.settings.renderViewer(params["viewer"]);
                 break;
 
             case "viewersMenu":

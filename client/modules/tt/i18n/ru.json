@@ -147,6 +147,9 @@
     "projectViewers": "Функции форматирования",
     "viewersMenu": "Форматирование",
     "viewers": "Функции форматирование",
+    "viewerName": "Наименование",
+    "viewerField": "Поле",
+    "addViewer": "Добавить функцию",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
