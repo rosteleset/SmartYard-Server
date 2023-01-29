@@ -56,7 +56,7 @@
              */
             public function raw($ip, $unit, $msg)
             {
-                $this->clickhouse->insert("syslog", [ [ "date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
+                return $this->clickhouse->insert("syslog", [ [ "date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
             }
 
             /**

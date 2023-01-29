@@ -49,8 +49,9 @@
                                         $groups = loadBackend("groups");
                                         if ($groups) {
                                             $gid = $groups->getGroupByAcronym($this->config["backends"]["authentication"]["default_group"]);
-                                            error_log(print_r([$uid, $gid], true));
-                                            $groups->addUserToGroup($uid, $gid);
+                                            if ($gid) {
+                                                $groups->addUserToGroup($uid, $gid);
+                                            }
                                         }
                                     }
                                     return $this->check_auth($login, $password);
