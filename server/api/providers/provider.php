@@ -47,12 +47,18 @@
             }
 
             public static function index() {
-                return [
-                    "GET",
-                    "PUT",
-                    "POST" => "#same(providers,provider,PUT)",
-                    "DELETE" => "#same(providers,provider,PUT)",
-                ];
+                $providers = loadBackend("providers");
+
+                if ($providers) {
+                    return [
+                        "GET",
+                        "PUT",
+                        "POST" => "#same(providers,provider,PUT)",
+                        "DELETE" => "#same(providers,provider,PUT)",
+                    ];
+                } else {
+                    return false;
+                }
             }
         }
     }

@@ -40,10 +40,10 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET" => "tt",
-                        "POST" => "tt",
-                        "PUT" => "tt",
-                        "DELETE" => "tt",
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
                     ];
                 } else {
                     return false;

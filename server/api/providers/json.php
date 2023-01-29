@@ -31,10 +31,16 @@
             }
 
             public static function index() {
-                return [
-                    "GET" => "#same(providers,provider,GET)",
-                    "PUT" => "#same(providers,provider,PUT)",
-                ];
+                $providers = loadBackend("providers");
+
+                if ($providers) {
+                    return [
+                        "GET" => "#same(providers,provider,GET)",
+                        "PUT" => "#same(providers,provider,PUT)",
+                    ];
+                } else {
+                    return false;
+                }
             }
         }
     }

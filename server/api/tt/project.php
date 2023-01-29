@@ -56,9 +56,9 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "POST" => "tt",
-                        "PUT" => "tt",
-                        "DELETE" => "tt",
+                        "POST",
+                        "PUT",
+                        "DELETE",
                     ];
                 } else {
                     return false;
