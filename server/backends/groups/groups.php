@@ -35,6 +35,12 @@
             abstract public function getGroup($gid);
 
             /**
+             * @param $acronym
+             * @return mixed
+             */
+            abstract public function getGroupByAcronym($acronym);
+
+            /**
              * @param integer $gid gid
              * @param string $acronym group name
              * @param string $name group name
@@ -47,9 +53,8 @@
             /**
              * add user to group
              *
-             * @param integer $gid
-             * @param integer $uid
-             *
+             * @param $acronym
+             * @param $name
              * @return boolean
              */
 
@@ -89,5 +94,12 @@
              */
 
             abstract public function deleteUser($uid);
+
+            /**
+             * @param $uid
+             * @param $gid
+             * @return mixed
+             */
+            abstract public function addUserToGroup($uid, $gid);
         }
     }

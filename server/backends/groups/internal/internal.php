@@ -233,5 +233,31 @@
                     "mode" => "rw",
                 ];
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function getGroupByAcronym($acronym)
+            {
+                return $this->db->get("select gid from core_groups where acronym = :acronym", [
+                    "acronym" => $acronym,
+                ], [
+                    "gid" => "gid",
+                ], [
+                    "fieldlify"
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addUserToGroup($uid, $gid)
+            {
+                if (!checkInt($uid) || !checkInt($gid)) {
+                    return false;
+                }
+
+                return $this->db->insert("insert into core_users_groups (uid, gid) values ($uid, $gid)");
+            }
         }
     }

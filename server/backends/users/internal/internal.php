@@ -110,7 +110,9 @@
                         ":phone" => trim($phone),
                     ])) {
                         $uid = $this->db->lastInsertId();
-                        eMail($this->config, trim($eMail), "new user", "your new password is $password");
+                        if ($eMail) {
+                            eMail($this->config, trim($eMail), "new user", "your new password is $password");
+                        }
                         return $uid;
                     } else {
                         return false;
