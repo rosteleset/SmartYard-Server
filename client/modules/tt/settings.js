@@ -158,6 +158,16 @@
         always(modules.tt.settings.renderCustomFields);
     },
 
+    doDeleteViewer: function (viewer) {
+        loadingStart();
+        DELETE("tt", "viewer", viewer).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.viewerWasDeleted"));
+        }).
+        always(modules.tt.settings.renderViewers);
+    },
+
     doSetWorkflowAlias: function (workflow, alias) {
         loadingStart();
         PUT("tt", "workflow", false, {
@@ -1147,6 +1157,12 @@
     deleteResolution: function (resolutionId) {
         mConfirm(i18n("tt.confirmResolutionDelete", resolutionId.toString()), i18n("confirm"), `danger:${i18n("tt.resolutionDelete")}`, () => {
             modules.tt.settings.doDeleteResolution(resolutionId);
+        });
+    },
+
+    deleteViewer: function (viewer) {
+        mConfirm(i18n("tt.confirmViewerDelete", viewer), i18n("confirm"), `danger:${i18n("tt.viewerDelete")}`, () => {
+            modules.tt.settings.doDeleteViewer(viewer);
         });
     },
 
@@ -2668,7 +2684,6 @@
         loadingStart();
         GET("tt", "viewer", false, true).
         done(r => {
-            console.log(r);
             cardTable({
                 target: "#mainForm",
                 title: {
@@ -2711,9 +2726,7 @@
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
                                         class: "text-warning",
-                                        click: name => {
-                                            //
-                                        },
+                                        click: modules.tt.settings.deleteViewer,
                                     },
                                 ],
                             },
