@@ -23,7 +23,7 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "PUT" => "tt",
+                        "PUT" => "#same(tt,project,PUT)",
                     ];
                 } else {
                     return false;

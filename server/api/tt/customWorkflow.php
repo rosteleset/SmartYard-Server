@@ -39,9 +39,9 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET",
-                        "PUT",
-                        "DELETE",
+                        "GET" => "#same(tt,tt,GET)",
+                        "PUT" => "#same(tt,project,PUT)",
+                        "DELETE" => "#same(tt,project,DELETE)",
                     ];
                 } else {
                     return false;

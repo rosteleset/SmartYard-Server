@@ -41,10 +41,10 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET" => "tt",
-                        "POST" => "tt",
-                        "PUT" => "tt",
-                        "DELETE" => "tt",
+                        "GET" => "#same(tt,tt,GET)",
+                        "POST" => "#same(tt,project,POST)",
+                        "PUT" => "#same(tt,project,PUT)",
+                        "DELETE" => "#same(tt,project,DELETE)",
                     ];
                 } else {
                     return false;

@@ -217,31 +217,31 @@
             console.log(r_);
 
             let filters = `
-            <span class="dropdown">
-                <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
-                <ul class="dropdown-menu" aria-labelledby="ttFilter">
-                    <li class="pointer dropdown-item">Тестовый фильтр бла-бла-бла</li>
-                    <li class="pointer dropdown-item">2</li>
-                    <li class="pointer dropdown-item">3</li>
-                    <li class="pointer dropdown-item">4</li>
-                </ul>
-            </span>
-        `;
+                <span class="dropdown">
+                    <span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.filter")}</span>
+                    <ul class="dropdown-menu" aria-labelledby="ttFilter">
+                        <li class="pointer dropdown-item">Тестовый фильтр бла-бла-бла</li>
+                        <li class="pointer dropdown-item">2</li>
+                        <li class="pointer dropdown-item">3</li>
+                        <li class="pointer dropdown-item">4</li>
+                    </ul>
+                </span>
+            `;
 
             $("#leftTopDynamic").html(`
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
-            </li>
-        `);
-
-            if (myself && myself.uid === 0) {
-                $("#rightTopDynamic").html(`
-                <li class="nav-item">
-                    <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                        <i class="fas fa-lg fa-fw fa-cog"></i>
-                    </a>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
                 </li>
             `);
+
+            if (AVAIL("tt", "project", "POST")) {
+                $("#rightTopDynamic").html(`
+                    <li class="nav-item">
+                        <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                            <i class="fas fa-lg fa-fw fa-cog"></i>
+                        </a>
+                    </li>
+                `);
             }
 
             $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
@@ -249,14 +249,14 @@
             document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 
             $("#mainForm").html(`
-            <div class="row m-1 mt-2">
-                <div class="col col-left">
-                    ${filters}
+                <div class="row m-1 mt-2">
+                    <div class="col col-left">
+                        ${filters}
+                    </div>
+                    <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
                 </div>
-                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
-            </div>
-            <div class="ml-2 mr-2" id="issuesList"></div>
-        `);
+                <div class="ml-2 mr-2" id="issuesList"></div>
+            `);
 
             cardTable({
                 target: "#issuesList",

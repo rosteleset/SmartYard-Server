@@ -29,8 +29,8 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "POST",
-                        "DELETE",
+                        "POST" => "#same(tt,project,POST)",
+                        "DELETE" => "#same(tt,project,DELETE)",
                     ];
                 } else {
                     return false;
