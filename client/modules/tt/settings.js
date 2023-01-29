@@ -2613,7 +2613,7 @@
                         title: i18n("tt.viewerName"),
                         placeholder: i18n("tt.viewerName"),
                         validate: (v) => {
-                            return $.trim(v) !== "";
+                            return $.trim(v) !== "" && typeof window[v] === 'undefined';
                         }
                     },
                     {

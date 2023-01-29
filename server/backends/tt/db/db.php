@@ -1144,10 +1144,11 @@
                     return false;
                 }
 
-                return $this->db->modify("update tt_viewers set code = :code where name = :name", [
-                    "name" => $name,
-                    "code" => $code,
-                ]);
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $name)) {
+                    return false;
+                }
+
+                file_put_contents(__DIR__ . "/../viewers/$name.js", $code);
             }
 
             /**
@@ -1158,6 +1159,12 @@
                     return false;
                 }
 
+                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $name)) {
+                    return false;
+                }
+
+                unlink(__DIR__ . "/../viewers/$name.js");
+
                 return $this->db->modify("delete from tt_viewers where name = :name", [
                     "name" => $name,
                 ]);
@@ -1167,11 +1174,22 @@
              * @inheritDoc
              */
             public function getViewers() {
-                return $this->db->get("select * from tt_viewers order by name", false, [
+                $vs = $this->db->get("select * from tt_viewers order by name", false, [
                     "name" => "name",
-                    "field" => "field",
-                    "code" => "code",
+                    "field" => "field"
                 ]);
+
+                foreach ($vs as &$v) {
+                    $name = $v["name"];
+
+                    if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $name)) {
+                        return false;
+                    }
+
+                    $v["code"] = @file_get_contents(__DIR__ . "/../viewers/$name.js") ? : "// function $name(value, field, issue) {\n\treturn value;\n//}\n";
+                }
+
+                return $vs;
             }
 
             /**

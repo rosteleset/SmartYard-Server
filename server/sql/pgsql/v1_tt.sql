@@ -172,8 +172,7 @@ CREATE INDEX tt_cronworks_crontab on tt_cronworks(crontab);
 CREATE TABLE tt_viewers
 (
     name character varying not null primary key,
-    field character varying,
-    code character varying
+    field character varying
 );
 
 -- projects viewers
