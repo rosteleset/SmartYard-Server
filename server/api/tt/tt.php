@@ -29,6 +29,7 @@
                         "roles" => $tt->getRoles(),
                         "tags" => $tt->getTags(),
                         "viewers" => $tt->getViewers(),
+                        "crontabs" => $tt->getCrontabs(),
                     ];
 
                     return api::ANSWER($meta, "meta");

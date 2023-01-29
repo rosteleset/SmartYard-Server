@@ -125,6 +125,26 @@
         always(modules.tt.settings.renderViewers);
     },
 
+    doAddCrontab: function (crontab) {
+        loadingStart();
+        POST("tt", "crontab", false, crontab).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.crontabWasAdded"));
+        }).
+        always(modules.tt.settings.renderCrontabs);
+    },
+
+    doDeleteCrontab: function (crontabId) {
+        loadingStart();
+        DELETE("tt", "crontab", crontabId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.crontabWasDeleted"));
+        }).
+        always(modules.tt.settings.renderCrontabs);
+    },
+
     doModifyProject: function (project) {
         loadingStart();
         PUT("tt", "project", project["projectId"], project).
@@ -2574,8 +2594,195 @@
         always(loadingDone);
     },
 
-    renderCrontabs: function () {
+    addCrontab: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            GET("accounts", "users").
+            done(response => {
+                let users = [];
 
+                for (let i in response.users) {
+                    if (response.users[i].uid) {
+                        users.push({
+                            id: response.users[i].uid,
+                            text: $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]"),
+                        });
+                    }
+                }
+
+                let crontabs = [
+                    {
+                        id: "minutely",
+                        text: i18n("minutely"),
+                    },
+                    {
+                        id: "5min",
+                        text: i18n("5min"),
+                    },
+                    {
+                        id: "hourly",
+                        text: i18n("hourly"),
+                    },
+                    {
+                        id: "daily",
+                        text: i18n("daily"),
+                    },
+                    {
+                        id: "monthly",
+                        text: i18n("monthly"),
+                    },
+                ];
+
+                let filters = [];
+
+                for (let i in modules.tt.meta.filters) {
+                    filters.push({
+                        id: i,
+                        text: modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i,
+                    });
+                }
+
+                cardForm({
+                    title: i18n("tt.addCrontab"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    fields: [
+                        {
+                            id: "crontab",
+                            type: "select2",
+                            title: i18n("tt.crontab"),
+                            placeholder: i18n("tt.crontab"),
+                            options: crontabs,
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "filter",
+                            type: "select2",
+                            title: i18n("tt.filter"),
+                            placeholder: i18n("tt.filter"),
+                            options: filters,
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "uid",
+                            type: "select2",
+                            title: i18n("tt.crontabUser"),
+                            placeholder: i18n("tt.crontabUser"),
+                            options: users,
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "action",
+                            type: "text",
+                            title: i18n("tt.action"),
+                            placeholder: i18n("tt.action"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                    ],
+                    callback: modules.tt.settings.doAddCrontab,
+                }).show();
+            }).
+            fail(FAIL).
+            always(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
+    },
+
+    deleteCrontab: function (crontabId) {
+        mConfirm(i18n("tt.confirmCrontabDelete", crontabId), i18n("confirm"), `warning:${i18n("tt.crontabDelete")}`, () => {
+            modules.tt.settings.doDeleteCrontab(crontabId);
+        });
+    },
+
+    renderCrontabs: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("tt.addCrontab"),
+                        click: modules.tt.settings.addCrontab,
+                    },
+                    caption: i18n("tt.crontabs"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.crontabId"),
+                    },
+                    {
+                        title: i18n("tt.crontab"),
+                    },
+                    {
+                        title: i18n("tt.filter"),
+                    },
+                    {
+                        title: i18n("tt.crontabUser"),
+                        noWrap: true,
+                    },
+                    {
+                        title: i18n("tt.action"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules.tt.meta.crontabs) {
+                        rows.push({
+                            uid: modules.tt.meta.crontabs[i].crontabId,
+                            cols: [
+                                {
+                                    data: modules.tt.meta.crontabs[i].crontabId,
+                                },
+                                {
+                                    data: modules.tt.meta.crontabs[i].crontab,
+                                },
+                                {
+                                    data: modules.tt.meta.crontabs[i].filter,
+                                },
+                                {
+                                    data: modules.tt.meta.crontabs[i].user.login,
+                                },
+                                {
+                                    data: modules.tt.meta.crontabs[i].action,
+                                    fullWidth: true,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("tt.deleteFilter"),
+                                        class: "text-warning",
+                                        click: modules.tt.settings.deleteCrontab,
+                                    },
+                                ],
+                            },
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
     },
 
     addViewer: function () {

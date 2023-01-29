@@ -156,6 +156,14 @@
     "viewerSave": "Сохранить",
     "viewerWasAdded": "Функция добавлена",
     "viewerWasSaved": "Функция сохранена",
+    "crontabId": "#",
+    "crontab": "Расписание",
+    "crontabUser": "От имени",
+    "action": "Действие",
+    "confirmCrontabDelete": "Удалить действие \"%s\" из расписания?",
+    "crontabDelete": "Удалить действие",
+    "crontabWasAdded": "Действие добавлено",
+    "crontabWasDeleted": "Действие удалено",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
