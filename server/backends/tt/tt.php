@@ -542,6 +542,26 @@
             abstract public function setProjectViewers($projectId, $viewers);
 
             /**
+             * @return mixed
+             */
+            abstract public function getCrontabs();
+
+            /**
+             * @param $crontab
+             * @param $filter
+             * @param $uid
+             * @param $action
+             * @return mixed
+             */
+            abstract public function addCrontab($crontab, $filter, $uid, $action);
+
+            /**
+             * @param $crontabId
+             * @return mixed
+             */
+            abstract public function deleteCrontab($crontabId);
+
+            /**
              * @param $issue
              * @return mixed
              */

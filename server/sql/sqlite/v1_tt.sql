@@ -156,17 +156,17 @@ CREATE INDEX tt_filters_available_filter on tt_filters_available (filter);
 CREATE INDEX tt_filters_available_uid on tt_filters_available (uid);
 CREATE INDEX tt_filters_available_gid on tt_filters_available (gid);
 
--- crons
-CREATE TABLE tt_cronworks
+-- crontabs
+CREATE TABLE tt_crontabs
 (
-    cronwork_id integer not null primary key autoincrement,
+    crontab_id integer not null primary key autoincrement,
     crontab text,
     filter text,
     uid integer,
     action text
 );
-CREATE UNIQUE INDEX tt_cronworks_uniq on tt_cronworks(filter, uid, action);
-CREATE INDEX tt_cronworks_crontab on tt_cronworks(crontab);
+CREATE UNIQUE INDEX tt_crontabs_uniq on tt_crontabs(filter, uid, action);
+CREATE INDEX tt_crontabs_crontab on tt_crontabs(crontab);
 
 -- viewers
 CREATE TABLE tt_viewers

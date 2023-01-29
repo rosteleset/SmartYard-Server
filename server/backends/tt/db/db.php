@@ -1233,6 +1233,54 @@
             /**
              * @inheritDoc
              */
+            public function getCrontabs() {
+                $cs = $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
+                    "crontab_id" => "crontabId",
+                    "crontab" => "crontab",
+                    "filter" => "filter",
+                    "uid" => "uid",
+                    "action" => "action",
+                ]);
+
+                $users = loadBackend("users");
+
+                foreach ($cs as &$c) {
+                    $c['user'] = $users->getUser($c["uid"]);
+                }
+
+                return $cs;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addCrontab($crontab, $filter, $uid, $action) {
+                if (!checkInt($uid)) {
+                    return false;
+                }
+
+                return $this->db->insert("insert into tt_crontabs (crontab, filter, uid, action) values (:crontab, :filter, :uid, :action)", [
+                    "crontab" => $crontab,
+                    "filter" => $filter,
+                    "uid" => $uid,
+                    "action" => $action,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteCrontab($crontabId) {
+                if (!checkInt($crontabId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from tt_crontabs where crontab_id = $crontabId");
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
