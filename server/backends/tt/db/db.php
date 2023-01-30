@@ -391,27 +391,19 @@
             /**
              * @inheritDoc
              */
-            public function addResolution($resolution)
+            public function addResolution($resolution, $protected = 0)
             {
                 $resolution = trim($resolution);
+
+                if (!checkInt($protected)) {
+                    return false;
+                }
 
                 if (!$resolution) {
                     return false;
                 }
 
-                try {
-                    $sth = $this->db->prepare("insert into tt_issue_resolutions (resolution) values (:resolution)");
-                    if (!$sth->execute([
-                        ":resolution" => $resolution,
-                    ])) {
-                        return false;
-                    }
-
-                    return $this->db->lastInsertId();
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
+                return $this->db->insert("insert into tt_issue_resolutions (resolution, alias, protected) values (:resolution, :resolution, :protected)", [ "resolution" => $resolution, "protected" => $protected ]);
             }
 
             /**
@@ -425,17 +417,8 @@
                     return false;
                 }
 
-                try {
-                    $sth = $this->db->prepare("update tt_issue_resolutions set resolution = :resolution where issue_resolution_id = $resolutionId");
-                    $sth->execute([
-                        ":resolution" => $resolution,
-                    ]);
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                return true;
+                return $this->db->modify("update tt_issue_resolutions set resolution = :resolution where issue_resolution_id = $resolutionId", [ "resolution" => $resolution, ]) +
+                    $this->db->modify("update tt_issue_resolutions set alias = :resolution where issue_resolution_id = $resolutionId and protected = 0", [ "resolution" => $resolution, ]);
             }
 
             /**
@@ -447,16 +430,8 @@
                     return false;
                 }
 
-                try {
-                    $this->db->exec("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId and protected = 0");
-                    $this->db->exec("delete from tt_projects_resolutions where issue_resolution_id not in (select issue_resolution_id from tt_issue_resolutions)");
-                    // TODO: delete all derivatives
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                return true;
+                return $this->db->modify("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId and protected = 0") +
+                    $this->db->modify("delete from tt_projects_resolutions where issue_resolution_id not in (select issue_resolution_id from tt_issue_resolutions)");
             }
 
             /**

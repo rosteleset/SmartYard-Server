@@ -259,7 +259,7 @@
              * @return false|integer
              */
 
-            abstract public function addResolution($resolution);
+            abstract public function addResolution($resolution, $protected = 0);
 
             /**
              * @param $resolutionId
