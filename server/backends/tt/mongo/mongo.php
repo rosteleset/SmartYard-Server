@@ -158,7 +158,7 @@
                     "issues" => $i,
                     "skip" => $skip,
                     "limit" => $limit,
-                    "count" => $this->mongo->$db->issues->count($query),
+                    "count" => $this->mongo->$db->issues->countDocuments($query),
                 ];
             }
 
