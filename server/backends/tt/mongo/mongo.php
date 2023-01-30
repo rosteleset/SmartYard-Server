@@ -111,13 +111,15 @@
 
                 $files = loadBackend("files");
 
-                $issueFiles = $files->searchFiles([
-                    "metadata.issue" => true,
-                    "metadata.issue_id" => $issue,
-                ]);
+                if ($files) {
+                    $issueFiles = $files->searchFiles([
+                        "metadata.issue" => true,
+                        "metadata.issue_id" => $issue,
+                    ]);
 
-                foreach ($issueFiles as $file) {
-                    $files->deleteFile($file["id"]);
+                    foreach ($issueFiles as $file) {
+                        $files->deleteFile($file["id"]);
+                    }
                 }
 
                 $this->mongo->$db->issues->deleteMany([
@@ -160,10 +162,18 @@
 
                 $i = [];
 
+                $files = loadBackend("files");
+
                 foreach ($issues as $issue) {
                     $x = json_decode(json_encode($issue), true);
-                    $x["id"] = $x["_id"]['$oid'];
+                    $x["id"] = $x["_id"]["\$oid"];
                     unset($x["_id"]);
+                    if ($files) {
+                        $x["attachments"] = $files->searchFiles([
+                            "metadata.issue" => true,
+                            "metadata.issue_id" => $issue["issue_id"],
+                        ]);
+                    }
                     $i[] = $x;
                 }
 
