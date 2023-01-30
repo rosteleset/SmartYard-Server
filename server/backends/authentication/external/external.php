@@ -41,7 +41,7 @@
                         $url = str_replace("%%password", $password, $url);
                         try {
                             $ok = trim(@file_get_contents($url));
-                            if ($ok === "OK") {
+                            if (strtolower($ok) === "ok") {
                                 $uid = $users->addUser($login, $login);
                                 if ($uid) {
                                     $users->setPassword($uid, $password);
