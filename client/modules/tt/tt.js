@@ -219,107 +219,115 @@
         $("#subTop").html("");
         $("#altForm").hide();
 
-        GET("tt", "myFilters").
-        done(r_ => {
-            let f = false;
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            GET("tt", "myFilters").
+            done(r_ => {
+                let f = false;
 
-            try {
-                f = r_.filters[$.cookie("_tt_issue_filter")];
-            } catch (e) {
-                //
-            }
+                try {
+                    f = r_.filters[$.cookie("_tt_issue_filter")];
+                } catch (e) {
+                    //
+                }
 
-            let filters = `<span class="dropdown">`;
-            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
-            filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-            for (let i in r_.filters) {
-                filters += `<li class="pointer dropdown-item" onclick="modules.tt.selectFilter('${i}')">${r_.filters[i]}</li>`;
+                let filters = `<span class="dropdown">`;
+                filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
+                filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+                for (let i in r_.filters) {
+                    filters += `<li class="pointer dropdown-item" onclick="modules.tt.selectFilter('${i}')">${r_.filters[i]}</li>`;
 
-            }
-            filters += `</ul></span>`;
+                }
+                filters += `</ul></span>`;
 
-            $("#leftTopDynamic").html(`
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
-                </li>
-            `);
-
-            if (AVAIL("tt", "project", "POST")) {
-                $("#rightTopDynamic").html(`
-                    <li class="nav-item">
-                        <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                            <i class="fas fa-lg fa-fw fa-cog"></i>
-                        </a>
+                $("#leftTopDynamic").html(`
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
                     </li>
                 `);
-            }
 
-            $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
+                if (AVAIL("tt", "project", "POST")) {
+                    $("#rightTopDynamic").html(`
+                        <li class="nav-item">
+                            <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                                <i class="fas fa-lg fa-fw fa-cog"></i>
+                            </a>
+                        </li>
+                    `);
+                }
 
-            document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
+                $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
 
-            f = $.cookie("_tt_issue_filter");
+                document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 
-            QUERY("tt", "issues", {
-                "filter": f?f:'',
-            }, true).
-            done(issues => {
-                console.log(issues);
+                f = $.cookie("_tt_issue_filter");
 
-                $("#mainForm").html(`
-                    <div class="row m-1 mt-2">
-                        <div class="col col-left">
-                            ${filters}
+                QUERY("tt", "issues", {
+                    "filter": f?f:'',
+                }, true).
+                done(response => {
+                    let issues = response.issues;
+
+                    $("#mainForm").html(`
+                        <div class="row m-1 mt-2">
+                            <div class="col col-left">
+                                ${filters}
+                            </div>
+                            <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
                         </div>
-                        <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
-                    </div>
-                    <div class="ml-2 mr-2" id="issuesList"></div>
-                `);
+                        <div class="ml-2 mr-2" id="issuesList"></div>
+                    `);
 
-                cardTable({
-                    target: "#issuesList",
-                    columns: [
-                        {
-                            title: i18n("tt.issueId"),
-                        },
-                        {
-                            title: i18n("tt.subject"),
-                            nowrap: true,
-                            fullWidth: true,
-                        },
-                    ],
-                    rows: () => {
-                        let rows = [];
+                    cardTable({
+                        target: "#issuesList",
+                        columns: [
+                            {
+                                title: i18n("tt.issueId"),
+                                nowrap: true,
+                            },
+                            {
+                                title: i18n("tt.subject"),
+                                nowrap: true,
+                                fullWidth: true,
+                            },
+                        ],
+                        rows: () => {
+                            let rows = [];
 
-                        for (let i = 0; i < 100; i++) {
-                            rows.push({
-                                uid: i,
-                                cols: [
-                                    {
-                                        data: i,
-                                    },
-                                    {
-                                        data: i,
-                                    },
-                                ],
-                                dropDown: {
-                                    items: [
+                            for (let i = 0; i < issues.issues.length; i++) {
+                                rows.push({
+                                    uid: issues.issues["issue_id"],
+                                    cols: [
                                         {
-                                            icon: "fas fa-trash-alt",
-                                            title: i18n("users.delete"),
-                                            class: "text-warning",
-                                            click: issueId => {
-                                                //
-                                            },
+                                            data: issues.issues[i]["issue_id"],
+                                            nowrap: true,
+                                        },
+                                        {
+                                            data: issues.issues[i]["subject"],
                                         },
                                     ],
-                                },
-                            });
-                        }
+                                    dropDown: {
+//                                        items: [
+//                                            {
+//                                                icon: "fas fa-trash-alt",
+//                                                title: i18n("users.delete"),
+//                                                class: "text-warning",
+//                                                click: issueId => {
+//                                                    //
+//                                                },
+//                                            },
+//                                        ],
+                                    },
+                                });
+                            }
 
-                        return rows;
-                    },
-                });
+                            return rows;
+                        },
+                    });
+                }).
+                fail(FAIL).
+                always(loadingDone);
             }).
             fail(FAIL).
             always(loadingDone);

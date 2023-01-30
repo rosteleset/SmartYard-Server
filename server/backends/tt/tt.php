@@ -587,7 +587,7 @@
              * @param $limit
              * @return mixed
              */
-            abstract public function getIssues($query, $fields = [], $sort = 'issue_id', $skip = 0, $limit = 100);
+            abstract public function getIssues($query, $fields = [], $sort = [ "issue_id" => 1 ], $skip = 0, $limit = 100);
 
             /**
              * @param $issue

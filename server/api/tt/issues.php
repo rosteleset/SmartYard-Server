@@ -24,15 +24,16 @@
                         $filter = @json_decode($tt->getFilter($params["filter"]), true);
                         $myFilters = $tt->myFilters();
 
-                        if (@$myFilters[$filter["name"]]) {
-                            $issues = $tt->getIssues(@$filter["filter"], @$filter["fields"], @$params["sortBy"], @$params["skip"], @$params["limit"]);
+                        if (@$myFilters[$params["filter"]]) {
+                            $issues = $tt->getIssues(@$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "issue_id" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 100);
                         }
                     } catch (\Exception $e) {
                         setLastError($e->getMessage());
+                        return api::ERROR();
                     }
                 }
 
-                return api::ANSWER($issues);
+                return api::ANSWER($issues, ($issues !== false)?"issues":"notFound");
             }
 
             public static function index() {

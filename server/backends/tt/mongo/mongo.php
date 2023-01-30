@@ -130,7 +130,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($query, $fields = [], $sort = 'issue_id', $skip = 0, $limit = 100)
+            public function getIssues($query, $fields = [], $sort = [ "issue_id" => 1 ], $skip = 0, $limit = 100)
             {
                 $projects = [];
                 $db = $this->dbName;
@@ -149,8 +149,10 @@
 
                 $projection = [];
 
-                foreach ($fields as $field) {
-                    $projection[$field] = 1;
+                if ($fields) {
+                    foreach ($fields as $field) {
+                        $projection[$field] = 1;
+                    }
                 }
 
                 $issues = $this->mongo->$db->issues->find($query, [
