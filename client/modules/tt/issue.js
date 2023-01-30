@@ -22,7 +22,7 @@
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].projectId == project) {
                             for (let j in modules.tt.meta.projects[i].workflows) {
-                                let a = "";
+                                let a = modules.tt.meta.projects[i].workflows[j];
                                 for (let k in modules.tt.meta.workflowAliases) {
                                     if (modules.tt.meta.workflowAliases[k].workflow == modules.tt.meta.projects[i].workflows[j]) {
                                         a = modules.tt.meta.workflowAliases[k].alias;

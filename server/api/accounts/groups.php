@@ -52,7 +52,7 @@
 
                 if ($groups) {
                     return [
-                        "GET",
+                        "GET" => "#common",
                     ];
                 } else {
                     return [ ];

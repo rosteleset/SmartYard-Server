@@ -58,7 +58,7 @@
 
             public static function index() {
                 return [
-                    "GET",
+                    "GET" => "#common",
                 ];
             }
         }

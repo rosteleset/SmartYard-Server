@@ -1091,7 +1091,7 @@
 
                 $f = [];
                 foreach ($filters as $filter) {
-                    $f[] = $this->getFilter($filter["filter"]);
+                    $f[$filter["filter"]] = @json_decode($this->getFilter($filter["filter"]), true)["name"] ? : $filter["filter"];
                 }
 
                 return $f;
