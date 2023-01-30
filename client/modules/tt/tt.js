@@ -313,18 +313,6 @@
                                             click: modules.tt.issueView,
                                         },
                                     ],
-//                                    dropDown: {
-//                                        items: [
-//                                            {
-//                                                icon: "fas fa-trash-alt",
-//                                                title: i18n("users.delete"),
-//                                                class: "text-warning",
-//                                                click: issueId => {
-//                                                    //
-//                                                },
-//                                            },
-//                                        ],
-//                                    },
                                 });
                             }
 
