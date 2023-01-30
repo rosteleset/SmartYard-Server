@@ -63,7 +63,7 @@
              * @param $query
              * @return mixed
              */
-            abstract public function searchFilesBy($query);
+            abstract public function searchFiles($query);
 
             /**
              * delete file

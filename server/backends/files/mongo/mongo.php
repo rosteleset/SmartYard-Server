@@ -107,7 +107,7 @@
             /**
              * @inheritDoc
              */
-            public function searchFilesBy($query)
+            public function searchFiles($query)
             {
                 $collection = "fs.files";
                 $db = $this->dbName;
@@ -116,6 +116,9 @@
 
                 $files = [];
                 foreach ($cursor as $document) {
+                    $document = json_decode(json_encode($document), true);
+                    $document["id"] = (string)$document["_id"]["\$oid"];
+                    unset($document["_id"]);
                     $files[] = $document;
                 }
 
@@ -131,9 +134,7 @@
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
-
-                $bucket->delete($fileId);
+                $bucket->delete(new \MongoDB\BSON\ObjectId($uuid));
             }
 
             /**

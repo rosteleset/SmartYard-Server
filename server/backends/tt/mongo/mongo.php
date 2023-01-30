@@ -52,7 +52,7 @@
 
                 $me = $this->whoAmI();
 
-                if (@$me[$acr] >= 30) { // 30, 'participant.senior', can create issues
+                if (@$me[$acr] >= 30 || $this->uid === 0) { // 30, 'participant.senior', can create issues or admin
                     $db = $this->dbName;
 
                     $aiid = $this->redis->incr("aiid_" . $acr);
@@ -109,7 +109,20 @@
             {
                 $db = $this->dbName;
 
-                $this->mongo->$db->issues->deleteMany([]);
+                $files = loadBackend("files");
+
+                $issueFiles = $files->searchFiles([
+                    "metadata.issue" => true,
+                    "metadata.issue_id" => $issue,
+                ]);
+
+                foreach ($issueFiles as $file) {
+                    $files->deleteFile($file["id"]);
+                }
+
+                $this->mongo->$db->issues->deleteMany([
+                    "issue_id" => $issue,
+                ]);
             }
 
             /**
@@ -225,8 +238,8 @@
             {
                 if ($part == "5min") {
                     if ($this->redis->get("ttReCreateIndexes")) {
-                        $this->reCreateIndexes();
                         $this->redis->delete("ttReCreateIndexes");
+                        $this->reCreateIndexes();
                     }
                 }
                 return parent::cron($part);
@@ -246,14 +259,6 @@
             public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor) {
                 $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
                 $this->redis->set("ttReCreateIndexes", true);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getJournal($issue)
-            {
-                // TODO: Implement getJournal() method.
             }
 
             /**

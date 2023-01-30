@@ -645,10 +645,5 @@
              * @return mixed
              */
             abstract public function addJournalRecord($issue, $record);
-
-            /**
-             * @return mixed
-             */
-            abstract public function getJournal($issue);
         }
     }
