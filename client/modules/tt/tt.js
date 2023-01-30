@@ -213,6 +213,10 @@
         modules.tt.route();
     },
 
+    issueView: function (issue) {
+        console.log(issue);
+    },
+
     route: function (params) {
         loadingStart();
 
@@ -297,17 +301,19 @@
 
                             for (let i = 0; i < issues.issues.length; i++) {
                                 rows.push({
-                                    uid: issues.issues["issue_id"],
+                                    uid: issues.issues[i]["issue_id"],
                                     cols: [
                                         {
                                             data: issues.issues[i]["issue_id"],
                                             nowrap: true,
+                                            click: modules.tt.issueView,
                                         },
                                         {
                                             data: issues.issues[i]["subject"],
+                                            click: modules.tt.issueView,
                                         },
                                     ],
-                                    dropDown: {
+//                                    dropDown: {
 //                                        items: [
 //                                            {
 //                                                icon: "fas fa-trash-alt",
@@ -318,7 +324,7 @@
 //                                                },
 //                                            },
 //                                        ],
-                                    },
+//                                    },
                                 });
                             }
 
