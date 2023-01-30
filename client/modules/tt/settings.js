@@ -122,6 +122,9 @@
         done(() => {
             message(i18n("tt.viewerWasAdded"));
         }).
+        done(() => {
+            location.href = "#tt.settings&section=viewer&viewer=" + viewer.name;
+        }).
         always(modules.tt.settings.renderViewers);
     },
 
@@ -2834,9 +2837,7 @@
                         }
                     },
                 ],
-                callback: function (result) {
-                    modules.tt.settings.doAddViewer(result);
-                },
+                callback: modules.tt.settings.doAddViewer,
             }).show();
         }).
         fail(FAIL).
