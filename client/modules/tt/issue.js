@@ -32,7 +32,7 @@
                                 w.push({
                                     id: modules.tt.meta.projects[i].workflows[j],
                                     text: $.trim(a + " [" + modules.tt.meta.projects[i].workflows[j] + "]"),
-                                    selected: $.cookie("lastIssueWorkflow") == modules.tt.meta.projects[i].workflows[j],
+                                    selected: $.cookie("_last_issue_workflow") == modules.tt.meta.projects[i].workflows[j],
                                 });
                             }
                             break;
@@ -54,11 +54,11 @@
                 projects.push({
                     id: modules.tt.meta.projects[i].projectId,
                     text: $.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"),
-                    selected: $.cookie("lastIssueProject") == modules.tt.meta.projects[i].projectId,
+                    selected: $.cookie("_last_issue_project") == modules.tt.meta.projects[i].projectId,
                 });
             }
 
-            let project = $.cookie("lastIssueProject")?$.cookie("lastIssueProject"):"";
+            let project = $.cookie("_last_issue_project")?$.cookie("_last_issue_project"):"";
 
             cardForm({
                 title: i18n("tt.createIssue"),
@@ -99,8 +99,8 @@
                 ],
                 callback: function (result) {
                     if (result.project && result.workflow) {
-                        $.cookie("lastIssueProject", result.project, { expires: 36500, insecure: config.insecureCookie });
-                        $.cookie("lastIssueWorkflow", result.workflow, { expires: 36500, insecure: config.insecureCookie });
+                        $.cookie("_last_issue_project", result.project, { expires: 36500, insecure: config.insecureCookie });
+                        $.cookie("_last_issue_workflow", result.workflow, { expires: 36500, insecure: config.insecureCookie });
                     }
                     location.href = `#tt.issue&action=create&project=${result.project}&workflow=${result.workflow}`;
                 },
