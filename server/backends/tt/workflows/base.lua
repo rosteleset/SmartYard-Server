@@ -14,19 +14,24 @@ function createIssueTemplate()
     }
 end
 
-function availableActions(issueId)
+function availableActions(issue)
+    return {}
+end
+
+function actionTemplate(issue, action)
 --
 end
 
-function actionTemplate(issueId, action)
---
-end
-
-function doAction(issueId, action, fields)
+function doAction(issue, action, fields)
 --
 end
 
 function createIssue(issue)
     utils.error_log(utils.print_r(issue))
     return tt.createIssue(issue)
+end
+
+function viewIssue(issue)
+    utils.error_log(utils.print_r(issue))
+    return issue
 end
