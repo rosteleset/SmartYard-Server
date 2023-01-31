@@ -650,5 +650,11 @@
              * @return mixed
              */
             abstract public function addJournalRecord($issue, $record);
+
+            /**
+             * @param $query
+             * @return mixed
+             */
+            abstract public function preprocessFilter($query);
         }
     }

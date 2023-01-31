@@ -64,6 +64,10 @@
                     $issue["created"] = time();
                     $issue["author"] = $this->login;
 
+                    $issue["assigned"] = array_values($issue["assigned"]);
+                    $issue["watchers"] = array_values($issue["watchers"]);
+                    $issue["tags"] = array_values($issue["tags"]);
+
                     try {
                         if ($attachments) {
                             $files = loadBackend("files");
@@ -140,6 +144,8 @@
                 foreach ($me as $i => $r) {
                     $projects[] = $i;
                 }
+
+                $query = $this->preprocessFilter($query);
 
                 if ($query) {
                     $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
@@ -280,6 +286,14 @@
             public function addJournalRecord($issue, $record)
             {
                 // TODO: Implement addJournalRecord() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function preprocessFilter($query)
+            {
+                return $query;
             }
         }
     }

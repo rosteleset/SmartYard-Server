@@ -63,7 +63,7 @@
         for (let i in modules.tt.meta.tags) {
             if (modules.tt.meta.tags[i].projectId == projectId) {
                 tags.push({
-                    id: modules.tt.meta.tags[i].tagId,
+                    id: modules.tt.meta.tags[i].tag,
                     text: modules.tt.meta.tags[i].tag,
                 });
             }
