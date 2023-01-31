@@ -1021,6 +1021,23 @@
                     return false;
                 }
 
+                $mobileChars = [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
+
+                $t = "";
+
+                for ($i = 0; $i < strlen($mobile); $i++) {
+                    if (in_array($mobile[$i], $mobileChars)) {
+                        $t .= $mobile[$i];
+                    }
+                }
+
+                $mobile = $t;
+
+                if (!checkStr($mobile)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
                 $subscriberId = $this->db->get("select house_subscriber_id from houses_subscribers_mobile where id = :mobile", [
                     "mobile" => $mobile,
                 ], [
@@ -1116,6 +1133,23 @@
 
                 if (@$params["mobile"]) {
                     if (!checkStr($params["mobile"], [ "minLength" => 6, "maxLength" => 32 ])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    $mobileChars = [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
+
+                    $t = "";
+
+                    for ($i = 0; $i < strlen($params["mobile"]); $i++) {
+                        if (in_array($params["mobile"][$i], $mobileChars)) {
+                            $t .= $params["mobile"][$i];
+                        }
+                    }
+
+                    $params["mobile"] = $t;
+
+                    if (!checkStr($params["mobile"])) {
                         setLastError("invalidParams");
                         return false;
                     }

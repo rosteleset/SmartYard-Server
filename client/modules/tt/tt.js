@@ -293,14 +293,14 @@
                         let issues = response.issues;
 
                         $("#mainForm").html(`
-                        <div class="row m-1 mt-2">
-                            <div class="col col-left">
-                                ${filters}
+                            <div class="row m-1 mt-2">
+                                <div class="col col-left">
+                                    ${filters}
+                                </div>
+                                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
                             </div>
-                            <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
-                        </div>
-                        <div class="ml-2 mr-2" id="issuesList"></div>
-                    `);
+                            <div class="ml-2 mr-2" id="issuesList"></div>
+                        `);
 
                         $(".tt_issues_filter").off("click").on("click", function () {
                             modules.tt.selectFilter($(this).attr("data-filter-name"));
@@ -344,7 +344,7 @@
                                 },
                             });
                         } else {
-                            $("#mainForm").append(`<span class="ml-3 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
+                            $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
                         }
                     }).
                     fail(FAIL).

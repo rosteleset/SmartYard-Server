@@ -116,7 +116,7 @@
                     id: "mobile",
                     type: "text",
                     title: i18n("addresses.mobile"),
-                    placeholder: i18n("addresses.mobile"),
+                    placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
@@ -241,7 +241,7 @@
                         id: "mobile",
                         type: "text",
                         title: i18n("addresses.mobile"),
-                        placeholder: i18n("addresses.mobile"),
+                        placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
                         validate: (v) => {
                             return $.trim(v) !== "";
                         },
