@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
-            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "#addresses", true);
+            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "#addresses", "households");
         }
 
         loadSubModules("addresses", [

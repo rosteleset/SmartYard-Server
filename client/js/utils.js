@@ -297,16 +297,12 @@ function i18n(msg, ...args) {
     }
 }
 
-var separatorForNextItem = false;
-
-function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
-    if ((separator && !mainSidebarFirst) || separatorForNextItem) {
+function leftSide(button, title, target, group, withibleOnlyWhenActive) {
+    if (group != mainSidebarGroup && !mainSidebarFirst) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
         `);
-
-        separator = false;
-        separatorForNextItem = false;
+        mainSidebarGroup = group;
     }
 
     let [ route ] = hashParse();
@@ -321,10 +317,6 @@ function leftSide(button, title, target, separator, withibleOnlyWhenActive) {
     `);
 
     mainSidebarFirst = false;
-
-    if (separator) {
-        separatorForNextItem = true;
-    }
 }
 
 function loadModule() {

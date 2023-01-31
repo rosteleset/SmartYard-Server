@@ -5,6 +5,7 @@ const loadingProgress = new ldBar("#loadingProgress");
 var lastHash = false;
 var currentPage = false;
 var mainSidebarFirst = true;
+var mainSidebarGroup = false;
 var config = false;
 var lang = false;
 var myself = false;

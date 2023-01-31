@@ -3,7 +3,7 @@
 
     init: function () {
         if (AVAIL("tt", "tt")) {
-            leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt", true);
+            leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt", "tt");
         }
         loadSubModules("tt", [
             "issue",
@@ -213,7 +213,7 @@
         window.location.href = `#tt&filter=${filter}`;
     },
 
-    issueView: function (issue) {
+    viewIssue: function (issue) {
         window.location.href = `#tt&issue=${issue}`;
     },
 
@@ -229,7 +229,7 @@
             if (params["issue"]) {
                 GET("tt", "issue", params["issue"], true).
                 done(r => {
-                    console.log(r.issue);
+                    $("#mainForm").html(r.issue["issue_id"]);
                 }).
                 fail(FAIL).
                 always(loadingDone)
@@ -330,11 +330,11 @@
                                                 {
                                                     data: issues.issues[i]["issue_id"],
                                                     nowrap: true,
-                                                    click: modules.tt.issueView,
+                                                    click: modules.tt.viewIssue,
                                                 },
                                                 {
                                                     data: issues.issues[i]["subject"],
-                                                    click: modules.tt.issueView,
+                                                    click: modules.tt.viewIssue,
                                                 },
                                             ],
                                         });

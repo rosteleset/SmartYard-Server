@@ -4,7 +4,7 @@
 
     init: function () {
         if (AVAIL("accounts", "group", "POST")) {
-            leftSide("fas fa-fw fa-users", i18n("groups.groups"), "#groups");
+            leftSide("fas fa-fw fa-users", i18n("groups.groups"), "#groups", "accounts");
         }
         moduleLoaded("groups", this);
     },

@@ -235,7 +235,7 @@
             issue: issue,
         }).
         done(result => {
-            console.log(result);
+            modules.tt.viewIssue(result.id);
         }).
         fail(FAIL).
         always(() => {

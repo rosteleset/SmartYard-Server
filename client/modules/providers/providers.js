@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("providers", "provider", "GET")) {
-            leftSide("fas fa-fw fa-network-wired", i18n("providers.providers"), "#providers", true);
+            leftSide("fas fa-fw fa-network-wired", i18n("providers.providers"), "#providers", "providers");
         }
         moduleLoaded("providers", this);
     },
