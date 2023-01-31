@@ -150,6 +150,7 @@
                 $projection = [];
 
                 if ($fields) {
+                    $projection["issue_id"] = 1;
                     foreach ($fields as $field) {
                         $projection[$field] = 1;
                     }

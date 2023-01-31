@@ -1063,6 +1063,26 @@
             /**
              * @inheritDoc
              */
+            public function myGroups()
+            {
+                $groups = loadBackend("groups");
+
+                $g = [];
+
+                if ($groups) {
+                    $groups = $groups->getGroups($this->uid);
+
+                    foreach ($groups as $group) {
+                        $g[] = $group["acronym"];
+                    }
+                }
+
+                return $g;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function myFilters()
             {
                 $groups = loadBackend("groups");

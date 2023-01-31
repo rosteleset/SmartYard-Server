@@ -632,6 +632,11 @@
             /**
              * @return mixed
              */
+            abstract public function myGroups();
+
+            /**
+             * @return mixed
+             */
             abstract public function myFilters();
 
             /**

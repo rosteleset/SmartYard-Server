@@ -30,6 +30,8 @@
                         "tags" => $tt->getTags(),
                         "viewers" => $tt->getViewers(),
                         "crontabs" => $tt->getCrontabs(),
+                        "whoAmI" => $tt->whoAmI(),
+                        "myGrooups" => $tt->myGroups(),
                     ];
 
                     return api::ANSWER($meta, "meta");
