@@ -7,7 +7,7 @@
         "password": "default_password"
     },
     "api": {
-           "internal": "https://rbt-example-host/internal"
+        "internal": "https://rbt-example-host/internal"
     },
     "hw": {
         "beward": [
