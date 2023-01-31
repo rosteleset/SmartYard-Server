@@ -210,7 +210,9 @@
 
     selectFilter: function (filter) {
         $.cookie("_tt_issue_filter", filter, { expires: 3650, insecure: config.insecureCookie });
-        modules.tt.route();
+        modules.tt.route({
+            filter: filter,
+        });
     },
 
     issueView: function (issue) {
@@ -236,14 +238,19 @@
                     //
                 }
 
+                let fcount = 0;
                 let filters = `<span class="dropdown">`;
                 filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
                 for (let i in r_.filters) {
-                    filters += `<li class="pointer dropdown-item" onclick="modules.tt.selectFilter('${i}')">${r_.filters[i]}</li>`;
-
+                    filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${i}">${r_.filters[i]}</li>`;
+                    fcount++;
                 }
                 filters += `</ul></span>`;
+
+                if (!fcount) {
+                    filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
+                }
 
                 $("#leftTopDynamic").html(`
                     <li class="nav-item d-none d-sm-inline-block">
@@ -283,42 +290,50 @@
                         <div class="ml-2 mr-2" id="issuesList"></div>
                     `);
 
-                    cardTable({
-                        target: "#issuesList",
-                        columns: [
-                            {
-                                title: i18n("tt.issueId"),
-                                nowrap: true,
-                            },
-                            {
-                                title: i18n("tt.subject"),
-                                nowrap: true,
-                                fullWidth: true,
-                            },
-                        ],
-                        rows: () => {
-                            let rows = [];
-
-                            for (let i = 0; i < issues.issues.length; i++) {
-                                rows.push({
-                                    uid: issues.issues[i]["issue_id"],
-                                    cols: [
-                                        {
-                                            data: issues.issues[i]["issue_id"],
-                                            nowrap: true,
-                                            click: modules.tt.issueView,
-                                        },
-                                        {
-                                            data: issues.issues[i]["subject"],
-                                            click: modules.tt.issueView,
-                                        },
-                                    ],
-                                });
-                            }
-
-                            return rows;
-                        },
+                    $(".tt_issues_filter").off("click").on("click", function () {
+                        modules.tt.selectFilter($(this).attr("data-filter-name"));
                     });
+
+                    if (issues.issues) {
+                        cardTable({
+                            target: "#issuesList",
+                            columns: [
+                                {
+                                    title: i18n("tt.issueId"),
+                                    nowrap: true,
+                                },
+                                {
+                                    title: i18n("tt.subject"),
+                                    nowrap: true,
+                                    fullWidth: true,
+                                },
+                            ],
+                            rows: () => {
+                                let rows = [];
+
+                                for (let i = 0; i < issues.issues.length; i++) {
+                                    rows.push({
+                                        uid: issues.issues[i]["issue_id"],
+                                        cols: [
+                                            {
+                                                data: issues.issues[i]["issue_id"],
+                                                nowrap: true,
+                                                click: modules.tt.issueView,
+                                            },
+                                            {
+                                                data: issues.issues[i]["subject"],
+                                                click: modules.tt.issueView,
+                                            },
+                                        ],
+                                    });
+                                }
+
+                                return rows;
+                            },
+                        });
+                    } else {
+                        $("#mainForm").append(`<span class="ml-3 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
+                    }
                 }).
                 fail(FAIL).
                 always(loadingDone);

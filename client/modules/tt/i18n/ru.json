@@ -164,6 +164,8 @@
     "crontabDelete": "Удалить действие",
     "crontabWasAdded": "Действие добавлено",
     "crontabWasDeleted": "Действие удалено",
+    "noFiltersAvailable": "Нет доступных фильтров",
+    "noIssuesAvailable": "Нет заявок для отображения",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
