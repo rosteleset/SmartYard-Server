@@ -7,8 +7,7 @@ const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(is);
 
 const gateRabbits = [];
-
-let lastCallsDone = {};
+const lastCallsDone = {};
 
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
