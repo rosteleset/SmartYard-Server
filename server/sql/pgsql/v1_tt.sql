@@ -109,6 +109,7 @@ CREATE TABLE tt_roles
     level integer
 );
 CREATE INDEX tt_roles_level on tt_roles(level);
+INSERT INTO tt_roles (level, name) values (-1, 'nobody');                                                               -- not a project member
 INSERT INTO tt_roles (level, name) values (10, 'participant.junior');                                                   -- can view only
 INSERT INTO tt_roles (level, name) values (20, 'participant.middle');                                                   -- can comment, can edit and delete own comments, can attach files and delete own files
 INSERT INTO tt_roles (level, name) values (30, 'participant.senior');                                                   -- can create issues
@@ -125,8 +126,8 @@ CREATE TABLE tt_projects_roles
     project_role_id serial not null primary key,
     project_id integer not null,
     role_id integer not null,
-    uid integer,
-    gid integer
+    uid integer default 0,
+    gid integer default 0
 );
 CREATE UNIQUE INDEX tt_projects_roles_uniq on tt_projects_roles (project_id, role_id, uid, gid);
 CREATE INDEX tt_projects_roles_project_id on tt_projects_roles(project_id);
@@ -148,8 +149,8 @@ CREATE TABLE tt_filters_available
 (
     filter_available_id serial not null primary key,
     filter character varying,
-    uid integer,
-    gid integer
+    uid integer default 0,
+    gid integer default 0
 );
 CREATE UNIQUE INDEX tt_filters_available_uniq on tt_filters_available (filter, uid, gid);
 CREATE INDEX tt_filters_available_filter on tt_filters_available (filter);

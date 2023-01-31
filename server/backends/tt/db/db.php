@@ -61,7 +61,7 @@
                         $u = [];
                         $g = [];
 
-                        $groups = $this->db->query("select project_role_id, gid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and gid is not null");
+                        $groups = $this->db->query("select project_role_id, gid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and gid is not null");
                         foreach ($groups as $group) {
                             $g[] = [
                                 "projectRoleId" => $group["project_role_id"],
@@ -76,8 +76,8 @@
                                         if ($_u["roleId"] < $group["role_id"]) {
                                             $_u["projectRoleId"] = $group["project_role_id"];
                                             $_u["roleId"] = $group["role_id"];
+                                            $_u["level"] = $group["level"];
                                             $_u["byGroup"] = true;
-                                            $_u["from"] = 4;
                                         }
                                         $f = true;
                                     }
@@ -87,22 +87,22 @@
                                         "projectRoleId" => $group["project_role_id"],
                                         "uid" => $user["uid"],
                                         "roleId" => $group["role_id"],
+                                        "level" => $group["level"],
                                         "byGroup" => true,
-                                        "from" => 3,
                                     ];
                                 }
                             }
                         }
 
-                        $users = $this->db->query("select project_role_id, uid, role_id from tt_projects_roles where project_id = {$project["project_id"]} and uid is not null");
+                        $users = $this->db->query("select project_role_id, uid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and uid is not null");
                         foreach ($users as $user) {
                             $f = false;
                             foreach ($u as &$_u) {
                                 if ($_u["uid"] == $user["uid"]) {
                                     $_u["projectRoleId"] = $user["project_role_id"];
                                     $_u["roleId"] = $user["role_id"];
+                                    $_u["level"] = $user["level"];
                                     $_u["byGroup"] = false;
-                                    $_u["from"] = 2;
                                     $f = true;
                                 }
                             }
@@ -111,8 +111,8 @@
                                     "projectRoleId" => $user["project_role_id"],
                                     "uid" => $user["uid"],
                                     "roleId" => $user["role_id"],
+                                    "level" => $user["level"],
                                     "byGroup" => false,
-                                    "from" => 1,
                                 ];
                             }
                         }
@@ -611,14 +611,7 @@
                     return false;
                 }
 
-                try {
-                    $this->db->exec("insert into tt_projects_roles (project_id, uid, role_id) values ($projectId, $uid, $roleId)");
-                    return $this->db->lastInsertId();
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                }
-
-                return false;
+                return $this->db->insert("insert into tt_projects_roles (project_id, uid, role_id) values ($projectId, $uid, $roleId)");
             }
 
             /**
@@ -630,11 +623,10 @@
                     return false;
                 }
 
-                try {
-                    $this->db->exec("insert into tt_projects_roles (project_id, gid, role_id) values ($projectId, $gid, $roleId)");
-                    return $this->db->lastInsertId();
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
+                $positive = $this->db->get("select count(*) from tt_roles where role_id = $roleId and level > 0", false, false, [ "fieldlify" ]);
+
+                if ($positive) {
+                    return $this->db->insert("insert into tt_projects_roles (project_id, gid, role_id) values ($projectId, $gid, $roleId)");
                 }
 
                 return false;
@@ -646,19 +638,12 @@
             public function getRoles()
             {
                 try {
-                    $roles = $this->db->query("select role_id, name, name_display, level from tt_roles order by level", \PDO::FETCH_ASSOC)->fetchAll();
-                    $_roles = [];
-
-                    foreach ($roles as $role) {
-                        $_roles[] = [
-                            "roleId" => $role["role_id"],
-                            "name" => $role["name"],
-                            "nameDisplay" => $role["name_display"],
-                            "level" => $role["level"],
-                        ];
-                    }
-
-                    return $_roles;
+                    return $this->db->get("select role_id, name, name_display, level from tt_roles order by level", false, [
+                        "role_id" => "roleId",
+                        "name" => "name",
+                        "name_display" => "nameDisplay",
+                        "level" => "level"
+                    ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -974,7 +959,9 @@
              */
             public function filterAvailable($filter)
             {
-                return $this->db->get("select filter_available_id, uid, gid from tt_filters_available order by uid, gid", false, [
+                return $this->db->get("select filter_available_id, uid, gid from tt_filters_available where filter = :filter order by uid, gid", [
+                    "filter" => $filter,
+                ], [
                     "filter_available_id" => "filterAvailableId",
                     "uid" => "uid",
                     "gid" => "gid",
@@ -1030,7 +1017,7 @@
 
                     $g = implode(",", $g);
 
-                    $groups = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g)", false, [
+                    $groups = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where gid in ($g) order by level", false, [
                         "level" => "level",
                         "acronym" => "acronym",
                     ]);
@@ -1044,16 +1031,22 @@
                     }
                 }
 
-                $levels = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$this->uid}", false, [
+                $levels = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$this->uid} order by level", false, [
                     "level" => "level",
                     "acronym" => "acronym",
                 ]);
 
                 foreach ($levels as $level) {
                     if (@(int)$projects[$level["acronym"]]) {
-                        $projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
+                        if ((int)$level["level"] > 0) {
+                            $projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
+                        } else {
+                            unset($projects[$level["acronym"]]);
+                        }
                     } else {
-                        $projects[$level["acronym"]] = (int)$level["level"];
+                        if ((int)$level["level"] > 0) {
+                            $projects[$level["acronym"]] = (int)$level["level"];
+                        }
                     }
                 }
 
