@@ -16,7 +16,9 @@
         function peoples(project, withGroups) {
             let p = [];
 
-            let already = {};
+            let already = {
+                "admin": true,
+            };
 
             if (withGroups) {
                 for (let i in project.groups) {
