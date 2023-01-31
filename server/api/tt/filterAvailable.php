@@ -27,13 +27,13 @@
             public static function POST($params) {
                 $success = loadBackend("tt")->addFilterAvailable($params["_id"], $params["uid"], $params["gid"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success);
             }
 
             public static function DELETE($params) {
                 $success = loadBackend("tt")->deleteFilterAvailable($params["_id"], $params["uid"], $params["gid"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success);
             }
 
             public static function index() {

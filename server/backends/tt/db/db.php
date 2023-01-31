@@ -973,14 +973,31 @@
              */
             public function addFilterAvailable($filter, $uid, $gid)
             {
-                $uid = $uid ? : null;
-                $gid = $gid ? : null;
+                if (!$filter) {
+                    return false;
+                }
 
-                return $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
-                    "filter" => $filter,
-                    "uid" => $uid,
-                    "gid" => $gid,
-                ]);
+                if ($uid && $gid) {
+                    return $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
+                        "filter" => $filter,
+                        "uid" => $uid,
+                        "gid" => $gid,
+                    ]);
+                }
+
+                if ($uid && !$gid) {
+                    return $this->db->insert("insert into tt_filters_available (filter, uid) values (:filter, :uid)", [
+                        "filter" => $filter,
+                        "uid" => $uid,
+                    ]);
+                }
+
+                if (!$uid && $gid) {
+                    return $this->db->insert("insert into tt_filters_available (filter, gid) values (:filter, :gid)", [
+                        "filter" => $filter,
+                        "gid" => $gid,
+                    ]);
+                }
             }
 
             /**
