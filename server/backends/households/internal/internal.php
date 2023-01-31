@@ -1013,27 +1013,10 @@
             public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false)
             {
                 if (
-                    !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32 ]) ||
+                    !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ]) ||
                     !checkStr($name, [ "maxLength" => 32 ]) ||
                     !checkStr($patronymic, [ "maxLength" => 32 ])
                 ) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                $mobileChars = [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
-
-                $t = "";
-
-                for ($i = 0; $i < strlen($mobile); $i++) {
-                    if (in_array($mobile[$i], $mobileChars)) {
-                        $t .= $mobile[$i];
-                    }
-                }
-
-                $mobile = $t;
-
-                if (!checkStr($mobile)) {
                     setLastError("invalidParams");
                     return false;
                 }
@@ -1132,24 +1115,7 @@
                 }
 
                 if (@$params["mobile"]) {
-                    if (!checkStr($params["mobile"], [ "minLength" => 6, "maxLength" => 32 ])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    $mobileChars = [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
-
-                    $t = "";
-
-                    for ($i = 0; $i < strlen($params["mobile"]); $i++) {
-                        if (in_array($params["mobile"][$i], $mobileChars)) {
-                            $t .= $params["mobile"][$i];
-                        }
-                    }
-
-                    $params["mobile"] = $t;
-
-                    if (!checkStr($params["mobile"])) {
+                    if (!checkStr($params["mobile"], [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ])) {
                         setLastError("invalidParams");
                         return false;
                     }
