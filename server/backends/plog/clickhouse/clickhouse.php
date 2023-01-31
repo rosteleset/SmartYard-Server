@@ -793,6 +793,66 @@
                             }
                         }
 
+                        // Call processing for QTECH panel
+                        if ($unit == "qtech") {
+
+                            // "Prefix:33,Replace Number:1000000004, Status:0 - 1"
+                            // "Prefix:100004,Replace Number:000133, Status:0 - 1"
+                            // "Prefix:1,Analog Number:01, Status:1 - 1"
+                            // "1000000004:Call Established, Number:1000000004 - 1"
+                            // "000133:Call Established, Number:000133 - 1"
+                            // "01:Call Established, Number:01 - 0"
+                            // "01:Open Door By Intercom,Apartment No 01 - 1"
+                            // "1:100004:Open Door By DTMF, DTMF Symbol 1 ,Apartment No 100004 - 1"
+                            // "1:33:Open Door By DTMF, DTMF Symbol 1 ,Apartment No 33 - 1"
+
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                ["/Prefix:\d+,Replace Number:\d+, Status:\d+/", true, false, false, 1],
+                                ["/Prefix:\d+,Analog Number:\d+, Status:\d+/", true, false, false, 1],
+                                ["/\d+:Call Established, Number:\d+/", false, true, false, 0],
+                                ["/\d+:Open Door By Intercom,Apartment No \d+/", false, false, true, 1],
+                                ["/\d+:\d+:Open Door By DTMF, DTMF Symbol \d+ ,Apartment No \d+/", false, false, true, 1],
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
+
+                                if (preg_match($pattern, $msg) !== 0) {
+                                    // Check if call started from this panel
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    } elseif ($now_call_from_panel < 0) {
+                                        $call_from_panel = -1;
+                                        break;
+                                    }
+
+                                    // Get flat number and/or prefix
+                                    if (strpos($pattern, "Prefix:") !== false) {
+                                        $msg_parts = preg_split("/[:,]/", $msg);
+                                        $number = (int) $msg_parts[1]; // Caller (apartment or panel SIP number)
+                                        $replacing_number = $msg_parts[3]; // Call destination
+
+                                        if ($number <= 9999) { // Apartment - ordinary panel
+                                            $now_flat_number = $number;
+
+                                            if ($msg_parts[2] === "Replace Number") { // Get flat ID
+                                                $now_flat_id = (int) substr($replacing_number, 1);
+                                            }
+                                        } else {
+                                            $prefix = (int) substr($replacing_number, 0, 4);
+                                            $now_flat_number = (int) substr($replacing_number, 4);
+                                        }
+                                    }
+
+                                    // TODO: To be continued...
+                                }
+                            }
+                        }
+
                         if ($call_start_found) {
                             break;
                         }
