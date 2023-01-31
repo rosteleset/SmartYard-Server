@@ -168,7 +168,7 @@
                             "direct_media" => "no",
                             "allow_subscribe" => "yes",
                             "dtmf_mode" => "rfc4733",
-                            "ice_support" => "no",
+                            "ice_support" => "yes",
                         ];
                     }
 
