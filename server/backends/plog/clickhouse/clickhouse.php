@@ -853,7 +853,7 @@
 
                                         if ($number_len === 10) { // Get flat ID
                                             $now_flat_id = (int) substr($number, 1);
-                                        } else if ($number < 9 && $number > 4) { // Get prefix and flat number
+                                        } else if ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
                                             $prefix = (int) substr($number, 0, 4);
                                             $now_flat_number = (int) substr($number, 4);
                                         } else { // Get flat number
