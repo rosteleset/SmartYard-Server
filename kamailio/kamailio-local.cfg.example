@@ -1,0 +1,25 @@
+## Sample configuration to set local IPs, hostname etc
+
+## Public ip address
+#!substdef "!KAMAILIO_IP_ADDR_PUBLIC!192.168.168.168!g"
+
+## Interface for trunk to media server (asterisk, freeswitch, etc)
+#!substdef "!KAMAILIO_IP_ADDR_LOCAL!127.0.0.1!g"
+
+## Set domain name (optional)
+#!substdef "!KAMAILIO_DOMAIN!domain.example!g"
+
+## Listen ports
+#!substdef "!KAMAILIO_UDP_PORT!5060!g"
+#!substdef "!KAMAILIO_TCP_PORT!5060!g"
+#!substdef "!KAMAILIO_TLS_PORT!5061!g"
+
+## DB
+#!substdef "!DBURL!postgres://kamailio:secret_password@localhost:5432/kamailio!g"
+
+## RTPEngine listen interface and port
+#!substdef "!RTPENGINE_IP_PORT!udp:127.0.0.1:2223!g"
+
+## TLS certs path
+#!substdef "!PRIVATE_KEY_PATH!/etc/letsencrypt/live/domain.example/privkey.pem!g"
+#!substdef "!CERTIFICATE_PATH!/etc/letsencrypt/live/domain.example/fullchain.pem!g"
