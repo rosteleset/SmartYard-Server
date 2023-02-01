@@ -172,9 +172,10 @@ CREATE INDEX tt_crontabs_crontab on tt_crontabs(crontab);
 -- viewers
 CREATE TABLE tt_viewers
 (
-    name character varying not null primary key,
-    field character varying
+    field character varying not null,
+    name character varying not null
 );
+CREATE UNIQUE INDEX tt_viewers_uniq on tt_viewers (field, name);
 
 -- projects viewers
 CREATE TABLE tt_projects_viewers

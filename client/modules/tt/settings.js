@@ -1709,7 +1709,7 @@
         for (let i in modules.tt.meta.viewers) {
             viewers.push({
                 id: modules.tt.meta.viewers[i].name,
-                text: $.trim(modules.tt.meta.viewers[i].name + "(" + modules.tt.meta.viewers[i].field + ")"),
+                text: $.trim(modules.tt.meta.viewers[i].field + " [" + modules.tt.meta.viewers[i].name + "]"),
             });
         }
 
@@ -2824,7 +2824,7 @@
                         title: i18n("tt.viewerName"),
                         placeholder: i18n("tt.viewerName"),
                         validate: (v) => {
-                            return $.trim(v) !== "" && typeof window[v] === 'undefined';
+                            return $.trim(v) !== "";
                         }
                     },
                     {
