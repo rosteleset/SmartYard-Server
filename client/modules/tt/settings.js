@@ -1973,7 +1973,6 @@
                                         click: workflow => {
                                             modules.tt.settings.deleteWorkflow(workflow);
                                         },
-                                        disabled: modules.tt.meta.workflows[i].type === "builtIn",
                                     },
                                 ],
                             },

@@ -56,12 +56,7 @@
                 ]);
 
                 $file = __DIR__ . "/workflows/" . $workflow . ".lua";
-                $customDir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $customDir . "/" . $workflow . ".lua";
 
-                if (file_exists($customDir) && file_exists($fileCustom)) {
-                    $file = $fileCustom;
-                } else
                 if (!file_exists($file)) {
                     $file = false;
                 }
