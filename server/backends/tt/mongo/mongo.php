@@ -134,7 +134,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($query, $fields = [], $sort = [ "issue_id" => 1 ], $skip = 0, $limit = 100)
+            public function getIssues($query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
             {
                 $projects = [];
                 $db = $this->dbName;
