@@ -10,9 +10,9 @@
 #!substdef "!KAMAILIO_DOMAIN!domain.example!g"
 
 ## Listen ports
-#!substdef "!KAMAILIO_UDP_PORT!5060!g"
-#!substdef "!KAMAILIO_TCP_PORT!5060!g"
-#!substdef "!KAMAILIO_TLS_PORT!5061!g"
+#!substdef "!KAMAILIO_UDP_PORT!50602!g"
+#!substdef "!KAMAILIO_TCP_PORT!50602!g"
+#!substdef "!KAMAILIO_TLS_PORT!50603!g"
 
 ## DB
 #!substdef "!DBURL_REP!postgres://kamailio:secret_password@localhost:5432/kamailio!g"
