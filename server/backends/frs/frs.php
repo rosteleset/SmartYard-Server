@@ -45,6 +45,7 @@
             const M_BEST_QUALITY = "bestQuality";
             const M_MOTION_DETECTION = "motionDetection";
             const M_REGISTER_FACE = "registerFace";
+            const M_REMOVE_FACES = "removeFaces";
 
             //response codes
             const R_CODE_OK = 200;
@@ -55,8 +56,13 @@
             const CAMERA_CREDENTIALS = "credentials";
             const CAMERA_FRS = "frs";
 
+            //other
             const PDO_SINGLIFY = "singlify";
             const PDO_FIELDLIFY = "fieldlify";
+
+            const FLAG_CAN_LIKE = "canLike";
+            const FLAG_CAN_DISLIKE = "canDislike";
+            const FLAG_LIKED = "liked";
 
             //FRS API methods calls
 
@@ -67,12 +73,12 @@
 
             /**
              * Call API method
-             * @param string $baseUrl base URL FRS
+             * @param string $base_url base URL FRS
              * @param string $method API method name
              * @param obect $params call parameters
              * @return false|object
              */
-            abstract public function apiCall($baseUrl, $method, $params);
+            abstract public function apiCall($base_url, $method, $params);
 
             /**
              * Add video stream to FRS
@@ -87,39 +93,47 @@
              * Call API method bestQuality by date
              * @param object $cam camera object
              * @param int $date host event's timestamp
-             * @param string $eventUuid host event's UUID
+             * @param string $event_uuid host event's UUID
              * @return object
              */
-            abstract public function bestQualityByDate($cam, $date, string $eventUuid = "");
+            abstract public function bestQualityByDate($cam, $date, string $event_uuid = "");
 
             /**
              * Call API method bestQuality by FRS event's identifier
              * @param object $cam camera object
-             * @param int $eventId FRS event's identifier
-             * @param string $eventUuid host event's UUID
+             * @param int $event_id FRS event's identifier
+             * @param string $event_uuid host event's UUID
              * @return object
              */
-            abstract public function bestQualityByEventId($cam, $eventId, string $eventUuid = "");
+            abstract public function bestQualityByEventId($cam, $event_id, string $event_uuid = "");
 
             /**
              * Register face by host's event data
              * @param object $cam camera object
-             * @param string $eventUuid host event's UUID
+             * @param string $event_uuid host event's UUID
              * @param int $left X-coordinate of face's square region
              * @param int $top Y-coordinate of face's square region
              * @param int $width face's region width
              * @param int $height face's region height
-             * @return false|int
+             * @return object
              */
-            abstract public function registerFace($cam, $eventUuid, $left = 0, $top = 0, $width = 0, $height = 0);
+            abstract public function registerFace($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0);
+
+            /**
+             * Detach faces from video stream
+             * @param object $cam camera object
+             * @param array $faces array of face identifiers (face_id)
+             * @return object
+             */
+            abstract public function removeFaces($cam, $faces);
 
             /**
              * Motion Detection
              * @param object $cam camera object
-             * @param bool $isStart starts or stops motion detection
+             * @param bool $is_start starts or stops motion detection
              * @return object
              */
-            abstract public function motionDetection($cam, bool $isStart);
+            abstract public function motionDetection($cam, bool $is_start);
 
             //RBT methods
 
@@ -136,8 +150,17 @@
              * Detach face_id from all subscriber's flats
              * @param int $face_id
              * @param int $house_subscriber_id
+             * @return false|int
              */
             abstract public function detachFaceId($face_id, $house_subscriber_id);
+
+            /**
+             * Detach face_id from flat (all subscribers)
+             * @param int $face_id
+             * @param int $flat_id
+             * @return false|int
+             */
+            abstract public function detachFaceIdFromFlat($face_id, $flat_id);
 
             /**
              * @param int $camera_id
@@ -157,9 +180,19 @@
              * @param int $flat_id
              * @param int $subscriber_id
              * @param int $face_id
+             * @param string $event_uuid
              * @param bool $is_owner
              * @return bool
              */
-            abstract public function isLikedFlag($flat_id, $subscriber_id, $face_id, $is_owner);
+            abstract public function isLikedFlag($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner);
+
+            /**
+             * List all liked faces in the flat by subscriber or all faces in the flat for owner
+             * @param int $flat_id
+             * @param int $subscriber_id
+             * @param bool $is_owner
+             * @return array
+             */
+            abstract public function listFaces($flat_id, $subscriber_id, $is_owner = false);
         }
     }

@@ -84,11 +84,10 @@
                                 $image_data = file_get_contents($response[frs::P_DATA][frs::P_SCREENSHOT]);
                                 if ($image_data) {
                                     $headers = implode("\n", $http_response_header);
+                                    $content_type = "image/jpeg";
                                     if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
                                         $content_type = end($matches[1]);
                                     }
-                                    if (!isset($content_type))
-                                        $content_type = "image/jpeg";
                                     $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
                                         "camshot",
                                         $files->contentsToStream($image_data),

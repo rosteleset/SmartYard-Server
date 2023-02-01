@@ -51,6 +51,7 @@
  */
 
 use backends\plog\plog;
+use backends\frs\frs;
 
 auth();
 $households = loadBackend("households");
@@ -118,7 +119,7 @@ try {
 
             $event_type = (int)$row[plog::COLUMN_EVENT];
             $e_details['event'] = $event_type;
-            $face = json_decode($row[plog::COLUMN_FACE]);
+            $face = json_decode($row[plog::COLUMN_FACE], false);
             if (isset($face->width) && $face->width > 0 && isset($face->height) && $face->height > 0) {
                 $e_details['detailX']['face'] = [
                     'left' => $face->left,
@@ -126,13 +127,17 @@ try {
                     'width' => $face->width,
                     'height' => $face->height
                 ];
-                $e_details['detailX']['flags'] = ["canLike"];
-                if (isset($face->faceId) && $face->faceId > 0) {
-                    $e_details['detailX']['flags'][] = "canDislike";
+                $frs = loadBackend("frs");
+                if ($frs) {
+                    $e_details['detailX']['flags'] = [frs::FLAG_CAN_LIKE];
+                    $face_id = null;
+                    if (isset($face->faceId) && $face->faceId > 0) {
+                        $face_id = $face->faceId;
+                    }
                     $subscriber_id = (int)$subscriber['subscriberId'];
-                    $frs = loadBackend("frs");
-                    if ($frs && $frs->isLikedFlag($flat_id, $subscriber_id, $face->faceId, $flat_owner)) {
-                        $e_details['detailX']['flags'][] = "liked";
+                    if ($frs->isLikedFlag($flat_id, $subscriber_id, $face_id, $row[plog::COLUMN_EVENT_UUID], $flat_owner)) {
+                        $e_details['detailX']['flags'][] = frs::FLAG_LIKED;
+                        $e_details['detailX']['flags'][] = frs::FLAG_CAN_DISLIKE;
                     }
                 }
             }

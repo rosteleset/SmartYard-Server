@@ -52,17 +52,17 @@ if (!$f) {
     response(403, false, 'Квартира не найдена');
 }
 
-// TODO: check if FRS allowed for flat_id
+// TODO: check if FRS is allowed for flat_id
 
 $households = loadBackend("households");
-$domophone = json_decode($event_data[plog::COLUMN_DOMOPHONE]);
+$domophone = json_decode($event_data[plog::COLUMN_DOMOPHONE], false);
 $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone->domophone_id, "output" => $domophone->domophone_output ]);
 if ($entrances && $entrances[0]) {
     $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
     if ($cameras && $cameras[0]) {
         $img_uuid = $event_data[plog::COLUMN_IMAGE_UUID];
         $url = @$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
-        $face = json_decode($event_data[plog::COLUMN_FACE]);
+        $face = json_decode($event_data[plog::COLUMN_FACE], false);
         $result = $frs->registerFace($cameras[0], $event_uuid, $face->left, $face->top, $face->width, $face->height);
         if (!isset($result[frs::P_FACE_ID])) {
             response(406, $result[frs::P_MESSAGE]);

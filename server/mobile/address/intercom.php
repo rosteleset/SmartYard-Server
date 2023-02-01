@@ -97,7 +97,25 @@
     */
     // response(200, $flat);
     $ret = [];
-    // $ret['FRSDisabled'] = 't';
+
+    $frs = loadBackend("frs");
+    $entrances = $households->getEntrances('flatId', $flat_id);
+    $cameras = loadBackend("cameras");
+    foreach ($entrances as $entrance) {
+        $cam = $cameras->getCamera($entrance['cameraId']);
+        if ($cam && strlen($cam['frs']) > 1) {
+            $frs_disabled = 'f';
+            break;
+        }
+    }
+    if (isset($frs_disabled) && $frs_disabled === 'f') {
+        // TODO: check if FRS is allowed for flat_id
+    }
+
+    if (isset($frs_disabled)) {
+        $ret['FRSDisabled'] = $frs_disabled;
+    }
+
     $ret['allowDoorCode'] = 't';
     $ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
     $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
