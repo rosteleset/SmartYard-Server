@@ -823,16 +823,14 @@
 
                                 if (preg_match($pattern, $msg) !== 0) {
                                     // Check if call started from this panel
-                                    if ($now_call_from_panel > 0) {
-                                        $call_from_panel = 1;
-                                    } elseif ($now_call_from_panel < 0) {
-                                        $call_from_panel = -1;
-                                        break;
-                                    }
+                                    $call_from_panel = $now_call_from_panel; // TODO: not good
 
-                                    // Get flat number and/or prefix
-                                    if (strpos($pattern, "Prefix:") !== false) {
-                                        $msg_parts = preg_split("/[:,]/", $msg);
+                                    // Get message parts separated by ":" and ","
+                                    $msg_parts = array_map("trim", preg_split("/[:,]/", $msg));
+                                    print_r($msg_parts); // TODO: delete later
+
+                                    // Get flat number, flat ID and prefix from call started events
+                                    if ($msg_parts[0] === "Prefix") {
                                         $number = (int) $msg_parts[1]; // Caller (apartment or panel SIP number)
                                         $replacing_number = $msg_parts[3]; // Call destination
 
@@ -842,13 +840,74 @@
                                             if ($msg_parts[2] === "Replace Number") { // Get flat ID
                                                 $now_flat_id = (int) substr($replacing_number, 1);
                                             }
-                                        } else {
+                                        } else { // Panel SIP number - gate panel
                                             $prefix = (int) substr($replacing_number, 0, 4);
                                             $now_flat_number = (int) substr($replacing_number, 4);
                                         }
                                     }
 
-                                    // TODO: To be continued...
+                                    // Get flat number, flat ID and prefix from call established events
+                                    if ($msg_parts[1] === "Call Established") {
+                                        $number = $msg_parts[0]; // Call destination
+                                        $number_len = strlen($number);
+
+                                        if ($number_len === 10) { // Get flat ID
+                                            $now_flat_id = (int) substr($number, 1);
+                                        } else if ($number < 9 && $number > 4) { // Get prefix and flat number
+                                            $prefix = (int) substr($number, 0, 4);
+                                            $now_flat_number = (int) substr($number, 4);
+                                        } else { // Get flat number
+                                            $now_flat_number = (int) $number;
+                                        }
+                                    }
+
+                                    // Get flat number from CMS door open event
+                                    if ($msg_parts[1] === "Open Door By Intercom") {
+                                        $now_flat_number = (int) $msg_parts[0];
+                                    }
+
+                                    // Get flat number from DTMF door open event
+                                    if ($msg_parts[2] === "Open Door By DTMF") {
+                                        $number = (int) $msg_parts[1];
+
+                                        if ($number <= 9999) { // Apartment - ordinary panel
+                                            $now_flat_number = $number;
+                                        }
+                                    }
+
+                                    $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
+                                        || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
+                                        || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
+                                        || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+
+                                    if ($call_start_lost) {
+                                        break;
+                                    }
+
+                                    $event_data[self::COLUMN_DATE] = $row["date"];
+
+                                    if (isset($now_call_id) && !isset($call_id)) {
+                                        $call_id = $now_call_id;
+                                    }
+                                    if (isset($now_sip_call_id) && !isset($sip_call_id)) {
+                                        $sip_call_id = $now_sip_call_id;
+                                    }
+                                    if (isset($now_flat_number) && !isset($flat_number)) {
+                                        $flat_number = $now_flat_number;
+                                    }
+                                    if (isset($now_flat_id) && !isset($flat_id)) {
+                                        $flat_id = $now_flat_id;
+                                    }
+                                    if ($flag_talk_started) {
+                                        $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                    }
+                                    if ($flag_door_opened) {
+                                        $event_data[self::COLUMN_OPENED] = 1;
+                                    }
+                                    if ($flag_start) {
+                                        $call_start_found = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
