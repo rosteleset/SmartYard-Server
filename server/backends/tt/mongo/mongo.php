@@ -145,9 +145,14 @@
                     $projects[] = $i;
                 }
 
-                $query = $this->preprocessFilter($query);
+                $my = $this->myGroups();
+                $my[] = $this->login;
 
                 if ($query) {
+                    $query = $this->preprocessFilter($query, [
+                        "%%me" => $this->login,
+                        "%%my" => $my,
+                    ]);
                     $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
                 } else {
                     $query = [ "project" => [ '$in' => $projects ] ];
@@ -291,8 +296,13 @@
             /**
              * @inheritDoc
              */
-            public function preprocessFilter($query)
+            public function preprocessFilter($query, $params)
             {
+                array_walk_recursive($query, function (&$item, $key, $params) {
+                    if (array_key_exists($item, $params)) {
+                        $item = $params[$item];
+                    }
+                }, $params);
                 return $query;
             }
         }

@@ -653,8 +653,9 @@
 
             /**
              * @param $query
+             * @param $params
              * @return mixed
              */
-            abstract public function preprocessFilter($query);
+            abstract public function preprocessFilter($query, $params);
         }
     }

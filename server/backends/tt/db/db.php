@@ -1015,6 +1015,17 @@
             /**
              * @inheritDoc
              */
+            public function deleteFilter($filter) {
+                $this->db->modify("delete from tt_filters_available where filter = :filter", [
+                    "filter" => $filter,
+                ]);
+
+                parent::deleteFilter($filter);
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function whoAmI()
             {
                 $groups = loadBackend("groups");
@@ -1081,6 +1092,7 @@
 
                 if ($groups) {
                     $groups = $groups->getGroups($this->uid);
+
 
                     foreach ($groups as $group) {
                         $g[] = $group["acronym"];
