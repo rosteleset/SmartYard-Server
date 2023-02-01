@@ -15,10 +15,12 @@
 #!substdef "!KAMAILIO_TLS_PORT!5061!g"
 
 ## DB
-#!substdef "!DBURL!postgres://kamailio:secret_password@localhost:5432/kamailio!g"
+#!substdef "!DBURL_REP!postgres://kamailio:secret_password@localhost:5432/kamailio!g"
+#!define DBURL "DBURL_REP"
 
 ## RTPEngine listen interface and port
-#!substdef "!RTPENGINE_IP_PORT!udp:127.0.0.1:2223!g"
+#!substdef "!RTPENGINE_IP_PORT_SUB!udp:localhost:2223!g"
+#!define RTPENGINE_IP_PORT "RTPENGINE_IP_PORT_SUB"
 
 ## TLS certs path
 #!substdef "!PRIVATE_KEY_PATH!/etc/letsencrypt/live/domain.example/privkey.pem!g"
