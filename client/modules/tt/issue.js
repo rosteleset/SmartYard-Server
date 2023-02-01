@@ -207,9 +207,7 @@
                         target: "#mainForm",
                         apply: "create",
                         fields: fields,
-                        callback: function (result) {
-                            modules.tt.issue.doCreateIssue(result);
-                        },
+                        callback: modules.tt.issue.doCreateIssue,
                         cancel: () => {
                             history.back();
                         },

@@ -25,7 +25,7 @@
                     $projectRoleId = loadBackend("tt")->addGroupRole($params["projectId"], $params["gid"], $params["roleId"]);
                 }
 
-                return api::ANSWER($projectRoleId, ($projectRoleId !== false)?"projectRoleId":"notAcceptable");
+                return api::ANSWER($projectRoleId, ($projectRoleId !== false)?"projectRoleId":false);
             }
 
             public static function PUT($params) {

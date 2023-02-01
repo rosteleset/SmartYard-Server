@@ -16,16 +16,17 @@
         function peoples(project, withGroups) {
             let p = [];
 
-            console.log(project);
-            console.log(modules.users.meta);
-            console.log(modules.groups.meta);
+            let already = {
+                "admin": true,
+            };
 
             if (withGroups) {
                 for (let i in project.groups) {
                     for (let j in modules.groups.meta) {
-                        if (modules.groups.meta[j].gid == project.groups[i].gid) {
+                        if (modules.groups.meta[j].gid == project.groups[i].gid && !already[modules.groups.meta[j].acronym]) {
+                            already[modules.groups.meta[j].acronym] = true;
                             p.push({
-                                id: project.groups[i].gid + 1000000000,
+                                id: modules.groups.meta[j].acronym,
                                 text: modules.groups.meta[j].name + " [" + i18n("groups.group") + "]",
                             });
                         }
@@ -35,11 +36,14 @@
 
             for (let i in project.users) {
                 for (let j in modules.users.meta) {
-                    if (modules.users.meta[j].uid == project.users[i].uid && !project.users[i].byGroup) {
-                        p.push({
-                            id: project.users[i].uid,
-                            text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
-                        });
+                    if (modules.users.meta[j].uid == project.users[i].uid && !already[modules.users.meta[j].login]) {
+                        already[modules.users.meta[j].login] = true;
+                        if (project.users[i].level > 0) {
+                            p.push({
+                                id: modules.users.meta[j].login,
+                                text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
+                            });
+                        }
                     }
                 }
             }
@@ -59,7 +63,7 @@
         for (let i in modules.tt.meta.tags) {
             if (modules.tt.meta.tags[i].projectId == projectId) {
                 tags.push({
-                    id: modules.tt.meta.tags[i].tagId,
+                    id: modules.tt.meta.tags[i].tag,
                     text: modules.tt.meta.tags[i].tag,
                 });
             }

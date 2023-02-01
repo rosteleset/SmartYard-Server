@@ -1498,7 +1498,9 @@
 
                 let roles = {};
                 for (let i in modules.tt.meta.roles) {
-                    roles[modules.tt.meta.roles[i].roleId] = $.trim((modules.tt.meta.roles[i].nameDisplay?modules.tt.meta.roles[i].nameDisplay:i18n("tt." + modules.tt.meta.roles[i].name)) + " [" + modules.tt.meta.roles[i].level + "]");
+                    if (modules.tt.meta.roles[i].level > 0) {
+                        roles[modules.tt.meta.roles[i].roleId] = $.trim((modules.tt.meta.roles[i].nameDisplay?modules.tt.meta.roles[i].nameDisplay:i18n("tt." + modules.tt.meta.roles[i].name)) + " [" + modules.tt.meta.roles[i].level + "]");
+                    }
                 }
 
                 cardTable({

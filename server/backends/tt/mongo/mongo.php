@@ -64,6 +64,10 @@
                     $issue["created"] = time();
                     $issue["author"] = $this->login;
 
+                    $issue["assigned"] = array_values($issue["assigned"]);
+                    $issue["watchers"] = array_values($issue["watchers"]);
+                    $issue["tags"] = array_values($issue["tags"]);
+
                     try {
                         if ($attachments) {
                             $files = loadBackend("files");
@@ -130,7 +134,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($query, $fields = [], $sort = [ "issue_id" => 1 ], $skip = 0, $limit = 100)
+            public function getIssues($query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
             {
                 $projects = [];
                 $db = $this->dbName;
@@ -141,7 +145,14 @@
                     $projects[] = $i;
                 }
 
+                $my = $this->myGroups();
+                $my[] = $this->login;
+
                 if ($query) {
+                    $query = $this->preprocessFilter($query, [
+                        "%%me" => $this->login,
+                        "%%my" => $my,
+                    ]);
                     $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
                 } else {
                     $query = [ "project" => [ '$in' => $projects ] ];
@@ -280,6 +291,19 @@
             public function addJournalRecord($issue, $record)
             {
                 // TODO: Implement addJournalRecord() method.
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function preprocessFilter($query, $params)
+            {
+                array_walk_recursive($query, function (&$item, $key, $params) {
+                    if (array_key_exists($item, $params)) {
+                        $item = $params[$item];
+                    }
+                }, $params);
+                return $query;
             }
         }
     }

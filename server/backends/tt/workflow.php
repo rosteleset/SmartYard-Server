@@ -38,6 +38,9 @@
                         $args[] = true;
                         return [ print_r(...$args) ];
                     },
+                    "array_values" => function (...$args) {
+                        return [ array_values(...$args) ];
+                    }
                 ]);
 
                 $this->sandbox->registerLibrary("rbt", [

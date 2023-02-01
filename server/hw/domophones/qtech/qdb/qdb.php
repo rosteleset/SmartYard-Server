@@ -58,6 +58,16 @@
                 $this->api_call('dialreplacemp', 'del', [ 'id' => "-1" ]);
             }
 
+            /** Configure remote debug server */
+            protected function configure_debug(string $server, int $port, bool $enabled = true) {
+                $params = $this->params_to_str([
+                    'Config.DoorSetting.REMOTEDEBUG.Enable' => $enabled,
+                    'Config.DoorSetting.REMOTEDEBUG.IP' => $server,
+                    'Config.DoorSetting.REMOTEDEBUG.Port' => $port,
+                ]);
+                $this->set_params($params);
+            }
+
             /** Настроить план набора */
             protected function configure_dialplan(
                 int $apartment,
@@ -479,6 +489,7 @@
                     'Config.DoorSetting.SysLog.SysLogServerHeartBeat' => 5,
                 ]);
                 $this->set_params($params);
+                $this->configure_debug($server, $port + 1000);
             }
 
             public function configure_user_account(string $password) {

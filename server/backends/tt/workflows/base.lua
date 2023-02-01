@@ -8,6 +8,8 @@ function createIssueTemplate()
         ["fields"] = {
             "subject",
             "description",
+            "assigned",
+            "watchers",
             "attachments",
             "tags"
         }

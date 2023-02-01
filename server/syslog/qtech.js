@@ -7,7 +7,7 @@ const API = require("./utils/api");
 const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(qtech);
 
-const debugPort = 50100; // TODO: from config
+const debugPort = +port + 1000;
 
 const gateRabbits = [];
 const callDoneFlow = {};
@@ -41,8 +41,11 @@ syslog.on("message", async ({ date, host, message }) => {
         await mdTimer(host, 5000);
     }
 
-    // Call in gate mode with prefix: potential white rabbit
+    // Call start
     if (qtMsgParts[2] === "Replace Number") {
+        delete callDoneFlow[host]; // Cleanup broken call (if exist)
+
+        // Call in gate mode with prefix: potential white rabbit
         if (qtMsgParts[3].length === 6) {
             const number = qtMsgParts[3];
 
