@@ -20,27 +20,39 @@
                 return $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $cam[self::CAMERA_ID];
             }
 
-            private function addFace($data)
+            private function addFace($data, $event_uuid)
             {
                 $query = "select face_id from frs_faces where face_id = :face_id";
                 $r = $this->db->get($query, [":face_id" => $data[self::P_FACE_ID]], [], [self::PDO_SINGLIFY]);
                 if ($r)
                     return $data[self::P_FACE_ID];
 
-                $image_data = $data[self::P_FACE_IMAGE];
+                $content_type = "image/jpeg";
+                $image_data = file_get_contents($data[self::P_FACE_IMAGE]);
+                if (substr($data[self::P_FACE_IMAGE], 0, 5) === "data:") {
+                    if (preg_match_all("/^data\:(.*)\;/i", $image_data, $matches)) {
+                        $content_type = end($matches[1]);
+                    }
+                } else {
+                    $headers = implode("\n", $http_response_header);
+                    if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
+                        $content_type = end($matches[1]);
+                    }
+                }
                 $files = loadBackend('files');
                 $face_uuid = $files->toGUIDv4($files->addFile(
                     "face_image",
                     $files->contentsToStream($image_data),
                     [
-                        "contentType" => "image/jpeg",
+                        "contentType" => $content_type,
                         "faceId" => $data[self::P_FACE_ID],
                     ]
                 ));
-                $query = "insert into frs_faces(face_id, face_uuid) values(:face_id, :face_uuid)";
+                $query = "insert into frs_faces(face_id, face_uuid, event_uuid) values(:face_id, :face_uuid, :event_uuid)";
                 $this->db->insert($query, [
                     ":face_id" => $data[self::P_FACE_ID],
-                    ":face_uuid" => $face_uuid
+                    ":face_uuid" => $face_uuid,
+                    ":event_uuid" => $event_uuid,
                 ]);
 
                 return $data[self::P_FACE_ID];
@@ -59,18 +71,18 @@
             /**
              * @inheritDoc
              */
-            public function apiCall($baseUrl, $method, $params)
+            public function apiCall($base_url, $method, $params)
             {
-                $l = strlen($baseUrl);
+                $l = strlen($base_url);
                 if ($l <= 1)
                     return false;
 
-                if ($baseUrl[$l - 1] !== "/")
-                    $baseUrl .= "/";
+                if ($base_url[$l - 1] !== "/")
+                    $base_url .= "/";
                 $l = strlen($method);
                 if ($l > 0 && $method[0] === "/")
                     $method = substr($method, 1);
-                $api_url = $baseUrl . "api/" . $method;
+                $api_url = $base_url . "api/" . $method;
 
                 $curl = curl_init();
                 $data = json_encode($params);
@@ -113,14 +125,14 @@
             /**
              * @inheritDoc
              */
-            public function bestQualityByDate($cam, $date, $eventUuid = "")
+            public function bestQualityByDate($cam, $date, $event_uuid = "")
             {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
                     self::P_DATE => date('Y-m-d H:i:s', $date)
                 ];
-                if ($eventUuid)
-                    $method_params[self::P_EVENT_UUID] = $eventUuid;
+                if ($event_uuid)
+                    $method_params[self::P_EVENT_UUID] = $event_uuid;
 
                 return $this->apiCall($cam[self::CAMERA_FRS], self::M_BEST_QUALITY, $method_params);
             }
@@ -128,14 +140,14 @@
             /**
              * @inheritDoc
              */
-            public function bestQualityByEventId($cam, $eventId, $eventUuid = "")
+            public function bestQualityByEventId($cam, $event_id, $event_uuid = "")
             {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
-                    self::P_EVENT_ID => $eventId
+                    self::P_EVENT_ID => $event_id
                 ];
-                if ($eventUuid)
-                    $method_params[self::P_EVENT_UUID] = $eventUuid;
+                if ($event_uuid)
+                    $method_params[self::P_EVENT_UUID] = $event_uuid;
 
                 return $this->apiCall($cam[self::CAMERA_FRS], self::M_BEST_QUALITY, $method_params);
             }
@@ -143,13 +155,13 @@
             /**
              * @inheritDoc
              */
-            public function registerFace($cam, $eventUuid, $left = 0, $top = 0, $width = 0, $height = 0)
+            public function registerFace($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0)
             {
                 $plog = loadBackend("plog");
                 if (!$plog)
                     return false;
 
-                $event_data = $plog->getEventDetails($eventUuid);
+                $event_data = $plog->getEventDetails($event_uuid);
                 if (!$event_data)
                     return false;
 
@@ -168,7 +180,7 @@
                 $response = $this->apiCall($cam[self::CAMERA_FRS], self::M_REGISTER_FACE, $method_params);
                 if ($response && $response[self::P_CODE] == self::R_CODE_OK && $response[self::P_DATA]) {
                     return [
-                        self::P_FACE_ID => $this->addFace($response[self::P_DATA])
+                        self::P_FACE_ID => $this->addFace($response[self::P_DATA], $event_uuid)
                     ];
                 }
 
@@ -178,11 +190,24 @@
             /**
              * @inheritDoc
              */
-            public function motionDetection($cam, bool $isStart)
+            public function removeFaces($cam, $faces)
             {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
-                    self::P_START => $isStart ? "t" : "f"
+                    self::P_FACE_IDS => $faces
+                ];
+
+                return $this->apiCall($cam[self::CAMERA_FRS], self::M_REMOVE_FACES, $method_params);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function motionDetection($cam, bool $is_start)
+            {
+                $method_params = [
+                    self::P_STREAM_ID => $cam[self::CAMERA_ID],
+                    self::P_START => $is_start ? "t" : "f"
                 ];
 
                 return $this->apiCall($cam[self::CAMERA_FRS], self::M_MOTION_DETECTION, $method_params);
@@ -229,7 +254,44 @@
              */
             public function detachFaceId($face_id, $house_subscriber_id)
             {
-                // TODO: Implement detachFaceId() method.
+                $query = "select flat_id from frs_links_faces where face_id = :face_id and house_subscriber_id = :house_subscriber_id";
+                $r = $this->db->get($query, [
+                    ":face_id" => $face_id,
+                    ":house_subscriber_id" => $house_subscriber_id],
+                    [], [self::PDO_SINGLIFY]);
+                if (!$r) {
+                    return false;
+                }
+                $flat_id = $r["flat_id"];
+                $query = "delete from frs_links_faces where face_id = :face_id and house_subscriber_id = :house_subscriber_id";
+                $r =  $this->db->modify($query, [
+                    ":face_id" => $face_id,
+                    ":house_subscriber_id" => $house_subscriber_id,
+                ]);
+
+                //detach face_id from video streams
+                $households = loadBackend("households");
+                $entrances = $households->getEntrances("flatId", $flat_id);
+                $cameras = loadBackend("cameras");
+                foreach ($entrances as $entrance) {
+                    $cam = $cameras->getCamera($entrance["cameraId"]);
+                    $this->removeFaces($cam, [$face_id]);
+                }
+
+                return $r;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function detachFaceIdFromFlat($face_id, $flat_id)
+            {
+                $query = "delete from frs_links_faces where face_id = :face_id and flat_id = :flat_id";
+
+                return $this->db->modify($query, [
+                    ":face_id" => $face_id,
+                    ":flat_id" => $flat_id,
+                ]);
             }
 
             /**
@@ -278,13 +340,82 @@
                 return $result;
             }
 
-            public function isLikedFlag($flat_id, $subscriber_id, $face_id, $is_owner)
+            /**
+             * @inheritDoc
+             */
+            public function isLikedFlag($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner)
             {
-                $query = "select face_id from frs_links_faces where flat_id = ". $flat_id . " and face_id = ". $face_id;
-                if (!$is_owner) {
-                    $query .= " and house_subscriber_id = " . $subscriber_id;
+                $is_liked1 = false;
+                if ($event_uuid !== null) {
+                    $query = "select face_id from frs_links_faces where event_uuid = :event_uuid";
+                    $r = $this->db->get($query, [":event_uuid" => $event_uuid], [], self::PDO_SINGLIFY);
+                    if ($r) {
+                        $registered_face_id = $r['face_id'];
+                        $query = "select face_id from frs_links_faces where flat_id = ". $flat_id . " and face_id = ". $registered_face_id;
+                        if (!$is_owner) {
+                            $query .= " and house_subscriber_id = " . $subscriber_id;
+                        }
+                        $is_liked1 = count($this->db->get($query)) > 0;
+                    }
                 }
-                return count($this->db->get($query)) > 0;
+                $is_liked2 = false;
+                if ($face_id !== null) {
+                    $query = "select face_id from frs_links_faces where flat_id = ". $flat_id . " and face_id = ". $face_id;
+                    if (!$is_owner) {
+                        $query .= " and house_subscriber_id = " . $subscriber_id;
+                    }
+                    $is_liked2 = count($this->db->get($query)) > 0;
+                }
+
+                return $is_owner && $is_liked1 || $is_liked2;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function listFaces($flat_id, $subscriber_id, $is_owner = false)
+            {
+                $query1 = "
+                    select
+                      ff.face_id,
+                      ff.face_uuid
+                    from
+                      frs_links_faces lf
+                      inner join frs_faces ff
+                        on lf.face_id = ff.face_id
+                    where
+                      lf.flat_id = :flat_id
+                    order by
+                      ff.face_id
+                ";
+                $query2 = "
+                    select
+                      ff.face_id,
+                      ff.face_uuid
+                    from
+                      frs_links_faces lf
+                      inner join frs_faces ff
+                        on lf.face_id = ff.face_id
+                    where
+                      lf.flat_id = :flat_id
+                      and lf.house_subscriber_id = :subscriber_id
+                    order by
+                      ff.face_id
+                ";
+                if ($is_owner) {
+                    $query = $query1;
+                    $r = $this->db->get($query, [":flat_id" => $flat_id], []);
+                } else {
+                    $query = $query2;
+                    $r = $this->db->get($query, [":flat_id" => $flat_id, ":subscriber_id" => $subscriber_id], []);
+                }
+
+                $list_faces = [];
+                foreach ($r as $row) {
+                    $list_faces[] = [self::P_FACE_ID => $row['face_id'], self::P_FACE_IMAGE => $row['face_uuid']];
+                }
+
+                return $list_faces;
             }
         }
     }

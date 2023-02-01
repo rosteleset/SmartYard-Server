@@ -1,13 +1,17 @@
 create table frs_faces
 (
-    face_id   integer
+    face_id    integer not null
         constraint frs_faces_pk
             primary key,
-    face_uuid character varying
+    face_uuid  varchar not null,
+    event_uuid varchar not null
 );
 
 create unique index frs_faces_face_uuid_uindex
     on frs_faces (face_uuid);
+
+create unique index frs_faces_event_uuid_uindex
+    on frs_faces (event_uuid);
 
 
 create table frs_links_faces

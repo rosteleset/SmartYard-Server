@@ -84,11 +84,10 @@
                                 $image_data = file_get_contents($response[frs::P_DATA][frs::P_SCREENSHOT]);
                                 if ($image_data) {
                                     $headers = implode("\n", $http_response_header);
+                                    $content_type = "image/jpeg";
                                     if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
                                         $content_type = end($matches[1]);
                                     }
-                                    if (!isset($content_type))
-                                        $content_type = "image/jpeg";
                                     $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
                                         "camshot",
                                         $files->contentsToStream($image_data),
@@ -853,7 +852,7 @@
 
                                         if ($number_len === 10) { // Get flat ID
                                             $now_flat_id = (int) substr($number, 1);
-                                        } else if ($number < 9 && $number > 4) { // Get prefix and flat number
+                                        } else if ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
                                             $prefix = (int) substr($number, 0, 4);
                                             $now_flat_number = (int) substr($number, 4);
                                         } else { // Get flat number

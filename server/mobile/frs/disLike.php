@@ -16,8 +16,64 @@
  * @apiParam {Number} [faceId] идентификатор "лица" (для списка лиц)
  */
 
-    auth(5);
-    response();
+use backends\plog\plog;
+use backends\frs\frs;
+
+auth(5);
+
+$plog = loadBackend("plog");
+if (!$plog) {
+    response(422);
+}
+
+$frs = loadBackend("frs");
+if (!$frs) {
+    response(422);
+}
+
+$event_uuid = @$postdata['event'];
+if ($event_uuid) {
+    $event_data = $plog->getEventDetails($event_uuid);
+    if (!$event_data) {
+        response(404, false, 'Событие не найдено');
+    }
+
+    $face = json_decode($event_data[plog::COLUMN_FACE], false);
+    $face_id = (int)$face->faceId;
+    $flat_id = (int)$event_data[plog::COLUMN_FLAT_ID];
+} else {
+    $face_id = @(int)$postdata['faceId'];
+    $flat_id = @(int)$postdata['flatId'];
+}
+
+if (!$face_id || $face_id <= 0) {
+    response(403, false, 'face_id не найден');
+}
+
+$flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
+$f = in_array($flat_id, $flat_ids);
+if (!$f) {
+    response(403, false, 'Квартира не найдена');
+}
+
+// TODO: check if FRS is allowed for flat_id
+
+$flat_owner = false;
+foreach ($subscriber['flats'] as $flat) {
+    if ($flat['flatId'] == $flat_id) {
+        $flat_owner = ($flat['role'] == 0);
+        break;
+    }
+}
+
+if ($flat_owner) {
+    $frs->detachFaceIdFromFlat($face_id, $flat_id);
+} else {
+    $subscriber_id = (int)$subscriber['subscriberId'];
+    $frs->detachFaceId($face_id, $subscriber_id);
+}
+
+response();
 
     /*
      * Disclaimer: использование "иерархии" владелец\не владелец считаю в данном случае избыточным и вредоносным,
