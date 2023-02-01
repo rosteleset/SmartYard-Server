@@ -2,6 +2,7 @@
 **/.idea
 .phpdoc
 RBT/RBT.xcodeproj/
+/api/
 /client/lib/
 /client/lib/AdminLTE/
 /client/lib/qrcodejs/
@@ -12,7 +13,6 @@ RBT/RBT.xcodeproj/
 /server/lib/parsedown/
 /server/db/mongo/
 /server/storage/
-/api/
 /server/services/nodejs
 /server/mzfc/mongodb/
 /server/backends/tt/workflows/
