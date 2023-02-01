@@ -318,6 +318,22 @@
             /**
              * @inheritDoc
              */
+            public function deleteWorkflow($workflow) {
+                parent::deleteWorkflow($workflow);
+
+                if (!$this->getWorkflow($workflow)) {
+                    $this->db->modify("delete from tt_workflows_aliases where workflow = :workflow", [
+                        "workflow" => $workflow,
+                    ]);
+                    $this->db->modify("delete from tt_projects_workflows where workflow = :workflow", [
+                        "workflow" => $workflow,
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getStatuses()
             {
                 try {
