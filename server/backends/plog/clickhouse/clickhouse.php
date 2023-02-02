@@ -20,6 +20,7 @@
             private $ttl_temp_record;  // значение, которое прибавляется к текущему времени для получения expire
             private $ttl_camshot_days;  // время жизни кадра события
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
+            private $cron_process_events_scheduler;
 
             function __construct($config, $db, $redis)
             {
@@ -40,6 +41,7 @@
                 $this->ttl_temp_record = $config['backends']['plog']['ttl_temp_record'];
                 $this->ttl_camshot_days = $config['backends']['plog']['ttl_camshot_days'];
                 $this->back_time_shift_video_shot = $config['backends']['plog']['back_time_shift_video_shot'];
+                $this->cron_process_events_scheduler = $config['backends']['plog']['cron_process_events_scheduler'];
             }
 
             /**
@@ -47,15 +49,15 @@
              */
             public function cron($part)
             {
-                echo("__cron\n");
-                $this->processEvents();
-
-                if ($part == '5min') {
+                if ($part === $this->cron_process_events_scheduler) {
+                    echo("__process events\n");
+                    $this->processEvents();
                     $this->db->modify("delete from plog_door_open where expire < " . time());
                     $this->db->modify("delete from plog_call_done where expire < " . time());
-                } else {
                     return true;
                 }
+
+                return false;
             }
 
             //получение кадра события на указанную дату+время и ip устройства или от FRS

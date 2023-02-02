@@ -46,6 +46,11 @@
             const M_MOTION_DETECTION = "motionDetection";
             const M_REGISTER_FACE = "registerFace";
             const M_REMOVE_FACES = "removeFaces";
+            const M_LIST_STREAMS = "listStreams";
+            const M_LIST_ALL_FACES = "listAllFaces";
+            const M_DELETE_FACES = "deleteFaces";
+            const M_REMOVE_STREAM = "removeStream";
+            const M_ADD_FACES = "addFaces";
 
             //response codes
             const R_CODE_OK = 200;
@@ -55,6 +60,10 @@
             const CAMERA_URL = "url";
             const CAMERA_CREDENTIALS = "credentials";
             const CAMERA_FRS = "frs";
+            const FRS_BASE_URL = "url";
+            const FRS_STREAMS = "streams";
+            const FRS_ALL_FACES = "allFaces";
+            const FRS_FACES = "faces";
 
             //other
             const PDO_SINGLIFY = "singlify";

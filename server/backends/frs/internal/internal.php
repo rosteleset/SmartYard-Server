@@ -83,10 +83,8 @@
                 if ($l > 0 && $method[0] === "/")
                     $method = substr($method, 1);
                 $api_url = $base_url . "api/" . $method;
-
                 $curl = curl_init();
                 $data = json_encode($params);
-
                 $options = [
                     CURLOPT_URL => $api_url,
                     CURLOPT_POST => 1,
@@ -214,6 +212,174 @@
             }
 
             //RBT methods
+
+            /**
+             * @inheritDoc
+             */
+            public function cron($part)
+            {
+                if ($part === $this->config['backends']['frs']['cron_sync_data_scheduler']) {
+                    $this->syncData();
+                }
+            }
+
+            private function deleteFaceId($face_id)
+            {
+                $query = "delete from frs_links_faces where face_id = :face_id";
+                $this->db->modify($query, [
+                    ":face_id" => $face_id,
+                ]);
+                $query = "delete from frs_faces where face_id = :face_id";
+                $this->db->modify($query, [
+                    ":face_id" => $face_id,
+                ]);
+            }
+
+            private function syncData()
+            {
+                if (!is_array($this->servers())) {
+                    return;
+                }
+
+                //syncing all faces
+                $frs_all_faces = [];
+                foreach ($this->servers() as $frs_server) {
+                    $all_faces = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_ALL_FACES, null);
+                    if ($all_faces && array_key_exists(self::P_DATA, $all_faces)) {
+                        $frs_all_faces = array_merge($frs_all_faces, $all_faces[self::P_DATA]);
+                    }
+                }
+
+                $rbt_all_faces = [];
+                $query = "select face_id from frs_faces order by 1";
+                foreach ($this->db->get($query, [], []) as $row) {
+                    $rbt_all_faces[] = $row["face_id"];
+                }
+
+                $diff_faces = array_diff($rbt_all_faces, $frs_all_faces);
+                if ($diff_faces) {
+                    $query = "delete from frs_links_faces where face_id in (" . implode(",", $diff_faces) . ")";
+                    $this->db->modify($query);
+                    $query = "delete from frs_faces where face_id in (" . implode(",", $diff_faces) . ")";
+                    $this->db->modify($query);
+                }
+
+                $diff_faces = array_diff($frs_all_faces, $rbt_all_faces);
+                if ($diff_faces) {
+                    foreach ($this->servers() as $frs_server) {
+                        $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_DELETE_FACES, [self::P_FACE_IDS => $diff_faces]);
+                    }
+                }
+
+                $frs_all_data = [];
+                foreach ($this->servers() as $frs_server) {
+                    $streams = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
+                    if ($streams && $streams[self::P_DATA] && is_array($streams[self::P_DATA]))
+                        foreach ($streams[self::P_DATA] as $item)
+                        {
+                            if (array_key_exists(self::P_FACE_IDS, $item))
+                                $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]] = $item[self::P_FACE_IDS];
+                            else
+                                $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]] = [];
+                        }
+                }
+
+                $rbt_all_data = [];
+                $query = "
+                    select
+                      c.frs,
+                      c.camera_id
+                    from
+                      cameras c
+                    where
+                      length(c.frs) > 1
+                    order by
+                      1, 2
+                ";
+                $rbt_data = $this->db->get($query);
+                if (is_array($rbt_data))
+                    foreach ($rbt_data as $item) {
+                        $frs_base_url = $item['frs'];
+                        $stream_id = $item['camera_id'];
+                        $rbt_all_data[$frs_base_url][$stream_id] = [];
+                    }
+
+                $query = "
+                    select distinct
+                      c.frs,
+                      c.camera_id,
+                      flf.face_id,
+                      ff.face_uuid
+                    from
+                      frs_links_faces flf
+                      left join frs_faces ff
+                        on flf.face_id = ff.face_id
+                      inner join houses_entrances_flats hef
+                        on hef.house_flat_id = flf.flat_id
+                      inner join houses_entrances he
+                        on hef.house_entrance_id = he.house_entrance_id
+                      inner join cameras c
+                        on he.camera_id = c.camera_id
+                    where
+                       length(c.frs) > 1
+                    order by
+                      1, 2, 3
+                ";
+                $rbt_data = $this->db->get($query);
+                if (is_array($rbt_data))
+                    foreach ($rbt_data as $item) {
+                        $frs_base_url = $item['frs'];
+                        $stream_id = $item['camera_id'];
+                        $face_id = $item['face_id'];
+                        $face_uuid = $item['face_uuid'];
+
+                        if ($face_uuid === null) {
+                            //face image doesn't exist in th RBT, so delete it everywhere
+                            $this->deleteFaceId($face_id);
+                            $this->apiCall($frs_base_url, self::M_DELETE_FACES, [$face_id]);
+                        } else {
+                            $rbt_all_data[$frs_base_url][$stream_id][] = $face_id;
+                        }
+                    }
+
+                foreach ($rbt_all_data as $base_url => $data) {
+                    //syncing video streams
+                    $diff_streams = array_diff_key($data, $frs_all_data[$base_url]);
+                    foreach ($diff_streams as $stream_id => $faces) {
+                        $cam = loadBackend("cameras")->getCamera($stream_id);
+                        if ($cam) {
+                            $method_params = [
+                                self::P_STREAM_ID => $stream_id,
+                                self::P_URL => $this->camshotUrl($cam),
+                                self::P_CALLBACK_URL => $this->callback($cam)
+                            ];
+                            if ($faces) {
+                                $method_params[self::P_FACE_IDS] = $faces;
+                            }
+                            $this->apiCall($base_url, self::M_ADD_STREAM, $method_params);
+                        }
+
+                    }
+
+                    $diff_streams = array_diff_key($frs_all_data[$base_url], $data);
+                    foreach (array_keys($diff_streams) as $stream_id) {
+                        $this->apiCall($base_url, self::M_REMOVE_STREAM, [self::P_STREAM_ID => $stream_id]);
+                    }
+
+                    //syncing faces
+                    $common_streams = array_intersect_key($data, $frs_all_data[$base_url]);
+                    foreach ($common_streams as $stream_id => $rbt_faces) {
+                        $diff_faces = array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id]);
+                        if ($diff_faces) {
+                            $this->apiCall($base_url, self::M_ADD_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
+                        }
+
+                        $diff_faces = array_diff($frs_all_data[$base_url][$stream_id], $rbt_faces);
+                        if ($diff_faces)
+                            $this->apiCall($base_url, self::M_REMOVE_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
+                    }
+                }
+            }
 
             /**
              * @inheritDoc
@@ -347,7 +513,7 @@
             {
                 $is_liked1 = false;
                 if ($event_uuid !== null) {
-                    $query = "select face_id from frs_links_faces where event_uuid = :event_uuid";
+                    $query = "select face_id from frs_faces where event_uuid = :event_uuid";
                     $r = $this->db->get($query, [":event_uuid" => $event_uuid], [], self::PDO_SINGLIFY);
                     if ($r) {
                         $registered_face_id = $r['face_id'];
