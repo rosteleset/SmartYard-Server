@@ -210,6 +210,17 @@
 
     tt: function (tt) {
         modules.tt.meta = tt["meta"];
+
+        if (!modules.tt.viewers) {
+            modules.tt.viewers = {};
+        }
+
+        for (let i in modules.tt.meta.viewers) {
+            if (!modules.tt.viewers[modules.tt.meta.viewers[i].field]) {
+                modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
+            }
+            modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', modules.tt.meta.viewers[i].code);
+        }
     },
 
     selectFilter: function (filter) {

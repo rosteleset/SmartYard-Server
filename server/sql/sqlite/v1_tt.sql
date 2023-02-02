@@ -1,7 +1,7 @@
 -- projects
 CREATE TABLE tt_projects
 (
-    project_id integer not null primary key autoincrement,
+    project_id integer primary key autoincrement,
     acronym text not null,
     project text not null,
     max_file_size integer,
@@ -13,7 +13,7 @@ CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
 -- workflows
 CREATE TABLE tt_workflows_aliases
 (
-    workflow_alias_id integer not null primary key autoincrement,
+    workflow_alias_id integer primary key autoincrement,
     workflow text,
     alias text
 );
@@ -22,7 +22,7 @@ CREATE UNIQUE INDEX tt_workflows_aliases_workflow on tt_workflows_aliases(workfl
 -- projects <-> workflows
 CREATE TABLE tt_projects_workflows
 (
-    project_workflow_id integer not null primary key autoincrement,
+    project_workflow_id integer primary key autoincrement,
     project_id integer,
     workflow text
 );
@@ -31,7 +31,7 @@ CREATE UNIQUE INDEX tt_projects_workflows_uniq on tt_projects_workflows (project
 -- issue statuses
 CREATE TABLE tt_issue_statuses                                                                                          -- !!! managed by workflows !!!
 (
-    issue_status_id integer not null primary key autoincrement,
+    issue_status_id integer primary key autoincrement,
     status text not null,                                                                                               -- internal (workflow)
     status_display text not null                                                                                        -- human readable value
 );
@@ -42,7 +42,7 @@ INSERT INTO tt_issue_statuses (status, status_display) values ('closed', '');
 -- issues resolutions
 CREATE TABLE tt_issue_resolutions
 (
-    issue_resolution_id integer not null primary key autoincrement,
+    issue_resolution_id integer primary key autoincrement,
     resolution text,
     alias text,
     protected integer default 0
@@ -56,7 +56,7 @@ INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('duplica
 -- projects <-> resolutions
 CREATE TABLE tt_projects_resolutions
 (
-    project_resolution_id integer not null primary key autoincrement,
+    project_resolution_id integer primary key autoincrement,
     project_id integer,
     issue_resolution_id integer
 );
@@ -65,7 +65,7 @@ CREATE UNIQUE INDEX tt_projects_resolutions_uniq on tt_projects_resolutions(proj
 -- custom fields
 CREATE TABLE tt_issue_custom_fields
 (
-    issue_custom_field_id integer not null primary key autoincrement,
+    issue_custom_field_id integer primary key autoincrement,
     type text not null,
     workflow integer,                                                                                                   -- managed by workflow, only field_display can be edited
     field text not null,
@@ -83,7 +83,7 @@ CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(field)
 -- projects <-> custom fields
 CREATE TABLE tt_projects_custom_fields
 (
-    project_custom_field_id integer not null primary key autoincrement,
+    project_custom_field_id integer primary key autoincrement,
     project_id integer,
     issue_custom_field_id integer
 );
@@ -92,7 +92,7 @@ CREATE UNIQUE INDEX tt_projects_custom_fields_uniq on tt_projects_custom_fields 
 -- custom fields values options
 CREATE TABLE tt_issue_custom_fields_options
 (
-    issue_custom_field_option_id integer not null primary key autoincrement,
+    issue_custom_field_option_id integer primary key autoincrement,
     issue_custom_field_id integer,
     option text not null,
     option_display text,                                                                                                -- only for workflow's fields
@@ -103,7 +103,7 @@ CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_field
 -- projects roles types
 CREATE TABLE tt_roles
 (
-    role_id integer not null primary key autoincrement,
+    role_id integer primary key autoincrement,
     name text,
     name_display text,
     level integer
@@ -123,7 +123,7 @@ INSERT INTO tt_roles (level, name) values (90, 'manager.senior');               
 -- project rights
 CREATE TABLE tt_projects_roles
 (
-    project_role_id integer not null primary key autoincrement,
+    project_role_id integer primary key autoincrement,
     project_id integer not null,
     role_id integer not null,
     uid integer default 0,
@@ -138,7 +138,7 @@ CREATE INDEX tt_projects_roles_gid on tt_projects_roles(gid);
 -- tags
 CREATE TABLE tt_tags
 (
-    tag_id integer not null primary key autoincrement,
+    tag_id integer primary key autoincrement,
     project_id integer not null,
     tag text
 );
@@ -147,7 +147,7 @@ CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);
 -- filters available
 CREATE TABLE tt_filters_available
 (
-    filter_available_id integer not null primary key autoincrement,
+    filter_available_id integer primary key autoincrement,
     filter text,
     uid integer default 0,
     gid integer default 0
@@ -160,7 +160,7 @@ CREATE INDEX tt_filters_available_gid on tt_filters_available (gid);
 -- crontabs
 CREATE TABLE tt_crontabs
 (
-    crontab_id integer not null primary key autoincrement,
+    crontab_id integer primary key autoincrement,
     crontab text,
     filter text,
     uid integer,
@@ -172,14 +172,18 @@ CREATE INDEX tt_crontabs_crontab on tt_crontabs(crontab);
 -- viewers
 CREATE TABLE tt_viewers
 (
-    name text not null primary key,
-    field text
+    field text not null,
+    name text not null,
+    code text
 );
+CREATE UNIQUE INDEX tt_viewers_uniq on tt_viewers(field, name);
 
 -- projects viewers
 CREATE TABLE tt_projects_viewers
 (
+    project_view_id integer primary key autoincrement,
     project_id integer,
+    field text,
     name text
 );
-CREATE UNIQUE INDEX tt_projects_viewers_uniq on tt_projects_viewers(project_id, name);
+CREATE UNIQUE INDEX tt_projects_viewers_uniq on tt_projects_viewers(project_id, field);

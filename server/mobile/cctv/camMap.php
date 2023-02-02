@@ -58,16 +58,21 @@ foreach($subscriber['flats'] as $flat) {
     }
     
 }
-$ret = [];
 
 foreach($cams as $entrance_id => $cam) {
     $e = $households->getEntrance($entrance_id);
     $dvr = loadBackend("dvr")->getDVRServerByStream($cam['dvrStream']);
+    $frs = 'f';
+    $cameras = loadBackend("cameras");
+    if ($cameras) {
+        $vstream = $cameras->getCamera($e['cameraId']);
+        $frs = strlen($vstream["frs"]) > 1 ? 't' : 'f';
+    }
     $ret[] = [
         'id' => strval($e['domophoneId']),
         'url' => $cam['dvrStream'],
         'token' => loadBackend("dvr")->getDVRTokenForCam($cam, $subscriber['subscriberId']),
-        'frs' => 'f', // TODO: добавить FRS
+        'frs' => $frs,
         'serverType' => $dvr['type']
     ];
 }

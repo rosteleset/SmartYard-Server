@@ -1,7 +1,7 @@
 -- vars
 CREATE TABLE core_vars
 (
-    var_id integer not null primary key autoincrement,
+    var_id integer primary key autoincrement,
     var_name text not null,
     var_value text
 );
@@ -12,7 +12,7 @@ INSERT INTO core_vars (var_name, var_value) values ('dbVersion', '0');
 -- users
 CREATE TABLE core_users
 (
-    uid integer not null primary key autoincrement,
+    uid integer primary key autoincrement,
     login text not null,
     password text not null,
     enabled integer,
@@ -33,7 +33,7 @@ INSERT INTO core_users (login, password, real_name, enabled) values ('user', '$2
 -- groups
 CREATE TABLE core_groups
 (
-    gid integer not null primary key autoincrement,
+    gid integer primary key autoincrement,
     acronym text not null,
     name text not null
 );
@@ -107,7 +107,7 @@ CREATE TABLE core_api_methods_by_backend
 -- running processes
 CREATE TABLE core_running_processes
 (
-    running_process_id integer not null primary key autoincrement,
+    running_process_id integer primary key autoincrement,
     pid integer,
     ppid integer,
     start integer,                                                                                                      -- UNIX timestamp

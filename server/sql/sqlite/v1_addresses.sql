@@ -1,7 +1,7 @@
 -- regions
 CREATE TABLE addresses_regions
 (
-    address_region_id integer not null primary key autoincrement,
+    address_region_id integer primary key autoincrement,
     region_uuid text,
     region_iso_code text,
     region_with_type text not null,
@@ -15,7 +15,7 @@ CREATE UNIQUE INDEX addresses_regions_region on addresses_regions(region);
 -- areas
 CREATE TABLE addresses_areas
 (
-    address_area_id integer not null primary key autoincrement,
+    address_area_id integer primary key autoincrement,
     address_region_id integer not null,
     area_uuid text,
     area_with_type text not null,
@@ -30,7 +30,7 @@ CREATE INDEX addresses_areas_address_region_id on addresses_areas(address_region
 -- cities
 CREATE TABLE addresses_cities
 (
-    address_city_id integer not null primary key autoincrement,
+    address_city_id integer primary key autoincrement,
     address_region_id integer,
     address_area_id integer,
     city_uuid text,
@@ -47,7 +47,7 @@ CREATE INDEX addresses_cities_address_area_id on addresses_cities(address_area_i
 -- settlements
 CREATE TABLE addresses_settlements
 (
-    address_settlement_id integer not null primary key autoincrement,
+    address_settlement_id integer primary key autoincrement,
     address_area_id integer,
     address_city_id integer,
     settlement_uuid text,
@@ -64,7 +64,7 @@ CREATE INDEX addresses_settlements_address_area_id on addresses_settlements(addr
 -- streets
 CREATE TABLE addresses_streets
 (
-    address_street_id integer not null primary key autoincrement,
+    address_street_id integer primary key autoincrement,
     address_city_id integer,
     address_settlement_id integer,
     street_uuid text,
@@ -81,7 +81,7 @@ CREATE INDEX addresses_streets_address_address_city_id on addresses_streets(addr
 -- houses
 CREATE TABLE addresses_houses
 (
-    address_house_id integer not null primary key autoincrement,
+    address_house_id integer primary key autoincrement,
     address_settlement_id integer,
     address_street_id integer,
     house_uuid text,

@@ -1,6 +1,6 @@
 CREATE TABLE camera_records
 (
-    record_id integer not null primary key autoincrement,
+    record_id integer primary key autoincrement,
     camera_id integer not null,
     subscriber_id integer not null,
     start integer,

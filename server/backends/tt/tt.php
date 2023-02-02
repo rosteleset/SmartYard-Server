@@ -25,20 +25,8 @@
              */
 
             public function getWorkflows() {
-                $base = __DIR__ . "/workflows/";
-                $dir = scandir($base);
-
                 $w = [];
-                foreach ($dir as $f) {
-                    if ($f != "." && $f != ".." && file_exists($base . $f)) {
-                        $f = pathinfo($f);
-                        if ($f['extension'] === "lua") {
-                            $w[$f['filename']] = 'builtIn';
-                        }
-                    }
-                }
-
-                $base = __DIR__ . "/workflowsCustom/";
+                $base = __DIR__ . "/workflows/";
 
                 if (file_exists($base)) {
                     $dir = scandir($base);
@@ -47,7 +35,7 @@
                         if ($f != "." && $f != ".." && file_exists($base . $f)) {
                             $f = pathinfo($f);
                             if ($f['extension'] === "lua") {
-                                $w[$f['filename']] = 'custom';
+                                $w[] = $f['filename'];
                             }
                         }
                     }
@@ -55,8 +43,8 @@
 
                 $wx = [];
 
-                foreach ($w as $workflow => $type) {
-                    $wx[] = [ "file" => $workflow, "type" => $type ];
+                foreach ($w as $workflow) {
+                    $wx[] = [ "file" => $workflow ];
                 }
 
                 return $wx;
@@ -100,14 +88,10 @@
                     return false;
                 }
 
-                $file = __DIR__ . "/workflows/" . $workflow . ".lua";
-                $customDir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $customDir . "/" . $workflow . ".lua";
+                $dir = __DIR__ . "/workflows";
+                $file = $dir . "/" . $workflow . ".lua";
 
-                if (file_exists($customDir) && file_exists($fileCustom)) {
-                    return file_get_contents($fileCustom);
-                } else
-                if (file_exists($file)) {
+                if (file_exists($dir) && file_exists($file)) {
                     return file_get_contents($file);
                 } else {
                     return "";
@@ -128,15 +112,15 @@
                     return false;
                 }
 
-                $dir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $dir . "/" . $workflow . ".lua";
+                $dir = __DIR__ . "/workflows";
+                $file = $dir . "/" . $workflow . ".lua";
 
                 try {
                     if (!file_exists($dir)) {
                         mkdir($dir);
                     }
 
-                    file_put_contents($fileCustom, $body);
+                    file_put_contents($file, $body);
 
                     return true;
                 } catch (\Exception $e) {
@@ -156,12 +140,12 @@
                     return false;
                 }
 
-                $dir = __DIR__ . "/workflowsCustom";
-                $fileCustom = $dir . "/" . $workflow . ".lua";
+                $dir = __DIR__ . "/workflows";
+                $file = $dir . "/" . $workflow . ".lua";
 
                 try {
-                    if (file_exists($fileCustom)) {
-                        unlink($fileCustom);
+                    if (file_exists($file)) {
+                        unlink($file);
 
                         return true;
                     }
@@ -511,17 +495,19 @@
             abstract public function addViewer($field, $name);
 
             /**
+             * @param $field
              * @param $name
              * @param $code
              * @return mixed
              */
-            abstract public function modifyViewer($name, $code);
+            abstract public function modifyViewer($field, $name, $code);
 
             /**
+             * @param $field
              * @param $name
              * @return mixed
              */
-            abstract public function deleteViewer($name);
+            abstract public function deleteViewer($field, $name);
 
             /**
              * @return mixed
@@ -627,7 +613,7 @@
             /**
              * @return mixed
              */
-            abstract public function whoAmI();
+            abstract public function myRoles();
 
             /**
              * @return mixed
@@ -656,6 +642,14 @@
              * @param $params
              * @return mixed
              */
-            abstract public function preprocessFilter($query, $params);
+            public function preprocessFilter($query, $params)
+            {
+                array_walk_recursive($query, function (&$item, $key, $params) {
+                    if (array_key_exists($item, $params)) {
+                        $item = $params[$item];
+                    }
+                }, $params);
+                return $query;
+            }
         }
     }

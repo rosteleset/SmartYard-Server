@@ -115,15 +115,18 @@
         });
     },
 
-    doAddViewer: function (viewer) {
+    doAddViewer: function (field, name) {
         loadingStart();
-        POST("tt", "viewer", false, viewer).
+        POST("tt", "viewer", false, {
+            field: field,
+            name: name,
+        }).
         fail(FAIL).
         done(() => {
             message(i18n("tt.viewerWasAdded"));
         }).
         done(() => {
-            location.href = "#tt.settings&section=viewer&viewer=" + viewer.name;
+            location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(field)}&name=${encodeURIComponent(name)}`;
         }).
         always(modules.tt.settings.renderViewers);
     },
@@ -181,9 +184,12 @@
         always(modules.tt.settings.renderCustomFields);
     },
 
-    doDeleteViewer: function (viewer) {
+    doDeleteViewer: function (field, name) {
         loadingStart();
-        DELETE("tt", "viewer", viewer).
+        DELETE("tt", "viewer", false, {
+            field: field,
+            name: name,
+        }).
         fail(FAIL).
         done(() => {
             message(i18n("tt.viewerWasDeleted"));
@@ -1183,9 +1189,9 @@
         });
     },
 
-    deleteViewer: function (viewer) {
-        mConfirm(i18n("tt.confirmViewerDelete", viewer), i18n("confirm"), `danger:${i18n("tt.viewerDelete")}`, () => {
-            modules.tt.settings.doDeleteViewer(viewer);
+    deleteViewer: function (field, name) {
+        mConfirm(i18n("tt.confirmViewerDelete", field + " [" + name + "]"), i18n("confirm"), `danger:${i18n("tt.viewerDelete")}`, () => {
+            modules.tt.settings.doDeleteViewer(field, name);
         });
     },
 
@@ -1452,7 +1458,7 @@
                                             {
                                                 icon: "fas fa-trash-alt",
                                                 title: i18n("users.delete"),
-                                                class: "text-warning",
+                                                class: "text-danger",
                                                 click: projectRoleId => {
                                                     modules.tt.settings.projectDeleteUser(projectRoleId, projectId);
                                                 },
@@ -1557,7 +1563,7 @@
                                         {
                                             icon: "fas fa-trash-alt",
                                             title: i18n("groups.delete"),
-                                            class: "text-warning",
+                                            class: "text-danger",
                                             click: projectRoleId => {
                                                 modules.tt.settings.projectDeleteGroup(projectRoleId, projectId);
                                             },
@@ -1698,6 +1704,7 @@
 
     projectViewers: function (projectId) {
         let project = false;
+
         for (let i in modules.tt.meta.projects) {
             if (modules.tt.meta.projects[i].projectId == projectId) {
                 project = modules.tt.meta.projects[i];
@@ -1705,12 +1712,38 @@
             }
         }
 
+        let cf = {};
+
+        for (let i in modules.tt.meta.customFields) {
+            cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+        }
+
+        let vi = {};
+        let va = [];
+
         let viewers = [];
         for (let i in modules.tt.meta.viewers) {
-            viewers.push({
-                id: modules.tt.meta.viewers[i].name,
-                text: $.trim(modules.tt.meta.viewers[i].name + "(" + modules.tt.meta.viewers[i].field + ")"),
-            });
+            let key = md5(guid());
+            vi[key] = {
+                field: modules.tt.meta.viewers[i].field,
+                name: modules.tt.meta.viewers[i].name,
+            }
+            if (modules.tt.meta.viewers[i].field.substring(0, 4) == "[cf]") {
+                viewers.push({
+                    id: key,
+                    text: $.trim(cf[modules.tt.meta.viewers[i].field] + " [" + modules.tt.meta.viewers[i].name + "]"),
+                });
+            } else {
+                viewers.push({
+                    id: key,
+                    text: $.trim(i18n("tt." + modules.tt.meta.viewers[i].field) + " [" + modules.tt.meta.viewers[i].name + "]"),
+                });
+            }
+            for (let j in project.viewers) {
+                if (project.viewers[j].field == modules.tt.meta.viewers[i].field && project.viewers[j].name == modules.tt.meta.viewers[i].name) {
+                    va.push(key);
+                }
+            }
         }
 
         cardForm({
@@ -1726,11 +1759,15 @@
                     type: "multiselect",
                     title: i18n("tt.projectViewers"),
                     options: viewers,
-                    value: project.viewers,
+                    value: va,
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doSetProjectViewers(projectId, result.viewers);
+                let vo = [];
+                for (let i in result.viewers) {
+                     vo.push(vi[result.viewers[i]]);
+                }
+                modules.tt.settings.doSetProjectViewers(projectId, vo);
             },
         }).show();
     },
@@ -1968,12 +2005,15 @@
                                         },
                                     },
                                     {
+                                        title: "-",
+                                    },
+                                    {
                                         icon: "far fa-trash-alt",
                                         title: i18n("tt.deleteWorkflow"),
+                                        class: "text-danger",
                                         click: workflow => {
                                             modules.tt.settings.deleteWorkflow(workflow);
                                         },
-                                        disabled: modules.tt.meta.workflows[i].type === "builtIn",
                                     },
                                 ],
                             },
@@ -2387,7 +2427,7 @@
                                             {
                                                 icon: "fas fa-trash-alt",
                                                 title: i18n("users.delete"),
-                                                class: "text-warning",
+                                                class: "text-danger",
                                                 click: filterAvailableId => {
                                                     modules.tt.settings.filterDeleteUser(filterAvailableId, filter);
                                                 },
@@ -2502,7 +2542,7 @@
                                             {
                                                 icon: "fas fa-trash-alt",
                                                 title: i18n("groups.delete"),
-                                                class: "text-warning",
+                                                class: "text-danger",
                                                 click: filterAvailableId => {
                                                     modules.tt.settings.filterDeleteGroup(filterAvailableId, filter);
                                                 },
@@ -2583,7 +2623,7 @@
                                     {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
-                                        class: "text-warning",
+                                        class: "text-danger",
                                         click: modules.tt.settings.deleteFilter,
                                     },
                                 ],
@@ -2774,7 +2814,7 @@
                                     {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
-                                        class: "text-warning",
+                                        class: "text-danger",
                                         click: modules.tt.settings.deleteCrontab,
                                     },
                                 ],
@@ -2820,15 +2860,6 @@
                 topApply: true,
                 fields: [
                     {
-                        id: "name",
-                        type: "text",
-                        title: i18n("tt.viewerName"),
-                        placeholder: i18n("tt.viewerName"),
-                        validate: (v) => {
-                            return $.trim(v) !== "" && typeof window[v] === 'undefined';
-                        }
-                    },
-                    {
                         id: "field",
                         type: "select2",
                         title: i18n("tt.viewerField"),
@@ -2838,22 +2869,33 @@
                             return $.trim(v) !== "";
                         }
                     },
+                    {
+                        id: "name",
+                        type: "text",
+                        title: i18n("tt.viewerName"),
+                        placeholder: i18n("tt.viewerName"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
                 ],
-                callback: modules.tt.settings.doAddViewer,
+                callback: r => {
+                    modules.tt.settings.doAddViewer(r.field, r.name)
+                },
             }).show();
         }).
         fail(FAIL).
         always(loadingDone);
     },
 
-    renderViewer: function (viewer) {
+    renderViewer: function (field, name) {
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
             let code = '';
             for (let i in v.viewers) {
-                if (v.viewers[i].name == viewer) {
-                    code = v.viewers[i].code?v.viewers[i].code:`// function ${viewer} (value, issue, field) {\n\treturn value;\n//}\n`;
+                if (v.viewers[i].field == field && v.viewers[i].name == name) {
+                    code = v.viewers[i].code?v.viewers[i].code:`// function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
@@ -2874,7 +2916,7 @@
             editor.setFontSize(14);
             $("#viewerSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "viewer", viewer, { "code": $.trim(editor.getValue()) }).
+                PUT("tt", "viewer", false, { field: field, name: name, code: $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));
@@ -2892,63 +2934,84 @@
 
     renderViewers: function () {
         loadingStart();
-        GET("tt", "viewer", false, true).
-        done(r => {
-            cardTable({
-                target: "#mainForm",
-                title: {
-                    button: {
-                        caption: i18n("tt.addViewer"),
-                        click: modules.tt.settings.addViewer,
-                    },
-                    caption: i18n("tt.viewers"),
-                    filter: true,
-                },
-                columns: [
-                    {
-                        title: i18n("tt.viewerName"),
-                    },
-                    {
-                        title: i18n("tt.viewerField"),
-                        fullWidth: true,
-                    },
-                ],
-                edit: name => {
-                    location.href = "#tt.settings&section=viewer&viewer=" + name;
-                },
-                rows: () => {
-                    let rows = [];
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            GET("tt", "viewer", false, true).
+            done(r => {
+                let cf = {};
 
-                    for (let i in r.viewers) {
-                        rows.push({
-                            uid: r.viewers[i].name,
-                            cols: [
-                                {
-                                    data: r.viewers[i].name,
-                                },
-                                {
-                                    data: r.viewers[i].field,
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+                for (let i in modules.tt.meta.customFields) {
+                    cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+                }
+
+                let v = {};
+
+                cardTable({
+                    target: "#mainForm",
+                    title: {
+                        button: {
+                            caption: i18n("tt.addViewer"),
+                            click: modules.tt.settings.addViewer,
+                        },
+                        caption: i18n("tt.viewers"),
+                        filter: true,
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.viewerField"),
+                        },
+                        {
+                            title: i18n("tt.viewerName"),
+                            fullWidth: true,
+                        },
+                    ],
+                    edit: k => {
+                        location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
+                    },
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in r.viewers) {
+                            let key = md5(guid());
+                            v[key] = {
+                                field: r.viewers[i].field,
+                                name: r.viewers[i].name,
+                            }
+                            rows.push({
+                                uid: key,
+                                cols: [
                                     {
-                                        icon: "fas fa-trash-alt",
-                                        title: i18n("tt.deleteFilter"),
-                                        class: "text-warning",
-                                        click: modules.tt.settings.deleteViewer,
+                                        data: (r.viewers[i].field.substring(0, 4) == "[cf]")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
+                                    },
+                                    {
+                                        data: r.viewers[i].name,
                                     },
                                 ],
-                            },
-                        });
-                    }
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("tt.deleteFilter"),
+                                            class: "text-danger",
+                                            click: k => {
+                                                modules.tt.settings.deleteViewer(v[k].field, v[k].name);
+                                            },
+                                        },
+                                    ],
+                                },
+                            });
+                        }
 
-                    return rows;
-                },
-            });
+                        return rows;
+                    },
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     route: function (params) {
@@ -3023,7 +3086,7 @@
                 break;
 
             case "viewer":
-                modules.tt.settings.renderViewer(params["viewer"]);
+                modules.tt.settings.renderViewer(params["field"], params["name"]);
                 break;
 
             case "viewersMenu":

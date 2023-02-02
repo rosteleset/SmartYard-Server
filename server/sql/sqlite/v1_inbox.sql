@@ -1,7 +1,7 @@
 -- inbox
 CREATE TABLE inbox
 (
-    msg_id integer not null primary key autoincrement,
+    msg_id integer primary key autoincrement,
     house_subscriber_id integer,
     id test not null,                                                                                                   -- phone number
     date integer,                                                                                                       -- send date, UNIX timestamp

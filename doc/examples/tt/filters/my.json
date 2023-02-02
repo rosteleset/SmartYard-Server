@@ -1,0 +1,17 @@
+{
+    "name": "My issues",
+    "filter": {
+        "$or": [
+            {
+                "assigned": {
+                    "$elemMatch": {
+                        "$in": "%%my"
+                    }
+                }
+            },
+            {
+                "author": "%%me"
+            }
+        ]
+    }
+}

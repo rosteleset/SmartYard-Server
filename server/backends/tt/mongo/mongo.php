@@ -50,7 +50,7 @@
             {
                 $acr = $issue["project"];
 
-                $me = $this->whoAmI();
+                $me = $this->myRoles();
 
                 if (@$me[$acr] >= 30 || $this->uid === 0) { // 30, 'participant.senior', can create issues or admin
                     $db = $this->dbName;
@@ -139,7 +139,7 @@
                 $projects = [];
                 $db = $this->dbName;
 
-                $me = $this->whoAmI();
+                $me = $this->myRoles();
 
                 foreach ($me as $i => $r) {
                     $projects[] = $i;
@@ -291,19 +291,6 @@
             public function addJournalRecord($issue, $record)
             {
                 // TODO: Implement addJournalRecord() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function preprocessFilter($query, $params)
-            {
-                array_walk_recursive($query, function (&$item, $key, $params) {
-                    if (array_key_exists($item, $params)) {
-                        $item = $params[$item];
-                    }
-                }, $params);
-                return $query;
             }
         }
     }
