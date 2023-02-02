@@ -1705,12 +1705,25 @@
             }
         }
 
+        let cf = {};
+
+        for (let i in modules.tt.meta.customFields) {
+            cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+        }
+
         let viewers = [];
         for (let i in modules.tt.meta.viewers) {
-            viewers.push({
-                id: modules.tt.meta.viewers[i].name,
-                text: $.trim(modules.tt.meta.viewers[i].field + " [" + modules.tt.meta.viewers[i].name + "]"),
-            });
+            if (modules.tt.meta.viewers[i].field.substring(0, 4) == "[cf]") {
+                viewers.push({
+                    id: modules.tt.meta.viewers[i].name,
+                    text: $.trim(cf[modules.tt.meta.viewers[i].field] + " [" + modules.tt.meta.viewers[i].name + "]"),
+                });
+            } else {
+                viewers.push({
+                    id: modules.tt.meta.viewers[i].name,
+                    text: $.trim(i18n("tt." + modules.tt.meta.viewers[i].field) + " [" + modules.tt.meta.viewers[i].name + "]"),
+                });
+            }
         }
 
         cardForm({
@@ -2891,63 +2904,75 @@
 
     renderViewers: function () {
         loadingStart();
-        GET("tt", "viewer", false, true).
-        done(r => {
-            cardTable({
-                target: "#mainForm",
-                title: {
-                    button: {
-                        caption: i18n("tt.addViewer"),
-                        click: modules.tt.settings.addViewer,
-                    },
-                    caption: i18n("tt.viewers"),
-                    filter: true,
-                },
-                columns: [
-                    {
-                        title: i18n("tt.viewerName"),
-                    },
-                    {
-                        title: i18n("tt.viewerField"),
-                        fullWidth: true,
-                    },
-                ],
-                edit: name => {
-                    location.href = "#tt.settings&section=viewer&viewer=" + name;
-                },
-                rows: () => {
-                    let rows = [];
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            GET("tt", "viewer", false, true).
+            done(r => {
+                let cf = {};
 
-                    for (let i in r.viewers) {
-                        rows.push({
-                            uid: r.viewers[i].name,
-                            cols: [
-                                {
-                                    data: r.viewers[i].name,
-                                },
-                                {
-                                    data: r.viewers[i].field,
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+                for (let i in modules.tt.meta.customFields) {
+                    cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+                }
+
+                cardTable({
+                    target: "#mainForm",
+                    title: {
+                        button: {
+                            caption: i18n("tt.addViewer"),
+                            click: modules.tt.settings.addViewer,
+                        },
+                        caption: i18n("tt.viewers"),
+                        filter: true,
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.viewerName"),
+                        },
+                        {
+                            title: i18n("tt.viewerField"),
+                            fullWidth: true,
+                        },
+                    ],
+                    edit: name => {
+                        location.href = "#tt.settings&section=viewer&viewer=" + name;
+                    },
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in r.viewers) {
+                            rows.push({
+                                uid: r.viewers[i].name,
+                                cols: [
                                     {
-                                        icon: "fas fa-trash-alt",
-                                        title: i18n("tt.deleteFilter"),
-                                        class: "text-warning",
-                                        click: modules.tt.settings.deleteViewer,
+                                        data: r.viewers[i].name,
+                                    },
+                                    {
+                                        data: (r.viewers[i].field.substring(0, 4) == "[cf]")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
                                     },
                                 ],
-                            },
-                        });
-                    }
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("tt.deleteFilter"),
+                                            class: "text-warning",
+                                            click: modules.tt.settings.deleteViewer,
+                                        },
+                                    ],
+                                },
+                            });
+                        }
 
-                    return rows;
-                },
-            });
+                        return rows;
+                    },
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     route: function (params) {
