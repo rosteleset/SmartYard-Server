@@ -292,18 +292,5 @@
             {
                 // TODO: Implement addJournalRecord() method.
             }
-
-            /**
-             * @inheritDoc
-             */
-            public function preprocessFilter($query, $params)
-            {
-                array_walk_recursive($query, function (&$item, $key, $params) {
-                    if (array_key_exists($item, $params)) {
-                        $item = $params[$item];
-                    }
-                }, $params);
-                return $query;
-            }
         }
     }
