@@ -1458,7 +1458,7 @@
                                             {
                                                 icon: "fas fa-trash-alt",
                                                 title: i18n("users.delete"),
-                                                class: "text-warning",
+                                                class: "text-danger",
                                                 click: projectRoleId => {
                                                     modules.tt.settings.projectDeleteUser(projectRoleId, projectId);
                                                 },
@@ -1563,7 +1563,7 @@
                                         {
                                             icon: "fas fa-trash-alt",
                                             title: i18n("groups.delete"),
-                                            class: "text-warning",
+                                            class: "text-danger",
                                             click: projectRoleId => {
                                                 modules.tt.settings.projectDeleteGroup(projectRoleId, projectId);
                                             },
@@ -2005,8 +2005,12 @@
                                         },
                                     },
                                     {
+                                        title: "-",
+                                    },
+                                    {
                                         icon: "far fa-trash-alt",
                                         title: i18n("tt.deleteWorkflow"),
+                                        class: "text-danger",
                                         click: workflow => {
                                             modules.tt.settings.deleteWorkflow(workflow);
                                         },
@@ -2423,7 +2427,7 @@
                                             {
                                                 icon: "fas fa-trash-alt",
                                                 title: i18n("users.delete"),
-                                                class: "text-warning",
+                                                class: "text-danger",
                                                 click: filterAvailableId => {
                                                     modules.tt.settings.filterDeleteUser(filterAvailableId, filter);
                                                 },
@@ -2538,7 +2542,7 @@
                                             {
                                                 icon: "fas fa-trash-alt",
                                                 title: i18n("groups.delete"),
-                                                class: "text-warning",
+                                                class: "text-danger",
                                                 click: filterAvailableId => {
                                                     modules.tt.settings.filterDeleteGroup(filterAvailableId, filter);
                                                 },
@@ -2619,7 +2623,7 @@
                                     {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
-                                        class: "text-warning",
+                                        class: "text-danger",
                                         click: modules.tt.settings.deleteFilter,
                                     },
                                 ],
@@ -2810,7 +2814,7 @@
                                     {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
-                                        class: "text-warning",
+                                        class: "text-danger",
                                         click: modules.tt.settings.deleteCrontab,
                                     },
                                 ],
@@ -2989,7 +2993,7 @@
                                         {
                                             icon: "fas fa-trash-alt",
                                             title: i18n("tt.deleteFilter"),
-                                            class: "text-warning",
+                                            class: "text-danger",
                                             click: k => {
                                                 modules.tt.settings.deleteViewer(v[k].field, v[k].name);
                                             },

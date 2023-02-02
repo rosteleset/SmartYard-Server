@@ -1750,7 +1750,7 @@
                                         {
                                             icon: "fas fa-trash-alt",
                                             title: i18n("addresses.deleteCamera"),
-                                            class: "text-warning",
+                                            class: "text-danger",
                                             disabled: !modules.addresses.houses.meta.cameras[i].cameraId,
                                             click: cameraId => {
                                                 mConfirm(i18n("addresses.confirmDeleteCamera", cameraId), i18n("confirm"), `danger:${i18n("addresses.deleteCamera")}`, () => {
