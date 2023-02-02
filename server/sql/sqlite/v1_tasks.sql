@@ -1,7 +1,7 @@
 -- tasks_changes
 CREATE TABLE tasks_changes
 (
-    task_change_id integer not null primary key autoincrement,
+    task_change_id integer primary key autoincrement,
     object_type text,
     object_id integer
 );

@@ -1158,7 +1158,7 @@
             /**
              * @inheritDoc
              */
-            public function addViewer($name, $field) {
+            public function addViewer($field, $name) {
                 if (!checkStr($name) || !checkStr($field)) {
                     return false;
                 }
@@ -1172,57 +1172,42 @@
             /**
              * @inheritDoc
              */
-            public function modifyViewer($name, $code) {
-                if (!checkStr($name)) {
+            public function modifyViewer($field, $name, $code) {
+                if (!checkStr($field) || !checkStr($name)) {
                     return false;
                 }
 
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $name)) {
-                    return false;
-                }
-
-                file_put_contents(__DIR__ . "/../viewers/$name.js", $code);
+                return $this->db->modify("update tt_viewers set code = :code where field = :field and name = :name", [
+                    "field" => $field,
+                    "name" => $name,
+                    "code" => $code,
+                ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function deleteViewer($name) {
-                if (!checkStr($name)) {
+            public function deleteViewer($field, $name) {
+                if (!checkStr($field) || !checkStr($name)) {
                     return false;
                 }
 
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $name)) {
-                    return false;
-                }
-
-                unlink(__DIR__ . "/../viewers/$name.js");
-
-                return $this->db->modify("delete from tt_viewers where name = :name", [
-                    "name" => $name,
-                ]);
+                return $this->db->modify("delete from tt_viewers where field = :field and name = :name", [
+                        "field" => $field,
+                        "name" => $name,
+                    ]) +
+                    $this->db->modify("delete from tt_projects_viewers where project_view_id in (select project_view_id from tt_projects_viewers left join tt_viewers on tt_projects_viewers.field = tt_viewers.field and tt_projects_viewers.name = tt_viewers.name where code is null)");
             }
 
             /**
              * @inheritDoc
              */
             public function getViewers() {
-                $vs = $this->db->get("select * from tt_viewers order by name", false, [
+                return $this->db->get("select * from tt_viewers order by name", false, [
                     "name" => "name",
-                    "field" => "field"
+                    "field" => "field",
+                    "code" => "code",
                 ]);
-
-                foreach ($vs as &$v) {
-                    $name = $v["name"];
-
-                    if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $name)) {
-                        return false;
-                    }
-
-                    $v["code"] = @file_get_contents(__DIR__ . "/../viewers/$name.js") ? : "// function $name(value, field, issue) {\n\treturn value;\n//}\n";
-                }
-
-                return $vs;
             }
 
             /**
@@ -1233,14 +1218,7 @@
                     return false;
                 }
 
-                $v = $this->db->get("select name from tt_projects_viewers where project_id = $projectId group by name order by name");
-                $r = [];
-
-                foreach ($v as $n) {
-                    $r[] = $n["name"];
-                }
-
-                return $r;
+                return $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId group by name order by name");
             }
 
             /**
@@ -1253,10 +1231,11 @@
 
                 $n = $this->db->modify("delete from tt_projects_viewers where project_id = $projectId");
 
-                foreach ($viewers as $name) {
-                    $n += $this->db->insert("insert into tt_projects_viewers (project_id, name) values (:project_id, :name)", [
+                foreach ($viewers as $viewer) {
+                    $n += $this->db->insert("insert into tt_projects_viewers (project_id, field, name) values (:project_id, :field, :name)", [
                         "project_id" => $projectId,
-                        "name" => $name,
+                        "field" => $viewer["field"],
+                        "name" => $viewer["name"],
                     ]);
                 }
 

@@ -1,7 +1,7 @@
 -- providers
 CREATE TABLE providers
 (
-    provider_id serial not null primary key,
+    provider_id serial primary key,
     id character varying not null,
     name character varying,
     base_url character varying,

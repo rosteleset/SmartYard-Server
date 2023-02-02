@@ -115,15 +115,18 @@
         });
     },
 
-    doAddViewer: function (viewer) {
+    doAddViewer: function (field, name) {
         loadingStart();
-        POST("tt", "viewer", false, viewer).
+        POST("tt", "viewer", false, {
+            field: field,
+            name: name,
+        }).
         fail(FAIL).
         done(() => {
             message(i18n("tt.viewerWasAdded"));
         }).
         done(() => {
-            location.href = "#tt.settings&section=viewer&viewer=" + viewer.name;
+            location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(field)}&name=${encodeURIComponent(name)}`;
         }).
         always(modules.tt.settings.renderViewers);
     },
@@ -181,9 +184,12 @@
         always(modules.tt.settings.renderCustomFields);
     },
 
-    doDeleteViewer: function (viewer) {
+    doDeleteViewer: function (field, name) {
         loadingStart();
-        DELETE("tt", "viewer", viewer).
+        DELETE("tt", "viewer", false, {
+            field: field,
+            name: name,
+        }).
         fail(FAIL).
         done(() => {
             message(i18n("tt.viewerWasDeleted"));
@@ -1183,9 +1189,9 @@
         });
     },
 
-    deleteViewer: function (viewer) {
-        mConfirm(i18n("tt.confirmViewerDelete", viewer), i18n("confirm"), `danger:${i18n("tt.viewerDelete")}`, () => {
-            modules.tt.settings.doDeleteViewer(viewer);
+    deleteViewer: function (field, name) {
+        mConfirm(i18n("tt.confirmViewerDelete", field + " [" + name + "]"), i18n("confirm"), `danger:${i18n("tt.viewerDelete")}`, () => {
+            modules.tt.settings.doDeleteViewer(field, name);
         });
     },
 
@@ -1698,6 +1704,7 @@
 
     projectViewers: function (projectId) {
         let project = false;
+
         for (let i in modules.tt.meta.projects) {
             if (modules.tt.meta.projects[i].projectId == projectId) {
                 project = modules.tt.meta.projects[i];
@@ -1711,18 +1718,31 @@
             cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
         }
 
+        let vi = {};
+        let va = [];
+
         let viewers = [];
         for (let i in modules.tt.meta.viewers) {
+            let key = md5(guid());
+            vi[key] = {
+                field: modules.tt.meta.viewers[i].field,
+                name: modules.tt.meta.viewers[i].name,
+            }
             if (modules.tt.meta.viewers[i].field.substring(0, 4) == "[cf]") {
                 viewers.push({
-                    id: modules.tt.meta.viewers[i].name,
+                    id: key,
                     text: $.trim(cf[modules.tt.meta.viewers[i].field] + " [" + modules.tt.meta.viewers[i].name + "]"),
                 });
             } else {
                 viewers.push({
-                    id: modules.tt.meta.viewers[i].name,
+                    id: key,
                     text: $.trim(i18n("tt." + modules.tt.meta.viewers[i].field) + " [" + modules.tt.meta.viewers[i].name + "]"),
                 });
+            }
+            for (let j in project.viewers) {
+                if (project.viewers[j].field == modules.tt.meta.viewers[i].field && project.viewers[j].name == modules.tt.meta.viewers[i].name) {
+                    va.push(key);
+                }
             }
         }
 
@@ -1739,11 +1759,15 @@
                     type: "multiselect",
                     title: i18n("tt.projectViewers"),
                     options: viewers,
-                    value: project.viewers,
+                    value: va,
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doSetProjectViewers(projectId, result.viewers);
+                let vo = [];
+                for (let i in result.viewers) {
+                     vo.push(vi[result.viewers[i]]);
+                }
+                modules.tt.settings.doSetProjectViewers(projectId, vo);
             },
         }).show();
     },
@@ -2832,15 +2856,6 @@
                 topApply: true,
                 fields: [
                     {
-                        id: "name",
-                        type: "text",
-                        title: i18n("tt.viewerName"),
-                        placeholder: i18n("tt.viewerName"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                    {
                         id: "field",
                         type: "select2",
                         title: i18n("tt.viewerField"),
@@ -2850,22 +2865,33 @@
                             return $.trim(v) !== "";
                         }
                     },
+                    {
+                        id: "name",
+                        type: "text",
+                        title: i18n("tt.viewerName"),
+                        placeholder: i18n("tt.viewerName"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
                 ],
-                callback: modules.tt.settings.doAddViewer,
+                callback: r => {
+                    modules.tt.settings.doAddViewer(r.field, r.name)
+                },
             }).show();
         }).
         fail(FAIL).
         always(loadingDone);
     },
 
-    renderViewer: function (viewer) {
+    renderViewer: function (field, name) {
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
             let code = '';
             for (let i in v.viewers) {
-                if (v.viewers[i].name == viewer) {
-                    code = v.viewers[i].code?v.viewers[i].code:`// function ${viewer} (value, issue, field) {\n\treturn value;\n//}\n`;
+                if (v.viewers[i].field == field && v.viewers[i].name == name) {
+                    code = v.viewers[i].code?v.viewers[i].code:`// function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
@@ -2886,7 +2912,7 @@
             editor.setFontSize(14);
             $("#viewerSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "viewer", viewer, { "code": $.trim(editor.getValue()) }).
+                PUT("tt", "viewer", false, { field: field, name: name, code: $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));
@@ -2915,6 +2941,8 @@
                     cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
                 }
 
+                let v = {};
+
                 cardTable({
                     target: "#mainForm",
                     title: {
@@ -2927,28 +2955,33 @@
                     },
                     columns: [
                         {
-                            title: i18n("tt.viewerName"),
+                            title: i18n("tt.viewerField"),
                         },
                         {
-                            title: i18n("tt.viewerField"),
+                            title: i18n("tt.viewerName"),
                             fullWidth: true,
                         },
                     ],
-                    edit: name => {
-                        location.href = "#tt.settings&section=viewer&viewer=" + name;
+                    edit: k => {
+                        location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
                     },
                     rows: () => {
                         let rows = [];
 
                         for (let i in r.viewers) {
+                            let key = md5(guid());
+                            v[key] = {
+                                field: r.viewers[i].field,
+                                name: r.viewers[i].name,
+                            }
                             rows.push({
-                                uid: r.viewers[i].name,
+                                uid: key,
                                 cols: [
                                     {
-                                        data: r.viewers[i].name,
+                                        data: (r.viewers[i].field.substring(0, 4) == "[cf]")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
                                     },
                                     {
-                                        data: (r.viewers[i].field.substring(0, 4) == "[cf]")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
+                                        data: r.viewers[i].name,
                                     },
                                 ],
                                 dropDown: {
@@ -2957,7 +2990,9 @@
                                             icon: "fas fa-trash-alt",
                                             title: i18n("tt.deleteFilter"),
                                             class: "text-warning",
-                                            click: modules.tt.settings.deleteViewer,
+                                            click: k => {
+                                                modules.tt.settings.deleteViewer(v[k].field, v[k].name);
+                                            },
                                         },
                                     ],
                                 },
@@ -3047,7 +3082,7 @@
                 break;
 
             case "viewer":
-                modules.tt.settings.renderViewer(params["viewer"]);
+                modules.tt.settings.renderViewer(params["field"], params["name"]);
                 break;
 
             case "viewersMenu":

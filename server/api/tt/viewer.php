@@ -21,19 +21,19 @@
             }
 
             public static function POST($params) {
-                $success = loadBackend("tt")->addViewer($params['name'], $params['field']);
+                $success = loadBackend("tt")->addViewer($params['field'], $params['name']);
 
                 return api::ANSWER($success);
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyViewer($params['_id'], $params['code']);
+                $success = loadBackend("tt")->modifyViewer($params['field'], $params["name"], $params['code']);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
-                $success = loadBackend("tt")->deleteViewer($params['_id']);
+                $success = loadBackend("tt")->deleteViewer($params['field'], $params['name']);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

@@ -495,17 +495,19 @@
             abstract public function addViewer($field, $name);
 
             /**
+             * @param $field
              * @param $name
              * @param $code
              * @return mixed
              */
-            abstract public function modifyViewer($name, $code);
+            abstract public function modifyViewer($field, $name, $code);
 
             /**
+             * @param $field
              * @param $name
              * @return mixed
              */
-            abstract public function deleteViewer($name);
+            abstract public function deleteViewer($field, $name);
 
             /**
              * @return mixed

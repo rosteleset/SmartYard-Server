@@ -1,7 +1,7 @@
 -- cameras
 CREATE TABLE cameras
 (
-    camera_id integer not null primary key autoincrement,
+    camera_id integer primary key autoincrement,
     enabled integer not null,
     model text not null,
     url text not null,
