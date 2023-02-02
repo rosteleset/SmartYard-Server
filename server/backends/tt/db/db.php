@@ -1042,7 +1042,7 @@
             /**
              * @inheritDoc
              */
-            public function whoAmI()
+            public function myRoles()
             {
                 $groups = loadBackend("groups");
 

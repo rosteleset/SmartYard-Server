@@ -613,7 +613,7 @@
             /**
              * @return mixed
              */
-            abstract public function whoAmI();
+            abstract public function myRoles();
 
             /**
              * @return mixed

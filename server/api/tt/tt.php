@@ -30,7 +30,7 @@
                         "tags" => $tt->getTags(),
                         "viewers" => $tt->getViewers(),
                         "crontabs" => $tt->getCrontabs(),
-                        "whoAmI" => $tt->whoAmI(),
+                        "myRoles" => $tt->myRoles(),
                         "myGrooups" => $tt->myGroups(),
                     ];
 
