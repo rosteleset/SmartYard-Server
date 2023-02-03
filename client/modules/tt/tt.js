@@ -285,14 +285,51 @@
                         </li>
                     `);
 
+                    let rtd = '';
+
                     if (AVAIL("tt", "project", "POST")) {
-                        $("#rightTopDynamic").html(`
+                        rtd += `
                             <li class="nav-item">
                                 <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
                                     <i class="fas fa-lg fa-fw fa-cog"></i>
                                 </a>
                             </li>
-                        `);
+                        `;
+                    }
+
+                    let pn = {};
+                    for (let i in modules.tt.meta.projects) {
+                        pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
+                    }
+
+                    if (Object.keys(modules.tt.meta.myRoles).length) {
+                        rtd += `
+                            <div class="form-inline mr-3 mt-1">
+                                <div class="input-group input-group-sm mr-2">
+                                    <select id="ttProjectSelect" class="form-control">
+                        `;
+                        for (let j in modules.tt.meta.myRoles) {
+                            rtd += `<option>${pn[j]} [${j}]</option>`;
+                        }
+                        rtd += `
+                                    </select>
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <input id="ttSearch" class="form-control" type="search" aria-label="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-default" id="ttSearchButton">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    $("#rightTopDynamic").html(rtd);
+
+                    if (Object.keys(modules.tt.meta.myRoles).length) {
+                        $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
                     }
 
                     $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
@@ -371,9 +408,5 @@
         }).
         fail(FAIL).
         always(loadingDone);
-    },
-
-    search: function (query) {
-
     },
 }).init();

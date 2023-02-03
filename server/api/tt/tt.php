@@ -31,7 +31,7 @@
                         "viewers" => $tt->getViewers(),
                         "crontabs" => $tt->getCrontabs(),
                         "myRoles" => $tt->myRoles(),
-                        "myGrooups" => $tt->myGroups(),
+                        "myGroups" => $tt->myGroups(),
                     ];
 
                     return api::ANSWER($meta, "meta");

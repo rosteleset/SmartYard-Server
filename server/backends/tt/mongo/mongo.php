@@ -84,7 +84,7 @@
                             }
                         }
 
-                        if ($this->mongo->$db->issues->insertOne($issue)->getInsertedId()) {
+                        if ($this->mongo->$db->$acr->insertOne($issue)->getInsertedId()) {
                             return $issue["issue_id"];
                         } else {
                             return false;
@@ -126,7 +126,9 @@
                     }
                 }
 
-                $this->mongo->$db->issues->deleteMany([
+                $acr = explode("-", $issue)[0];
+
+                $this->mongo->$db->$acr->deleteMany([
                     "issue_id" => $issue,
                 ]);
             }
@@ -134,7 +136,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
             {
                 $projects = [];
                 $db = $this->dbName;
@@ -167,7 +169,7 @@
                     }
                 }
 
-                $issues = $this->mongo->$db->issues->find($query, [
+                $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
                     "skip" => $skip,
                     "limit" => $limit,
@@ -195,7 +197,7 @@
                     "issues" => $i,
                     "skip" => $skip,
                     "limit" => $limit,
-                    "count" => $this->mongo->$db->issues->countDocuments($query),
+                    "count" => $this->mongo->$db->$collection->countDocuments($query),
                 ];
             }
 

@@ -570,14 +570,15 @@
             abstract public function deleteIssue($issue);
 
             /**
+             * @param $collection
              * @param $query
-             * @param $fields
-             * @param $sort
-             * @param $skip
-             * @param $limit
+             * @param array $fields
+             * @param int[] $sort
+             * @param int $skip
+             * @param int $limit
              * @return mixed
              */
-            abstract public function getIssues($query, $fields = [], $sort = [ "issue_id" => 1 ], $skip = 0, $limit = 100);
+            abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issue_id" => 1 ], $skip = 0, $limit = 100);
 
             /**
              * @param $issue

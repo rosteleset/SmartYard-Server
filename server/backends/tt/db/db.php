@@ -94,7 +94,7 @@
                             }
                         }
 
-                        $users = $this->db->query("select project_role_id, uid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and uid is not null");
+                        $users = $this->db->query("select project_role_id, uid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and uid is not null and uid > 0");
                         foreach ($users as $user) {
                             $f = false;
                             foreach ($u as &$_u) {
@@ -1087,7 +1087,7 @@
                     }
                 }
 
-                $levels = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$this->uid} order by level", false, [
+                $levels = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$this->uid} and uid > 0 order by level", false, [
                     "level" => "level",
                     "acronym" => "acronym",
                 ]);
@@ -1150,11 +1150,11 @@
 
                     $g = implode(",", $g);
 
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid} or gid in ($g)", false, [
+                    $filters = $this->db->get("select filter from tt_filters_available where (uid = {$this->uid} and uid > 0) or gid in ($g)", false, [
                         "filter" => "filter",
                     ]);
                 } else {
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid}", false, [
+                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid} and uid > 0", false, [
                         "filter" => "filter",
                     ]);
                 }

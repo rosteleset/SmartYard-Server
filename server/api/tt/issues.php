@@ -25,7 +25,7 @@
                         $myFilters = $tt->myFilters();
 
                         if (@$myFilters[$params["filter"]]) {
-                            $issues = $tt->getIssues(@$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 100);
+                            $issues = $tt->getIssues(@$filter["collection"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 100);
                         }
                     } catch (\Exception $e) {
                         setLastError($e->getMessage());
