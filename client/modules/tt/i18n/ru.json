@@ -82,9 +82,6 @@
     "multiple": "Мультивыбор",
     "usersAndGroups": "Тип выбора",
     "usersAndGroupsChoice": "Пользователи и группы",
-    "index": "Индекс",
-    "indexes": "Индексирование",
-    "fullText": "Полнотекстовый поиск",
     "required": "Обязательное поле",
     "resolutionDelete": "Удалить резолюцию",
     "confirmResolutionDelete": "Удалить резолюцию #%s?",
@@ -166,6 +163,11 @@
     "crontabWasDeleted": "Действие удалено",
     "noFiltersAvailable": "Нет доступных фильтров",
     "noIssuesAvailable": "Нет заявок для отображения",
+    "customFieldIndex": "Индексирование",
+    "customFieldSearch": "Поиск",
+    "searchSubject": "Поиск в теме",
+    "searchDescription": "Поиск в описании",
+    "searchComments": "Поиск в комментариях",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

@@ -5,7 +5,10 @@ CREATE TABLE tt_projects
     acronym text not null,
     project text not null,
     max_file_size integer,
-    mime_types text
+    mime_types text,
+    search_subject integer default 1,
+    search_description integer default 1,
+    search_comments integer default 1
 );
 CREATE UNIQUE INDEX tt_projects_acronym on tt_projects(acronym);
 CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
@@ -75,7 +78,8 @@ CREATE TABLE tt_issue_custom_fields
     link text,
     format text,
     editor text,
-    indexes integer,                                                                                                    -- 0 - none, 1 - field index, 2 - full text search index
+    indx integer,
+    search integer,
     required integer
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_name on tt_issue_custom_fields(field);

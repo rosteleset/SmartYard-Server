@@ -178,10 +178,13 @@
              * @param $project string
              * @param $maxFileSize
              * @param $allowedMimeTypes
+             * @param $searchSubject
+             * @param $searchDescription
+             * @param $searchComments
              * @return boolean
              */
 
-            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes);
+            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes, $searchSubject, $searchDescription, $searchComments);
 
             /**
              * delete project and all it derivatives
@@ -355,12 +358,13 @@
              * @param $format
              * @param $link
              * @param $options
-             * @param $indexes
+             * @param $indx
+             * @param $search
              * @param $required
              * @param $editor
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
 
             /**
              * @param $customFieldId

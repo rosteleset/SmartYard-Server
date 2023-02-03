@@ -691,6 +691,27 @@
                     options: w,
                     title: i18n("tt.allowedMimeTypes"),
                 },
+                {
+                    id: "searchSubject",
+                    type: "yesno",
+                    value: project.searchSubject,
+                    title: i18n("tt.searchSubject"),
+                    placeholder: i18n("tt.searchSubject"),
+                },
+                {
+                    id: "searchDescription",
+                    type: "yesno",
+                    value: project.searchDescription,
+                    title: i18n("tt.searchDescription"),
+                    placeholder: i18n("tt.searchDescription"),
+                },
+                {
+                    id: "searchComments",
+                    type: "yesno",
+                    value: project.searchComments,
+                    title: i18n("tt.searchComments"),
+                    placeholder: i18n("tt.searchComments"),
+                },
             ],
             delete: i18n("tt.projectDelete"),
             callback: function (result) {
@@ -1108,24 +1129,17 @@
                             hidden: cf.type !== "users",
                         },
                         {
-                            id: "indexes",
-                            type: "select",
-                            title: i18n("tt.indexes"),
-                            value: cf.indexes,
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("tt.index"),
-                                },
-                                {
-                                    id: "2",
-                                    text: i18n("tt.fullText"),
-                                },
-                            ],
+                            id: "indx",
+                            type: "yesno",
+                            title: i18n("tt.customFieldIndex"),
+                            value: cf.indx,
+                        },
+                        {
+                            id: "search",
+                            type: "yesno",
+                            title: i18n("tt.customFieldSearch"),
+                            value: cf.search,
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "required",

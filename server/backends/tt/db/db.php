@@ -36,7 +36,7 @@
             public function getProjects()
             {
                 try {
-                    $projects = $this->db->query("select project_id, acronym, project, max_file_size, mime_types from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
+                    $projects = $this->db->query("select project_id, acronym, project, max_file_size, mime_types, search_subject, search_description, search_comments from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
                     $_projects = [];
 
                     foreach ($projects as $project) {
@@ -123,6 +123,9 @@
                             "project" => $project["project"],
                             "maxFileSize" => $project["max_file_size"],
                             "allowedMimeTypes" => $project["mime_types"],
+                            "searchSubject" => $project["search_subject"],
+                            "searchDescription" => $project["search_description"],
+                            "searchComments" => $project["search_comments"],
                             "workflows" => $w,
                             "resolutions" => $r,
                             "customFields" => $cf,
@@ -170,19 +173,22 @@
             /**
              * @inheritDoc
              */
-            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes)
+            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes, $searchSubject, $searchDescription, $searchComments)
             {
-                if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize)) {
+                if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize) || !checkInt($searchSubject) || !checkInt($searchDescription) || !checkInt($searchComments)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, mime_types = :mime_types where project_id = $projectId");
+                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, mime_types = :mime_types, search_subject = :search_subject, search_description = :search_description, search_comments = :search_comments where project_id = $projectId");
                     $sth->execute([
                         "acronym" => $acronym,
                         "project" => $project,
                         "max_file_size" => $maxFileSize,
                         "mime_types" => $allowedMimeTypes,
+                        "search_subject" => $searchSubject,
+                        "search_description" => $searchDescription,
+                        "search_comments" => $searchComments,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -501,7 +507,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, indexes, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, indx, search, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -527,7 +533,8 @@
                             "link" => $customField["link"],
                             "format" => $customField["format"],
                             "editor" => $customField["editor"],
-                            "indexes" => $customField["indexes"],
+                            "indx" => $customField["indx"],
+                            "search" => $customField["search"],
                             "required" => $customField["required"],
                             "options" => $_options,
                         ];
@@ -712,13 +719,17 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor)
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
             {
                 if (!checkInt($customFieldId)) {
                     return false;
                 }
 
-                if (!checkInt($indexes)) {
+                if (!checkInt($indx)) {
+                    return false;
+                }
+
+                if (!checkInt($search)) {
                     return false;
                 }
 
@@ -772,7 +783,7 @@
                                 link = :link,
                                 format = :format,
                                 editor = :editor,
-                                indexes = :indexes,
+                                indx = :indx,
                                 required = :required
                             where
                                 issue_custom_field_id = $customFieldId
@@ -785,7 +796,8 @@
                             ":link" => $link,
                             ":format" => $format,
                             ":editor" => $editor,
-                            ":indexes" => $indexes,
+                            ":indx" => $indx,
+                            ":search" => $search,
                             ":required" => $required,
                         ]);
 
