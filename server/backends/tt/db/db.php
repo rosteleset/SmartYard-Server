@@ -1187,6 +1187,7 @@
                 $cs = $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
                     "crontab_id" => "crontabId",
                     "crontab" => "crontab",
+                    "project_id" => "projectId",
                     "filter" => "filter",
                     "uid" => "uid",
                     "action" => "action",
@@ -1204,13 +1205,14 @@
             /**
              * @inheritDoc
              */
-            public function addCrontab($crontab, $filter, $uid, $action) {
+            public function addCrontab($crontab, $projectId, $filter, $uid, $action) {
                 if (!checkInt($uid)) {
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_crontabs (crontab, filter, uid, action) values (:crontab, :filter, :uid, :action)", [
+                return $this->db->insert("insert into tt_crontabs (crontab, project_id, filter, uid, action) values (:crontab, :project_id, :filter, :uid, :action)", [
                     "crontab" => $crontab,
+                    "project_id" => $projectId,
                     "filter" => $filter,
                     "uid" => $uid,
                     "action" => $action,

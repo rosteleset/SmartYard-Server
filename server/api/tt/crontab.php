@@ -15,7 +15,7 @@
         class crontab extends api {
 
             public static function POST($params) {
-                $success = loadBackend("tt")->addCrontab($params["crontab"], $params["filter"], $params["uid"], $params["action"]);
+                $success = loadBackend("tt")->addCrontab($params["crontab"], $params["projectId"], $params["filter"], $params["uid"], $params["action"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

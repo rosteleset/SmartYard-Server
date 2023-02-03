@@ -153,11 +153,12 @@ CREATE TABLE tt_crontabs
 (
     crontab_id integer primary key autoincrement,
     crontab text,
+    project_id integer,
     filter text,
     uid integer,
     action text
 );
-CREATE UNIQUE INDEX tt_crontabs_uniq on tt_crontabs(filter, uid, action);
+CREATE UNIQUE INDEX tt_crontabs_uniq on tt_crontabs(project_id, filter, uid, action);
 CREATE INDEX tt_crontabs_crontab on tt_crontabs(crontab);
 
 -- viewers

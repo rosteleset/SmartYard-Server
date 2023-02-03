@@ -2394,6 +2394,13 @@
                     },
                 ];
 
+                let projects = [
+                    {
+                        id: "0",
+                        text: "-",
+                    }
+                ]
+
                 let filters = [];
 
                 for (let i in modules.tt.meta.filters) {
@@ -2420,12 +2427,22 @@
                             }
                         },
                         {
+                            id: "project",
+                            type: "select2",
+                            title: i18n("tt.project"),
+                            placeholder: i18n("tt.project"),
+                            options: projects,
+                            validate: v => {
+                                return parseInt(v);
+                            }
+                        },
+                        {
                             id: "filter",
                             type: "select2",
                             title: i18n("tt.filter"),
                             placeholder: i18n("tt.filter"),
                             options: filters,
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             }
                         },
@@ -2435,7 +2452,7 @@
                             title: i18n("tt.crontabUser"),
                             placeholder: i18n("tt.crontabUser"),
                             options: users,
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             }
                         },
@@ -2444,7 +2461,7 @@
                             type: "text",
                             title: i18n("tt.action"),
                             placeholder: i18n("tt.action"),
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             }
                         },
@@ -2488,6 +2505,9 @@
                         title: i18n("tt.crontab"),
                     },
                     {
+                        title: i18n("tt.project"),
+                    },
+                    {
                         title: i18n("tt.filter"),
                     },
                     {
@@ -2511,6 +2531,9 @@
                                 },
                                 {
                                     data: modules.tt.meta.crontabs[i].crontab,
+                                },
+                                {
+                                    data: modules.tt.meta.crontabs[i].project,
                                 },
                                 {
                                     data: modules.tt.meta.crontabs[i].filter,

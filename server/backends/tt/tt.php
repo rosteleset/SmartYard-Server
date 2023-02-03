@@ -518,12 +518,13 @@
 
             /**
              * @param $crontab
+             * @param $projectId
              * @param $filter
              * @param $uid
              * @param $action
              * @return mixed
              */
-            abstract public function addCrontab($crontab, $filter, $uid, $action);
+            abstract public function addCrontab($crontab, $projectId, $filter, $uid, $action);
 
             /**
              * @param $crontabId

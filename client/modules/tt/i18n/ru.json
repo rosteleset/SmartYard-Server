@@ -185,6 +185,6 @@
     },
     "errors": {
         "UNIQUE constraint failed: tt_viewers.field, tt_viewers.name": "Такая функция уже существует",
-        "UNIQUE constraint failed: tt_projects_roles.project_id, tt_projects_roles.role_id, tt_projects_roles.uid, tt_projects_roles.gid": "Такая запись уже существует",
+        "UNIQUE constraint failed: tt_projects_roles.project_id, tt_projects_roles.role_id, tt_projects_roles.uid, tt_projects_roles.gid": "Такая запись уже существует"
     }
 }
