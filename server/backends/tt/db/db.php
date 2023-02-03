@@ -76,7 +76,7 @@
                             ];
                             $users = $this->db->query("select uid from core_users_groups where gid = {$group["gid"]}");
                             foreach ($users as $user) {
-                                $f = false;
+                                $_f = false;
                                 foreach ($u as &$_u) {
                                     if ($_u["uid"] == $user["uid"]) {
                                         if ($_u["roleId"] < $group["role_id"]) {
@@ -85,10 +85,10 @@
                                             $_u["level"] = $group["level"];
                                             $_u["byGroup"] = true;
                                         }
-                                        $f = true;
+                                        $_f = true;
                                     }
                                 }
-                                if (!$f) {
+                                if (!$_f) {
                                     $u[] = [
                                         "projectRoleId" => $group["project_role_id"],
                                         "uid" => $user["uid"],
@@ -102,17 +102,17 @@
 
                         $users = $this->db->query("select project_role_id, uid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and uid is not null and uid > 0");
                         foreach ($users as $user) {
-                            $f = false;
+                            $_f = false;
                             foreach ($u as &$_u) {
                                 if ($_u["uid"] == $user["uid"]) {
                                     $_u["projectRoleId"] = $user["project_role_id"];
                                     $_u["roleId"] = $user["role_id"];
                                     $_u["level"] = $user["level"];
                                     $_u["byGroup"] = false;
-                                    $f = true;
+                                    $_f = true;
                                 }
                             }
-                            if (!$f) {
+                            if (!$_f) {
                                 $u[] = [
                                     "projectRoleId" => $user["project_role_id"],
                                     "uid" => $user["uid"],
@@ -1184,7 +1184,7 @@
              * @inheritDoc
              */
             public function getCrontabs() {
-                $cs = $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
+                return $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
                     "crontab_id" => "crontabId",
                     "crontab" => "crontab",
                     "project_id" => "projectId",
@@ -1192,14 +1192,6 @@
                     "uid" => "uid",
                     "action" => "action",
                 ]);
-
-                $users = loadBackend("users");
-
-                foreach ($cs as &$c) {
-                    $c['user'] = $users->getUser($c["uid"]);
-                }
-
-                return $cs;
             }
 
             /**

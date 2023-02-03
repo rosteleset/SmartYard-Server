@@ -2360,54 +2360,86 @@
         done(() => {
             GET("accounts", "users").
             done(response => {
-                let users = [];
-
-                for (let i in response.users) {
-                    if (response.users[i].uid) {
-                        users.push({
-                            id: response.users[i].uid,
-                            text: $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]"),
-                        });
-                    }
-                }
+                let users = response.users;
 
                 let crontabs = [
                     {
+                        id: "daily",
+                        text: i18n("tt.crontabDaily"),
+                    },
+                    {
                         id: "minutely",
-                        text: i18n("minutely"),
+                        text: i18n("tt.crontabMinutely"),
                     },
                     {
                         id: "5min",
-                        text: i18n("5min"),
+                        text: i18n("tt.crontab5min"),
                     },
                     {
                         id: "hourly",
-                        text: i18n("hourly"),
-                    },
-                    {
-                        id: "daily",
-                        text: i18n("daily"),
+                        text: i18n("tt.crontabHourly"),
                     },
                     {
                         id: "monthly",
-                        text: i18n("monthly"),
+                        text: i18n("tt.crontabMonthly"),
                     },
                 ];
 
-                let projects = [
-                    {
-                        id: "0",
-                        text: "-",
+                let projectsOptions = [];
+                let projects = {};
+                let project = false;
+
+                for (let i in modules.tt.meta.projects) {
+                    projects[modules.tt.meta.projects[i].projectId] = modules.tt.meta.projects[i];
+                    if (!project) {
+                        project = modules.tt.meta.projects[i].projectId;
                     }
-                ]
-
-                let filters = [];
-
-                for (let i in modules.tt.meta.filters) {
-                    filters.push({
-                        id: i,
-                        text: modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i,
+                    projectsOptions.push({
+                        id: modules.tt.meta.projects[i].projectId,
+                        text: $.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"),
                     });
+                }
+
+                function filtersByProject(projectId) {
+                    let f = [];
+
+                    for (let i in modules.tt.meta.projects) {
+                        if (modules.tt.meta.projects[i].projectId == projectId) {
+                            for (let j in modules.tt.meta.projects[i].filters) {
+                                for (let k in modules.tt.meta.filters) {
+                                    if (k == modules.tt.meta.projects[i].filters[j]) {
+                                        f.push({
+                                            id: k,
+                                            text: $.trim((modules.tt.meta.filters[k]?modules.tt.meta.filters[k]:k) + " [" + k + "]"),
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return f;
+                }
+
+                function uidsByProject(projectId) {
+                    let u = [];
+
+                    for (let i in modules.tt.meta.projects) {
+                        if (modules.tt.meta.projects[i].projectId == projectId) {
+                            for (let j in modules.tt.meta.projects[i].users) {
+                                for (let k in users) {
+                                    if (users[k].uid == modules.tt.meta.projects[i].users[j].uid) {
+                                        u.push({
+                                            id: users[k].uid,
+                                            text: $.trim((users[k].realName?users[k].realName:users[k].login) + " [" + users[k].login + "]"),
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return u;
                 }
 
                 cardForm({
@@ -2424,37 +2456,49 @@
                             options: crontabs,
                             validate: (v) => {
                                 return $.trim(v) !== "";
-                            }
+                            },
                         },
                         {
-                            id: "project",
+                            id: "projectId",
                             type: "select2",
                             title: i18n("tt.project"),
                             placeholder: i18n("tt.project"),
-                            options: projects,
+                            options: projectsOptions,
                             validate: v => {
                                 return parseInt(v);
-                            }
+                            },
+                            select: (el, id, prefix) => {
+                                $(`#${prefix}filter`).html("").select2({
+                                    data: filtersByProject(el.val()),
+                                    minimumResultsForSearch: Infinity,
+                                    language: lang["_code"],
+                                });
+                                $(`#${prefix}uid`).html("").select2({
+                                    data: uidsByProject(el.val()),
+                                    minimumResultsForSearch: Infinity,
+                                    language: lang["_code"],
+                                });
+                            },
                         },
                         {
                             id: "filter",
                             type: "select2",
                             title: i18n("tt.filter"),
                             placeholder: i18n("tt.filter"),
-                            options: filters,
+                            options: filtersByProject(project),
                             validate: v => {
                                 return $.trim(v) !== "";
-                            }
+                            },
                         },
                         {
                             id: "uid",
                             type: "select2",
                             title: i18n("tt.crontabUser"),
                             placeholder: i18n("tt.crontabUser"),
-                            options: users,
+                            options: uidsByProject(project),
                             validate: v => {
                                 return $.trim(v) !== "";
-                            }
+                            },
                         },
                         {
                             id: "action",
@@ -2463,7 +2507,7 @@
                             placeholder: i18n("tt.action"),
                             validate: v => {
                                 return $.trim(v) !== "";
-                            }
+                            },
                         },
                     ],
                     callback: modules.tt.settings.doAddCrontab,
@@ -2487,84 +2531,112 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            cardTable({
-                target: "#mainForm",
-                title: {
-                    button: {
-                        caption: i18n("tt.addCrontab"),
-                        click: modules.tt.settings.addCrontab,
-                    },
-                    caption: i18n("tt.crontabs"),
-                    filter: true,
-                },
-                columns: [
-                    {
-                        title: i18n("tt.crontabId"),
-                    },
-                    {
-                        title: i18n("tt.crontab"),
-                    },
-                    {
-                        title: i18n("tt.project"),
-                    },
-                    {
-                        title: i18n("tt.filter"),
-                    },
-                    {
-                        title: i18n("tt.crontabUser"),
-                        noWrap: true,
-                    },
-                    {
-                        title: i18n("tt.action"),
-                        fullWidth: true,
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
+            GET("accounts", "users").
+            done(response => {
+                let users = {};
 
-                    for (let i in modules.tt.meta.crontabs) {
-                        rows.push({
-                            uid: modules.tt.meta.crontabs[i].crontabId,
-                            cols: [
-                                {
-                                    data: modules.tt.meta.crontabs[i].crontabId,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].crontab,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].project,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].filter,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].user.login,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].action,
-                                    fullWidth: true,
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+                for (let i in response.users) {
+                    users[response.users[i].uid] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
+                }
+
+                let projects = {};
+
+                for (let i in modules.tt.meta.projects) {
+                    projects[modules.tt.meta.projects[i].projectId] = modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]";
+                }
+
+                let filters = {};
+                for (let i in modules.tt.meta.filters) {
+                    filters[i] = modules.tt.meta.filters[i] + " [" + i + "]";
+                }
+
+                cardTable({
+                    target: "#mainForm",
+                    title: {
+                        button: {
+                            caption: i18n("tt.addCrontab"),
+                            click: modules.tt.settings.addCrontab,
+                        },
+                        caption: i18n("tt.crontabs"),
+                        filter: true,
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.crontabId"),
+                        },
+                        {
+                            title: i18n("tt.crontab"),
+                        },
+                        {
+                            title: i18n("tt.project"),
+                        },
+                        {
+                            title: i18n("tt.filter"),
+                        },
+                        {
+                            title: i18n("tt.crontabUser"),
+                            noWrap: true,
+                        },
+                        {
+                            title: i18n("tt.action"),
+                            fullWidth: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in modules.tt.meta.crontabs) {
+                            rows.push({
+                                uid: modules.tt.meta.crontabs[i].crontabId,
+                                cols: [
                                     {
-                                        icon: "fas fa-trash-alt",
-                                        title: i18n("tt.deleteCrontab"),
-                                        class: "text-danger",
-                                        click: modules.tt.settings.deleteCrontab,
+                                        data: modules.tt.meta.crontabs[i].crontabId,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: i18n("tt.crontab" + modules.tt.meta.crontabs[i].crontab.charAt(0).toUpperCase() + modules.tt.meta.crontabs[i].crontab.slice(1)),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: projects[modules.tt.meta.crontabs[i].projectId],
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: filters[modules.tt.meta.crontabs[i].filter],
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: users[modules.tt.meta.crontabs[i].uid],
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.tt.meta.crontabs[i].action,
+                                        nowrap: true,
+                                        fullWidth: true,
                                     },
                                 ],
-                            },
-                        });
-                    }
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("tt.deleteCrontab"),
+                                            class: "text-danger",
+                                            click: modules.tt.settings.deleteCrontab,
+                                        },
+                                    ],
+                                },
+                            });
+                        }
 
-                    return rows;
-                },
-            });
+                        return rows;
+                    },
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     addViewer: function () {

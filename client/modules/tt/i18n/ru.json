@@ -160,6 +160,11 @@
     "searchSubject": "Поиск в теме",
     "searchDescription": "Поиск в описании",
     "searchComments": "Поиск в комментариях",
+    "crontabMinutely": "Каждую минуту",
+    "crontab5min": "Каждые 5 минут",
+    "crontabHourly": "Каждый час",
+    "crontabDaily": "Ежедневно",
+    "crontabMonthly": "Ежемесячно",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
