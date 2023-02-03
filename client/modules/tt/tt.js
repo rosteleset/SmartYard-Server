@@ -224,8 +224,13 @@
     },
 
     selectFilter: function (filter) {
-        $.cookie("_tt_issue_filter", filter, { expires: 3650, insecure: config.insecureCookie });
+        $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
         window.location.href = `#tt&filter=${filter}`;
+    },
+
+    selectProject: function (project) {
+        $.cookie("_project", project, { expires: 36500, insecure: config.insecureCookie });
+        window.location.href = `#tt&project=${project}`;
     },
 
     viewIssue: function (issue) {
@@ -302,9 +307,7 @@
                 current_project = $("#ttProjectSelect").val();
 
                 $("#ttProjectSelect").off("change").on("change", () => {
-                    $.cookie("_project", $("#ttProjectSelect").val(), { expires: 36500, insecure: config.insecureCookie });
-                    params["project"] = $("#ttProjectSelect").val();
-                    modules.tt.route(params);
+                    modules.tt.selectProject($("#ttProjectSelect").val());
                 });
 
                 let project = false;
@@ -323,7 +326,7 @@
                 let f = false;
 
                 try {
-                    x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter");
+                    x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter_" + current_project);
                     f = modules.tt.meta.filters[x];
                 } catch (e) {
                     //
@@ -334,7 +337,6 @@
 
                 filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-
                 for (let i in project.filters) {
                     if (x == project.filters[i]) {
                         filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
@@ -361,7 +363,7 @@
 
                 document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 
-                f = $.cookie("_tt_issue_filter");
+                f = $.cookie("_tt_issue_filter_" + current_project);
 
                 QUERY("tt", "issues", {
                     "project": current_project,
