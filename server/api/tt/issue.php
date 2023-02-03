@@ -21,7 +21,7 @@
                     return API::ERROR(500);
                 }
 
-                $issue = $tt->getIssues([ "issue_id" => $params["_id"] ]);
+                $issue = $tt->getIssues(explode("-", $params["_id"])[0], [ "issue_id" => $params["_id"] ]);
 
                 if (!$issue || !$issue["issues"] || !$issue["issues"][0]) {
                     return API::ERROR(404);

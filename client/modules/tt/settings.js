@@ -179,19 +179,6 @@
         always(modules.tt.settings.renderViewers);
     },
 
-    doSetWorkflowAlias: function (workflow, alias) {
-        loadingStart();
-        PUT("tt", "workflow", false, {
-            workflow: workflow,
-            alias: alias,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.workflowWasChanged"));
-        }).
-        always(modules.tt.settings.renderWorkflows);
-    },
-
     doSetProjectWorkflows: function (projectId, workflows) {
         loadingStart();
         PUT("tt", "project", projectId, {
@@ -722,7 +709,7 @@
         }
 
         cardForm({
-            title: i18n("tt.workflowAlias"),
+            title: i18n("tt.status"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -770,7 +757,7 @@
         }
 
         cardForm({
-            title: i18n("tt.workflowAlias"),
+            title: i18n("tt.resolution"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -812,7 +799,7 @@
         }
 
         cardForm({
-            title: i18n("tt.roles"),
+            title: i18n("tt.role"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -1941,7 +1928,7 @@
                         title: i18n("tt.workflow"),
                     },
                     {
-                        title: i18n("tt.workflowAlias"),
+                        title: i18n("tt.workflowName"),
                         fullWidth: true,
                     },
                 ],

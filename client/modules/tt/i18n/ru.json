@@ -39,7 +39,6 @@
     "version": "Версия",
     "users": "Пользователи",
     "groups": "Группы",
-    "workflowAlias": "Описание",
     "projectForkflows": "Рабочие процессы проекта",
     "projectRoleId": "#",
     "roles": "Роли",
@@ -165,6 +164,8 @@
     "crontabHourly": "Каждый час",
     "crontabDaily": "Ежедневно",
     "crontabMonthly": "Ежемесячно",
+    "role": "Роль",
+    "workflowName": "Процесс",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

@@ -9,6 +9,11 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
+            let workflows = [];
+
+            for (let i in modules.tt.meta.workflows) {
+                workflows[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file;
+            }
 
             function workflowsByProject(project) {
                 let w = [];
@@ -17,16 +22,9 @@
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].acronym == project) {
                             for (let j in modules.tt.meta.projects[i].workflows) {
-                                let a = modules.tt.meta.projects[i].workflows[j];
-                                for (let k in modules.tt.meta.workflowAliases) {
-                                    if (modules.tt.meta.workflowAliases[k].workflow == modules.tt.meta.projects[i].workflows[j]) {
-                                        a = modules.tt.meta.workflowAliases[k].alias;
-                                        break;
-                                    }
-                                }
                                 w.push({
                                     id: modules.tt.meta.projects[i].workflows[j],
-                                    text: $.trim(a + " [" + modules.tt.meta.projects[i].workflows[j] + "]"),
+                                    text: $.trim(workflows[modules.tt.meta.projects[i].workflows[j]] + " [" + modules.tt.meta.projects[i].workflows[j] + "]"),
                                     selected: $.cookie("_workflow") == modules.tt.meta.projects[i].workflows[j],
                                 });
                             }
@@ -43,7 +41,7 @@
             projects.push({
                 id: "",
                 text: "-",
-            })
+            });
 
             for (let i in modules.tt.meta.projects) {
                 projects.push({
@@ -52,8 +50,6 @@
                     selected: current_project == modules.tt.meta.projects[i].acronym || $.cookie("_project") == modules.tt.meta.projects[i].acronym,
                 });
             }
-
-            let project = $.cookie("_project")?$.cookie("_project"):"";
 
             cardForm({
                 title: i18n("tt.createIssue"),
@@ -119,21 +115,21 @@
                 done(response => {
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
+                    let workflows = [];
+
+                    for (let i in modules.tt.meta.workflows) {
+                        workflows[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file;
+                    }
+
                     let projectName = "";
                     let project = false;
                     let projectId = -1;
+
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].acronym == current_project) {
                             project = modules.tt.meta.projects[i];
                             projectName = modules.tt.meta.projects[i].project?$.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"):modules.tt.meta.projects[i].acronym;
                             projectId = modules.tt.meta.projects[i].projectId;
-                        }
-                    }
-
-                    let workflowAlias = workflow;
-                    for (let i in modules.tt.meta.workflowAliases) {
-                        if (modules.tt.meta.workflowAliases[i].workflow == workflow) {
-                            workflowAlias = modules.tt.meta.workflowAliases[i].alias?$.trim(modules.tt.meta.workflowAliases[i].alias + " [" + workflow + "]"):workflow;
                         }
                     }
 
@@ -154,11 +150,11 @@
                             hidden: true,
                         },
                         {
-                            id: "workflowAlias",
+                            id: "workflowName",
                             type: "text",
                             readonly: true,
                             title: i18n("tt.workflow"),
-                            value: workflowAlias,
+                            value: workflows[workflow],
                         },
                         {
                             id: "workflow",
@@ -223,7 +219,7 @@
     doCreateIssue: function (issue) {
         loadingStart();
         delete issue.projectName;
-        delete issue.workflowAlias;
+        delete issue.workflowName;
         issue.project = issue.projectAcronym;
         delete issue.projectAcronym;
         POST("tt", "issue", false, {
