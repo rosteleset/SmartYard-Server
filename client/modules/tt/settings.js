@@ -1090,19 +1090,9 @@
                         },
                         {
                             id: "multiple",
-                            type: "select",
+                            type: "yesno",
                             title: i18n("tt.multiple"),
                             value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
-                            options: [
-                                {
-                                    id: "1",
-                                    text: i18n("yes"),
-                                },
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                            ],
                             hidden: cf.type !== "users" && cf.type !== "select",
                         },
                         {
@@ -1143,19 +1133,9 @@
                         },
                         {
                             id: "required",
-                            type: "select",
+                            type: "yesno",
                             title: i18n("tt.required"),
                             value: cf.required,
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("yes"),
-                                },
-                            ],
                         },
                     ],
                     delete: i18n("tt.customFieldDelete"),
