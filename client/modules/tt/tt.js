@@ -251,6 +251,68 @@
             } else {
                 GET("tt", "myFilters").
                 done(r => {
+                    let rtd = '';
+
+                    let current_project = params["project"]?params["project"]:$.cookie("_project");
+
+                    if (AVAIL("tt", "project", "POST")) {
+                        rtd += `
+                            <li class="nav-item">
+                                <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                                    <i class="fas fa-lg fa-fw fa-cog"></i>
+                                </a>
+                            </li>
+                        `;
+                    }
+
+                    let pn = {};
+
+                    for (let i in modules.tt.meta.projects) {
+                        pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
+                    }
+
+                    if (Object.keys(modules.tt.meta.myRoles).length) {
+                        rtd += `
+                            <div class="form-inline mr-3 mt-1">
+                                <div class="input-group input-group-sm mr-2">
+                                    <select id="ttProjectSelect" class="form-control">
+                                        `;
+                                        for (let j in modules.tt.meta.myRoles) {
+                                            if (j == current_project) {
+                                                rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
+                                            } else {
+                                                rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
+                                            }
+                                        }
+                                        rtd += `
+                                    </select>
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <input id="ttSearch" class="form-control" type="search" aria-label="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-default" id="ttSearchButton">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    $("#rightTopDynamic").html(rtd);
+
+                    current_project = $("#ttProjectSelect").val();
+
+                    $("#ttProjectSelect").off("change").on("change", () => {
+                        $.cookie("_project", $("#ttProjectSelect").val(), { expires: 36500, insecure: config.insecureCookie });
+                        params["project"] = $("#ttProjectSelect").val();
+                        modules.tt.route(params);
+                    });
+
+                    if (Object.keys(modules.tt.meta.myRoles).length) {
+                        $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
+                    }
+
                     let f = false;
                     let x = false;
 
@@ -285,54 +347,9 @@
                         </li>
                     `);
 
-                    let rtd = '';
-
-                    if (AVAIL("tt", "project", "POST")) {
-                        rtd += `
-                            <li class="nav-item">
-                                <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                                    <i class="fas fa-lg fa-fw fa-cog"></i>
-                                </a>
-                            </li>
-                        `;
-                    }
-
-                    let pn = {};
-                    for (let i in modules.tt.meta.projects) {
-                        pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
-                    }
-
-                    if (Object.keys(modules.tt.meta.myRoles).length) {
-                        rtd += `
-                            <div class="form-inline mr-3 mt-1">
-                                <div class="input-group input-group-sm mr-2">
-                                    <select id="ttProjectSelect" class="form-control">
-                        `;
-                        for (let j in modules.tt.meta.myRoles) {
-                            rtd += `<option>${pn[j]} [${j}]</option>`;
-                        }
-                        rtd += `
-                                    </select>
-                                </div>
-                                <div class="input-group input-group-sm">
-                                    <input id="ttSearch" class="form-control" type="search" aria-label="Search">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-default" id="ttSearchButton">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    $("#rightTopDynamic").html(rtd);
-
-                    if (Object.keys(modules.tt.meta.myRoles).length) {
-                        $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
-                    }
-
-                    $(".createIssue").off("click").on("click", modules.tt.issue.createIssue);
+                    $(".createIssue").off("click").on("click", () => {
+                        modules.tt.issue.createIssue($("#ttProjectSelect").val());
+                    });
 
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 

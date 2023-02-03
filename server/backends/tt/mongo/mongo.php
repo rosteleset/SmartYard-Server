@@ -138,27 +138,21 @@
              */
             public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
             {
-                $projects = [];
                 $db = $this->dbName;
 
                 $me = $this->myRoles();
 
-                foreach ($me as $i => $r) {
-                    $projects[] = $i;
+                if (!@$me[$collection]) {
+                    return [];
                 }
 
                 $my = $this->myGroups();
                 $my[] = $this->login;
 
-                if ($query) {
-                    $query = $this->preprocessFilter($query, [
-                        "%%me" => $this->login,
-                        "%%my" => $my,
-                    ]);
-                    $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
-                } else {
-                    $query = [ "project" => [ '$in' => $projects ] ];
-                }
+                $query = $this->preprocessFilter($query, [
+                    "%%me" => $this->login,
+                    "%%my" => $my,
+                ]);
 
                 $projection = [];
 

@@ -102,7 +102,12 @@
 
                     $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
 
-                    return $auth;
+                    $users = loadBackend("users");
+                    if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
+                        return $auth;
+                    } else {
+                        return false;
+                    }
                 }
 
                 return false;
