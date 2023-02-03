@@ -11,6 +11,6 @@
     "groupWasDeleted": "Группа удалена",
     "usersCount": "Пользователей",
     "users": "Пользователи группы",
-    "confirmDelete": "Удалить группу #%s?",
+    "confirmDelete": "Удалить группу \"#%s\"?",
     "delete": "Удалить группу"
 }

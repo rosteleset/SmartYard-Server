@@ -32,6 +32,10 @@
                     $success = $tt->setProjectWorkflows($params["_id"], $params["workflows"]);
                 }
 
+                if (array_key_exists("filters", $params)) {
+                    $success = $tt->setProjectFilters($params["_id"], $params["filters"]);
+                }
+
                 if (array_key_exists("resolutions", $params)) {
                     $success = $tt->setProjectResolutions($params["_id"], $params["resolutions"]);
                 }
@@ -44,7 +48,7 @@
                     $success = $tt->setProjectViewers($params["_id"], $params["viewers"]);
                 }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success);
             }
 
             public static function DELETE($params) {

@@ -44,7 +44,17 @@
                 $wx = [];
 
                 foreach ($w as $workflow) {
-                    $wx[] = [ "file" => $workflow ];
+                    try {
+                        $workflow_ = $this->loadWorkflow($workflow);
+                        $name = $workflow_->workflowName();
+                    } catch (\Exception $e) {
+                        $name = $workflow;
+                    }
+
+                    $wx[] = [
+                        "file" => $workflow,
+                        "name" => $name,
+                    ];
                 }
 
                 return $wx;
@@ -196,30 +206,20 @@
             abstract public function deleteProject($projectId);
 
             /**
-             * get workflow aliases
-             *
-             * @return false|array
-             */
-
-            abstract public function getWorkflowAliases();
-
-            /**
-             * set workflow alias
-             *
-             * @param $workflow
-             * @param $alias
-             * @return boolean
-             */
-
-            abstract public function setWorkflowAlias($workflow, $alias);
-
-            /**
              * @param $projectId
              * @param $workflows
              * @return boolean
              */
 
             abstract public function setProjectWorkflows($projectId, $workflows);
+
+            /**
+             * @param $projectId
+             * @param $filters
+             * @return boolean
+             */
+
+            abstract public function setProjectFilters($projectId, $filters);
 
             /**
              * @return false|array
@@ -292,26 +292,6 @@
              */
 
             abstract public function setProjectCustomFields($projectId, $customFields);
-
-            /**
-             * @param $filter
-             * @return mixed
-             */
-            abstract public function filterAvailable($filter);
-
-            /**
-             * @param $filter
-             * @param $uid
-             * @param $gid
-             * @return mixed
-             */
-            abstract public function addFilterAvailable($filter, $uid, $gid);
-
-            /**
-             * @param $filter_available_id
-             * @return mixed
-             */
-            abstract public function deleteFilterAvailable($filter_available_id);
 
             /**
              * @param $projectId

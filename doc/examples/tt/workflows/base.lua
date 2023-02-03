@@ -37,3 +37,7 @@ function viewIssue(issue)
     utils.error_log(utils.print_r(issue))
     return issue
 end
+
+function workflowName()
+    return "Базовый"
+end

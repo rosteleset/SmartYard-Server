@@ -76,7 +76,7 @@
              */
             public function __call($name, $arguments)
             {
-                $ret = $this->sandbox->callFunction($name, ...$arguments);
+                $ret = @$this->sandbox->callFunction($name, ...$arguments);
 
                 if (isset($ret) && is_array($ret) && isset($ret[0])) {
                     return $ret[0];

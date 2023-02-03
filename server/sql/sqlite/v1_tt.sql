@@ -13,15 +13,6 @@ CREATE TABLE tt_projects
 CREATE UNIQUE INDEX tt_projects_acronym on tt_projects(acronym);
 CREATE UNIQUE INDEX tt_projects_name on tt_projects(project);
 
--- workflows
-CREATE TABLE tt_workflows_aliases
-(
-    workflow_alias_id integer primary key autoincrement,
-    workflow text,
-    alias text
-);
-CREATE UNIQUE INDEX tt_workflows_aliases_workflow on tt_workflows_aliases(workflow);
-
 -- projects <-> workflows
 CREATE TABLE tt_projects_workflows
 (
@@ -30,6 +21,15 @@ CREATE TABLE tt_projects_workflows
     workflow text
 );
 CREATE UNIQUE INDEX tt_projects_workflows_uniq on tt_projects_workflows (project_id, workflow);
+
+-- projects <-> filters
+CREATE TABLE tt_projects_filters
+(
+    project_filter_id integer primary key autoincrement,
+    project_id integer,
+    filter text
+);
+CREATE UNIQUE INDEX tt_projects_filters_uniq on tt_projects_filters (project_id, filter);
 
 -- issue statuses
 CREATE TABLE tt_issue_statuses                                                                                          -- !!! managed by workflows !!!
@@ -147,19 +147,6 @@ CREATE TABLE tt_tags
     tag text
 );
 CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);
-
--- filters available
-CREATE TABLE tt_filters_available
-(
-    filter_available_id integer primary key autoincrement,
-    filter text,
-    uid integer default 0,
-    gid integer default 0
-);
-CREATE UNIQUE INDEX tt_filters_available_uniq on tt_filters_available (filter, uid, gid);
-CREATE INDEX tt_filters_available_filter on tt_filters_available (filter);
-CREATE INDEX tt_filters_available_uid on tt_filters_available (uid);
-CREATE INDEX tt_filters_available_gid on tt_filters_available (gid);
 
 -- crontabs
 CREATE TABLE tt_crontabs

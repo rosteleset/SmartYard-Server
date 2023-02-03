@@ -46,6 +46,12 @@
                             $w[] = $workflow['workflow'];
                         }
 
+                        $filters = $this->db->query("select filter from tt_projects_filters where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
+                        $f = [];
+                        foreach ($filters as $filter) {
+                            $f[] = $filter['filter'];
+                        }
+
                         $resolutions = $this->db->query("select issue_resolution_id from tt_projects_resolutions where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
                         $r = [];
                         foreach ($resolutions as $resolution) {
@@ -127,6 +133,7 @@
                             "searchDescription" => $project["search_description"],
                             "searchComments" => $project["search_comments"],
                             "workflows" => $w,
+                            "filters" => $f,
                             "resolutions" => $r,
                             "customFields" => $cf,
                             "users" => $u,
@@ -221,63 +228,6 @@
             /**
              * @inheritDoc
              */
-            public function getWorkflowAliases()
-            {
-                try {
-                    $workflows = $this->db->query("select workflow, alias from tt_workflows_aliases order by workflow", \PDO::FETCH_ASSOC)->fetchAll();
-                    $_workflows = [];
-
-                    foreach ($workflows as $workflow) {
-                        $_workflows[] = [
-                            "workflow" => $workflow["workflow"],
-                            "alias" => $workflow["alias"],
-                        ];
-                    }
-
-                    return $_workflows;
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function setWorkflowAlias($workflow, $alias)
-            {
-                $alias = trim($alias);
-
-                if (!$alias) {
-                    return false;
-                }
-
-                try {
-                    $sth = $this->db->prepare("insert into tt_workflows_aliases (workflow) values (:workflow)");
-                    $sth->execute([
-                        ":workflow" => $workflow,
-                    ]);
-                } catch (\Exception $e) {
-//                    error_log(print_r($e, true));
-                }
-
-                try {
-                    $sth = $this->db->prepare("update tt_workflows_aliases set alias = :alias where workflow = :workflow");
-                    $sth->execute([
-                        ":workflow" => $workflow,
-                        ":alias" => $alias,
-                    ]);
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                return true;
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function setProjectWorkflows($projectId, $workflows)
             {
                 // TODO: add transaction, commint, rollback
@@ -310,12 +260,51 @@
                         }
                         $w = $this->loadWorkflow($workflow);
                         if (!$w->initProject($projectId)) {
+                            setLastError("invalidWorflow");
                             return false;
                         }
                     }
                 } catch (\Exception $e) {
+                    setLastError("invalidWorflow");
                     error_log(print_r($e, true));
                     return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function setProjectFilters($projectId, $filters)
+            {
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_projects_filters (project_id, filter) values (:project_id, :filter)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_filters where project_id = $projectId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                foreach ($filters as $filter) {
+                    if (!$sth->execute([
+                        ":project_id" => $projectId,
+                        ":filter" => $filter,
+                    ])) {
+                        return false;
+                    }
                 }
 
                 return true;
@@ -327,14 +316,20 @@
             public function deleteWorkflow($workflow) {
                 parent::deleteWorkflow($workflow);
 
-                if (!$this->getWorkflow($workflow)) {
-                    $this->db->modify("delete from tt_workflows_aliases where workflow = :workflow", [
-                        "workflow" => $workflow,
-                    ]);
-                    $this->db->modify("delete from tt_projects_workflows where workflow = :workflow", [
-                        "workflow" => $workflow,
-                    ]);
-                }
+                $this->db->modify("delete from tt_projects_workflows where workflow = :workflow", [
+                    "workflow" => $workflow,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteFilter($filter) {
+                parent::deleteFilter($filter);
+
+                $this->db->modify("delete from tt_projects_filters where filter = :filter", [
+                    "filter" => $filter,
+                ]);
             }
 
             /**
@@ -980,75 +975,6 @@
                 }
 
                 return true;
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function filterAvailable($filter)
-            {
-                return $this->db->get("select filter_available_id, uid, gid from tt_filters_available where filter = :filter order by uid, gid", [
-                    "filter" => $filter,
-                ], [
-                    "filter_available_id" => "filterAvailableId",
-                    "uid" => "uid",
-                    "gid" => "gid",
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addFilterAvailable($filter, $uid, $gid)
-            {
-                if (!$filter) {
-                    return false;
-                }
-
-                if ($uid && $gid) {
-                    return $this->db->insert("insert into tt_filters_available (filter, uid, gid) values (:filter, :uid, :gid)", [
-                        "filter" => $filter,
-                        "uid" => $uid,
-                        "gid" => $gid,
-                    ]);
-                }
-
-                if ($uid && !$gid) {
-                    return $this->db->insert("insert into tt_filters_available (filter, uid) values (:filter, :uid)", [
-                        "filter" => $filter,
-                        "uid" => $uid,
-                    ]);
-                }
-
-                if (!$uid && $gid) {
-                    return $this->db->insert("insert into tt_filters_available (filter, gid) values (:filter, :gid)", [
-                        "filter" => $filter,
-                        "gid" => $gid,
-                    ]);
-                }
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function deleteFilterAvailable($filter_available_id)
-            {
-                $filter_available_id = (int)$filter_available_id;
-
-                return $this->db->modify("delete from tt_filters_available where filter_available_id = :filter_available_id", [
-                    "filter_available_id" => $filter_available_id,
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function deleteFilter($filter) {
-                $this->db->modify("delete from tt_filters_available where filter = :filter", [
-                    "filter" => $filter,
-                ]);
-
-                parent::deleteFilter($filter);
             }
 
             /**

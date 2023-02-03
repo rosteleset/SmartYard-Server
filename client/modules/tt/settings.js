@@ -97,24 +97,6 @@
         });
     },
 
-    doAddFilterAvailable: function (filter, uid, gid) {
-        loadingStart();
-        POST("tt", "filterAvailable", filter, { uid, gid }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.filterWasChanged"));
-        }).
-        done(() => {
-            if (uid) {
-                modules.tt.settings.filterUsers(filter);
-            }
-            if (gid) {
-                modules.tt.settings.filterGroups(filter);
-            }
-        });
-    },
-
     doAddViewer: function (field, name) {
         loadingStart();
         POST("tt", "viewer", false, {
@@ -214,6 +196,18 @@
         loadingStart();
         PUT("tt", "project", projectId, {
             workflows: workflows,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        always(modules.tt.settings.renderProjects);
+    },
+
+    doSetProjectFilters: function (projectId, filters) {
+        loadingStart();
+        PUT("tt", "project", projectId, {
+            filters: filters,
         }).
         fail(FAIL).
         done(() => {
@@ -360,23 +354,6 @@
         }).
         done(() => {
             modules.tt.settings.projectTags(projectId);
-        });
-    },
-
-    doDeleteFilterAvailable: function (filterAvailableId, filter, users) {
-        loadingStart();
-        DELETE("tt", "filterAvailable", filterAvailableId).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.filterWasChanged"));
-        }).
-        done(() => {
-            if (users) {
-                modules.tt.settings.filterUsers(filter);
-            } else {
-                modules.tt.settings.filterGroups(filter);
-            }
         });
     },
 
@@ -1189,46 +1166,6 @@
         });
     },
 
-    setWorkflowAlias: function (workflow) {
-        let w = '';
-
-        for (let i in modules.tt.meta.workflowAliases) {
-            if (modules.tt.meta.workflowAliases[i].workflow === workflow) {
-                w = modules.tt.meta.workflowAliases[i].alias;
-                break;
-            }
-        }
-
-        cardForm({
-            title: i18n("tt.workflowAlias"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "workflow",
-                    type: "text",
-                    title: i18n("tt.workflow"),
-                    value: workflow,
-                    readonly: true,
-                },
-                {
-                    id: "alias",
-                    type: "text",
-                    title: i18n("tt.workflowAlias"),
-                    placeholder: i18n("tt.workflowAlias"),
-                    value: w,
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-            ],
-            callback: function (result) {
-                modules.tt.settings.doSetWorkflowAlias(workflow, result.alias);
-            },
-        }).show();
-    },
-
     projectWorkflows: function (projectId) {
         let project = false;
 
@@ -1241,20 +1178,14 @@
 
         let w = {};
         for (let i in modules.tt.meta.workflows) {
-            w[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].file;
-        }
-
-        for (let i in modules.tt.meta.workflowAliases) {
-            if (w[modules.tt.meta.workflowAliases[i].workflow]) {
-                w[modules.tt.meta.workflowAliases[i].workflow] = modules.tt.meta.workflowAliases[i].alias;
-            }
+            w[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i];
         }
 
         let workflows = [];
         for (let i in w) {
             workflows.push({
                 id: i,
-                text: "<span class='text-monospace'>[" + i + "]</span> " + w[i],
+                text: "<span class='text-monospace'>[" + i + "]</span> " + (w[i].name?w[i].name:i),
             });
         }
 
@@ -1276,6 +1207,46 @@
             ],
             callback: function (result) {
                 modules.tt.settings.doSetProjectWorkflows(projectId, result.workflows);
+            },
+        }).show();
+    },
+
+    projectFilters: function (projectId) {
+        let project = false;
+
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        let filters = [];
+        for (let i in modules.tt.meta.filters) {
+            filters.push({
+                id: i,
+                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i),
+            });
+        }
+
+        cardForm({
+            title: i18n("tt.projectFilters"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "filters",
+                    type: "multiselect",
+                    title: i18n("tt.filters"),
+                    options: filters,
+                    value: project.filters,
+                },
+            ],
+            callback: function (result) {
+                modules.tt.settings.doSetProjectFilters(projectId, result.filters);
             },
         }).show();
     },
@@ -1821,6 +1792,11 @@
                                         click: modules.tt.settings.projectWorkflows,
                                     },
                                     {
+                                        icon: "fas fa-filter",
+                                        title: i18n("tt.filters"),
+                                        click: modules.tt.settings.projectFilters,
+                                    },
+                                    {
                                         title: "-",
                                     },
                                     {
@@ -1873,7 +1849,7 @@
 
     renderWorkflow: function (workflow) {
         loadingStart();
-        GET("tt", "customWorkflow", workflow, true).
+        GET("tt", "workflow", workflow, true).
         done(w => {
             // TODO f..ck!
             let top = 75;
@@ -1892,7 +1868,7 @@
             editor.setFontSize(14);
             $("#workflowSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "customWorkflow", workflow, { "body": $.trim(editor.getValue()) }).
+                PUT("tt", "workflow", workflow, { "body": $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowWasSaved"));
@@ -1911,7 +1887,7 @@
     deleteWorkflow: function (workflow) {
         mConfirm(i18n("tt.confirmWorkflowDelete", workflow), i18n("confirm"), i18n("delete"), () => {
             loadingStart();
-            DELETE("tt", "customWorkflow", workflow, false).
+            DELETE("tt", "workflow", workflow, false).
             fail(err => {
                 FAIL(err);
                 loadingDone();
@@ -1969,14 +1945,11 @@
                         fullWidth: true,
                     },
                 ],
-                edit: modules.tt.settings.setWorkflowAlias,
+                edit: workflow => {
+                    location.href = "#tt.settings&section=workflow&workflow=" + workflow;
+                },
                 rows: () => {
                     let rows = [];
-
-                    let w = {};
-                    for (let i = 0; i < modules.tt.meta.workflowAliases.length; i++) {
-                        w[modules.tt.meta.workflowAliases[i].workflow] = modules.tt.meta.workflowAliases[i].alias;
-                    }
 
                     for (let i = 0; i < modules.tt.meta.workflows.length; i++) {
                         rows.push({
@@ -1986,21 +1959,11 @@
                                     data: modules.tt.meta.workflows[i].file,
                                 },
                                 {
-                                    data: w[modules.tt.meta.workflows[i].file]?w[modules.tt.meta.workflows[i].file]:modules.tt.meta.workflows[i].file,
+                                    data: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file,
                                 },
                             ],
                             dropDown: {
                                 items: [
-                                    {
-                                        icon: "far fa-file-code",
-                                        title: i18n("tt.editWorkflow"),
-                                        click: workflow => {
-                                            location.href = "#tt.settings&section=workflow&workflow=" + workflow;
-                                        },
-                                    },
-                                    {
-                                        title: "-",
-                                    },
                                     {
                                         icon: "far fa-trash-alt",
                                         title: i18n("tt.deleteWorkflow"),
@@ -2328,236 +2291,6 @@
         }).show();
     },
 
-    addFilterUser: function (filter, users) {
-        let u = [];
-        for (let i in users) {
-            u.push({
-                id: i,
-                text: users[i],
-            })
-        }
-        cardForm({
-            title: i18n("tt.addFilterUser"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "uid",
-                    type: "select2",
-                    title: i18n("tt.filterUser"),
-                    options: u,
-                },
-            ],
-            callback: result => {
-                modules.tt.settings.doAddFilterAvailable(filter, result.uid, 0);
-            },
-        }).show();
-    },
-
-    filterDeleteUser: function (filterAvailableId, filter) {
-        mConfirm(i18n("users.confirmDelete", filterAvailableId.toString()), i18n("confirm"), `warning:${i18n("tt.removeUserFromFilter")}`, () => {
-            modules.tt.settings.doDeleteFilterAvailable(filterAvailableId, filter, true);
-        });
-    },
-
-    filterUsers: function (filter) {
-        loadingStart();
-        GET("tt", "filterAvailable", filter, true).
-        done(filterAvailable => {
-            GET("accounts", "users").
-            done(response => {
-                let users = {};
-                for (let i in response.users) {
-                    if (response.users[i].uid) {
-                        users[response.users[i].uid] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
-                    }
-                }
-
-                cardTable({
-                    target: "#altForm",
-                    title: {
-                        caption: modules.tt.meta.filters[filter]?modules.tt.meta.filters[filter]:filter + " " + i18n("tt.filterUsers"),
-                        button: {
-                            caption: i18n("tt.addFilterUser"),
-                            click: () => {
-                                modules.tt.settings.addFilterUser(filter, users);
-                            },
-                        },
-                        altButton: {
-                            caption: i18n("close"),
-                            click: () => {
-                                $("#altForm").hide();
-                            },
-                        },
-                    },
-                    columns: [
-                        {
-                            title: i18n("tt.filterAvailableId"),
-                        },
-                        {
-                            title: i18n("tt.filterUser"),
-                            nowrap: true,
-                            fullWidth: true,
-                        },
-                    ],
-                    rows: () => {
-                        let rows = [];
-
-                        for (let i in filterAvailable.available) {
-                            if (filterAvailable.available[i].uid) {
-                                rows.push({
-                                    uid: filterAvailable.available[i].filterAvailableId,
-                                    cols: [
-                                        {
-                                            data: filterAvailable.available[i].filterAvailableId,
-                                        },
-                                        {
-                                            data: users[filterAvailable.available[i].uid],
-                                        },
-                                    ],
-                                    dropDown: {
-                                        items: [
-                                            {
-                                                icon: "fas fa-trash-alt",
-                                                title: i18n("users.delete"),
-                                                class: "text-danger",
-                                                click: filterAvailableId => {
-                                                    modules.tt.settings.filterDeleteUser(filterAvailableId, filter);
-                                                },
-                                            },
-                                        ],
-                                    },
-                                });
-                            }
-                        }
-
-                        return rows;
-                    },
-                }).show();
-            }).
-            fail(FAIL).
-            always(loadingDone);
-        }).
-        fail(FAIL).
-        fail(loadingDone);
-    },
-
-    addFilterGroup: function (filter, groups) {
-        let g = [];
-        for (let i in groups) {
-            g.push({
-                id: i,
-                text: groups[i],
-            })
-        }
-        cardForm({
-            title: i18n("tt.addFilterGroup"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "gid",
-                    type: "select2",
-                    title: i18n("tt.filterGroup"),
-                    options: g,
-                },
-            ],
-            callback: result => {
-                modules.tt.settings.doAddFilterAvailable(filter, 0, result.gid);
-            },
-        }).show();
-    },
-
-    filterDeleteGroup: function (filterAvailableId, filter) {
-        mConfirm(i18n("groups.confirmDelete", filterAvailableId.toString()), i18n("confirm"), `warning:${i18n("tt.removeGroupFromFilter")}`, () => {
-            modules.tt.settings.doDeleteFilterAvailable(filterAvailableId, filter, false);
-        });
-    },
-
-    filterGroups: function (filter) {
-        loadingStart();
-        GET("tt", "filterAvailable", filter, true).
-        done(filterAvailable => {
-            GET("accounts", "groups").
-            done(response => {
-                let groups = {};
-                for (let i in response.groups) {
-                    if (response.groups[i].gid) {
-                        groups[response.groups[i].gid] = $.trim((response.groups[i].name?response.groups[i].name:response.groups[i].acronym) + " [" + response.groups[i].acronym + "]");
-                    }
-                }
-
-                cardTable({
-                    target: "#altForm",
-                    title: {
-                        caption: modules.tt.meta.filters[filter]?modules.tt.meta.filters[filter]:filter + " " + i18n("tt.filterGroups"),
-                        button: {
-                            caption: i18n("tt.addFilterGroup"),
-                            click: () => {
-                                modules.tt.settings.addFilterGroup(filter, groups);
-                            },
-                        },
-                        altButton: {
-                            caption: i18n("close"),
-                            click: () => {
-                                $("#altForm").hide();
-                            },
-                        },
-                    },
-                    columns: [
-                        {
-                            title: i18n("tt.filterAvailableId"),
-                        },
-                        {
-                            title: i18n("tt.filterGroup"),
-                            nowrap: true,
-                            fullWidth: true,
-                        },
-                    ],
-                    rows: () => {
-                        let rows = [];
-
-                        for (let i in filterAvailable.available) {
-                            if (filterAvailable.available[i].gid) {
-                                rows.push({
-                                    uid: filterAvailable.available[i].filterAvailableId,
-                                    cols: [
-                                        {
-                                            data: filterAvailable.available[i].filterAvailableId,
-                                        },
-                                        {
-                                            data: groups[filterAvailable.available[i].gid],
-                                        },
-                                    ],
-                                    dropDown: {
-                                        items: [
-                                            {
-                                                icon: "fas fa-trash-alt",
-                                                title: i18n("groups.delete"),
-                                                class: "text-danger",
-                                                click: filterAvailableId => {
-                                                    modules.tt.settings.filterDeleteGroup(filterAvailableId, filter);
-                                                },
-                                            },
-                                        ],
-                                    },
-                                });
-                            }
-                        }
-
-                        return rows;
-                    },
-                }).show();
-            }).
-            fail(FAIL).
-            always(loadingDone);
-        }).
-        fail(FAIL).
-        fail(loadingDone);
-    },
-
     renderFilters: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -2601,19 +2334,6 @@
                             ],
                             dropDown: {
                                 items: [
-                                    {
-                                        icon: "fas fa-user",
-                                        title: i18n("tt.users"),
-                                        click: modules.tt.settings.filterUsers,
-                                    },
-                                    {
-                                        icon: "fas fa-users",
-                                        title: i18n("tt.groups"),
-                                        click: modules.tt.settings.filterGroups,
-                                    },
-                                    {
-                                        title: "-",
-                                    },
                                     {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
@@ -2807,7 +2527,7 @@
                                 items: [
                                     {
                                         icon: "fas fa-trash-alt",
-                                        title: i18n("tt.deleteFilter"),
+                                        title: i18n("tt.deleteCrontab"),
                                         class: "text-danger",
                                         click: modules.tt.settings.deleteCrontab,
                                     },
