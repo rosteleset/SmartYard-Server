@@ -329,15 +329,11 @@
                     //
                 }
 
-                console.log(x);
-
                 let fcount = 0;
                 let filters = `<span class="dropdown">`;
 
                 filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-
-                console.log(project);
 
                 for (let i in project.filters) {
                     if (x == project.filters[i]) {
