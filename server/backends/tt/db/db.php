@@ -1059,43 +1059,6 @@
             /**
              * @inheritDoc
              */
-            public function myFilters()
-            {
-                $groups = loadBackend("groups");
-
-                if ($groups) {
-                    $groups = $groups->getGroups($this->uid);
-                }
-
-                if ($groups) {
-                    $g = [];
-
-                    foreach ($groups as $group) {
-                        $g[] = $group["gid"];
-                    }
-
-                    $g = implode(",", $g);
-
-                    $filters = $this->db->get("select filter from tt_filters_available where (uid = {$this->uid} and uid > 0) or gid in ($g)", false, [
-                        "filter" => "filter",
-                    ]);
-                } else {
-                    $filters = $this->db->get("select filter from tt_filters_available where uid = {$this->uid} and uid > 0", false, [
-                        "filter" => "filter",
-                    ]);
-                }
-
-                $f = [];
-                foreach ($filters as $filter) {
-                    $f[$filter["filter"]] = @json_decode($this->getFilter($filter["filter"]), true)["name"] ? : $filter["filter"];
-                }
-
-                return $f;
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function addViewer($field, $name) {
                 if (!checkStr($name) || !checkStr($field)) {
                     return false;

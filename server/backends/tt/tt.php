@@ -609,11 +609,6 @@
             /**
              * @return mixed
              */
-            abstract public function myFilters();
-
-            /**
-             * @return mixed
-             */
             abstract public function reCreateIndexes();
 
             /**

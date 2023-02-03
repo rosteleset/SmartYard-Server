@@ -249,175 +249,185 @@
                 fail(FAIL).
                 always(loadingDone)
             } else {
-                GET("tt", "myFilters").
-                done(r => {
-                    let rtd = '';
+                let rtd = '';
 
-                    let current_project = params["project"]?params["project"]:$.cookie("_project");
+                let current_project = params["project"]?params["project"]:$.cookie("_project");
 
-                    if (AVAIL("tt", "project", "POST")) {
-                        rtd += `
-                            <li class="nav-item">
-                                <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                                    <i class="fas fa-lg fa-fw fa-cog"></i>
-                                </a>
-                            </li>
-                        `;
-                    }
+                if (AVAIL("tt", "project", "POST")) {
+                    rtd += `
+                        <li class="nav-item">
+                            <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                                <i class="fas fa-lg fa-fw fa-cog"></i>
+                            </a>
+                        </li>
+                    `;
+                }
 
-                    let pn = {};
+                let pn = {};
 
-                    for (let i in modules.tt.meta.projects) {
-                        pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
-                    }
+                for (let i in modules.tt.meta.projects) {
+                    pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
+                }
 
-                    if (Object.keys(modules.tt.meta.myRoles).length) {
-                        rtd += `
-                            <div class="form-inline mr-3 mt-1">
-                                <div class="input-group input-group-sm mr-2">
-                                    <select id="ttProjectSelect" class="form-control">
-                                        `;
-                                        for (let j in modules.tt.meta.myRoles) {
-                                            if (j == current_project) {
-                                                rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
-                                            } else {
-                                                rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
-                                            }
+                if (Object.keys(modules.tt.meta.myRoles).length) {
+                    rtd += `
+                        <div class="form-inline mr-3 mt-1">
+                            <div class="input-group input-group-sm mr-2">
+                                <select id="ttProjectSelect" class="form-control">
+                                    `;
+                                    for (let j in modules.tt.meta.myRoles) {
+                                        if (j == current_project) {
+                                            rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
+                                        } else {
+                                            rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
                                         }
-                                        rtd += `
-                                    </select>
-                                </div>
-                                <div class="input-group input-group-sm">
-                                    <input id="ttSearch" class="form-control" type="search" aria-label="Search">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-default" id="ttSearchButton">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
+                                    }
+                                    rtd += `
+                                </select>
+                            </div>
+                            <div class="input-group input-group-sm">
+                                <input id="ttSearch" class="form-control" type="search" aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-default" id="ttSearchButton">
+                                        <i class="fas fa-search"></i>
+                                    </button>
                                 </div>
                             </div>
-                        `;
+                        </div>
+                    `;
+                }
+
+                $("#rightTopDynamic").html(rtd);
+
+                current_project = $("#ttProjectSelect").val();
+
+                $("#ttProjectSelect").off("change").on("change", () => {
+                    $.cookie("_project", $("#ttProjectSelect").val(), { expires: 36500, insecure: config.insecureCookie });
+                    params["project"] = $("#ttProjectSelect").val();
+                    modules.tt.route(params);
+                });
+
+                let project = false;
+
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].acronym == current_project) {
+                        project = modules.tt.meta.projects[i];
                     }
+                }
 
-                    $("#rightTopDynamic").html(rtd);
+                if (Object.keys(modules.tt.meta.myRoles).length) {
+                    $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
+                }
 
-                    current_project = $("#ttProjectSelect").val();
+                let x = false;
+                let f = false;
 
-                    $("#ttProjectSelect").off("change").on("change", () => {
-                        $.cookie("_project", $("#ttProjectSelect").val(), { expires: 36500, insecure: config.insecureCookie });
-                        params["project"] = $("#ttProjectSelect").val();
-                        modules.tt.route(params);
-                    });
+                try {
+                    x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter");
+                    f = modules.tt.meta.filters[x];
+                } catch (e) {
+                    //
+                }
 
-                    if (Object.keys(modules.tt.meta.myRoles).length) {
-                        $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
+                console.log(x);
+
+                let fcount = 0;
+                let filters = `<span class="dropdown">`;
+
+                filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
+                filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+
+                console.log(project);
+
+                for (let i in project.filters) {
+                    if (x == project.filters[i]) {
+                        filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
+                    } else {
+                        filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
                     }
+                    fcount++;
+                }
+                filters += `</ul></span>`;
 
-                    let f = false;
-                    let x = false;
+                if (!fcount) {
+                    filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
+                }
 
-                    try {
-                        x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter");
-                        f = r.filters[x]?r.filters[x]:r.filters[x];
-                    } catch (e) {
-                        //
-                    }
+                $("#leftTopDynamic").html(`
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
+                    </li>
+                `);
 
-                    let fcount = 0;
-                    let filters = `<span class="dropdown">`;
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
-                    filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-                    for (let i in r.filters) {
-                        if (x == i) {
-                            filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${i}">${r.filters[i]}</li>`;
-                        } else {
-                            filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${i}">${r.filters[i]}</li>`;
-                        }
-                        fcount++;
-                    }
-                    filters += `</ul></span>`;
+                $(".createIssue").off("click").on("click", () => {
+                    modules.tt.issue.createIssue($("#ttProjectSelect").val());
+                });
 
-                    if (!fcount) {
-                        filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
-                    }
+                document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 
-                    $("#leftTopDynamic").html(`
-                        <li class="nav-item d-none d-sm-inline-block">
-                            <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
-                        </li>
+                f = $.cookie("_tt_issue_filter");
+
+                QUERY("tt", "issues", {
+                    "project": current_project,
+                    "filter": f?f:'',
+                }, true).
+                done(response => {
+                    let issues = response.issues;
+
+                    $("#mainForm").html(`
+                        <div class="row m-1 mt-2">
+                            <div class="col col-left">
+                                ${filters}
+                            </div>
+                            <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
+                        </div>
+                        <div class="ml-2 mr-2" id="issuesList"></div>
                     `);
 
-                    $(".createIssue").off("click").on("click", () => {
-                        modules.tt.issue.createIssue($("#ttProjectSelect").val());
+                    $(".tt_issues_filter").off("click").on("click", function () {
+                        modules.tt.selectFilter($(this).attr("data-filter-name"));
                     });
 
-                    document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
-
-                    f = $.cookie("_tt_issue_filter");
-
-                    QUERY("tt", "issues", {
-                        "filter": f?f:'',
-                    }, true).
-                    done(response => {
-                        let issues = response.issues;
-
-                        $("#mainForm").html(`
-                            <div class="row m-1 mt-2">
-                                <div class="col col-left">
-                                    ${filters}
-                                </div>
-                                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
-                            </div>
-                            <div class="ml-2 mr-2" id="issuesList"></div>
-                        `);
-
-                        $(".tt_issues_filter").off("click").on("click", function () {
-                            modules.tt.selectFilter($(this).attr("data-filter-name"));
-                        });
-
-                        if (issues.issues) {
-                            cardTable({
-                                target: "#issuesList",
-                                columns: [
-                                    {
-                                        title: i18n("tt.issueId"),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        title: i18n("tt.subject"),
-                                        nowrap: true,
-                                        fullWidth: true,
-                                    },
-                                ],
-                                rows: () => {
-                                    let rows = [];
-
-                                    for (let i = 0; i < issues.issues.length; i++) {
-                                        rows.push({
-                                            uid: issues.issues[i]["issue_id"],
-                                            cols: [
-                                                {
-                                                    data: issues.issues[i]["issue_id"],
-                                                    nowrap: true,
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                                {
-                                                    data: issues.issues[i]["subject"],
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                            ],
-                                        });
-                                    }
-
-                                    return rows;
+                    if (issues.issues) {
+                        cardTable({
+                            target: "#issuesList",
+                            columns: [
+                                {
+                                    title: i18n("tt.issueId"),
+                                    nowrap: true,
                                 },
-                            });
-                        } else {
-                            $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
-                        }
-                    }).
-                    fail(FAIL).
-                    always(loadingDone);
+                                {
+                                    title: i18n("tt.subject"),
+                                    nowrap: true,
+                                    fullWidth: true,
+                                },
+                            ],
+                            rows: () => {
+                                let rows = [];
+
+                                for (let i = 0; i < issues.issues.length; i++) {
+                                    rows.push({
+                                        uid: issues.issues[i]["issue_id"],
+                                        cols: [
+                                            {
+                                                data: issues.issues[i]["issue_id"],
+                                                nowrap: true,
+                                                click: modules.tt.viewIssue,
+                                            },
+                                            {
+                                                data: issues.issues[i]["subject"],
+                                                click: modules.tt.viewIssue,
+                                            },
+                                        ],
+                                    });
+                                }
+
+                                return rows;
+                            },
+                        });
+                    } else {
+                        $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
+                    }
                 }).
                 fail(FAIL).
                 always(loadingDone);
