@@ -105,7 +105,7 @@
             /**
              * @inheritDoc
              */
-            public function addStream($cam, $faces = [], $params = [])
+            public function addStream($cam, array $faces = [], array $params = [])
             {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
@@ -188,7 +188,7 @@
             /**
              * @inheritDoc
              */
-            public function removeFaces($cam, $faces)
+            public function removeFaces($cam, array $faces)
             {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
@@ -226,13 +226,17 @@
             private function deleteFaceId($face_id)
             {
                 $query = "delete from frs_links_faces where face_id = :face_id";
-                $this->db->modify($query, [
-                    ":face_id" => $face_id,
-                ]);
+                $this->db->modify($query, [":face_id" => $face_id]);
+
+                $query = "select face_uuid from frs_faces where face_id = :face_id";
+                $r = $this->db->get($query, [":face_id" => $face_id], [], [self::PDO_SINGLIFY]);
+                if ($r) {
+                    $files = loadBackend("files");
+                    $files->deleteFile($files->fromGUIDv4($r["face_uuid"]));
+                }
+
                 $query = "delete from frs_faces where face_id = :face_id";
-                $this->db->modify($query, [
-                    ":face_id" => $face_id,
-                ]);
+                $this->db->modify($query, [":face_id" => $face_id]);
             }
 
             private function syncData()
@@ -258,6 +262,14 @@
 
                 $diff_faces = array_diff($rbt_all_faces, $frs_all_faces);
                 if ($diff_faces) {
+                    $files = loadBackend("files");
+                    foreach ($diff_faces as $f_id) {
+                        $query = "select face_uuid from frs_faces where face_id = :face_id";
+                        $r = $this->db->get($query, [":face_id" => $f_id], [], [self::PDO_SINGLIFY]);
+                        if ($r) {
+                            $files->deleteFile($files->fromGUIDv4($r["face_uuid"]));
+                        }
+                    }
                     $query = "delete from frs_links_faces where face_id in (" . implode(",", $diff_faces) . ")";
                     $this->db->modify($query);
                     $query = "delete from frs_faces where face_id in (" . implode(",", $diff_faces) . ")";
@@ -514,9 +526,9 @@
                 $is_liked1 = false;
                 if ($event_uuid !== null) {
                     $query = "select face_id from frs_faces where event_uuid = :event_uuid";
-                    $r = $this->db->get($query, [":event_uuid" => $event_uuid], [], self::PDO_SINGLIFY);
+                    $r = $this->db->get($query, [":event_uuid" => $event_uuid], [], [self::PDO_SINGLIFY]);
                     if ($r) {
-                        $registered_face_id = $r['face_id'];
+                        $registered_face_id = $r["face_id"];
                         $query = "select face_id from frs_links_faces where flat_id = ". $flat_id . " and face_id = ". $registered_face_id;
                         if (!$is_owner) {
                             $query .= " and house_subscriber_id = " . $subscriber_id;
@@ -582,6 +594,19 @@
                 }
 
                 return $list_faces;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getRegisteredFaceId($event_uuid)
+            {
+                $query = "select face_id from frs_faces where event_uuid = :event_uuid";
+                $r = $this->db->get($query, [":event_uuid" => $event_uuid], [], [self::PDO_SINGLIFY]);
+                if ($r)
+                    return $r["face_id"];
+
+                return false;
             }
         }
     }
