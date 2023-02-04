@@ -178,8 +178,6 @@
             }
 
             if (cf) {
-                console.log(cf);
-
                 let validate = false;
                 if (cf.required && !cf.regex) {
                     validate = new Function ("v", `return v && $.trim(v) !== "";`);
@@ -193,7 +191,7 @@
 
                 switch (cf.type) {
                     case "text":
-                        if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local" ].indexOf(cf.editor) < 0) {
+                        if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno" ].indexOf(cf.editor) < 0) {
                             cf.editor = "text";
                         }
 
@@ -207,6 +205,7 @@
                         }
 
                     case "select":
+                        console.log(cf);
                         return false;
 
                     case "users":

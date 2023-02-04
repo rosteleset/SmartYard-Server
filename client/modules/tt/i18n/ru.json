@@ -115,6 +115,7 @@
     "customFieldEditorDate": "Дата",
     "customFieldEditorTime": "Время",
     "customFieldEditorDateTime": "Дата и время",
+    "customFieldEditorYesNo": "Да - Нет",
     "addWorkflow": "Добавить рабочий процесс",
     "statusWasChanged": "Статус изменен",
     "resolutionWasChanged": "Резолюция изменена",
@@ -167,6 +168,7 @@
     "role": "Роль",
     "workflowName": "Процесс",
     "projectFilters": "Доступные фильтры",
+    "addProjectTag": "Добавить ярлык",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

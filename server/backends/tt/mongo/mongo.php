@@ -50,6 +50,59 @@
             {
                 $acr = $issue["project"];
 
+                $customFields = $this->getCustomFields();
+                $validFields = [];
+
+                $project = false;
+                $projects = $this->getProjects();
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == $acr) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                foreach ($project["customFields"] as $cfId) {
+                    foreach ($customFields as $cf) {
+                        if ($cf["customFieldId"] == $cfId) {
+                            $validFields[] = "_cf_" . $cf["field"];
+                            break;
+                        }
+                    }
+                }
+
+                $validFields[] = "project";
+                $validFields[] = "workflow";
+                $validFields[] = "subject";
+                $validFields[] = "description";
+                $validFields[] = "resolution";
+                $validFields[] = "tags";
+                $validFields[] = "assigned";
+                $validFields[] = "watchers";
+                $validFields[] = "attachments";
+
+                $validTags = [];
+
+                foreach ($project["tags"] as $t) {
+                    $validTags[] = $t["tag"];
+                }
+
+                foreach ($issue as $field => $dumb) {
+                    if (!in_array($field, $validFields)) {
+                        unset($issue[$field]);
+                    }
+                }
+
+                foreach ($issue["tags"] as $indx => $tag) {
+                    if (!in_array($tag, $validTags)) {
+                        unset($issue["tags"][$indx]);
+                    }
+                }
+
+                $issue["assigned"] = array_values($issue["assigned"]);
+                $issue["watchers"] = array_values($issue["watchers"]);
+                $issue["tags"] = array_values($issue["tags"]);
+
                 $me = $this->myRoles();
 
                 if (@$me[$acr] >= 30 || $this->uid === 0) { // 30, 'participant.senior', can create issues or admin
@@ -63,10 +116,6 @@
 
                     $issue["created"] = time();
                     $issue["author"] = $this->login;
-
-                    $issue["assigned"] = array_values($issue["assigned"]);
-                    $issue["watchers"] = array_values($issue["watchers"]);
-                    $issue["tags"] = array_values($issue["tags"]);
 
                     try {
                         if ($attachments) {

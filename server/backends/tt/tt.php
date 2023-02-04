@@ -353,9 +353,10 @@
             abstract public function deleteCustomField($customFieldId);
 
             /**
+             * @param $projectId
              * @return false|array
              */
-            abstract public function getTags();
+            abstract public function getTags($projectId = false);
 
             /**
              * @return false|integer

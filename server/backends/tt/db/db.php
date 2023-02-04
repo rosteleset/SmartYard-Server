@@ -139,6 +139,7 @@
                             "users" => $u,
                             "groups" => $g,
                             "viewers" => $this->getProjectViewers($project["project_id"]),
+                            "tags" => $this->getTags($project["project_id"]),
                         ];
                     }
 
@@ -903,13 +904,24 @@
             /**
              * @inheritDoc
              */
-            public function getTags()
+            public function getTags($projectId = false)
             {
-                return $this->db->get("select * from tt_tags order by tag", false, [
-                    "tag_id" => "tagId",
-                    "project_id" => "projectId",
-                    "tag" => "tag",
-                ]);
+                if ($projectId !== false) {
+                    if (!checkInt($projectId)) {
+                        return false;
+                    }
+
+                    return $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
+                        "tag_id" => "tagId",
+                        "tag" => "tag",
+                    ]);
+                } else {
+                    return $this->db->get("select * from tt_tags order by tag", false, [
+                        "tag_id" => "tagId",
+                        "project_id" => "projectId",
+                        "tag" => "tag",
+                    ]);
+                }
             }
 
             /**

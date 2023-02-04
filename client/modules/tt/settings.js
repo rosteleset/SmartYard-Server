@@ -1030,6 +1030,10 @@
                                     id: "datetime-local",
                                     text: i18n("tt.customFieldEditorDateTime"),
                                 },
+                                {
+                                    id: "yesno",
+                                    text: i18n("tt.customFieldEditorYesNo"),
+                                },
                             ],
                             hidden: cf.type !== "text",
                         },
