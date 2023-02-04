@@ -66,10 +66,13 @@
 
 //                error_log(print_r($this->myRoles($users->getUidByLogin("mmikel")), true));
 
+                $customFieldsByName = [];
+
                 foreach ($project["customFields"] as $cfId) {
                     foreach ($customFields as $cf) {
                         if ($cf["customFieldId"] == $cfId) {
                             $validFields[] = "_cf_" . $cf["field"];
+                            $customFieldsByName["_cf_" . $cf["field"]] = $cf;
                             break;
                         }
                     }
@@ -108,6 +111,9 @@
                 $issue["tags"] = array_values($issue["tags"]);
 
                 $me = $this->myRoles();
+
+                error_log(print_r($customFieldsByName, true));
+                exit;
 
                 if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
