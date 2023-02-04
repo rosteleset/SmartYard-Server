@@ -32,21 +32,30 @@ if (!$frs) {
 }
 
 $event_uuid = @$postdata['event'];
+$face_id = null;
+$face_id2 = null;
 if ($event_uuid) {
     $event_data = $plog->getEventDetails($event_uuid);
     if (!$event_data) {
         response(404, false, 'Событие не найдено');
     }
+    $flat_id = (int)$event_data[plog::COLUMN_FLAT_ID];
 
     $face = json_decode($event_data[plog::COLUMN_FACE], false);
-    $face_id = (int)$face->faceId;
-    $flat_id = (int)$event_data[plog::COLUMN_FLAT_ID];
+    if (isset($face->faceId) && $face->faceId > 0) {
+        $face_id = (int)$face->faceId;
+    }
+
+    $face_id2 = $frs->getRegisteredFaceId($event_uuid);
+    if ($face_id2 === false) {
+        $face_id2 = null;
+    }
 } else {
-    $face_id = @(int)$postdata['faceId'];
     $flat_id = @(int)$postdata['flatId'];
+    $face_id = @(int)$postdata['faceId'];
 }
 
-if (!$face_id || $face_id <= 0) {
+if (($face_id === null || $face_id <= 0) && ($face_id2 === null || $face_id2 <= 0)) {
     response(403, false, 'face_id не найден');
 }
 
@@ -67,10 +76,20 @@ foreach ($subscriber['flats'] as $flat) {
 }
 
 if ($flat_owner) {
-    $frs->detachFaceIdFromFlat($face_id, $flat_id);
+    if ($face_id > 0) {
+        $frs->detachFaceIdFromFlat($face_id, $flat_id);
+    }
+    if ($face_id2 > 0) {
+        $frs->detachFaceIdFromFlat($face_id2, $flat_id);
+    }
 } else {
     $subscriber_id = (int)$subscriber['subscriberId'];
-    $frs->detachFaceId($face_id, $subscriber_id);
+    if ($face_id > 0) {
+        $frs->detachFaceId($face_id, $subscriber_id);
+    }
+    if ($face_id2 > 0) {
+        $frs->detachFaceId($face_id2, $subscriber_id);
+    }
 }
 
 response();

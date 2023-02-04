@@ -96,7 +96,7 @@
              * @param array $params array of setup parameters for video stream
              * @return object
              */
-            abstract public function addStream($cam, $faces = [], $params = []);
+            abstract public function addStream($cam, array $faces = [], array $params = []);
 
             /**
              * Call API method bestQuality by date
@@ -134,7 +134,7 @@
              * @param array $faces array of face identifiers (face_id)
              * @return object
              */
-            abstract public function removeFaces($cam, $faces);
+            abstract public function removeFaces($cam, array $faces);
 
             /**
              * Motion Detection
@@ -203,5 +203,12 @@
              * @return array
              */
             abstract public function listFaces($flat_id, $subscriber_id, $is_owner = false);
+
+            /**
+             * Get registered face_id by event's UUID
+             * @param int $event_uuid
+             * @return false|int
+             */
+            abstract public function getRegisteredFaceId($event_uuid);
         }
     }
