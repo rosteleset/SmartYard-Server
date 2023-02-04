@@ -194,6 +194,23 @@
                 switch (cf.type) {
                     case "text":
                         switch (cf.editor) {
+                            case "text":
+                            case "number":
+                            case "area":
+                            case "email":
+                            case "tel":
+                            case "date":
+                            case "time":
+                            case "datetime-local":
+                                return {
+                                    id: "_cf_" + fieldId,
+                                    type: cf.editor,
+                                    title: cf.fieldDisplay,
+                                    placeholder: cf.fieldDisplay,
+                                    value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"",
+                                    validate: validate,
+                                }
+
                             default:
                                 return {
                                     id: "_cf_" + fieldId,
@@ -204,6 +221,11 @@
                                     validate: validate,
                                 }
                         }
+                    case "select":
+                        return false;
+
+                    case "users":
+                        return false;
                 }
             }
         }

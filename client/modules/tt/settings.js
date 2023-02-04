@@ -999,7 +999,7 @@
                             value: cf.editor,
                             options: [
                                 {
-                                    id: "string",
+                                    id: "text",
                                     text: i18n("tt.customFieldEditorString"),
                                 },
                                 {
@@ -1007,7 +1007,7 @@
                                     text: i18n("tt.customFieldEditorNumber"),
                                 },
                                 {
-                                    id: "text",
+                                    id: "area",
                                     text: i18n("tt.customFieldEditorText"),
                                 },
                                 {
@@ -1027,7 +1027,7 @@
                                     text: i18n("tt.customFieldEditorTime"),
                                 },
                                 {
-                                    id: "dateTime",
+                                    id: "datetime-local",
                                     text: i18n("tt.customFieldEditorDateTime"),
                                 },
                             ],
