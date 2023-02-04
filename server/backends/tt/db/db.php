@@ -85,6 +85,7 @@
                             } else {
                                 $users = [];
                             }
+
                             foreach ($users as $user) {
                                 $user = $usersBackend->getUser($user);
                                 if ($user["uid"] > 0) {
