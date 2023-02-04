@@ -224,6 +224,7 @@ function cardForm(params) {
 
             case "text":
             case "email":
+            case "number":
             case "tel":
             case "date":
             case "time":
@@ -295,9 +296,11 @@ function cardForm(params) {
             case "select":
             case "select2":
             case "email":
+            case "number":
             case "tel":
             case "date":
             case "time":
+            case "datetime":
             case "password":
             case "text":
             case "area":
@@ -438,9 +441,11 @@ function cardForm(params) {
             switch (params.fields[i].type) {
                 case "select":
                 case "email":
+                case "number":
                 case "tel":
                 case "date":
                 case "time":
+                case "datetime":
                 case "password":
                 case "text":
                 case "area":

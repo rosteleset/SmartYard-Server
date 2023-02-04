@@ -59,7 +59,6 @@
     "customFieldDescription": "Описание",
     "customFieldTypeString": "Строка",
     "customFieldTypeText": "Текст",
-    "customFieldTypeNumber": "Число",
     "customFieldTypeSelect": "Выбор",
     "customFieldTypeUsers": "Пользователи и группы",
     "customFieldRegex": "Регулярное выражение",
@@ -109,6 +108,7 @@
     "allowedMimeTypes": "Разрешенные типы файлов",
     "customFieldEditor": "Редактор",
     "customFieldEditorString": "Строка",
+    "customFieldEditorNumber": "Число",
     "customFieldEditorText": "Текст",
     "customFieldEditorEmail": "Электронная почта",
     "customFieldEditorTel": "Телефон",
@@ -166,6 +166,7 @@
     "crontabMonthly": "Ежемесячно",
     "role": "Роль",
     "workflowName": "Процесс",
+    "projectFilters": "Доступные фильтры",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

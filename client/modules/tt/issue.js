@@ -179,20 +179,6 @@
                         }
                     }
 
-                    for (let i in project.customFields) {
-                        for (let j in modules.tt.meta.customFields) {
-                            if (modules.tt.meta.customFields[j].customFieldId === project.customFields[i]) {
-                                if (af.indexOf("[cf]" + modules.tt.meta.customFields[j].field) < 0) {
-                                    let f = modules.tt.issueField2FormFieldEditor(false, "[cf]" + modules.tt.meta.customFields[j].field, projectId);
-                                    if (f) {
-                                        fields.push(f);
-                                        af.push("[cf]" + modules.tt.meta.customFields[j].field);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
                     cardForm({
                         title: i18n("tt.createIssueTitle"),
                         footer: true,

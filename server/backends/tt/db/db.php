@@ -779,6 +779,7 @@
                                 format = :format,
                                 editor = :editor,
                                 indx = :indx,
+                                search = :search,
                                 required = :required
                             where
                                 issue_custom_field_id = $customFieldId
@@ -798,7 +799,7 @@
 
                         // TODO: create and remove indexes
 
-                        if ($cf["type"] === "Select" || $cf["type"] === "MultiSelect") {
+                        if ($cf["type"] === "select") {
                             $t = explode("\n", trim($options));
                             $new = [];
                             foreach ($t as $i) {
@@ -889,7 +890,7 @@
                         return $this->db->modify("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId") +
                             $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId") +
                             $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId") +
-                            $this->db->modify("delete from tt_viewers where field = '[cf]' || :field", [
+                            $this->db->modify("delete from tt_viewers where field = '_cf_' || :field", [
                                 "field" => $cf['field'],
                             ]);
                     } catch (\Exception $e) {
@@ -1191,7 +1192,7 @@
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
-                $this->db->modify("delete from tt_viewers where field not in (select '[cf]' || field from tt_issue_custom_fields)");
+                $this->db->modify("delete from tt_viewers where field not in (select '_cf_' || field from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_viewers where name not in (select name from tt_viewers)");
                 $this->db->modify("delete from tt_projects_viewers where project_id not in (select project_id from tt_projects)");
 

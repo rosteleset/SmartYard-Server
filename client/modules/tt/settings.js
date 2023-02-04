@@ -433,10 +433,6 @@
                             text: i18n("tt.customFieldTypeText"),
                         },
                         {
-                            id: "number",
-                            text: i18n("tt.customFieldTypeNumber"),
-                        },
-                        {
                             id: "select",
                             text: i18n("tt.customFieldTypeSelect"),
                         },
@@ -984,7 +980,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "select" || cf.type === "users",
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "format",
@@ -993,7 +989,7 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type !== "number",
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "editor",
@@ -1005,6 +1001,10 @@
                                 {
                                     id: "string",
                                     text: i18n("tt.customFieldEditorString"),
+                                },
+                                {
+                                    id: "number",
+                                    text: i18n("tt.customFieldEditorNumber"),
                                 },
                                 {
                                     id: "text",
@@ -1031,7 +1031,7 @@
                                     text: i18n("tt.customFieldEditorDateTime"),
                                 },
                             ],
-                            hidden: cf.type !== "number" && cf.type !== "text",
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "link",
@@ -1057,7 +1057,7 @@
                             type: "yesno",
                             title: i18n("tt.multiple"),
                             value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
-                            hidden: cf.type !== "users" && cf.type !== "select",
+                            hidden: cf.type === "text",
                         },
                         {
                             id: "usersAndGroups",
@@ -1107,16 +1107,14 @@
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
-                            if (cf.type === "users" || cf.type === "select" || cf.type === "text") {
-                                result.format = "";
-                                if (result.multiple === "1") {
-                                    result.format += " multiple";
-                                }
-                                if (cf.type === "users") {
-                                    result.format += " " + result.usersAndGroups;
-                                }
-                                result.format = $.trim(result.format);
+                            result.format = "";
+                            if (result.multiple === "1") {
+                                result.format += " multiple";
                             }
+                            if (cf.type === "users") {
+                                result.format += " " + result.usersAndGroups;
+                            }
+                            result.format = $.trim(result.format);
                             modules.tt.settings.doModifyCustomField(customFieldId, result);
                         }
                     },
@@ -1667,7 +1665,7 @@
         let cf = {};
 
         for (let i in modules.tt.meta.customFields) {
-            cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+            cf["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
         }
 
         let vi = {};
@@ -1680,7 +1678,7 @@
                 field: modules.tt.meta.viewers[i].field,
                 name: modules.tt.meta.viewers[i].name,
             }
-            if (modules.tt.meta.viewers[i].field.substring(0, 4) == "[cf]") {
+            if (modules.tt.meta.viewers[i].field.substring(0, 4) == "_cf_") {
                 viewers.push({
                     id: key,
                     text: $.trim(cf[modules.tt.meta.viewers[i].field] + " [" + modules.tt.meta.viewers[i].name + "]"),
@@ -2644,7 +2642,7 @@
 
             for (let i in modules.tt.meta.customFields) {
                 fields.push({
-                    id: "[cf]" + modules.tt.meta.customFields[i].field,
+                    id: "_cf_" + modules.tt.meta.customFields[i].field,
                     text: modules.tt.meta.customFields[i].fieldDisplay,
                 });
             }
@@ -2738,7 +2736,7 @@
                 let cf = {};
 
                 for (let i in modules.tt.meta.customFields) {
-                    cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+                    cf["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
                 }
 
                 let v = {};
@@ -2778,7 +2776,7 @@
                                 uid: key,
                                 cols: [
                                     {
-                                        data: (r.viewers[i].field.substring(0, 4) == "[cf]")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
+                                        data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
                                     },
                                     {
                                         data: r.viewers[i].name,

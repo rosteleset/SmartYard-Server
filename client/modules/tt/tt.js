@@ -77,7 +77,7 @@
             }
         }
 
-        if (fieldId.substring(0, 4) !== "[cf]") {
+        if (fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
                 case "subject":
@@ -169,13 +169,6 @@
             // custom field
             fieldId = fieldId.substring(4);
 
-/*
-            id: "String",
-            id: "Number",
-            id: "Select [format: multiple]",
-            id: "Users [format: multiple, users|groups|usersAndGroups]",
-*/
-
             let cf = false;
             for (let i in modules.tt.meta.customFields) {
                 if (modules.tt.meta.customFields[i].field === fieldId) {
@@ -186,12 +179,29 @@
 
             if (cf) {
                 console.log(cf);
+
+                let validate = false;
+                if (cf.required && !cf.regex) {
+                    validate = new Function ("v", `return v && $.trim(v) !== "";`);
+                } else
+                if (!cf.required && cf.regex) {
+                    validate = new Function ("v", `return /${cf.regex}/.test(v);`);
+                } else
+                if (cf.required && cf.regex) {
+                    validate = new Function ("v", `return v && $.trim(v) !== "" && /${cf.regex}/.test(v);`);
+                }
+
                 switch (cf.type) {
-                    case "Text":
+                    case "text":
                         switch (cf.editor) {
                             default:
                                 return {
-
+                                    id: "_cf_" + fieldId,
+                                    type: "text",
+                                    title: cf.fieldDisplay,
+                                    placeholder: cf.fieldDisplay,
+                                    value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"",
+                                    validate: validate,
                                 }
                         }
                 }
