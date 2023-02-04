@@ -70,7 +70,7 @@
                         $usersBackend = loadBackend("users");
                         $groupsBackend = loadBackend("groups");
 
-                        $groups = $this->db->query("select project_role_id, gid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and gid is not null");
+                        $groups = $this->db->query("select project_role_id, gid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and gid is not null and gid > 0");
 
                         foreach ($groups as $group) {
                             $g[] = [
