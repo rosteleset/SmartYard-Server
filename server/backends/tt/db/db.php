@@ -67,35 +67,48 @@
                         $u = [];
                         $g = [];
 
+                        $usersBackend = loadBackend("users");
+                        $groupsBackend = loadBackend("groups");
+
                         $groups = $this->db->query("select project_role_id, gid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and gid is not null");
                         foreach ($groups as $group) {
                             $g[] = [
                                 "projectRoleId" => $group["project_role_id"],
                                 "gid" => $group["gid"],
                                 "roleId" => $group["role_id"],
+                                "acronym" => $groupsBackend?$groupsBackend->getGroup($group["gid"])["acronym"]:null,
                             ];
-                            $users = $this->db->query("select uid from core_users_groups where gid = {$group["gid"]}");
+
+                            if ($groupsBackend) {
+                                $users = $groupsBackend->getUsers($group["gid"]);
+                            } else {
+                                $users = [];
+                            }
                             foreach ($users as $user) {
-                                $_f = false;
-                                foreach ($u as &$_u) {
-                                    if ($_u["uid"] == $user["uid"]) {
-                                        if ($_u["roleId"] < $group["role_id"]) {
-                                            $_u["projectRoleId"] = $group["project_role_id"];
-                                            $_u["roleId"] = $group["role_id"];
-                                            $_u["level"] = $group["level"];
-                                            $_u["byGroup"] = true;
+                                if ($user["uid"] > 0) {
+                                    $_f = false;
+                                    foreach ($u as &$_u) {
+                                        if ($_u["uid"] == $user["uid"]) {
+                                            if ($_u["roleId"] < $group["role_id"]) {
+                                                $_u["projectRoleId"] = $group["project_role_id"];
+                                                $_u["roleId"] = $group["role_id"];
+                                                $_u["level"] = $group["level"];
+                                                $_u["login"] = $usersBackend->getUser($user["uid"])["login"];
+                                                $_u["byGroup"] = true;
+                                            }
+                                            $_f = true;
                                         }
-                                        $_f = true;
                                     }
-                                }
-                                if (!$_f) {
-                                    $u[] = [
-                                        "projectRoleId" => $group["project_role_id"],
-                                        "uid" => $user["uid"],
-                                        "roleId" => $group["role_id"],
-                                        "level" => $group["level"],
-                                        "byGroup" => true,
-                                    ];
+                                    if (!$_f) {
+                                        $u[] = [
+                                            "projectRoleId" => $group["project_role_id"],
+                                            "uid" => $user["uid"],
+                                            "roleId" => $group["role_id"],
+                                            "level" => $group["level"],
+                                            "login" => $usersBackend->getUser($user["uid"])["login"],
+                                            "byGroup" => true,
+                                        ];
+                                    }
                                 }
                             }
                         }
@@ -108,6 +121,7 @@
                                     $_u["projectRoleId"] = $user["project_role_id"];
                                     $_u["roleId"] = $user["role_id"];
                                     $_u["level"] = $user["level"];
+                                    $_u["login"] = $usersBackend->getUser($user["uid"])["login"];
                                     $_u["byGroup"] = false;
                                     $_f = true;
                                 }
@@ -118,6 +132,7 @@
                                     "uid" => $user["uid"],
                                     "roleId" => $user["role_id"],
                                     "level" => $user["level"],
+                                    "login" => $usersBackend->getUser($user["uid"])["login"],
                                     "byGroup" => false,
                                 ];
                             }
@@ -993,12 +1008,16 @@
             /**
              * @inheritDoc
              */
-            public function myRoles()
+            public function myRoles($uid = false)
             {
+                if ($uid === false) {
+                    $uid = $this->uid;
+                }
+
                 $groups = loadBackend("groups");
 
                 if ($groups) {
-                    $groups = $groups->getGroups($this->uid);
+                    $groups = $groups->getGroups($uid);
                 }
 
                 $projects = [];
@@ -1026,7 +1045,7 @@
                     }
                 }
 
-                $levels = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$this->uid} and uid > 0 order by level", false, [
+                $levels = $this->db->get("select acronym, level from tt_projects_roles left join tt_projects using (project_id) left join tt_roles using (role_id) where uid = {$uid} and uid > 0 order by level", false, [
                     "level" => "level",
                     "acronym" => "acronym",
                 ]);

@@ -53,6 +53,8 @@
                 $customFields = $this->getCustomFields();
                 $validFields = [];
 
+                $users = loadBackend("users");
+
                 $project = false;
                 $projects = $this->getProjects();
                 foreach ($projects as $p) {
@@ -61,6 +63,8 @@
                         break;
                     }
                 }
+
+//                error_log(print_r($this->myRoles($users->getUidByLogin("mmikel")), true));
 
                 foreach ($project["customFields"] as $cfId) {
                     foreach ($customFields as $cf) {
@@ -105,7 +109,7 @@
 
                 $me = $this->myRoles();
 
-                if (@$me[$acr] >= 30 || $this->uid === 0) { // 30, 'participant.senior', can create issues or admin
+                if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
 
                     $aiid = $this->redis->incr("aiid_" . $acr);

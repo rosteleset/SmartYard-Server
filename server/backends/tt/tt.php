@@ -598,9 +598,10 @@
             abstract public function deleteAttachment($issue, $file);
 
             /**
+             * @param $uid
              * @return mixed
              */
-            abstract public function myRoles();
+            abstract public function myRoles($uid = false);
 
             /**
              * @return mixed
