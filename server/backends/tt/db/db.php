@@ -71,6 +71,7 @@
                         $groupsBackend = loadBackend("groups");
 
                         $groups = $this->db->query("select project_role_id, gid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and gid is not null");
+
                         foreach ($groups as $group) {
                             $g[] = [
                                 "projectRoleId" => $group["project_role_id"],
@@ -85,6 +86,7 @@
                                 $users = [];
                             }
                             foreach ($users as $user) {
+                                $user = $usersBackend->getUser($user);
                                 if ($user["uid"] > 0) {
                                     $_f = false;
                                     foreach ($u as &$_u) {
@@ -93,7 +95,7 @@
                                                 $_u["projectRoleId"] = $group["project_role_id"];
                                                 $_u["roleId"] = $group["role_id"];
                                                 $_u["level"] = $group["level"];
-                                                $_u["login"] = $usersBackend->getUser($user["uid"])["login"];
+                                                $_u["login"] = $user["login"];
                                                 $_u["byGroup"] = true;
                                             }
                                             $_f = true;
@@ -105,7 +107,7 @@
                                             "uid" => $user["uid"],
                                             "roleId" => $group["role_id"],
                                             "level" => $group["level"],
-                                            "login" => $usersBackend->getUser($user["uid"])["login"],
+                                            "login" => $user["login"],
                                             "byGroup" => true,
                                         ];
                                     }
