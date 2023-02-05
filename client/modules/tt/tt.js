@@ -225,6 +225,7 @@
                             type: cf.editor,
                             title: cf.fieldDisplay,
                             placeholder: cf.fieldDisplay,
+                            hint: cf.fieldDescription?cf.fieldDescription:false,
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"",
                             validate: validate,
                         }
@@ -241,6 +242,7 @@
                             type: "select2",
                             title: cf.fieldDisplay,
                             placeholder: cf.fieldDisplay,
+                            hint: cf.fieldDescription?cf.fieldDescription:false,
                             options: options,
                             multiple: cf.format.indexOf("multiple") >= 0,
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
@@ -262,6 +264,7 @@
                             type: "select2",
                             title: cf.fieldDisplay,
                             placeholder: cf.fieldDisplay,
+                            hint: cf.fieldDescription?cf.fieldDescription:false,
                             options: options,
                             multiple: cf.format.indexOf("multiple") >= 0,
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],

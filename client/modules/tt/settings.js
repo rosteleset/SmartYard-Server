@@ -872,7 +872,7 @@
                     },
                     {
                         id: "fieldDescription",
-                        type: "area",
+                        type: "text",
                         title: i18n("tt.customFieldDescription"),
                         placeholder: i18n("tt.customFieldDescription"),
                         value: cf.fieldDescription,
@@ -968,7 +968,7 @@
                         },
                         {
                             id: "fieldDescription",
-                            type: "area",
+                            type: "text",
                             title: i18n("tt.customFieldDescription"),
                             placeholder: i18n("tt.customFieldDescription"),
                             value: cf.fieldDescription,
