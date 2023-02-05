@@ -108,7 +108,12 @@ function cardForm(params) {
                 h += `<td class="tdform${first}">${params.fields[i].title}</td>`;
             }
         }
-        h += `<td class="tdform-right${first}">`;
+
+        if (params.fields[i].hint) {
+            h += `<td class="tdform-right${first} pb-0">`;
+        } else {
+            h += `<td class="tdform-right${first}">`;
+        }
 
         first = "";
 
