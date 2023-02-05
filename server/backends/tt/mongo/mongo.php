@@ -78,6 +78,7 @@
                     }
                 }
 
+                $validFields[] = "issue_id";
                 $validFields[] = "project";
                 $validFields[] = "workflow";
                 $validFields[] = "subject";
@@ -88,6 +89,8 @@
                 $validFields[] = "assigned";
                 $validFields[] = "watchers";
                 $validFields[] = "attachments";
+                $validFields[] = "comments";
+                $validFields[] = "journal";
 
                 $validTags = [];
 
