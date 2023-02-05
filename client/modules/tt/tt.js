@@ -97,7 +97,7 @@
                 case "description":
                     return {
                         id: "description",
-                        type: "rich",
+                        type: "area",
                         title: i18n("tt.description"),
                         placeholder: i18n("tt.description"),
                         value: (issue && issue.description)?issue.description:"",
