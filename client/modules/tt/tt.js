@@ -206,7 +206,23 @@
 
                     case "select":
                         console.log(cf);
-                        return false;
+                        let options = [];
+                        for (let i in cf.options) {
+                            options.push({
+                                id: cf.options[i].option,
+                                text: cf.options[i].optionDisplay,
+                            });
+                        }
+                        return {
+                            id: "_cf_" + fieldId,
+                            type: "select2",
+                            title: cf.fieldDisplay,
+                            placeholder: cf.fieldDisplay,
+                            options: options,
+                            multiple: cf.format.indexOf("multiple") >= 0,
+                            value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
+                            validate: validate,
+                        }
 
                     case "users":
                         return false;

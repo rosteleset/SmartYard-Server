@@ -97,6 +97,10 @@
                 foreach ($issue as $field => $dumb) {
                     if (!in_array($field, $validFields)) {
                         unset($issue[$field]);
+                    } else {
+                        if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                            $issue[$field] = array_values($dumb);
+                        }
                     }
                 }
 
@@ -112,7 +116,7 @@
 
                 $me = $this->myRoles();
 
-                error_log(print_r($customFieldsByName, true));
+                error_log(print_r($issue, true));
                 exit;
 
                 if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
