@@ -1,0 +1,14 @@
+{
+    "title": "BEWARD DKS85023",
+    "vendor": "BEWARD",
+    "model": "DKS85023",
+    "class": "dks85023",
+    "syslog": "beward",
+    "outputs": 2,
+    "camera": "beward",
+    "cmses": [
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105"
+    ]
+}
