@@ -44,10 +44,10 @@
             }
 
             /**
-             * @inheritDoc
+             * @param $issue
+             * @return void
              */
-            public function createIssue($issue)
-            {
+            public function checkIssue(&$issue) {
                 $acr = $issue["project"];
 
                 $customFields = $this->getCustomFields();
@@ -115,10 +115,24 @@
                 $issue["watchers"] = array_values($issue["watchers"]);
                 $issue["tags"] = array_values($issue["tags"]);
 
-                $me = $this->myRoles();
-
 //                error_log(print_r($issue, true));
 //                exit;
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function createIssue($issue)
+            {
+                if (!$this->checkIssue($issue)) {
+                    setLastError("invalidIssue");
+                    return false;
+                }
+
+                $me = $this->myRoles();
+                $acr = $issue["project"];
 
                 if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
