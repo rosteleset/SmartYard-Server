@@ -1,14 +1,13 @@
 <?php
 
-namespace hw\domophones {
+    namespace hw\domophones {
 
-    require_once 'dks.php';
-    require_once 'separated_rfids.php';
+        require_once 'dks.php';
+        require_once 'separated_rfids.php';
 
-    class dks85023 extends dks {
+        class dks85023 extends dks {
 
-        use separated_rfids;
+            use separated_rfids;
 
+        }
     }
-
-}
