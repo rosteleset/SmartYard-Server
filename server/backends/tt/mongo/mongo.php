@@ -53,7 +53,7 @@
                 $customFields = $this->getCustomFields();
                 $validFields = [];
 
-                $users = loadBackend("users");
+//                $users = loadBackend("users");
 
                 $project = false;
                 $projects = $this->getProjects();
@@ -83,6 +83,7 @@
                 $validFields[] = "subject";
                 $validFields[] = "description";
                 $validFields[] = "resolution";
+                $validFields[] = "status";
                 $validFields[] = "tags";
                 $validFields[] = "assigned";
                 $validFields[] = "watchers";

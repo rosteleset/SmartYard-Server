@@ -13,7 +13,7 @@
 
     issueField2FormFieldEditor: function (issue, field, projectId) {
 
-        function peoples(project, withGroups) {
+        function peoples(project, withGroups, withUsers) {
             let p = [];
 
             let already = {
@@ -34,15 +34,17 @@
                 }
             }
 
-            for (let i in project.users) {
-                for (let j in modules.users.meta) {
-                    if (modules.users.meta[j].uid == project.users[i].uid && !already[modules.users.meta[j].login]) {
-                        already[modules.users.meta[j].login] = true;
-                        if (project.users[i].level > 0) {
-                            p.push({
-                                id: modules.users.meta[j].login,
-                                text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
-                            });
+            if (withUsers) {
+                for (let i in project.users) {
+                    for (let j in modules.users.meta) {
+                        if (modules.users.meta[j].uid == project.users[i].uid && !already[modules.users.meta[j].login]) {
+                            already[modules.users.meta[j].login] = true;
+                            if (project.users[i].level > 0) {
+                                p.push({
+                                    id: modules.users.meta[j].login,
+                                    text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
+                                });
+                            }
                         }
                     }
                 }
@@ -107,21 +109,42 @@
                 case "resolution":
                     let resolutions = [];
 
+                    console.log(modules.tt.meta.resolutions);
+                    console.log(project.resolutions);
+
                     for (let i in modules.tt.meta.resolutions) {
                         if (project.resolutions.indexOf(modules.tt.meta.resolutions[i].resolutionId) >= 0) {
                             resolutions.push({
-                                id: modules.tt.meta.resolutions[i].resolutionId,
+                                id: modules.tt.meta.resolutions[i].alias,
                                 text: modules.tt.meta.resolutions[i].resolution,
                             });
                         }
                     }
 
                     return {
-                        id: "resoluton",
+                        id: "resolution",
                         type: "select2",
                         title: i18n("tt.resolution"),
                         options: resolutions,
                         value: (issue && issue.resolution)?issue.resolution:-1,
+                    };
+
+                case "status":
+                    let statuses = [];
+
+                    for (let i in modules.tt.meta.statuses) {
+                        statuses.push({
+                            id: modules.tt.meta.statuses[i].status,
+                            text: modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status,
+                        });
+                    }
+
+                    return {
+                        id: "status",
+                        type: "select2",
+                        title: i18n("tt.status"),
+                        options: statuses,
+                        value: (issue && issue.status)?issue.status:-1,
                     };
 
                 case "tags":
@@ -143,7 +166,7 @@
                         multiple: true,
                         title: i18n("tt.assigned"),
                         placeholder: i18n("tt.assigned"),
-                        options: peoples(project, true),
+                        options: peoples(project, true, true),
                     };
 
                 case "watchers":
@@ -153,7 +176,7 @@
                         multiple: true,
                         title: i18n("tt.watchers"),
                         placeholder: i18n("tt.watchers"),
-                        options: peoples(project, false),
+                        options: peoples(project, false, true),
                     };
 
                 case "attachments":
@@ -189,6 +212,8 @@
                     validate = new Function ("v", `return v && $.trim(v) !== "" && /${cf.regex}/.test(v);`);
                 }
 
+                let options = [];
+
                 switch (cf.type) {
                     case "text":
                         if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno" ].indexOf(cf.editor) < 0) {
@@ -205,8 +230,6 @@
                         }
 
                     case "select":
-                        console.log(cf);
-                        let options = [];
                         for (let i in cf.options) {
                             options.push({
                                 id: cf.options[i].option,
@@ -225,7 +248,25 @@
                         }
 
                     case "users":
-                        return false;
+                        if (cf.format.split(" ").includes("users")) {
+                            options = peoples(project, false, true);
+                        } else
+                        if (cf.format.split(" ").includes("groups")) {
+                            options = peoples(project, true, false);
+                        } else
+                        if (cf.format.split(" ").includes("usersAndGroups")) {
+                            options = peoples(project, true, true);
+                        }
+                        return {
+                            id: "_cf_" + fieldId,
+                            type: "select2",
+                            title: cf.fieldDisplay,
+                            placeholder: cf.fieldDisplay,
+                            options: options,
+                            multiple: cf.format.indexOf("multiple") >= 0,
+                            value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
+                            validate: validate,
+                        }
                 }
             }
         }
