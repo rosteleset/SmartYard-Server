@@ -34,8 +34,8 @@ function uploadForm(mimeTypes) {
                 <table class="table tform-borderless">
                     <tfoot>
                         <tr>
-                            <td><button id="uploadButton" class="btn btn-default">${i18n("doUpload")}</button></td>
-                            <td style="text-align: right"><button id="chooseFileToUpload" class="btn btn-default">${i18n("chooseFile")}...</button></td>
+                            <td><button id="chooseFileToUpload" class="btn btn-default">${i18n("chooseFile")}...</button></td>
+                            <td style="text-align: right"><button id="uploadButton" class="btn btn-default">${i18n("doUpload")}</button></td>
                         </tr>
                     </tfoot>
                 </table>
