@@ -117,8 +117,8 @@
 
                 $me = $this->myRoles();
 
-                error_log(print_r($issue, true));
-                exit;
+//                error_log(print_r($issue, true));
+//                exit;
 
                 if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
