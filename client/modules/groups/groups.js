@@ -159,10 +159,12 @@
                 let users_list = [];
 
                 for (let i in users.users) {
-                    users_list.push({
-                        id: users.users[i].uid,
-                        text: $.trim(users.users[i].realName + " [" + users.users[i].login + "]"),
-                    });
+                    if (users.users[i].uid) {
+                        users_list.push({
+                            id: users.users[i].uid,
+                            text: $.trim(users.users[i].realName + " [" + users.users[i].login + "]"),
+                        });
+                    }
                 }
 
                 cardForm({
