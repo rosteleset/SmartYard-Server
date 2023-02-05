@@ -109,9 +109,6 @@
                 case "resolution":
                     let resolutions = [];
 
-                    console.log(modules.tt.meta.resolutions);
-                    console.log(project.resolutions);
-
                     for (let i in modules.tt.meta.resolutions) {
                         if (project.resolutions.indexOf(modules.tt.meta.resolutions[i].resolutionId) >= 0) {
                             resolutions.push({
