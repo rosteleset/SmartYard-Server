@@ -127,7 +127,7 @@
             /**
              * @inheritDoc
              */
-            public function createIssue($issue)
+            protected function createIssue($issue)
             {
                 if (!$this->checkIssue($issue)) {
                     setLastError("invalidIssue");

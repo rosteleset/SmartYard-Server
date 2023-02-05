@@ -79,7 +79,37 @@
                 }
 
                 try {
-                    return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow);
+                    $sandbox = new \LuaSandbox;
+
+                    $sandbox->registerLibrary("utils", [
+                        "error_log" => function (...$args) {
+                            return [ error_log(...$args) ];
+                        },
+                        "print_r" => function (...$args) {
+                            $args[] = true;
+                            return [ print_r(...$args) ];
+                        },
+                        "array_values" => function (...$args) {
+                            return [ array_values(...$args) ];
+                        }
+                    ]);
+
+                    $sandbox->registerLibrary("rbt", [
+                        "setLastError" => function (...$args) {
+                            return [ setLastError(...$args) ];
+                        },
+                        "i18n" => function (...$args) {
+                            return [ i18n(...$args) ];
+                        },
+                    ]);
+
+                    $sandbox->registerLibrary("tt", [
+                        "createIssue" => function ($issue) {
+                            return [ $this->createIssue($issue) ];
+                        },
+                    ]);
+
+                    return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
                     return false;
                 }
@@ -537,7 +567,7 @@
              * @param $issue
              * @return mixed
              */
-            abstract public function createIssue($issue);
+            abstract protected function createIssue($issue);
 
             /**
              * @param $issue

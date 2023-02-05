@@ -23,37 +23,12 @@
              * @throws \Exception
              */
 
-            public function __construct($config, $db, $redis, $tt, $workflow) {
+            public function __construct($config, $db, $redis, $tt, $workflow, $sandbox) {
                 $this->config = $config;
                 $this->db = $db;
                 $this->redis = $redis;
                 $this->tt = $tt;
-                $this->sandbox = new \LuaSandbox;
-
-                $this->sandbox->registerLibrary("utils", [
-                    "error_log" => function (...$args) {
-                        return [ error_log(...$args) ];
-                    },
-                    "print_r" => function (...$args) {
-                        $args[] = true;
-                        return [ print_r(...$args) ];
-                    },
-                    "array_values" => function (...$args) {
-                        return [ array_values(...$args) ];
-                    }
-                ]);
-
-                $this->sandbox->registerLibrary("rbt", [
-                    "setLastError" => function (...$args) {
-                        return [ setLastError(...$args) ];
-                    },
-                ]);
-
-                $this->sandbox->registerLibrary("tt", [
-                    "createIssue" => function ($issue) {
-                        return [ $this->tt->createIssue($issue) ];
-                    },
-                ]);
+                $this->sandbox = $sandbox;
 
                 $file = __DIR__ . "/workflows/" . $workflow . ".lua";
 
