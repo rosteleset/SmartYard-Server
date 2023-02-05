@@ -64,7 +64,7 @@ function modalUpload(mimeTypes, maxSize, url, postFields, callback) {
             let files = document.querySelector("#fileInput").files;
             if (files && files.length && files[0].name) {
                 $("#uploadFileInfo").html(`
-                    ${i18n("fileName")}: ${files[0].name}<br />
+                    ${files[0].name}<br />
                     ${i18n("fileSize")}: ${formatBytes(files[0].size)}<br />
                     ${i18n("fileDate")}: ${date("Y-m-d H:i", files[0].lastModified / 1000)}<br />
                     ${i18n("fileType")}: ${files[0].type}<br />
@@ -146,7 +146,15 @@ function loadFile(mimeTypes, maxSize, callback) {
     let file = false;
 
     $("#chooseFileToUpload").off("click").on("click", () => {
-        $("#uploadFileInfo").parent().hide();
+        $("#fileIcon").html(`<h1><i class="fas fa-file-upload"></i></h1>`);
+        $("#fileIcon").attr("title", i18n("fileNotUploaded"));
+        $("#uploadFileInfo").html(`
+            ${i18n("fileNotUploaded")}<br />
+            ${i18n("fileSize")}:<br />
+            ${i18n("fileDate")}:<br />
+            ${i18n("fileType")}:<br />
+        `).parent().show();
+        $("#uploadButton").hide();
         $("#fileInput").off("change").val("").click().on("change", () => {
             files = document.querySelector("#fileInput").files;
 
@@ -187,6 +195,7 @@ function loadFile(mimeTypes, maxSize, callback) {
                     ${i18n("fileDate")}: ${date("Y-m-d H:i", file.lastModified / 1000)}<br />
                     ${i18n("fileType")}: ${file.type}<br />
                 `).parent().show();
+                $("#uploadButton").show();
             }
         });
     });
