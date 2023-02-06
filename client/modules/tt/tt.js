@@ -273,13 +273,52 @@
     },
 
     issueField2Html: function (issue, field) {
-        /*
-            const sum = new Function('a', 'b', 'return a + b');
+        let members = {};
 
-            console.log(sum(2, 6));
-            // Expected output: 8
-         */
-        return issue[field];
+        if (modules.groups) {
+            for (let i in modules.groups.meta) {
+                members[modules.groups.meta[i].acronym] = modules.groups.meta[i].name?modules.groups.meta[i].name:modules.groups.meta[i].acronym;
+            }
+        }
+
+        for (let i in modules.users.meta) {
+            members[modules.users.meta[i].login] = modules.users.meta[i].realName?modules.users.meta[i].realName:modules.users.meta[i].login;
+        }
+
+        let val = issue[field];
+        if (field.substring(0, 4) !== "_cf_") {
+            switch (field) {
+                case "description":
+                    val = nl2br(escapeHTML(val));
+                    break;
+
+                case "assigned":
+                case "watchers":
+                    let m = "";
+
+                    for (let i in val) {
+                        m += members[val[i]]?members[val[i]]:val[i];
+                        m += ", ";
+                    }
+
+                    if (m) {
+                        m = m.substring(0, m.length - 2);
+                    }
+
+                    val = m;
+                    break;
+
+                case "created":
+                case "updated":
+                    val = new Date(val * 1000);
+
+                    val = val.toLocaleDateString() + " " + val.toLocaleTimeString();
+                    break;
+            }
+        } else {
+
+        }
+        return val;
     },
 
     tt: function (tt) {
@@ -311,6 +350,83 @@
         window.location.href = `#tt&issue=${issue}`;
     },
 
+    renderIssue: function (issue) {
+        console.log(issue);
+        document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
+        let cfn = {};
+        for (let i in modules.tt.meta.customFields) {
+            cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
+        }
+        let h = "";
+        h += "<div class='mt-2 ml-2'>";
+        h += `<div class="text-bold pt-1">${issue.issue["issueId"]}</div>`;
+        h += "<table style='width: 100%;'>";
+        for (let i in issue.fields) {
+            if (![ "issueId", "comments", "attachments", "journal", "project", "workflow" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+                h += "<tr><td colspan='2'><hr/></td></tr>";
+                h += "<tr>";
+                h += "<td class='m-1 pr-2' nowrap='nowrap'>";
+                if (issue.fields[i].substring(0, 4) !== '_cf_') {
+                    switch (issue.fields[i]) {
+                        case "issueId":
+                            h += i18n("tt.issue");
+                            break;
+                        case "subject":
+                            h += i18n("tt.subject");
+                            break;
+                        case "comments":
+                            h += i18n("tt.comments");
+                            break;
+                        case "attachments":
+                            h += i18n("tt.attachments");
+                            break;
+                        case "journal":
+                            h += i18n("tt.journal");
+                            break;
+                        case "description":
+                            h += i18n("tt.description");
+                            break;
+                        case "resolution":
+                            h += i18n("tt.resolution");
+                            break;
+                        case "status":
+                            h += i18n("tt.status");
+                            break;
+                        case "tags":
+                            h += i18n("tt.tags");
+                            break;
+                        case "assigned":
+                            h += i18n("tt.assigned");
+                            break;
+                        case "watchers":
+                            h += i18n("tt.watchers");
+                            break;
+                        case "created":
+                            h += i18n("tt.created");
+                            break;
+                        case "updated":
+                            h += i18n("tt.updated");
+                            break;
+                        case "author":
+                            h += i18n("tt.author");
+                            break;
+                    }
+                } else {
+                    h += cfn[issue.fields[i]];
+                }
+                h += ":";
+                h += "</td>";
+                h += "<td style='width: 100%' class='m-1'>";
+                h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
+                h += "<td>";
+                h += "</tr>";
+            }
+        }
+        h += "</table>";
+        h += "</div>";
+        $("#mainForm").html(h);
+    },
+
     route: function (params) {
         loadingStart();
 
@@ -323,80 +439,17 @@
             if (params["issue"]) {
                 GET("tt", "issue", params["issue"], true).
                 done(r => {
-                    console.log(r);
-                    document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + r.issue.issue["issueId"];
-                    let cfn = {};
-                    for (let i in modules.tt.meta.customFields) {
-                        cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
+                    if (modules.groups) {
+                        modules.users.loadUsers(() => {
+                            modules.groups.loadGroups(() => {
+                                modules.tt.renderIssue(r.issue);
+                            });
+                        });
+                    } else {
+                        modules.users.loadUsers(() => {
+                            modules.tt.renderIssue(r.issue);
+                        });
                     }
-                    let h = "";
-                    h += "<div class='mt-2 ml-2'>";
-                    h += `<div class="text-bold pt-1">${r.issue.issue["issueId"]}</div>`;
-                    h += "<table style='width: 100%;'>";
-                    for (let i in r.issue.fields) {
-                        if (![ "issueId", "comments", "attachments", "journal", "project", "workflow" ].includes(r.issue.fields[i]) && !isEmpty(r.issue.issue[r.issue.fields[i]])) {
-                            h += "<tr><td colspan='2'><hr/></td></tr>";
-                            h += "<tr>";
-                            h += "<td class='m-1 pr-2' nowrap='nowrap'>";
-                            if (r.issue.fields[i].substring(0, 4) !== '_cf_') {
-                                switch (r.issue.fields[i]) {
-                                    case "issueId":
-                                        h += i18n("tt.issue");
-                                        break;
-                                    case "subject":
-                                        h += i18n("tt.subject");
-                                        break;
-                                    case "comments":
-                                        h += i18n("tt.comments");
-                                        break;
-                                    case "attachments":
-                                        h += i18n("tt.attachments");
-                                        break;
-                                    case "journal":
-                                        h += i18n("tt.journal");
-                                        break;
-                                    case "description":
-                                        h += i18n("tt.description");
-                                        break;
-                                    case "resolution":
-                                        h += i18n("tt.resolution");
-                                        break;
-                                    case "status":
-                                        h += i18n("tt.status");
-                                        break;
-                                    case "tags":
-                                        h += i18n("tt.tags");
-                                        break;
-                                    case "assigned":
-                                        h += i18n("tt.assigned");
-                                        break;
-                                    case "watchers":
-                                        h += i18n("tt.watchers");
-                                        break;
-                                    case "created":
-                                        h += i18n("tt.created");
-                                        break;
-                                    case "updated":
-                                        h += i18n("tt.updated");
-                                        break;
-                                    case "author":
-                                        h += i18n("tt.author");
-                                        break;
-                                }
-                            } else {
-                                h += cfn[r.issue.fields[i]];
-                            }
-                            h += ":";
-                            h += "</td>";
-                            h += "<td style='width: 100%' class='m-1'>";
-                            h += modules.tt.issueField2Html(r.issue.issue, r.issue.fields[i]);
-                            h += "<td>";
-                            h += "</tr>";
-                        }
-                    }
-                    h += "</table>";
-                    h += "</div>";
-                    $("#mainForm").html(h);
                 }).
                 fail(FAIL).
                 always(loadingDone)

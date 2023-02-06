@@ -10,7 +10,7 @@
     },
 
     loadGroups: function (callback) {
-        GET("accounts", "groups").
+        return GET("accounts", "groups").
         done(groups => {
             modules.groups.meta = groups.groups;
         }).
@@ -117,6 +117,7 @@
                         value: response.group.acronym,
                         placeholder: i18n("groups.acronym"),
                         title: i18n("groups.acronym"),
+                        readonly: true,
                         validate: (v) => {
                             return $.trim(v) !== "";
                         }

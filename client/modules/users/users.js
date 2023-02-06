@@ -10,7 +10,7 @@
     },
 
     loadUsers: function (callback) {
-        GET("accounts", "users").
+        return GET("accounts", "users").
         done(users => {
             modules.users.meta = users.users;
         }).
