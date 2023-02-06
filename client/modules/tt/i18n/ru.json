@@ -169,6 +169,8 @@
     "workflowName": "Процесс",
     "projectFilters": "Доступные фильтры",
     "addProjectTag": "Добавить ярлык",
+    "created": "Дата создания",
+    "updated": "Дата обновления",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

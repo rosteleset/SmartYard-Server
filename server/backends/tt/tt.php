@@ -91,7 +91,13 @@
                         },
                         "array_values" => function (...$args) {
                             return [ array_values(...$args) ];
-                        }
+                        },
+                        "explode" => function (...$args) {
+                            return [ explode(...$args) ];
+                        },
+                        "implode" => function (...$args) {
+                            return [ implode(...$args) ];
+                        },
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
@@ -104,8 +110,11 @@
                     ]);
 
                     $sandbox->registerLibrary("tt", [
-                        "createIssue" => function ($issue) {
-                            return [ $this->createIssue($issue) ];
+                        "createIssue" => function (...$args) {
+                            return [ $this->createIssue(...$args) ];
+                        },
+                        "getIssues" => function (...$args) {
+                            return [ $this->getIssues(...$args) ];
                         },
                     ]);
 

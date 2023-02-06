@@ -325,7 +325,78 @@
                 done(r => {
                     console.log(r);
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + r.issue.issue["issueId"];
-                    $("#mainForm").html(r.issue.issue["issueId"]);
+                    let cfn = {};
+                    for (let i in modules.tt.meta.customFields) {
+                        cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
+                    }
+                    let h = "";
+                    h += "<div class='mt-2 ml-2'>";
+                    h += `<div class="text-bold pt-1">${r.issue.issue["issueId"]}</div>`;
+                    h += "<table style='width: 100%;'>";
+                    for (let i in r.issue.fields) {
+                        if (![ "issueId", "comments", "attachments", "journal", "project", "workflow" ].includes(r.issue.fields[i]) && !isEmpty(r.issue.issue[r.issue.fields[i]])) {
+                            h += "<tr><td colspan='2'><hr/></td></tr>";
+                            h += "<tr>";
+                            h += "<td class='m-1 pr-2' nowrap='nowrap'>";
+                            if (r.issue.fields[i].substring(0, 4) !== '_cf_') {
+                                switch (r.issue.fields[i]) {
+                                    case "issueId":
+                                        h += i18n("tt.issue");
+                                        break;
+                                    case "subject":
+                                        h += i18n("tt.subject");
+                                        break;
+                                    case "comments":
+                                        h += i18n("tt.comments");
+                                        break;
+                                    case "attachments":
+                                        h += i18n("tt.attachments");
+                                        break;
+                                    case "journal":
+                                        h += i18n("tt.journal");
+                                        break;
+                                    case "description":
+                                        h += i18n("tt.description");
+                                        break;
+                                    case "resolution":
+                                        h += i18n("tt.resolution");
+                                        break;
+                                    case "status":
+                                        h += i18n("tt.status");
+                                        break;
+                                    case "tags":
+                                        h += i18n("tt.tags");
+                                        break;
+                                    case "assigned":
+                                        h += i18n("tt.assigned");
+                                        break;
+                                    case "watchers":
+                                        h += i18n("tt.watchers");
+                                        break;
+                                    case "created":
+                                        h += i18n("tt.created");
+                                        break;
+                                    case "updated":
+                                        h += i18n("tt.updated");
+                                        break;
+                                    case "author":
+                                        h += i18n("tt.author");
+                                        break;
+                                }
+                            } else {
+                                h += cfn[r.issue.fields[i]];
+                            }
+                            h += ":";
+                            h += "</td>";
+                            h += "<td style='width: 100%' class='m-1'>";
+                            h += modules.tt.issueField2Html(r.issue.issue, r.issue.fields[i]);
+                            h += "<td>";
+                            h += "</tr>";
+                        }
+                    }
+                    h += "</table>";
+                    h += "</div>";
+                    $("#mainForm").html(h);
                 }).
                 fail(FAIL).
                 always(loadingDone)

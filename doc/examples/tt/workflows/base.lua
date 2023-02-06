@@ -36,7 +36,7 @@ end
 function viewIssue(issue)
     return {
         ["issue"] = issue,
-        ["actions"] = {},
+        ["actions"] = availableActions(issue),
         ["fields"] = {
             "issueId",
             "project",
@@ -45,8 +45,10 @@ function viewIssue(issue)
             "description",
             "assigned",
             "watchers",
+            "tags",
             "attachments",
-            "tags"
+            "comments",
+            "journal",
         }
     }
 end

@@ -471,3 +471,17 @@ Object.defineProperty(Array.prototype, "assoc", {
         }
     }
 });
+
+function isEmpty(v) {
+    let f = !!v;
+
+    if (Array.isArray(v)) {
+        f = f && v.length;
+    }
+
+    if (typeof v == "object" && !Array.isArray(v)) {
+        f = f && Object.keys(v).length;
+    }
+
+    return !f;
+}

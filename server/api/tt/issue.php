@@ -34,7 +34,6 @@
                 }
 
                 $issue = $workflow->viewIssue($issue["issues"][0]);
-                $issue["available_actions"] = $workflow->availableActions($issue);
 
                 return api::ANSWER($issue, "issue");
             }
