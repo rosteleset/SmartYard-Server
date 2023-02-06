@@ -21,11 +21,11 @@ function availableActions(issue)
 end
 
 function actionTemplate(issue, action)
---
+    --
 end
 
 function doAction(issue, action, fields)
---
+    --
 end
 
 function createIssue(issue)
@@ -34,8 +34,18 @@ function createIssue(issue)
 end
 
 function viewIssue(issue)
-    utils.error_log(utils.print_r(issue))
-    return issue
+    return {
+        ["issue"] = issue,
+        ["actions"] = {},
+        ["fields"] = {
+            "subject",
+            "description",
+            "assigned",
+            "watchers",
+            "attachments",
+            "tags"
+        }
+    }
 end
 
 function workflowName()
