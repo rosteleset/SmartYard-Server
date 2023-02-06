@@ -279,6 +279,7 @@
             console.log(sum(2, 6));
             // Expected output: 8
          */
+        return issue[field];
     },
 
     tt: function (tt) {
@@ -322,7 +323,9 @@
             if (params["issue"]) {
                 GET("tt", "issue", params["issue"], true).
                 done(r => {
-                    $("#mainForm").html(r.issue["issue_id"]);
+                    console.log(r);
+                    document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + r.issue.issue["issue_id"];
+                    $("#mainForm").html(r.issue.issue["issue_id"]);
                 }).
                 fail(FAIL).
                 always(loadingDone)
