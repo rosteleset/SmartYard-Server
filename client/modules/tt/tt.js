@@ -460,7 +460,7 @@
             for (let i in issue.issue.tags) {
                 let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground)?tags[issue.issue.tags[i]].foreground:"#666666";
                 let bg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].background)?tags[issue.issue.tags[i]].background:"#ffffff";
-                t += `<span class="mr-1" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 1px; padding-bottom: 1px; color: ${fg}; border-radius: 4px; background: ${bg};'>#${issue.issue.tags[i].toUpperCase()}</span>`;
+                t += `<span class="mr-1 text-bold" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 0px; padding-bottom: 2px; color: ${fg}; border-radius: 4px; background: ${bg};'>#${issue.issue.tags[i]}</span>`;
             }
             h += $.trim(t);
             h += "</div>";
