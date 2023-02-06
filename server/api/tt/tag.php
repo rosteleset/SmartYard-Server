@@ -15,13 +15,13 @@
         class tag extends api {
 
             public static function POST($params) {
-                $tagId = loadBackend("tt")->addTag($params["projectId"], $params["tag"]);
+                $tagId = loadBackend("tt")->addTag($params["projectId"], $params["tag"], $params["foreground"], $params["background"]);
 
                 return api::ANSWER($tagId, ($tagId !== false)?"tagId":"notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyTag($params["_id"], $params["tag"]);
+                $success = loadBackend("tt")->modifyTag($params["_id"], $params["tag"], $params["foreground"], $params["background"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

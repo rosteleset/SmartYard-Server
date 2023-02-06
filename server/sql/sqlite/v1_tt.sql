@@ -145,7 +145,9 @@ CREATE TABLE tt_tags
 (
     tag_id integer primary key autoincrement,
     project_id integer not null,
-    tag text
+    tag text,
+    foreground text,
+    background text
 );
 CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);
 

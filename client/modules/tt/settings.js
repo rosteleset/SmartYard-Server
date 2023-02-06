@@ -81,11 +81,13 @@
         });
     },
 
-    doAddTag: function (projectId, tag) {
+    doAddTag: function (projectId, tag, foreground, background) {
         loadingStart();
         POST("tt", "tag", false, {
             projectId: projectId,
             tag: tag,
+            foreground,
+            background,
         }).
         fail(FAIL).
         fail(loadingDone).
@@ -263,10 +265,12 @@
         always(modules.tt.settings.renderResolutions);
     },
 
-    doModifyTag: function (tagId, tag, projectId) {
+    doModifyTag: function (tagId, tag, foreground, background, projectId) {
         loadingStart();
         PUT("tt", "tag", tagId, {
             tag: tag,
+            foreground: foreground,
+            background: background,
         }).
         fail(FAIL).
         fail(loadingDone).
@@ -1563,9 +1567,23 @@
                                         title: i18n("tt.tag"),
                                         placeholder: i18n("tt.tag"),
                                     },
+                                    {
+                                        id: "foreground",
+                                        type: "color",
+                                        title: i18n("tt.foreground"),
+                                        placeholder: i18n("tt.foreground"),
+                                        value: "#666666",
+                                    },
+                                    {
+                                        id: "background",
+                                        type: "color",
+                                        title: i18n("tt.background"),
+                                        placeholder: i18n("tt.background"),
+                                        value: "#ffffff",
+                                    },
                                 ],
-                                callback: fields => {
-                                    modules.tt.settings.doAddTag(projectId, fields.tag);
+                                callback: f => {
+                                    modules.tt.settings.doAddTag(projectId, f.tag, f.foreground, f.background);
                                 },
                             });
                         },
@@ -1579,9 +1597,13 @@
                 },
                 edit: tagId => {
                     let tag = "";
+                    let foreground = "#666666";
+                    let background = "#ffffff";
                     for (let i in modules.tt.meta.tags) {
                         if (modules.tt.meta.tags[i].projectId == projectId && modules.tt.meta.tags[i].tagId == tagId) {
                             tag = modules.tt.meta.tags[i].tag;
+                            foreground = modules.tt.meta.tags[i].foreground?modules.tt.meta.tags[i].foreground:foreground;
+                            background = modules.tt.meta.tags[i].background?modules.tt.meta.tags[i].background:background;
                         }
                     }
                     cardForm({
@@ -1606,14 +1628,28 @@
                                 placeholder: i18n("tt.tag"),
                                 value: tag,
                             },
+                            {
+                                id: "foreground",
+                                type: "color",
+                                title: i18n("tt.foreground"),
+                                placeholder: i18n("tt.foreground"),
+                                value: foreground,
+                            },
+                            {
+                                id: "background",
+                                type: "color",
+                                title: i18n("tt.background"),
+                                placeholder: i18n("tt.background"),
+                                value: background,
+                            },
                         ],
-                        callback: result => {
-                            if (result.delete === "yes") {
+                        callback: f => {
+                            if (f.delete === "yes") {
                                 mConfirm(i18n("tt.confirmDeleteTag", tagId), i18n("confirm"), `danger:${i18n("tt.deleteTag")}`, () => {
                                     modules.tt.settings.doDeleteTag(tagId, projectId);
                                 });
                             } else {
-                                modules.tt.settings.doModifyTag(tagId, fields.tag, projectId);
+                                modules.tt.settings.doModifyTag(tagId, f.tag, f.foreground, f.background, projectId);
                             }
                         },
                     });

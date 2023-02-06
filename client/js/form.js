@@ -236,6 +236,7 @@ function cardForm(params) {
             case "datetime":
             case "datetime-local":
             case "password":
+            case "color":
                 if (params.fields[i].type === "datetime") {
                     params.fields[i].type = "datetime-local"
                 }
@@ -307,6 +308,7 @@ function cardForm(params) {
             case "datetime":
             case "password":
             case "text":
+            case "color":
             case "area":
                 return $(`#${_prefix}${params.fields[i].id}`).val();
 
@@ -452,6 +454,7 @@ function cardForm(params) {
                 case "datetime":
                 case "password":
                 case "text":
+                case "color":
                 case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
                     break;

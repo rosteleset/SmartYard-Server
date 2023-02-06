@@ -394,6 +394,20 @@
             cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
         }
 
+        let tags = {};
+        let project = false;
+
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].acronym === issue.issue.project) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        for (let i in project.tags) {
+            tags[project.tags[i].tag] = project.tags[i];
+        }
+
         let h = "";
 
         h += "<table class='mt-2 ml-2' style='width: 100%;'>";
@@ -444,7 +458,9 @@
             h += "<div class='pt-2 pb-1'>";
             let t = "";
             for (let i in issue.issue.tags) {
-                t += "<span style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 1px; padding-bottom: 1px; color: #666666; border-radius: 4px;'>#" + issue.issue.tags[i].toUpperCase() + "</span> ";
+                let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground)?tags[issue.issue.tags[i]].foreground:"#666666";
+                let bg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].background)?tags[issue.issue.tags[i]].background:"#ffffff";
+                t += `<span class="mr-1" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 1px; padding-bottom: 1px; color: ${fg}; border-radius: 4px; background: ${bg};'>#${issue.issue.tags[i].toUpperCase()}</span>`;
             }
             h += $.trim(t);
             h += "</div>";

@@ -932,12 +932,16 @@
                     return $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
                         "tag_id" => "tagId",
                         "tag" => "tag",
+                        "foreground" => "foreground",
+                        "background" => "background",
                     ]);
                 } else {
                     return $this->db->get("select * from tt_tags order by tag", false, [
                         "tag_id" => "tagId",
                         "project_id" => "projectId",
                         "tag" => "tag",
+                        "foreground" => "foreground",
+                        "background" => "background",
                     ]);
                 }
             }
@@ -945,17 +949,19 @@
             /**
              * @inheritDoc
              */
-            public function addTag($projectId, $tag)
+            public function addTag($projectId, $tag, $foreground, $background)
             {
                 if (!checkInt($projectId) || !checkStr($tag)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag) values (:project_id, :tag)");
+                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag, foreground, background) values (:project_id, :tag, :foreground, :background)");
                     if (!$sth->execute([
                         "project_id" => $projectId,
                         "tag" => $tag,
+                        "foreground" => $foreground,
+                        "background" => $background,
                     ])) {
                         return false;
                     }
@@ -970,16 +976,18 @@
             /**
              * @inheritDoc
              */
-            public function modifyTag($tagId, $tag)
+            public function modifyTag($tagId, $tag, $foreground, $background)
             {
                 if (!checkInt($tagId) || !checkStr($tag)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_tags set tag = :tag where tag_id = $tagId");
+                    $sth = $this->db->prepare("update tt_tags set tag = :tag, foreground = :foreground, background = :background where tag_id = $tagId");
                     $sth->execute([
                         "tag" => $tag,
+                        "foreground" => $foreground,
+                        "background" => $background,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

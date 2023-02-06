@@ -398,14 +398,22 @@
             abstract public function getTags($projectId = false);
 
             /**
+             * @param $projectId
+             * @param $tag
+             * @param $foreground
+             * @param $background
              * @return false|integer
              */
-            abstract public function addTag($projectId, $tag);
+            abstract public function addTag($projectId, $tag, $foreground, $background);
 
             /**
+             * @param $tagId
+             * @param $tag
+             * @param $foreground
+             * @param $background
              * @return boolean
              */
-            abstract public function modifyTag($tagId, $tag);
+            abstract public function modifyTag($tagId, $tag, $foreground, $background);
 
             /**
              * @return boolean

@@ -145,7 +145,9 @@ CREATE TABLE tt_tags
 (
     tag_id serial primary key,
     project_id integer not null,
-    tag character varying
+    tag character varying,
+    foreground text,
+    background text
 );
 CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);
 

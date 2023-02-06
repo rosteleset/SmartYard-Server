@@ -173,6 +173,8 @@
     "updated": "Дата обновления",
     "author": "Автор",
     "allActions": "Все действия",
+    "foreground": "Цвет текста",
+    "background": "Цвет фона",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
