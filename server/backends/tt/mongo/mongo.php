@@ -78,7 +78,7 @@
                     }
                 }
 
-                $validFields[] = "issue_id";
+                $validFields[] = "issueId";
                 $validFields[] = "project";
                 $validFields[] = "workflow";
                 $validFields[] = "subject";
@@ -141,7 +141,7 @@
                     $db = $this->dbName;
 
                     $aiid = $this->redis->incr("aiid_" . $acr);
-                    $issue["issue_id"] = $acr . "-" . $aiid;
+                    $issue["issueId"] = $acr . "-" . $aiid;
 
                     $attachments = @$issue["attachments"] ? : [];
                     unset($issue["attachments"]);
@@ -159,14 +159,14 @@
                                     "type" => $attachment["type"],
                                     "issue" => true,
                                     "project" => $acr,
-                                    "issue_id" => $issue["issue_id"],
+                                    "issueId" => $issue["issueId"],
                                     "attachman" => $issue["author"],
                                 ]);
                             }
                         }
 
                         if ($this->mongo->$db->$acr->insertOne($issue)->getInsertedId()) {
-                            return $issue["issue_id"];
+                            return $issue["issueId"];
                         } else {
                             return false;
                         }
@@ -199,7 +199,7 @@
                 if ($files) {
                     $issueFiles = $files->searchFiles([
                         "metadata.issue" => true,
-                        "metadata.issue_id" => $issue,
+                        "metadata.issueId" => $issue,
                     ]);
 
                     foreach ($issueFiles as $file) {
@@ -210,7 +210,7 @@
                 $acr = explode("-", $issue)[0];
 
                 $this->mongo->$db->$acr->deleteMany([
-                    "issue_id" => $issue,
+                    "issueId" => $issue,
                 ]);
             }
 
@@ -238,7 +238,7 @@
                 $projection = [];
 
                 if ($fields) {
-                    $projection["issue_id"] = 1;
+                    $projection["issueId"] = 1;
                     foreach ($fields as $field) {
                         $projection[$field] = 1;
                     }
@@ -262,7 +262,7 @@
                     if ($files) {
                         $x["attachments"] = $files->searchFiles([
                             "metadata.issue" => true,
-                            "metadata.issue_id" => $issue["issue_id"],
+                            "metadata.issueId" => $issue["issueId"],
                         ]);
                     }
                     $i[] = $x;

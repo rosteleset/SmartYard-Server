@@ -38,6 +38,9 @@ function viewIssue(issue)
         ["issue"] = issue,
         ["actions"] = {},
         ["fields"] = {
+            "issueId",
+            "project",
+            "workflow",
             "subject",
             "description",
             "assigned",

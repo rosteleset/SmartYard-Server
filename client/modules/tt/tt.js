@@ -324,8 +324,8 @@
                 GET("tt", "issue", params["issue"], true).
                 done(r => {
                     console.log(r);
-                    document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + r.issue.issue["issue_id"];
-                    $("#mainForm").html(r.issue.issue["issue_id"]);
+                    document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + r.issue.issue["issueId"];
+                    $("#mainForm").html(r.issue.issue["issueId"]);
                 }).
                 fail(FAIL).
                 always(loadingDone)
@@ -481,10 +481,10 @@
 
                                 for (let i = 0; i < issues.issues.length; i++) {
                                     rows.push({
-                                        uid: issues.issues[i]["issue_id"],
+                                        uid: issues.issues[i]["issueId"],
                                         cols: [
                                             {
-                                                data: issues.issues[i]["issue_id"],
+                                                data: issues.issues[i]["issueId"],
                                                 nowrap: true,
                                                 click: modules.tt.viewIssue,
                                             },
