@@ -699,8 +699,6 @@
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
                                 ["/Calling sip:\d+@.* through account/", true, false, false, 1],
-                                ["/Baresip event CALL_INCOMING/", true, false, false, -1],
-                                ["/Incoming call to sip:\d+@.* \(\d+\)/", true, false, false, -1],
                                 ["/CMS handset is not connected for apartment \d+, aborting CMS call/", true, false, false, 0],
                                 ["/CMS handset call started for apartment \d+/", true, false, false, 0],
                                 ["/CMS handset talk started for apartment \d+/", false, true, false, 0],
@@ -712,6 +710,10 @@
                                 ["/CMS handset call done for apartment \d+, handset is down/", false, false, false, 0],
                                 ["/SIP call done for apartment \d+, handset is down/", false, false, false, 1],
                                 ["/All calls are done for apartment \d+/", false, false, false, 1],
+
+                                // Incoming call patterns
+                                ["/Baresip event CALL_INCOMING/", false, false, false, -1],
+                                ["/Incoming call to sip:\d+@.* \(\d+\)/", false, false, false, -1],
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
@@ -731,7 +733,7 @@
                                     if (isset($msg_parts[1])) {
                                         $number = $msg_parts[1];
 
-                                        if ($number <= 9999) { // Apartment - ordinary panel
+                                        if (strlen($number) < 5) { // Apartment - ordinary panel
                                             $now_flat_number = $number;
                                         } else { // Gate panel - prefix and apartment
                                             $prefix = substr($number, 0, 4);
@@ -778,17 +780,6 @@
 
                         // Call processing for QTECH panel
                         if ($unit == "qtech") {
-
-                            // "Prefix:33,Replace Number:1000000004, Status:0 - 1"
-                            // "Prefix:100004,Replace Number:000133, Status:0 - 1"
-                            // "Prefix:1,Analog Number:01, Status:1 - 1"
-                            // "1000000004:Call Established, Number:1000000004 - 1"
-                            // "000133:Call Established, Number:000133 - 1"
-                            // "01:Call Established, Number:01 - 0"
-                            // "01:Open Door By Intercom,Apartment No 01 - 1"
-                            // "1:100004:Open Door By DTMF, DTMF Symbol 1 ,Apartment No 100004 - 1"
-                            // "1:33:Open Door By DTMF, DTMF Symbol 1 ,Apartment No 33 - 1"
-
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
                                 ["/Prefix:\d+,Replace Number:\d+, Status:\d+/", true, false, false, 1],
@@ -810,22 +801,21 @@
 
                                     // Get message parts separated by ":" and ","
                                     $msg_parts = array_map("trim", preg_split("/[:,]/", $msg));
-                                    print_r($msg_parts); // TODO: delete later
 
                                     // Get flat number, flat ID and prefix from call started events
                                     if ($msg_parts[0] === "Prefix") {
-                                        $number = (int) $msg_parts[1]; // Caller (apartment or panel SIP number)
+                                        $number = $msg_parts[1]; // Caller (apartment or panel SIP number)
                                         $replacing_number = $msg_parts[3]; // Call destination
 
                                         if ($number <= 9999) { // Apartment - ordinary panel
                                             $now_flat_number = $number;
 
                                             if ($msg_parts[2] === "Replace Number") { // Get flat ID
-                                                $now_flat_id = (int) substr($replacing_number, 1);
+                                                $now_flat_id = substr($replacing_number, 1);
                                             }
                                         } else { // Panel SIP number - gate panel
-                                            $prefix = (int) substr($replacing_number, 0, 4);
-                                            $now_flat_number = (int) substr($replacing_number, 4);
+                                            $prefix = substr($replacing_number, 0, 4);
+                                            $now_flat_number = substr($replacing_number, 4);
                                         }
                                     }
 
@@ -835,23 +825,23 @@
                                         $number_len = strlen($number);
 
                                         if ($number_len === 10) { // Get flat ID
-                                            $now_flat_id = (int) substr($number, 1);
+                                            $now_flat_id = substr($number, 1);
                                         } else if ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
-                                            $prefix = (int) substr($number, 0, 4);
-                                            $now_flat_number = (int) substr($number, 4);
+                                            $prefix = substr($number, 0, 4);
+                                            $now_flat_number = substr($number, 4);
                                         } else { // Get flat number
-                                            $now_flat_number = (int) $number;
+                                            $now_flat_number = $number;
                                         }
                                     }
 
                                     // Get flat number from CMS door open event
                                     if ($msg_parts[1] === "Open Door By Intercom") {
-                                        $now_flat_number = (int) $msg_parts[0];
+                                        $now_flat_number = $msg_parts[0];
                                     }
 
                                     // Get flat number from DTMF door open event
                                     if ($msg_parts[2] === "Open Door By DTMF") {
-                                        $number = (int) $msg_parts[1];
+                                        $number = $msg_parts[1];
 
                                         if ($number <= 9999) { // Apartment - ordinary panel
                                             $now_flat_number = $number;
