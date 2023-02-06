@@ -171,6 +171,8 @@
     "addProjectTag": "Добавить ярлык",
     "created": "Дата создания",
     "updated": "Дата обновления",
+    "author": "Автор",
+    "allActions": "Все действия",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

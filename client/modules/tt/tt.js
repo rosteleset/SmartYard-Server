@@ -351,80 +351,124 @@
     },
 
     renderIssue: function (issue) {
-        console.log(issue);
-        document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
-        let cfn = {};
-        for (let i in modules.tt.meta.customFields) {
-            cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
-        }
-        let h = "";
-        h += "<div class='mt-2 ml-2'>";
-        h += `<div class="text-bold pt-1">${issue.issue["issueId"]}</div>`;
-        h += "<table style='width: 100%;'>";
-        for (let i in issue.fields) {
-            if (![ "issueId", "comments", "attachments", "journal", "project", "workflow" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
-                h += "<tr><td colspan='2'><hr/></td></tr>";
-                h += "<tr>";
-                h += "<td class='m-1 pr-2' nowrap='nowrap'>";
+
+        function fieldRow(i) {
+            let h = '';
+
+            if (![ "issueId", "comments", "attachments", "journal", "project", "workflow", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+                let c;
                 if (issue.fields[i].substring(0, 4) !== '_cf_') {
                     switch (issue.fields[i]) {
                         case "issueId":
-                            h += i18n("tt.issue");
+                            c = i18n("tt.issue");
                             break;
-                        case "subject":
-                            h += i18n("tt.subject");
-                            break;
-                        case "comments":
-                            h += i18n("tt.comments");
-                            break;
-                        case "attachments":
-                            h += i18n("tt.attachments");
-                            break;
-                        case "journal":
-                            h += i18n("tt.journal");
-                            break;
-                        case "description":
-                            h += i18n("tt.description");
-                            break;
-                        case "resolution":
-                            h += i18n("tt.resolution");
-                            break;
-                        case "status":
-                            h += i18n("tt.status");
-                            break;
-                        case "tags":
-                            h += i18n("tt.tags");
-                            break;
-                        case "assigned":
-                            h += i18n("tt.assigned");
-                            break;
-                        case "watchers":
-                            h += i18n("tt.watchers");
-                            break;
-                        case "created":
-                            h += i18n("tt.created");
-                            break;
-                        case "updated":
-                            h += i18n("tt.updated");
-                            break;
-                        case "author":
-                            h += i18n("tt.author");
+                        default:
+                            c = i18n("tt." + issue.fields[i]);
                             break;
                     }
                 } else {
-                    h += cfn[issue.fields[i]];
+                    c = cfn[issue.fields[i]];
                 }
-                h += ":";
-                h += "</td>";
-                h += "<td style='width: 100%' class='m-1'>";
+                h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${c}' style="font-size: 11pt;"/></td></tr>`;
+                h += "<tr>";
+                h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
                 h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
                 h += "<td>";
                 h += "</tr>";
             }
+
+            return h;
+        }
+
+        console.log(issue);
+        document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
+
+        let cfn = {};
+        let rightFields = [ "assigned", "watchers", "created", "updated", "author" ];
+
+        for (let i in modules.tt.meta.customFields) {
+            cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
+        }
+
+        let h = "";
+
+        h += "<table class='mt-2 ml-2' style='width: 100%;'>";
+        h += "<tr>";
+        h += "<td style='vertical-align: top; width: 100%;'>";
+        h += "<div class='text-bold pt-1 pb-1'>";
+        h += issue.issue["issueId"] + ": ";
+        if (!isEmpty(issue.actions)) {
+            let t = 0;
+            let la = false;
+            for (let i in issue.actions) {
+                if (issue.actions[i].substring(0, 1) === "!") {
+                    h += `<span class="hoverable text-primary ml-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
+                    t++;
+                } else {
+                    la = issue.actions[i];
+                }
+            }
+            if (Object.keys(issue.actions).length - t === 1) {
+                h += la;
+            } else
+            if (t < Object.keys(issue.actions).length) {
+                h += `<span class="dropdown ml-3">`;
+                h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
+                h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
+                for (let i in issue.actions) {
+                    let a = issue.actions[i];
+                    if (a.substring(0, 1) === "!") {
+                        a = a.substring(1);
+                    }
+                    h += `<li class="pointer dropdown-item tt_issues_filter ttIssueAction" data-filter-name="${a}">${a}</li>`;
+                }
+                h += `</ul></span>`;
+            }
+        }
+        h += "</div>";
+        h += "</td>";
+        h += "</tr>";
+
+        if (!isEmpty(issue.issue.tags)) {
+            h += "<tr>";
+            h += "<td style='vertical-align: top; width: 100%;'>";
+            h += "<div class='pt-1 pb-1'>";
+            let t = "";
+            for (let i in issue.issue.tags) {
+                t += "<span style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 1px; padding-bottom: 1px;'>#" + issue.issue.tags[i] + "</span> ";
+            }
+            h += $.trim(t);
+            h += "</div>";
+            h += "</td>";
+            h += "</tr>";
+        }
+
+        h += "<tr>";
+        h += "<td style='vertical-align: top;'>";
+        h += "<table style='width: 100%;'>";
+        for (let i in issue.fields) {
+            if (!rightFields.includes(issue.fields[i])) {
+                h += fieldRow(i);
+            }
         }
         h += "</table>";
-        h += "</div>";
+        h += "</td>";
+        h += "<td style='vertical-align: top;'>";
+        h += "<table style='width: 300px;'>";
+        for (let i in issue.fields) {
+            if (rightFields.includes(issue.fields[i])) {
+                h += fieldRow(i);
+            }
+        }
+        h += "</table>";
+        h += "</td>";
+        h += "</tr>";
+        h += "</table>";
         $("#mainForm").html(h);
+
+        $(".ttIssueAction").off("click").on("click", function () {
+            console.log($(this).text());
+        });
     },
 
     route: function (params) {
