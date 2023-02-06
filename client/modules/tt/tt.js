@@ -396,13 +396,15 @@
         h += "<tr>";
         h += "<td style='vertical-align: top; width: 100%;'>";
         h += "<div class='text-bold pt-1 pb-1'>";
-        h += issue.issue["issueId"] + ": ";
+        h += "<span class='mr-3'>";
+        h += issue.issue["issueId"] + ":";
+        h += "</span>";
         if (!isEmpty(issue.actions)) {
             let t = 0;
             let la = false;
             for (let i in issue.actions) {
                 if (issue.actions[i].substring(0, 1) === "!") {
-                    h += `<span class="hoverable text-primary ml-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
+                    h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
                     t++;
                 } else {
                     la = issue.actions[i];
@@ -412,7 +414,7 @@
                 h += la;
             } else
             if (t < Object.keys(issue.actions).length) {
-                h += `<span class="dropdown ml-3">`;
+                h += `<span class="dropdown">`;
                 h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
                 for (let i in issue.actions) {
@@ -432,10 +434,10 @@
         if (!isEmpty(issue.issue.tags)) {
             h += "<tr>";
             h += "<td style='vertical-align: top; width: 100%;'>";
-            h += "<div class='pt-1 pb-1'>";
+            h += "<div class='pt-2 pb-1'>";
             let t = "";
             for (let i in issue.issue.tags) {
-                t += "<span style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 1px; padding-bottom: 1px;'>#" + issue.issue.tags[i] + "</span> ";
+                t += "<span style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 1px; padding-bottom: 1px; color: #666666; border-radius: 4px;'>#" + issue.issue.tags[i].toUpperCase() + "</span> ";
             }
             h += $.trim(t);
             h += "</div>";
