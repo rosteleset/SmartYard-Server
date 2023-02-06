@@ -308,6 +308,10 @@
                     val = m;
                     break;
 
+                case "author":
+                    val = members[val]?members[val]:val;
+                    break;
+
                 case "created":
                 case "updated":
                     val = new Date(val * 1000);
@@ -397,7 +401,10 @@
         h += "<td style='vertical-align: top; width: 100%;'>";
         h += "<div class='text-bold pt-1 pb-1'>";
         h += "<span class='mr-3'>";
-        h += issue.issue["issueId"] + ":";
+        h += issue.issue["issueId"];
+        if (!isEmpty(issue.actions)) {
+            h += ":";
+        }
         h += "</span>";
         if (!isEmpty(issue.actions)) {
             let t = 0;
