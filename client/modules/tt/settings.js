@@ -1676,7 +1676,7 @@
                                         data: modules.tt.meta.tags[i].tagId,
                                     },
                                     {
-                                        data: modules.tt.meta.tags[i].tag,
+                                        data: `<span class="mr-1 text-bold" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 0px; padding-bottom: 2px; color: ${modules.tt.meta.tags[i].foreground}; border-radius: 4px; background: ${modules.tt.meta.tags[i].background};'>#${modules.tt.meta.tags[i].tag}</span>`,
                                     },
                                 ],
                             });
