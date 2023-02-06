@@ -698,20 +698,20 @@
                         if ($unit == "is") {
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
-                                ["Calling sip:", true, false, false, 1],
-                                ["Baresip event CALL_INCOMING", true, false, false, -1],
-                                ["Incoming call to sip:", true, false, false, -1],
-                                ["CMS handset is not connected for apartment ", true, false, false, 0],
-                                ["CMS handset call started for apartment ", true, false, false, 0],
-                                ["CMS handset talk started for apartment ", false, true, false, 0],
-                                ["Baresip event CALL_RINGING", true, false, false, 1],
-                                ["Baresip event CALL_ESTABLISHED", false, true, false, 0],
-                                ["Opening door by CMS handset for apartment ", false, false, true, 0],
-                                ["Open from handset!", false, false, true, 0],
-                                ["Open main door by DTMF", false, false, true, 1],
-                                ["Baresip event CALL_CLOSED", false, false, false, 0],
-                                ["SIP call done for apartment ", false, false, false, 1],
-                                ["All calls are done for apartment ", false, false, false, 1],
+                                ["/Calling sip:\d+@.* through account/", true, false, false, 1],
+                                ["/Baresip event CALL_INCOMING/", true, false, false, -1],
+                                ["/Incoming call to sip:\d+@.* \(\d+\)/", true, false, false, -1],
+                                ["/CMS handset is not connected for apartment \d+, aborting CMS call/", true, false, false, 0],
+                                ["/CMS handset call started for apartment \d+/", true, false, false, 0],
+                                ["/CMS handset talk started for apartment \d+/", false, true, false, 0],
+                                ["/Baresip event CALL_RINGING/", true, false, false, 1],
+                                ["/Baresip event CALL_ESTABLISHED/", false, true, false, 0],
+                                ["/Opening door by CMS handset for apartment \d+/", false, false, true, 0],
+                                ["/Open from handset!/", false, false, true, 0],
+                                ["/Open main door by DTMF/", false, false, true, 1],
+                                ["/CMS handset call done for apartment \d+, handset is down/", false, false, false, 0],
+                                ["/SIP call done for apartment \d+, handset is down/", false, false, false, 1],
+                                ["/All calls are done for apartment \d+/", false, false, false, 1],
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
@@ -720,40 +720,22 @@
                                 unset($now_call_id);
                                 unset($now_sip_call_id);
 
-                                if (strpos($msg, $pattern) !== false) {
+                                if (preg_match($pattern, $msg)) {
                                     // Check if call started from this panel
-                                    if ($now_call_from_panel > 0) {
-                                        $call_from_panel = 1;
-                                    } elseif ($now_call_from_panel < 0) {
-                                        $call_from_panel = -1;
-                                        break;
-                                    }
+                                    $call_from_panel = $now_call_from_panel; // TODO: not good
 
-                                    // Get flat number
-                                    if (strpos($pattern, "apartment") !== false) {
-                                        $p1 = strpos($msg, $pattern);
-                                        $p2 = strpos($msg, ".", $p1 + strlen($pattern));
-                                        if (!$p2)
-                                            $p2 = strpos($msg, ",", $p1 + strlen($pattern));
-                                        if (!$p2)
-                                            $p2 = strlen($msg);
-                                        $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern)));
-                                    }
+                                    // Get message parts
+                                    $msg_parts = array_map('trim', preg_split("/[,@:]|\s(?=\d)/", $msg));
 
                                     // Get flat number and prefix
-                                    if (strpos($pattern, "Calling sip:") !== false) {
-                                        $p1 = strpos($msg, $pattern);
-                                        $p2 = strpos($msg, "@", $p1 + strlen($pattern));
-                                        $sip = substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern));
-                                        if (strlen($sip) < 5) {
-                                            // Call from panel with CMS, slave panel or gate panel without prefix
-                                            $p1 = strpos($msg, $pattern);
-                                            $p2 = strpos($msg, "@", $p1 + strlen($pattern));
-                                            $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern)));
-                                        } else {
-                                            // Call from gate panel with prefix
-                                            $prefix = intval(substr($sip, 0, 4));
-                                            $now_flat_number = intval(substr($sip, 4));
+                                    if (isset($msg_parts[1])) {
+                                        $number = $msg_parts[1];
+
+                                        if ($number <= 9999) { // Apartment - ordinary panel
+                                            $now_flat_number = $number;
+                                        } else { // Gate panel - prefix and apartment
+                                            $prefix = substr($number, 0, 4);
+                                            $now_flat_number = substr($number, 4);
                                         }
                                     }
 
