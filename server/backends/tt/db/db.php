@@ -270,6 +270,14 @@
                 }
 
                 try {
+                    $projects = $this->getProjects();
+                    $project = false;
+                    foreach ($projects as $p) {
+                        if ($p["projectId"] == $projectId) {
+                            $project = $p;
+                        }
+                    }
+
                     foreach ($workflows as $workflow) {
                         if (!$sth->execute([
                             ":project_id" => $projectId,
@@ -278,7 +286,7 @@
                             return false;
                         }
                         $w = $this->loadWorkflow($workflow);
-                        if (!$w->initProject($projectId)) {
+                        if (!$w->initProject($project)) {
                             setLastError("invalidWorflow");
                             return false;
                         }
