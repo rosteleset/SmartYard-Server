@@ -565,9 +565,13 @@
                     }
 
                     if (Object.keys(modules.tt.meta.myRoles).length) {
+                        let cog = "mt-1";
+                        if (AVAIL("tt", "project", "POST")) {
+                            cog = "";
+                        }
                         rtd += `
                             <div class="form-inline">
-                                <div class="input-group input-group-sm mr-2">
+                                <div class="input-group input-group-sm mr-2 ${cog}">
                                     <select id="ttProjectSelect" class="form-control">
                         `;
                         for (let j in modules.tt.meta.myRoles) {
@@ -580,7 +584,7 @@
                         rtd += `
                                 </select>
                                 </div>
-                                <div class="input-group input-group-sm">
+                                <div class="input-group input-group-sm ${cog}">
                                     <input id="ttSearch" class="form-control" type="search" aria-label="Search">
                                     <div class="input-group-append">
                                         <button class="btn btn-default" id="ttSearchButton">
@@ -600,8 +604,17 @@
                         rtd += `
                             </div>
                         `;
+                    } else {
+                        if (AVAIL("tt", "project", "POST")) {
+                            rtd += `
+                                <div class="nav-item mr-0 pr-0">
+                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                                        <i class="fas fa-lg fa-fw fa-cog"></i>
+                                    </a>
+                                </div>
+                            `;
+                        }
                     }
-
 
                     $("#rightTopDynamic").html(rtd);
 
