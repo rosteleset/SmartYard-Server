@@ -558,16 +558,6 @@
 
                     let current_project = params["project"]?params["project"]:$.cookie("_project");
 
-                    if (AVAIL("tt", "project", "POST")) {
-                        rtd += `
-                            <li class="nav-item">
-                                <a href="#tt.settings&edit=projects" class="nav-link text-primary" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                                    <i class="fas fa-lg fa-fw fa-cog"></i>
-                                </a>
-                            </li>
-                        `;
-                    }
-
                     let pn = {};
 
                     for (let i in modules.tt.meta.projects) {
@@ -576,9 +566,9 @@
 
                     if (Object.keys(modules.tt.meta.myRoles).length) {
                         rtd += `
-                        <div class="form-inline mr-3 mt-1">
-                            <div class="input-group input-group-sm mr-2">
-                                <select id="ttProjectSelect" class="form-control">
+                            <div class="form-inline">
+                                <div class="input-group input-group-sm mr-2">
+                                    <select id="ttProjectSelect" class="form-control">
                         `;
                         for (let j in modules.tt.meta.myRoles) {
                             if (j == current_project) {
@@ -597,10 +587,21 @@
                                             <i class="fas fa-search"></i>
                                         </button>
                                     </div>
+                                </div>`;
+                        if (AVAIL("tt", "project", "POST")) {
+                            rtd += `
+                                <div class="nav-item mr-0 pr-0">
+                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                                        <i class="fas fa-lg fa-fw fa-cog"></i>
+                                    </a>
                                 </div>
+                            `;
+                        }
+                        rtd += `
                             </div>
                         `;
                     }
+
 
                     $("#rightTopDynamic").html(rtd);
 
