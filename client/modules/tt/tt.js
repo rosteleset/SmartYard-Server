@@ -650,11 +650,13 @@
                     filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
                 }
 
-                $("#leftTopDynamic").html(`
-                    <li class="nav-item d-none d-sm-inline-block">
-                        <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
-                    </li>
-                `);
+                if (myself.uid) {
+                    $("#leftTopDynamic").html(`
+                        <li class="nav-item d-none d-sm-inline-block">
+                            <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
+                        </li>
+                    `);
+                }
 
                 $(".createIssue").off("click").on("click", () => {
                     modules.tt.issue.createIssue($("#ttProjectSelect").val());
