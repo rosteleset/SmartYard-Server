@@ -23,16 +23,12 @@
                         $project,
                         [
                             "issueId" => $params["issue"],
-                        ],
-                        [
-                            "workflow",
                         ]
                     );
 
                     if ($issues && $issues["issues"] && $issues["issues"][0]) {
                         $workflow = $tt->loadWorkflow($issues["issues"][0]["workflow"]);
-
-                        return api::ANSWER($workflow->actionTemplate($params["issue"], $params["action"]));
+                        return api::ANSWER($workflow->actionTemplate($issues["issues"][0], $params["action"]));
                     }
                 }
 
