@@ -372,6 +372,18 @@
         window.location.href = `#tt&issue=${issue}`;
     },
 
+    doAction: function (issue, action) {
+        loadingStart();
+        QUERY("tt", "workflowActionTemplate", {
+            issue,
+            action,
+        }, true).done(r => {
+            console.log(r);
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     renderIssue: function (issue) {
 
         function fieldRow(i) {
@@ -510,7 +522,7 @@
         $("#mainForm").html(h);
 
         $(".ttIssueAction").off("click").on("click", function () {
-            console.log($(this).text());
+            modules.tt.doAction(issue.issue.issueId, $(this).text())
         });
     },
 
