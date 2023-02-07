@@ -462,7 +462,7 @@
                 }
             }
             if (Object.keys(issue.actions).length - t === 1) {
-                h += la;
+                h += `<span class="hoverable text-primary mr-3 ttIssueAction">${la}</span>`;
             } else
             if (t < Object.keys(issue.actions).length) {
                 h += `<span class="dropdown">`;
