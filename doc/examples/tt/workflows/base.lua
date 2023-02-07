@@ -1,5 +1,4 @@
 function initProject(projectId)
-    utils.error_log(projectId)
     return projectId
 end
 
@@ -11,17 +10,33 @@ function createIssueTemplate()
             "assigned",
             "watchers",
             "attachments",
-            "tags"
+            "tags",
+            "_cf_text",
         }
     }
 end
 
 function availableActions(issue)
-    return {}
+    if issue["status"] ~= "closed" then
+        return {
+            "Закрыть",
+        }
+    else
+        return {}
+    end
 end
 
 function actionTemplate(issue, action)
-    --
+    if action == "Закрыть" then
+        if issue["status"] ~= "closed" then
+            return {
+                "resolution",
+                "comment",
+            }
+        else
+            return false
+        end
+    end
 end
 
 function doAction(issue, action, fields)
@@ -29,7 +44,7 @@ function doAction(issue, action, fields)
 end
 
 function createIssue(issue)
-    utils.error_log(utils.print_r(issue))
+    issue["status"] = "opened";
     return tt.createIssue(issue)
 end
 
@@ -42,13 +57,19 @@ function viewIssue(issue)
             "project",
             "workflow",
             "subject",
+            "created",
+            "updated",
+            "status",
+            "resolution",
             "description",
+            "author",
             "assigned",
             "watchers",
             "tags",
             "attachments",
             "comments",
             "journal",
+            "_cf_text",
         }
     }
 end
