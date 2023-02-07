@@ -312,6 +312,24 @@
                     val = members[val]?members[val]:val;
                     break;
 
+                case "status":
+                    for (let i in modules.tt.meta.statuses) {
+                        if (val == modules.tt.meta.statuses[i].status) {
+                            val = modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status;
+                            break;
+                        }
+                    }
+                    break;
+
+                case "resolution":
+                    for (let i in modules.tt.meta.resolutions) {
+                        if (val == modules.tt.meta.resolutions[i].alias) {
+                            val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
+                            break;
+                        }
+                    }
+                    break;
+
                 case "created":
                 case "updated":
                     val = new Date(val * 1000);
@@ -388,7 +406,7 @@
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
         let cfn = {};
-        let rightFields = [ "assigned", "watchers", "created", "updated", "author" ];
+        let rightFields = [ "status", "resolution", "assigned", "watchers", "created", "updated", "author" ];
 
         for (let i in modules.tt.meta.customFields) {
             cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
