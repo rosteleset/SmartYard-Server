@@ -29,8 +29,6 @@
                         ]
                     );
 
-                    error_log(print_r($issues, true));
-
                     if ($issues && $issues["issues"] && $issues["issues"][0]) {
                         $workflow = $tt->loadWorkflow($issues["issues"][0]["workflow"]);
 
