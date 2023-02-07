@@ -259,7 +259,7 @@
                     $x = json_decode(json_encode($issue), true);
                     $x["id"] = $x["_id"]["\$oid"];
                     unset($x["_id"]);
-                    if ($files && (!count($fields) || in_array("attachments", $fields))) {
+                    if ($files && (!$fields || !count($fields) || in_array("attachments", $fields))) {
                         $x["attachments"] = $files->searchFiles([
                             "metadata.issue" => true,
                             "metadata.issueId" => $issue["issueId"],
