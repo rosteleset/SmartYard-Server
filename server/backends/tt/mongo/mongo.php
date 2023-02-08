@@ -158,7 +158,8 @@
 
                             foreach ($attachments as $attachment) {
                                 $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                                    "date" => $attachment["date"],
+                                    "date" => round($attachment["date"] / 1000),
+                                    "added" => time(),
                                     "type" => $attachment["type"],
                                     "issue" => true,
                                     "project" => $acr,

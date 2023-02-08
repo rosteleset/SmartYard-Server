@@ -611,7 +611,7 @@
                 h += "<span class='text-info text-bold'>";
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>, ";
-                h += ttDate(issue.issue.attachments[i].metadata.date);
+                h += ttDate(issue.issue.attachments[i].metadata.added);
                 h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
