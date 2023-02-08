@@ -48,7 +48,7 @@
              * @return mixed
              */
             public function checkIssue(&$issue) {
-                $acr = $issue["project"];
+                $acr = explode("-", $issue["issueId"])[0];
 
                 $customFields = $this->getCustomFields();
                 $validFields = [];
@@ -112,9 +112,19 @@
                     }
                 }
 
-                $issue["assigned"] = array_values($issue["assigned"]);
-                $issue["watchers"] = array_values($issue["watchers"]);
-                $issue["tags"] = array_values($issue["tags"]);
+                if ($issue["assigned"]) {
+                    $issue["assigned"] = array_values($issue["assigned"]);
+                }
+
+                if ($issue["watchers"]) {
+                    $issue["watchers"] = array_values($issue["watchers"]);
+                }
+
+                if ($issue["tags"]) {
+                    $issue["tags"] = array_values($issue["tags"]);
+                }
+
+                error_log(print_r($issue, true));
 
                 return $issue;
             }

@@ -1,5 +1,6 @@
-function initProject(projectId)
-    return projectId
+function initProject(project)
+    utils.error_log(utils.print_r(project))
+    return project
 end
 
 function createIssueTemplate()
@@ -22,7 +23,9 @@ function availableActions(issue)
             "Закрыть",
         }
     else
-        return {}
+        return {
+            "Переоткрыть",
+        }
     end
 end
 
@@ -31,6 +34,7 @@ function actionTemplate(issue, action)
         if issue["status"] ~= "closed" then
             return {
                 "resolution",
+                "tags",
                 "comment",
             }
         else
@@ -39,8 +43,16 @@ function actionTemplate(issue, action)
     end
 end
 
-function doAction(issue, action, fields)
-    --
+function doAction(issue, action)
+    if action == "Закрыть" then
+        issue["status"] = "closed"
+        tt.modifyIssue(issue)
+    end
+    if action == "Переоткрыть" then
+        issue["status"] = "opened"
+        issue["resolution"] = ""
+        tt.modifyIssue(issue)
+    end
 end
 
 function createIssue(issue)

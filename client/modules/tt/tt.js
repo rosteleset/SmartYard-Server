@@ -168,6 +168,7 @@
                         title: i18n("tt.tags"),
                         placeholder: i18n("tt.tags"),
                         options: tags,
+                        value: (issue && issue.tags)?Object.values(issue.tags):[],
                     };
 
                 case "assigned":
@@ -178,6 +179,7 @@
                         title: i18n("tt.assigned"),
                         placeholder: i18n("tt.assigned"),
                         options: peoples(project, true, true),
+                        value: (issue && issue.assigned)?Object.values(issue.assigned):[],
                     };
 
                 case "watchers":
@@ -188,6 +190,7 @@
                         title: i18n("tt.watchers"),
                         placeholder: i18n("tt.watchers"),
                         options: peoples(project, false, true),
+                        value: (issue && issue.watchers)?Object.values(issue.watchers):[],
                     };
 
                 case "attachments":
@@ -410,20 +413,40 @@
                 }
             }
 
+            let n = 0;
             for (let i in r.template) {
                 fields.push(this.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId));
+                n++;
             }
 
-            cardForm({
-                title: action,
-                apply: action,
-                fields: fields,
-                footer: true,
-                size: "lg",
-                callback: r => {
+            if (n) {
+                cardForm({
+                    title: action,
+                    apply: action,
+                    fields: fields,
+                    footer: true,
+                    size: "lg",
+                    callback: r => {
+                        loadingStart();
+                        PUT("tt", "workflowProgressAction", false, {
+                            set: r,
+                            action: action,
+                        }).
+                        fail(FAIL).
+                        always(() => {
+                            modules.tt.route({
+                                "issue": issue.issue.issueId,
+                            });
+                        });
+                    },
+                });
+            } else {
+                mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
                     loadingStart();
                     PUT("tt", "workflowProgressAction", false, {
-                        set: r,
+                        set: {
+                            issueId: issue.issue.issueId,
+                        },
                         action: action,
                     }).
                     fail(FAIL).
@@ -432,8 +455,8 @@
                             "issue": issue.issue.issueId,
                         });
                     });
-                },
-            });
+                });
+            }
         }).
         fail(FAIL).
         always(loadingDone);
