@@ -74,11 +74,6 @@ function log_debug(v)
     --dm("log", m)
 end
 
-function round(num, numDecimalPlaces)
-    local mult = 10^(numDecimalPlaces or 0)
-    return math.floor(num * mult + 0.5) / mult
-end
-
 function has_value(tab, val)
     for index, value in ipairs(tab) do
         if value == val then
@@ -452,7 +447,7 @@ extensions = {
                 local entrance = dm("entrance", domophoneId)
                 log_debug("entrance: " .. inspect(entrance))
 
-                channel.CALLERID("name"):set(entrance.callerId .. ", " .. math.floor(flatNumber))
+                channel.CALLERID("name"):set(entrance.callerId .. ", " .. tonumber(flatNumber))
 
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
                     local dest = ""
