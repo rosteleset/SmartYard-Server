@@ -198,7 +198,11 @@
                     unset($issue["comment"]);
                 }
 
-                return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
+                if ($comment) {
+                    return $this->addComment($issue, $comment) && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
+                } else {
+                    return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
+                }
             }
 
             /**
@@ -310,7 +314,15 @@
              */
             public function addComment($issue, $comment)
             {
-                // TODO: Implement addComment() method.
+                $db = $this->dbName;
+                $project = explode("-", $issue["issueId"])[0];
+
+                return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => [ "updated" => time() ] ]) &&
+                    $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$push" => [ "comments" => [
+                        "body" => $comment,
+                        "created" => time(),
+                        "author" => $this->login,
+                    ] ] ]);
             }
 
             /**

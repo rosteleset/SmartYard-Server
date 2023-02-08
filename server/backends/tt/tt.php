@@ -119,6 +119,9 @@
                         "modifyIssue" => function (...$args) {
                             return [ $this->modifyIssue(...$args) ];
                         },
+                        "addComment" => function (...$args) {
+                            return [ $this->addComment(...$args) ];
+                        },
                     ]);
 
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
