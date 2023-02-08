@@ -132,11 +132,6 @@
              */
             protected function createIssue($issue)
             {
-                if (!$this->checkIssue($issue)) {
-                    setLastError("invalidIssue");
-                    return false;
-                }
-
                 $me = $this->myRoles();
                 $acr = $issue["project"];
 
@@ -145,6 +140,11 @@
 
                     $aiid = $this->redis->incr("aiid_" . $acr);
                     $issue["issueId"] = $acr . "-" . $aiid;
+
+                    if (!$this->checkIssue($issue)) {
+                        setLastError("invalidIssue");
+                        return false;
+                    }
 
                     $attachments = @$issue["attachments"] ? : [];
                     unset($issue["attachments"]);

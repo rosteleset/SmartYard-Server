@@ -303,6 +303,7 @@
         }
 
         let val = issue[field];
+
         if (field.substring(0, 4) !== "_cf_") {
             switch (field) {
                 case "description":
@@ -603,10 +604,13 @@
 
         if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' style="font-size: 11pt;"/></td></tr>`;
-            h += "<tr>";
-            h += "<td colspan='2'>";
-            h += "</td>";
-            h += "</tr>";
+            for (let i in issue.issue.attachments) {
+                h += "<tr>";
+                h += "<td colspan='2'>";
+                h += issue.issue.attachments[i].filename;
+                h += "</td>";
+                h += "</tr>";
+            }
         }
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;

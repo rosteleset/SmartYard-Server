@@ -493,5 +493,5 @@ function pad2(n) {
 function ttDate(date) {
     date = new Date(date * 1000);
 
-    return date.toLocaleDateString() + ", " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
+    return date.toLocaleDateString() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
 }
