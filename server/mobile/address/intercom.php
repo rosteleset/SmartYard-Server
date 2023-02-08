@@ -34,100 +34,125 @@
  * @apiSuccess {string="t","f"} [_.FRSDisabled] отключить распознование лиц для квартиры
  */
 
-    auth();
-    $households = loadBackend("households");
-    
-    $flat_id = (int)@$postdata['flatId'];
+use backends\plog\plog;
 
-    if (!$flat_id) {
-        response(422);
+auth();
+$households = loadBackend("households");
+$plog = loadBackend("plog");
+
+$flat_id = (int)@$postdata['flatId'];
+
+if (!$flat_id) {
+    response(422);
+}
+$flatIds = array_map( function($item) { return $item['flatId']; }, $subscriber['flats']);
+$f = in_array($flat_id, $flatIds);
+
+if (!$f) {
+    response(404);
+}
+
+//check for flat owner
+$flat_owner = false;
+foreach ($subscriber['flats'] as $flat) {
+    if ($flat['flatId'] == $flat_id) {
+        $flat_owner = ($flat['role'] == 0);
+        break;
     }
-    $flatIds = array_map( function($item) { return $item['flatId']; }, $subscriber['flats']);
-    $f = in_array($flat_id, $flatIds);
+}
 
-    if (!$f) {
-        response(404);
+if (@$postdata['settings']) {
+    $params = [];
+    $settings = $postdata['settings'];
+
+    if (@$settings['CMS']) {
+        $params["cmsEnabled"] = ($settings['CMS'] == 't') ? 1: 0;
     }
 
-    if (@$postdata['settings']) {
-        $params = [];
-        $settings = $postdata['settings'];
+    if (@$settings['autoOpen']) {
+        $d = date('Y-m-d H:i:s', strtotime($settings['autoOpen']));
+        $params['autoOpen'] = $d;
+    }
 
-        if (@$settings['CMS']) {
-            $params["cmsEnabled"] = ($settings['CMS'] == 't') ? 1: 0;
+    if (array_key_exists('whiteRabbit', $settings)) {
+        $wr = (int)$settings['whiteRabbit'];
+        if (!in_array($wr, [0, 1, 2, 3, 5, 7, 10]))
+            $wr = 0;
+        $params['whiteRabbit'] = $wr;
+    }
+
+    $disable_plog = null;
+    if (@$settings['disablePlog'] && $flat_owner) {
+        $disable_plog = ($settings['disablePlog'] == 't');
+    }
+
+    $hidden_plog = null;
+    if (@$settings['hiddenPlog'] && $flat_owner) {
+        $hidden_plog = ($settings['hiddenPlog'] == 't');
+    }
+
+    if ($disable_plog === true) {
+        $params['plog'] = plog::ACCESS_DENIED;
+    } elseif ($disable_plog === false) {
+        if ($hidden_plog === false) {
+            $params['plog'] = plog::ACCESS_ALL;
+        } else {
+            $params['plog'] = plog::ACCESS_OWNER_ONLY;
         }
-
-        if (@$settings['autoOpen']) {
-            $d = date('Y-m-d H:i:s', strtotime($settings['autoOpen']));
-            $params['autoOpen'] = $d;
-        }
-
-        if (array_key_exists('whiteRabbit', $settings)) {
-            $wr = (int)$settings['whiteRabbit'];
-            if (!in_array($wr, [0, 1, 2, 3, 5, 7, 10]))
-                $wr = 0;
-            $params['whiteRabbit'] = $wr;
-        }
-
-        $households->modifyFlat($flat_id, $params);
-
-        if (@$settings['VoIP']) {
-            $params = [];
-            $params['voipEnabled'] = ($settings['VoIP'] == 't') ? 1: 0;
-            $households->modifySubscriber($subscriber['subscriberId'], $params);
-        }
-    }
-
-    $subscriber = $households->getSubscribers('id', $subscriber['subscriberId'])[0];
-    $flat = $households->getFlat($flat_id);
-    /*
-        "flatId": "1",
-		"floor": "10",
-		"flat": "69",
-		"autoBlock": "0",
-		"manualBlock": "0",
-		"openCode": "12345",
-		"autoOpen": "1970-01-01 03:00:00",
-		"whiteRabbit": "0",
-		"sipEnabled": "0",
-		"sipPassword": "",
-		"lastOpened": null,
-		"cmsEnabled": "1",
-		"entrances": []
-    */
-    // response(200, $flat);
-    $ret = [];
-
-    $frs = loadBackend("frs");
-    $entrances = $households->getEntrances('flatId', $flat_id);
-    $cameras = loadBackend("cameras");
-    foreach ($entrances as $entrance) {
-        $cam = $cameras->getCamera($entrance['cameraId']);
-        if ($cam && strlen($cam['frs']) > 1) {
-            $frs_disabled = 'f';
-            break;
-        }
-    }
-    if (isset($frs_disabled) && $frs_disabled === 'f') {
-        // TODO: check if FRS is allowed for flat_id
-    }
-
-    if (isset($frs_disabled)) {
-        $ret['FRSDisabled'] = $frs_disabled;
-    }
-
-    $ret['allowDoorCode'] = 't';
-    $ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
-    $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
-    $ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
-    $ret['autoOpen'] = date('Y-m-d H:i:s', strtotime($flat['autoOpen']));
-    $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
-
-    if ($ret) {
-        response(200, $ret);
     } else {
-        response();
+        if ($hidden_plog !== null) {
+            $flat = $households->getFlat($flat_id);
+            $p = $flat['plog'];
+            if ($p == plog::ACCESS_ALL || $p == plog::ACCESS_OWNER_ONLY) {
+                $params['plog'] = $hidden_plog ? plog::ACCESS_OWNER_ONLY : plog::ACCESS_ALL;
+            }
+        }
     }
+
+    $households->modifyFlat($flat_id, $params);
+
+    if (@$settings['VoIP']) {
+        $params = [];
+        $params['voipEnabled'] = ($settings['VoIP'] == 't') ? 1: 0;
+        $households->modifySubscriber($subscriber['subscriberId'], $params);
+    }
+}
+
+$subscriber = $households->getSubscribers('id', $subscriber['subscriberId'])[0];
+$flat = $households->getFlat($flat_id);
+/*
+    "flatId": "1",
+    "floor": "10",
+    "flat": "69",
+    "autoBlock": "0",
+    "manualBlock": "0",
+    "openCode": "12345",
+    "autoOpen": "1970-01-01 03:00:00",
+    "whiteRabbit": "0",
+    "sipEnabled": "0",
+    "sipPassword": "",
+    "lastOpened": null,
+    "cmsEnabled": "1",
+    "entrances": []
+*/
+// response(200, $flat);
+$ret = [];
+$ret['allowDoorCode'] = 't';
+$ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
+$ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
+$ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
+$ret['autoOpen'] = date('Y-m-d H:i:s', strtotime($flat['autoOpen']));
+$ret['whiteRabbit'] = strval($flat['whiteRabbit']);
+if ($flat_owner) {
+    $ret['disablePlog'] = ($flat['plog'] == plog::ACCESS_DENIED || $flat['plog'] == plog::ACCESS_RESTRICTED_BY_ADMIN) ? 't' : 'f';
+    $ret['hiddenPlog'] = ($flat['plog'] == plog::ACCESS_ALL) ? 'f' : 't';
+}
+
+if ($ret) {
+    response(200, $ret);
+} else {
+    response();
+}
 
     // response(200, $flatIds);
 /*

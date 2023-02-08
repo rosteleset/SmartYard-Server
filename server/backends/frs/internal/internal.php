@@ -11,8 +11,7 @@
             //private methods
             private function camshotUrl($cam)
             {
-                // TODO: create method in a suitable backend
-                return $cam[self::CAMERA_URL] . "cgi-bin/images_cgi?channel=0&user=admin&pwd=" . $cam[self::CAMERA_CREDENTIALS];
+                return $this->config["api"]["internal"] . "/frs/camshot/" . $cam[self::CAMERA_ID];
             }
 
             private function callback($cam)
