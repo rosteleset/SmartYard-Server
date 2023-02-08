@@ -8,6 +8,8 @@
     "projectAcronym": "Ярлык",
     "projectProject": "Проект",
     "issueType": "Тип задачи",
+    "issue": "Задача",
+    "comment": "Комментарий",
     "issueTypeProjects": "Проекты",
     "issueTypeDelete": "Удалить тип задач",
     "projectEdit": "Редактирование проекта",

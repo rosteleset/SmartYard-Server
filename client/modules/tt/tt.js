@@ -53,6 +53,8 @@
             return p;
         }
 
+        console.log(field);
+
         let fieldId;
 
         if (typeof field === "object") {
@@ -106,6 +108,17 @@
                         },
                     };
 
+                case "comment":
+                    return {
+                        id: "comment",
+                        type: "area",
+                        title: i18n("tt.comment"),
+                        placeholder: i18n("tt.comment"),
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    };
+
                 case "resolution":
                     let resolutions = [];
 
@@ -124,6 +137,9 @@
                         title: i18n("tt.resolution"),
                         options: resolutions,
                         value: (issue && issue.resolution)?issue.resolution:-1,
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
                     };
 
                 case "status":
@@ -375,10 +391,43 @@
     doAction: function (issue, action) {
         loadingStart();
         QUERY("tt", "workflowActionTemplate", {
-            issue,
-            action,
+            issue: issue.issue.issueId,
+            action: action,
         }, true).done(r => {
-            console.log(r);
+            let fields = [
+                {
+                    id: "issue",
+                    type: "text",
+                    readonly: true,
+                    title: i18n("tt.issue"),
+                    value: issue.issue.issueId,
+                },
+            ];
+
+            let project;
+
+            for (let i in modules.tt.meta.projects) {
+                if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
+                    project = modules.tt.meta.projects[i];
+                }
+            }
+
+            for (let i in r.template) {
+                fields.push(this.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId));
+            }
+
+            console.log(fields);
+
+            cardForm({
+                title: action,
+                apply: action,
+                fields: fields,
+                footer: true,
+                size: "lg",
+                callback: r => {
+                    console.log(r);
+                },
+            });
         }).
         fail(FAIL).
         always(loadingDone);
@@ -522,7 +571,7 @@
         $("#mainForm").html(h);
 
         $(".ttIssueAction").off("click").on("click", function () {
-            modules.tt.doAction(issue.issue.issueId, $(this).text())
+            modules.tt.doAction(issue, $(this).text())
         });
     },
 
