@@ -41,6 +41,15 @@ function actionTemplate(issue, action)
             return false
         end
     end
+    if action == "Переоткрыть" then
+        if issue["status"] == "closed" then
+            return {
+                "comment",
+            }
+        else
+            return false
+        end
+    end
 end
 
 function doAction(issue, action)
