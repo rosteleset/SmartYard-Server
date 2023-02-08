@@ -273,7 +273,7 @@
         main form (permissions) render function
      */
 
-    rightsForm: function (group, g, u, m) {
+    rightsForm: function (group, g, u, m, tgt) {
         let x = {};
 
         if (group) {
@@ -321,7 +321,7 @@
         }
 
         return cardTable({
-            target: group?"#mainForm":"#altForm",
+            target: tgt,
             title: {
                 button: {
                     caption: i18n("permissions.addRights"),
@@ -510,8 +510,12 @@
                             u[_u.users[i].uid] = _u.users[i];
                         }
 
-                        modules.permissions.rightsForm(true, g, u, m);
-                        modules.permissions.rightsForm(false, g, u, m).show();
+                        if (AVAIL("accounts", "group", "POST")) {
+                            modules.permissions.rightsForm(true, g, u, m, "#mainForm");
+                            modules.permissions.rightsForm(false, g, u, m, "#altForm").show();
+                        } else {
+                            modules.permissions.rightsForm(false, g, u, m, "#mainForm");
+                        }
 
                         loadingDone();
                     }).

@@ -1858,6 +1858,7 @@
                                         icon: "fas fa-users",
                                         title: i18n("tt.groups"),
                                         click: modules.tt.settings.projectGroups,
+                                        disabled: !AVAIL("accounts", "group", "POST"),
                                     },
                                 ],
                             }
