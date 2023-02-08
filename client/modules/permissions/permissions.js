@@ -492,15 +492,7 @@
 
                 modules.permissions.methods = _m.methods;
 
-                GET("accounts", "groups").done(_g => {
-                    modules.permissions.groups = _g.groups;
-
-                    let g = {};
-
-                    for (let i in _g.groups) {
-                        g[_g.groups[i].gid] = _g.groups[i];
-                    }
-
+                function accountsUsers(g, m) {
                     GET("accounts", "users").done(_u => {
                         modules.permissions.users = _u.users;
 
@@ -521,9 +513,24 @@
                     }).
                     fail(FAIL).
                     fail(loadingDone);
-                }).
-                fail(FAIL).
-                fail(loadingDone);
+                }
+
+                if (AVAIL("accounts", "group", "POST")) {
+                    GET("accounts", "groups").done(_g => {
+                        modules.permissions.groups = _g.groups;
+
+                        let g = {};
+
+                        for (let i in _g.groups) {
+                            g[_g.groups[i].gid] = _g.groups[i];
+                        }
+                        accountsUsers(g, m);
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                } else {
+                    accountsUsers(false, m);
+                }
             }).
             fail(FAIL).
             fail(loadingDone);
