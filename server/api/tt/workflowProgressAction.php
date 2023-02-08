@@ -14,15 +14,32 @@
 
         class workflowProgressAction extends api {
 
-            public static function POST($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+            public static function PUT($params) {
+                $tt = loadBackend("tt");
+                $project = explode("-", $params["set"]["issueId"])[0];
+
+                error_log(print_r($params["set"], true));
+
+                if ($tt) {
+                    $issues = $tt->getIssues(
+                        $project,
+                        [
+                            "issueId" => $params["set"]["issueId"],
+                        ]
+                    );
+
+                    if ($issues && $issues["issues"] && $issues["issues"][0]) {
+                        return api::ANSWER($tt->loadWorkflow($issues["issues"][0]["workflow"])->doAction($params["set"], $params["action"]));
+                    }
+                }
+
+                return api::ERROR();
             }
 
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "POST" => "tt",
+                        "PUT" => "tt",
                     ];
                 } else {
                     return false;

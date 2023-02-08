@@ -184,7 +184,18 @@
              */
             public function modifyIssue($issue)
             {
-                // TODO: Implement modifyIssue() method.
+                $db = $this->dbName;
+                $project = explode("-", $issue["issueId"])[0];
+
+                $issue["updated"] = time();
+
+                $comment = false;
+                if ($issue["comment"]) {
+                    $comment = $issue["comment"];
+                    unset($issue["comment"]);
+                }
+
+                return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
             }
 
             /**

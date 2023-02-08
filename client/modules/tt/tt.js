@@ -53,8 +53,6 @@
             return p;
         }
 
-        console.log(field);
-
         let fieldId;
 
         if (typeof field === "object") {
@@ -396,7 +394,7 @@
         }, true).done(r => {
             let fields = [
                 {
-                    id: "issue",
+                    id: "issueId",
                     type: "text",
                     readonly: true,
                     title: i18n("tt.issue"),
@@ -416,8 +414,6 @@
                 fields.push(this.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId));
             }
 
-            console.log(fields);
-
             cardForm({
                 title: action,
                 apply: action,
@@ -425,7 +421,17 @@
                 footer: true,
                 size: "lg",
                 callback: r => {
-                    console.log(r);
+                    loadingStart();
+                    PUT("tt", "workflowProgressAction", false, {
+                        set: r,
+                        action: action,
+                    }).
+                    fail(FAIL).
+                    always(() => {
+                        modules.tt.route({
+                            "issue": issue.issue.issueId,
+                        });
+                    });
                 },
             });
         }).
