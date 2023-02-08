@@ -485,3 +485,13 @@ function isEmpty(v) {
 
     return !f;
 }
+
+function pad2(n) {
+    return (n < 10 ? '0' : '') + n;
+}
+
+function ttDate(date) {
+    date = new Date(date * 1000);
+
+    return date.toLocaleDateString() + ", " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
+}

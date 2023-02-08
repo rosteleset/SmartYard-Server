@@ -349,14 +349,13 @@
 
                 case "created":
                 case "updated":
-                    val = new Date(val * 1000);
-
-                    val = val.toLocaleDateString() + " " + val.toLocaleTimeString();
+                    val = ttDate(val);
                     break;
             }
         } else {
-
+            // TODO: add viewer functions and formatting for custom fields
         }
+
         return val;
     },
 
@@ -596,6 +595,39 @@
         h += "</table>";
         h += "</td>";
         h += "</tr>";
+        let members = {};
+
+        for (let i in modules.users.meta) {
+            members[modules.users.meta[i].login] = modules.users.meta[i].realName?modules.users.meta[i].realName:modules.users.meta[i].login;
+        }
+
+        if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' style="font-size: 11pt;"/></td></tr>`;
+            h += "<tr>";
+            h += "<td colspan='2'>";
+            h += "</td>";
+            h += "</tr>";
+        }
+        if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+            for (let i in issue.issue.comments) {
+                h += "<tr>";
+                h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+                h += "<div>";
+                h += "<span class='text-info text-bold'>";
+                h += members[issue.issue.comments[i].author]?members[issue.issue.comments[i].author]:issue.issue.comments[i].author;
+                h += "</span>, ";
+                h += ttDate(issue.issue.comments[i].created);
+                h += "<i class='far fa-edit ml-2 hoverable text-primary'></i>";
+                h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
+                h += "</div>";
+                h += "<div class='ml-2 mb-2 mt-1'>";
+                h += nl2br($.trim(issue.issue.comments[i].body));
+                h += "</div>";
+                h += "</td>";
+                h += "</tr>";
+            }
+        }
         h += "</table>";
         $("#mainForm").html(h);
 

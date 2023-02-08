@@ -177,6 +177,7 @@
     "allActions": "Все действия",
     "foreground": "Цвет текста",
     "background": "Цвет фона",
+    "comments": "Комментарии",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

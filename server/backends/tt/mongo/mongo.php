@@ -194,7 +194,7 @@
 
                 $comment = false;
                 if ($issue["comment"]) {
-                    $comment = $issue["comment"];
+                    $comment = trim($issue["comment"]);
                     unset($issue["comment"]);
                 }
 
@@ -319,7 +319,7 @@
 
                 return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => [ "updated" => time() ] ]) &&
                     $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$push" => [ "comments" => [
-                        "body" => $comment,
+                        "body" => trim($comment),
                         "created" => time(),
                         "author" => $this->login,
                     ] ] ]);
