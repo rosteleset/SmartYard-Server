@@ -563,7 +563,7 @@
         if (!isEmpty(issue.issue.tags)) {
             h += "<tr>";
             h += "<td style='vertical-align: top; width: 100%;'>";
-            h += "<div class='pt-2 pb-1'>";
+            h += "<div class='pt-2 pb-1 small'>";
             let t = "";
             for (let i in issue.issue.tags) {
                 let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground)?tags[issue.issue.tags[i]].foreground:"#666666";
