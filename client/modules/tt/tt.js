@@ -834,6 +834,10 @@
                                         nowrap: true,
                                     },
                                     {
+                                        title: i18n("tt.issue"),
+                                        nowrap: true,
+                                    },
+                                    {
                                         title: i18n("tt.subject"),
                                         nowrap: true,
                                         fullWidth: true,
@@ -846,6 +850,11 @@
                                         rows.push({
                                             uid: issues.issues[i]["issueId"],
                                             cols: [
+                                                {
+                                                    data: i + issues.skip + 1,
+                                                    nowrap: true,
+                                                    click: modules.tt.viewIssue,
+                                                },
                                                 {
                                                     data: issues.issues[i]["issueId"],
                                                     nowrap: true,
