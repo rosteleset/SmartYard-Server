@@ -124,8 +124,6 @@
                     $issue["tags"] = array_values($issue["tags"]);
                 }
 
-                error_log(print_r($issue, true));
-
                 return $issue;
             }
 

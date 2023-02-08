@@ -52,12 +52,12 @@ function actionTemplate(issue, action)
     end
 end
 
-function doAction(issue, action)
-    if action == "Закрыть" then
+function doAction(issue, action, original)
+    if action == "Закрыть" and original["status"] == "opened" then
         issue["status"] = "closed"
         tt.modifyIssue(issue)
     end
-    if action == "Переоткрыть" then
+    if action == "Переоткрыть" and original["status"] == "closed" then
         issue["status"] = "opened"
         issue["resolution"] = ""
         tt.modifyIssue(issue)
