@@ -45,7 +45,7 @@
 
             /**
              * @param $issue
-             * @return void
+             * @return mixed
              */
             public function checkIssue(&$issue) {
                 $acr = $issue["project"];
@@ -63,8 +63,6 @@
                         break;
                     }
                 }
-
-//                error_log(print_r($this->myRoles($users->getUidByLogin("mmikel")), true));
 
                 $customFieldsByName = [];
 
@@ -118,10 +116,7 @@
                 $issue["watchers"] = array_values($issue["watchers"]);
                 $issue["tags"] = array_values($issue["tags"]);
 
-//                error_log(print_r($issue, true));
-//                exit;
-
-                return true;
+                return $issue;
             }
 
             /**
@@ -195,7 +190,7 @@
                     unset($issue["comment"]);
                 }
 
-                return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
             }
 
             /**
