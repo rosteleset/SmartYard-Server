@@ -8,13 +8,14 @@
     {
 
         use backends\frs\frs;
+        use PDO;
 
         /**
          * clickhouse archive class
          */
         class clickhouse extends plog
         {
-            private $clickhouse;
+            private \clickhouse $clickhouse;
             private $time_shift;  // сдвиг по времени в секундах от текущего для обработки событий
             private $max_call_length;  // максимальная длительность звонка в секундах
             private $ttl_temp_record;  // значение, которое прибавляется к текущему времени для получения expire
@@ -22,7 +23,7 @@
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
             private $cron_process_events_scheduler;
 
-            function __construct($config, $db, $redis)
+            public function __construct($config, $db, $redis)
             {
                 parent::__construct($config, $db, $redis);
 
@@ -420,7 +421,7 @@
                     order by
                         date
                 ";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $event_data = [];
                     $event_id = false;
@@ -527,7 +528,7 @@
                     order by
                         date
                 ";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $ip = $row['ip'];
                     $domophone_id = $this->getDomophoneId($row["ip"]);
@@ -572,11 +573,11 @@
                             date desc
                     ";
                     $result = $this->clickhouse->select($query);
-                    foreach ($result as $row) {
-                        $msg = $row['msg'];
-                        $unit = $row['unit'];
+                    foreach ($result as $item) {
+                        $msg = $item['msg'];
+                        $unit = $item['unit'];
 
-                        //обработка звонка
+                        // Call processing for Beward panel
                         if ($unit == 'beward') {
                             $patterns_call = [
                                 //pattern         start  talk  open   call_from_panel
@@ -666,7 +667,7 @@
                                         break;
                                     }
 
-                                    $event_data[self::COLUMN_DATE] = $row['date'];
+                                    $event_data[self::COLUMN_DATE] = $item['date'];
 
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
@@ -724,7 +725,12 @@
 
                                 if (preg_match($pattern, $msg)) {
                                     // Check if call started from this panel
-                                    $call_from_panel = $now_call_from_panel; // TODO: not good
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    } elseif ($now_call_from_panel < 0) {
+                                        $call_from_panel = -1;
+                                        break;
+                                    }
 
                                     // Get message parts
                                     $msg_parts = array_map('trim', preg_split("/[,@:]|\s(?=\d)/", $msg));
@@ -750,7 +756,7 @@
                                         break;
                                     }
 
-                                    $event_data[self::COLUMN_DATE] = $row["date"];
+                                    $event_data[self::COLUMN_DATE] = $item["date"];
 
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
@@ -797,7 +803,9 @@
 
                                 if (preg_match($pattern, $msg) !== 0) {
                                     // Check if call started from this panel
-                                    $call_from_panel = $now_call_from_panel; // TODO: not good
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    }
 
                                     // Get message parts separated by ":" and ","
                                     $msg_parts = array_map("trim", preg_split("/[:,]/", $msg));
@@ -826,7 +834,7 @@
 
                                         if ($number_len === 10) { // Get flat ID
                                             $now_flat_id = substr($number, 1);
-                                        } else if ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
+                                        } elseif ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
                                             $prefix = substr($number, 0, 4);
                                             $now_flat_number = substr($number, 4);
                                         } else { // Get flat number
@@ -857,7 +865,7 @@
                                         break;
                                     }
 
-                                    $event_data[self::COLUMN_DATE] = $row["date"];
+                                    $event_data[self::COLUMN_DATE] = $item["date"];
 
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
