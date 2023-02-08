@@ -452,7 +452,7 @@ extensions = {
                 local entrance = dm("entrance", domophoneId)
                 log_debug("entrance: " .. inspect(entrance))
 
-                channel.CALLERID("name"):set(entrance.callerId .. ", " .. math.tonumber(flatNumber))
+                channel.CALLERID("name"):set(entrance.callerId .. ", " .. math.floor(flatNumber))
 
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
                     local dest = ""
