@@ -540,27 +540,27 @@
             h += ":";
         }
         h += "</span>";
+
+        let specialActions = [
+            "addComment",
+            "addFile",
+            "assignToMe",
+        ];
+
         if (!isEmpty(issue.actions)) {
             let t = 0;
             let la = false;
             for (let i in issue.actions) {
-                switch (issue.actions[i]) {
-                    case "addComment":
-                        h += `<span class="hoverable text-primary mr-3 ttAddComment">${i18n("tt.addComment")}</span>`;
-                        t++;
-                        break;
-                    case "addFile":
-                        h += `<span class="hoverable text-primary mr-3 ttAddFile">${i18n("tt.addFile")}</span>`;
-                        t++;
-                        break;
-                    default:
-                        if (issue.actions[i].substring(0, 1) === "!") {
-                            h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
-                            t++;
-                        } else {
-                            la = issue.actions[i];
-                        }
-                        break;
+                if (issue.actions[i].substring(0, 1) === "!") {
+                    if (specialActions.indexOf(issue.actions[i].substring(1)) >= 0) {
+                        let a = issue.actions[i].substring(1);
+                        h += `<span class="hoverable text-primary mr-3 tt${a.charAt(0).toUpperCase() + a.substring(1)}">${i18n("tt." + a)}</span>`;
+                    } else {
+                        h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
+                    }
+                    t++;
+                } else {
+                    la = issue.actions[i];
                 }
             }
             if (Object.keys(issue.actions).length - t === 1) {
@@ -570,12 +570,33 @@
                 h += `<span class="dropdown">`;
                 h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
+                let hr = true;
+                for (let i = Object.keys(issue.actions).length - 1; i >= 0; i--) {
+                    if (issue.actions[Object.keys(issue.actions)[i]] == "-") {
+                        delete issue.actions[Object.keys(issue.actions)[i]];
+                    } else {
+                        break;
+                    }
+                }
                 for (let i in issue.actions) {
                     let a = issue.actions[i];
                     if (a.substring(0, 1) === "!") {
                         a = a.substring(1);
                     }
-                    h += `<li class="pointer dropdown-item tt_issues_filter ttIssueAction" data-filter-name="${a}">${a}</li>`;
+                    if (specialActions.indexOf(a) >= 0) {
+                        h += `<li class="pointer dropdown-item tt${a.charAt(0).toUpperCase() + a.substring(1)}">${i18n("tt." + a)}</li>`;
+                        hr = false;
+                    } else {
+                        if (a == "-") {
+                            if (!hr) {
+                                h += `<li class="dropdown-divider"></li>`;
+                                hr = true;
+                            }
+                        } else {
+                            h += `<li class="pointer dropdown-item ttIssueAction">${a}</li>`;
+                            hr = false;
+                        }
+                    }
                 }
                 h += `</ul></span>`;
             }

@@ -179,8 +179,8 @@
     "background": "Цвет фона",
     "comments": "Комментарии",
     "commentPrivate": "Частный",
-    "addComment": "+ Комментарий",
-    "addFile": "+ Файл",
+    "addComment": "Комментарий",
+    "addFile": "Файл",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
