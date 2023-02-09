@@ -545,6 +545,7 @@
             "saAddComment",
             "saAddFile",
             "saAssignToMe",
+            "saWatch",
             "saDelete",
             "saEdit",
         ];
