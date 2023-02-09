@@ -27,7 +27,8 @@
                             already[modules.groups.meta[j].acronym] = true;
                             p.push({
                                 id: modules.groups.meta[j].acronym,
-                                text: modules.groups.meta[j].name + " [" + i18n("groups.group") + "]",
+                                text: modules.groups.meta[j].name?modules.groups.meta[j].name:modules.groups.meta[j].acronym,
+                                icon: "fas fa-fw fa-users",
                             });
                         }
                     }
@@ -43,6 +44,7 @@
                                 p.push({
                                     id: modules.users.meta[j].login,
                                     text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
+                                    icon: "fas fa-fw fa-user",
                                 });
                             }
                         }
@@ -67,6 +69,7 @@
                 tags.push({
                     id: modules.tt.meta.tags[i].tag,
                     text: modules.tt.meta.tags[i].tag,
+                    icon: "fas fa-fw fa-tag",
                 });
             }
         }

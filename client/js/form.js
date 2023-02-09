@@ -166,9 +166,9 @@ function cardForm(params) {
                 h += `>`;
                 for (let j in params.fields[i].options) {
                     if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                        h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
+                        h += `<option value="${params.fields[i].options[j].value}" selected data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
                     } else {
-                        h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
+                        h += `<option value="${params.fields[i].options[j].value}" data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
                     }
                 }
                 h += `</select>`;
@@ -507,6 +507,24 @@ function cardForm(params) {
 
             if (params.fields[i].ajax) {
                 s2p.ajax = params.fields[i].ajax;
+            }
+
+            function s2IconFormat(item) {
+                if (!item.id) {
+                    return item.text;
+                }
+                if (item.element && item.element.dataset && item.element.dataset.icon) {
+                    return $(`<span><i class="${item.element.dataset.icon} mr-2"></i>${item.text}</span>`);
+                } else {
+                    return $(`<span>${item.text}</span>`);
+                }
+            }
+
+            s2p.templateResult = s2IconFormat;
+            s2p.templateSelection = s2IconFormat;
+
+            s2p.escapeMarkup = function (m) {
+                return m;
             }
 
             $(`#${_prefix}${params.fields[i].id}`).select2(s2p);
