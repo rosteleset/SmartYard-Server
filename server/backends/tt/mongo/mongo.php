@@ -132,19 +132,22 @@
              */
             protected function createIssue($issue)
             {
-                $me = $this->myRoles();
                 $acr = $issue["project"];
+
+                $issue["issueId"] = $acr;
+
+                if (!$this->checkIssue($issue)) {
+                    setLastError("invalidIssue");
+                    return false;
+                }
+
+                $me = $this->myRoles();
 
                 if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
 
                     $aiid = $this->redis->incr("aiid_" . $acr);
                     $issue["issueId"] = $acr . "-" . $aiid;
-
-                    if (!$this->checkIssue($issue)) {
-                        setLastError("invalidIssue");
-                        return false;
-                    }
 
                     $attachments = @$issue["attachments"] ? : [];
                     unset($issue["attachments"]);
@@ -194,13 +197,16 @@
                 $issue["updated"] = time();
 
                 $comment = false;
+                $commentPrivate = false;
                 if ($issue["comment"]) {
                     $comment = trim($issue["comment"]);
+                    $commentPrivate = !!$issue["commentPrivate"];
                     unset($issue["comment"]);
+                    unset($issue["commentPrivate"]);
                 }
 
                 if ($comment) {
-                    return $this->addComment($issue, $comment) && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
+                    return $this->addComment($issue, $comment, $commentPrivate) && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
                 } else {
                     return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
                 }
@@ -313,7 +319,7 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issue, $comment)
+            public function addComment($issue, $comment, $private)
             {
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
@@ -323,6 +329,7 @@
                         "body" => trim($comment),
                         "created" => time(),
                         "author" => $this->login,
+                        "private" => $private,
                     ] ] ]);
             }
 

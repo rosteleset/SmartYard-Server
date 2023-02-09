@@ -178,6 +178,7 @@
     "foreground": "Цвет текста",
     "background": "Цвет фона",
     "comments": "Комментарии",
+    "commentPrivate": "Частный",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

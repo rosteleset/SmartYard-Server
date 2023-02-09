@@ -618,9 +618,10 @@
             /**
              * @param $issue
              * @param $comment
+             * @param $private
              * @return mixed
              */
-            abstract public function addComment($issue, $comment);
+            abstract public function addComment($issue, $comment, $private);
 
             /**
              * @param $issue

@@ -416,6 +416,14 @@
             let n = 0;
             for (let i in r.template) {
                 fields.push(this.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId));
+                if (r.template[i] == "comment") {
+                    fields.push({
+                        id: "commentPrivate",
+                        type: "yesno",
+                        title: i18n("tt.commentPrivate"),
+                        value: "1",
+                    });
+                }
                 n++;
             }
 
@@ -425,6 +433,7 @@
                     apply: action,
                     fields: fields,
                     footer: true,
+                    borderless: true,
                     size: "lg",
                     callback: r => {
                         loadingStart();
@@ -627,10 +636,15 @@
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
-                h += "<span class='text-info text-bold'>";
-                h += members[issue.issue.comments[i].author]?members[issue.issue.comments[i].author]:issue.issue.comments[i].author;
-                h += "</span>, ";
                 h += ttDate(issue.issue.comments[i].created);
+                h += "<span class='ml-2 text-info text-bold'>";
+                h += members[issue.issue.comments[i].author]?members[issue.issue.comments[i].author]:issue.issue.comments[i].author;
+                h += "</span>";
+                if (issue.issue.comments[i].private) {
+                    h += "<span class='ml-2 text-warning text-bold'>";
+                    h += i18n("tt.commentPrivate");
+                    h += "</span>";
+                }
                 h += "<i class='far fa-edit ml-2 hoverable text-primary'></i>";
                 h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
                 h += "</div>";
