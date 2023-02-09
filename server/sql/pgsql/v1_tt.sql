@@ -25,7 +25,7 @@ CREATE UNIQUE INDEX tt_projects_workflows_uniq on tt_projects_workflows (project
 -- projects <-> filters
 CREATE TABLE tt_projects_filters
 (
-    project_filter_id integer primary key autoincrement,
+    project_filter_id serial primary key,
     project_id integer,
     filter character varying
 );
