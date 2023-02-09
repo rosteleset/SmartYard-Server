@@ -22,7 +22,7 @@
                 $mail->Password = $config["email"]["password"];
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = $config["email"]["port"];
-                $mail->setFrom($config["email"]["username"], $config["email"]["from"]);
+                $mail->setFrom($config["email"]["from"], $config["email"]["from"]);
                 $mail->addAddress($to);
                 $mail->isHTML(true);
                 $mail->Subject = $subj;
