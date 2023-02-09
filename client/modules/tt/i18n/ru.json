@@ -182,9 +182,9 @@
     "saAddComment": "Комментарий",
     "saAddFile": "Файл",
     "saDelete": "Удалить задачу",
-    "saEdit": "Редактировать задачу",
+    "saEdit": "Редактировать",
     "saWatch": "Наблюдать",
-    "saAssignToMe": "Назначить мне",
+    "saAssignToMe": "Забрать",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

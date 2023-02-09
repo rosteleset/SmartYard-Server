@@ -701,11 +701,27 @@
             modules.tt.doAction(issue, $(this).text())
         });
 
-        $(".ttAddComment").off("click").on("click", () => {
+        $(".ttSaAddComment").off("click").on("click", () => {
             console.log("addComment");
         });
 
-        $(".ttAddFile").off("click").on("click", () => {
+        $(".ttSaAddFile").off("click").on("click", () => {
+            console.log("addFile");
+        });
+
+        $(".ttSaAssignToMe").off("click").on("click", () => {
+            console.log("addFile");
+        });
+
+        $(".ttSaWatch").off("click").on("click", () => {
+            console.log("addFile");
+        });
+
+        $(".ttSaDelete").off("click").on("click", () => {
+            console.log("addFile");
+        });
+
+        $(".ttSaEdit").off("click").on("click", () => {
             console.log("addFile");
         });
     },
