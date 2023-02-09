@@ -544,11 +544,23 @@
             let t = 0;
             let la = false;
             for (let i in issue.actions) {
-                if (issue.actions[i].substring(0, 1) === "!") {
-                    h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
-                    t++;
-                } else {
-                    la = issue.actions[i];
+                switch (issue.actions[i]) {
+                    case "addComment":
+                        h += `<span class="hoverable text-primary mr-3 ttAddComment">${i18n("tt.addComment")}</span>`;
+                        t++;
+                        break;
+                    case "addFile":
+                        h += `<span class="hoverable text-primary mr-3 ttAddFile">${i18n("tt.addFile")}</span>`;
+                        t++;
+                        break;
+                    default:
+                        if (issue.actions[i].substring(0, 1) === "!") {
+                            h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
+                            t++;
+                        } else {
+                            la = issue.actions[i];
+                        }
+                        break;
                 }
             }
             if (Object.keys(issue.actions).length - t === 1) {
@@ -663,6 +675,14 @@
 
         $(".ttIssueAction").off("click").on("click", function () {
             modules.tt.doAction(issue, $(this).text())
+        });
+
+        $(".ttAddComment").off("click").on("click", () => {
+            console.log("addComment");
+        });
+
+        $(".ttAddFile").off("click").on("click", () => {
+            console.log("addFile");
         });
     },
 
