@@ -542,9 +542,11 @@
         h += "</span>";
 
         let specialActions = [
-            "addComment",
-            "addFile",
-            "assignToMe",
+            "saAddComment",
+            "saAddFile",
+            "saAssignToMe",
+            "saDelete",
+            "saEdit",
         ];
 
         if (!isEmpty(issue.actions)) {

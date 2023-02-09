@@ -179,8 +179,10 @@
     "background": "Цвет фона",
     "comments": "Комментарии",
     "commentPrivate": "Частный",
-    "addComment": "Комментарий",
-    "addFile": "Файл",
+    "saAddComment": "Комментарий",
+    "saAddFile": "Файл",
+    "saDelete": "Удалить задачу",
+    "saEdit": "Редактировать задачу",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
