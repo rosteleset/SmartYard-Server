@@ -51,12 +51,18 @@
             }
 
             public static function index() {
-                return [
-                    "GET",
-                    "PUT",
-                    "POST",
-                    "DELETE",
-                ];
+                $addresses = loadBackend("addresses");
+
+                if ($addresses) {
+                    return [
+                        "GET",
+                        "PUT",
+                        "POST",
+                        "DELETE",
+                    ];
+                } else {
+                    return [];
+                }
             }
         }
     }
