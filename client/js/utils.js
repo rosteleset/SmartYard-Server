@@ -302,7 +302,6 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
         `);
-        mainSidebarGroup = group;
     }
 
     let [ route ] = hashParse();
@@ -316,6 +315,7 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
         </li>
     `);
 
+    mainSidebarGroup = group;
     mainSidebarFirst = false;
 }
 
