@@ -37,8 +37,8 @@
                     $this->already = true;
                     if (@$this->config["backends"]["authentication"]["checkauth"]) {
                         $url = $this->config["backends"]["authentication"]["checkauth"];
-                        $url = urlencode(str_replace("%%login", $login, $url));
-                        $url = urlencode(str_replace("%%password", $password, $url));
+                        $url = str_replace("%%login", urlencode($login), $url);
+                        $url = str_replace("%%password", urlencode($password), $url);
                         try {
                             $ok = trim(@file_get_contents($url));
                             if (strtolower($ok) === "ok") {
