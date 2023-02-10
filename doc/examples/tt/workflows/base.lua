@@ -20,6 +20,9 @@ end
 function availableActions(issue)
     if issue["status"] ~= "closed" then
         return {
+            "!saAddComment",
+            "saAddFile",
+            "-",
             "Закрыть",
         }
     else
