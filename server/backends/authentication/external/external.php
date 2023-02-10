@@ -42,7 +42,7 @@
                         try {
                             $ok = trim(@file_get_contents($url));
                             if (strtolower($ok) === "ok") {
-                                $uid = $users->addUser($login, $login);
+                                $uid = $users->addUser($login, $login, $login);
                                 if ($uid) {
                                     $users->setPassword($uid, $password);
                                     if (@$this->config["backends"]["authentication"]["default_group"]) {
