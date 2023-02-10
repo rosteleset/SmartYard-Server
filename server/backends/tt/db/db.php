@@ -46,7 +46,7 @@
                             $w[] = $workflow['workflow'];
                         }
 
-                        $filters = $this->db->query("select filter from tt_projects_filters where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
+                        $filters = $this->db->query("select filter from tt_projects_filters where project_id = {$project["project_id"]} order by filter", \PDO::FETCH_ASSOC)->fetchAll();
                         $f = [];
                         foreach ($filters as $filter) {
                             $f[] = $filter['filter'];
