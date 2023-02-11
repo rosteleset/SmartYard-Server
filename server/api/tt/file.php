@@ -30,6 +30,8 @@
                     return API::ERROR(404);
                 }
 
+                $files = loadBackend("files");
+
                 return api::ANSWER($issue, "issue");
             }
 
