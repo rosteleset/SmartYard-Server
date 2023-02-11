@@ -185,6 +185,8 @@
     "saEdit": "Редактировать",
     "saWatch": "Наблюдать",
     "saAssignToMe": "Забрать",
+    "saLink": "Связать",
+    "saSubTask": "Подзадача",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

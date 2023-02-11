@@ -548,6 +548,8 @@
             "saWatch",
             "saDelete",
             "saEdit",
+            "saLink",
+            "saSubTask",
         ];
 
         if (!isEmpty(issue.actions)) {
@@ -710,19 +712,27 @@
         });
 
         $(".ttSaAssignToMe").off("click").on("click", () => {
-            console.log("addFile");
+            console.log("assignToMe");
         });
 
         $(".ttSaWatch").off("click").on("click", () => {
-            console.log("addFile");
+            console.log("watch");
         });
 
         $(".ttSaDelete").off("click").on("click", () => {
-            console.log("addFile");
+            console.log("delete");
         });
 
         $(".ttSaEdit").off("click").on("click", () => {
-            console.log("addFile");
+            console.log("edit");
+        });
+
+        $(".ttSaLink").off("click").on("click", () => {
+            console.log("link");
+        });
+
+        $(".ttSaSubTask").off("click").on("click", () => {
+            console.log("subTask");
         });
     },
 
