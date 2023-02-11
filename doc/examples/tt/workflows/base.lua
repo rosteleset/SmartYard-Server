@@ -17,6 +17,17 @@ function createIssueTemplate()
     }
 end
 
+-- special actions:
+--
+-- saAddComment - add comment
+-- saAddFile    - add file
+-- saAssignToMe - set assigned to myself
+-- saWatch      - add myself to watchers
+-- saDelete     - delete issue
+-- saEdit       - edit issue
+-- saLink       - add link to another issue
+-- saSubTask    - create subIssue
+
 function availableActions(issue)
     if issue["status"] ~= "closed" then
         return {
