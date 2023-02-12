@@ -23,6 +23,7 @@
                     "image/bmp",
                     "image/vnd.microsoft.icon",
                     "image/tiff",
+                    "audio/mpeg",
                 ];
 
                 $tt = loadBackend("tt");
@@ -84,16 +85,15 @@
 
                     fseek($file, $begin);
 
-                    $part = "";
+                    $body = "";
                     $chunk = 0;
-                    while (strlen($part) < $portion) {
-                        $part .= fread($file, $chunk ? : $portion);
-                        if (!$chunk) {
-                            $chunk = strlen($part);
-                        }
+                    while (strlen($body) < $portion && !feof($file)) {
+                        $part = fread($file, $chunk ? : $portion);
+                        $body .= $part;
+                        $chunk = $chunk ? : strlen($part);
                     }
 
-                    echo substr($part, 0, $portion);
+                    echo substr($body, 0, $portion);
 
                     exit();
                 }
