@@ -24,6 +24,8 @@
                     "image/vnd.microsoft.icon",
                     "image/tiff",
                     "audio/mpeg",
+                    "audio/x-m4a",
+                    "video/mp4",
                 ];
 
                 $tt = loadBackend("tt");
@@ -54,7 +56,7 @@
                 if ($file) {
                     header("Content-type: " . $list[0]["metadata"]["type"]);
                     if (in_array($list[0]["metadata"]["type"], $inline) !== false) {
-                        header("Content-Disposition: inline");
+                        header("Content-Disposition: inline; filename=" . urlencode($list[0]["filename"]));
                     } else {
                         header("Content-Disposition: attachment; filename=" . urlencode($list[0]["filename"]));
                     }

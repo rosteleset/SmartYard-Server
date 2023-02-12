@@ -545,34 +545,11 @@
 
     modifyProject: function (projectId) {
         let project = false;
+
         for (let i in modules.tt.meta.projects) {
             if (modules.tt.meta.projects[i].projectId == projectId) {
                 project = modules.tt.meta.projects[i];
                 break;
-            }
-        }
-
-
-        let allowedMimeTypes;
-
-        try {
-            allowedMimeTypes = JSON.parse(project.allowedMimeTypes);
-            if (!allowedMimeTypes) {
-                allowedMimeTypes = [];
-            }
-        } catch (e) {
-            allowedMimeTypes = [];
-        }
-
-        let w = [];
-
-        for (let i in mime2fa) {
-            if (i && i != "false") {
-                w.push({
-                    id: md5(i),
-                    text: i,
-                    checked: allowedMimeTypes.includes(i),
-                });
             }
         }
 
@@ -650,12 +627,6 @@
                     }
                 },
                 {
-                    id: "allowedMimeTypes",
-                    type: "multiselect",
-                    options: w,
-                    title: i18n("tt.allowedMimeTypes"),
-                },
-                {
                     id: "searchSubject",
                     type: "yesno",
                     value: project.searchSubject,
@@ -679,15 +650,6 @@
             ],
             delete: i18n("tt.projectDelete"),
             callback: function (result) {
-                let t = [];
-                for (let i in result.allowedMimeTypes) {
-                    for (let j in mime2fa) {
-                        if (md5(j) == result.allowedMimeTypes[i]) {
-                            t.push(j)
-                        }
-                    }
-                }
-                result.allowedMimeTypes = JSON.stringify(t);
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteProject(result.projectId);
                 } else {

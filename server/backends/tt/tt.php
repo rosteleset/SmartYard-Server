@@ -232,14 +232,13 @@
              * @param $acronym string
              * @param $project string
              * @param $maxFileSize
-             * @param $allowedMimeTypes
              * @param $searchSubject
              * @param $searchDescription
              * @param $searchComments
              * @return boolean
              */
 
-            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes, $searchSubject, $searchDescription, $searchComments);
+            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments);
 
             /**
              * delete project and all it derivatives

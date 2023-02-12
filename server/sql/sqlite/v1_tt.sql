@@ -5,7 +5,6 @@ CREATE TABLE tt_projects
     acronym text not null,
     project text not null,
     max_file_size integer,
-    mime_types text,
     search_subject integer default 1,
     search_description integer default 1,
     search_comments integer default 1

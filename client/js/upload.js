@@ -14,7 +14,7 @@ const mime2fa = {
 };
 
 function uploadForm(mimeTypes) {
-    mimeTypes = escapeHTML(mimeTypes?mimeTypes.join(","):"");
+    mimeTypes = mimeTypes?escapeHTML(mimeTypes.join(",")):"";
     let h = `
         <div class="card mt-0 mb-0">
             <div class="card-header">

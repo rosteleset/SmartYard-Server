@@ -5,7 +5,6 @@ CREATE TABLE tt_projects
     acronym character varying not null,
     project character varying not null,
     max_file_size integer,
-    mime_types character varying,
     search_subject integer default 1,
     search_description integer default 1,
     search_comments integer default 1

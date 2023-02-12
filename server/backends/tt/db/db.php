@@ -36,7 +36,7 @@
             public function getProjects()
             {
                 try {
-                    $projects = $this->db->query("select project_id, acronym, project, max_file_size, mime_types, search_subject, search_description, search_comments from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
+                    $projects = $this->db->query("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
                     $_projects = [];
 
                     foreach ($projects as $project) {
@@ -146,7 +146,6 @@
                             "acronym" => $project["acronym"],
                             "project" => $project["project"],
                             "maxFileSize" => $project["max_file_size"],
-                            "allowedMimeTypes" => $project["mime_types"],
                             "searchSubject" => $project["search_subject"],
                             "searchDescription" => $project["search_description"],
                             "searchComments" => $project["search_comments"],
@@ -199,19 +198,18 @@
             /**
              * @inheritDoc
              */
-            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes, $searchSubject, $searchDescription, $searchComments)
+            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments)
             {
                 if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize) || !checkInt($searchSubject) || !checkInt($searchDescription) || !checkInt($searchComments)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, mime_types = :mime_types, search_subject = :search_subject, search_description = :search_description, search_comments = :search_comments where project_id = $projectId");
+                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, search_subject = :search_subject, search_description = :search_description, search_comments = :search_comments where project_id = $projectId");
                     $sth->execute([
                         "acronym" => $acronym,
                         "project" => $project,
                         "max_file_size" => $maxFileSize,
-                        "mime_types" => $allowedMimeTypes,
                         "search_subject" => $searchSubject,
                         "search_description" => $searchDescription,
                         "search_comments" => $searchComments,

@@ -513,7 +513,7 @@ function cardForm(params) {
                 if (!item.id) {
                     return item.text;
                 }
-                if (item.element && item.element.dataset && item.element.dataset.icon) {
+                if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
                     return $(`<span><i class="${item.element.dataset.icon} mr-2"></i>${item.text}</span>`);
                 } else {
                     return $(`<span>${item.text}</span>`);
@@ -605,7 +605,15 @@ function cardForm(params) {
 
             $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", function () {
                 let id = $(this).attr("data-for");
-                let mimeTypes = JSON.parse($(this).attr("data-mime-types"));
+
+                let mimeTypes;
+
+                try {
+                    mimeTypes = JSON.parse($(this).attr("data-mime-types"));
+                } catch (e) {
+                    //
+                }
+
                 let maxSize = parseInt($(this).attr("data-max-size"));
 
                 loadFile(mimeTypes, maxSize, file => {
