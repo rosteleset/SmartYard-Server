@@ -101,10 +101,22 @@
                 api::ERROR("notFound");
             }
 
+            public static function POST($params)
+            {
+                return api::ANSWER();
+            }
+
+            public static function DELETE($params)
+            {
+                return api::ANSWER();
+            }
+
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
                         "GET" => "#same(tt,issue,GET)",
+                        "POST" => "#same(tt,issue,POST)",
+                        "DELETE" => "#same(tt,issue,DELETE)",
                     ];
                 } else {
                     return false;

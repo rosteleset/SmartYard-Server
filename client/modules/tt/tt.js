@@ -547,7 +547,6 @@
             "saAssignToMe",
             "saWatch",
             "saDelete",
-            "saEdit",
             "saLink",
             "saSubTask",
         ];
