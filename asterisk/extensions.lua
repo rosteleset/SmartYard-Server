@@ -335,6 +335,8 @@ extensions = {
             local dest = channel.PJSIP_DIAL_CONTACTS(extension):get()
             if dest ~= "" and dest ~= nil then
                 app.Dial(dest, 120)
+            else
+                add.Dial("PJSIP/" .. extension .."@kamailio", 120)
             end
         end,
 
@@ -403,6 +405,7 @@ extensions = {
             local domophoneId = false
             local flatId = false
             local flatNumber = false
+            local sipEnabled = false
 
             -- is it domophone "1XXXXX"?
             if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
@@ -440,6 +443,7 @@ extensions = {
             log_debug("domophoneId: " .. inspect(domophoneId))
             log_debug("flatId: " .. inspect(flatId))
             log_debug("flatNumber: " .. inspect(flatNumber))
+            log_debug("sipEnabled: " .. inspect(sipEnabled))
 
             if domophoneId and flatId and flatNumber then
                 log_debug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
@@ -475,8 +479,7 @@ extensions = {
                     end
 
                     -- SIP intercom(s)
-                    local sip_intercom = channel.PJSIP_DIAL_CONTACTS(string.format("4%09d", flatId)):get()
-                    if sip_intercom ~= "" and sip_intercom ~= nil then
+                    if sipEnabled == 1 then
                         dest = dest .. "&Local/" .. string.format("4%09d", flatId)
                     end
 
