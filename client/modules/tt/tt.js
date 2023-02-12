@@ -665,7 +665,9 @@
                 h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
+                h += "<a href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "'>";
                 h += nl2br($.trim(issue.issue.attachments[i].filename));
+                h += "</a>";
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
