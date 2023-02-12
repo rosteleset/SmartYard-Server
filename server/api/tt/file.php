@@ -61,6 +61,7 @@
                     $begin = 0;
                     $size = (int)($list[0]["length"]);
                     $end = $size - 1;
+                    $portion = $size - $begin;
 
                     if (isset($_SERVER['HTTP_RANGE'])) {
                         if (preg_match('/bytes=\h*(\d+)-(\d*)[\D.*]?/i', $_SERVER['HTTP_RANGE'], $matches)) {
@@ -78,21 +79,21 @@
                     header('Cache-Control: public, must-revalidate, max-age=0');
                     header('Pragma: no-cache');
                     header('Accept-Ranges: bytes');
-                    header('Content-Length:' . ($size - $begin));
+                    header('Content-Length:' . $portion);
                     header('Content-Transfer-Encoding: binary');
 
                     fseek($file, $begin);
 
                     $part = "";
                     $chunk = 0;
-                    while (strlen($part) < $size - $begin) {
-                        $part .= fread($file, $chunk ? : $size - $begin);
+                    while (strlen($part) < $portion) {
+                        $part .= fread($file, $chunk ? : $portion);
                         if (!$chunk) {
                             $chunk = strlen($part);
                         }
                     }
 
-                    echo substr($part, 0, $size - $begin);
+                    echo substr($part, 0, $portion);
 
                     exit();
                 }
