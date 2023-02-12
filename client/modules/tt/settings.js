@@ -81,11 +81,13 @@
         });
     },
 
-    doAddTag: function (projectId, tag) {
+    doAddTag: function (projectId, tag, foreground, background) {
         loadingStart();
         POST("tt", "tag", false, {
             projectId: projectId,
             tag: tag,
+            foreground,
+            background,
         }).
         fail(FAIL).
         fail(loadingDone).
@@ -94,24 +96,6 @@
         }).
         done(() => {
             modules.tt.settings.projectTags(projectId);
-        });
-    },
-
-    doAddFilterAvailable: function (filter, uid, gid) {
-        loadingStart();
-        POST("tt", "filterAvailable", filter, { uid, gid }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.filterWasChanged"));
-        }).
-        done(() => {
-            if (uid) {
-                modules.tt.settings.filterUsers(filter);
-            }
-            if (gid) {
-                modules.tt.settings.filterGroups(filter);
-            }
         });
     },
 
@@ -197,23 +181,22 @@
         always(modules.tt.settings.renderViewers);
     },
 
-    doSetWorkflowAlias: function (workflow, alias) {
-        loadingStart();
-        PUT("tt", "workflow", false, {
-            workflow: workflow,
-            alias: alias,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.workflowWasChanged"));
-        }).
-        always(modules.tt.settings.renderWorkflows);
-    },
-
     doSetProjectWorkflows: function (projectId, workflows) {
         loadingStart();
         PUT("tt", "project", projectId, {
             workflows: workflows,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        always(modules.tt.settings.renderProjects);
+    },
+
+    doSetProjectFilters: function (projectId, filters) {
+        loadingStart();
+        PUT("tt", "project", projectId, {
+            filters: filters,
         }).
         fail(FAIL).
         done(() => {
@@ -282,10 +265,12 @@
         always(modules.tt.settings.renderResolutions);
     },
 
-    doModifyTag: function (tagId, tag, projectId) {
+    doModifyTag: function (tagId, tag, foreground, background, projectId) {
         loadingStart();
         PUT("tt", "tag", tagId, {
             tag: tag,
+            foreground: foreground,
+            background: background,
         }).
         fail(FAIL).
         fail(loadingDone).
@@ -360,23 +345,6 @@
         }).
         done(() => {
             modules.tt.settings.projectTags(projectId);
-        });
-    },
-
-    doDeleteFilterAvailable: function (filterAvailableId, filter, users) {
-        loadingStart();
-        DELETE("tt", "filterAvailable", filterAvailableId).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.filterWasChanged"));
-        }).
-        done(() => {
-            if (users) {
-                modules.tt.settings.filterUsers(filter);
-            } else {
-                modules.tt.settings.filterGroups(filter);
-            }
         });
     },
 
@@ -467,10 +435,6 @@
                         {
                             id: "text",
                             text: i18n("tt.customFieldTypeText"),
-                        },
-                        {
-                            id: "number",
-                            text: i18n("tt.customFieldTypeNumber"),
                         },
                         {
                             id: "select",
@@ -581,34 +545,11 @@
 
     modifyProject: function (projectId) {
         let project = false;
+
         for (let i in modules.tt.meta.projects) {
             if (modules.tt.meta.projects[i].projectId == projectId) {
                 project = modules.tt.meta.projects[i];
                 break;
-            }
-        }
-
-
-        let allowedMimeTypes;
-
-        try {
-            allowedMimeTypes = JSON.parse(project.allowedMimeTypes);
-            if (!allowedMimeTypes) {
-                allowedMimeTypes = [];
-            }
-        } catch (e) {
-            allowedMimeTypes = [];
-        }
-
-        let w = [];
-
-        for (let i in mime2fa) {
-            if (i && i != "false") {
-                w.push({
-                    id: md5(i),
-                    text: i,
-                    checked: allowedMimeTypes.includes(i),
-                });
             }
         }
 
@@ -686,23 +627,29 @@
                     }
                 },
                 {
-                    id: "allowedMimeTypes",
-                    type: "multiselect",
-                    options: w,
-                    title: i18n("tt.allowedMimeTypes"),
+                    id: "searchSubject",
+                    type: "yesno",
+                    value: project.searchSubject,
+                    title: i18n("tt.searchSubject"),
+                    placeholder: i18n("tt.searchSubject"),
+                },
+                {
+                    id: "searchDescription",
+                    type: "yesno",
+                    value: project.searchDescription,
+                    title: i18n("tt.searchDescription"),
+                    placeholder: i18n("tt.searchDescription"),
+                },
+                {
+                    id: "searchComments",
+                    type: "yesno",
+                    value: project.searchComments,
+                    title: i18n("tt.searchComments"),
+                    placeholder: i18n("tt.searchComments"),
                 },
             ],
             delete: i18n("tt.projectDelete"),
             callback: function (result) {
-                let t = [];
-                for (let i in result.allowedMimeTypes) {
-                    for (let j in mime2fa) {
-                        if (md5(j) == result.allowedMimeTypes[i]) {
-                            t.push(j)
-                        }
-                    }
-                }
-                result.allowedMimeTypes = JSON.stringify(t);
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteProject(result.projectId);
                 } else {
@@ -724,7 +671,7 @@
         }
 
         cardForm({
-            title: i18n("tt.workflowAlias"),
+            title: i18n("tt.status"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -772,7 +719,7 @@
         }
 
         cardForm({
-            title: i18n("tt.workflowAlias"),
+            title: i18n("tt.resolution"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -814,7 +761,7 @@
         }
 
         cardForm({
-            title: i18n("tt.roles"),
+            title: i18n("tt.role"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -891,7 +838,7 @@
                     },
                     {
                         id: "fieldDescription",
-                        type: "area",
+                        type: "text",
                         title: i18n("tt.customFieldDescription"),
                         placeholder: i18n("tt.customFieldDescription"),
                         value: cf.fieldDescription,
@@ -987,7 +934,7 @@
                         },
                         {
                             id: "fieldDescription",
-                            type: "area",
+                            type: "text",
                             title: i18n("tt.customFieldDescription"),
                             placeholder: i18n("tt.customFieldDescription"),
                             value: cf.fieldDescription,
@@ -999,7 +946,7 @@
                             placeholder: i18n("tt.customFieldRegex"),
                             value: cf.regex,
                             hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type === "select" || cf.type === "users",
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "format",
@@ -1008,7 +955,7 @@
                             placeholder: i18n("tt.customFieldDisplayFormat"),
                             value: cf.format,
                             hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type !== "number",
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "editor",
@@ -1018,11 +965,15 @@
                             value: cf.editor,
                             options: [
                                 {
-                                    id: "string",
+                                    id: "text",
                                     text: i18n("tt.customFieldEditorString"),
                                 },
                                 {
-                                    id: "text",
+                                    id: "number",
+                                    text: i18n("tt.customFieldEditorNumber"),
+                                },
+                                {
+                                    id: "area",
                                     text: i18n("tt.customFieldEditorText"),
                                 },
                                 {
@@ -1042,11 +993,15 @@
                                     text: i18n("tt.customFieldEditorTime"),
                                 },
                                 {
-                                    id: "dateTime",
+                                    id: "datetime-local",
                                     text: i18n("tt.customFieldEditorDateTime"),
                                 },
+                                {
+                                    id: "yesno",
+                                    text: i18n("tt.customFieldEditorYesNo"),
+                                },
                             ],
-                            hidden: cf.type !== "number" && cf.type !== "text",
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "link",
@@ -1069,20 +1024,10 @@
                         },
                         {
                             id: "multiple",
-                            type: "select",
+                            type: "yesno",
                             title: i18n("tt.multiple"),
                             value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
-                            options: [
-                                {
-                                    id: "1",
-                                    text: i18n("yes"),
-                                },
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                            ],
-                            hidden: cf.type !== "users" && cf.type !== "select",
+                            hidden: cf.type === "text",
                         },
                         {
                             id: "usersAndGroups",
@@ -1108,40 +1053,23 @@
                             hidden: cf.type !== "users",
                         },
                         {
-                            id: "indexes",
-                            type: "select",
-                            title: i18n("tt.indexes"),
-                            value: cf.indexes,
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("tt.index"),
-                                },
-                                {
-                                    id: "2",
-                                    text: i18n("tt.fullText"),
-                                },
-                            ],
+                            id: "indx",
+                            type: "yesno",
+                            title: i18n("tt.customFieldIndex"),
+                            value: cf.indx,
+                        },
+                        {
+                            id: "search",
+                            type: "yesno",
+                            title: i18n("tt.customFieldSearch"),
+                            value: cf.search,
+                            hidden: cf.type !== "text",
                         },
                         {
                             id: "required",
-                            type: "select",
+                            type: "yesno",
                             title: i18n("tt.required"),
                             value: cf.required,
-                            options: [
-                                {
-                                    id: "0",
-                                    text: i18n("no"),
-                                },
-                                {
-                                    id: "1",
-                                    text: i18n("yes"),
-                                },
-                            ],
                         },
                     ],
                     delete: i18n("tt.customFieldDelete"),
@@ -1149,16 +1077,14 @@
                         if (result.delete === "yes") {
                             modules.tt.settings.deleteCustomField(customFieldId);
                         } else {
-                            if (cf.type === "users" || cf.type === "select" || cf.type === "text") {
-                                result.format = "";
-                                if (result.multiple === "1") {
-                                    result.format += " multiple";
-                                }
-                                if (cf.type === "users") {
-                                    result.format += " " + result.usersAndGroups;
-                                }
-                                result.format = $.trim(result.format);
+                            result.format = "";
+                            if (result.multiple === "1") {
+                                result.format += " multiple";
                             }
+                            if (cf.type === "users") {
+                                result.format += " " + result.usersAndGroups;
+                            }
+                            result.format = $.trim(result.format);
                             modules.tt.settings.doModifyCustomField(customFieldId, result);
                         }
                     },
@@ -1195,46 +1121,6 @@
         });
     },
 
-    setWorkflowAlias: function (workflow) {
-        let w = '';
-
-        for (let i in modules.tt.meta.workflowAliases) {
-            if (modules.tt.meta.workflowAliases[i].workflow === workflow) {
-                w = modules.tt.meta.workflowAliases[i].alias;
-                break;
-            }
-        }
-
-        cardForm({
-            title: i18n("tt.workflowAlias"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "workflow",
-                    type: "text",
-                    title: i18n("tt.workflow"),
-                    value: workflow,
-                    readonly: true,
-                },
-                {
-                    id: "alias",
-                    type: "text",
-                    title: i18n("tt.workflowAlias"),
-                    placeholder: i18n("tt.workflowAlias"),
-                    value: w,
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-            ],
-            callback: function (result) {
-                modules.tt.settings.doSetWorkflowAlias(workflow, result.alias);
-            },
-        }).show();
-    },
-
     projectWorkflows: function (projectId) {
         let project = false;
 
@@ -1247,20 +1133,14 @@
 
         let w = {};
         for (let i in modules.tt.meta.workflows) {
-            w[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].file;
-        }
-
-        for (let i in modules.tt.meta.workflowAliases) {
-            if (w[modules.tt.meta.workflowAliases[i].workflow]) {
-                w[modules.tt.meta.workflowAliases[i].workflow] = modules.tt.meta.workflowAliases[i].alias;
-            }
+            w[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i];
         }
 
         let workflows = [];
         for (let i in w) {
             workflows.push({
                 id: i,
-                text: "<span class='text-monospace'>[" + i + "]</span> " + w[i],
+                text: "<span class='text-monospace'>[" + i + "]</span> " + (w[i].name?w[i].name:i),
             });
         }
 
@@ -1282,6 +1162,46 @@
             ],
             callback: function (result) {
                 modules.tt.settings.doSetProjectWorkflows(projectId, result.workflows);
+            },
+        }).show();
+    },
+
+    projectFilters: function (projectId) {
+        let project = false;
+
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        let filters = [];
+        for (let i in modules.tt.meta.filters) {
+            filters.push({
+                id: i,
+                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i),
+            });
+        }
+
+        cardForm({
+            title: i18n("tt.projectFilters"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "filters",
+                    type: "multiselect",
+                    title: i18n("tt.filters"),
+                    options: filters,
+                    value: project.filters,
+                },
+            ],
+            callback: function (result) {
+                modules.tt.settings.doSetProjectFilters(projectId, result.filters);
             },
         }).show();
     },
@@ -1609,9 +1529,23 @@
                                         title: i18n("tt.tag"),
                                         placeholder: i18n("tt.tag"),
                                     },
+                                    {
+                                        id: "foreground",
+                                        type: "color",
+                                        title: i18n("tt.foreground"),
+                                        placeholder: i18n("tt.foreground"),
+                                        value: "#666666",
+                                    },
+                                    {
+                                        id: "background",
+                                        type: "color",
+                                        title: i18n("tt.background"),
+                                        placeholder: i18n("tt.background"),
+                                        value: "#ffffff",
+                                    },
                                 ],
-                                callback: fields => {
-                                    modules.tt.settings.doAddTag(projectId, fields.tag);
+                                callback: f => {
+                                    modules.tt.settings.doAddTag(projectId, f.tag, f.foreground, f.background);
                                 },
                             });
                         },
@@ -1625,9 +1559,13 @@
                 },
                 edit: tagId => {
                     let tag = "";
+                    let foreground = "#666666";
+                    let background = "#ffffff";
                     for (let i in modules.tt.meta.tags) {
                         if (modules.tt.meta.tags[i].projectId == projectId && modules.tt.meta.tags[i].tagId == tagId) {
                             tag = modules.tt.meta.tags[i].tag;
+                            foreground = modules.tt.meta.tags[i].foreground?modules.tt.meta.tags[i].foreground:foreground;
+                            background = modules.tt.meta.tags[i].background?modules.tt.meta.tags[i].background:background;
                         }
                     }
                     cardForm({
@@ -1652,14 +1590,28 @@
                                 placeholder: i18n("tt.tag"),
                                 value: tag,
                             },
+                            {
+                                id: "foreground",
+                                type: "color",
+                                title: i18n("tt.foreground"),
+                                placeholder: i18n("tt.foreground"),
+                                value: foreground,
+                            },
+                            {
+                                id: "background",
+                                type: "color",
+                                title: i18n("tt.background"),
+                                placeholder: i18n("tt.background"),
+                                value: background,
+                            },
                         ],
-                        callback: result => {
-                            if (result.delete === "yes") {
+                        callback: f => {
+                            if (f.delete === "yes") {
                                 mConfirm(i18n("tt.confirmDeleteTag", tagId), i18n("confirm"), `danger:${i18n("tt.deleteTag")}`, () => {
                                     modules.tt.settings.doDeleteTag(tagId, projectId);
                                 });
                             } else {
-                                modules.tt.settings.doModifyTag(tagId, fields.tag, projectId);
+                                modules.tt.settings.doModifyTag(tagId, f.tag, f.foreground, f.background, projectId);
                             }
                         },
                     });
@@ -1686,7 +1638,7 @@
                                         data: modules.tt.meta.tags[i].tagId,
                                     },
                                     {
-                                        data: modules.tt.meta.tags[i].tag,
+                                        data: `<span class="mr-1 text-bold" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; color: ${modules.tt.meta.tags[i].foreground}; border-radius: 4px; background: ${modules.tt.meta.tags[i].background};'><i class="fas fa-tag mr-2"></i>${modules.tt.meta.tags[i].tag}</span>`,
                                     },
                                 ],
                             });
@@ -1715,7 +1667,7 @@
         let cf = {};
 
         for (let i in modules.tt.meta.customFields) {
-            cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+            cf["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
         }
 
         let vi = {};
@@ -1728,7 +1680,7 @@
                 field: modules.tt.meta.viewers[i].field,
                 name: modules.tt.meta.viewers[i].name,
             }
-            if (modules.tt.meta.viewers[i].field.substring(0, 4) == "[cf]") {
+            if (modules.tt.meta.viewers[i].field.substring(0, 4) == "_cf_") {
                 viewers.push({
                     id: key,
                     text: $.trim(cf[modules.tt.meta.viewers[i].field] + " [" + modules.tt.meta.viewers[i].name + "]"),
@@ -1827,6 +1779,11 @@
                                         click: modules.tt.settings.projectWorkflows,
                                     },
                                     {
+                                        icon: "fas fa-filter",
+                                        title: i18n("tt.filters"),
+                                        click: modules.tt.settings.projectFilters,
+                                    },
+                                    {
                                         title: "-",
                                     },
                                     {
@@ -1863,6 +1820,7 @@
                                         icon: "fas fa-users",
                                         title: i18n("tt.groups"),
                                         click: modules.tt.settings.projectGroups,
+                                        disabled: !AVAIL("accounts", "group", "POST"),
                                     },
                                 ],
                             }
@@ -1879,7 +1837,7 @@
 
     renderWorkflow: function (workflow) {
         loadingStart();
-        GET("tt", "customWorkflow", workflow, true).
+        GET("tt", "workflow", workflow, true).
         done(w => {
             // TODO f..ck!
             let top = 75;
@@ -1898,7 +1856,7 @@
             editor.setFontSize(14);
             $("#workflowSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "customWorkflow", workflow, { "body": $.trim(editor.getValue()) }).
+                PUT("tt", "workflow", workflow, { "body": $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowWasSaved"));
@@ -1917,7 +1875,7 @@
     deleteWorkflow: function (workflow) {
         mConfirm(i18n("tt.confirmWorkflowDelete", workflow), i18n("confirm"), i18n("delete"), () => {
             loadingStart();
-            DELETE("tt", "customWorkflow", workflow, false).
+            DELETE("tt", "workflow", workflow, false).
             fail(err => {
                 FAIL(err);
                 loadingDone();
@@ -1971,18 +1929,15 @@
                         title: i18n("tt.workflow"),
                     },
                     {
-                        title: i18n("tt.workflowAlias"),
+                        title: i18n("tt.workflowName"),
                         fullWidth: true,
                     },
                 ],
-                edit: modules.tt.settings.setWorkflowAlias,
+                edit: workflow => {
+                    location.href = "#tt.settings&section=workflow&workflow=" + workflow;
+                },
                 rows: () => {
                     let rows = [];
-
-                    let w = {};
-                    for (let i = 0; i < modules.tt.meta.workflowAliases.length; i++) {
-                        w[modules.tt.meta.workflowAliases[i].workflow] = modules.tt.meta.workflowAliases[i].alias;
-                    }
 
                     for (let i = 0; i < modules.tt.meta.workflows.length; i++) {
                         rows.push({
@@ -1992,21 +1947,11 @@
                                     data: modules.tt.meta.workflows[i].file,
                                 },
                                 {
-                                    data: w[modules.tt.meta.workflows[i].file]?w[modules.tt.meta.workflows[i].file]:modules.tt.meta.workflows[i].file,
+                                    data: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file,
                                 },
                             ],
                             dropDown: {
                                 items: [
-                                    {
-                                        icon: "far fa-file-code",
-                                        title: i18n("tt.editWorkflow"),
-                                        click: workflow => {
-                                            location.href = "#tt.settings&section=workflow&workflow=" + workflow;
-                                        },
-                                    },
-                                    {
-                                        title: "-",
-                                    },
                                     {
                                         icon: "far fa-trash-alt",
                                         title: i18n("tt.deleteWorkflow"),
@@ -2334,236 +2279,6 @@
         }).show();
     },
 
-    addFilterUser: function (filter, users) {
-        let u = [];
-        for (let i in users) {
-            u.push({
-                id: i,
-                text: users[i],
-            })
-        }
-        cardForm({
-            title: i18n("tt.addFilterUser"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "uid",
-                    type: "select2",
-                    title: i18n("tt.filterUser"),
-                    options: u,
-                },
-            ],
-            callback: result => {
-                modules.tt.settings.doAddFilterAvailable(filter, result.uid, 0);
-            },
-        }).show();
-    },
-
-    filterDeleteUser: function (filterAvailableId, filter) {
-        mConfirm(i18n("users.confirmDelete", filterAvailableId.toString()), i18n("confirm"), `warning:${i18n("tt.removeUserFromFilter")}`, () => {
-            modules.tt.settings.doDeleteFilterAvailable(filterAvailableId, filter, true);
-        });
-    },
-
-    filterUsers: function (filter) {
-        loadingStart();
-        GET("tt", "filterAvailable", filter, true).
-        done(filterAvailable => {
-            GET("accounts", "users").
-            done(response => {
-                let users = {};
-                for (let i in response.users) {
-                    if (response.users[i].uid) {
-                        users[response.users[i].uid] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
-                    }
-                }
-
-                cardTable({
-                    target: "#altForm",
-                    title: {
-                        caption: modules.tt.meta.filters[filter]?modules.tt.meta.filters[filter]:filter + " " + i18n("tt.filterUsers"),
-                        button: {
-                            caption: i18n("tt.addFilterUser"),
-                            click: () => {
-                                modules.tt.settings.addFilterUser(filter, users);
-                            },
-                        },
-                        altButton: {
-                            caption: i18n("close"),
-                            click: () => {
-                                $("#altForm").hide();
-                            },
-                        },
-                    },
-                    columns: [
-                        {
-                            title: i18n("tt.filterAvailableId"),
-                        },
-                        {
-                            title: i18n("tt.filterUser"),
-                            nowrap: true,
-                            fullWidth: true,
-                        },
-                    ],
-                    rows: () => {
-                        let rows = [];
-
-                        for (let i in filterAvailable.available) {
-                            if (filterAvailable.available[i].uid) {
-                                rows.push({
-                                    uid: filterAvailable.available[i].filterAvailableId,
-                                    cols: [
-                                        {
-                                            data: filterAvailable.available[i].filterAvailableId,
-                                        },
-                                        {
-                                            data: users[filterAvailable.available[i].uid],
-                                        },
-                                    ],
-                                    dropDown: {
-                                        items: [
-                                            {
-                                                icon: "fas fa-trash-alt",
-                                                title: i18n("users.delete"),
-                                                class: "text-danger",
-                                                click: filterAvailableId => {
-                                                    modules.tt.settings.filterDeleteUser(filterAvailableId, filter);
-                                                },
-                                            },
-                                        ],
-                                    },
-                                });
-                            }
-                        }
-
-                        return rows;
-                    },
-                }).show();
-            }).
-            fail(FAIL).
-            always(loadingDone);
-        }).
-        fail(FAIL).
-        fail(loadingDone);
-    },
-
-    addFilterGroup: function (filter, groups) {
-        let g = [];
-        for (let i in groups) {
-            g.push({
-                id: i,
-                text: groups[i],
-            })
-        }
-        cardForm({
-            title: i18n("tt.addFilterGroup"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            fields: [
-                {
-                    id: "gid",
-                    type: "select2",
-                    title: i18n("tt.filterGroup"),
-                    options: g,
-                },
-            ],
-            callback: result => {
-                modules.tt.settings.doAddFilterAvailable(filter, 0, result.gid);
-            },
-        }).show();
-    },
-
-    filterDeleteGroup: function (filterAvailableId, filter) {
-        mConfirm(i18n("groups.confirmDelete", filterAvailableId.toString()), i18n("confirm"), `warning:${i18n("tt.removeGroupFromFilter")}`, () => {
-            modules.tt.settings.doDeleteFilterAvailable(filterAvailableId, filter, false);
-        });
-    },
-
-    filterGroups: function (filter) {
-        loadingStart();
-        GET("tt", "filterAvailable", filter, true).
-        done(filterAvailable => {
-            GET("accounts", "groups").
-            done(response => {
-                let groups = {};
-                for (let i in response.groups) {
-                    if (response.groups[i].gid) {
-                        groups[response.groups[i].gid] = $.trim((response.groups[i].name?response.groups[i].name:response.groups[i].acronym) + " [" + response.groups[i].acronym + "]");
-                    }
-                }
-
-                cardTable({
-                    target: "#altForm",
-                    title: {
-                        caption: modules.tt.meta.filters[filter]?modules.tt.meta.filters[filter]:filter + " " + i18n("tt.filterGroups"),
-                        button: {
-                            caption: i18n("tt.addFilterGroup"),
-                            click: () => {
-                                modules.tt.settings.addFilterGroup(filter, groups);
-                            },
-                        },
-                        altButton: {
-                            caption: i18n("close"),
-                            click: () => {
-                                $("#altForm").hide();
-                            },
-                        },
-                    },
-                    columns: [
-                        {
-                            title: i18n("tt.filterAvailableId"),
-                        },
-                        {
-                            title: i18n("tt.filterGroup"),
-                            nowrap: true,
-                            fullWidth: true,
-                        },
-                    ],
-                    rows: () => {
-                        let rows = [];
-
-                        for (let i in filterAvailable.available) {
-                            if (filterAvailable.available[i].gid) {
-                                rows.push({
-                                    uid: filterAvailable.available[i].filterAvailableId,
-                                    cols: [
-                                        {
-                                            data: filterAvailable.available[i].filterAvailableId,
-                                        },
-                                        {
-                                            data: groups[filterAvailable.available[i].gid],
-                                        },
-                                    ],
-                                    dropDown: {
-                                        items: [
-                                            {
-                                                icon: "fas fa-trash-alt",
-                                                title: i18n("groups.delete"),
-                                                class: "text-danger",
-                                                click: filterAvailableId => {
-                                                    modules.tt.settings.filterDeleteGroup(filterAvailableId, filter);
-                                                },
-                                            },
-                                        ],
-                                    },
-                                });
-                            }
-                        }
-
-                        return rows;
-                    },
-                }).show();
-            }).
-            fail(FAIL).
-            always(loadingDone);
-        }).
-        fail(FAIL).
-        fail(loadingDone);
-    },
-
     renderFilters: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -2608,19 +2323,6 @@
                             dropDown: {
                                 items: [
                                     {
-                                        icon: "fas fa-user",
-                                        title: i18n("tt.users"),
-                                        click: modules.tt.settings.filterUsers,
-                                    },
-                                    {
-                                        icon: "fas fa-users",
-                                        title: i18n("tt.groups"),
-                                        click: modules.tt.settings.filterGroups,
-                                    },
-                                    {
-                                        title: "-",
-                                    },
-                                    {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deleteFilter"),
                                         class: "text-danger",
@@ -2646,47 +2348,86 @@
         done(() => {
             GET("accounts", "users").
             done(response => {
-                let users = [];
-
-                for (let i in response.users) {
-                    if (response.users[i].uid) {
-                        users.push({
-                            id: response.users[i].uid,
-                            text: $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]"),
-                        });
-                    }
-                }
+                let users = response.users;
 
                 let crontabs = [
                     {
+                        id: "daily",
+                        text: i18n("tt.crontabDaily"),
+                    },
+                    {
                         id: "minutely",
-                        text: i18n("minutely"),
+                        text: i18n("tt.crontabMinutely"),
                     },
                     {
                         id: "5min",
-                        text: i18n("5min"),
+                        text: i18n("tt.crontab5min"),
                     },
                     {
                         id: "hourly",
-                        text: i18n("hourly"),
-                    },
-                    {
-                        id: "daily",
-                        text: i18n("daily"),
+                        text: i18n("tt.crontabHourly"),
                     },
                     {
                         id: "monthly",
-                        text: i18n("monthly"),
+                        text: i18n("tt.crontabMonthly"),
                     },
                 ];
 
-                let filters = [];
+                let projectsOptions = [];
+                let projects = {};
+                let project = false;
 
-                for (let i in modules.tt.meta.filters) {
-                    filters.push({
-                        id: i,
-                        text: modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i,
+                for (let i in modules.tt.meta.projects) {
+                    projects[modules.tt.meta.projects[i].projectId] = modules.tt.meta.projects[i];
+                    if (!project) {
+                        project = modules.tt.meta.projects[i].projectId;
+                    }
+                    projectsOptions.push({
+                        id: modules.tt.meta.projects[i].projectId,
+                        text: $.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"),
                     });
+                }
+
+                function filtersByProject(projectId) {
+                    let f = [];
+
+                    for (let i in modules.tt.meta.projects) {
+                        if (modules.tt.meta.projects[i].projectId == projectId) {
+                            for (let j in modules.tt.meta.projects[i].filters) {
+                                for (let k in modules.tt.meta.filters) {
+                                    if (k == modules.tt.meta.projects[i].filters[j]) {
+                                        f.push({
+                                            id: k,
+                                            text: $.trim((modules.tt.meta.filters[k]?modules.tt.meta.filters[k]:k) + " [" + k + "]"),
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return f;
+                }
+
+                function uidsByProject(projectId) {
+                    let u = [];
+
+                    for (let i in modules.tt.meta.projects) {
+                        if (modules.tt.meta.projects[i].projectId == projectId) {
+                            for (let j in modules.tt.meta.projects[i].users) {
+                                for (let k in users) {
+                                    if (users[k].uid == modules.tt.meta.projects[i].users[j].uid) {
+                                        u.push({
+                                            id: users[k].uid,
+                                            text: $.trim((users[k].realName?users[k].realName:users[k].login) + " [" + users[k].login + "]"),
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return u;
                 }
 
                 cardForm({
@@ -2703,36 +2444,58 @@
                             options: crontabs,
                             validate: (v) => {
                                 return $.trim(v) !== "";
-                            }
+                            },
+                        },
+                        {
+                            id: "projectId",
+                            type: "select2",
+                            title: i18n("tt.project"),
+                            placeholder: i18n("tt.project"),
+                            options: projectsOptions,
+                            validate: v => {
+                                return parseInt(v);
+                            },
+                            select: (el, id, prefix) => {
+                                $(`#${prefix}filter`).html("").select2({
+                                    data: filtersByProject(el.val()),
+                                    minimumResultsForSearch: Infinity,
+                                    language: lang["_code"],
+                                });
+                                $(`#${prefix}uid`).html("").select2({
+                                    data: uidsByProject(el.val()),
+                                    minimumResultsForSearch: Infinity,
+                                    language: lang["_code"],
+                                });
+                            },
                         },
                         {
                             id: "filter",
                             type: "select2",
                             title: i18n("tt.filter"),
                             placeholder: i18n("tt.filter"),
-                            options: filters,
-                            validate: (v) => {
+                            options: filtersByProject(project),
+                            validate: v => {
                                 return $.trim(v) !== "";
-                            }
+                            },
                         },
                         {
                             id: "uid",
                             type: "select2",
                             title: i18n("tt.crontabUser"),
                             placeholder: i18n("tt.crontabUser"),
-                            options: users,
-                            validate: (v) => {
+                            options: uidsByProject(project),
+                            validate: v => {
                                 return $.trim(v) !== "";
-                            }
+                            },
                         },
                         {
                             id: "action",
                             type: "text",
                             title: i18n("tt.action"),
                             placeholder: i18n("tt.action"),
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
-                            }
+                            },
                         },
                     ],
                     callback: modules.tt.settings.doAddCrontab,
@@ -2756,78 +2519,112 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            cardTable({
-                target: "#mainForm",
-                title: {
-                    button: {
-                        caption: i18n("tt.addCrontab"),
-                        click: modules.tt.settings.addCrontab,
-                    },
-                    caption: i18n("tt.crontabs"),
-                    filter: true,
-                },
-                columns: [
-                    {
-                        title: i18n("tt.crontabId"),
-                    },
-                    {
-                        title: i18n("tt.crontab"),
-                    },
-                    {
-                        title: i18n("tt.filter"),
-                    },
-                    {
-                        title: i18n("tt.crontabUser"),
-                        noWrap: true,
-                    },
-                    {
-                        title: i18n("tt.action"),
-                        fullWidth: true,
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
+            GET("accounts", "users").
+            done(response => {
+                let users = {};
 
-                    for (let i in modules.tt.meta.crontabs) {
-                        rows.push({
-                            uid: modules.tt.meta.crontabs[i].crontabId,
-                            cols: [
-                                {
-                                    data: modules.tt.meta.crontabs[i].crontabId,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].crontab,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].filter,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].user.login,
-                                },
-                                {
-                                    data: modules.tt.meta.crontabs[i].action,
-                                    fullWidth: true,
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+                for (let i in response.users) {
+                    users[response.users[i].uid] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
+                }
+
+                let projects = {};
+
+                for (let i in modules.tt.meta.projects) {
+                    projects[modules.tt.meta.projects[i].projectId] = modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]";
+                }
+
+                let filters = {};
+                for (let i in modules.tt.meta.filters) {
+                    filters[i] = modules.tt.meta.filters[i] + " [" + i + "]";
+                }
+
+                cardTable({
+                    target: "#mainForm",
+                    title: {
+                        button: {
+                            caption: i18n("tt.addCrontab"),
+                            click: modules.tt.settings.addCrontab,
+                        },
+                        caption: i18n("tt.crontabs"),
+                        filter: true,
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.crontabId"),
+                        },
+                        {
+                            title: i18n("tt.crontab"),
+                        },
+                        {
+                            title: i18n("tt.project"),
+                        },
+                        {
+                            title: i18n("tt.filter"),
+                        },
+                        {
+                            title: i18n("tt.crontabUser"),
+                            noWrap: true,
+                        },
+                        {
+                            title: i18n("tt.action"),
+                            fullWidth: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in modules.tt.meta.crontabs) {
+                            rows.push({
+                                uid: modules.tt.meta.crontabs[i].crontabId,
+                                cols: [
                                     {
-                                        icon: "fas fa-trash-alt",
-                                        title: i18n("tt.deleteFilter"),
-                                        class: "text-danger",
-                                        click: modules.tt.settings.deleteCrontab,
+                                        data: modules.tt.meta.crontabs[i].crontabId,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: i18n("tt.crontab" + modules.tt.meta.crontabs[i].crontab.charAt(0).toUpperCase() + modules.tt.meta.crontabs[i].crontab.slice(1)),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: projects[modules.tt.meta.crontabs[i].projectId],
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: filters[modules.tt.meta.crontabs[i].filter],
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: users[modules.tt.meta.crontabs[i].uid],
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.tt.meta.crontabs[i].action,
+                                        nowrap: true,
+                                        fullWidth: true,
                                     },
                                 ],
-                            },
-                        });
-                    }
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("tt.deleteCrontab"),
+                                            class: "text-danger",
+                                            click: modules.tt.settings.deleteCrontab,
+                                        },
+                                    ],
+                                },
+                            });
+                        }
 
-                    return rows;
-                },
-            });
+                        return rows;
+                    },
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     addViewer: function () {
@@ -2848,7 +2645,7 @@
 
             for (let i in modules.tt.meta.customFields) {
                 fields.push({
-                    id: "[cf]" + modules.tt.meta.customFields[i].field,
+                    id: "_cf_" + modules.tt.meta.customFields[i].field,
                     text: modules.tt.meta.customFields[i].fieldDisplay,
                 });
             }
@@ -2942,7 +2739,7 @@
                 let cf = {};
 
                 for (let i in modules.tt.meta.customFields) {
-                    cf["[cf]" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+                    cf["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
                 }
 
                 let v = {};
@@ -2982,7 +2779,7 @@
                                 uid: key,
                                 cols: [
                                     {
-                                        data: (r.viewers[i].field.substring(0, 4) == "[cf]")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
+                                        data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
                                     },
                                     {
                                         data: r.viewers[i].name,

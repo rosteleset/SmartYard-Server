@@ -59,7 +59,7 @@
              * @return integer
              */
 
-            abstract public function addUser($login, $realName = '', $eMail = '', $phone = '');
+            abstract public function addUser($login, $realName = null, $eMail = null, $phone = null);
 
             /**
              * set password

@@ -10,7 +10,7 @@
     },
 
     loadGroups: function (callback) {
-        GET("accounts", "groups").
+        return GET("accounts", "groups").
         done(groups => {
             modules.groups.meta = groups.groups;
         }).
@@ -117,6 +117,7 @@
                         value: response.group.acronym,
                         placeholder: i18n("groups.acronym"),
                         title: i18n("groups.acronym"),
+                        readonly: true,
                         validate: (v) => {
                             return $.trim(v) !== "";
                         }
@@ -159,10 +160,12 @@
                 let users_list = [];
 
                 for (let i in users.users) {
-                    users_list.push({
-                        id: users.users[i].uid,
-                        text: $.trim(users.users[i].realName + " [" + users.users[i].login + "]"),
-                    });
+                    if (users.users[i].uid) {
+                        users_list.push({
+                            id: users.users[i].uid,
+                            text: $.trim(users.users[i].realName + " [" + users.users[i].login + "]"),
+                        });
+                    }
                 }
 
                 cardForm({

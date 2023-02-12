@@ -302,7 +302,6 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
         `);
-        mainSidebarGroup = group;
     }
 
     let [ route ] = hashParse();
@@ -316,6 +315,7 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
         </li>
     `);
 
+    mainSidebarGroup = group;
     mainSidebarFirst = false;
 }
 
@@ -427,31 +427,75 @@ function hashParse() {
 }
 
 function escapeHTML(str) {
-    let escapeChars = {
-        '¢': 'cent',
-        '£': 'pound',
-        '¥': 'yen',
-        '€': 'euro',
-        '©':'copy',
-        '®': 'reg',
-        '<': 'lt',
-        '>': 'gt',
-        '"': 'quot',
-        '&': 'amp',
-        '\'': '#39'
-    };
+    if (str) {
+        let escapeChars = {
+            '¢': 'cent',
+            '£': 'pound',
+            '¥': 'yen',
+            '€': 'euro',
+            '©':'copy',
+            '®': 'reg',
+            '<': 'lt',
+            '>': 'gt',
+            '"': 'quot',
+            '&': 'amp',
+            '\'': '#39'
+        };
 
-    let regexString = '[';
+        let regexString = '[';
 
-    for(let key in escapeChars) {
-        regexString += key;
+        for(let key in escapeChars) {
+            regexString += key;
+        }
+
+        regexString += ']';
+
+        let regex = new RegExp(regexString, 'g');
+
+        return str.replace(regex, function(m) {
+            return '&' + escapeChars[m] + ';';
+        });
+    } else {
+        return str;
+    }
+}
+
+Object.defineProperty(Array.prototype, "assoc", {
+    value: function (key, target, val) {
+        let arr = this;
+
+        for (let i in arr) {
+            if (arr[i][key] == target) {
+                if (val) {
+                    return arr[i][val];
+                } else {
+                    return arr[i];
+                }
+            }
+        }
+    }
+});
+
+function isEmpty(v) {
+    let f = !!v;
+
+    if (Array.isArray(v)) {
+        f = f && v.length;
     }
 
-    regexString += ']';
+    if (typeof v == "object" && !Array.isArray(v)) {
+        f = f && Object.keys(v).length;
+    }
 
-    let regex = new RegExp(regexString, 'g');
+    return !f;
+}
 
-    return str.replace(regex, function(m) {
-        return '&' + escapeChars[m] + ';';
-    });
+function pad2(n) {
+    return (n < 10 ? '0' : '') + n;
+}
+
+function ttDate(date) {
+    date = date?(new Date(date * 1000)):(new Date());
+
+    return date.toLocaleDateString() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
 }

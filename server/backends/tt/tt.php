@@ -44,7 +44,17 @@
                 $wx = [];
 
                 foreach ($w as $workflow) {
-                    $wx[] = [ "file" => $workflow ];
+                    try {
+                        $workflow_ = $this->loadWorkflow($workflow);
+                        $name = $workflow_->workflowName();
+                    } catch (\Exception $e) {
+                        $name = $workflow;
+                    }
+
+                    $wx[] = [
+                        "file" => $workflow,
+                        "name" => $name,
+                    ];
                 }
 
                 return $wx;
@@ -69,7 +79,52 @@
                 }
 
                 try {
-                    return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow);
+                    $sandbox = new \LuaSandbox;
+
+                    $sandbox->registerLibrary("utils", [
+                        "error_log" => function (...$args) {
+                            return [ error_log(...$args) ];
+                        },
+                        "print_r" => function (...$args) {
+                            $args[] = true;
+                            return [ print_r(...$args) ];
+                        },
+                        "array_values" => function (...$args) {
+                            return [ array_values(...$args) ];
+                        },
+                        "explode" => function (...$args) {
+                            return [ explode(...$args) ];
+                        },
+                        "implode" => function (...$args) {
+                            return [ implode(...$args) ];
+                        },
+                    ]);
+
+                    $sandbox->registerLibrary("rbt", [
+                        "setLastError" => function (...$args) {
+                            return [ setLastError(...$args) ];
+                        },
+                        "i18n" => function (...$args) {
+                            return [ i18n(...$args) ];
+                        },
+                    ]);
+
+                    $sandbox->registerLibrary("tt", [
+                        "createIssue" => function (...$args) {
+                            return [ $this->createIssue(...$args) ];
+                        },
+                        "getIssues" => function (...$args) {
+                            return [ $this->getIssues(...$args) ];
+                        },
+                        "modifyIssue" => function (...$args) {
+                            return [ $this->modifyIssue(...$args) ];
+                        },
+                        "addComment" => function (...$args) {
+                            return [ $this->addComment(...$args) ];
+                        },
+                    ]);
+
+                    return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
                     return false;
                 }
@@ -177,11 +232,13 @@
              * @param $acronym string
              * @param $project string
              * @param $maxFileSize
-             * @param $allowedMimeTypes
+             * @param $searchSubject
+             * @param $searchDescription
+             * @param $searchComments
              * @return boolean
              */
 
-            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $allowedMimeTypes);
+            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments);
 
             /**
              * delete project and all it derivatives
@@ -193,30 +250,20 @@
             abstract public function deleteProject($projectId);
 
             /**
-             * get workflow aliases
-             *
-             * @return false|array
-             */
-
-            abstract public function getWorkflowAliases();
-
-            /**
-             * set workflow alias
-             *
-             * @param $workflow
-             * @param $alias
-             * @return boolean
-             */
-
-            abstract public function setWorkflowAlias($workflow, $alias);
-
-            /**
              * @param $projectId
              * @param $workflows
              * @return boolean
              */
 
             abstract public function setProjectWorkflows($projectId, $workflows);
+
+            /**
+             * @param $projectId
+             * @param $filters
+             * @return boolean
+             */
+
+            abstract public function setProjectFilters($projectId, $filters);
 
             /**
              * @return false|array
@@ -291,26 +338,6 @@
             abstract public function setProjectCustomFields($projectId, $customFields);
 
             /**
-             * @param $filter
-             * @return mixed
-             */
-            abstract public function filterAvailable($filter);
-
-            /**
-             * @param $filter
-             * @param $uid
-             * @param $gid
-             * @return mixed
-             */
-            abstract public function addFilterAvailable($filter, $uid, $gid);
-
-            /**
-             * @param $filter_available_id
-             * @return mixed
-             */
-            abstract public function deleteFilterAvailable($filter_available_id);
-
-            /**
              * @param $projectId
              * @param $uid
              * @param $roleId
@@ -355,12 +382,13 @@
              * @param $format
              * @param $link
              * @param $options
-             * @param $indexes
+             * @param $indx
+             * @param $search
              * @param $required
              * @param $editor
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
+            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
 
             /**
              * @param $customFieldId
@@ -369,19 +397,28 @@
             abstract public function deleteCustomField($customFieldId);
 
             /**
+             * @param $projectId
              * @return false|array
              */
-            abstract public function getTags();
+            abstract public function getTags($projectId = false);
 
             /**
+             * @param $projectId
+             * @param $tag
+             * @param $foreground
+             * @param $background
              * @return false|integer
              */
-            abstract public function addTag($projectId, $tag);
+            abstract public function addTag($projectId, $tag, $foreground, $background);
 
             /**
+             * @param $tagId
+             * @param $tag
+             * @param $foreground
+             * @param $background
              * @return boolean
              */
-            abstract public function modifyTag($tagId, $tag);
+            abstract public function modifyTag($tagId, $tag, $foreground, $background);
 
             /**
              * @return boolean
@@ -534,12 +571,13 @@
 
             /**
              * @param $crontab
+             * @param $projectId
              * @param $filter
              * @param $uid
              * @param $action
              * @return mixed
              */
-            abstract public function addCrontab($crontab, $filter, $uid, $action);
+            abstract public function addCrontab($crontab, $projectId, $filter, $uid, $action);
 
             /**
              * @param $crontabId
@@ -551,7 +589,7 @@
              * @param $issue
              * @return mixed
              */
-            abstract public function createIssue($issue);
+            abstract protected function createIssue($issue);
 
             /**
              * @param $issue
@@ -566,21 +604,23 @@
             abstract public function deleteIssue($issue);
 
             /**
+             * @param $collection
              * @param $query
-             * @param $fields
-             * @param $sort
-             * @param $skip
-             * @param $limit
+             * @param array $fields
+             * @param int[] $sort
+             * @param int $skip
+             * @param int $limit
              * @return mixed
              */
-            abstract public function getIssues($query, $fields = [], $sort = [ "issue_id" => 1 ], $skip = 0, $limit = 100);
+            abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100);
 
             /**
              * @param $issue
              * @param $comment
+             * @param $private
              * @return mixed
              */
-            abstract public function addComment($issue, $comment);
+            abstract public function addComment($issue, $comment, $private);
 
             /**
              * @param $issue
@@ -611,19 +651,15 @@
             abstract public function deleteAttachment($issue, $file);
 
             /**
+             * @param $uid
              * @return mixed
              */
-            abstract public function myRoles();
+            abstract public function myRoles($uid = false);
 
             /**
              * @return mixed
              */
             abstract public function myGroups();
-
-            /**
-             * @return mixed
-             */
-            abstract public function myFilters();
 
             /**
              * @return mixed

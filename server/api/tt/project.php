@@ -25,11 +25,15 @@
                 $tt = loadBackend("tt");
 
                 if (array_key_exists("acronym", $params)) {
-                    $success = $tt->modifyProject($params["_id"], $params["acronym"], $params["project"], $params["maxFileSize"], $params["allowedMimeTypes"]);
+                    $success = $tt->modifyProject($params["_id"], $params["acronym"], $params["project"], $params["maxFileSize"], $params["searchSubject"], $params["searchDescription"], $params["searchComments"]);
                 }
 
                 if (array_key_exists("workflows", $params)) {
                     $success = $tt->setProjectWorkflows($params["_id"], $params["workflows"]);
+                }
+
+                if (array_key_exists("filters", $params)) {
+                    $success = $tt->setProjectFilters($params["_id"], $params["filters"]);
                 }
 
                 if (array_key_exists("resolutions", $params)) {
@@ -44,7 +48,7 @@
                     $success = $tt->setProjectViewers($params["_id"], $params["viewers"]);
                 }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success);
             }
 
             public static function DELETE($params) {

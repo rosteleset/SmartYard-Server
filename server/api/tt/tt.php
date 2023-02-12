@@ -21,7 +21,6 @@
                     $meta = [
                         "projects" => $tt->getProjects(),
                         "workflows" => $tt->getWorkflows(),
-                        "workflowAliases" => $tt->getWorkflowAliases(),
                         "filters" => $tt->availableFilters(),
                         "statuses" => $tt->getStatuses(),
                         "resolutions" => $tt->getResolutions(),
@@ -31,7 +30,7 @@
                         "viewers" => $tt->getViewers(),
                         "crontabs" => $tt->getCrontabs(),
                         "myRoles" => $tt->myRoles(),
-                        "myGrooups" => $tt->myGroups(),
+                        "myGroups" => $tt->myGroups(),
                     ];
 
                     return api::ANSWER($meta, "meta");

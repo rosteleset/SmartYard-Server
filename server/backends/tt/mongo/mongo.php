@@ -44,19 +44,110 @@
             }
 
             /**
+             * @param $issue
+             * @return mixed
+             */
+            public function checkIssue(&$issue) {
+                $acr = explode("-", $issue["issueId"])[0];
+
+                $customFields = $this->getCustomFields();
+                $validFields = [];
+
+//                $users = loadBackend("users");
+
+                $project = false;
+                $projects = $this->getProjects();
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == $acr) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                $customFieldsByName = [];
+
+                foreach ($project["customFields"] as $cfId) {
+                    foreach ($customFields as $cf) {
+                        if ($cf["customFieldId"] == $cfId) {
+                            $validFields[] = "_cf_" . $cf["field"];
+                            $customFieldsByName["_cf_" . $cf["field"]] = $cf;
+                            break;
+                        }
+                    }
+                }
+
+                $validFields[] = "issueId";
+                $validFields[] = "project";
+                $validFields[] = "workflow";
+                $validFields[] = "subject";
+                $validFields[] = "description";
+                $validFields[] = "resolution";
+                $validFields[] = "status";
+                $validFields[] = "tags";
+                $validFields[] = "assigned";
+                $validFields[] = "watchers";
+                $validFields[] = "attachments";
+                $validFields[] = "comments";
+                $validFields[] = "journal";
+
+                $validTags = [];
+
+                foreach ($project["tags"] as $t) {
+                    $validTags[] = $t["tag"];
+                }
+
+                foreach ($issue as $field => $dumb) {
+                    if (!in_array($field, $validFields)) {
+                        unset($issue[$field]);
+                    } else {
+                        if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                            $issue[$field] = array_values($dumb);
+                        }
+                    }
+                }
+
+                foreach ($issue["tags"] as $indx => $tag) {
+                    if (!in_array($tag, $validTags)) {
+                        unset($issue["tags"][$indx]);
+                    }
+                }
+
+                if ($issue["assigned"]) {
+                    $issue["assigned"] = array_values($issue["assigned"]);
+                }
+
+                if ($issue["watchers"]) {
+                    $issue["watchers"] = array_values($issue["watchers"]);
+                }
+
+                if ($issue["tags"]) {
+                    $issue["tags"] = array_values($issue["tags"]);
+                }
+
+                return $issue;
+            }
+
+            /**
              * @inheritDoc
              */
-            public function createIssue($issue)
+            protected function createIssue($issue)
             {
                 $acr = $issue["project"];
 
+                $issue["issueId"] = $acr;
+
+                if (!$this->checkIssue($issue)) {
+                    setLastError("invalidIssue");
+                    return false;
+                }
+
                 $me = $this->myRoles();
 
-                if (@$me[$acr] >= 30 || $this->uid === 0) { // 30, 'participant.senior', can create issues or admin
+                if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
 
                     $aiid = $this->redis->incr("aiid_" . $acr);
-                    $issue["issue_id"] = $acr . "-" . $aiid;
+                    $issue["issueId"] = $acr . "-" . $aiid;
 
                     $attachments = @$issue["attachments"] ? : [];
                     unset($issue["attachments"]);
@@ -64,28 +155,25 @@
                     $issue["created"] = time();
                     $issue["author"] = $this->login;
 
-                    $issue["assigned"] = array_values($issue["assigned"]);
-                    $issue["watchers"] = array_values($issue["watchers"]);
-                    $issue["tags"] = array_values($issue["tags"]);
-
                     try {
                         if ($attachments) {
                             $files = loadBackend("files");
 
                             foreach ($attachments as $attachment) {
                                 $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                                    "date" => $attachment["date"],
+                                    "date" => round($attachment["date"] / 1000),
+                                    "added" => time(),
                                     "type" => $attachment["type"],
                                     "issue" => true,
                                     "project" => $acr,
-                                    "issue_id" => $issue["issue_id"],
+                                    "issueId" => $issue["issueId"],
                                     "attachman" => $issue["author"],
                                 ]);
                             }
                         }
 
-                        if ($this->mongo->$db->issues->insertOne($issue)->getInsertedId()) {
-                            return $issue["issue_id"];
+                        if ($this->mongo->$db->$acr->insertOne($issue)->getInsertedId()) {
+                            return $issue["issueId"];
                         } else {
                             return false;
                         }
@@ -103,7 +191,25 @@
              */
             public function modifyIssue($issue)
             {
-                // TODO: Implement modifyIssue() method.
+                $db = $this->dbName;
+                $project = explode("-", $issue["issueId"])[0];
+
+                $issue["updated"] = time();
+
+                $comment = false;
+                $commentPrivate = false;
+                if ($issue["comment"]) {
+                    $comment = trim($issue["comment"]);
+                    $commentPrivate = !!$issue["commentPrivate"];
+                    unset($issue["comment"]);
+                    unset($issue["commentPrivate"]);
+                }
+
+                if ($comment) {
+                    return $this->addComment($issue, $comment, $commentPrivate) && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
+                } else {
+                    return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
+                }
             }
 
             /**
@@ -118,7 +224,7 @@
                 if ($files) {
                     $issueFiles = $files->searchFiles([
                         "metadata.issue" => true,
-                        "metadata.issue_id" => $issue,
+                        "metadata.issueId" => $issue,
                     ]);
 
                     foreach ($issueFiles as $file) {
@@ -126,48 +232,44 @@
                     }
                 }
 
-                $this->mongo->$db->issues->deleteMany([
-                    "issue_id" => $issue,
+                $acr = explode("-", $issue)[0];
+
+                $this->mongo->$db->$acr->deleteMany([
+                    "issueId" => $issue,
                 ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function getIssues($query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
             {
-                $projects = [];
                 $db = $this->dbName;
 
                 $me = $this->myRoles();
 
-                foreach ($me as $i => $r) {
-                    $projects[] = $i;
+                if (!@$me[$collection]) {
+                    return [];
                 }
 
                 $my = $this->myGroups();
                 $my[] = $this->login;
 
-                if ($query) {
-                    $query = $this->preprocessFilter($query, [
-                        "%%me" => $this->login,
-                        "%%my" => $my,
-                    ]);
-                    $query = [ '$and' => [ $query, [ "project" => [ '$in' => $projects ] ] ] ];
-                } else {
-                    $query = [ "project" => [ '$in' => $projects ] ];
-                }
+                $query = $this->preprocessFilter($query, [
+                    "%%me" => $this->login,
+                    "%%my" => $my,
+                ]);
 
                 $projection = [];
 
                 if ($fields) {
-                    $projection["issue_id"] = 1;
+                    $projection["issueId"] = 1;
                     foreach ($fields as $field) {
                         $projection[$field] = 1;
                     }
                 }
 
-                $issues = $this->mongo->$db->issues->find($query, [
+                $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
                     "skip" => $skip,
                     "limit" => $limit,
@@ -182,10 +284,10 @@
                     $x = json_decode(json_encode($issue), true);
                     $x["id"] = $x["_id"]["\$oid"];
                     unset($x["_id"]);
-                    if ($files) {
+                    if ($files && (!$fields || !count($fields) || in_array("attachments", $fields))) {
                         $x["attachments"] = $files->searchFiles([
                             "metadata.issue" => true,
-                            "metadata.issue_id" => $issue["issue_id"],
+                            "metadata.issueId" => $issue["issueId"],
                         ]);
                     }
                     $i[] = $x;
@@ -195,7 +297,7 @@
                     "issues" => $i,
                     "skip" => $skip,
                     "limit" => $limit,
-                    "count" => $this->mongo->$db->issues->countDocuments($query),
+                    "count" => $this->mongo->$db->$collection->countDocuments($query),
                 ];
             }
 
@@ -217,9 +319,18 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issue, $comment)
+            public function addComment($issue, $comment, $private)
             {
-                // TODO: Implement addComment() method.
+                $db = $this->dbName;
+                $project = explode("-", $issue["issueId"])[0];
+
+                return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => [ "updated" => time() ] ]) &&
+                    $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$push" => [ "comments" => [
+                        "body" => trim($comment),
+                        "created" => time(),
+                        "author" => $this->login,
+                        "private" => $private,
+                    ] ] ]);
             }
 
             /**
@@ -280,8 +391,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor) {
-                $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indexes, $required, $editor);
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor) {
+                $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
                 $this->redis->set("ttReCreateIndexes", true);
             }
 

@@ -15,8 +15,25 @@
         class workflowActionTemplate extends api {
 
             public static function GET($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER(); // $cache must (?) be set to 0 (zero, i.e. no-cache)
+                $tt = loadBackend("tt");
+                $project = explode("-", $params["issue"])[0];
+
+                if ($tt) {
+                    $issues = $tt->getIssues(
+                        $project,
+                        [
+                            "issueId" => $params["issue"],
+                        ]
+                    );
+
+                    if ($issues && $issues["issues"] && $issues["issues"][0]) {
+                        $workflow = $tt->loadWorkflow($issues["issues"][0]["workflow"]);
+                        $template = $workflow->actionTemplate($issues["issues"][0], $params["action"]);
+                        return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
+                    }
+                }
+
+                return api::ERROR();
             }
 
             public static function index() {

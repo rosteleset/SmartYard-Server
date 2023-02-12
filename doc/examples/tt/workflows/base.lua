@@ -1,6 +1,6 @@
-function initProject(projectId)
-    utils.error_log(projectId)
-    return projectId
+function initProject(project)
+    utils.error_log(utils.print_r(project))
+    return project
 end
 
 function createIssueTemplate()
@@ -11,29 +11,104 @@ function createIssueTemplate()
             "assigned",
             "watchers",
             "attachments",
-            "tags"
+            "tags",
+            "_cf_text",
         }
     }
 end
 
+-- special actions:
+--
+-- saAddComment - add comment
+-- saAddFile    - add file
+-- saAssignToMe - set assigned to myself
+-- saWatch      - add myself to watchers
+-- saDelete     - delete issue
+-- saEdit       - edit issue
+-- saLink       - add link to another issue
+-- saSubTask    - create subIssue
+
 function availableActions(issue)
-    return {}
+    if issue["status"] ~= "closed" then
+        return {
+            "!saAddComment",
+            "saAddFile",
+            "-",
+            "Закрыть",
+        }
+    else
+        return {
+            "Переоткрыть",
+        }
+    end
 end
 
 function actionTemplate(issue, action)
---
+    if action == "Закрыть" then
+        if issue["status"] ~= "closed" then
+            return {
+                "resolution",
+                "tags",
+                "comment",
+            }
+        else
+            return false
+        end
+    end
+    if action == "Переоткрыть" then
+        if issue["status"] == "closed" then
+            return {
+                "comment",
+            }
+        else
+            return false
+        end
+    end
 end
 
-function doAction(issue, action, fields)
---
+function doAction(issue, action, original)
+    if action == "Закрыть" and original["status"] == "opened" then
+        issue["status"] = "closed"
+        tt.modifyIssue(issue)
+    end
+    if action == "Переоткрыть" and original["status"] == "closed" then
+        issue["status"] = "opened"
+        issue["resolution"] = ""
+        tt.modifyIssue(issue)
+    end
 end
 
 function createIssue(issue)
-    utils.error_log(utils.print_r(issue))
+    issue["status"] = "opened";
     return tt.createIssue(issue)
 end
 
 function viewIssue(issue)
-    utils.error_log(utils.print_r(issue))
-    return issue
+    return {
+        ["issue"] = issue,
+        ["actions"] = availableActions(issue),
+        ["fields"] = {
+            "issueId",
+            "project",
+            "workflow",
+            "subject",
+            "created",
+            "updated",
+            "status",
+            "resolution",
+            "description",
+            "author",
+            "assigned",
+            "watchers",
+            "tags",
+            "attachments",
+            "comments",
+            "journal",
+            "_cf_text",
+        }
+    }
+end
+
+function workflowName()
+    return "Базовый"
 end

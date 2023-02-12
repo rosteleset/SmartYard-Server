@@ -108,7 +108,12 @@ function cardForm(params) {
                 h += `<td class="tdform${first}">${params.fields[i].title}</td>`;
             }
         }
-        h += `<td class="tdform-right${first}">`;
+
+        if (params.fields[i].hint || params.fields[i].type == "files") {
+            h += `<td class="tdform-right${first} pb-1">`;
+        } else {
+            h += `<td class="tdform-right${first}">`;
+        }
 
         first = "";
 
@@ -161,9 +166,9 @@ function cardForm(params) {
                 h += `>`;
                 for (let j in params.fields[i].options) {
                     if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                        h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
+                        h += `<option value="${params.fields[i].options[j].value}" selected data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
                     } else {
-                        h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
+                        h += `<option value="${params.fields[i].options[j].value}" data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
                     }
                 }
                 h += `</select>`;
@@ -224,12 +229,14 @@ function cardForm(params) {
 
             case "text":
             case "email":
+            case "number":
             case "tel":
             case "date":
             case "time":
             case "datetime":
             case "datetime-local":
             case "password":
+            case "color":
                 if (params.fields[i].type === "datetime") {
                     params.fields[i].type = "datetime-local"
                 }
@@ -254,9 +261,8 @@ function cardForm(params) {
                 break;
 
             case "files":
-//                h += `<button id="${_prefix}${params.fields[i].id}-add" class="btn btn-primary" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}">${i18n("add")}</button><br/>`;
                 h += `<select id="${_prefix}${params.fields[i].id}" class="form-control mt-2" multiple="multiple"></select>`;
-                h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}">+${i18n("add")}</span> <span class="text-secondary text-xs">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
+                h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}"><i class="far fa-folder-open" style="margin-right: 5px;"></i>${i18n("add")}</span><span class="text-secondary text-xs ml-2">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
                 break;
         }
 
@@ -295,11 +301,14 @@ function cardForm(params) {
             case "select":
             case "select2":
             case "email":
+            case "number":
             case "tel":
             case "date":
             case "time":
+            case "datetime":
             case "password":
             case "text":
+            case "color":
             case "area":
                 return $(`#${_prefix}${params.fields[i].id}`).val();
 
@@ -438,11 +447,14 @@ function cardForm(params) {
             switch (params.fields[i].type) {
                 case "select":
                 case "email":
+                case "number":
                 case "tel":
                 case "date":
                 case "time":
+                case "datetime":
                 case "password":
                 case "text":
+                case "color":
                 case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
                     break;
@@ -495,6 +507,24 @@ function cardForm(params) {
 
             if (params.fields[i].ajax) {
                 s2p.ajax = params.fields[i].ajax;
+            }
+
+            function s2IconFormat(item) {
+                if (!item.id) {
+                    return item.text;
+                }
+                if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
+                    return $(`<span><i class="${item.element.dataset.icon} mr-2"></i>${item.text}</span>`);
+                } else {
+                    return $(`<span>${item.text}</span>`);
+                }
+            }
+
+            s2p.templateResult = s2IconFormat;
+            s2p.templateSelection = s2IconFormat;
+
+            s2p.escapeMarkup = function (m) {
+                return m;
             }
 
             $(`#${_prefix}${params.fields[i].id}`).select2(s2p);
@@ -551,29 +581,39 @@ function cardForm(params) {
                 let id = $(this).attr("id");
                 let fileNames = $(this).val();
 
-                for (let i in fileNames) {
-                    let found;
-                    do {
-                        found = false;
-                        for (let j in files[id]) {
-                            if (files[id][j].name == fileNames[i]) {
-                                files[id].splice(j, 1);
-                                found = true;
-                                break;
+                mConfirm(i18n("deleteFile", fileNames.join(', ')), i18n("confirm"), i18n("delete"), () => {
+                    for (let i in fileNames) {
+                        let found;
+                        do {
+                            found = false;
+                            for (let j in files[id]) {
+                                if (files[id][j].name == fileNames[i]) {
+                                    files[id].splice(j, 1);
+                                    found = true;
+                                    break;
+                                }
                             }
-                        }
-                    } while (found);
-                }
+                        } while (found);
+                    }
 
-                $("#" + id).html("");
-                for (let j in files[id]) {
-                    $("#" + id).append("<option>" + files[id][j].name + "</option>");
-                }
+                    $("#" + id).html("");
+                    for (let j in files[id]) {
+                        $("#" + id).append("<option>" + files[id][j].name + "</option>");
+                    }
+                });
             });
 
             $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", function () {
                 let id = $(this).attr("data-for");
-                let mimeTypes = JSON.parse($(this).attr("data-mime-types"));
+
+                let mimeTypes;
+
+                try {
+                    mimeTypes = JSON.parse($(this).attr("data-mime-types"));
+                } catch (e) {
+                    //
+                }
+
                 let maxSize = parseInt($(this).attr("data-max-size"));
 
                 loadFile(mimeTypes, maxSize, file => {

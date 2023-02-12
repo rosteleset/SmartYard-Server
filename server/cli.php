@@ -325,11 +325,11 @@
         $r = email($config, $args["--check-mail"], "test email", "test email");
         if ($r === true) {
             echo "email sended\n";
-            exit(0);
-        }
+        } else
         if ($r === false) {
             echo "no email config found\n";
-            exit(0);
+        } else {
+            print_r($r);
         }
         exit(0);
     }

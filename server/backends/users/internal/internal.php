@@ -96,7 +96,7 @@
              * @return integer|false
              */
 
-            public function addUser($login, $realName = '', $eMail = '', $phone = '') {
+            public function addUser($login, $realName = null, $eMail = null, $phone = null) {
                 $login = trim($login);
                 $password = generatePassword();
 
@@ -105,9 +105,9 @@
                     if ($sth->execute([
                         ":login" => $login,
                         ":password" => password_hash($password, PASSWORD_DEFAULT),
-                        ":real_name" => trim($realName),
-                        ":e_mail" => trim($eMail),
-                        ":phone" => trim($phone),
+                        ":real_name" => $realName?trim($realName):null,
+                        ":e_mail" => $eMail?trim($eMail):null,
+                        ":phone" => $phone?trim($phone):null,
                     ])) {
                         $uid = $this->db->lastInsertId();
                         if ($eMail) {

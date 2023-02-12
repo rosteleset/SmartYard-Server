@@ -37,12 +37,12 @@
                     $this->already = true;
                     if (@$this->config["backends"]["authentication"]["checkauth"]) {
                         $url = $this->config["backends"]["authentication"]["checkauth"];
-                        $url = str_replace("%%login", $login, $url);
-                        $url = str_replace("%%password", $password, $url);
+                        $url = str_replace("%%login", urlencode($login), $url);
+                        $url = str_replace("%%password", urlencode($password), $url);
                         try {
                             $ok = trim(@file_get_contents($url));
                             if (strtolower($ok) === "ok") {
-                                $uid = $users->addUser($login, $login);
+                                $uid = $users->addUser($login, $login, $login);
                                 if ($uid) {
                                     $users->setPassword($uid, $password);
                                     if (@$this->config["backends"]["authentication"]["default_group"]) {

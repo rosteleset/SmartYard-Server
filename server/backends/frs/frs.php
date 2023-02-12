@@ -46,6 +46,11 @@
             const M_MOTION_DETECTION = "motionDetection";
             const M_REGISTER_FACE = "registerFace";
             const M_REMOVE_FACES = "removeFaces";
+            const M_LIST_STREAMS = "listStreams";
+            const M_LIST_ALL_FACES = "listAllFaces";
+            const M_DELETE_FACES = "deleteFaces";
+            const M_REMOVE_STREAM = "removeStream";
+            const M_ADD_FACES = "addFaces";
 
             //response codes
             const R_CODE_OK = 200;
@@ -55,6 +60,10 @@
             const CAMERA_URL = "url";
             const CAMERA_CREDENTIALS = "credentials";
             const CAMERA_FRS = "frs";
+            const FRS_BASE_URL = "url";
+            const FRS_STREAMS = "streams";
+            const FRS_ALL_FACES = "allFaces";
+            const FRS_FACES = "faces";
 
             //other
             const PDO_SINGLIFY = "singlify";
@@ -87,7 +96,7 @@
              * @param array $params array of setup parameters for video stream
              * @return object
              */
-            abstract public function addStream($cam, $faces = [], $params = []);
+            abstract public function addStream($cam, array $faces = [], array $params = []);
 
             /**
              * Call API method bestQuality by date
@@ -125,7 +134,7 @@
              * @param array $faces array of face identifiers (face_id)
              * @return object
              */
-            abstract public function removeFaces($cam, $faces);
+            abstract public function removeFaces($cam, array $faces);
 
             /**
              * Motion Detection
@@ -194,5 +203,12 @@
              * @return array
              */
             abstract public function listFaces($flat_id, $subscriber_id, $is_owner = false);
+
+            /**
+             * Get registered face_id by event's UUID
+             * @param int $event_uuid
+             * @return false|int
+             */
+            abstract public function getRegisteredFaceId($event_uuid);
         }
     }

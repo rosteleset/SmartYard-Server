@@ -10,7 +10,7 @@
     "tokenSms": "Токен для отправки SMS",
     "tokenFlashCall": "Токен для входящих звонков",
     "deleteProvider": "Удалить провайдера?",
-    "confirmDeleteProvider": "Удалить провайдера #%s?",
+    "confirmDeleteProvider": "Удалить провайдера \"#%s\"?",
     "providerWasAdded": "Провайдер добавлен",
     "providerWasChanged": "Провайдер изменен",
     "providerWasDeleted": "Провайдер удален",

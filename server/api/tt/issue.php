@@ -21,7 +21,7 @@
                     return API::ERROR(500);
                 }
 
-                $issue = $tt->getIssues([ "issue_id" => $params["_id"] ]);
+                $issue = $tt->getIssues(explode("-", $params["_id"])[0], [ "issueId" => $params["_id"] ]);
 
                 if (!$issue || !$issue["issues"] || !$issue["issues"][0]) {
                     return API::ERROR(404);
@@ -34,7 +34,6 @@
                 }
 
                 $issue = $workflow->viewIssue($issue["issues"][0]);
-                $issue["available_actions"] = $workflow->availableActions($issue);
 
                 return api::ANSWER($issue, "issue");
             }

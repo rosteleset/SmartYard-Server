@@ -8,20 +8,22 @@
     {
 
         use backends\frs\frs;
+        use PDO;
 
         /**
          * clickhouse archive class
          */
         class clickhouse extends plog
         {
-            private $clickhouse;
+            private \clickhouse $clickhouse;
             private $time_shift;  // сдвиг по времени в секундах от текущего для обработки событий
             private $max_call_length;  // максимальная длительность звонка в секундах
             private $ttl_temp_record;  // значение, которое прибавляется к текущему времени для получения expire
             private $ttl_camshot_days;  // время жизни кадра события
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
+            private $cron_process_events_scheduler;
 
-            function __construct($config, $db, $redis)
+            public function __construct($config, $db, $redis)
             {
                 parent::__construct($config, $db, $redis);
 
@@ -40,6 +42,7 @@
                 $this->ttl_temp_record = $config['backends']['plog']['ttl_temp_record'];
                 $this->ttl_camshot_days = $config['backends']['plog']['ttl_camshot_days'];
                 $this->back_time_shift_video_shot = $config['backends']['plog']['back_time_shift_video_shot'];
+                $this->cron_process_events_scheduler = $config['backends']['plog']['cron_process_events_scheduler'];
             }
 
             /**
@@ -47,15 +50,15 @@
              */
             public function cron($part)
             {
-                echo("__cron\n");
-                $this->processEvents();
-
-                if ($part == '5min') {
+                if ($part === $this->cron_process_events_scheduler) {
+                    echo("__process events\n");
+                    $this->processEvents();
                     $this->db->modify("delete from plog_door_open where expire < " . time());
                     $this->db->modify("delete from plog_call_done where expire < " . time());
-                } else {
                     return true;
                 }
+
+                return false;
             }
 
             //получение кадра события на указанную дату+время и ip устройства или от FRS
@@ -418,7 +421,7 @@
                     order by
                         date
                 ";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $event_data = [];
                     $event_id = false;
@@ -525,7 +528,7 @@
                     order by
                         date
                 ";
-                $result = $this->db->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $ip = $row['ip'];
                     $domophone_id = $this->getDomophoneId($row["ip"]);
@@ -570,11 +573,11 @@
                             date desc
                     ";
                     $result = $this->clickhouse->select($query);
-                    foreach ($result as $row) {
-                        $msg = $row['msg'];
-                        $unit = $row['unit'];
+                    foreach ($result as $item) {
+                        $msg = $item['msg'];
+                        $unit = $item['unit'];
 
-                        //обработка звонка
+                        // Call processing for Beward panel
                         if ($unit == 'beward') {
                             $patterns_call = [
                                 //pattern         start  talk  open   call_from_panel
@@ -664,7 +667,7 @@
                                         break;
                                     }
 
-                                    $event_data[self::COLUMN_DATE] = $row['date'];
+                                    $event_data[self::COLUMN_DATE] = $item['date'];
 
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
@@ -696,20 +699,22 @@
                         if ($unit == "is") {
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
-                                ["Calling sip:", true, false, false, 1],
-                                ["Baresip event CALL_INCOMING", true, false, false, -1],
-                                ["Incoming call to sip:", true, false, false, -1],
-                                ["CMS handset is not connected for apartment ", true, false, false, 0],
-                                ["CMS handset call started for apartment ", true, false, false, 0],
-                                ["CMS handset talk started for apartment ", false, true, false, 0],
-                                ["Baresip event CALL_RINGING", true, false, false, 1],
-                                ["Baresip event CALL_ESTABLISHED", false, true, false, 0],
-                                ["Opening door by CMS handset for apartment ", false, false, true, 0],
-                                ["Open from handset!", false, false, true, 0],
-                                ["Open main door by DTMF", false, false, true, 1],
-                                ["Baresip event CALL_CLOSED", false, false, false, 0],
-                                ["SIP call done for apartment ", false, false, false, 1],
-                                ["All calls are done for apartment ", false, false, false, 1],
+                                ["/Calling sip:\d+@.* through account/", true, false, false, 1],
+                                ["/CMS handset is not connected for apartment \d+, aborting CMS call/", true, false, false, 0],
+                                ["/CMS handset call started for apartment \d+/", true, false, false, 0],
+                                ["/CMS handset talk started for apartment \d+/", false, true, false, 0],
+                                ["/Baresip event CALL_RINGING/", true, false, false, 1],
+                                ["/Baresip event CALL_ESTABLISHED/", false, true, false, 0],
+                                ["/Opening door by CMS handset for apartment \d+/", false, false, true, 0],
+                                ["/Open from handset!/", false, false, true, 0],
+                                ["/Open main door by DTMF/", false, false, true, 1],
+                                ["/CMS handset call done for apartment \d+, handset is down/", false, false, false, 0],
+                                ["/SIP call done for apartment \d+, handset is down/", false, false, false, 1],
+                                ["/All calls are done for apartment \d+/", false, false, false, 1],
+
+                                // Incoming call patterns
+                                ["/Baresip event CALL_INCOMING/", false, false, false, -1],
+                                ["/Incoming call to sip:\d+@.* \(\d+\)/", false, false, false, -1],
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
@@ -718,7 +723,7 @@
                                 unset($now_call_id);
                                 unset($now_sip_call_id);
 
-                                if (strpos($msg, $pattern) !== false) {
+                                if (preg_match($pattern, $msg)) {
                                     // Check if call started from this panel
                                     if ($now_call_from_panel > 0) {
                                         $call_from_panel = 1;
@@ -727,31 +732,18 @@
                                         break;
                                     }
 
-                                    // Get flat number
-                                    if (strpos($pattern, "apartment") !== false) {
-                                        $p1 = strpos($msg, $pattern);
-                                        $p2 = strpos($msg, ".", $p1 + strlen($pattern));
-                                        if (!$p2)
-                                            $p2 = strpos($msg, ",", $p1 + strlen($pattern));
-                                        if (!$p2)
-                                            $p2 = strlen($msg);
-                                        $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern)));
-                                    }
+                                    // Get message parts
+                                    $msg_parts = array_map('trim', preg_split("/[,@:]|\s(?=\d)/", $msg));
 
                                     // Get flat number and prefix
-                                    if (strpos($pattern, "Calling sip:") !== false) {
-                                        $p1 = strpos($msg, $pattern);
-                                        $p2 = strpos($msg, "@", $p1 + strlen($pattern));
-                                        $sip = substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern));
-                                        if (strlen($sip) < 5) {
-                                            // Call from panel with CMS, slave panel or gate panel without prefix
-                                            $p1 = strpos($msg, $pattern);
-                                            $p2 = strpos($msg, "@", $p1 + strlen($pattern));
-                                            $now_flat_number = intval(substr($msg, $p1 + strlen($pattern), $p2 - $p1 - strlen($pattern)));
-                                        } else {
-                                            // Call from gate panel with prefix
-                                            $prefix = intval(substr($sip, 0, 4));
-                                            $now_flat_number = intval(substr($sip, 4));
+                                    if (isset($msg_parts[1])) {
+                                        $number = $msg_parts[1];
+
+                                        if (strlen($number) < 5) { // Apartment - ordinary panel
+                                            $now_flat_number = $number;
+                                        } else { // Gate panel - prefix and apartment
+                                            $prefix = substr($number, 0, 4);
+                                            $now_flat_number = substr($number, 4);
                                         }
                                     }
 
@@ -764,7 +756,7 @@
                                         break;
                                     }
 
-                                    $event_data[self::COLUMN_DATE] = $row["date"];
+                                    $event_data[self::COLUMN_DATE] = $item["date"];
 
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
@@ -794,17 +786,6 @@
 
                         // Call processing for QTECH panel
                         if ($unit == "qtech") {
-
-                            // "Prefix:33,Replace Number:1000000004, Status:0 - 1"
-                            // "Prefix:100004,Replace Number:000133, Status:0 - 1"
-                            // "Prefix:1,Analog Number:01, Status:1 - 1"
-                            // "1000000004:Call Established, Number:1000000004 - 1"
-                            // "000133:Call Established, Number:000133 - 1"
-                            // "01:Call Established, Number:01 - 0"
-                            // "01:Open Door By Intercom,Apartment No 01 - 1"
-                            // "1:100004:Open Door By DTMF, DTMF Symbol 1 ,Apartment No 100004 - 1"
-                            // "1:33:Open Door By DTMF, DTMF Symbol 1 ,Apartment No 33 - 1"
-
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
                                 ["/Prefix:\d+,Replace Number:\d+, Status:\d+/", true, false, false, 1],
@@ -822,26 +803,27 @@
 
                                 if (preg_match($pattern, $msg) !== 0) {
                                     // Check if call started from this panel
-                                    $call_from_panel = $now_call_from_panel; // TODO: not good
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    }
 
                                     // Get message parts separated by ":" and ","
                                     $msg_parts = array_map("trim", preg_split("/[:,]/", $msg));
-                                    print_r($msg_parts); // TODO: delete later
 
                                     // Get flat number, flat ID and prefix from call started events
                                     if ($msg_parts[0] === "Prefix") {
-                                        $number = (int) $msg_parts[1]; // Caller (apartment or panel SIP number)
+                                        $number = $msg_parts[1]; // Caller (apartment or panel SIP number)
                                         $replacing_number = $msg_parts[3]; // Call destination
 
                                         if ($number <= 9999) { // Apartment - ordinary panel
                                             $now_flat_number = $number;
 
                                             if ($msg_parts[2] === "Replace Number") { // Get flat ID
-                                                $now_flat_id = (int) substr($replacing_number, 1);
+                                                $now_flat_id = substr($replacing_number, 1);
                                             }
                                         } else { // Panel SIP number - gate panel
-                                            $prefix = (int) substr($replacing_number, 0, 4);
-                                            $now_flat_number = (int) substr($replacing_number, 4);
+                                            $prefix = substr($replacing_number, 0, 4);
+                                            $now_flat_number = substr($replacing_number, 4);
                                         }
                                     }
 
@@ -851,23 +833,23 @@
                                         $number_len = strlen($number);
 
                                         if ($number_len === 10) { // Get flat ID
-                                            $now_flat_id = (int) substr($number, 1);
-                                        } else if ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
-                                            $prefix = (int) substr($number, 0, 4);
-                                            $now_flat_number = (int) substr($number, 4);
+                                            $now_flat_id = substr($number, 1);
+                                        } elseif ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
+                                            $prefix = substr($number, 0, 4);
+                                            $now_flat_number = substr($number, 4);
                                         } else { // Get flat number
-                                            $now_flat_number = (int) $number;
+                                            $now_flat_number = $number;
                                         }
                                     }
 
                                     // Get flat number from CMS door open event
                                     if ($msg_parts[1] === "Open Door By Intercom") {
-                                        $now_flat_number = (int) $msg_parts[0];
+                                        $now_flat_number = $msg_parts[0];
                                     }
 
                                     // Get flat number from DTMF door open event
                                     if ($msg_parts[2] === "Open Door By DTMF") {
-                                        $number = (int) $msg_parts[1];
+                                        $number = $msg_parts[1];
 
                                         if ($number <= 9999) { // Apartment - ordinary panel
                                             $now_flat_number = $number;
@@ -883,7 +865,7 @@
                                         break;
                                     }
 
-                                    $event_data[self::COLUMN_DATE] = $row["date"];
+                                    $event_data[self::COLUMN_DATE] = $item["date"];
 
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;

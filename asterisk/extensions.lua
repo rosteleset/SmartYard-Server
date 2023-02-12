@@ -74,11 +74,6 @@ function log_debug(v)
     --dm("log", m)
 end
 
-function round(num, numDecimalPlaces)
-    local mult = 10^(numDecimalPlaces or 0)
-    return math.floor(num * mult + 0.5) / mult
-end
-
 function has_value(tab, val)
     for index, value in ipairs(tab) do
         if value == val then
@@ -189,46 +184,43 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
 
     for i, s in ipairs(subscribers) do
         log_debug(s)
-        if s.platform == cjson.null or s.type == cjson.null or tonumber(s.voipEnabled) ~= 1 then
-            goto continue
+        if s.platform ~= cjson.null and s.type ~= cjson.null and tonumber(s.voipEnabled) == 1 then
+            redis:incr("autoextension")
+            extension = tonumber(redis:get("autoextension"))
+            if extension > 999999 then
+                redis:set("autoextension", "1")
+            end
+            extension = extension + 2000000000
+            local token = ""
+            if tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2 then
+                token = s.voipToken
+            else
+                token = s.pushToken
+            end
+            if token ~= cjson.null and token ~= nil and token ~= "" then
+                redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
+                redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
+                if tonumber(s.tokenType) ~= 1 and tonumber(s.tokenType) ~= 2 then
+                    -- not for apple's voips
+                    redis:setex("mobile_token_" .. extension, 3 * 60, token)
+                end
+                -- ios over fcm (with repeat)
+                if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
+                    redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
+                        id = extension,
+                        token = token,
+                        hash = hash,
+                        platform = s.platform,
+                        flatId = flatId,
+                        dtmf = dtmf,
+                        mobile = s.mobile,
+                        flatNumber = flatNumber,
+                    }))
+                end
+                push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
+                res = res .. "&Local/" .. extension
+            end
         end
-        redis:incr("autoextension")
-        extension = tonumber(redis:get("autoextension"))
-        if extension > 999999 then
-            redis:set("autoextension", "1")
-        end
-        extension = extension + 2000000000
-        local token = ""
-        if tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2 then
-            token = s.voipToken
-        else
-            token = s.pushToken
-        end
-        if token == cjson.null or token == nil or token == "" then
-            goto continue
-        end
-        redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
-        redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
-        if tonumber(s.tokenType) ~= 1 and tonumber(s.tokenType) ~= 2 then
-            -- not for apple's voips
-            redis:setex("mobile_token_" .. extension, 3 * 60, token)
-        end
-        -- ios over fcm (with repeat)
-        if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
-            redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
-                id = extension,
-                token = token,
-                hash = hash,
-                platform = s.platform,
-                flatId = flatId,
-                dtmf = dtmf,
-                mobile = s.mobile,
-                flatNumber = flatNumber,
-            }))
-        end
-        push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber)
-        res = res .. "&Local/" .. extension
-        ::continue::
     end
 
     if res ~= "" then
@@ -455,7 +447,7 @@ extensions = {
                 local entrance = dm("entrance", domophoneId)
                 log_debug("entrance: " .. inspect(entrance))
 
-                channel.CALLERID("name"):set(entrance.callerId .. ", " .. math.tointeger(flatNumber))
+                channel.CALLERID("name"):set(entrance.callerId .. ", " .. tonumber(flatNumber))
 
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
                     local dest = ""

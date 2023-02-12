@@ -10,7 +10,7 @@
     },
 
     loadUsers: function (callback) {
-        GET("accounts", "users").
+        return GET("accounts", "users").
         done(users => {
             modules.users.meta = users.users;
         }).
@@ -142,7 +142,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: (uid.toString() !== "0")?i18n("users.delete"):false,
+                delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString())?i18n("users.delete"):false,
                 fields: [
                     {
                         id: "uid",
