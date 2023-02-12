@@ -4,7 +4,7 @@ CREATE TABLE tt_projects
     project_id integer primary key autoincrement,
     acronym text not null,
     project text not null,
-    max_file_size integer,
+    max_file_size integer default 16777216,
     search_subject integer default 1,
     search_description integer default 1,
     search_comments integer default 1

@@ -4,7 +4,7 @@ CREATE TABLE tt_projects
     project_id serial primary key,
     acronym character varying not null,
     project character varying not null,
-    max_file_size integer,
+    max_file_size integer default 16777216,
     search_subject integer default 1,
     search_description integer default 1,
     search_comments integer default 1
