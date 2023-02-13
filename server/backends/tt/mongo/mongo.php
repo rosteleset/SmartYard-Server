@@ -44,90 +44,6 @@
             }
 
             /**
-             * @param $issue
-             * @return mixed
-             */
-            public function checkIssue(&$issue) {
-                $acr = explode("-", $issue["issueId"])[0];
-
-                $customFields = $this->getCustomFields();
-                $validFields = [];
-
-//                $users = loadBackend("users");
-
-                $project = false;
-                $projects = $this->getProjects();
-                foreach ($projects as $p) {
-                    if ($p["acronym"] == $acr) {
-                        $project = $p;
-                        break;
-                    }
-                }
-
-                $customFieldsByName = [];
-
-                foreach ($project["customFields"] as $cfId) {
-                    foreach ($customFields as $cf) {
-                        if ($cf["customFieldId"] == $cfId) {
-                            $validFields[] = "_cf_" . $cf["field"];
-                            $customFieldsByName["_cf_" . $cf["field"]] = $cf;
-                            break;
-                        }
-                    }
-                }
-
-                $validFields[] = "issueId";
-                $validFields[] = "project";
-                $validFields[] = "workflow";
-                $validFields[] = "subject";
-                $validFields[] = "description";
-                $validFields[] = "resolution";
-                $validFields[] = "status";
-                $validFields[] = "tags";
-                $validFields[] = "assigned";
-                $validFields[] = "watchers";
-                $validFields[] = "attachments";
-                $validFields[] = "comments";
-                $validFields[] = "journal";
-
-                $validTags = [];
-
-                foreach ($project["tags"] as $t) {
-                    $validTags[] = $t["tag"];
-                }
-
-                foreach ($issue as $field => $dumb) {
-                    if (!in_array($field, $validFields)) {
-                        unset($issue[$field]);
-                    } else {
-                        if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
-                            $issue[$field] = array_values($dumb);
-                        }
-                    }
-                }
-
-                foreach ($issue["tags"] as $indx => $tag) {
-                    if (!in_array($tag, $validTags)) {
-                        unset($issue["tags"][$indx]);
-                    }
-                }
-
-                if ($issue["assigned"]) {
-                    $issue["assigned"] = array_values($issue["assigned"]);
-                }
-
-                if ($issue["watchers"]) {
-                    $issue["watchers"] = array_values($issue["watchers"]);
-                }
-
-                if ($issue["tags"]) {
-                    $issue["tags"] = array_values($issue["tags"]);
-                }
-
-                return $issue;
-            }
-
-            /**
              * @inheritDoc
              */
             protected function createIssue($issue)
@@ -205,17 +121,23 @@
                     unset($issue["commentPrivate"]);
                 }
 
-                if ($comment) {
-                    return $this->addComment($issue, $comment, $commentPrivate) && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
-                } else {
-                    return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $this->checkIssue($issue) ]);
+                if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate)) {
+                    return false;
                 }
+
+                $issue = $this->checkIssue($issue);
+
+                if ($issue) {
+                    return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                }
+
+                return false;
             }
 
             /**
              * @inheritDoc
              */
-            public function deleteIssue($issue)
+            public function deleteIssue($issueId)
             {
                 $db = $this->dbName;
 
@@ -224,7 +146,7 @@
                 if ($files) {
                     $issueFiles = $files->searchFiles([
                         "metadata.issue" => true,
-                        "metadata.issueId" => $issue,
+                        "metadata.issueId" => $issueId,
                     ]);
 
                     foreach ($issueFiles as $file) {
@@ -232,10 +154,10 @@
                     }
                 }
 
-                $acr = explode("-", $issue)[0];
+                $acr = explode("-", $issueId)[0];
 
                 $this->mongo->$db->$acr->deleteMany([
-                    "issueId" => $issue,
+                    "issueId" => $issueId,
                 ]);
             }
 
@@ -319,13 +241,13 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issue, $comment, $private)
+            public function addComment($issueId, $comment, $private)
             {
                 $db = $this->dbName;
-                $project = explode("-", $issue["issueId"])[0];
+                $project = explode("-", $issueId)[0];
 
-                return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => [ "updated" => time() ] ]) &&
-                    $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$push" => [ "comments" => [
+                return $this->mongo->$db->$project->updateOne([ "issueId" => $issueId ], [ "\$set" => [ "updated" => time() ] ]) &&
+                    $this->mongo->$db->$project->updateOne([ "issueId" => $issueId ], [ "\$push" => [ "comments" => [
                         "body" => trim($comment),
                         "created" => time(),
                         "author" => $this->login,
@@ -336,7 +258,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyComment($issue, $comment)
+            public function modifyComment($issueId, $comment)
             {
                 // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$set' => [ "comments.2.body" => "abrakadabra#2" ] ])
             }
@@ -344,7 +266,7 @@
             /**
              * @inheritDoc
              */
-            public function deleteComment($issue, $comment)
+            public function deleteComment($issueId, $commentIndex)
             {
                 // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$unset' => [ "comments.1" => true ] ])
                 // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$pull' => [ "comments" => null ] ])
@@ -353,17 +275,89 @@
             /**
              * @inheritDoc
              */
-            public function addAttachment($issue, $file)
+            public function addAttachments($issueId, $attachments)
             {
-                // TODO: Implement addAttachment() method.
+                $acr = explode("-", $issueId)[0];
+
+                $projects = $this->getProjects($acr);
+
+                if (!$projects || !$projects[0]) {
+                    return false;
+                }
+
+                $project = $projects[0];
+
+                $issue = $this->getIssue($issueId);
+
+                if (!$issue) {
+                    return false;
+                }
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $files = loadBackend("files");
+
+                foreach ($attachments as $attachment) {
+                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $issueId, "filename" => $attachment["name"] ]);
+                    if (count($list)) {
+                        return false;
+                    }
+                    if (strlen(base64_decode($attachment["body"])) > $project["maxFileSize"]) {
+                        return false;
+                    }
+                }
+
+                foreach ($attachments as $attachment) {
+                    $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                        "date" => round($attachment["date"] / 1000),
+                        "added" => time(),
+                        "type" => $attachment["type"],
+                        "issue" => true,
+                        "project" => $acr,
+                        "issueId" => $issueId,
+                        "attachman" => $this->login,
+                    ]);
+                }
+
+                return true;
             }
 
             /**
              * @inheritDoc
              */
-            public function deleteAttachment($issue, $file)
+            public function deleteAttachment($issueId, $filename)
             {
-                // TODO: Implement deleteAttachment() method.
+                $project = explode("-", $issueId)[0];
+
+                $issue = $this->getIssues($project, [ "issueId" => $issueId ], [ "issueId" ]);
+
+                if (!$issue || !$issue["issues"] || !$issue["issues"][0]) {
+                    return false;
+                }
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$project] || $roles[$project] < 20) {
+                    return false;
+                }
+
+                $files = loadBackend("files");
+
+                if ($roles[$project] >= 70) {
+                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $issueId, "filename" => $filename ]);
+                } else {
+                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.attachman" => $this->login, "metadata.issueId" => $issueId, "filename" => $filename ]);
+                }
+
+                if ($list && $list[0] && $list[0]["id"]) {
+                    return $files->deleteFile($list[0]["id"]);
+                }
+
+                return false;
             }
 
             /**

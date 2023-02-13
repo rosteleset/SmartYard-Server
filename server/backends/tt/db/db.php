@@ -33,10 +33,16 @@
             /**
              * @inheritDoc
              */
-            public function getProjects()
+            public function getProjects($acronym = false)
             {
                 try {
-                    $projects = $this->db->query("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects order by acronym", \PDO::FETCH_ASSOC)->fetchAll();
+                    if ($acronym) {
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects where acronym = :acronym", [
+                            "acronym" => $acronym,
+                        ]);
+                    } else {
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects order by acronym");
+                    }
                     $_projects = [];
 
                     foreach ($projects as $project) {

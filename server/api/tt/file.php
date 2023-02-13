@@ -111,53 +111,9 @@
                     return API::ERROR(500);
                 }
 
-                $acr = explode("-", $params["issueId"])[0];
+                $success = $tt->addAttachments($params["issueId"], $params["attachments"]);
 
-                $projects = $tt->getProjects();
-                $project = false;
-                foreach ($projects as $p) {
-                    if ($p["acronym"] == $acr) {
-                        $project = $p;
-                    }
-                }
-
-                $issue = $tt->getIssues($acr, [ "issueId" => $params["issueId"] ], [ "issueId" ]);
-
-                if (!$issue || !$issue["issues"] || !$issue["issues"][0] || !$project) {
-                    return API::ERROR("notFound");
-                }
-
-                $roles = $tt->myRoles();
-
-                if (!@$roles[$acr] || $roles[$acr] < 20) {
-                    return API::ERROR("forbidden");
-                }
-
-                $files = loadBackend("files");
-
-                foreach ($params["attachments"] as $attachment) {
-                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $params["issueId"], "filename" => $attachment["name"] ]);
-                    if (count($list)) {
-                        return API::ERROR("alreadyExists");
-                    }
-                    if (strlen(base64_decode($attachment["body"])) > $project["maxFileSize"]) {
-                        return API::ERROR("exceededSize");
-                    }
-                }
-
-                foreach ($params["attachments"] as $attachment) {
-                    $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                        "date" => round($attachment["date"] / 1000),
-                        "added" => time(),
-                        "type" => $attachment["type"],
-                        "issue" => true,
-                        "project" => $acr,
-                        "issueId" => $params["issueId"],
-                        "attachman" => $params["_login"],
-                    ]);
-                }
-
-                return api::ANSWER();
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params)
@@ -168,36 +124,9 @@
                     return API::ERROR(500);
                 }
 
-                $project = explode("-", $params["issueId"])[0];
-                $filename = $params["filename"];
+                $success = $tt->deleteAttachment($params["issueId"], $params["filename"]);
 
-                $issue = $tt->getIssues($project, [ "issueId" => $params["issueId"] ], [ "issueId" ]);
-
-                if (!$issue || !$issue["issues"] || !$issue["issues"][0]) {
-                    return API::ERROR("notFound");
-                }
-
-                $roles = $tt->myRoles();
-
-                if (!@$roles[$project] || $roles[$project] < 20) {
-                    return API::ERROR("forbidden");
-                }
-
-                $files = loadBackend("files");
-
-                if ($roles[$project] >= 70) {
-                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $params["issueId"], "filename" => $filename ]);
-                } else {
-                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.attachman" => $params["_login"], "metadata.issueId" => $params["issueId"], "filename" => $filename ]);
-                }
-
-                if ($list && $list[0] && $list[0]["id"]) {
-                    $files->deleteFile($list[0]["id"]);
-
-                    return api::ANSWER();
-                }
-
-                return api::ERROR("notFound");
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {

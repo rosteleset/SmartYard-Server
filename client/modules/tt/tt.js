@@ -827,6 +827,7 @@
                 borderless: true,
                 topApply: true,
                 size: "lg",
+                apply: i18n("tt.addFile"),
                 fields: [
                     {
                         id: "issueId",
