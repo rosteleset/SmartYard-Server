@@ -765,7 +765,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-//                size: "lg",
+                size: "lg",
                 fields: [
                     {
                         id: "issueId",

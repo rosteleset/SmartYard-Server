@@ -24,7 +24,7 @@ function uploadForm(mimeTypes) {
             </div>
             <div class="card-body table-responsive p-0">
                 <input type="file" id="fileInput" style="display: none" accept="${mimeTypes}"/>
-                <table class="table tform-borderless" style="width: 100%;">
+                <table class="table tform-borderless mt-2 mb-3" style="width: 100%;">
                     <tbody>
                         <tr style="display: none">
                             <td id="fileIcon">&nbsp;</td>
