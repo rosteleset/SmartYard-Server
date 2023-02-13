@@ -226,7 +226,8 @@
             /**
              * @inheritDoc
              */
-            public function cleanup() {
+            public function cleanup()
+            {
                 $this->dbCleanup();
             }
 
@@ -378,7 +379,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteCustomField($customFieldId) {
+            public function deleteCustomField($customFieldId)
+            {
                 $this->dbDeleteCustomField($customFieldId);
                 $this->redis->set("ttReCreateIndexes", true);
             }
@@ -386,7 +388,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor) {
+            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
+            {
                 $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
                 $this->redis->set("ttReCreateIndexes", true);
             }
