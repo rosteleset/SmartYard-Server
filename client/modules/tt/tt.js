@@ -664,10 +664,10 @@
                 h += "<span class='ml-2 text-info text-bold'>";
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
-                h += "<i class='far fa-trash-alt ml-2 hoverable text-danger deleteAttachment'></i>";
+                h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteAttachment'></i>";
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
-                h += "<a href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "' target='_blank'>";
+                h += "<a class='hoverable' href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "' target='_blank'>";
                 h += $.trim(issue.issue.attachments[i].filename);
                 h += "</a>";
                 h += "</div>";
@@ -692,7 +692,7 @@
                 } else {
                     h += "<i class='fas fa-fw fa-eye ml-2 text-success'></i>";
                 }
-                h += `<i class='far fa-fw fa-edit ml-2 hoverable text-primary modifyComment' data-index='${i}'></i>`;
+                h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += nl2br($.trim(issue.issue.comments[i].body));
