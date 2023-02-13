@@ -338,7 +338,7 @@
              */
             public function modifyComment($issue, $comment)
             {
-                // TODO: Implement modifyComment() method.
+                // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$set' => [ "comments.2.body" => "abrakadabra#2" ] ])
             }
 
             /**
@@ -346,7 +346,8 @@
              */
             public function deleteComment($issue, $comment)
             {
-                // TODO: Implement deleteComment() method.
+                // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$unset' => [ "comments.1" => true ] ])
+                // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$pull' => [ "comments" => null ] ])
             }
 
             /**

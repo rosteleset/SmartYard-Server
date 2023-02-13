@@ -14,10 +14,6 @@
 
         class comment extends api {
 
-            public static function GET($params) {
-                return api::ANSWER();
-            }
-
             public static function POST($params)
             {
                 $tt = loadBackend("tt");
@@ -71,7 +67,6 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET" => "#same(tt,issue,GET)",
                         "POST" => "#same(tt,issue,POST)",
                         "PUT" => "#same(tt,issue,PUT)",
                         "DELETE" => "#same(tt,issue,DELETE)",
