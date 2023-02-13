@@ -562,6 +562,9 @@
                         h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
                     }
                     t++;
+                } else
+                if (issue.actions[i] == "-") {
+                    t++;
                 } else {
                     la = issue.actions[i];
                 }
