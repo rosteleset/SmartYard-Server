@@ -24,7 +24,6 @@ end
 -- saAssignToMe - set assigned to myself
 -- saWatch      - add myself to watchers
 -- saDelete     - delete issue
--- saEdit       - edit issue
 -- saLink       - add link to another issue
 -- saSubTask    - create subIssue
 

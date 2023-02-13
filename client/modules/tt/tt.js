@@ -404,6 +404,7 @@
                     readonly: true,
                     title: i18n("tt.issue"),
                     value: issue.issue.issueId,
+                    hidden: true,
                 },
             ];
 
