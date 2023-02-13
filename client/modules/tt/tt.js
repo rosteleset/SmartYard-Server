@@ -795,15 +795,27 @@
                 ],
                 delete: i18n("tt.deleteComment"),
                 callback: function (result) {
-                    loadingStart();
-                    POST("tt", "comment", false, result).
-                    fail(FAIL).
-                    done(() => {
-                        modules.tt.route({
-                            "issue": issue.issue.issueId,
-                        });
-                    }).
-                    always(loadingDone);
+                    if (result.delete) {
+                        loadingStart();
+                        DELETE("tt", "comment", false, result).
+                        fail(FAIL).
+                        done(() => {
+                            modules.tt.route({
+                                "issue": issue.issue.issueId,
+                            });
+                        }).
+                        always(loadingDone);
+                    } else {
+                        loadingStart();
+                        PUT("tt", "comment", false, result).
+                        fail(FAIL).
+                        done(() => {
+                            modules.tt.route({
+                                "issue": issue.issue.issueId,
+                            });
+                        }).
+                        always(loadingDone);
+                    }
                 },
             }).show();
         });
