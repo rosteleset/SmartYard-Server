@@ -650,16 +650,18 @@
             members[modules.users.meta[i].login] = modules.users.meta[i].realName?modules.users.meta[i].realName:modules.users.meta[i].login;
         }
 
+        let c = 0;
         if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.attachments) {
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
-                h += "<span class='text-info text-bold'>";
-                h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
-                h += "</span>, ";
+                h += "#" + (c + 1) + " ";
                 h += ttDate(issue.issue.attachments[i].metadata.added);
+                h += "<span class='ml-2 text-info text-bold'>";
+                h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
+                h += "</span>";
                 h += "<i class='far fa-trash-alt ml-2 hoverable text-primary deleteAttachment'></i>";
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
@@ -669,33 +671,34 @@
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
+                c++;
             }
         }
 
-        let c = 0;
+        c = 0;
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.comments) {
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
+                h += "#" + (c + 1) + " ";
                 h += ttDate(issue.issue.comments[i].created);
                 h += "<span class='ml-2 text-info text-bold'>";
                 h += members[issue.issue.comments[i].author]?members[issue.issue.comments[i].author]:issue.issue.comments[i].author;
                 h += "</span>";
                 if (issue.issue.comments[i].private) {
-                    h += "<span class='ml-2 text-warning text-bold'>";
-                    h += i18n("tt.commentPrivate");
-                    h += "</span>";
+                    h += "<i class='fas fa-fw fa-eye-slash ml-2 text-warning'></i>";
                 }
-                h += `<i class='far fa-edit ml-2 hoverable text-primary modifyComment' data-index='${c}'></i>`;
-                h += `<i class='far fa-trash-alt ml-2 hoverable text-primary deleteComment' data-index='${c}'></i>`;
+                h += `<i class='far fa-fw fa-edit ml-2 hoverable text-primary modifyComment' data-index='${c}'></i>`;
+                h += `<i class='far fa-fw fa-trash-alt ml-2 hoverable text-primary deleteComment' data-index='${c}'></i>`;
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += nl2br($.trim(issue.issue.comments[i].body));
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
+                c++;
             }
         }
         h += "</table>";
@@ -752,11 +755,13 @@
         });
 
         $(".modifyComment").off("click").on("click", function () {
-
+            let i = $(this).attr("data-index");
+            console.log("modify " + i);
         });
 
         $(".deleteComment").off("click").on("click", function () {
-
+            let i = $(this).attr("data-index");
+            console.log("delete " + i);
         });
 
         $(".ttSaAddFile").off("click").on("click", () => {
