@@ -671,6 +671,8 @@
                 h += "</tr>";
             }
         }
+
+        let c = 0;
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.comments) {
@@ -686,8 +688,8 @@
                     h += i18n("tt.commentPrivate");
                     h += "</span>";
                 }
-                h += "<i class='far fa-edit ml-2 hoverable text-primary'></i>";
-                h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
+                h += `<i class='far fa-edit ml-2 hoverable text-primary modifyComment' data-index='${c}'></i>`;
+                h += `<i class='far fa-trash-alt ml-2 hoverable text-primary deleteComment' data-index='${c}'></i>`;
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += nl2br($.trim(issue.issue.comments[i].body));
@@ -704,7 +706,57 @@
         });
 
         $(".ttSaAddComment").off("click").on("click", () => {
-            console.log("addComment");
+            cardForm({
+                title: i18n("tt.addComment"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                size: "lg",
+                fields: [
+                    {
+                        id: "issueId",
+                        type: "text",
+                        readonly: true,
+                        value: issue.issue["issueId"],
+                        title: i18n("tt.issue"),
+                        hidden: true,
+                    },
+                    {
+                        id: "comment",
+                        type: "area",
+                        title: i18n("tt.comment"),
+                        placeholder: i18n("tt.comment"),
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    },
+                    {
+                        id: "commentPrivate",
+                        type: "yesno",
+                        title: i18n("tt.commentPrivate"),
+                        value: "1",
+                    },
+                ],
+                callback: function (result) {
+                    loadingStart();
+                    POST("tt", "comment", false, result).
+                    fail(FAIL).
+                    done(() => {
+                        modules.tt.route({
+                            "issue": issue.issue.issueId,
+                        });
+                    }).
+                    always(loadingDone);
+                },
+            }).show();
+        });
+
+        $(".modifyComment").off("click").on("click", function () {
+
+        });
+
+        $(".deleteComment").off("click").on("click", function () {
+
         });
 
         $(".ttSaAddFile").off("click").on("click", () => {

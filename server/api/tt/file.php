@@ -184,7 +184,12 @@
                 }
 
                 $files = loadBackend("files");
-                $list = $files->searchFiles([ "metadata.issue" => true, "metadata.attachman" => $params["_login"], "metadata.issueId" => $params["issueId"], "filename" => $filename ]);
+
+                if ($roles[$project] >= 70) {
+                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $params["issueId"], "filename" => $filename ]);
+                } else {
+                    $list = $files->searchFiles([ "metadata.issue" => true, "metadata.attachman" => $params["_login"], "metadata.issueId" => $params["issueId"], "filename" => $filename ]);
+                }
 
                 if ($list && $list[0] && $list[0]["id"]) {
                     $files->deleteFile($list[0]["id"]);
