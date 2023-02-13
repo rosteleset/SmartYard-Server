@@ -162,7 +162,37 @@
 
             public static function DELETE($params)
             {
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $project = explode("-", $params["issueId"])[0];
+                $filename = $params["filename"];
+
+                $issue = $tt->getIssues($project, [ "issueId" => $params["issueId"] ], [ "issueId" ]);
+
+                if (!$issue || !$issue["issues"] || !$issue["issues"][0]) {
+                    return API::ERROR("notFound");
+                }
+
+                $roles = $tt->myRoles();
+
+                if (!@$roles[$project] || $roles[$project] < 20) {
+                    return API::ERROR("forbidden");
+                }
+
+                $files = loadBackend("files");
+                $list = $files->searchFiles([ "metadata.issue" => true, "metadata.attachman" => $params["_login"], "metadata.issueId" => $params["issueId"], "filename" => $filename ]);
+
+                if ($list && $list[0] && $list[0]["id"]) {
+                    $files->deleteFile($list[0]["id"]);
+
+                    return api::ANSWER();
+                }
+
+                return api::ERROR("notFound");
             }
 
             public static function index() {

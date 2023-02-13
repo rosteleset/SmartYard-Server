@@ -660,11 +660,11 @@
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>, ";
                 h += ttDate(issue.issue.attachments[i].metadata.added);
-                h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
+                h += "<i class='far fa-trash-alt ml-2 hoverable text-primary deleteAttachment'></i>";
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += "<a href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "' target='_blank'>";
-                h += nl2br($.trim(issue.issue.attachments[i].filename));
+                h += $.trim(issue.issue.attachments[i].filename);
                 h += "</a>";
                 h += "</div>";
                 h += "</td>";
@@ -732,17 +732,37 @@
                     },
                 ],
                 callback: function (result) {
-                    loadingStart();
-                    POST("tt", "file", false, result).
-                    fail(FAIL).
-                    done(() => {
-                        modules.tt.route({
-                            "issue": issue.issue.issueId,
-                        });
-                    }).
-                    always(loadingDone);
+                    if (result.attachments.length) {
+                        loadingStart();
+                        POST("tt", "file", false, result).
+                        fail(FAIL).
+                        done(() => {
+                            modules.tt.route({
+                                "issue": issue.issue.issueId,
+                            });
+                        }).
+                        always(loadingDone);
+                    }
                 },
             }).show();
+        });
+
+        $(".deleteAttachment").off("click").on("click", function () {
+            let file = $(this).parent().next().text();
+            mConfirm(i18n("tt.deleteFile", file), i18n("confirm"), i18n("delete"), () => {
+                loadingStart();
+                DELETE("tt", "file", false, {
+                    issueId: issue.issue.issueId,
+                    filename: file,
+                }).
+                fail(FAIL).
+                done(() => {
+                    modules.tt.route({
+                        "issue": issue.issue.issueId,
+                    });
+                }).
+                always(loadingDone);
+            });
         });
 
         $(".ttSaAssignToMe").off("click").on("click", () => {
