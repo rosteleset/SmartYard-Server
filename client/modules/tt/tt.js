@@ -708,7 +708,41 @@
         });
 
         $(".ttSaAddFile").off("click").on("click", () => {
-            console.log("addFile");
+            cardForm({
+                title: i18n("tt.addFile"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+//                size: "lg",
+                fields: [
+                    {
+                        id: "issueId",
+                        type: "text",
+                        readonly: true,
+                        value: issue.issue["issueId"],
+                        title: i18n("tt.issue"),
+                        hidden: true,
+                    },
+                    {
+                        id: "attachments",
+                        type: "files",
+                        title: i18n("tt.attachments"),
+                        maxSize: project.maxFileSize,
+                        autoload: true,
+                    },
+                ],
+                callback: function (result) {
+                    loadingStart();
+                    POST("tt", "file", false, result).
+                    fail(FAIL).
+                    done(() => {
+                        modules.tt.route({
+                            "issue": issue.issue.issueId,
+                        });
+                    }).
+                    always(loadingDone);
+                },
+            }).show();
         });
 
         $(".ttSaAssignToMe").off("click").on("click", () => {
@@ -721,10 +755,6 @@
 
         $(".ttSaDelete").off("click").on("click", () => {
             console.log("delete");
-        });
-
-        $(".ttSaEdit").off("click").on("click", () => {
-            console.log("edit");
         });
 
         $(".ttSaLink").off("click").on("click", () => {
@@ -761,7 +791,7 @@
                     }
                 }).
                 fail(FAIL).
-                always(loadingDone)
+                always(loadingDone);
             } else {
                 if (myself.uid) {
                     let rtd = '';

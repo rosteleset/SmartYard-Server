@@ -186,6 +186,7 @@
     "saAssignToMe": "Забрать",
     "saLink": "Связать",
     "saSubTask": "Подзадача",
+    "addFile": "Добавить файл(ы)",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
