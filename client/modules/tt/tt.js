@@ -662,7 +662,7 @@
                 h += "<span class='ml-2 text-info text-bold'>";
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
-                h += "<i class='far fa-trash-alt ml-2 hoverable text-primary deleteAttachment'></i>";
+                h += "<i class='far fa-trash-alt ml-2 hoverable text-danger deleteAttachment'></i>";
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += "<a href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "' target='_blank'>";
@@ -689,9 +689,11 @@
                 h += "</span>";
                 if (issue.issue.comments[i].private) {
                     h += "<i class='fas fa-fw fa-eye-slash ml-2 text-warning'></i>";
+                } else {
+                    h += "<i class='fas fa-fw fa-eye ml-2 text-success'></i>";
                 }
                 h += `<i class='far fa-fw fa-edit ml-2 hoverable text-primary modifyComment' data-index='${c}'></i>`;
-                h += `<i class='far fa-fw fa-trash-alt ml-2 hoverable text-primary deleteComment' data-index='${c}'></i>`;
+                h += `<i class='far fa-fw fa-trash-alt ml-2 hoverable text-danger deleteComment' data-index='${c}'></i>`;
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += nl2br($.trim(issue.issue.comments[i].body));

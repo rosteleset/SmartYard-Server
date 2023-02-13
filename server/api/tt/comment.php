@@ -48,7 +48,8 @@
                     return API::ERROR("forbidden");
                 }
 
-                if (!checkStr($params["comment"])) {
+                $comment = trim($params["comment"]);
+                if (!$comment) {
                     return API::ERROR("notAcceptable");
                 }
 

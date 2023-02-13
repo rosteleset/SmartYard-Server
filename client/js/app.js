@@ -281,7 +281,7 @@ function login() {
 }
 
 function logout() {
-    window.onbeforeunload = false;
+    window.onbeforeunload = null;
 
     POST("authentication", "logout", false, {
         mode: "all",
@@ -459,11 +459,7 @@ function initAll() {
                             uid: -1,
                         };
                         whoAmI().done(() => {
-                            window.onbeforeunload = function (e) {
-                                let dialogText = i18n("leavePage");
-                                e.returnValue = dialogText;
-                                return dialogText;
-                            };
+                            window.onbeforeunload = () => false;
                             available = a.available;
                             if (config && config.modules) {
                                 for (let i in config.modules) {
