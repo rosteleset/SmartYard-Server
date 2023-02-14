@@ -2,6 +2,7 @@
     meta: {},
 
     defaultIssuesPerPage: 5,
+    defaultPagerItemsCount: 10,
 
     init: function () {
         if (AVAIL("tt", "tt")) {
@@ -1166,25 +1167,58 @@
                         console.log(issues);
 
                         limit = parseInt(issues.limit);
-                        skip = parseInt(issues.skip)
+                        skip = parseInt(issues.skip);
+                        let page = Math.floor(skip / limit) + 1;
 
                         function pager() {
                             let h = '';
 
-                            h += "<span class='tt_pager' data-page='1'>1</span> ";
-                            h += "<span class='tt_pager' data-page='2'>2</span> ";
-                            h += "<span class='tt_pager' data-page='3'>3</span> ";
+                            let pages = Math.ceil(issues.count / limit);
+                            let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
+                            let first = Math.max(page - delta, 1);
+                            let preFirst = Math.max(0, 1 - page + delta);
+                            let last = Math.min(page + delta, pages);
+                            let postLast = Math.max(pages, page + delta) - pages;
+
+                            if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
+                                if (first > 1) {
+                                    first++;
+                                } else {
+                                    last--;
+                                }
+                            }
+
+                            h += '<nav>';
+                            h += '<ul class="pagination mb-0 ml-0">';
+
+                            if (page != 1) {
+                                h += `<li class="page-item pointer tt_pager" data-page="1"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+                            } else {
+                                h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+                            }
+                            for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
+                                if (page == i) {
+                                    h += `<li class="page-item pointer font-weight-bold tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
+                                } else {
+                                    h += `<li class="page-item pointer tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
+                                }
+                            }
+                            if (page != pages) {
+                                h += `<li class="page-item pointer tt_pager" data-page="${pages}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+                            } else {
+                                h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+                            }
+
+                            h += '</ul>';
+                            h += '</nav>';
 
                             return h;
                         }
 
                         $("#mainForm").html(`
-                            <div class="row m-1 mt-2">
-                                <div class="col col-left">
-                                    ${filters}
-                                </div>
-                                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">${pager()}</div>
-                            </div>
+                            <table class="mt-2 ml-2" style="width: 100%;">
+                                <tr><td style="width: 100%;">${filters}</td><td class="pr-3">${pager()}</td></tr>
+                            </table>
                             <div class="ml-2 mr-2" id="issuesList"></div>
                         `);
 
@@ -1193,7 +1227,7 @@
                         });
 
                         $(".tt_pager").off("click").on("click", function () {
-                            modules.tt.selectFilter(false, (parseInt($(this).attr("data-page")) - 1) * limit);
+                            modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
                         });
 
                         let columns = [ {
