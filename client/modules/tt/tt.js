@@ -1191,7 +1191,7 @@
                             h += '<nav>';
                             h += '<ul class="pagination mb-0 ml-0">';
 
-                            if (page != 1) {
+                            if (page > 1) {
                                 h += `<li class="page-item pointer tt_pager" data-page="1"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                             } else {
                                 h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
@@ -1203,7 +1203,7 @@
                                     h += `<li class="page-item pointer tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
                                 }
                             }
-                            if (page != pages) {
+                            if (page < pages) {
                                 h += `<li class="page-item pointer tt_pager" data-page="${pages}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
                             } else {
                                 h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
