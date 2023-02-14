@@ -999,6 +999,273 @@
         });
     },
 
+    renderIssues: function (params) {
+        let rtd = '';
+
+        let current_project = params["project"]?params["project"]:$.cookie("_project");
+
+        let pn = {};
+
+        for (let i in modules.tt.meta.projects) {
+            pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
+        }
+
+        if (Object.keys(modules.tt.meta.myRoles).length) {
+            let cog = "mt-1";
+            if (AVAIL("tt", "project", "POST")) {
+                cog = "";
+            }
+            rtd += `
+                            <div class="form-inline">
+                                <div class="input-group input-group-sm mr-2 ${cog}">
+                                    <select id="ttProjectSelect" class="form-control">
+                        `;
+            for (let j in modules.tt.meta.myRoles) {
+                if (j == current_project) {
+                    rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
+                } else {
+                    rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
+                }
+            }
+            rtd += `
+                                </select>
+                                </div>
+                                <div class="input-group input-group-sm ${cog}">
+                                    <input id="ttSearch" class="form-control" type="search" aria-label="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-default" id="ttSearchButton">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>`;
+            if (AVAIL("tt", "project", "POST")) {
+                rtd += `
+                                <div class="nav-item mr-0 pr-0">
+                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                                        <i class="fas fa-lg fa-fw fa-cog"></i>
+                                    </a>
+                                </div>
+                            `;
+            }
+            rtd += `
+                            </div>
+                        `;
+        } else {
+            if (AVAIL("tt", "project", "POST")) {
+                rtd += `
+                                <div class="nav-item mr-0 pr-0">
+                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
+                                        <i class="fas fa-lg fa-fw fa-cog"></i>
+                                    </a>
+                                </div>
+                            `;
+            }
+        }
+
+        $("#rightTopDynamic").html(rtd);
+
+        current_project = $("#ttProjectSelect").val();
+
+        $("#ttProjectSelect").off("change").on("change", () => {
+            modules.tt.selectProject($("#ttProjectSelect").val());
+        });
+
+        let project = false;
+
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].acronym == current_project) {
+                project = modules.tt.meta.projects[i];
+            }
+        }
+
+        if (Object.keys(modules.tt.meta.myRoles).length) {
+            $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
+        }
+
+        let x = false;
+        let f = false;
+
+        try {
+            x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter_" + current_project);
+            f = modules.tt.meta.filters[x];
+        } catch (e) {
+            //
+        }
+
+        let fcount = 0;
+        let filters = `<span class="dropdown">`;
+
+        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
+        filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+        for (let i in project.filters) {
+            if (x == project.filters[i]) {
+                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
+            } else {
+                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
+            }
+            fcount++;
+        }
+        filters += `</ul></span>`;
+
+        if (!fcount) {
+            filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
+        }
+
+        if (myself.uid) {
+            $("#leftTopDynamic").html(`
+                            <li class="nav-item d-none d-sm-inline-block">
+                                <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
+                            </li>
+                        `);
+        }
+
+        $(".createIssue").off("click").on("click", () => {
+            modules.tt.issue.createIssue($("#ttProjectSelect").val());
+        });
+
+        document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
+
+        f = $.cookie("_tt_issue_filter_" + current_project);
+
+        let skip = parseInt(params.skip?params.skip:0);
+        let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
+
+        QUERY("tt", "issues", {
+            "project": current_project,
+            "filter": f?f:'',
+            "skip": skip,
+            "limit": limit,
+        }, true).
+        done(response => {
+            let issues = response.issues;
+
+            console.log(issues);
+
+            limit = parseInt(issues.limit);
+            skip = parseInt(issues.skip);
+            let page = Math.floor(skip / limit) + 1;
+
+            function pager() {
+                let h = '';
+
+                let pages = Math.ceil(issues.count / limit);
+                let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
+                let first = Math.max(page - delta, 1);
+                let preFirst = Math.max(0, 1 - page + delta);
+                let last = Math.min(page + delta, pages);
+                let postLast = Math.max(pages, page + delta) - pages;
+
+                if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
+                    if (first > 1) {
+                        first++;
+                    } else {
+                        last--;
+                    }
+                }
+
+                h += '<nav>';
+                h += '<ul class="pagination mb-0 ml-0">';
+
+                if (page > 1) {
+                    h += `<li class="page-item pointer tt_pager" data-page="1"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+                } else {
+                    h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+                }
+                for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
+                    if (page == i) {
+                        h += `<li class="page-item font-weight-bold disabled" data-page="${i}"><span class="page-link">${i}</span></li>`;
+                    } else {
+                        h += `<li class="page-item pointer tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
+                    }
+                }
+                if (page < pages) {
+                    h += `<li class="page-item pointer tt_pager" data-page="${pages}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+                } else {
+                    h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+                }
+
+                h += '</ul>';
+                h += '</nav>';
+
+                return h;
+            }
+
+            $("#mainForm").html(`
+                <table class="mt-2 ml-2" style="width: 100%;">
+                    <tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager()}</td></tr>
+                </table>
+                <div class="ml-2 mr-2" id="issuesList"></div>
+            `);
+
+            $(".tt_issues_filter").off("click").on("click", function () {
+                modules.tt.selectFilter($(this).attr("data-filter-name"));
+            });
+
+            $(".tt_pager").off("click").on("click", function () {
+                modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
+            });
+
+            let columns = [ {
+                title: i18n("tt.issueIndx"),
+                nowrap: true,
+            } ];
+
+            let pKeys = Object.keys(issues.projection);
+
+            for (let i = 0; i < pKeys.length; i++) {
+                columns.push({
+                    title: modules.tt.issueFieldTitle(pKeys[i]),
+                    nowrap: true,
+                    fullWidth: i == pKeys.length - 1,
+                });
+            };
+
+            if (issues.issues) {
+                cardTable({
+                    target: "#issuesList",
+                    columns: columns,
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i = 0; i < issues.issues.length; i++) {
+
+                            let cols = [ {
+                                data: i + skip + 1,
+                                nowrap: true,
+                                click: modules.tt.viewIssue,
+                            } ];
+
+                            for (let j = 0; j < pKeys.length; j++) {
+                                cols.push({
+                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j]),
+                                    nowrap: true,
+                                    click: modules.tt.viewIssue,
+                                    fullWidth: j == pKeys.length - 1,
+                                });
+                            }
+
+                            rows.push({
+                                uid: utf8_to_b64(JSON.stringify({
+                                    id: issues.issues[i]["issueId"],
+                                    filter: f?f:'',
+                                    index: i + skip + 1,
+                                    count: issues.count,
+                                })),
+                                cols: cols,
+                            });
+                        }
+
+                        return rows;
+                    },
+                });
+            } else {
+                $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
+            }
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     route: function (params) {
         loadingStart();
 
@@ -1027,270 +1294,17 @@
                 always(loadingDone);
             } else {
                 if (myself.uid) {
-                    let rtd = '';
-
-                    let current_project = params["project"]?params["project"]:$.cookie("_project");
-
-                    let pn = {};
-
-                    for (let i in modules.tt.meta.projects) {
-                        pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
-                    }
-
-                    if (Object.keys(modules.tt.meta.myRoles).length) {
-                        let cog = "mt-1";
-                        if (AVAIL("tt", "project", "POST")) {
-                            cog = "";
-                        }
-                        rtd += `
-                            <div class="form-inline">
-                                <div class="input-group input-group-sm mr-2 ${cog}">
-                                    <select id="ttProjectSelect" class="form-control">
-                        `;
-                        for (let j in modules.tt.meta.myRoles) {
-                            if (j == current_project) {
-                                rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
-                            } else {
-                                rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
-                            }
-                        }
-                        rtd += `
-                                </select>
-                                </div>
-                                <div class="input-group input-group-sm ${cog}">
-                                    <input id="ttSearch" class="form-control" type="search" aria-label="Search">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-default" id="ttSearchButton">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>`;
-                        if (AVAIL("tt", "project", "POST")) {
-                            rtd += `
-                                <div class="nav-item mr-0 pr-0">
-                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                                        <i class="fas fa-lg fa-fw fa-cog"></i>
-                                    </a>
-                                </div>
-                            `;
-                        }
-                        rtd += `
-                            </div>
-                        `;
+                    if (modules.groups) {
+                        modules.users.loadUsers(() => {
+                            modules.groups.loadGroups(() => {
+                                modules.tt.renderIssues(params);
+                            });
+                        });
                     } else {
-                        if (AVAIL("tt", "project", "POST")) {
-                            rtd += `
-                                <div class="nav-item mr-0 pr-0">
-                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                                        <i class="fas fa-lg fa-fw fa-cog"></i>
-                                    </a>
-                                </div>
-                            `;
-                        }
-                    }
-
-                    $("#rightTopDynamic").html(rtd);
-
-                    current_project = $("#ttProjectSelect").val();
-
-                    $("#ttProjectSelect").off("change").on("change", () => {
-                        modules.tt.selectProject($("#ttProjectSelect").val());
-                    });
-
-                    let project = false;
-
-                    for (let i in modules.tt.meta.projects) {
-                        if (modules.tt.meta.projects[i].acronym == current_project) {
-                            project = modules.tt.meta.projects[i];
-                        }
-                    }
-
-                    if (Object.keys(modules.tt.meta.myRoles).length) {
-                        $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
-                    }
-
-                    let x = false;
-                    let f = false;
-
-                    try {
-                        x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter_" + current_project);
-                        f = modules.tt.meta.filters[x];
-                    } catch (e) {
-                        //
-                    }
-
-                    let fcount = 0;
-                    let filters = `<span class="dropdown">`;
-
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
-                    filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-                    for (let i in project.filters) {
-                        if (x == project.filters[i]) {
-                            filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
-                        } else {
-                            filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
-                        }
-                        fcount++;
-                    }
-                    filters += `</ul></span>`;
-
-                    if (!fcount) {
-                        filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
-                    }
-
-                    if (myself.uid) {
-                        $("#leftTopDynamic").html(`
-                            <li class="nav-item d-none d-sm-inline-block">
-                                <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
-                            </li>
-                        `);
-                    }
-
-                    $(".createIssue").off("click").on("click", () => {
-                        modules.tt.issue.createIssue($("#ttProjectSelect").val());
-                    });
-
-                    document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
-
-                    f = $.cookie("_tt_issue_filter_" + current_project);
-
-                    let skip = parseInt(params.skip?params.skip:0);
-                    let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
-
-                    QUERY("tt", "issues", {
-                        "project": current_project,
-                        "filter": f?f:'',
-                        "skip": skip,
-                        "limit": limit,
-                    }, true).
-                    done(response => {
-                        let issues = response.issues;
-
-                        console.log(issues);
-
-                        limit = parseInt(issues.limit);
-                        skip = parseInt(issues.skip);
-                        let page = Math.floor(skip / limit) + 1;
-
-                        function pager() {
-                            let h = '';
-
-                            let pages = Math.ceil(issues.count / limit);
-                            let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
-                            let first = Math.max(page - delta, 1);
-                            let preFirst = Math.max(0, 1 - page + delta);
-                            let last = Math.min(page + delta, pages);
-                            let postLast = Math.max(pages, page + delta) - pages;
-
-                            if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
-                                if (first > 1) {
-                                    first++;
-                                } else {
-                                    last--;
-                                }
-                            }
-
-                            h += '<nav>';
-                            h += '<ul class="pagination mb-0 ml-0">';
-
-                            if (page > 1) {
-                                h += `<li class="page-item pointer tt_pager" data-page="1"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
-                            } else {
-                                h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
-                            }
-                            for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
-                                if (page == i) {
-                                    h += `<li class="page-item font-weight-bold disabled" data-page="${i}"><span class="page-link">${i}</span></li>`;
-                                } else {
-                                    h += `<li class="page-item pointer tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
-                                }
-                            }
-                            if (page < pages) {
-                                h += `<li class="page-item pointer tt_pager" data-page="${pages}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
-                            } else {
-                                h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
-                            }
-
-                            h += '</ul>';
-                            h += '</nav>';
-
-                            return h;
-                        }
-
-                        $("#mainForm").html(`
-                            <table class="mt-2 ml-2" style="width: 100%;">
-                                <tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager()}</td></tr>
-                            </table>
-                            <div class="ml-2 mr-2" id="issuesList"></div>
-                        `);
-
-                        $(".tt_issues_filter").off("click").on("click", function () {
-                            modules.tt.selectFilter($(this).attr("data-filter-name"));
+                        modules.users.loadUsers(() => {
+                            modules.tt.renderIssues(params);
                         });
-
-                        $(".tt_pager").off("click").on("click", function () {
-                            modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
-                        });
-
-                        let columns = [ {
-                            title: i18n("tt.issueIndx"),
-                            nowrap: true,
-                        } ];
-
-                        let pKeys = Object.keys(issues.projection);
-
-                        for (let i = 0; i < pKeys.length; i++) {
-                            columns.push({
-                                title: modules.tt.issueFieldTitle(pKeys[i]),
-                                nowrap: true,
-                                fullWidth: i == pKeys.length - 1,
-                            });
-                        };
-
-                        if (issues.issues) {
-                            cardTable({
-                                target: "#issuesList",
-                                columns: columns,
-                                rows: () => {
-                                    let rows = [];
-
-                                    for (let i = 0; i < issues.issues.length; i++) {
-
-                                        let cols = [ {
-                                            data: i + skip + 1,
-                                            nowrap: true,
-                                            click: modules.tt.viewIssue,
-                                        } ];
-
-                                        for (let j = 0; j < pKeys.length; j++) {
-                                            cols.push({
-                                                data: modules.tt.issueField2Html(issues.issues[i], pKeys[j]),
-                                                nowrap: true,
-                                                click: modules.tt.viewIssue,
-                                                fullWidth: j == pKeys.length - 1,
-                                            });
-                                        }
-
-                                        rows.push({
-                                            uid: utf8_to_b64(JSON.stringify({
-                                                id: issues.issues[i]["issueId"],
-                                                filter: f?f:'',
-                                                index: i + skip + 1,
-                                                count: issues.count,
-                                            })),
-                                            cols: cols,
-                                        });
-                                    }
-
-                                    return rows;
-                                },
-                            });
-                        } else {
-                            $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
-                        }
-                    }).
-                    fail(FAIL).
-                    always(loadingDone);
+                    }
                 } else {
                     window.location.href = "#tt.settings&edit=projects";
                 }
