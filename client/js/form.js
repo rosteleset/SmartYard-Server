@@ -261,8 +261,13 @@ function cardForm(params) {
                 break;
 
             case "files":
-                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control mt-2" multiple="multiple"></select>`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control" multiple="multiple"></select>`;
                 h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}"><i class="far fa-folder-open" style="margin-right: 5px;"></i>${i18n("add")}</span><span class="text-secondary text-xs ml-2">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
+                if (params.fields[i].autoload) {
+                    setTimeout(() => {
+                        $("#" + _prefix + params.fields[i].id + "-add").click();
+                    }, 100);
+                }
                 break;
         }
 

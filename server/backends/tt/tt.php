@@ -187,7 +187,6 @@
              * @param $workflow
              * @return boolean
              */
-
             public function deleteWorkflow($workflow) {
                 $workflow = trim($workflow);
 
@@ -216,15 +215,13 @@
              *
              * @return false|array[]
              */
-
-            abstract public function getProjects();
+            abstract public function getProjects($acronym = false);
 
             /**
              * @param $acronym
              * @param $project
              * @return false|integer
              */
-
             abstract public function addProject($acronym, $project);
 
             /**
@@ -237,7 +234,6 @@
              * @param $searchComments
              * @return boolean
              */
-
             abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments);
 
             /**
@@ -589,6 +585,114 @@
              * @param $issue
              * @return mixed
              */
+            public function checkIssue(&$issue)
+            {
+                $acr = explode("-", $issue["issueId"])[0];
+
+                $customFields = $this->getCustomFields();
+                $validFields = [];
+
+//                $users = loadBackend("users");
+
+                $project = false;
+                $projects = $this->getProjects();
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == $acr) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                $customFieldsByName = [];
+
+                foreach ($project["customFields"] as $cfId) {
+                    foreach ($customFields as $cf) {
+                        if ($cf["customFieldId"] == $cfId) {
+                            $validFields[] = "_cf_" . $cf["field"];
+                            $customFieldsByName["_cf_" . $cf["field"]] = $cf;
+                            break;
+                        }
+                    }
+                }
+
+                $validFields[] = "issueId";
+                $validFields[] = "project";
+                $validFields[] = "workflow";
+                $validFields[] = "subject";
+                $validFields[] = "description";
+                $validFields[] = "resolution";
+                $validFields[] = "status";
+                $validFields[] = "tags";
+                $validFields[] = "assigned";
+                $validFields[] = "watchers";
+                $validFields[] = "attachments";
+                $validFields[] = "comments";
+                $validFields[] = "journal";
+
+                $validTags = [];
+
+                foreach ($project["tags"] as $t) {
+                    $validTags[] = $t["tag"];
+                }
+
+                foreach ($issue as $field => $dumb) {
+                    if (!in_array($field, $validFields)) {
+                        unset($issue[$field]);
+                    } else {
+                        if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                            $issue[$field] = array_values($dumb);
+                        }
+                    }
+                }
+
+                foreach ($issue["tags"] as $indx => $tag) {
+                    if (!in_array($tag, $validTags)) {
+                        unset($issue["tags"][$indx]);
+                    }
+                }
+
+                if ($issue["assigned"]) {
+                    $issue["assigned"] = array_values($issue["assigned"]);
+                }
+
+                if ($issue["watchers"]) {
+                    $issue["watchers"] = array_values($issue["watchers"]);
+                }
+
+                if ($issue["tags"]) {
+                    $issue["tags"] = array_values($issue["tags"]);
+                }
+
+                return $issue;
+            }
+
+            /**
+             * @param $issueId
+             * @return void
+             */
+            public function getIssue($issueId)
+            {
+                $acr = explode("-", $issueId)[0];
+
+                $projects = $this->getProjects($acr);
+
+                if (!$projects || !$projects[0]) {
+                    return false;
+                }
+
+                $issues = $this->getIssues($acr, [ "issueId" => $issueId ], true);
+
+                if (!$issues || !$issues["issues"] || !$issues["issues"][0]) {
+                    return false;
+                }
+
+                return $issues["issues"][0];
+            }
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
             abstract protected function createIssue($issue);
 
             /**
@@ -598,10 +702,10 @@
             abstract public function modifyIssue($issue);
 
             /**
-             * @param $issue
+             * @param $issueId
              * @return mixed
              */
-            abstract public function deleteIssue($issue);
+            abstract public function deleteIssue($issueId);
 
             /**
              * @param $collection
@@ -615,40 +719,42 @@
             abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100);
 
             /**
-             * @param $issue
+             * @param $issueId
              * @param $comment
              * @param $private
              * @return mixed
              */
-            abstract public function addComment($issue, $comment, $private);
+            abstract public function addComment($issueId, $comment, $private);
 
             /**
-             * @param $issue
+             * @param $issueId
+             * @param $commentIndex
              * @param $comment
+             * @param $private
              * @return mixed
              */
-            abstract public function modifyComment($issue, $comment);
+            abstract public function modifyComment($issueId, $commentIndex, $comment, $private);
 
             /**
-             * @param $issue
-             * @param $comment
+             * @param $issueId
+             * @param $commentIndex
              * @return mixed
              */
-            abstract public function deleteComment($issue, $comment);
+            abstract public function deleteComment($issueId, $commentIndex);
 
             /**
-             * @param $issue
-             * @param $file
+             * @param $issueId
+             * @param $attachments
              * @return mixed
              */
-            abstract public function addAttachment($issue, $file);
+            abstract public function addAttachments($issueId, $attachments);
 
             /**
-             * @param $issue
-             * @param $file
+             * @param $issueId
+             * @param $filename
              * @return mixed
              */
-            abstract public function deleteAttachment($issue, $file);
+            abstract public function deleteAttachment($issueId, $filename);
 
             /**
              * @param $uid

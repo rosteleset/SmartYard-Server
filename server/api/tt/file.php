@@ -105,12 +105,28 @@
 
             public static function POST($params)
             {
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $success = $tt->addAttachments($params["issueId"], $params["attachments"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params)
             {
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $success = $tt->deleteAttachment($params["issueId"], $params["filename"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {

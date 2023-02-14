@@ -90,8 +90,8 @@
                 ],
                 callback: function (result) {
                     if (result.project && result.workflow) {
-                        $.cookie("_project", result.project, { expires: 36500, insecure: config.insecureCookie });
-                        $.cookie("_workflow", result.workflow, { expires: 36500, insecure: config.insecureCookie });
+                        $.cookie("_project", result.project, { expires: 3650, insecure: config.insecureCookie });
+                        $.cookie("_workflow", result.workflow, { expires: 3650, insecure: config.insecureCookie });
                     }
                     location.href = `#tt.issue&action=create&project=${result.project}&workflow=${result.workflow}`;
                 },

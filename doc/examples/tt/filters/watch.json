@@ -6,5 +6,9 @@
                 "$in": "%%my"
             }
         }
-    }
+    },
+    "fields": [
+        "subject",
+        "status"
+    ]
 }

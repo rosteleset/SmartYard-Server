@@ -1,6 +1,8 @@
 ({
     meta: {},
 
+    defaultIssuesPerPage: 5,
+
     init: function () {
         if (AVAIL("tt", "tt")) {
             leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt", "tt");
@@ -9,6 +11,80 @@
             "issue",
             "settings",
         ], this);
+    },
+    
+    issueFieldTitle: function (field) {
+        let fieldId;
+
+        if (typeof field === "object") {
+            fieldId = field.field;
+        } else{
+            fieldId = field;
+        }
+
+        if (fieldId.substring(0, 4) !== "_cf_") {
+            // regular issue fields
+            switch (fieldId) {
+                case "issueId":
+                    return i18n("tt.issueId");
+
+                case "subject":
+                    return i18n("tt.subject");
+
+                case "description":
+                    return i18n("tt.description");
+
+                case "comment":
+                    return i18n("tt.comment");
+
+                case "resolution":
+                    return i18n("tt.resolution");
+
+                case "status":
+                    return i18n("tt.status");
+
+                case "tags":
+                    return i18n("tt.tags");
+
+                case "assigned":
+                    return i18n("tt.assigned");
+
+                case "watchers":
+                    return i18n("tt.watchers");
+
+                case "attachments":
+                    return i18n("tt.attachments");
+
+                case "created":
+                    return i18n("tt.created");
+
+                case "updated":
+                    return i18n("tt.updated");
+
+                case "author":
+                    return i18n("tt.author");
+
+                default:
+                    return fieldId;
+            }
+        } else {
+            // custom field
+            fieldId = fieldId.substring(4);
+
+            let cf = false;
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].field === fieldId) {
+                    cf = modules.tt.meta.customFields[i];
+                    break;
+                }
+            }
+            
+            if (cf) {
+                return cf.fieldDisplay;
+            } else {
+                return fieldId;
+            }
+        }
     },
 
     issueField2FormFieldEditor: function (issue, field, projectId) {
@@ -85,12 +161,22 @@
         if (fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
+                case "issueId":
+                    return {
+                        id: "issueId",
+                        type: "text",
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
+                        value: (issue && issue.issueId)?issue.issueId:"",
+                        hidden: true,
+                    };
+
                 case "subject":
                     return {
                         id: "subject",
                         type: "text",
-                        title: i18n("tt.subject"),
-                        placeholder: i18n("tt.subject"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         value: (issue && issue.subject)?issue.subject:"",
                         validate: v => {
                             return $.trim(v) !== "";
@@ -101,8 +187,8 @@
                     return {
                         id: "description",
                         type: "area",
-                        title: i18n("tt.description"),
-                        placeholder: i18n("tt.description"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         value: (issue && issue.description)?issue.description:"",
                         validate: v => {
                             return $.trim(v) !== "";
@@ -113,8 +199,8 @@
                     return {
                         id: "comment",
                         type: "area",
-                        title: i18n("tt.comment"),
-                        placeholder: i18n("tt.comment"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         validate: v => {
                             return $.trim(v) !== "";
                         },
@@ -135,7 +221,7 @@
                     return {
                         id: "resolution",
                         type: "select2",
-                        title: i18n("tt.resolution"),
+                        title: modules.tt.issueFieldTitle(field),
                         options: resolutions,
                         value: (issue && issue.resolution)?issue.resolution:-1,
                         validate: v => {
@@ -156,7 +242,7 @@
                     return {
                         id: "status",
                         type: "select2",
-                        title: i18n("tt.status"),
+                        title: modules.tt.issueFieldTitle(field),
                         options: statuses,
                         value: (issue && issue.status)?issue.status:-1,
                     };
@@ -168,8 +254,8 @@
                         tags: true,
                         createTags: false,
                         multiple: true,
-                        title: i18n("tt.tags"),
-                        placeholder: i18n("tt.tags"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         options: tags,
                         value: (issue && issue.tags)?Object.values(issue.tags):[],
                     };
@@ -179,8 +265,8 @@
                         id: "assigned",
                         type: "select2",
                         multiple: true,
-                        title: i18n("tt.assigned"),
-                        placeholder: i18n("tt.assigned"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         options: peoples(project, true, true),
                         value: (issue && issue.assigned)?Object.values(issue.assigned):[],
                     };
@@ -190,8 +276,8 @@
                         id: "watchers",
                         type: "select2",
                         multiple: true,
-                        title: i18n("tt.watchers"),
-                        placeholder: i18n("tt.watchers"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         options: peoples(project, false, true),
                         value: (issue && issue.watchers)?Object.values(issue.watchers):[],
                     };
@@ -200,7 +286,7 @@
                     return {
                         id: "attachments",
                         type: "files",
-                        title: i18n("tt.attachments"),
+                        title: modules.tt.issueFieldTitle(field),
                         maxSize: project.maxFileSize,
                     };
             }
@@ -239,8 +325,8 @@
                         return {
                             id: "_cf_" + fieldId,
                             type: cf.editor,
-                            title: cf.fieldDisplay,
-                            placeholder: cf.fieldDisplay,
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"",
                             validate: validate,
@@ -256,8 +342,8 @@
                         return {
                             id: "_cf_" + fieldId,
                             type: "select2",
-                            title: cf.fieldDisplay,
-                            placeholder: cf.fieldDisplay,
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
                             options: options,
                             multiple: cf.format.indexOf("multiple") >= 0,
@@ -278,8 +364,8 @@
                         return {
                             id: "_cf_" + fieldId,
                             type: "select2",
-                            title: cf.fieldDisplay,
-                            placeholder: cf.fieldDisplay,
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
                             options: options,
                             multiple: cf.format.indexOf("multiple") >= 0,
@@ -377,13 +463,17 @@
         }
     },
 
-    selectFilter: function (filter) {
-        $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
-        window.location.href = `#tt&filter=${filter}`;
+    selectFilter: function (filter, skip, limit) {
+        if (filter) {
+            $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
+        } else {
+            filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
+        }
+        window.location.href = `#tt&filter=${filter}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}`;
     },
 
     selectProject: function (project) {
-        $.cookie("_project", project, { expires: 36500, insecure: config.insecureCookie });
+        $.cookie("_project", project, { expires: 3650, insecure: config.insecureCookie });
         window.location.href = `#tt&project=${project}`;
     },
 
@@ -404,6 +494,7 @@
                     readonly: true,
                     title: i18n("tt.issue"),
                     value: issue.issue.issueId,
+                    hidden: true,
                 },
             ];
 
@@ -479,20 +570,7 @@
             let h = '';
 
             if (![ "issueId", "comments", "attachments", "journal", "project", "workflow", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
-                let c;
-                if (issue.fields[i].substring(0, 4) !== '_cf_') {
-                    switch (issue.fields[i]) {
-                        case "issueId":
-                            c = i18n("tt.issue");
-                            break;
-                        default:
-                            c = i18n("tt." + issue.fields[i]);
-                            break;
-                    }
-                } else {
-                    c = cfn[issue.fields[i]];
-                }
-                h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${c}' style="font-size: 11pt;"/></td></tr>`;
+                h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
                 h += "<tr>";
                 h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
                 h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
@@ -506,12 +584,7 @@
         console.log(issue);
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
-        let cfn = {};
         let rightFields = [ "status", "resolution", "assigned", "watchers", "created", "updated", "author" ];
-
-        for (let i in modules.tt.meta.customFields) {
-            cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
-        }
 
         let tags = {};
         let project = false;
@@ -562,6 +635,9 @@
                         h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
                     }
                     t++;
+                } else
+                if (issue.actions[i] == "-") {
+                    t++;
                 } else {
                     la = issue.actions[i];
                 }
@@ -605,6 +681,10 @@
             }
         }
         h += "</div>";
+        h += "</td>";
+        h += "<td style='text-align: right;' class='pr-2'>";
+        h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left text-muted'></i>"
+        h += "<i id='stepNext' class='fas fa-fw fa-chevron-right text-muted'></i>"
         h += "</td>";
         h += "</tr>";
 
@@ -656,38 +736,48 @@
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
-                h += "<span class='text-info text-bold'>";
-                h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
-                h += "</span>, ";
+                h += "#" + (parseInt(i) + 1) + " ";
                 h += ttDate(issue.issue.attachments[i].metadata.added);
-                h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
+                h += "<span class='ml-2 text-info text-bold'>";
+                h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
+                h += "</span>";
+                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
+                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == $.cookie("_login")) {
+                        h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteAttachment'></i>";
+                    }
+                }
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
-                h += "<a href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "' target='_blank'>";
-                h += nl2br($.trim(issue.issue.attachments[i].filename));
+                h += "<a class='hoverable' href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "' target='_blank'>";
+                h += $.trim(issue.issue.attachments[i].filename);
                 h += "</a>";
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
             }
         }
+
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.comments) {
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
+                h += "#" + (parseInt(i) + 1) + " ";
                 h += ttDate(issue.issue.comments[i].created);
                 h += "<span class='ml-2 text-info text-bold'>";
                 h += members[issue.issue.comments[i].author]?members[issue.issue.comments[i].author]:issue.issue.comments[i].author;
                 h += "</span>";
                 if (issue.issue.comments[i].private) {
-                    h += "<span class='ml-2 text-warning text-bold'>";
-                    h += i18n("tt.commentPrivate");
-                    h += "</span>";
+                    h += "<i class='fas fa-fw fa-eye-slash ml-2 text-warning'></i>";
+                } else {
+                    h += "<i class='fas fa-fw fa-eye ml-2 text-success'></i>";
                 }
-                h += "<i class='far fa-edit ml-2 hoverable text-primary'></i>";
-                h += "<i class='far fa-trash-alt ml-2 hoverable text-primary'></i>";
+                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
+                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == $.cookie("_login")) {
+                        h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
+                    }
+                }
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += nl2br($.trim(issue.issue.comments[i].body));
@@ -704,11 +794,177 @@
         });
 
         $(".ttSaAddComment").off("click").on("click", () => {
-            console.log("addComment");
+            cardForm({
+                title: i18n("tt.addComment"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                size: "lg",
+                fields: [
+                    {
+                        id: "issueId",
+                        type: "text",
+                        readonly: true,
+                        value: issue.issue["issueId"],
+                        title: i18n("tt.issue"),
+                        hidden: true,
+                    },
+                    {
+                        id: "comment",
+                        type: "area",
+                        title: i18n("tt.comment"),
+                        placeholder: i18n("tt.comment"),
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    },
+                    {
+                        id: "commentPrivate",
+                        type: "yesno",
+                        title: i18n("tt.commentPrivate"),
+                        value: "1",
+                    },
+                ],
+                callback: function (result) {
+                    loadingStart();
+                    POST("tt", "comment", false, result).
+                    fail(FAIL).
+                    done(() => {
+                        modules.tt.route({
+                            "issue": issue.issue.issueId,
+                        });
+                    }).
+                    always(loadingDone);
+                },
+            }).show();
+        });
+
+        $(".modifyComment").off("click").on("click", function () {
+            let i = $(this).attr("data-index");
+            cardForm({
+                title: i18n("tt.modifyComment"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                size: "lg",
+                fields: [
+                    {
+                        id: "issueId",
+                        type: "text",
+                        readonly: true,
+                        value: issue.issue["issueId"],
+                        title: i18n("tt.issue"),
+                        hidden: true,
+                    },
+                    {
+                        id: "commentIndex",
+                        type: "text",
+                        readonly: true,
+                        value: i,
+                        title: i18n("tt.commentIndex"),
+                        hidden: true,
+                    },
+                    {
+                        id: "comment",
+                        type: "area",
+                        title: i18n("tt.comment"),
+                        placeholder: i18n("tt.comment"),
+                        value: issue.issue.comments[i].body,
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    },
+                    {
+                        id: "commentPrivate",
+                        type: "yesno",
+                        title: i18n("tt.commentPrivate"),
+                        value: issue.issue.comments[i].private?"1":"0",
+                    },
+                ],
+                delete: i18n("tt.deleteComment"),
+                callback: function (result) {
+                    if (result.delete) {
+                        loadingStart();
+                        DELETE("tt", "comment", false, result).
+                        fail(FAIL).
+                        done(() => {
+                            modules.tt.route({
+                                "issue": issue.issue.issueId,
+                            });
+                        }).
+                        always(loadingDone);
+                    } else {
+                        loadingStart();
+                        PUT("tt", "comment", false, result).
+                        fail(FAIL).
+                        done(() => {
+                            modules.tt.route({
+                                "issue": issue.issue.issueId,
+                            });
+                        }).
+                        always(loadingDone);
+                    }
+                },
+            }).show();
         });
 
         $(".ttSaAddFile").off("click").on("click", () => {
-            console.log("addFile");
+            cardForm({
+                title: i18n("tt.addFile"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                size: "lg",
+                apply: i18n("tt.addFile"),
+                fields: [
+                    {
+                        id: "issueId",
+                        type: "text",
+                        readonly: true,
+                        value: issue.issue["issueId"],
+                        title: i18n("tt.issue"),
+                        hidden: true,
+                    },
+                    {
+                        id: "attachments",
+                        type: "files",
+                        title: i18n("tt.attachments"),
+                        maxSize: project.maxFileSize,
+                        autoload: true,
+                    },
+                ],
+                callback: function (result) {
+                    if (result.attachments.length) {
+                        loadingStart();
+                        POST("tt", "file", false, result).
+                        fail(FAIL).
+                        done(() => {
+                            modules.tt.route({
+                                "issue": issue.issue.issueId,
+                            });
+                        }).
+                        always(loadingDone);
+                    }
+                },
+            }).show();
+        });
+
+        $(".deleteAttachment").off("click").on("click", function () {
+            let file = $(this).parent().next().text();
+            mConfirm(i18n("tt.deleteFile", file), i18n("confirm"), i18n("delete"), () => {
+                loadingStart();
+                DELETE("tt", "file", false, {
+                    issueId: issue.issue.issueId,
+                    filename: file,
+                }).
+                fail(FAIL).
+                done(() => {
+                    modules.tt.route({
+                        "issue": issue.issue.issueId,
+                    });
+                }).
+                always(loadingDone);
+            });
         });
 
         $(".ttSaAssignToMe").off("click").on("click", () => {
@@ -723,16 +979,20 @@
             console.log("delete");
         });
 
-        $(".ttSaEdit").off("click").on("click", () => {
-            console.log("edit");
-        });
-
         $(".ttSaLink").off("click").on("click", () => {
             console.log("link");
         });
 
         $(".ttSaSubTask").off("click").on("click", () => {
             console.log("subTask");
+        });
+
+        $("#stepPrev").off("click").on("click", () => {
+            console.log("stepPrev");
+        });
+
+        $("#stepNext").off("click").on("click", () => {
+            console.log("stepNext");
         });
     },
 
@@ -761,7 +1021,7 @@
                     }
                 }).
                 fail(FAIL).
-                always(loadingDone)
+                always(loadingDone);
             } else {
                 if (myself.uid) {
                     let rtd = '';
@@ -891,19 +1151,39 @@
 
                     f = $.cookie("_tt_issue_filter_" + current_project);
 
+                    let skip = parseInt(params.skip?params.skip:0);
+                    let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
+
                     QUERY("tt", "issues", {
                         "project": current_project,
                         "filter": f?f:'',
+                        "skip": skip,
+                        "limit": limit,
                     }, true).
                     done(response => {
                         let issues = response.issues;
+
+                        console.log(issues);
+
+                        limit = parseInt(issues.limit);
+                        skip = parseInt(issues.skip)
+
+                        function pager() {
+                            let h = '';
+
+                            h += "<span class='tt_pager' data-page='1'>1</span> ";
+                            h += "<span class='tt_pager' data-page='2'>2</span> ";
+                            h += "<span class='tt_pager' data-page='3'>3</span> ";
+
+                            return h;
+                        }
 
                         $("#mainForm").html(`
                             <div class="row m-1 mt-2">
                                 <div class="col col-left">
                                     ${filters}
                                 </div>
-                                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
+                                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">${pager()}</div>
                             </div>
                             <div class="ml-2 mr-2" id="issuesList"></div>
                         `);
@@ -912,46 +1192,52 @@
                             modules.tt.selectFilter($(this).attr("data-filter-name"));
                         });
 
+                        $(".tt_pager").off("click").on("click", function () {
+                            modules.tt.selectFilter(false, (parseInt($(this).attr("data-page")) - 1) * limit);
+                        });
+
+                        let columns = [ {
+                            title: i18n("tt.issueIndx"),
+                            nowrap: true,
+                        } ];
+
+                        let pKeys = Object.keys(issues.projection);
+
+                        for (let i = 0; i < pKeys.length; i++) {
+                            columns.push({
+                                title: modules.tt.issueFieldTitle(pKeys[i]),
+                                nowrap: true,
+                                fullWidth: i == pKeys.length - 1,
+                            });
+                        };
+
                         if (issues.issues) {
                             cardTable({
                                 target: "#issuesList",
-                                columns: [
-                                    {
-                                        title: i18n("tt.issueId"),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        title: i18n("tt.issue"),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        title: i18n("tt.subject"),
-                                        nowrap: true,
-                                        fullWidth: true,
-                                    },
-                                ],
+                                columns: columns,
                                 rows: () => {
                                     let rows = [];
 
                                     for (let i = 0; i < issues.issues.length; i++) {
+
+                                        let cols = [ {
+                                            data: i + skip + 1,
+                                            nowrap: true,
+                                            click: modules.tt.viewIssue,
+                                        } ];
+
+                                        for (let j = 0; j < pKeys.length; j++) {
+                                            cols.push({
+                                                data: modules.tt.issueField2Html(issues.issues[i], pKeys[j]),
+                                                nowrap: true,
+                                                click: modules.tt.viewIssue,
+                                                fullWidth: j == pKeys.length - 1,
+                                            });
+                                        }
+
                                         rows.push({
                                             uid: issues.issues[i]["issueId"],
-                                            cols: [
-                                                {
-                                                    data: i + issues.skip + 1,
-                                                    nowrap: true,
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                                {
-                                                    data: issues.issues[i]["issueId"],
-                                                    nowrap: true,
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                                {
-                                                    data: issues.issues[i]["subject"],
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                            ],
+                                            cols: cols,
                                         });
                                     }
 

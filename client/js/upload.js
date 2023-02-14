@@ -15,6 +15,7 @@ const mime2fa = {
 
 function uploadForm(mimeTypes) {
     mimeTypes = mimeTypes?escapeHTML(mimeTypes.join(",")):"";
+
     let h = `
         <div class="card mt-0 mb-0">
             <div class="card-header">
@@ -23,7 +24,7 @@ function uploadForm(mimeTypes) {
             </div>
             <div class="card-body table-responsive p-0">
                 <input type="file" id="fileInput" style="display: none" accept="${mimeTypes}"/>
-                <table class="table tform-borderless" style="width: 100%;">
+                <table class="table tform-borderless mt-2 mb-3" style="width: 100%;">
                     <tbody>
                         <tr style="display: none">
                             <td id="fileIcon">&nbsp;</td>

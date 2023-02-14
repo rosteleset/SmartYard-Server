@@ -13,5 +13,9 @@
                 "author": "%%me"
             }
         ]
-    }
+    },
+    "fields": [
+        "subject",
+        "status"
+    ]
 }

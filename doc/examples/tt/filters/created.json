@@ -2,5 +2,9 @@
     "name": "Created by me",
     "filter": {
         "author": "%%me"
-    }
+    },
+    "fields": [
+        "subject",
+        "status"
+    ]
 }

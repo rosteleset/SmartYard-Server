@@ -12,7 +12,6 @@ function createIssueTemplate()
             "watchers",
             "attachments",
             "tags",
-            "_cf_text",
         }
     }
 end
@@ -24,7 +23,6 @@ end
 -- saAssignToMe - set assigned to myself
 -- saWatch      - add myself to watchers
 -- saDelete     - delete issue
--- saEdit       - edit issue
 -- saLink       - add link to another issue
 -- saSubTask    - create subIssue
 
@@ -48,7 +46,6 @@ function actionTemplate(issue, action)
         if issue["status"] ~= "closed" then
             return {
                 "resolution",
-                "tags",
                 "comment",
             }
         else
@@ -104,7 +101,6 @@ function viewIssue(issue)
             "attachments",
             "comments",
             "journal",
-            "_cf_text",
         }
     }
 end
