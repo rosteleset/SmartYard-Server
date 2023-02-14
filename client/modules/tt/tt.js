@@ -1,7 +1,7 @@
 ({
     meta: {},
 
-    defaultIssuesPerPage: 5,
+    defaultIssuesPerPage: 50,
     defaultPagerItemsCount: 10,
 
     init: function () {
@@ -1200,7 +1200,7 @@
                             }
                             for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
                                 if (page == i) {
-                                    h += `<li class="page-item pointer font-weight-bold tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
+                                    h += `<li class="page-item font-weight-bold disabled" data-page="${i}"><span class="page-link">${i}</span></li>`;
                                 } else {
                                     h += `<li class="page-item pointer tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
                                 }
