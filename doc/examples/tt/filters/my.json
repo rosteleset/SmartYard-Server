@@ -13,5 +13,12 @@
                 "author": "%%me"
             }
         ]
+    },
+    "columns": [
+        "subject",
+        "status"
+    ],
+    "sort": {
+        "created": 1
     }
 }

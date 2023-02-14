@@ -184,10 +184,15 @@
 
                 $projection = [];
 
-                if ($fields) {
+                if ($fields === true) {
+                    $fields = [];
+                } else {
                     $projection["issueId"] = 1;
-                    foreach ($fields as $field) {
-                        $projection[$field] = 1;
+
+                    if ($fields) {
+                        foreach ($fields as $field) {
+                            $projection[$field] = 1;
+                        }
                     }
                 }
 
@@ -217,6 +222,8 @@
 
                 return [
                     "issues" => $i,
+                    "projection" => $projection,
+                    "sort" => $sort,
                     "skip" => $skip,
                     "limit" => $limit,
                     "count" => $this->mongo->$db->$collection->countDocuments($query),
@@ -416,12 +423,6 @@
             public function deleteAttachment($issueId, $filename)
             {
                 $project = explode("-", $issueId)[0];
-
-                $issue = $this->getIssues($project, [ "issueId" => $issueId ], [ "issueId" ]);
-
-                if (!$issue || !$issue["issues"] || !$issue["issues"][0]) {
-                    return false;
-                }
 
                 $roles = $this->myRoles();
 

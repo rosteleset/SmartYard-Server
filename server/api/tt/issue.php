@@ -21,19 +21,19 @@
                     return API::ERROR(500);
                 }
 
-                $issue = $tt->getIssues(explode("-", $params["_id"])[0], [ "issueId" => $params["_id"] ]);
+                $issue = $tt->getIssue($params["_id"]);
 
-                if (!$issue || !$issue["issues"] || !$issue["issues"][0]) {
+                if (!$issue) {
                     return API::ERROR(404);
                 }
 
-                $workflow = $tt->loadWorkflow($issue["issues"][0]["workflow"]);
+                $workflow = $tt->loadWorkflow($issue["workflow"]);
 
                 if (!$workflow) {
                     return API::ERROR(404);
                 }
 
-                $issue = $workflow->viewIssue($issue["issues"][0]);
+                $issue = $workflow->viewIssue($issue);
 
                 return api::ANSWER($issue, "issue");
             }

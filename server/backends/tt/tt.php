@@ -680,7 +680,7 @@
                     return false;
                 }
 
-                $issues = $this->getIssues($acr, [ "issueId" => $issueId ]);
+                $issues = $this->getIssues($acr, [ "issueId" => $issueId ], true);
 
                 if (!$issues || !$issues["issues"] || !$issues["issues"][0]) {
                     return false;

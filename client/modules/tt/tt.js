@@ -10,6 +10,68 @@
             "settings",
         ], this);
     },
+    
+    issueFieldTitle: function (field) {
+        let fieldId;
+
+        if (typeof field === "object") {
+            fieldId = field.field;
+        } else{
+            fieldId = field;
+        }
+
+        if (fieldId.substring(0, 4) !== "_cf_") {
+            // regular issue fields
+            switch (fieldId) {
+                case "issueId":
+                    return i18n("tt.issueId");
+
+                case "subject":
+                    return i18n("tt.subject");
+
+                case "description":
+                    return i18n("tt.description");
+
+                case "comment":
+                    return i18n("tt.comment");
+
+                case "resolution":
+                    return i18n("tt.resolution");
+
+                case "status":
+                    return i18n("tt.status");
+
+                case "tags":
+                    return i18n("tt.tags");
+
+                case "assigned":
+                    return i18n("tt.assigned");
+
+                case "watchers":
+                    return i18n("tt.watchers");
+                
+                case "attachments":
+                    return i18n("tt.attachments");
+            }
+        } else {
+            // custom field
+            fieldId = fieldId.substring(4);
+
+            let cf = false;
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].field === fieldId) {
+                    cf = modules.tt.meta.customFields[i];
+                    break;
+                }
+            }
+            
+            if (cf) {
+                return cf.fieldDisplay;
+            } else {
+                return fieldId;
+            }
+        }
+    },
 
     issueField2FormFieldEditor: function (issue, field, projectId) {
 
@@ -85,12 +147,22 @@
         if (fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
+                case "issueId":
+                    return {
+                        id: "issueId",
+                        type: "text",
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
+                        value: (issue && issue.issueId)?issue.issueId:"",
+                        hidden: true,
+                    };
+
                 case "subject":
                     return {
                         id: "subject",
                         type: "text",
-                        title: i18n("tt.subject"),
-                        placeholder: i18n("tt.subject"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         value: (issue && issue.subject)?issue.subject:"",
                         validate: v => {
                             return $.trim(v) !== "";
@@ -101,8 +173,8 @@
                     return {
                         id: "description",
                         type: "area",
-                        title: i18n("tt.description"),
-                        placeholder: i18n("tt.description"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         value: (issue && issue.description)?issue.description:"",
                         validate: v => {
                             return $.trim(v) !== "";
@@ -113,8 +185,8 @@
                     return {
                         id: "comment",
                         type: "area",
-                        title: i18n("tt.comment"),
-                        placeholder: i18n("tt.comment"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         validate: v => {
                             return $.trim(v) !== "";
                         },
@@ -135,7 +207,7 @@
                     return {
                         id: "resolution",
                         type: "select2",
-                        title: i18n("tt.resolution"),
+                        title: modules.tt.issueFieldTitle(field),
                         options: resolutions,
                         value: (issue && issue.resolution)?issue.resolution:-1,
                         validate: v => {
@@ -156,7 +228,7 @@
                     return {
                         id: "status",
                         type: "select2",
-                        title: i18n("tt.status"),
+                        title: modules.tt.issueFieldTitle(field),
                         options: statuses,
                         value: (issue && issue.status)?issue.status:-1,
                     };
@@ -168,8 +240,8 @@
                         tags: true,
                         createTags: false,
                         multiple: true,
-                        title: i18n("tt.tags"),
-                        placeholder: i18n("tt.tags"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         options: tags,
                         value: (issue && issue.tags)?Object.values(issue.tags):[],
                     };
@@ -179,8 +251,8 @@
                         id: "assigned",
                         type: "select2",
                         multiple: true,
-                        title: i18n("tt.assigned"),
-                        placeholder: i18n("tt.assigned"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         options: peoples(project, true, true),
                         value: (issue && issue.assigned)?Object.values(issue.assigned):[],
                     };
@@ -190,8 +262,8 @@
                         id: "watchers",
                         type: "select2",
                         multiple: true,
-                        title: i18n("tt.watchers"),
-                        placeholder: i18n("tt.watchers"),
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
                         options: peoples(project, false, true),
                         value: (issue && issue.watchers)?Object.values(issue.watchers):[],
                     };
@@ -200,7 +272,7 @@
                     return {
                         id: "attachments",
                         type: "files",
-                        title: i18n("tt.attachments"),
+                        title: modules.tt.issueFieldTitle(field),
                         maxSize: project.maxFileSize,
                     };
             }
@@ -239,8 +311,8 @@
                         return {
                             id: "_cf_" + fieldId,
                             type: cf.editor,
-                            title: cf.fieldDisplay,
-                            placeholder: cf.fieldDisplay,
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"",
                             validate: validate,
@@ -256,8 +328,8 @@
                         return {
                             id: "_cf_" + fieldId,
                             type: "select2",
-                            title: cf.fieldDisplay,
-                            placeholder: cf.fieldDisplay,
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
                             options: options,
                             multiple: cf.format.indexOf("multiple") >= 0,
@@ -278,8 +350,8 @@
                         return {
                             id: "_cf_" + fieldId,
                             type: "select2",
-                            title: cf.fieldDisplay,
-                            placeholder: cf.fieldDisplay,
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
                             options: options,
                             multiple: cf.format.indexOf("multiple") >= 0,
@@ -1074,6 +1146,8 @@
                     done(response => {
                         let issues = response.issues;
 
+                        console.log(issues);
+
                         $("#mainForm").html(`
                             <div class="row m-1 mt-2">
                                 <div class="col col-left">
@@ -1088,46 +1162,48 @@
                             modules.tt.selectFilter($(this).attr("data-filter-name"));
                         });
 
+                        let columns = [ {
+                            title: i18n("tt.issueIndx"),
+                            nowrap: true,
+                        } ];
+
+                        let pKeys = Object.keys(issues.projection);
+
+                        for (let i = 0; i < pKeys.length; i++) {
+                            columns.push({
+                                title: modules.tt.issueFieldTitle(pKeys[i]),
+                                nowrap: true,
+                                fullWidth: i == pKeys.length - 1,
+                            });
+                        };
+
                         if (issues.issues) {
                             cardTable({
                                 target: "#issuesList",
-                                columns: [
-                                    {
-                                        title: i18n("tt.issueId"),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        title: i18n("tt.issue"),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        title: i18n("tt.subject"),
-                                        nowrap: true,
-                                        fullWidth: true,
-                                    },
-                                ],
+                                columns: columns,
                                 rows: () => {
                                     let rows = [];
 
                                     for (let i = 0; i < issues.issues.length; i++) {
+
+                                        let cols = [ {
+                                            data: i + issues.skip + 1,
+                                            nowrap: true,
+                                            click: modules.tt.viewIssue,
+                                        } ];
+
+                                        for (let j = 0; j < pKeys.length; j++) {
+                                            cols.push({
+                                                data: modules.tt.issueField2Html(issues.issues[i], pKeys[j]),
+                                                nowrap: true,
+                                                click: modules.tt.viewIssue,
+                                                fullWidth: j == pKeys.length - 1,
+                                            });
+                                        }
+
                                         rows.push({
                                             uid: issues.issues[i]["issueId"],
-                                            cols: [
-                                                {
-                                                    data: i + issues.skip + 1,
-                                                    nowrap: true,
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                                {
-                                                    data: issues.issues[i]["issueId"],
-                                                    nowrap: true,
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                                {
-                                                    data: issues.issues[i]["subject"],
-                                                    click: modules.tt.viewIssue,
-                                                },
-                                            ],
+                                            cols: cols,
                                         });
                                     }
 
