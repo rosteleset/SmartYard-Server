@@ -479,7 +479,8 @@
     },
 
     viewIssue: function (issue) {
-        window.location.href = `#tt&issue=${issue}`;
+        issue = JSON.parse(b64_to_utf8(issue));
+        window.location.href = `#tt&issue=${issue.id}&filter=${issue.filter}&index=${issue.index}&count=${issue.count}`;
     },
 
     doAction: function (issue, action) {
@@ -565,7 +566,7 @@
         always(loadingDone);
     },
 
-    renderIssue: function (issue) {
+    renderIssue: function (issue, filter, index, count) {
 
         function fieldRow(i) {
             let h = '';
@@ -582,6 +583,7 @@
             return h;
         }
 
+        console.log(filter, index, count);
         console.log(issue);
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
@@ -1012,12 +1014,12 @@
                     if (modules.groups) {
                         modules.users.loadUsers(() => {
                             modules.groups.loadGroups(() => {
-                                modules.tt.renderIssue(r.issue);
+                                modules.tt.renderIssue(r.issue, params["filter"], params["index"], params["count"]);
                             });
                         });
                     } else {
                         modules.users.loadUsers(() => {
-                            modules.tt.renderIssue(r.issue);
+                            modules.tt.renderIssue(r.issue, params["filter"], params["index"], params["count"]);
                         });
                     }
                 }).
@@ -1270,7 +1272,12 @@
                                         }
 
                                         rows.push({
-                                            uid: issues.issues[i]["issueId"],
+                                            uid: utf8_to_b64(JSON.stringify({
+                                                id: issues.issues[i]["issueId"],
+                                                filter: f?f:'',
+                                                index: i + skip + 1,
+                                                count: issues.count,
+                                            })),
                                             cols: cols,
                                         });
                                     }
