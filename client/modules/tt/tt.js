@@ -464,7 +464,11 @@
     },
 
     selectFilter: function (filter, skip, limit) {
-        $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
+        if (filter) {
+            $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
+        } else {
+            filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
+        }
         window.location.href = `#tt&filter=${filter}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}`;
     },
 
@@ -1164,12 +1168,22 @@
                         limit = parseInt(issues.limit);
                         skip = parseInt(issues.skip)
 
+                        function pager() {
+                            let h = '';
+
+                            h += "<span class='tt_pager' data-page='1'>1</span> ";
+                            h += "<span class='tt_pager' data-page='2'>2</span> ";
+                            h += "<span class='tt_pager' data-page='3'>3</span> ";
+
+                            return h;
+                        }
+
                         $("#mainForm").html(`
                             <div class="row m-1 mt-2">
                                 <div class="col col-left">
                                     ${filters}
                                 </div>
-                                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">1 2 3 4</div>
+                                <div class="col col-right mr-0" style="text-align: right" id="issuesPager">${pager()}</div>
                             </div>
                             <div class="ml-2 mr-2" id="issuesList"></div>
                         `);
@@ -1179,7 +1193,7 @@
                         });
 
                         $(".tt_pager").off("click").on("click", function () {
-
+                            modules.tt.selectFilter(false, (parseInt($(this).attr("data-page")) - 1) * limit);
                         });
 
                         let columns = [ {
