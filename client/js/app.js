@@ -350,12 +350,12 @@ function whoAmI(force) {
 function initAll() {
     if (!$.cookie("_cookie")) {
         warning(i18n("cookieWarning"), false, 3600);
-        $.cookie("_cookie", "1", { expires: 36500, insecure: config.insecureCookie });
+        $.cookie("_cookie", "1", { expires: 3650, insecure: config.insecureCookie });
     }
 
     if (!$.cookie("_https") && window.location.protocol === 'http:') {
         warning(i18n("httpsWarning"), false, 3600);
-        $.cookie("_https", "1", { expires: 36500, insecure: config.insecureCookie });
+        $.cookie("_https", "1", { expires: 3650, insecure: config.insecureCookie });
     }
 
     if (config.logo) {
@@ -368,18 +368,18 @@ function initAll() {
     $(document.body).css("background-color", '#e9ecef');
 
     if (!$.cookie("_ua")) {
-        $.cookie("_ua", $.browser.ua, { expires: 36500, insecure: config.insecureCookie });
+        $.cookie("_ua", $.browser.ua, { expires: 3650, insecure: config.insecureCookie });
     }
 
     if (!$.cookie("_did")) {
-        $.cookie("_did", guid(), { expires: 36500, insecure: config.insecureCookie });
+        $.cookie("_did", guid(), { expires: 3650, insecure: config.insecureCookie });
     }
 
     loadingStart();
 
     $("#leftSideToggler").parent().parent().on("click", () => {
         setTimeout(() => {
-            $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 36500, insecure: config.insecureCookie });
+            $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 3650, insecure: config.insecureCookie });
         }, 100);
     });
 

@@ -14,11 +14,8 @@
             }
         ]
     },
-    "columns": [
+    "fields": [
         "subject",
         "status"
-    ],
-    "sort": {
-        "created": 1
-    }
+    ]
 }

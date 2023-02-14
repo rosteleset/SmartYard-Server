@@ -12,7 +12,6 @@ function createIssueTemplate()
             "watchers",
             "attachments",
             "tags",
-            "_cf_text",
         }
     }
 end
@@ -47,7 +46,6 @@ function actionTemplate(issue, action)
         if issue["status"] ~= "closed" then
             return {
                 "resolution",
-                "tags",
                 "comment",
             }
         else
@@ -103,7 +101,6 @@ function viewIssue(issue)
             "attachments",
             "comments",
             "journal",
-            "_cf_text",
         }
     }
 end

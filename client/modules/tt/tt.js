@@ -1,6 +1,8 @@
 ({
     meta: {},
 
+    defaultIssuesPerPage: 5,
+
     init: function () {
         if (AVAIL("tt", "tt")) {
             leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt", "tt");
@@ -49,9 +51,21 @@
 
                 case "watchers":
                     return i18n("tt.watchers");
-                
+
                 case "attachments":
                     return i18n("tt.attachments");
+
+                case "created":
+                    return i18n("tt.created");
+
+                case "updated":
+                    return i18n("tt.updated");
+
+                case "author":
+                    return i18n("tt.author");
+
+                default:
+                    return fieldId;
             }
         } else {
             // custom field
@@ -449,13 +463,13 @@
         }
     },
 
-    selectFilter: function (filter) {
+    selectFilter: function (filter, skip, limit) {
         $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
-        window.location.href = `#tt&filter=${filter}`;
+        window.location.href = `#tt&filter=${filter}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}`;
     },
 
     selectProject: function (project) {
-        $.cookie("_project", project, { expires: 36500, insecure: config.insecureCookie });
+        $.cookie("_project", project, { expires: 3650, insecure: config.insecureCookie });
         window.location.href = `#tt&project=${project}`;
     },
 
@@ -552,20 +566,7 @@
             let h = '';
 
             if (![ "issueId", "comments", "attachments", "journal", "project", "workflow", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
-                let c;
-                if (issue.fields[i].substring(0, 4) !== '_cf_') {
-                    switch (issue.fields[i]) {
-                        case "issueId":
-                            c = i18n("tt.issue");
-                            break;
-                        default:
-                            c = i18n("tt." + issue.fields[i]);
-                            break;
-                    }
-                } else {
-                    c = cfn[issue.fields[i]];
-                }
-                h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${c}' style="font-size: 11pt;"/></td></tr>`;
+                h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
                 h += "<tr>";
                 h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
                 h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
@@ -579,12 +580,7 @@
         console.log(issue);
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
-        let cfn = {};
         let rightFields = [ "status", "resolution", "assigned", "watchers", "created", "updated", "author" ];
-
-        for (let i in modules.tt.meta.customFields) {
-            cfn["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay?modules.tt.meta.customFields[i].fieldDisplay:modules.tt.meta.customFields[i].field;
-        }
 
         let tags = {};
         let project = false;
@@ -681,6 +677,10 @@
             }
         }
         h += "</div>";
+        h += "</td>";
+        h += "<td style='text-align: right;' class='pr-2'>";
+        h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left text-muted'></i>"
+        h += "<i id='stepNext' class='fas fa-fw fa-chevron-right text-muted'></i>"
         h += "</td>";
         h += "</tr>";
 
@@ -982,6 +982,14 @@
         $(".ttSaSubTask").off("click").on("click", () => {
             console.log("subTask");
         });
+
+        $("#stepPrev").off("click").on("click", () => {
+            console.log("stepPrev");
+        });
+
+        $("#stepNext").off("click").on("click", () => {
+            console.log("stepNext");
+        });
     },
 
     route: function (params) {
@@ -1139,14 +1147,22 @@
 
                     f = $.cookie("_tt_issue_filter_" + current_project);
 
+                    let skip = parseInt(params.skip?params.skip:0);
+                    let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
+
                     QUERY("tt", "issues", {
                         "project": current_project,
                         "filter": f?f:'',
+                        "skip": skip,
+                        "limit": limit,
                     }, true).
                     done(response => {
                         let issues = response.issues;
 
                         console.log(issues);
+
+                        limit = parseInt(issues.limit);
+                        skip = parseInt(issues.skip)
 
                         $("#mainForm").html(`
                             <div class="row m-1 mt-2">
@@ -1160,6 +1176,10 @@
 
                         $(".tt_issues_filter").off("click").on("click", function () {
                             modules.tt.selectFilter($(this).attr("data-filter-name"));
+                        });
+
+                        $(".tt_pager").off("click").on("click", function () {
+
                         });
 
                         let columns = [ {
@@ -1187,7 +1207,7 @@
                                     for (let i = 0; i < issues.issues.length; i++) {
 
                                         let cols = [ {
-                                            data: i + issues.skip + 1,
+                                            data: i + skip + 1,
                                             nowrap: true,
                                             click: modules.tt.viewIssue,
                                         } ];

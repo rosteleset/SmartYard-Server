@@ -198,8 +198,8 @@
 
                 $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
-                    "skip" => $skip,
-                    "limit" => $limit,
+                    "skip" => (int)$skip,
+                    "limit" => (int)$limit,
                     "sort" => $sort
                 ]);
 
