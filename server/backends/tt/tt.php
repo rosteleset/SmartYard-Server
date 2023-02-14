@@ -728,10 +728,12 @@
 
             /**
              * @param $issueId
+             * @param $commentIndex
              * @param $comment
+             * @param $private
              * @return mixed
              */
-            abstract public function modifyComment($issueId, $comment);
+            abstract public function modifyComment($issueId, $commentIndex, $comment, $private);
 
             /**
              * @param $issueId

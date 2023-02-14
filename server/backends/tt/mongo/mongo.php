@@ -245,23 +245,82 @@
             public function addComment($issueId, $comment, $private)
             {
                 $db = $this->dbName;
-                $project = explode("-", $issueId)[0];
+                $acr = explode("-", $issueId)[0];
 
-                return $this->mongo->$db->$project->updateOne([ "issueId" => $issueId ], [ "\$set" => [ "updated" => time() ] ]) &&
-                    $this->mongo->$db->$project->updateOne([ "issueId" => $issueId ], [ "\$push" => [ "comments" => [
-                        "body" => trim($comment),
-                        "created" => time(),
-                        "author" => $this->login,
-                        "private" => $private,
-                    ] ] ]);
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $comment = trim($comment);
+                if (!$comment) {
+                    return false;
+                }
+
+                return $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$push" => [
+                            "comments" => [
+                                "body" => $comment,
+                                "created" => time(),
+                                "author" => $this->login,
+                                "private" => $private,
+                            ],
+                        ],
+                    ]
+                );
             }
 
             /**
              * @inheritDoc
              */
-            public function modifyComment($issueId, $comment)
+            public function modifyComment($issueId, $commentIndex, $comment, $private)
             {
-                // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$set' => [ "comments.2.body" => "abrakadabra#2" ] ])
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                if (!checkInt($commentIndex)) {
+                    return false;
+                }
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $comment = trim($comment);
+                if (!$comment) {
+                    return false;
+                }
+
+                $issue = $this->getIssue($issueId);
+
+                if (!$issue) {
+                    return false;
+                }
+
+                if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
+                    return $this->mongo->$db->$acr->updateOne(
+                        [
+                            "issueId" => $issueId,
+                        ],
+                        [
+                            "\$set" => [
+                                "comments.$commentIndex.body" => $comment,
+                                "comments.$commentIndex.created" => time(),
+                                "comments.$commentIndex.author" => $this->login,
+                                "comments.$commentIndex.private" => $private,
+                            ]
+                        ]
+                    );
+                }
+
+                return false;
             }
 
             /**
@@ -269,8 +328,32 @@
              */
             public function deleteComment($issueId, $commentIndex)
             {
-                // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$unset' => [ "comments.1" => true ] ])
-                // $mongo->tt->REM->updateOne([ "issueId" => "REM-4" ], [ '$pull' => [ "comments" => null ] ])
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                if (!checkInt($commentIndex)) {
+                    return false;
+                }
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $issue = $this->getIssue($issueId);
+
+                if (!$issue) {
+                    return false;
+                }
+
+                if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
+                    return
+                        $this->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ "comments.$commentIndex" => true ] ]) &
+                        $this->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$pull' => [ "comments" => null ] ]);
+                }
+
+                return false;
             }
 
             /**

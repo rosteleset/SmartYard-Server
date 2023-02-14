@@ -22,46 +22,35 @@
                     return API::ERROR(500);
                 }
 
-                $acr = explode("-", $params["issueId"])[0];
+                $success =  $tt->addComment($params["issueId"], $params["comment"], !!$params["commentPrivate"]);
 
-                $projects = $tt->getProjects();
-                $project = false;
-                foreach ($projects as $p) {
-                    if ($p["acronym"] == $acr) {
-                        $project = $p;
-                    }
-                }
-
-                $issue = $tt->getIssues($acr, [ "issueId" => $params["issueId"] ], [ "issueId" ]);
-
-                if (!$issue || !$issue["issues"] || !$issue["issues"][0] || !$project) {
-                    return API::ERROR("notFound");
-                }
-
-                $roles = $tt->myRoles();
-
-                if (!@$roles[$acr] || $roles[$acr] < 20) {
-                    return API::ERROR("forbidden");
-                }
-
-                $comment = trim($params["comment"]);
-                if (!$comment) {
-                    return API::ERROR("notAcceptable");
-                }
-
-                $tt->addComment($issue["issues"][0], $params["comment"], !!$params["commentPrivate"]);
-
-                return api::ANSWER();
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function PUT($params)
             {
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $success =  $tt->modifyComment($params["issueId"], $params["commentIndex"], $params["comment"], !!$params["commentPrivate"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params)
             {
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $success =  $tt->deleteComment($params["issueId"], $params["commentIndex"]);
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {
