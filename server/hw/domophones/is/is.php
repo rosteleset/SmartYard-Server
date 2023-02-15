@@ -9,10 +9,11 @@
             public $user = 'root';
             protected $def_pass = '123456';
 
-            protected $rfid_keys = [];
-            protected $apartments = [];
-            protected $matrix = [];
+            protected array $rfid_keys = [];
+            protected array $apartments = [];
+            protected array $matrix = [];
 
+            /** Make an API call */
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $resource;
 
@@ -41,6 +42,7 @@
                 return json_decode($res, true);
             }
 
+            /** Add the private code to the apartment */
             protected function add_open_code($code, $apartment) {
                 $this->api_call('/openCode', 'POST', [
                     'code' => $code,
@@ -48,12 +50,13 @@
                 ]);
             }
 
+            /** Set the CMS model and fill CMS matrix with zeros */
             protected function clear_cms($cms_model) {
                 for ($i = 1; $i <= 3; $i++) {
                     if ($cms_model == 'FACTORIAL 8x8') {
                         $capacity = 64;
                         $matrix = array_fill(0, 8, array_fill(0, 8, null));
-                    } else if ($cms_model == 'COM-220U') {
+                    } elseif ($cms_model == 'COM-220U') {
                         $capacity = 220;
                         $matrix = array_fill(0, 10, array_fill(0, 22, null));
                     } else {
@@ -68,14 +71,22 @@
                 }
             }
 
+            /** Delete a private code from the apartment */
             protected function delete_open_code(int $apartment) {
                 $this->api_call("/openCode/$apartment", 'DELETE');
             }
 
+            /** Enable DDNS */
+            protected function enable_ddns(bool $enabled = true) {
+                $this->api_call('/v1/ddns', 'PUT', [ 'enabled' => $enabled ]);
+            }
+
+            /** Enable echo cancellation for SIP */
             protected function enable_echo_cancellation(bool $enabled = true) {
                 $this->api_call('/sip/options', 'PUT', [ 'echoD' => $enabled ]);
             }
 
+            /** Get an array of apartment numbers only */
             protected function get_apartments() {
                 $apartments = [];
                 $raw_apartments = $this->get_raw_apartments();
@@ -87,6 +98,7 @@
                 return $apartments;
             }
 
+            /** Get CMS matrix */
             protected function get_matrix() {
                 $matrix = [];
 
@@ -97,14 +109,17 @@
                 return $matrix;
             }
 
+            /** Get all apartments as an array of objects */
             protected function get_raw_apartments() {
                 return $this->api_call('/panelCode');
             }
 
+            /** Get all RFID keys as an array of objects */
             protected function get_raw_rfids() {
                 return $this->api_call('/key/store');
             }
 
+            /** Merge the current CMS matrix from object property into a device */
             protected function merge_matrix() {
                 for ($i = 0; $i <= 2; $i++) {
                     $this->api_call('/switch/matrix/' . ($i + 1), 'PUT', [
@@ -114,6 +129,7 @@
                 }
             }
 
+            /** Merge the current array of RFID keys from object property into a device */
             protected function merge_rfids() {
                 $this->api_call('/key/store/merge', 'PUT', $this->rfid_keys);
             }
@@ -538,6 +554,7 @@
 
             public function prepare() {
                 parent::prepare();
+                $this->enable_ddns(false);
                 $this->enable_echo_cancellation(false);
             }
 
