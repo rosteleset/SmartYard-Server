@@ -464,13 +464,13 @@
         }
     },
 
-    selectFilter: function (filter, skip, limit) {
+    selectFilter: function (filter, skip, limit, search) {
         if (filter) {
             $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
         } else {
             filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
-        window.location.href = `#tt&filter=${filter}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}`;
+        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${search?encodeURIComponent(search):''}`;
     },
 
     selectProject: function (project) {
