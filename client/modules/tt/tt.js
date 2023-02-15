@@ -1015,11 +1015,7 @@
             if (AVAIL("tt", "project", "POST")) {
                 cog = "";
             }
-            rtd += `
-                            <div class="form-inline">
-                                <div class="input-group input-group-sm mr-2 ${cog}">
-                                    <select id="ttProjectSelect" class="form-control">
-                        `;
+            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control">`;
             for (let j in modules.tt.meta.myRoles) {
                 if (j == current_project) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
@@ -1027,38 +1023,15 @@
                     rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
                 }
             }
-            rtd += `
-                                </select>
-                                </div>
-                                <div class="input-group input-group-sm ${cog}">
-                                    <input id="ttSearch" class="form-control" type="search" aria-label="Search">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-default" id="ttSearchButton">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>`;
+            rtd += `</select></div>`;
+            rtd += `<div class="input-group input-group-sm ${cog}"><input id="ttSearch" class="form-control" type="search" aria-label="Search"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton"><i class="fas fa-search"></i></button></div></div>`;
             if (AVAIL("tt", "project", "POST")) {
-                rtd += `
-                                <div class="nav-item mr-0 pr-0">
-                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                                        <i class="fas fa-lg fa-fw fa-cog"></i>
-                                    </a>
-                                </div>
-                            `;
+                rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
-            rtd += `
-                            </div>
-                        `;
+            rtd += `</div>`;
         } else {
             if (AVAIL("tt", "project", "POST")) {
-                rtd += `
-                                <div class="nav-item mr-0 pr-0">
-                                    <a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}">
-                                        <i class="fas fa-lg fa-fw fa-cog"></i>
-                                    </a>
-                                </div>
-                            `;
+                rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
         }
 
@@ -1112,11 +1085,7 @@
         }
 
         if (myself.uid) {
-            $("#leftTopDynamic").html(`
-                            <li class="nav-item d-none d-sm-inline-block">
-                                <a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a>
-                            </li>
-                        `);
+            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a></li>`);
         }
 
         $(".createIssue").off("click").on("click", () => {
@@ -1190,12 +1159,7 @@
                 return h;
             }
 
-            $("#mainForm").html(`
-                <table class="mt-2 ml-2" style="width: 100%;">
-                    <tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager()}</td></tr>
-                </table>
-                <div class="ml-2 mr-2" id="issuesList"></div>
-            `);
+            $("#mainForm").html(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager()}</td></tr></table><div class="ml-2 mr-2" id="issuesList"></div>`);
 
             $(".tt_issues_filter").off("click").on("click", function () {
                 modules.tt.selectFilter($(this).attr("data-filter-name"));
