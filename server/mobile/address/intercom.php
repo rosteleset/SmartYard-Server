@@ -81,13 +81,15 @@ if (@$postdata['settings']) {
         $params['whiteRabbit'] = $wr;
     }
 
+    $flat_plog = $households->getFlat($flat_id)['plog'];
+
     $disable_plog = null;
-    if (@$settings['disablePlog'] && $flat_owner) {
+    if (@$settings['disablePlog'] && $flat_owner && $plog && $flat_plog != plog::ACCESS_RESTRICTED_BY_ADMIN) {
         $disable_plog = ($settings['disablePlog'] == 't');
     }
 
     $hidden_plog = null;
-    if (@$settings['hiddenPlog'] && $flat_owner) {
+    if (@$settings['hiddenPlog'] && $flat_owner && $plog && $flat_plog != plog::ACCESS_RESTRICTED_BY_ADMIN) {
         $hidden_plog = ($settings['hiddenPlog'] == 't');
     }
 
@@ -101,9 +103,7 @@ if (@$postdata['settings']) {
         }
     } else {
         if ($hidden_plog !== null) {
-            $flat = $households->getFlat($flat_id);
-            $p = $flat['plog'];
-            if ($p == plog::ACCESS_ALL || $p == plog::ACCESS_OWNER_ONLY) {
+            if ($flat_plog == plog::ACCESS_ALL || $flat_plog == plog::ACCESS_OWNER_ONLY) {
                 $params['plog'] = $hidden_plog ? plog::ACCESS_OWNER_ONLY : plog::ACCESS_ALL;
             }
         }
@@ -143,9 +143,9 @@ $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
 $ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
 $ret['autoOpen'] = date('Y-m-d H:i:s', strtotime($flat['autoOpen']));
 $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
-if ($flat_owner) {
-    $ret['disablePlog'] = ($flat['plog'] == plog::ACCESS_DENIED || $flat['plog'] == plog::ACCESS_RESTRICTED_BY_ADMIN) ? 't' : 'f';
-    $ret['hiddenPlog'] = ($flat['plog'] == plog::ACCESS_ALL) ? 'f' : 't';
+if ($flat_owner && $plog && $flat['plog'] != plog::ACCESS_RESTRICTED_BY_ADMIN) {
+    $ret['disablePlog'] = $flat['plog'] == plog::ACCESS_DENIED ? 't' : 'f';
+    $ret['hiddenPlog'] = $flat['plog'] == plog::ACCESS_ALL ? 'f' : 't';
 }
 
 if ($ret) {

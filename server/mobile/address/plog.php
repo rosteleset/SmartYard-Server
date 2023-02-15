@@ -72,7 +72,6 @@ if (!@$postdata['day']) {
 }
 
 $plog = loadBackend("plog");
-
 if (!$plog) {
     response(403);
 }

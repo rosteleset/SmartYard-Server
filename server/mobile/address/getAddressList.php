@@ -36,8 +36,11 @@
  * 424 неверный токен
  */
 
+    use backends\plog\plog;
+
     auth(3600);
     $households = loadBackend("households");
+    $plog = loadBackend("plog");
     $cameras = loadBackend("cameras");
 
     $houses = [];
@@ -52,7 +55,12 @@
             $house = &$houses[$houseId];
             $house['houseId'] = strval($houseId);
             $house['address'] = $flat['house']['houseFull'];
-            $house['hasPlog'] = 't';
+            $is_owner = ((int)$flat['role'] == 0);
+            $flat_plog = $households->getFlat($flat["flatId"])['plog'];
+            $has_plog = $plog && ($flat_plog == plog::ACCESS_ALL || $flat_plog == plog::ACCESS_OWNER_ONLY && $is_owner);
+            if ($plog && $flat_plog != plog::ACCESS_RESTRICTED_BY_ADMIN) {
+                $house['hasPlog'] = $has_plog ? 't' : 'f';
+            }
             $house['cameras'] = $households->getCameras("houseId", $houseId);
             $house['doors'] = [];
         }
