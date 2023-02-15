@@ -105,7 +105,7 @@
 
     },
 
-    createIssueForm(current_project, workflow) {
+    createIssueForm: function (current_project, workflow) {
         loadingStart();
         modules.users.loadUsers(() => {
             modules.groups.loadGroups(() => {
