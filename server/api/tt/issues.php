@@ -22,7 +22,9 @@
                 if (@$params["filter"]) {
                     try {
                         $filter = @json_decode($tt->getFilter($params["filter"]), true);
-                        $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5);
+                        if ($filter) {
+                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5);
+                        }
                     } catch (\Exception $e) {
                         setLastError($e->getMessage());
                         return api::ERROR();

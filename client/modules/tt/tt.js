@@ -1055,6 +1055,23 @@
             $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
         }
 
+        $("#ttSearch").off("keypress").on("keypress", function (e) {
+            if (e.keyCode == 13) {
+                $("#ttSearchButton").click();
+            }
+        });
+
+        $("#ttSearchButton").off("click").on("click", () => {
+            let s = $.trim($("#ttSearch").val());
+            if (s) {
+                modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
+            }
+        });
+
+        if (params.search) {
+            $("#ttSearch").val(params.search);
+        }
+
         let x = false;
         let f = false;
 
@@ -1104,6 +1121,7 @@
             "filter": f?f:'',
             "skip": skip,
             "limit": limit,
+            "search": params.search?params.search:'',
         }, true).
         done(response => {
             let issues = response.issues;
@@ -1174,7 +1192,11 @@
                 nowrap: true,
             } ];
 
-            let pKeys = Object.keys(issues.projection);
+            let pKeys = [];
+
+            if (issues.projection) {
+                pKeys = Object.keys(issues.projection);
+            }
 
             for (let i = 0; i < pKeys.length; i++) {
                 columns.push({
@@ -1214,6 +1236,7 @@
                                     filter: f?f:'',
                                     index: i + skip + 1,
                                     count: issues.count,
+                                    search: params.search,
                                 })),
                                 cols: cols,
                             });
