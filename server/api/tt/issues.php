@@ -20,14 +20,31 @@
                 $tt = loadBackend("tt");
 
                 if (@$params["filter"]) {
-                    try {
-                        $filter = @json_decode($tt->getFilter($params["filter"]), true);
-                        if ($filter) {
-                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5);
+
+                    if ($params["filter"] == "#search" && @$params["search"]) {
+                        try {
+                            $issues = $tt->getIssues(@$params["project"] ? : "TT", [
+                                "\$text" => [ "\$search" => $params["search"] ],
+                            ], [
+                                "author",
+                                "created",
+                                "issueId",
+                                "subject"
+                            ], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5);
+                        } catch (\Exception $e) {
+                            setLastError($e->getMessage());
+                            return api::ERROR();
                         }
-                    } catch (\Exception $e) {
-                        setLastError($e->getMessage());
-                        return api::ERROR();
+                    } else {
+                        try {
+                            $filter = @json_decode($tt->getFilter($params["filter"]), true);
+                            if ($filter) {
+                                $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5);
+                            }
+                        } catch (\Exception $e) {
+                            setLastError($e->getMessage());
+                            return api::ERROR();
+                        }
                     }
                 }
 
