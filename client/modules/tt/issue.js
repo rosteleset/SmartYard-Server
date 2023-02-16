@@ -212,7 +212,7 @@
             issue: issue,
         }).
         done(result => {
-            modules.tt.viewIssue(result.id);
+            modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify({ id: result.id })));
         }).
         fail(FAIL).
         always(() => {
@@ -222,10 +222,10 @@
 
     viewIssue: function (issue) {
         issue = JSON.parse(b64_to_utf8(issue));
-        window.location.href = `#tt&issue=${issue.id}&filter=${issue.filter}&index=${issue.index}&count=${issue.count}`;
+        window.location.href = `#tt&issue=${issue.id}&filter=${issue.filter?issue.filter:""}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${issue.search?issue.search:""}`;
     },
 
-    renderIssue: function (issue, filter, index, count) {
+    renderIssue: function (issue, filter, index, count, search) {
 
         function fieldRow(i) {
             let h = '';
@@ -242,7 +242,7 @@
             return h;
         }
 
-        console.log(filter, index, count);
+        console.log(filter, index, count, search);
         console.log(issue);
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 

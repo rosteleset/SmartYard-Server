@@ -466,7 +466,9 @@
 
     selectFilter: function (filter, skip, limit, search) {
         if (filter) {
-            $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
+            if (filter !== "#search") {
+                $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
+            }
         } else {
             filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
@@ -635,11 +637,9 @@
         }
 
         let x = false;
-        let f = false;
 
         try {
             x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter_" + current_project);
-            f = modules.tt.meta.filters[x];
         } catch (e) {
             //
         }
@@ -647,7 +647,7 @@
         let fcount = 0;
         let filters = `<span class="dropdown">`;
 
-        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${f?f:i18n("tt.filter")}</span>`;
+        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
         filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
         for (let i in project.filters) {
             if (x == project.filters[i]) {
@@ -673,14 +673,12 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
 
-        f = $.cookie("_tt_issue_filter_" + current_project);
-
         let skip = parseInt(params.skip?params.skip:0);
         let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
 
         QUERY("tt", "issues", {
             "project": current_project,
-            "filter": f?f:'',
+            "filter": x?x:'',
             "skip": skip,
             "limit": limit,
             "search": params.search?params.search:'',
@@ -795,10 +793,10 @@
                             rows.push({
                                 uid: utf8_to_b64(JSON.stringify({
                                     id: issues.issues[i]["issueId"],
-                                    filter: f?f:'',
+                                    filter: x?x:"",
                                     index: i + skip + 1,
-                                    count: issues.count,
-                                    search: params.search,
+                                    count: parseInt(issues.count)?parseInt(issues.count):modules.tt.defaultIssuesPerPage,
+                                    search: ($.trim(params.search) && typeof params.search === "string")?$.trim(params.search):"",
                                 })),
                                 cols: cols,
                             });
@@ -830,12 +828,12 @@
                     if (modules.groups) {
                         modules.users.loadUsers(() => {
                             modules.groups.loadGroups(() => {
-                                modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"]);
+                                modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"], params["search"]);
                             });
                         });
                     } else {
                         modules.users.loadUsers(() => {
-                            modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"]);
+                            modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"], params["search"]);
                         });
                     }
                 }).
