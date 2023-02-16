@@ -336,7 +336,7 @@ extensions = {
             if dest ~= "" and dest ~= nil then
                 app.Dial(dest, 120)
             else
-                add.Dial("PJSIP/" .. extension .."@kamailio", 120)
+                app.Dial("PJSIP/" .. extension .."@kamailio", 120)
             end
         end,
 
@@ -417,6 +417,7 @@ extensions = {
                     if flatId ~= nil then
                         log_debug("ordinal call")
                         flat = dm("flat", flatId)
+                        sipEnabled = flat.sipEnabled
                         for i, e in ipairs(flat.entrances) do
                             if flat.entrances[i].domophoneId == domophoneId then
                                 flatNumber = flat.entrances[i].apartment
