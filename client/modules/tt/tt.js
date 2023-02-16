@@ -472,12 +472,12 @@
         } else {
             filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
-        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${search?encodeURIComponent(search):''}`;
+        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}`;
     },
 
     selectProject: function (project) {
         $.cookie("_project", project, { expires: 3650, insecure: config.insecureCookie });
-        window.location.href = `#tt&project=${project}`;
+        window.location.href = `#tt&project=${encodeURIComponent(project)}`;
     },
 
     doAction: function (issue, action) {

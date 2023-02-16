@@ -220,7 +220,7 @@
 
     viewIssue: function (issue) {
         issue = JSON.parse(b64_to_utf8(issue));
-        window.location.href = `#tt&issue=${issue.id}&filter=${issue.filter?issue.filter:""}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):""}`;
+        window.location.href = `#tt&issue=${encodeURIComponent(issue.id)}&filter=${encodeURIComponent(issue.filter?issue.filter:"")}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${encodeURIComponent(($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):"")}`;
     },
 
     renderIssue: function (issue, filter, index, count, search) {
