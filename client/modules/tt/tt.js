@@ -681,7 +681,7 @@
             "filter": x?x:'',
             "skip": skip,
             "limit": limit,
-            "search": params.search?params.search:'',
+            "search": (params.search && typeof params.search === "string")?params.search:'',
         }, true).
         done(response => {
             let issues = response.issues;

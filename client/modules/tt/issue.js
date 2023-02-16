@@ -101,10 +101,6 @@
         always(loadingDone)
     },
 
-    issueField: function (custom, field, value) {
-
-    },
-
     createIssueForm: function (current_project, workflow) {
         $("#leftTopDynamic").html("");
 
@@ -224,12 +220,14 @@
 
     viewIssue: function (issue) {
         issue = JSON.parse(b64_to_utf8(issue));
-        window.location.href = `#tt&issue=${issue.id}&filter=${issue.filter?issue.filter:""}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${issue.search?issue.search:""}`;
+        window.location.href = `#tt&issue=${issue.id}&filter=${issue.filter?issue.filter:""}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):""}`;
     },
 
     renderIssue: function (issue, filter, index, count, search) {
         $("#leftTopDynamic").html("");
 
+        search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
+        
         function fieldRow(i) {
             let h = '';
 
