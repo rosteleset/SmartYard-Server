@@ -89,7 +89,6 @@ function error(message, caption, timeout) {
     });
 }
 
-// button - "class(danger, warning, success....):текст"
 function mConfirm(body, title, button, callback) {
     if (!title) {
         title = i18n("confirm");
@@ -498,4 +497,12 @@ function ttDate(date) {
     date = date?(new Date(date * 1000)):(new Date());
 
     return date.toLocaleDateString() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
+}
+
+function utf8_to_b64(str) {
+    return window.btoa(unescape(encodeURIComponent(str)));
+}
+
+function b64_to_utf8(str) {
+    return decodeURIComponent(escape(window.atob(str)));
 }

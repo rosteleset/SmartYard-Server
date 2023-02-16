@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    ID: dialplan item ID
+    Prefix: apartment number
+    Replace: analog number (must be with leading zero if number from 1 to 9)
+    Replace2 - Replace5: SIP numbers
+    DelayTime1 - DelayTime5: call delay for each replace number
+    Line - SIP account for a call (0 - auto, 1 - fist account, 2 - second account)
+    Tags - call destination (0 - analog + SIP, 1 - analog only, 2 - SIP only, 3 - forbidden)
+-->
+
+<Dial>
+    <DialReplace>
+        <Data ID="1"
+              Prefix="1"
+              Replace="01"
+              Replace2="1000000006"
+              Replace3=""
+              Replace4=""
+              Replace5=""
+              DelayTime1="0"
+              DelayTime2="0"
+              DelayTime3="0"
+              DelayTime4="0"
+              DelayTime5="0"
+              Line="1"
+              Tags="0"
+        />
+    </DialReplace>
+</Dial>

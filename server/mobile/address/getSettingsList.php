@@ -36,8 +36,11 @@
  * 424 неверный токен
  */
 
+    use backends\plog\plog;
+
     auth(3600);
     $households = loadBackend("households");
+    $plog = loadBackend("plog");
     $flats = [];
 //    response(200, $subscriber);
 
@@ -48,13 +51,17 @@
         $f['houseId'] = strval($flat['house']['houseId']);
         $f['flatId'] = strval($flat['flatId']);
         $f['flatNumber'] = strval($flat['flat']);
-        $f['flatOwner'] = (int)$flat['role']==0?'t':'f';
-        
+        $is_owner = ((int)$flat['role'] == 0);
+        $f['flatOwner'] = $is_owner ? 't' : 'f';
         
         // TODO : сделать временный доступ к воротам. пока он отключен, и в приложении этот раздел просто не будет отображаться.
         $f['hasGates'] = 'f';
 
-        $f['hasPlog'] = 't';
+        $flat_plog = $households->getFlat($flat["flatId"])['plog'];
+        $has_plog = $plog && ($flat_plog == plog::ACCESS_ALL || $flat_plog == plog::ACCESS_OWNER_ONLY && $is_owner);
+        if ($plog && $flat_plog != plog::ACCESS_RESTRICTED_BY_ADMIN) {
+            $f['hasPlog'] = $has_plog ? 't' : 'f';
+        }
 
         // TODO: сделать работу с заявками на изменение услуг. пока блок выбора услуг - "тарелочки" отключены.
         // в услугах должна быть услуга domophone, чтобы было доступно управление доступом.

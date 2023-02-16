@@ -26,6 +26,7 @@ CREATE TABLE tt_projects_filters
 (
     project_filter_id integer primary key autoincrement,
     project_id integer,
+    personal integer,
     filter text
 );
 CREATE UNIQUE INDEX tt_projects_filters_uniq on tt_projects_filters (project_id, filter);

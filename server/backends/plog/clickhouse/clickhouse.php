@@ -149,10 +149,20 @@
                 echo("__call writeEventData\n");
                 if (count($flat_list)) {
                     foreach ($flat_list as $flat_id) {
+                        $hidden = $this->getPlogHidden($flat_id);
+                        if ($hidden < 0) {
+                            continue;
+                        }
+                        $event_data[self::COLUMN_HIDDEN] = $hidden;
                         $event_data[self::COLUMN_FLAT_ID] = $flat_id;
                         $this->clickhouse->insert("plog", [$event_data]);
                     }
                 } else {
+                    $hidden = $this->getPlogHidden($event_data[self::COLUMN_FLAT_ID]);
+                    if ($hidden < 0) {
+                        return;
+                    }
+                    $event_data[self::COLUMN_HIDDEN] = $hidden;
                     $this->clickhouse->insert("plog", [$event_data]);
                 }
             }
@@ -404,6 +414,21 @@
                 $households = loadBackend('households');
                 $result = $households->getEntrances('flatId', $flat_id);
                 return count($result);
+            }
+
+            private function getPlogHidden($flat_id) {
+                $households = loadBackend('households');
+                $flat = $households->getFlat($flat_id);
+                if ($flat['plog'] == self::ACCESS_RESTRICTED_BY_ADMIN) {
+                    //ignore event
+                    return -1;
+                }
+                $hidden = 0;
+                if ($flat['plog'] == self::ACCESS_DENIED) {
+                    $hidden = 1;
+                }
+
+                return $hidden;
             }
 
             private function processEvents()

@@ -26,6 +26,7 @@ CREATE TABLE tt_projects_filters
 (
     project_filter_id serial primary key,
     project_id integer,
+    personal integer,
     filter character varying
 );
 CREATE UNIQUE INDEX tt_projects_filters_uniq on tt_projects_filters (project_id, filter);

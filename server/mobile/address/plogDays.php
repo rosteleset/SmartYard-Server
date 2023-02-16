@@ -40,7 +40,6 @@ if (!$f) {
 }
 
 $plog = loadBackend("plog");
-
 if (!$plog) {
     response(403);
 }
