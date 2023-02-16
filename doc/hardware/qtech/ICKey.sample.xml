@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    ID: RFID key ID
+    Admin: ???
+    Name: name of RFID key (usually the apartment number)
+    Code: RFID code
+    DoorNum: relay that is triggered by internal reader (1 - relay A, 2 - relay B, 3 - relay C)
+    WiegandDoorNum: relay that is triggered by external Wiegand reader (1 - relay A, 2 - relay B, 3 - relay C)
+    Mon - Sun: RFID key allowed days (0 - disable, 1 - enable)
+    TimeStart, TimeEnd: RFID key allowed time
+    DeviceName: ???
+    Tags: is access allowed (0 - allowed, 2 - forbidden)
+-->
+
+<KeyData>
+    <Key ID="1"
+         Admin="0"
+         Name=""
+         Code="00000033753EFB"
+         DoorNum="1"
+         WiegandDoorNum="2"
+         Mon="1"
+         Tue="1"
+         Wed="1"
+         Thur="1"
+         Fri="1"
+         Sat="1"
+         Sun="1"
+         TimeStart="00:00"
+         TimeEnd="23:59"
+         DeviceName=""
+         Tags="0"
+    />
+</KeyData>
