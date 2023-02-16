@@ -106,6 +106,8 @@
     },
 
     createIssueForm: function (current_project, workflow) {
+        $("#leftTopDynamic").html("");
+
         loadingStart();
         modules.users.loadUsers(() => {
             modules.groups.loadGroups(() => {
@@ -212,7 +214,7 @@
             issue: issue,
         }).
         done(result => {
-            modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify({ id: result.id })));
+            modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify(result)));
         }).
         fail(FAIL).
         always(() => {
@@ -226,6 +228,7 @@
     },
 
     renderIssue: function (issue, filter, index, count, search) {
+        $("#leftTopDynamic").html("");
 
         function fieldRow(i) {
             let h = '';
