@@ -345,16 +345,20 @@
         h += "</div>";
         h += "</td>";
         h += "<td style='text-align: right;' class='pr-2'>";
-        if (parseInt(index) > 1) {
-            h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left pointer'></i>"
+        if (index && count) {
+            if (parseInt(index) > 1) {
+                h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left pointer'></i>"
+            } else {
+                h += "<i class='fas fa-fw fa-chevron-left text-muted'></i>"
+            }
+            h += "<span class='ml-2 mr-2'>" + index + " " + i18n("tt.of") + " " + count + "</span>";
+            if (parseInt(index) < parseInt(count)) {
+                h += "<i id='stepNext' class='fas fa-fw fa-chevron-right pointer'></i>"
+            } else {
+                h += "<i class='fas fa-fw fa-chevron-right text-muted'></i>"
+            }
         } else {
-            h += "<i class='fas fa-fw fa-chevron-left text-muted'></i>"
-        }
-        h += "<span class='ml-2 mr-2'>" + index + " " + i18n("tt.of") + " " + count + "</span>";
-        if (parseInt(index) < parseInt(count)) {
-            h += "<i id='stepNext' class='fas fa-fw fa-chevron-right pointer'></i>"
-        } else {
-            h += "<i class='fas fa-fw fa-chevron-right text-muted'></i>"
+            h += "&nbsp;";
         }
         h += "</td>";
         h += "</tr>";
