@@ -763,9 +763,10 @@
             abstract public function myRoles($uid = false);
 
             /**
+             * @param $returnGids
              * @return mixed
              */
-            abstract public function myGroups();
+            abstract public function myGroups($returnGids = false);
 
             /**
              * @return mixed

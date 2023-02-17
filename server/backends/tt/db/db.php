@@ -1103,7 +1103,7 @@
             /**
              * @inheritDoc
              */
-            public function myGroups()
+            public function myGroups($returnGids = false)
             {
                 $groups = loadBackend("groups");
 
@@ -1112,9 +1112,14 @@
                 if ($groups) {
                     $groups = $groups->getGroups($this->uid);
 
-
-                    foreach ($groups as $group) {
-                        $g[] = $group["acronym"];
+                    if ($returnGids) {
+                        foreach ($groups as $group) {
+                            $g[] = $group["gid"];
+                        }
+                    } else {
+                        foreach ($groups as $group) {
+                            $g[] = $group["acronym"];
+                        }
                     }
                 }
 

@@ -650,7 +650,12 @@
         filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
         filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
         personal = true;
+        let falready = {};
         for (let i in project.filters) {
+            if (falready[project.filters[i].filter]) {
+                continue;
+            }
+            falready[project.filters[i].filter] = true;
             if (!parseInt(project.filters[i].personal)) {
                 if (personal) {
                     if (fcount) {
