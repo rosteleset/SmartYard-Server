@@ -103,6 +103,7 @@
 
     createIssueForm: function (current_project, workflow) {
         $("#leftTopDynamic").html("");
+        $("#rightTopDynamic").html("");
 
         loadingStart();
         modules.users.loadUsers(() => {
@@ -225,6 +226,7 @@
 
     renderIssue: function (issue, filter, index, count, search) {
         $("#leftTopDynamic").html("");
+        $("#rightTopDynamic").html("");
 
         search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
         
