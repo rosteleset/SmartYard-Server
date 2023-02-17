@@ -6,11 +6,11 @@
 
         abstract class dks extends domophones {
 
-            public $user = 'admin';
+            public string $user = 'admin';
 
-            protected $def_pass = 'admin';
+            protected string $def_pass = 'admin';
 
-            protected $cms_models = [
+            protected array $cms_models = [
                 'COM-25U' => 0,
                 'COM-80U' => 1,
                 'COM-100U' => 2,
@@ -189,7 +189,7 @@
                     $units = $offset%10;
                     $dozens = intdiv($offset, 10);
                 }
-                else if ($cms_model == 'COM-220U') {
+                elseif ($cms_model == 'COM-220U') {
                     $cms = intdiv($offset, 220);
                     if ($offset%220 == 0) {
                         $units = 0;
@@ -683,7 +683,5 @@
                 $this->set_intercom('IndividualLevels', 'on');
                 $this->set_intercom('SosDelay', 0);
             }
-
         }
-
     }

@@ -9,14 +9,14 @@
 
             use separated_rfids;
 
-            protected $cms_models = [
+            protected array $cms_models = [
                 'KKM-100S2' => 0,
                 'KKM-105' => 1,
                 'KAD2501' => 2,
                 'KKM-108' => 3,
             ];
 
-            function configure_user_account(string $password) {
+            public function configure_user_account(string $password) {
                 parent::configure_user_account($password);
 
                 $this->api_call('cgi-bin/pwdgrp_cgi', [
@@ -25,7 +25,5 @@
                     'password' => $password,
                 ]);
             }
-
         }
-
     }

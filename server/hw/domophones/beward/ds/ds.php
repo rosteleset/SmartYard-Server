@@ -6,10 +6,10 @@
 
         abstract class ds extends domophones {
 
-            public $user = 'admin';
+            public string $user = 'admin';
 
-            protected $def_pass = 'admin';
-            protected $reboot_time = 30;
+            protected string $def_pass = 'admin';
+            protected int $reboot_time = 30;
 
             /** Сделать API-вызов */
             protected function api_call($method, $params = []) {
@@ -430,7 +430,5 @@
                 $this->configure_audio();
                 $this->configure_rtsp();
             }
-
         }
-
     }

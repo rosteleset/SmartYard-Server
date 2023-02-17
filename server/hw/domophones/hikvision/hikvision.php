@@ -9,10 +9,10 @@
 
         abstract class hikvision extends domophones {
 
-            public $user = 'admin';
+            public string $user = 'admin';
 
-            protected $api_prefix = '/ISAPI/';
-            protected $def_pass = 'password123';
+            protected string $def_pass = 'password123';
+            protected string $api_prefix = '/ISAPI/';
 
             protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;

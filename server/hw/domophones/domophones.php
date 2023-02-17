@@ -9,13 +9,14 @@
 
         abstract class domophones extends hw {
 
-            public $user;
-            public $pass;
+            public string $user;
+            public string $pass;
 
-            protected $def_pass;
+            protected string $def_pass;
+            protected string $api_prefix;
 
             /**
-             * @throws Exception если панель недоступна
+             * @throws Exception if panel unavailable
              */
             public function __construct(string $url, string $pass, bool $first_time = false) {
                 parent::__construct($url);
@@ -246,7 +247,5 @@
                 $this->set_cms_model($cms_model);
                 $this->configure_gate([]);
             }
-
         }
-
     }

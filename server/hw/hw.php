@@ -4,21 +4,19 @@
 
         abstract class hw {
 
-            public $url;
+            public string $url;
 
             public function __construct(string $url) {
                 $this->url = $url;
             }
 
-            /** Проверить доступность устройства */
+            /** Check device availability */
             abstract public function ping(): bool;
 
-            /** Перезагрузить устройство */
+            /** Reboot device */
             abstract public function reboot();
 
-            /** Сбросить устройство к заводским настройкам */
+            /** Reset device to factory settings */
             abstract public function reset();
-
         }
-
     }
