@@ -52,10 +52,17 @@
                             $w[] = $workflow['workflow'];
                         }
 
-                        $filters = $this->db->query("select filter from tt_projects_filters where project_id = {$project["project_id"]} order by filter", \PDO::FETCH_ASSOC)->fetchAll();
+                        if ($this->uid) {
+                            $filters = $this->db->query("select filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} and (personal is null or personal = {$this->uid}) order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
+                        } else {
+                            $filters = $this->db->query("select filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
+                        }
                         $f = [];
                         foreach ($filters as $filter) {
-                            $f[] = $filter['filter'];
+                            $f[] = [
+                                "filter" => $filter['filter'],
+                                "personal" => $filter['personal'],
+                            ];
                         }
 
                         $resolutions = $this->db->query("select issue_resolution_id from tt_projects_resolutions where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();

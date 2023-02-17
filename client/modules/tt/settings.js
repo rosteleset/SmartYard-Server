@@ -1184,6 +1184,8 @@
             });
         }
 
+        console.log(project.filters);
+
         cardForm({
             title: i18n("tt.projectFilters"),
             footer: true,

@@ -649,11 +649,20 @@
 
         filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
         filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+        personal = true;
         for (let i in project.filters) {
-            if (x == project.filters[i]) {
-                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
+            if (!parseInt(project.filters[i].personal)) {
+                if (personal) {
+                    if (fcount) {
+                        filters += `<li class="dropdown-divider"></li>`;
+                    }
+                    personal = false;
+                }
+            }
+            if (x == project.filters[i].filter) {
+                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i].filter}">${modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"}</li>`;
             } else {
-                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
+                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i].filter}">${modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"}</li>`;
             }
             fcount++;
         }
