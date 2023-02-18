@@ -329,73 +329,27 @@
              */
             public function addProjectFilter($projectId, $filter, $personal)
             {
-                // TODO: add transaction, commint, rollback
-
-                if (!checkInt($projectId)) {
+                if (!checkInt($projectId) || ($personal && !checkInt($personal))) {
                     return false;
                 }
 
-                try {
-                    $sth = $this->db->prepare("insert into tt_projects_filters (project_id, filter) values (:project_id, :filter)");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                try {
-                    $this->db->exec("delete from tt_projects_filters where project_id = $projectId");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                foreach ($filters as $filter) {
-                    if (!$sth->execute([
-                        ":project_id" => $projectId,
-                        ":filter" => $filter,
-                    ])) {
-                        return false;
-                    }
-                }
-
-                return true;
+                return $this->db->insert("insert into tt_projects_filters (project_id, filter, personal) values (:project_id, :filter, :personal)", [
+                    "project_id" => $projectId,
+                    "filter" => $filter,
+                    "personal" => $personal?$personal:null,
+                ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function deleteProjectFilter($projectId, $filter, $personal)
+            public function deleteProjectFilter($projectFilterId)
             {
-                // TODO: add transaction, commint, rollback
-
-                if (!checkInt($projectId)) {
+                if (!checkInt($projectFilterId)) {
                     return false;
                 }
 
-                try {
-                    $sth = $this->db->prepare("insert into tt_projects_filters (project_id, filter) values (:project_id, :filter)");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                try {
-                    $this->db->exec("delete from tt_projects_filters where project_id = $projectId");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                foreach ($filters as $filter) {
-                    if (!$sth->execute([
-                        ":project_id" => $projectId,
-                        ":filter" => $filter,
-                    ])) {
-                        return false;
-                    }
-                }
-
-                return true;
+                return $this->db->update("delete from tt_projects_filters where project_filter_id = $projectFilterId");
             }
 
             /**

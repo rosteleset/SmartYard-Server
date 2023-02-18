@@ -263,13 +263,11 @@
              abstract public function addProjectFilter($projectId, $filter, $personal);
 
             /**
-             * @param $projectId
-             * @param $filter
-             * @param $personal
+             * @param $projectFilterId
              * @return boolean
              */
 
-             abstract public function deleteProjectFilter($projectId, $filter, $personal);
+             abstract public function deleteProjectFilter($projectFilterId);
 
              /**
              * @return false|array
