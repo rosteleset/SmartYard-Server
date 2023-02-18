@@ -169,7 +169,7 @@
     "crontabMonthly": "Ежемесячно",
     "role": "Роль",
     "workflowName": "Процесс",
-    "projectFilters": "Доступные фильтры",
+    "projectFilters": "Фильтры проекта",
     "addProjectTag": "Добавить ярлык",
     "created": "Дата создания",
     "updated": "Дата обновления",
