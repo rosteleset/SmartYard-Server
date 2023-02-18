@@ -15,9 +15,17 @@
         class project extends api {
 
             public static function POST($params) {
-                $projectId = loadBackend("tt")->addProject($params["acronym"], $params["project"]);
+                $tt = loadBackend("tt");
 
-                return api::ANSWER($projectId, ($projectId !== false)?"projectId":"notAcceptable");
+                if (array_key_exists("filter", $params)) {
+                    $success = $tt->addProjectFilter($params["_id"], $params["filter"], $params["personal"]);
+
+                    return api::ANSWER($success);
+                } else {
+                    $projectId = $tt->addProject($params["acronym"], $params["project"]);
+
+                    return api::ANSWER($projectId, ($projectId !== false)?"projectId":"notAcceptable");
+                }
             }
 
             public static function PUT($params) {
@@ -30,10 +38,6 @@
 
                 if (array_key_exists("workflows", $params)) {
                     $success = $tt->setProjectWorkflows($params["_id"], $params["workflows"]);
-                }
-
-                if (array_key_exists("filter", $params)) {
-                    $success = $tt->addProjectFilter($params["_id"], $params["filter"], $params["personal"]);
                 }
 
                 if (array_key_exists("resolutions", $params)) {
@@ -52,10 +56,12 @@
             }
 
             public static function DELETE($params) {
+                $tt = loadBackend("tt");
+
                 if (array_key_exists("filter", $params)) {
                     $success = $tt->deleteProjectFilter($params["_id"], $params["filter"], $params["personal"]);
                 } else {
-                    $success = loadBackend("tt")->deleteProject($params["_id"]);
+                    $success = $tt->deleteProject($params["_id"]);
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
