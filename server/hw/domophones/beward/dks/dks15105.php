@@ -9,7 +9,7 @@
 
             use separated_rfids;
 
-            protected $cms_models = [
+            protected array $cms_models = [
                 'KKM-100S2' => 0,
                 'KKM-105' => 1,
                 'KKM-108' => 3,
@@ -18,5 +18,4 @@
             ];
 
         }
-
     }

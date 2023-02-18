@@ -1,0 +1,12 @@
+{
+    "title": "RUBETEK RV-3434",
+    "vendor": "RUBETEK",
+    "model": "RV-3434",
+    "class": "rv3434",
+    "syslog": "rubetek",
+    "outputs": 3,
+    "camera": "rubetek",
+    "cmses": [
+
+    ]
+}

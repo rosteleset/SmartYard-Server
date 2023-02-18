@@ -10,5 +10,4 @@
             use separated_rfids;
 
         }
-
     }

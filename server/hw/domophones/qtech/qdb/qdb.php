@@ -6,10 +6,10 @@
 
         abstract class qdb extends domophones {
 
-            public $user = 'admin';
+            public string $user = 'admin';
 
-            protected $api_prefix = '/api/';
-            protected $def_pass = 'admin';
+            protected string $def_pass = 'admin';
+            protected string $api_prefix = '/api/';
 
             /** Сделать API-вызов */
             protected function api_call(string $target, string $action, array $data = null) {
@@ -612,9 +612,9 @@
                 if (!$data['result']) {
                     if ($data['line_err1']) {
                         return 'short';
-                    } else if ($data['line_err2']) {
+                    } elseif ($data['line_err2']) {
                         return 'unconnected';
-                    } else if ($data['line_err3']) {
+                    } elseif ($data['line_err3']) {
                         return 'off-hook';
                     }
                 }
@@ -812,7 +812,5 @@
                 $this->set_private_code_length();
                 $this->set_rfid_mode();
             }
-
         }
-
     }
