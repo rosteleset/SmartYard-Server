@@ -665,9 +665,9 @@
                 }
             }
             if (x == project.filters[i].filter) {
-                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i].filter}">${modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"}</li>`;
+                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter}</li>`;
             } else {
-                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i].filter}">${modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"}</li>`;
+                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter}</li>`;
             }
             fcount++;
         }

@@ -53,13 +53,14 @@
                         }
 
                         if ($this->uid) {
-                            $filters = $this->db->query("select filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} and (personal is null or personal = {$this->uid}) order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
+                            $filters = $this->db->query("select project_filter_id, filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} and (personal is null or personal = {$this->uid}) order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
                         } else {
-                            $filters = $this->db->query("select filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
+                            $filters = $this->db->query("select project_filter_id, filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
                         }
                         $f = [];
                         foreach ($filters as $filter) {
                             $f[] = [
+                                "projectFilterId" => $filter['project_filter_id'],
                                 "filter" => $filter['filter'],
                                 "personal" => $filter['personal'],
                             ];
