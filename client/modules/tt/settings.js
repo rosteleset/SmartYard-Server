@@ -47,6 +47,22 @@
         always(modules.tt.settings.renderCustomFields);
     },
 
+    doAddProjectFilter: function (projectId, filter, personal) {
+        loadingStart();
+        POST("tt", "project", projectId, {
+            filter: filter,
+            personal: personal,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            modules.tt.settings.projectFilters(projectId);
+        });
+    },
+
     doAddProjectUser: function (projectId, uid, roleId) {
         loadingStart();
         POST("tt", "role", false, {
@@ -153,6 +169,21 @@
             message(i18n("tt.projectWasDeleted"));
         }).
         always(modules.tt.settings.renderProjects);
+    },
+
+    doDeleteProjectFilter: function (projectId, projectFilterId) {
+        loadingStart();
+        DELETE("tt", "project", false, {
+            filter: projectFilterId,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            modules.tt.settings.projectFilters(projectId);
+        });
     },
 
     doDeleteCustomField: function (customFieldId) {
@@ -1157,7 +1188,7 @@
     addProjectFilter: function (projectId, personals) {
         let p = [
             {
-                id: 0,
+                id: "0",
                 text: i18n("tt.commonFilter"),
                 icon: "fas fa-fw fa-globe-americas",
             }
@@ -1193,6 +1224,9 @@
                     type: "select2",
                     title: i18n("tt.filter"),
                     options: f,
+                    validate: v => {
+                        return !!$.trim(v);
+                    },
                 },
                 {
                     id: "personal",
@@ -1202,13 +1236,15 @@
                 },
             ],
             callback: result => {
-                //
+                modules.tt.settings.doAddProjectFilter(projectId, result.filter, result.personal)
             },
         }).show();
     },
 
     deleteProjectFilter: function (projectFilterId, projectId) {
-
+        mConfirm(i18n("tt.confirmFilterDelete", projectFilterId), i18n("confirm"), `danger:${i18n("delete")}`, () => {
+            modules.tt.settings.doDeleteProjectFilter(projectId, projectFilterId);
+        });
     },
 
     projectFilters: function (projectId) {

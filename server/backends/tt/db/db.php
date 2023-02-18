@@ -333,6 +333,18 @@
                     return false;
                 }
 
+                if (!$personal) {
+                    $already = $this->db->get("select count(*) from tt_projects_filters where project_id = :project_id and filter = :filter and personal is null", [
+                        "project_id" => $projectId,
+                        "filter" => $filter,
+                    ], false, [ "fieldlify" ]);
+
+                    if ($already) {
+                        setLastError("filterAlreadyExists");
+                        return false;
+                    }
+                }
+
                 return $this->db->insert("insert into tt_projects_filters (project_id, filter, personal) values (:project_id, :filter, :personal)", [
                     "project_id" => $projectId,
                     "filter" => $filter,
@@ -349,7 +361,7 @@
                     return false;
                 }
 
-                return $this->db->update("delete from tt_projects_filters where project_filter_id = $projectFilterId");
+                return $this->db->modify("delete from tt_projects_filters where project_filter_id = $projectFilterId");
             }
 
             /**

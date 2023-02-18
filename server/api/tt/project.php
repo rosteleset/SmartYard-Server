@@ -59,7 +59,7 @@
                 $tt = loadBackend("tt");
 
                 if (array_key_exists("filter", $params)) {
-                    $success = $tt->deleteProjectFilter($params["_id"], $params["filter"], $params["personal"]);
+                    $success = $tt->deleteProjectFilter($params["filter"]);
                 } else {
                     $success = $tt->deleteProject($params["_id"]);
                 }
