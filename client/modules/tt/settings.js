@@ -1154,6 +1154,63 @@
         }).show();
     },
 
+    addProjectFilter: function (projectId, personals) {
+        let p = [
+            {
+                id: 0,
+                text: i18n("tt.commonFilter"),
+                icon: "fas fa-fw fa-globe-americas",
+            }
+        ];
+
+        for (let i in personals) {
+            p.push({
+                id: i,
+                text: personals[i],
+                icon: "fas fa-fw " + ((parseInt(i) > 1000000)?"fa-users":"fa-user"),
+            });
+        }
+
+        let f = [];
+
+        for (let i in modules.tt.meta.filters) {
+            f.push({
+                id: i,
+                text: modules.tt.meta.filters[i]?(modules.tt.meta.filters[i] + " [" + i + "]"):i,
+            });
+        }
+
+        cardForm({
+            title: i18n("tt.addProjectFilter"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            singleColumn: true,
+            apply: i18n("add"),
+            fields: [
+                {
+                    id: "filter",
+                    type: "select2",
+                    title: i18n("tt.filter"),
+                    options: f,
+                },
+                {
+                    id: "personal",
+                    type: "select2",
+                    title: i18n("tt.personal"),
+                    options: p,
+                },
+            ],
+            callback: result => {
+                //
+            },
+        }).show();
+    },
+
+    deleteProjectFilter: function (projectFilterId, projectId) {
+
+    },
+
     projectFilters: function (projectId) {
         loadingStart();
         GET("tt", "tt", false, true).

@@ -195,6 +195,7 @@
     "projectFilter": "Фильтр",
     "filterPersonal": "Доступен",
     "commonFilter": "Общий",
+    "addProjectFilter": "Добавить фильтр",
     "of": "из",
     "methods": {
         "tt": {

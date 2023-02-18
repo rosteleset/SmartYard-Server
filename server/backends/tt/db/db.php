@@ -329,7 +329,7 @@
              */
             public function addProjectFilter($projectId, $filter, $personal)
             {
-                if (!checkInt($projectId) || ($personal && !checkInt($personal))) {
+                if (!checkInt($projectId) || !checkInt($personal)) {
                     return false;
                 }
 
