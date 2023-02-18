@@ -255,13 +255,23 @@
 
             /**
              * @param $projectId
-             * @param $filters
+             * @param $filter
+             * @param $personal
              * @return boolean
              */
 
-            abstract public function setProjectFilters($projectId, $filters);
+             abstract public function addProjectFilter($projectId, $filter, $personal);
 
             /**
+             * @param $projectId
+             * @param $filter
+             * @param $personal
+             * @return boolean
+             */
+
+             abstract public function deleteProjectFilter($projectId, $filter, $personal);
+
+             /**
              * @return false|array
              */
 

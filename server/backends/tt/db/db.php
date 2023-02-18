@@ -317,7 +317,44 @@
             /**
              * @inheritDoc
              */
-            public function setProjectFilters($projectId, $filters)
+            public function addProjectFilter($projectId, $filter, $personal)
+            {
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_projects_filters (project_id, filter) values (:project_id, :filter)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_filters where project_id = $projectId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                foreach ($filters as $filter) {
+                    if (!$sth->execute([
+                        ":project_id" => $projectId,
+                        ":filter" => $filter,
+                    ])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteProjectFilter($projectId, $filter, $personal)
             {
                 // TODO: add transaction, commint, rollback
 
