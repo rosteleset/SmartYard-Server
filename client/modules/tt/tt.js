@@ -391,10 +391,26 @@
             members[modules.users.meta[i].login] = modules.users.meta[i].realName?modules.users.meta[i].realName:modules.users.meta[i].login;
         }
 
+        let project;
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].acronym == issue.project) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        let v = false;
+        for (let i in project.viewers) {
+            if (project.viewers[i].field == field) {
+                v = project.viewers[i].name;
+                break;
+            }
+        }
+
         let val = issue[field];
 
-        if (modules.tt.viewers[field]) {
-            val = modules.tt.meta.viewers[field](val, field, issue);
+        if (v) {
+            val = modules.tt.viewers[field][v](val, field, issue);
         } else {
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
