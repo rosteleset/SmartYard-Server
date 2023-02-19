@@ -347,7 +347,7 @@
         h += "</div>";
         h += "</td>";
         h += "<td style='text-align: right;' class='pr-2'>";
-        if (index && count) {
+        if (index && count && index !== true && count !== true) {
             if (parseInt(index) > 1) {
                 h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left pointer'></i>"
             } else {

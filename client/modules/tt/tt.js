@@ -393,7 +393,7 @@
 
         let project;
         for (let i in modules.tt.meta.projects) {
-            if (modules.tt.meta.projects[i].acronym == issue.project) {
+            if (modules.tt.meta.projects[i].acronym == issue.project || modules.tt.meta.projects[i].acronym == issue.issueId.split("-")[0]) {
                 project = modules.tt.meta.projects[i];
                 break;
             }
@@ -409,7 +409,7 @@
 
         let val = issue[field];
 
-        if (v) {
+        if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
             val = modules.tt.viewers[field][v](val, field, issue);
         } else {
             if (field.substring(0, 4) !== "_cf_") {
@@ -729,10 +729,9 @@
         done(response => {
             let issues = response.issues;
 
-            console.log(issues);
-
             limit = parseInt(issues.limit);
             skip = parseInt(issues.skip);
+            
             let page = Math.floor(skip / limit) + 1;
 
             function pager() {
