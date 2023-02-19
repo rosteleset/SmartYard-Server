@@ -393,57 +393,62 @@
 
         let val = issue[field];
 
-        if (field.substring(0, 4) !== "_cf_") {
-            switch (field) {
-                case "description":
-                    val = nl2br(escapeHTML(val));
-                    break;
-
-                case "assigned":
-                case "watchers":
-                    let m = "";
-
-                    for (let i in val) {
-                        m += members[val[i]]?members[val[i]]:val[i];
-                        m += ", ";
-                    }
-
-                    if (m) {
-                        m = m.substring(0, m.length - 2);
-                    }
-
-                    val = m;
-                    break;
-
-                case "author":
-                    val = members[val]?members[val]:val;
-                    break;
-
-                case "status":
-                    for (let i in modules.tt.meta.statuses) {
-                        if (val == modules.tt.meta.statuses[i].status) {
-                            val = modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status;
-                            break;
-                        }
-                    }
-                    break;
-
-                case "resolution":
-                    for (let i in modules.tt.meta.resolutions) {
-                        if (val == modules.tt.meta.resolutions[i].alias) {
-                            val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
-                            break;
-                        }
-                    }
-                    break;
-
-                case "created":
-                case "updated":
-                    val = ttDate(val);
-                    break;
-            }
+        if (modules.tt.viewers[field]) {
+            val = modules.tt.meta.viewers[field](val, field, issue);
         } else {
-            // TODO: add viewer functions and formatting for custom fields
+            if (field.substring(0, 4) !== "_cf_") {
+                switch (field) {
+                    case "description":
+                    case "subject":
+                        val = nl2br(escapeHTML(val));
+                        break;
+    
+                    case "assigned":
+                    case "watchers":
+                        let m = "";
+    
+                        for (let i in val) {
+                            m += members[val[i]]?members[val[i]]:val[i];
+                            m += ", ";
+                        }
+    
+                        if (m) {
+                            m = m.substring(0, m.length - 2);
+                        }
+    
+                        val = m;
+                        break;
+    
+                    case "author":
+                        val = members[val]?members[val]:val;
+                        break;
+    
+                    case "status":
+                        for (let i in modules.tt.meta.statuses) {
+                            if (val == modules.tt.meta.statuses[i].status) {
+                                val = modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status;
+                                break;
+                            }
+                        }
+                        break;
+    
+                    case "resolution":
+                        for (let i in modules.tt.meta.resolutions) {
+                            if (val == modules.tt.meta.resolutions[i].alias) {
+                                val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
+                                break;
+                            }
+                        }
+                        break;
+    
+                    case "created":
+                    case "updated":
+                        val = ttDate(val);
+                        break;
+                }
+            } else {
+                // TODO: add formatting for custom fields
+            }
         }
 
         return val;
