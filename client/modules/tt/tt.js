@@ -653,7 +653,7 @@
             }
         });
 
-        if ($.trim(params.search) && typeof params.search === "string") {
+        if ($.trim(params.search) && params.search !== true) {
             $("#ttSearch").val($.trim(params.search));
         }
 
@@ -724,14 +724,14 @@
             "filter": x?x:'',
             "skip": skip,
             "limit": limit,
-            "search": (params.search && typeof params.search === "string")?params.search:'',
+            "search": ($.trim(params.search) && params.search !== true)?$.trim(params.search):'',
         }, true).
         done(response => {
             let issues = response.issues;
 
             limit = parseInt(issues.limit);
             skip = parseInt(issues.skip);
-            
+
             let page = Math.floor(skip / limit) + 1;
 
             function pager() {
@@ -838,7 +838,7 @@
                                     filter: x?x:"",
                                     index: i + skip + 1,
                                     count: parseInt(issues.count)?parseInt(issues.count):modules.tt.defaultIssuesPerPage,
-                                    search: ($.trim(params.search) && typeof params.search === "string")?$.trim(params.search):"",
+                                    search: ($.trim(params.search) && params.search !== true)?$.trim(params.search):"",
                                 })),
                                 cols: cols,
                             });
