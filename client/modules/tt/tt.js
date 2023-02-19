@@ -668,7 +668,7 @@
         let fcount = 0;
         let filters = `<span class="dropdown">`;
 
-        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
+        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
         filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
         let personal = "user";
         let falready = {};
