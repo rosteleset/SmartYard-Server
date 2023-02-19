@@ -2,6 +2,7 @@
 **/.idea
 .phpdoc
 .eslintrc.yml
+.eslint.js
 jsconfig.json
 RBT/RBT.xcodeproj/
 /api/
