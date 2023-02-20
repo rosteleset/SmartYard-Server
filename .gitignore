@@ -69,3 +69,6 @@ package-lock.json
 /server/integration.php
 /asterisk/config.lua
 /asterisk/extconfig.conf
+#Kamailio
+kamailio/kamailio-api/.env
+!kamailio/kamailio-api/package.json
