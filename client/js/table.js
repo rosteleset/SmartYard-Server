@@ -25,6 +25,7 @@ function cardTable(params) {
         }
         if (params.title.filter) {
             filterInput = md5(guid());
+            h += '<form autocomplete="off">';
             h += `<div class="card-tools d-none d-md-block">`;
             h += `<div class="input-group input-group-sm">`;
             h += `<input id="${filterInput}" type="text" class="form-control float-right table-search-input" placeholder="${i18n("filter")}">`;
@@ -33,6 +34,7 @@ function cardTable(params) {
             h += `</div>`;
             h += `</div>`;
             h += `</div>`;
+            h += '</form>';
         }
         h += `</div>`;
     }
