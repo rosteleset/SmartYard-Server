@@ -47,8 +47,26 @@
             }
 
             public static function PUT($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $success = false;
+
+                if (array_key_exists("action", $params)) {
+                    switch ($params["action"]) {
+                        case "assignToMe":
+                            $success = $tt->assignToMe($params["_id"]);
+                            break;
+                        case "watch":
+                            $success = $tt->watch($params["_id"]);
+                            break;
+                    }
+                }
+
+                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {

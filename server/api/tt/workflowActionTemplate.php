@@ -16,19 +16,13 @@
 
             public static function GET($params) {
                 $tt = loadBackend("tt");
-                $project = explode("-", $params["issue"])[0];
 
                 if ($tt) {
-                    $issues = $tt->getIssues(
-                        $project,
-                        [
-                            "issueId" => $params["issue"],
-                        ]
-                    );
+                    $issue = $tt->getIssue($params["_id"]);
 
-                    if ($issues && $issues["issues"] && $issues["issues"][0]) {
-                        $workflow = $tt->loadWorkflow($issues["issues"][0]["workflow"]);
-                        $template = $workflow->actionTemplate($issues["issues"][0], $params["action"]);
+                    if ($issue) {
+                        $workflow = $tt->loadWorkflow($issue["workflow"]);
+                        $template = $workflow->actionTemplate($issue, $params["action"]);
                         return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
                     }
                 }
