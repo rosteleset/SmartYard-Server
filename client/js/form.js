@@ -1,6 +1,6 @@
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
-    let h = "";
+    let h = '<form autocomlete="off">';
     let files = {};
 
     if (params.target) {
@@ -300,6 +300,8 @@ function cardForm(params) {
     h += `</table>`;
     h += `</div>`;
     h += `</div>`;
+
+    h += '</form>';
 
     function getVal(i) {
         switch (params.fields[i].type) {
