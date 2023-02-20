@@ -1,10 +1,11 @@
 {
   "name": "kamailio-api",
   "version": "1.0.0",
-  "description": "Kamailio-API",
-  "main": "index.js",
+  "description": "kamailio-api",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
