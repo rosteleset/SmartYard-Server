@@ -7,7 +7,7 @@ const {
   createSubscriber,
   updateSubscriber,
   deleteSubscriber,
-} = require("../../queries");
+} = require("../../controllers");
 
 router.get("/", getSubscribers);
 
