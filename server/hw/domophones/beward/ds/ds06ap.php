@@ -7,5 +7,4 @@
         class ds06ap extends ds {
 
         }
-
     }

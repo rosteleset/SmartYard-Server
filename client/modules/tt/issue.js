@@ -103,6 +103,7 @@
 
     createIssueForm: function (current_project, workflow) {
         $("#leftTopDynamic").html("");
+        $("#rightTopDynamic").html("");
 
         loadingStart();
         modules.users.loadUsers(() => {
@@ -225,6 +226,7 @@
 
     renderIssue: function (issue, filter, index, count, search) {
         $("#leftTopDynamic").html("");
+        $("#rightTopDynamic").html("");
 
         search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
         
@@ -243,7 +245,6 @@
             return h;
         }
 
-        console.log(filter, index, count, search);
         console.log(issue);
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
@@ -346,8 +347,21 @@
         h += "</div>";
         h += "</td>";
         h += "<td style='text-align: right;' class='pr-2'>";
-        h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left text-muted'></i>"
-        h += "<i id='stepNext' class='fas fa-fw fa-chevron-right text-muted'></i>"
+        if (index && count && index !== true && count !== true) {
+            if (parseInt(index) > 1) {
+                h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left pointer'></i>"
+            } else {
+                h += "<i class='fas fa-fw fa-chevron-left text-muted'></i>"
+            }
+            h += "<span class='ml-2 mr-2'>" + index + " " + i18n("tt.of") + " " + count + "</span>";
+            if (parseInt(index) < parseInt(count)) {
+                h += "<i id='stepNext' class='fas fa-fw fa-chevron-right pointer'></i>"
+            } else {
+                h += "<i class='fas fa-fw fa-chevron-right text-muted'></i>"
+            }
+        } else {
+            h += "&nbsp;";
+        }
         h += "</td>";
         h += "</tr>";
 
@@ -651,11 +665,47 @@
         });
 
         $("#stepPrev").off("click").on("click", () => {
-            console.log("stepPrev");
+            loadingStart();
+            QUERY("tt", "issues", {
+                "project": issue.issue.project,
+                "filter": filter,
+                "skip": Math.max(parseInt(index) - 2, 0),
+                "limit": 1,
+                "search": search,
+            }, true).
+            done(response => {
+                modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify({
+                    id: response.issues.issues[0]["issueId"],
+                    filter: filter,
+                    index: parseInt(response.issues.skip) + 1,
+                    count: parseInt(response.issues.count),
+                    search: search,
+                })));
+            }).
+            fail(FAIL).
+            fail(loadingDone);
         });
 
         $("#stepNext").off("click").on("click", () => {
-            console.log("stepNext");
+            loadingStart();
+            QUERY("tt", "issues", {
+                "project": issue.issue.project,
+                "filter": filter,
+                "skip": index,
+                "limit": 1,
+                "search": search,
+            }, true).
+            done(response => {
+                modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify({
+                    id: response.issues.issues[0]["issueId"],
+                    filter: filter,
+                    index: parseInt(response.issues.skip) + 1,
+                    count: parseInt(response.issues.count),
+                    search: search,
+                })));
+            }).
+            fail(FAIL).
+            fail(loadingDone);
         });
     },
 

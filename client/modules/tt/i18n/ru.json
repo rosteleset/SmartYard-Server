@@ -169,7 +169,7 @@
     "crontabMonthly": "Ежемесячно",
     "role": "Роль",
     "workflowName": "Процесс",
-    "projectFilters": "Доступные фильтры",
+    "projectFilters": "Фильтры проекта",
     "addProjectTag": "Добавить ярлык",
     "created": "Дата создания",
     "updated": "Дата обновления",
@@ -191,6 +191,13 @@
     "addComment": "Добавить коммментарий",
     "modifyComment": "Редактировать комментарий",
     "deleteComment": "Удалить комментарий",
+    "projectFilterId": "#",
+    "projectFilter": "Фильтр",
+    "filterPersonal": "Доступен",
+    "commonFilter": "Общий",
+    "addProjectFilter": "Добавить фильтр",
+    "confirmFilterDelete": "Удалить фильтр \"#%s\"?",
+    "of": "из",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
@@ -216,6 +223,8 @@
     },
     "errors": {
         "UNIQUE constraint failed: tt_viewers.field, tt_viewers.name": "Такая функция уже существует",
-        "UNIQUE constraint failed: tt_projects_roles.project_id, tt_projects_roles.role_id, tt_projects_roles.uid, tt_projects_roles.gid": "Такая запись уже существует"
+        "UNIQUE constraint failed: tt_projects_roles.project_id, tt_projects_roles.role_id, tt_projects_roles.uid, tt_projects_roles.gid": "Такая запись уже существует",
+        "UNIQUE constraint failed: tt_projects_filters.project_id, tt_projects_filters.filter": "Фильтр уже добавлен",
+        "filterAlreadyExists": "Фильтр уже добавлен"
     }
 }

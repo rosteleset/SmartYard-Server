@@ -1,6 +1,9 @@
 **/node_modules
 **/.idea
 .phpdoc
+.eslintrc.yml
+.eslintrc.js
+jsconfig.json
 RBT/RBT.xcodeproj/
 /api/
 /client/lib/

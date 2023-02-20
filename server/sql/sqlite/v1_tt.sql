@@ -29,7 +29,7 @@ CREATE TABLE tt_projects_filters
     personal integer,
     filter text
 );
-CREATE UNIQUE INDEX tt_projects_filters_uniq on tt_projects_filters (project_id, filter);
+CREATE UNIQUE INDEX tt_projects_filters_uniq on tt_projects_filters (project_id, filter, personal);
 
 -- issue statuses
 CREATE TABLE tt_issue_statuses                                                                                          -- !!! managed by workflows !!!

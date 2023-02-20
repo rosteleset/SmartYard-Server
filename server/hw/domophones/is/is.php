@@ -6,8 +6,9 @@
 
         abstract class is extends domophones {
 
-            public $user = 'root';
-            protected $def_pass = '123456';
+            public string $user = 'root';
+
+            protected string $def_pass = '123456';
 
             protected array $rfid_keys = [];
             protected array $apartments = [];

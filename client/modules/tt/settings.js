@@ -47,6 +47,22 @@
         always(modules.tt.settings.renderCustomFields);
     },
 
+    doAddProjectFilter: function (projectId, filter, personal) {
+        loadingStart();
+        POST("tt", "project", projectId, {
+            filter: filter,
+            personal: personal,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            modules.tt.settings.projectFilters(projectId);
+        });
+    },
+
     doAddProjectUser: function (projectId, uid, roleId) {
         loadingStart();
         POST("tt", "role", false, {
@@ -155,6 +171,21 @@
         always(modules.tt.settings.renderProjects);
     },
 
+    doDeleteProjectFilter: function (projectId, projectFilterId) {
+        loadingStart();
+        DELETE("tt", "project", false, {
+            filter: projectFilterId,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            message(i18n("tt.projectWasChanged"));
+        }).
+        done(() => {
+            modules.tt.settings.projectFilters(projectId);
+        });
+    },
+
     doDeleteCustomField: function (customFieldId) {
         loadingStart();
         DELETE("tt", "customField", customFieldId).
@@ -185,18 +216,6 @@
         loadingStart();
         PUT("tt", "project", projectId, {
             workflows: workflows,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doSetProjectFilters: function (projectId, filters) {
-        loadingStart();
-        PUT("tt", "project", projectId, {
-            filters: filters,
         }).
         fail(FAIL).
         done(() => {
@@ -1166,44 +1185,177 @@
         }).show();
     },
 
-    projectFilters: function (projectId) {
-        let project = false;
-
-        for (let i in modules.tt.meta.projects) {
-            if (modules.tt.meta.projects[i].projectId == projectId) {
-                project = modules.tt.meta.projects[i];
-                break;
+    addProjectFilter: function (projectId, personals) {
+        let p = [
+            {
+                id: "0",
+                text: i18n("tt.commonFilter"),
+                icon: "fas fa-fw fa-globe-americas",
             }
+        ];
+
+        for (let i in personals) {
+            p.push({
+                id: i,
+                text: personals[i],
+                icon: "fas fa-fw " + ((parseInt(i) > 1000000)?"fa-users":"fa-user"),
+            });
         }
 
-        let filters = [];
+        let f = [];
+
         for (let i in modules.tt.meta.filters) {
-            filters.push({
+            f.push({
                 id: i,
-                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i),
+                text: modules.tt.meta.filters[i]?(modules.tt.meta.filters[i] + " [" + i + "]"):i,
             });
         }
 
         cardForm({
-            title: i18n("tt.projectFilters"),
+            title: i18n("tt.addProjectFilter"),
             footer: true,
             borderless: true,
-            noHover: true,
             topApply: true,
             singleColumn: true,
+            apply: i18n("add"),
             fields: [
                 {
-                    id: "filters",
-                    type: "multiselect",
-                    title: i18n("tt.filters"),
-                    options: filters,
-                    value: project.filters,
+                    id: "filter",
+                    type: "select2",
+                    title: i18n("tt.filter"),
+                    options: f,
+                    validate: v => {
+                        return !!$.trim(v);
+                    },
+                },
+                {
+                    id: "personal",
+                    type: "select2",
+                    title: i18n("tt.personal"),
+                    options: p,
                 },
             ],
-            callback: function (result) {
-                modules.tt.settings.doSetProjectFilters(projectId, result.filters);
+            callback: result => {
+                modules.tt.settings.doAddProjectFilter(projectId, result.filter, result.personal)
             },
         }).show();
+    },
+
+    deleteProjectFilter: function (projectFilterId, projectId) {
+        mConfirm(i18n("tt.confirmFilterDelete", projectFilterId), i18n("confirm"), `danger:${i18n("delete")}`, () => {
+            modules.tt.settings.doDeleteProjectFilter(projectId, projectFilterId);
+        });
+    },
+
+    projectFilters: function (projectId) {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            GET("accounts", "groups").
+            done(response => {
+                let personals = {};
+
+                for (let i in response.groups) {
+                    if (response.groups[i].gid) {
+                        personals[1000000 + parseInt(response.groups[i].gid)] = $.trim(response.groups[i].name + " [" + response.groups[i].acronym + "]");
+                    }
+                }
+
+                GET("accounts", "users").
+                done(response => {
+                    let project = false;
+
+                    for (let i in modules.tt.meta.projects) {
+                        if (modules.tt.meta.projects[i].projectId == projectId) {
+                            project = modules.tt.meta.projects[i];
+                            break;
+                        }
+                    }
+    
+                    for (let i in response.users) {
+                        if (response.users[i].uid) {
+                            personals[parseInt(response.users[i].uid)] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
+                        }
+                    }
+    
+                    cardTable({
+                        target: "#altForm",
+                        title: {
+                            caption: i18n("tt.projectFilters") + " " + i18n("tt.projectId") + projectId,
+                            button: {
+                                caption: i18n("tt.addProjectFilter"),
+                                click: () => {
+                                    modules.tt.settings.addProjectFilter(projectId, personals);
+                                },
+                            },
+                            altButton: {
+                                caption: i18n("close"),
+                                click: () => {
+                                    $("#altForm").hide();
+                                },
+                            },
+                        },
+                        columns: [
+                            {
+                                title: i18n("tt.projectFilterId"),
+                            },
+                            {
+                                title: i18n("tt.projectFilter"),
+                                nowrap: true,
+                                fullWidth: true,
+                            },
+                            {
+                                title: i18n("tt.filterPersonal"),
+                                nowrap: true,
+                            },
+                        ],
+                        rows: () => {
+                            let rows = [];
+    
+                            for (let i in project.filters) {
+                                rows.push({
+                                    uid: project.filters[i].projectFilterId,
+                                    cols: [
+                                        {
+                                            data: project.filters[i].projectFilterId,
+                                        },
+                                        {
+                                            data: project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter,
+                                        },
+                                        {
+                                            data: project.filters[i].personal?personals[project.filters[i].personal]:i18n("tt.commonFilter"),
+                                            nowrap: true,
+                                        },
+                                    ],
+                                    dropDown: {
+                                        items: [
+                                            {
+                                                icon: "fas fa-trash-alt",
+                                                title: i18n("tt.deleteFilter"),
+                                                class: "text-danger",
+                                                click: projectFilterId => {
+                                                    modules.tt.settings.deleteProjectFilter(projectFilterId, projectId);
+                                                },
+                                            },
+                                        ],
+                                    },
+                                });
+                            }
+    
+                            return rows;
+                        },
+                    }).show();
+                    loadingDone();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            }).
+            fail(FAIL).
+            fail(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
     },
 
     projectResolutions: function (projectId) {

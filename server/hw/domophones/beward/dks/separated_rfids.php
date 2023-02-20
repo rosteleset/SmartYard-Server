@@ -37,7 +37,5 @@
 
                 return $rfids;
             }
-
         }
-
     }

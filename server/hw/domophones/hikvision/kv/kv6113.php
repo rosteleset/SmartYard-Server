@@ -7,5 +7,4 @@
         class kv6113 extends hikvision {
 
         }
-
     }

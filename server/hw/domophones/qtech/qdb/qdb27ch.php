@@ -7,5 +7,4 @@
         class qdb27ch extends qdb {
 
         }
-
     }

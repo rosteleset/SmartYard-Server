@@ -255,13 +255,21 @@
 
             /**
              * @param $projectId
-             * @param $filters
+             * @param $filter
+             * @param $personal
              * @return boolean
              */
 
-            abstract public function setProjectFilters($projectId, $filters);
+             abstract public function addProjectFilter($projectId, $filter, $personal);
 
             /**
+             * @param $projectFilterId
+             * @return boolean
+             */
+
+             abstract public function deleteProjectFilter($projectFilterId);
+
+             /**
              * @return false|array
              */
 
@@ -763,9 +771,10 @@
             abstract public function myRoles($uid = false);
 
             /**
+             * @param $returnGids
              * @return mixed
              */
-            abstract public function myGroups();
+            abstract public function myGroups($returnGids = false);
 
             /**
              * @return mixed

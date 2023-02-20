@@ -391,59 +391,80 @@
             members[modules.users.meta[i].login] = modules.users.meta[i].realName?modules.users.meta[i].realName:modules.users.meta[i].login;
         }
 
+        let project;
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].acronym == issue.project || modules.tt.meta.projects[i].acronym == issue.issueId.split("-")[0]) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        let v = false;
+        for (let i in project.viewers) {
+            if (project.viewers[i].field == field) {
+                v = project.viewers[i].name;
+                break;
+            }
+        }
+
         let val = issue[field];
 
-        if (field.substring(0, 4) !== "_cf_") {
-            switch (field) {
-                case "description":
-                    val = nl2br(escapeHTML(val));
-                    break;
-
-                case "assigned":
-                case "watchers":
-                    let m = "";
-
-                    for (let i in val) {
-                        m += members[val[i]]?members[val[i]]:val[i];
-                        m += ", ";
-                    }
-
-                    if (m) {
-                        m = m.substring(0, m.length - 2);
-                    }
-
-                    val = m;
-                    break;
-
-                case "author":
-                    val = members[val]?members[val]:val;
-                    break;
-
-                case "status":
-                    for (let i in modules.tt.meta.statuses) {
-                        if (val == modules.tt.meta.statuses[i].status) {
-                            val = modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status;
-                            break;
-                        }
-                    }
-                    break;
-
-                case "resolution":
-                    for (let i in modules.tt.meta.resolutions) {
-                        if (val == modules.tt.meta.resolutions[i].alias) {
-                            val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
-                            break;
-                        }
-                    }
-                    break;
-
-                case "created":
-                case "updated":
-                    val = ttDate(val);
-                    break;
-            }
+        if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
+            val = modules.tt.viewers[field][v](val, field, issue);
         } else {
-            // TODO: add viewer functions and formatting for custom fields
+            if (field.substring(0, 4) !== "_cf_") {
+                switch (field) {
+                    case "description":
+                    case "subject":
+                        val = nl2br(escapeHTML(val));
+                        break;
+    
+                    case "assigned":
+                    case "watchers":
+                        let m = "";
+    
+                        for (let i in val) {
+                            m += members[val[i]]?members[val[i]]:val[i];
+                            m += ", ";
+                        }
+    
+                        if (m) {
+                            m = m.substring(0, m.length - 2);
+                        }
+    
+                        val = m;
+                        break;
+    
+                    case "author":
+                        val = members[val]?members[val]:val;
+                        break;
+    
+                    case "status":
+                        for (let i in modules.tt.meta.statuses) {
+                            if (val == modules.tt.meta.statuses[i].status) {
+                                val = modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status;
+                                break;
+                            }
+                        }
+                        break;
+    
+                    case "resolution":
+                        for (let i in modules.tt.meta.resolutions) {
+                            if (val == modules.tt.meta.resolutions[i].alias) {
+                                val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
+                                break;
+                            }
+                        }
+                        break;
+    
+                    case "created":
+                    case "updated":
+                        val = ttDate(val);
+                        break;
+                }
+            } else {
+                // TODO: add formatting for custom fields
+            }
         }
 
         return val;
@@ -632,7 +653,7 @@
             }
         });
 
-        if ($.trim(params.search) && typeof params.search === "string") {
+        if ($.trim(params.search) && params.search !== true) {
             $("#ttSearch").val($.trim(params.search));
         }
 
@@ -647,13 +668,35 @@
         let fcount = 0;
         let filters = `<span class="dropdown">`;
 
-        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
+        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
         filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+        let personal = "user";
+        let falready = {};
         for (let i in project.filters) {
-            if (x == project.filters[i]) {
-                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
+            if (falready[project.filters[i].filter]) {
+                continue;
+            }
+            falready[project.filters[i].filter] = true;
+            if (parseInt(project.filters[i].personal) > 1000000) {
+                if (personal === "user") {
+                    if (fcount) {
+                        filters += `<li class="dropdown-divider"></li>`;
+                    }
+                    personal = "group";
+                }
+            }
+            if (!parseInt(project.filters[i].personal)) {
+                if (personal === "group") {
+                    if (fcount) {
+                        filters += `<li class="dropdown-divider"></li>`;
+                    }
+                    personal = "common";
+                }
+            }
+            if (x == project.filters[i].filter) {
+                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter}</li>`;
             } else {
-                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i]}">${modules.tt.meta.filters[project.filters[i]] + " [" + project.filters[i] + "]"}</li>`;
+                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter}</li>`;
             }
             fcount++;
         }
@@ -681,15 +724,14 @@
             "filter": x?x:'',
             "skip": skip,
             "limit": limit,
-            "search": (params.search && typeof params.search === "string")?params.search:'',
+            "search": ($.trim(params.search) && params.search !== true)?$.trim(params.search):'',
         }, true).
         done(response => {
             let issues = response.issues;
 
-            console.log(issues);
-
             limit = parseInt(issues.limit);
             skip = parseInt(issues.skip);
+
             let page = Math.floor(skip / limit) + 1;
 
             function pager() {
@@ -796,7 +838,7 @@
                                     filter: x?x:"",
                                     index: i + skip + 1,
                                     count: parseInt(issues.count)?parseInt(issues.count):modules.tt.defaultIssuesPerPage,
-                                    search: ($.trim(params.search) && typeof params.search === "string")?$.trim(params.search):"",
+                                    search: ($.trim(params.search) && params.search !== true)?$.trim(params.search):"",
                                 })),
                                 cols: cols,
                             });

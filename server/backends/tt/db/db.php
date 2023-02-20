@@ -52,10 +52,27 @@
                             $w[] = $workflow['workflow'];
                         }
 
-                        $filters = $this->db->query("select filter from tt_projects_filters where project_id = {$project["project_id"]} order by filter", \PDO::FETCH_ASSOC)->fetchAll();
+                        if ($this->uid) {
+                            $gids = $this->myGroups(true);
+                            foreach ($gids as &$gid) {
+                                $gid = 1000000 + (int)$gid;
+                            }
+                            $gids = implode(",", $gids);
+                            if ($gids) {
+                                $filters = $this->db->query("select project_filter_id, filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} and (personal is null or personal = {$this->uid} or personal in ($gids)) order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
+                            } else {
+                                $filters = $this->db->query("select project_filter_id, filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} and (personal is null or personal = {$this->uid}) order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
+                            }
+                        } else {
+                            $filters = $this->db->query("select project_filter_id, filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
+                        }
                         $f = [];
                         foreach ($filters as $filter) {
-                            $f[] = $filter['filter'];
+                            $f[] = [
+                                "projectFilterId" => $filter['project_filter_id'],
+                                "filter" => $filter['filter'],
+                                "personal" => $filter['personal'],
+                            ];
                         }
 
                         $resolutions = $this->db->query("select issue_resolution_id from tt_projects_resolutions where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
@@ -310,38 +327,41 @@
             /**
              * @inheritDoc
              */
-            public function setProjectFilters($projectId, $filters)
+            public function addProjectFilter($projectId, $filter, $personal)
             {
-                // TODO: add transaction, commint, rollback
-
-                if (!checkInt($projectId)) {
+                if (!checkInt($projectId) || !checkInt($personal)) {
                     return false;
                 }
 
-                try {
-                    $sth = $this->db->prepare("insert into tt_projects_filters (project_id, filter) values (:project_id, :filter)");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
+                if (!$personal) {
+                    $already = $this->db->get("select count(*) from tt_projects_filters where project_id = :project_id and filter = :filter and personal is null", [
+                        "project_id" => $projectId,
+                        "filter" => $filter,
+                    ], false, [ "fieldlify" ]);
 
-                try {
-                    $this->db->exec("delete from tt_projects_filters where project_id = $projectId");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                foreach ($filters as $filter) {
-                    if (!$sth->execute([
-                        ":project_id" => $projectId,
-                        ":filter" => $filter,
-                    ])) {
+                    if ($already) {
+                        setLastError("filterAlreadyExists");
                         return false;
                     }
                 }
 
-                return true;
+                return $this->db->insert("insert into tt_projects_filters (project_id, filter, personal) values (:project_id, :filter, :personal)", [
+                    "project_id" => $projectId,
+                    "filter" => $filter,
+                    "personal" => $personal?$personal:null,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteProjectFilter($projectFilterId)
+            {
+                if (!checkInt($projectFilterId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from tt_projects_filters where project_filter_id = $projectFilterId");
             }
 
             /**
@@ -1096,7 +1116,7 @@
             /**
              * @inheritDoc
              */
-            public function myGroups()
+            public function myGroups($returnGids = false)
             {
                 $groups = loadBackend("groups");
 
@@ -1105,9 +1125,14 @@
                 if ($groups) {
                     $groups = $groups->getGroups($this->uid);
 
-
-                    foreach ($groups as $group) {
-                        $g[] = $group["acronym"];
+                    if ($returnGids) {
+                        foreach ($groups as $group) {
+                            $g[] = $group["gid"];
+                        }
+                    } else {
+                        foreach ($groups as $group) {
+                            $g[] = $group["acronym"];
+                        }
                     }
                 }
 

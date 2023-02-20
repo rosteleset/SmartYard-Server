@@ -7,5 +7,4 @@
         class iscomx1 extends is {
 
         }
-
     }
