@@ -11,6 +11,14 @@
             protected string $def_pass = 'api_password';
             protected string $api_prefix = '/api/v1';
 
+            protected array $config = [];
+
+            public function __construct(string $url, string $pass, bool $first_time = false) {
+                parent::__construct($url, $pass, $first_time);
+                $this->config = $this->get_config();
+                print_r($this->config); // TODO: delete later
+            }
+
             /** Make an API call */
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
@@ -18,7 +26,7 @@
                 // TODO: delete later
                 echo $method . PHP_EOL;
                 echo $req . PHP_EOL;
-                echo 'Payload: ' . json_encode($payload) . PHP_EOL;
+                echo 'Payload: ' . json_encode($payload, JSON_UNESCAPED_UNICODE) . PHP_EOL;
                 echo '---------------------------------' . PHP_EOL;
 
                 $ch = curl_init($req);
@@ -30,7 +38,7 @@
                 curl_setopt($ch, CURLOPT_VERBOSE, false);
 
                 if ($payload) {
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ]);
                 }
 
@@ -38,6 +46,29 @@
                 curl_close($ch);
 
                 return json_decode($res, true);
+            }
+
+            /** Get current intercom config */
+            protected function get_config() {
+                return $this->api_call('/configuration');
+            }
+
+            /** Get door IDs and lock status */
+            protected function get_doors() {
+                return array_slice($this->api_call('/doors'), 0, -1);
+            }
+
+            /** Set random administrator pin code */
+            protected function set_admin_pin() {
+                $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                $displaySettings = $this->config['display'];
+
+                $this->api_call('/settings/display', 'PATCH', [
+                    'welcome_display' => $displaySettings['welcome_display'],
+                    'lang' => $displaySettings['lang'],
+                    'text' => $displaySettings['text'],
+                    'admin_password' => $pin,
+                ]);
             }
 
             public function add_rfid(string $code, int $apartment = 0) {
@@ -145,7 +176,16 @@
             }
 
             public function keep_doors_unlocked(bool $unlocked = true) {
-                // TODO: Implement keep_doors_unlocked() method.
+                // TODO: if unlocked, the locks will close after reboot
+                $doors = $this->get_doors();
+
+                foreach ($doors as $door) {
+                    $id = $door['id'];
+                    $this->api_call("/doors/$id", 'PATCH', [
+                        'id' => $id,
+                        'open' => $unlocked,
+                    ]);
+                }
             }
 
             public function line_diag(int $apartment) {
@@ -153,8 +193,13 @@
             }
 
             public function open_door(int $door_number = 0) {
-                $door_number+=1;
-                $this->api_call("/doors/$door_number/open", 'POST');
+                $doors = $this->get_doors();
+                $open = $doors[$door_number]['open'] ?? false;
+
+                if (!$open) {
+                    $door_number+=1;
+                    $this->api_call("/doors/$door_number/open", 'POST');
+                }
             }
 
             public function set_admin_password(string $password) {
@@ -182,7 +227,14 @@
             }
 
             public function set_display_text(string $text = '') {
-                // TODO: Implement set_display_text() method.
+                $displaySettings = $this->config['display'];
+
+                $this->api_call('/settings/display', 'PATCH', [
+                    'welcome_display' => $displaySettings['welcome_display'],
+                    'lang' => $displaySettings['lang'],
+                    'text' => $text,
+                    'admin_password' => $displaySettings['admin_password'],
+                ]);
             }
 
             public function set_public_code(int $code = 0) {
@@ -202,7 +254,19 @@
             }
 
             public function set_unlock_time(int $time) {
-                // TODO: Implement set_unlock_time() method.
+                // TODO: causes a side effect: always closes the relay
+                $doors = $this->get_doors();
+
+                foreach ($doors as $door) {
+                    $id = $door['id'];
+                    $inverted = $this->api_call("/doors/$id/param")['inverted'];
+
+                    $this->api_call("/doors/$id/param", 'PATCH', [
+                        'id' => $id,
+                        'open_timeout' => $time,
+                        'inverted' => $inverted,
+                    ]);
+                }
             }
 
             public function set_video_overlay(string $title = '') {
@@ -210,7 +274,7 @@
             }
 
             public function set_language(string $lang) {
-                // TODO: Implement set_language() method.
+                // not used
             }
 
             public function write_config() {
@@ -223,6 +287,11 @@
 
             public function reset() {
                 $this->api_call('/reset', 'POST');
+            }
+
+            public function prepare() {
+                parent::prepare();
+                $this->set_admin_pin();
             }
         }
     }
