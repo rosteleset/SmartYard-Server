@@ -647,7 +647,7 @@
                     if (!in_array($field, $validFields)) {
                         unset($issue[$field]);
                     } else {
-                        if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                        if (array_key_exists($field, $customFieldsByName) && strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
                             $issue[$field] = array_values($dumb);
                         }
                     }
@@ -787,6 +787,81 @@
              * @return mixed
              */
             abstract public function addJournalRecord($issue, $record);
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            public function assignToMe($issue)
+            {
+                $acr = explode("-", $issue)[0];
+
+                $myRoles = $this->myRoles();
+
+                if ((int)$myRoles[$acr] < 50) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
+                $issue = $this->getIssue($issue);
+
+                if (!$issue) {
+                    setLastError("issueNotFound");
+                    return false;
+                }
+
+                if (!in_array($this->login, $issue["assigned"])) {
+                    $issue["assigned"] = [ $this->login ];
+                    return $this->modifyIssue($issue);
+                }
+
+                return true;
+            }
+
+            /**
+             * @param $issue
+             * @return mixed
+             */
+            public function watch($issue)
+            {
+                $acr = explode("-", $issue)[0];
+
+                $myRoles = $this->myRoles();
+
+                if ((int)$myRoles[$acr] < 30) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
+                $issue = $this->getIssue($issue);
+
+                if (!$issue) {
+                    setLastError("issueNotFound");
+                    return false;
+                }
+
+                if (!$issue["watchers"]) {
+                    $issue["watchers"] = [];
+                }
+
+                if (!in_array($this->login, $issue["watchers"])) {
+                    $issue["watchers"][] = $this->login;
+                    return $this->modifyIssue($issue);
+                }
+
+                return true;
+            }
+
+            /**
+             * @param $issue
+             * @param $linkTo
+             * @param $linkType
+             * @return mixed
+             */
+            public function linkIssue($issue, $linkTo, $linkType)
+            {
+                return true;
+            }
 
             /**
              * @param $query

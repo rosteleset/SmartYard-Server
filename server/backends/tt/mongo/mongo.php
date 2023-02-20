@@ -110,11 +110,9 @@
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
-                $issue["updated"] = time();
-
                 $comment = false;
                 $commentPrivate = false;
-                if ($issue["comment"]) {
+                if (array_key_exists("comment", $issue) && $issue["comment"]) {
                     $comment = trim($issue["comment"]);
                     $commentPrivate = !!$issue["commentPrivate"];
                     unset($issue["comment"]);
@@ -126,6 +124,8 @@
                 }
 
                 $issue = $this->checkIssue($issue);
+
+                $issue["updated"] = time();
 
                 if ($issue) {
                     return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
