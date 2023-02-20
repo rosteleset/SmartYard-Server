@@ -62,13 +62,8 @@
             protected function set_admin_pin() {
                 $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
                 $displaySettings = $this->config['display'];
-
-                $this->api_call('/settings/display', 'PATCH', [
-                    'welcome_display' => $displaySettings['welcome_display'],
-                    'lang' => $displaySettings['lang'],
-                    'text' => $displaySettings['text'],
-                    'admin_password' => $pin,
-                ]);
+                $displaySettings['admin_password'] = $pin;
+                $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
             public function add_rfid(string $code, int $apartment = 0) {
@@ -117,7 +112,10 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                // TODO: Implement configure_ntp() method.
+                $timeSettings = $this->config['time'];
+                $timeSettings['ntp_pool'] = "$server:$port";
+                $timeSettings['timezone'] = 'GMT+3';
+                $this->api_call('/configuration', 'PATCH', [ 'time' => $timeSettings ]);
             }
 
             public function configure_sip(
@@ -133,7 +131,10 @@
             }
 
             public function configure_syslog(string $server, int $port) {
-                // TODO: Implement configure_syslog() method.
+                $this->api_call('/settings/syslog', 'PATCH', [
+                    'address' => "$server:$port",
+                    'protocol' => 'udp',
+                ]);
             }
 
             public function configure_user_account(string $password) {
@@ -228,13 +229,8 @@
 
             public function set_display_text(string $text = '') {
                 $displaySettings = $this->config['display'];
-
-                $this->api_call('/settings/display', 'PATCH', [
-                    'welcome_display' => $displaySettings['welcome_display'],
-                    'lang' => $displaySettings['lang'],
-                    'text' => $text,
-                    'admin_password' => $displaySettings['admin_password'],
-                ]);
+                $displaySettings['text'] = $text;
+                $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
             public function set_public_code(int $code = 0) {
@@ -242,7 +238,12 @@
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
-                // TODO: Implement set_relay_dtmf() method.
+                $this->api_call('/settings/dtmf', 'PATCH', [
+                    'code_length' => 1,
+                    'code1' => (string) $relay_1,
+                    'code2' => (string) $relay_2,
+                    'code3' => (string) $relay_3,
+                ]);
             }
 
             public function set_sos_number(int $number) {
