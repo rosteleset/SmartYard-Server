@@ -3,12 +3,11 @@ const { json } = require("express");
 const app = express();
 const router = require("./routes/v1");
 
-
 app.disable("x-powered-by");
 
 app.use(json());
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   const ipAddress = req.ip.split(":")[req.ip.split(":").length - 1];
   if (ipAddress !== process.env.ALLOWED_HOST) {
     return res.sendStatus(401);
