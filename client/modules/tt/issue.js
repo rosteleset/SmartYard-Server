@@ -214,9 +214,7 @@
             modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify(result)));
         }).
         fail(FAIL).
-        always(() => {
-            loadingDone();
-        });
+        always(loadingDone);
     },
 
     viewIssue: function (issue) {
