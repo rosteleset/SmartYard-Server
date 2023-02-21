@@ -25,16 +25,16 @@ function cardTable(params) {
         }
         if (params.title.filter) {
             filterInput = md5(guid());
-            h += '<form autocomplete="off">';
             h += `<div class="card-tools d-none d-md-block">`;
+            h += '<form autocomplete="off">';
             h += `<div class="input-group input-group-sm">`;
             h += `<input id="${filterInput}" type="text" class="form-control float-right table-search-input" placeholder="${i18n("filter")}">`;
             h += `<div class="input-group-append">`;
             h += `<button type="submit" class="btn btn-default" id="${filterInput}-search-button"><i class="fas fa-filter"></i></button>`;
             h += `</div>`;
             h += `</div>`;
-            h += `</div>`;
             h += '</form>';
+            h += `</div>`;
         }
         h += `</div>`;
     }
