@@ -25,34 +25,27 @@
              */
 
             public function getWorkflows() {
-                $w = [];
-                $base = __DIR__ . "/workflows/";
+                $files = loadBackend("files");
 
-                if (file_exists($base)) {
-                    $dir = scandir($base);
-
-                    foreach ($dir as $f) {
-                        if ($f != "." && $f != ".." && file_exists($base . $f)) {
-                            $f = pathinfo($f);
-                            if ($f['extension'] === "lua") {
-                                $w[] = $f['filename'];
-                            }
-                        }
-                    }
+                if (!$files) {
+                    return false;
                 }
+                
+                $workflows = $files->searchFiles([ "metadata.type" => "workflow" ]);
+
+                error_log(print_r($workflows, true));
 
                 $wx = [];
-
-                foreach ($w as $workflow) {
+                foreach ($workflows as $workflow) {
                     try {
-                        $workflow_ = $this->loadWorkflow($workflow);
+                        $workflow_ = $this->loadWorkflow($workflow["metadata"]["workflow"]);
                         $name = $workflow_->workflowName();
                     } catch (\Exception $e) {
-                        $name = $workflow;
+                        $name = $workflow["metadata"]["workflow"];
                     }
 
                     $wx[] = [
-                        "file" => $workflow,
+                        "file" => $workflow["metadata"]["workflow"],
                         "name" => $name,
                     ];
                 }
@@ -136,21 +129,28 @@
              */
 
             public function getWorkflow($workflow) {
+                $files = loadBackend("files");
 
-                $workflow = trim($workflow);
-
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                if (!$files) {
                     return false;
                 }
+                
+                $workflows = $files->searchFiles([
+                    "metadata.type" => "workflow",
+                    "metadata.workflow" => $workflow,
+                ]);
 
-                $dir = __DIR__ . "/workflows";
-                $file = $dir . "/" . $workflow . ".lua";
+                $workflow = false;
+                foreach ($workflows as $w) {
+                    $workflow = $w;
+                    break;
+                }
 
-                if (file_exists($dir) && file_exists($file)) {
-                    return file_get_contents($file);
-                } else {
+                if (!$workflow) {
                     return "";
                 }
+
+                return $files->streamToContents($files->getFileStream($workflow["id"]));
             }
 
             /**
@@ -158,29 +158,30 @@
              * @param $body
              * @return boolean
              */
-
             public function putWorkflow($workflow, $body) {
+                $files = loadBackend("files");
 
-                $workflow = trim($workflow);
-
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                if (!$files) {
                     return false;
                 }
 
-                $dir = __DIR__ . "/workflows";
-                $file = $dir . "/" . $workflow . ".lua";
-
-                try {
-                    if (!file_exists($dir)) {
-                        mkdir($dir);
-                    }
-
-                    file_put_contents($file, $body);
-
-                    return true;
-                } catch (\Exception $e) {
+                if (!$workflow) {
                     return false;
                 }
+                
+                $workflows = $files->searchFiles([
+                    "metadata.type" => "workflow",
+                    "metadata.workflow" => $workflow,
+                ]);
+
+                foreach ($workflows as $w) {
+                    $files->deleteFile($w["id"]);
+                }
+
+                return $files->addFile($workflow . ".lua", $files->contentsToStream($body), [
+                    "type" => "workflow",
+                    "workflow" => $workflow,
+                ]);
             }
 
             /**
@@ -188,26 +189,29 @@
              * @return boolean
              */
             public function deleteWorkflow($workflow) {
-                $workflow = trim($workflow);
+                $files = loadBackend("files");
 
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
+                if (!$files) {
                     return false;
                 }
+                
+                $workflows = $files->searchFiles([
+                    "type" => "workflow",
+                    "workflow" => $workflow,
+                ]);
 
-                $dir = __DIR__ . "/workflows";
-                $file = $dir . "/" . $workflow . ".lua";
-
-                try {
-                    if (file_exists($file)) {
-                        unlink($file);
-
-                        return true;
-                    }
-
-                    return false;
-                } catch (\Exception $e) {
-                    return false;
+                $workflow = false;
+                foreach ($workflows as $w) {
+                    $workflow = $w;
+                    break;
                 }
+
+                if ($workflow) {
+                    $files->deleteFile($workflow["id"]);
+                    return true;
+                }
+
+                return false;
             }
 
             /**
