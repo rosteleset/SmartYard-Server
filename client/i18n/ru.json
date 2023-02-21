@@ -56,7 +56,7 @@
         "404message": "Похоже, мы не можем найти нужную Вам страницу.<br />Попробуйте перейти на <a href=\"#\">начальную страницу</a>.",
         "redis": "Ошибка подключения к redis серверу",
         "notFound": "Ничего не найдено",
-        "noGravatar": "Gravatar не найден",
+        "noGravatar": "Gravatar не найден<br/><a href='https://ru.gravatar.com/' target='_blank' class='text-bold hover'>[Установить]</a>",
         "unknown": "Неизвестная ошибка",
         "cantReadNfcTag": "Невозможно прочитать метку",
         "serverUnavailable": "Сервер недоступен",
