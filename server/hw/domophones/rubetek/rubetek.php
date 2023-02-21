@@ -68,6 +68,10 @@
 
             public function add_rfid(string $code, int $apartment = 0) {
                 // TODO: Implement add_rfid() method.
+                $this->api_call("/apartments/$apartment/rfids", 'POST', [
+                    'door_access' => [1, 2, 3],
+                    'rfids' => [ $code ],
+                ]);
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -127,7 +131,25 @@
                 string $stun_server = '',
                 int $stun_port = 3478
             ) {
-                // TODO: Implement configure_sip() method.
+                $params = [
+                    'Acc1Login' => $login,
+                    'Acc1Password' => $password,
+                    'Acc1SipServer' => $server,
+                    'Acc1SipServerPort' => $port,
+                    'Acc1SipTransport' => 'tcp',
+                    'Acc1RegInterval' => 1200,
+                    'RegTimeout' => 5,
+                    'RegCycleInterval' => 60,
+                    'RegAttemptsInCycle' => 5,
+                ];
+
+                if ($nat) {
+                    $params['Acc1StunServer'] = $stun_server;
+                    $params['Acc1StunPort'] = $stun_port;
+                }
+
+                $endpoint = '/sip?' . http_build_query($params);
+                $this->api_call($endpoint, 'PATCH');
             }
 
             public function configure_syslog(string $server, int $port) {
