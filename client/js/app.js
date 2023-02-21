@@ -459,7 +459,7 @@ function initAll() {
                             uid: -1,
                         };
                         whoAmI().done(() => {
-                            window.onbeforeunload = () => false;
+//                            window.onbeforeunload = () => false;
                             available = a.available;
                             if (config && config.modules) {
                                 for (let i in config.modules) {
