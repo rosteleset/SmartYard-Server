@@ -228,6 +228,7 @@
         "UNIQUE constraint failed: tt_projects_roles.project_id, tt_projects_roles.role_id, tt_projects_roles.uid, tt_projects_roles.gid": "Такая запись уже существует",
         "UNIQUE constraint failed: tt_projects_filters.project_id, tt_projects_filters.filter": "Фильтр уже добавлен",
         "filterAlreadyExists": "Фильтр уже добавлен",
+        "viewerAlreadyExists": "Функция уже существует",
         "insufficentRights": "Недостаточно прав для выполнения операции"
     }
 }

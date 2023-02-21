@@ -549,6 +549,17 @@
                     return false;
                 }
 
+                $viewers = $files->searchFiles([
+                    "metadata.type" => "viewer",
+                    "metadata.field" => $field,
+                    "metadata.name" => $name,
+                ]);
+
+                if (count($viewers)) {
+                    setLastError("viewerAlreadyExists");
+                    return false;
+                }
+
                 return $files->addFile($field . "_" . $name . ".js", $files->contentsToStream("//function $name (val, field, issue) {\n\treturn val;\n//}\n"), [
                     "type" => "viewer",
                     "field" => $field,
