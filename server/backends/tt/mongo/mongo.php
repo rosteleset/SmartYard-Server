@@ -141,6 +141,15 @@
             {
                 $db = $this->dbName;
 
+                $acr = explode("-", $issueId)[0];
+
+                $myRoles = $this->myRoles();
+
+                if ((int)$myRoles[$acr] < 80) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
                 $files = loadBackend("files");
 
                 if ($files) {
@@ -154,9 +163,7 @@
                     }
                 }
 
-                $acr = explode("-", $issueId)[0];
-
-                $this->mongo->$db->$acr->deleteMany([
+                return $this->mongo->$db->$acr->deleteMany([
                     "issueId" => $issueId,
                 ]);
             }

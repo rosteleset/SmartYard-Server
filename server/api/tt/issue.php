@@ -70,8 +70,15 @@
             }
 
             public static function DELETE($params) {
-//                $tt_resolutions = loadBackend("tt")->getResolutions;
-                return api::ANSWER();
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $success = $tt->deleteIssue($params["_id"]);
+
+                return api::ANSWER($success);
             }
 
             public static function index() {

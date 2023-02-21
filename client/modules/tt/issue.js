@@ -786,7 +786,15 @@
         });
 
         $(".ttSaDelete").off("click").on("click", () => {
-            console.log("delete");
+            mConfirm(i18n("tt.confirmDeleteIssue", issue.issue.issueId), i18n("confirm"), i18n("delete"), () => {
+                loadingStart();
+                DELETE("tt", "issue", issue.issue.issueId).
+                fail(FAIL).
+                done(() => {
+                    window.location.href = "#tt";
+                }).
+                fail(loadingDone);
+            });
         });
 
         $(".ttSaLink").off("click").on("click", () => {
