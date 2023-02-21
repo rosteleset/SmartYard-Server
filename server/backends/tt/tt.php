@@ -33,8 +33,6 @@
                 
                 $workflows = $files->searchFiles([ "metadata.type" => "workflow" ]);
 
-                error_log(print_r($workflows, true));
-
                 $wx = [];
                 foreach ($workflows as $workflow) {
                     try {
@@ -119,6 +117,7 @@
 
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
                 }
             }
@@ -200,18 +199,12 @@
                     "workflow" => $workflow,
                 ]);
 
-                $workflow = false;
                 foreach ($workflows as $w) {
-                    $workflow = $w;
+                    $files->deleteFile($w["id"]);
                     break;
                 }
 
-                if ($workflow) {
-                    $files->deleteFile($workflow["id"]);
-                    return true;
-                }
-
-                return false;
+                return true;
             }
 
             /**
@@ -436,13 +429,19 @@
             /**
              * @return false|array
              */
-            public function availableFilters() {
-                $filters = glob(__DIR__ . "/filters/*.json");
+            public function getFilters() {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
                 $list = [];
 
                 foreach ($filters as $filter) {
-                    $filter = pathinfo($filter);
+                    $filter = pathinfo($filter["filename"]);
 
                     try {
                         $f = json_decode($this->getFilter($filter["filename"]), true);
@@ -460,20 +459,28 @@
              * @return false|string
              */
             public function getFilter($filter) {
+                $files = loadBackend("files");
 
-                $filter = trim($filter);
-
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
+                if (!$files) {
                     return false;
                 }
+                
+                $filters = $files->searchFiles([
+                    "metadata.type" => "filter",
+                    "metadata.filter" => $filter,
+                ]);
 
-                $file = __DIR__ . "/filters/" . $filter . ".json";
+                $filter = false;
+                foreach ($filters as $f) {
+                    $filter = $f;
+                    break;
+                }
 
-                if (file_exists($file)) {
-                    return file_get_contents($file);
-                } else {
+                if (!$filter) {
                     return "{}";
                 }
+
+                return $files->streamToContents($files->getFileStream($filter["id"]));
             }
 
             /**
@@ -482,27 +489,29 @@
              * @return boolean
              */
             public function putFilter($filter, $body) {
+                $files = loadBackend("files");
 
-                $filter = trim($filter);
-
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
+                if (!$files) {
                     return false;
                 }
 
-                $dir = __DIR__ . "/filters";
-                $file = $dir . "/" . $filter . ".json";
-
-                try {
-                    if (!file_exists($dir)) {
-                        mkdir($dir);
-                    }
-
-                    file_put_contents($file, $body);
-
-                    return true;
-                } catch (\Exception $e) {
+                if (!$filter) {
                     return false;
                 }
+                
+                $filters = $files->searchFiles([
+                    "metadata.type" => "filter",
+                    "metadata.filter" => $filter,
+                ]);
+
+                foreach ($filters as $f) {
+                    $files->deleteFile($f["id"]);
+                }
+
+                return $files->addFile($filter . ".json", $files->contentsToStream($body), [
+                    "type" => "filter",
+                    "filter" => $filter,
+                ]);
             }
 
             /**
@@ -510,26 +519,22 @@
              * @return boolean
              */
             public function deleteFilter($filter) {
-                $filter = trim($filter);
+                $files = loadBackend("files");
 
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $filter)) {
+                if (!$files) {
                     return false;
                 }
+                
+                $filters = $files->searchFiles([
+                    "type" => "filter",
+                    "workflow" => $filter,
+                ]);
 
-                $dir = __DIR__ . "/filters";
-                $fileCustom = $dir . "/" . $filter . ".json";
-
-                try {
-                    if (file_exists($fileCustom)) {
-                        unlink($fileCustom);
-
-                        return true;
-                    }
-
-                    return false;
-                } catch (\Exception $e) {
-                    return false;
+                foreach ($filters as $f) {
+                    $files->deleteFile($f["id"]);
                 }
+
+                return true;
             }
 
             /**
