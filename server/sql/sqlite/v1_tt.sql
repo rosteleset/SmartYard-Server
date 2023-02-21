@@ -164,15 +164,6 @@ CREATE TABLE tt_crontabs
 CREATE UNIQUE INDEX tt_crontabs_uniq on tt_crontabs(project_id, filter, uid, action);
 CREATE INDEX tt_crontabs_crontab on tt_crontabs(crontab);
 
--- viewers
-CREATE TABLE tt_viewers
-(
-    field text not null,
-    name text not null,
-    code text
-);
-CREATE UNIQUE INDEX tt_viewers_uniq on tt_viewers(field, name);
-
 -- projects viewers
 CREATE TABLE tt_projects_viewers
 (

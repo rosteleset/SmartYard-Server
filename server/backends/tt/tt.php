@@ -65,10 +65,6 @@
                     return $this->workflows[$workflow];
                 }
 
-                if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$/', $workflow)) {
-                    return false;
-                }
-
                 try {
                     $sandbox = new \LuaSandbox;
 
@@ -542,7 +538,23 @@
              * @param $name
              * @return mixed
              */
-            abstract public function addViewer($field, $name);
+            public function addViewer($field, $name) {
+                if (!checkStr($name) || !checkStr($field)) {
+                    return false;
+                }
+
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                return $files->addFile($field . "_" . $name . ".js", $files->contentsToStream("//function $name (val, field, issue) {\n\treturn val;\n//}\n"), [
+                    "type" => "viewer",
+                    "field" => $field,
+                    "name" => $name,
+                ]);
+            }
 
             /**
              * @param $field
@@ -550,19 +562,84 @@
              * @param $code
              * @return mixed
              */
-            abstract public function modifyViewer($field, $name, $code);
+            public function modifyViewer($field, $name, $code) {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                if (!$code) {
+                    return false;
+                }
+
+                $viewers = $files->searchFiles([
+                    "metadata.type" => "viewer",
+                    "metadata.field" => $field,
+                    "metadata.name" => $name,
+                ]);
+
+                foreach ($viewers as $v) {
+                    $files->deleteFile($v["id"]);
+                }
+
+                return $files->addFile($field . "_" . $name . ".js", $files->contentsToStream($code), [
+                    "type" => "viewer",
+                    "field" => $field,
+                    "name" => $name,
+                ]);
+            }
 
             /**
              * @param $field
              * @param $name
              * @return mixed
              */
-            abstract public function deleteViewer($field, $name);
+            public function deleteViewer($field, $name) {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                $viewers = $files->searchFiles([
+                    "metadata.type" => "viewer",
+                    "metadata.field" => $field,
+                    "metadata.name" => $name,
+                ]);
+
+                foreach ($viewers as $v) {
+                    $files->deleteFile($v["id"]);
+                }
+
+                return true;
+            }
 
             /**
              * @return mixed
              */
-            abstract public function getViewers();
+            public function getViewers() {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                $viewers = $files->searchFiles([
+                    "metadata.type" => "viewer",
+                ]);
+
+                $vs = [];
+                foreach ($viewers as $v) {
+                    $vs[] = [
+                        "name" => $v["metadata"]["name"],
+                        "field" => $v["metadata"]["field"],
+                        "code" => $files->streamToContents($files->getFileStream($v["id"])),
+                    ]; 
+                }
+
+                return $vs;
+            }
 
             /**
              * @param $projectId

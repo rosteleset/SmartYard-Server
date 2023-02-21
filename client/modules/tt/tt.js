@@ -481,7 +481,11 @@
             if (!modules.tt.viewers[modules.tt.meta.viewers[i].field]) {
                 modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
             }
-            modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', modules.tt.meta.viewers[i].code);
+            try {
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', modules.tt.meta.viewers[i].code);
+            } catch (e) {
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', "//function $name (val, field, issue) {\n\treturn val;\n//}\n");
+            }
         }
     },
 
