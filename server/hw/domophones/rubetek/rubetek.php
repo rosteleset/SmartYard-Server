@@ -12,11 +12,19 @@
             protected string $api_prefix = '/api/v1';
 
             protected array $config = [];
+            protected array $rfids = [];
+            protected array $rfidsToDelete = [];
 
             public function __construct(string $url, string $pass, bool $first_time = false) {
                 parent::__construct($url, $pass, $first_time);
                 $this->config = $this->get_config();
-                print_r($this->config); // TODO: delete later
+                $this->rfids = $this->get_rfids();
+                // print_r($this->config); // TODO: delete later
+            }
+
+            public function __destruct() {
+                parent::__destruct();
+                $this->write_rfids(array_unique(array_diff($this->rfids, $this->rfidsToDelete)));
             }
 
             /** Make an API call */
@@ -48,6 +56,16 @@
                 return json_decode($res, true);
             }
 
+            /** Configure internal reader mode */
+            protected function configure_internal_reader() {
+                $this->api_call('/settings/nfc_reader', 'PATCH', [
+                    'period_reading_ms' => 500,
+                    'disable_sl3' => true,
+                    'code_length' => 4,
+                    'reverse_data_order' => true,
+                ]);
+            }
+
             /** Get current intercom config */
             protected function get_config() {
                 return $this->api_call('/configuration');
@@ -66,12 +84,18 @@
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
-            public function add_rfid(string $code, int $apartment = 0) {
-                // TODO: Implement add_rfid() method.
-                $this->api_call("/apartments/$apartment/rfids", 'POST', [
-                    'door_access' => [1, 2, 3],
-                    'rfids' => [ $code ],
+            /** Write array of RFID keys from object property to intercom memory */
+            protected function write_rfids(array $rfids) {
+                $this->api_call('/apartments', 'POST', [
+                    'id' => '0',
+                    'call_type' => 'blocked',
+                    'door_access' => [ 1, 5 ], // 1 - Relay A, internal reader; 5 - Relay B, external reader
+                    'rfids' => array_values($rfids),
                 ]);
+            }
+
+            public function add_rfid(string $code, int $apartment = 0) {
+                $this->rfids[] = $code;
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -79,7 +103,11 @@
             }
 
             public function clear_rfid(string $code = '') {
-                // TODO: Implement clear_rfid() method.
+                if ($code) {
+                    $this->rfidsToDelete[] = $code;
+                } else {
+                    $this->rfids = [];
+                }
             }
 
             public function configure_apartment(
@@ -183,8 +211,7 @@
             }
 
             public function get_rfids(): array {
-                // TODO: Implement get_rfids() method.
-                return [];
+                return $this->api_call('/apartments/0')['rfids'] ?? [];
             }
 
             public function get_sysinfo(): array {
@@ -315,6 +342,7 @@
             public function prepare() {
                 parent::prepare();
                 $this->set_admin_pin();
+                $this->configure_internal_reader();
             }
         }
     }
