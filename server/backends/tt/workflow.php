@@ -30,16 +30,10 @@
                 $this->tt = $tt;
                 $this->sandbox = $sandbox;
 
-                $file = __DIR__ . "/workflows/" . $workflow . ".lua";
-
-                if (!file_exists($file)) {
-                    $file = false;
-                }
-
-                if ($file) {
-                    $code = $this->sandbox->loadString(file_get_contents($file));
+                try {
+                    $code = $this->sandbox->loadString($tt->getWorkflow($workflow));
                     $code->call();
-                } else {
+                } catch (\Exception $e) {
                     throw new \Exception("workflow not found");
                 }
             }

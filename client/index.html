@@ -94,17 +94,19 @@
             <ul class="navbar-nav ml-auto" id="topMenuRight">
 
                 <!-- Search form -->
-                <div class="form-inline mr-3" id="searchForm" style="display: none;">
-                    <div class="input-group input-group-sm">
-                        <input id="searchInput" class="form-control" type="search" aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-default" id="searchButton">
-                                <i class="fas fa-search"></i>
-                            </button>
+                <form autocomplete="off">
+                    <div class="form-inline mr-3" id="searchForm" style="display: none;">
+                        <div class="input-group input-group-sm">
+                            <input id="searchInput" class="form-control" type="search" aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-default" id="searchButton">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-
+                </form>
+                
                 <div id="rightTopDynamic"></div>
 
                 <li class="nav-item rs232-scanner-button" style="display: none;">

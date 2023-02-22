@@ -16,18 +16,12 @@
 
             public static function PUT($params) {
                 $tt = loadBackend("tt");
-                $project = explode("-", $params["set"]["issueId"])[0];
 
                 if ($tt) {
-                    $issues = $tt->getIssues(
-                        $project,
-                        [
-                            "issueId" => $params["set"]["issueId"],
-                        ]
-                    );
+                    $issue = $tt->getIssue($params["_id"]);
 
-                    if ($issues && $issues["issues"] && $issues["issues"][0]) {
-                        return api::ANSWER($tt->loadWorkflow($issues["issues"][0]["workflow"])->doAction($params["set"], $params["action"], $issues["issues"][0]));
+                    if ($issue) {
+                        return api::ANSWER($tt->loadWorkflow($issue["workflow"])->doAction($params["set"], $params["action"], $issue));
                     }
                 }
 

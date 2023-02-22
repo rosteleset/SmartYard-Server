@@ -943,10 +943,7 @@
                     try {
                         return $this->db->modify("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId") +
                             $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId") +
-                            $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId") +
-                            $this->db->modify("delete from tt_viewers where field = '_cf_' || :field", [
-                                "field" => $cf['field'],
-                            ]);
+                            $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId");
                     } catch (\Exception $e) {
                         error_log(print_r($e, true));
                         return false;
@@ -1142,61 +1139,6 @@
             /**
              * @inheritDoc
              */
-            public function addViewer($field, $name) {
-                if (!checkStr($name) || !checkStr($field)) {
-                    return false;
-                }
-
-                return $this->db->insert("insert into tt_viewers (name, field) values (:name, :field)", [
-                    "name" => $name,
-                    "field" => $field,
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function modifyViewer($field, $name, $code) {
-                if (!checkStr($field) || !checkStr($name)) {
-                    return false;
-                }
-
-                return $this->db->modify("update tt_viewers set code = :code where field = :field and name = :name", [
-                    "field" => $field,
-                    "name" => $name,
-                    "code" => $code,
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function deleteViewer($field, $name) {
-                if (!checkStr($field) || !checkStr($name)) {
-                    return false;
-                }
-
-                return $this->db->modify("delete from tt_viewers where field = :field and name = :name", [
-                        "field" => $field,
-                        "name" => $name,
-                    ]) +
-                    $this->db->modify("delete from tt_projects_viewers where project_view_id in (select project_view_id from tt_projects_viewers left join tt_viewers on tt_projects_viewers.field = tt_viewers.field and tt_projects_viewers.name = tt_viewers.name where code is null)");
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function getViewers() {
-                return $this->db->get("select * from tt_viewers order by name", false, [
-                    "name" => "name",
-                    "field" => "field",
-                    "code" => "code",
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function getProjectViewers($projectId) {
                 if (!checkInt($projectId)) {
                     return false;
@@ -1274,8 +1216,6 @@
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
-                $this->db->modify("delete from tt_viewers where field not in (select '_cf_' || field from tt_issue_custom_fields)");
-                $this->db->modify("delete from tt_projects_viewers where name not in (select name from tt_viewers)");
                 $this->db->modify("delete from tt_projects_viewers where project_id not in (select project_id from tt_projects)");
 
                 parent::cleanup();

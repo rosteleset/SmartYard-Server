@@ -214,9 +214,7 @@
             modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify(result)));
         }).
         fail(FAIL).
-        always(() => {
-            loadingDone();
-        });
+        always(loadingDone);
     },
 
     viewIssue: function (issue) {
@@ -467,7 +465,88 @@
         $("#mainForm").html(h);
 
         $(".ttIssueAction").off("click").on("click", function () {
-            modules.tt.doAction(issue, $(this).text())
+            let action = $(this).text();
+
+            loadingStart();
+            QUERY("tt", "workflowActionTemplate", {
+                _id: issue.issue.issueId,
+                action: action,
+            }, true).done(r => {
+                let fields = [];
+    
+                let project;
+    
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
+                        project = modules.tt.meta.projects[i];
+                    }
+                }
+    
+                let n = 0;
+                for (let i in r.template) {
+                    fields.push(modules.tt.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId));
+                    if (r.template[i] == "comment") {
+                        fields.push({
+                            id: "commentPrivate",
+                            type: "yesno",
+                            title: i18n("tt.commentPrivate"),
+                            value: "1",
+                        });
+                    }
+                    n++;
+                }
+    
+                if (n) {
+                    cardForm({
+                        title: action,
+                        apply: action,
+                        fields: fields,
+                        footer: true,
+                        borderless: true,
+                        size: "lg",
+                        callback: r => {
+                            r["issueId"] = issue.issue.issueId;
+                            loadingStart();
+                            PUT("tt", "workflowProgressAction", issue.issue.issueId, {
+                                set: r,
+                                action: action,
+                            }).
+                            fail(FAIL).
+                            always(() => {
+                                modules.tt.route({
+                                    issue: issue.issue.issueId,
+                                    filter: filter,
+                                    index: index,
+                                    count: count,
+                                    search: search,
+                                });
+                            });
+                        },
+                    });
+                } else {
+                    mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
+                        loadingStart();
+                        PUT("tt", "workflowProgressAction", issue.issue.issueId, {
+                            set: {
+                                issueId: issue.issue.issueId,
+                            },
+                            action: action,
+                        }).
+                        fail(FAIL).
+                        always(() => {
+                            modules.tt.route({
+                                issue: issue.issue.issueId,
+                                filter: filter,
+                                index: index,
+                                count: count,
+                                search: search,
+                            });
+                        });
+                    });
+                }
+            }).
+            fail(FAIL).
+            always(loadingDone);
         });
 
         $(".ttSaAddComment").off("click").on("click", () => {
@@ -508,7 +587,11 @@
                     fail(FAIL).
                     done(() => {
                         modules.tt.route({
-                            "issue": issue.issue.issueId,
+                            issue: issue.issue.issueId,
+                            filter: filter,
+                            index: index,
+                            count: count,
+                            search: search,
                         });
                     }).
                     always(loadingDone);
@@ -566,7 +649,11 @@
                         fail(FAIL).
                         done(() => {
                             modules.tt.route({
-                                "issue": issue.issue.issueId,
+                                issue: issue.issue.issueId,
+                                filter: filter,
+                                index: index,
+                                count: count,
+                                search: search,
                             });
                         }).
                         always(loadingDone);
@@ -576,7 +663,11 @@
                         fail(FAIL).
                         done(() => {
                             modules.tt.route({
-                                "issue": issue.issue.issueId,
+                                issue: issue.issue.issueId,
+                                filter: filter,
+                                index: index,
+                                count: count,
+                                search: search,
                             });
                         }).
                         always(loadingDone);
@@ -617,7 +708,11 @@
                         fail(FAIL).
                         done(() => {
                             modules.tt.route({
-                                "issue": issue.issue.issueId,
+                                issue: issue.issue.issueId,
+                                filter: filter,
+                                index: index,
+                                count: count,
+                                search: search,
                             });
                         }).
                         always(loadingDone);
@@ -637,7 +732,11 @@
                 fail(FAIL).
                 done(() => {
                     modules.tt.route({
-                        "issue": issue.issue.issueId,
+                        issue: issue.issue.issueId,
+                        filter: filter,
+                        index: index,
+                        count: count,
+                        search: search,
                     });
                 }).
                 always(loadingDone);
@@ -645,15 +744,55 @@
         });
 
         $(".ttSaAssignToMe").off("click").on("click", () => {
-            console.log("assignToMe");
+            mConfirm(i18n("tt.confirmAssignToMe"), i18n("confirm"), i18n("tt.saAssignToMe"), () => {
+                loadingStart();
+                PUT("tt", "issue", issue.issue.issueId, {
+                    "action": "assignToMe"
+                }).
+                fail(FAIL).
+                done(() => {
+                    modules.tt.route({
+                        issue: issue.issue.issueId,
+                        filter: filter,
+                        index: index,
+                        count: count,
+                        search: search,
+                    });
+                }).
+                always(loadingDone);
+            });
         });
 
         $(".ttSaWatch").off("click").on("click", () => {
-            console.log("watch");
+            mConfirm(i18n("tt.confirmWatch"), i18n("confirm"), i18n("tt.saWatch"), () => {
+                loadingStart();
+                PUT("tt", "issue", issue.issue.issueId, {
+                    "action": "watch"
+                }).
+                fail(FAIL).
+                done(() => {
+                    modules.tt.route({
+                        issue: issue.issue.issueId,
+                        filter: filter,
+                        index: index,
+                        count: count,
+                        search: search,
+                    });
+                }).
+                always(loadingDone);
+            });
         });
 
         $(".ttSaDelete").off("click").on("click", () => {
-            console.log("delete");
+            mConfirm(i18n("tt.confirmDeleteIssue", issue.issue.issueId), i18n("confirm"), i18n("delete"), () => {
+                loadingStart();
+                DELETE("tt", "issue", issue.issue.issueId).
+                fail(FAIL).
+                done(() => {
+                    window.location.href = "#tt";
+                }).
+                fail(loadingDone);
+            });
         });
 
         $(".ttSaLink").off("click").on("click", () => {

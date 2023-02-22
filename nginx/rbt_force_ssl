@@ -5,13 +5,19 @@ map $http_upgrade $connection_upgrade {
 
 server {
         listen 80 default_server;
-        listen [::]:80 default_server;
 
-# SSL
-#        listen 443 ssl http2 default_server;
-#        listen [::]:443 ssl http2 default_server;
-#        ssl_certificate /etc/ssl/cert.pem;
-#        ssl_certificate_key /etc/ssl/key.pem;
+        location /.well-known {
+                root /var/www/html;
+        }
+
+        return 301 https://$host$request_uri;
+}
+
+server {
+        listen 443 ssl http2 default_server;
+        listen [::]:443 ssl http2 default_server;
+        ssl_certificate /etc/ssl/cert.pem;
+        ssl_certificate_key /etc/ssl/key.pem;
 
         location / {
                 root /opt/rbt/client;

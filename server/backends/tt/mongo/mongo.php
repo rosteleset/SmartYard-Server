@@ -110,11 +110,9 @@
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
-                $issue["updated"] = time();
-
                 $comment = false;
                 $commentPrivate = false;
-                if ($issue["comment"]) {
+                if (array_key_exists("comment", $issue) && $issue["comment"]) {
                     $comment = trim($issue["comment"]);
                     $commentPrivate = !!$issue["commentPrivate"];
                     unset($issue["comment"]);
@@ -126,6 +124,8 @@
                 }
 
                 $issue = $this->checkIssue($issue);
+
+                $issue["updated"] = time();
 
                 if ($issue) {
                     return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
@@ -141,6 +141,15 @@
             {
                 $db = $this->dbName;
 
+                $acr = explode("-", $issueId)[0];
+
+                $myRoles = $this->myRoles();
+
+                if ((int)$myRoles[$acr] < 80) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
                 $files = loadBackend("files");
 
                 if ($files) {
@@ -154,9 +163,7 @@
                     }
                 }
 
-                $acr = explode("-", $issueId)[0];
-
-                $this->mongo->$db->$acr->deleteMany([
+                return $this->mongo->$db->$acr->deleteMany([
                     "issueId" => $issueId,
                 ]);
             }

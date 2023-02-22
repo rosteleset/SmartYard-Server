@@ -24,7 +24,7 @@
                 if (@$params["_id"]) {
                     return api::ANSWER($tt->getFilter($params["_id"]), "body");
                 } else {
-                    return api::ANSWER($tt->availableFilters(), "filters");
+                    return api::ANSWER($tt->getFilters(), "filters");
                 }
             }
 

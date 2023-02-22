@@ -184,6 +184,8 @@
     "saDelete": "Удалить задачу",
     "saWatch": "Наблюдать",
     "saAssignToMe": "Забрать",
+    "confirmAssignToMe": "Назначить заявку себе?",
+    "confirmWatch": "Добавить себя в наблюдатели?",
     "saLink": "Связать",
     "saSubTask": "Подзадача",
     "addFile": "Добавить файл(ы)",
@@ -198,6 +200,7 @@
     "addProjectFilter": "Добавить фильтр",
     "confirmFilterDelete": "Удалить фильтр \"#%s\"?",
     "of": "из",
+    "confirmDeleteIssue": "Удалить задачу \"%s\"?",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
@@ -222,9 +225,10 @@
         }
     },
     "errors": {
-        "UNIQUE constraint failed: tt_viewers.field, tt_viewers.name": "Такая функция уже существует",
         "UNIQUE constraint failed: tt_projects_roles.project_id, tt_projects_roles.role_id, tt_projects_roles.uid, tt_projects_roles.gid": "Такая запись уже существует",
         "UNIQUE constraint failed: tt_projects_filters.project_id, tt_projects_filters.filter": "Фильтр уже добавлен",
-        "filterAlreadyExists": "Фильтр уже добавлен"
+        "filterAlreadyExists": "Фильтр уже добавлен",
+        "viewerAlreadyExists": "Функция уже существует",
+        "insufficentRights": "Недостаточно прав для выполнения операции"
     }
 }

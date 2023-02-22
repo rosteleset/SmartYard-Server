@@ -122,13 +122,11 @@
             name: name,
         }).
         fail(FAIL).
+        fail(modules.tt.settings.renderViewers).
         done(() => {
             message(i18n("tt.viewerWasAdded"));
-        }).
-        done(() => {
             location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(field)}&name=${encodeURIComponent(name)}`;
-        }).
-        always(modules.tt.settings.renderViewers);
+        });
     },
 
     doAddCrontab: function (crontab) {

@@ -481,7 +481,11 @@
             if (!modules.tt.viewers[modules.tt.meta.viewers[i].field]) {
                 modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
             }
-            modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', modules.tt.meta.viewers[i].code);
+            try {
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', modules.tt.meta.viewers[i].code);
+            } catch (e) {
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', "//function $name (val, field, issue) {\n\treturn val;\n//}\n");
+            }
         }
     },
 
@@ -499,89 +503,6 @@
     selectProject: function (project) {
         $.cookie("_project", project, { expires: 3650, insecure: config.insecureCookie });
         window.location.href = `#tt&project=${encodeURIComponent(project)}`;
-    },
-
-    doAction: function (issue, action) {
-        loadingStart();
-        QUERY("tt", "workflowActionTemplate", {
-            issue: issue.issue.issueId,
-            action: action,
-        }, true).done(r => {
-            let fields = [
-                {
-                    id: "issueId",
-                    type: "text",
-                    readonly: true,
-                    title: i18n("tt.issue"),
-                    value: issue.issue.issueId,
-                    hidden: true,
-                },
-            ];
-
-            let project;
-
-            for (let i in modules.tt.meta.projects) {
-                if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
-                    project = modules.tt.meta.projects[i];
-                }
-            }
-
-            let n = 0;
-            for (let i in r.template) {
-                fields.push(this.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId));
-                if (r.template[i] == "comment") {
-                    fields.push({
-                        id: "commentPrivate",
-                        type: "yesno",
-                        title: i18n("tt.commentPrivate"),
-                        value: "1",
-                    });
-                }
-                n++;
-            }
-
-            if (n) {
-                cardForm({
-                    title: action,
-                    apply: action,
-                    fields: fields,
-                    footer: true,
-                    borderless: true,
-                    size: "lg",
-                    callback: r => {
-                        loadingStart();
-                        PUT("tt", "workflowProgressAction", false, {
-                            set: r,
-                            action: action,
-                        }).
-                        fail(FAIL).
-                        always(() => {
-                            modules.tt.route({
-                                "issue": issue.issue.issueId,
-                            });
-                        });
-                    },
-                });
-            } else {
-                mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
-                    loadingStart();
-                    PUT("tt", "workflowProgressAction", false, {
-                        set: {
-                            issueId: issue.issue.issueId,
-                        },
-                        action: action,
-                    }).
-                    fail(FAIL).
-                    always(() => {
-                        modules.tt.route({
-                            "issue": issue.issue.issueId,
-                        });
-                    });
-                });
-            }
-        }).
-        fail(FAIL).
-        always(loadingDone);
     },
 
     renderIssues: function (params) {
@@ -609,11 +530,13 @@
                 }
             }
             rtd += `</select></div>`;
-            rtd += `<div class="input-group input-group-sm ${cog}"><input id="ttSearch" class="form-control" type="search" aria-label="Search"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton"><i class="fas fa-search"></i></button></div></div>`;
+            rtd += '<form autocomplete="off">';
+            rtd += `<div class="input-group input-group-sm ${cog}"><input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton"><i class="fas fa-search"></i></button></div></div>`;
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
             rtd += `</div>`;
+            rtd += '</form>';
         } else {
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;

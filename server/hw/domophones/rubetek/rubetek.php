@@ -11,6 +11,14 @@
             protected string $def_pass = 'api_password';
             protected string $api_prefix = '/api/v1';
 
+            protected array $config = [];
+
+            public function __construct(string $url, string $pass, bool $first_time = false) {
+                parent::__construct($url, $pass, $first_time);
+                $this->config = $this->get_config();
+                print_r($this->config); // TODO: delete later
+            }
+
             /** Make an API call */
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
@@ -18,7 +26,7 @@
                 // TODO: delete later
                 echo $method . PHP_EOL;
                 echo $req . PHP_EOL;
-                echo 'Payload: ' . json_encode($payload) . PHP_EOL;
+                echo 'Payload: ' . json_encode($payload, JSON_UNESCAPED_UNICODE) . PHP_EOL;
                 echo '---------------------------------' . PHP_EOL;
 
                 $ch = curl_init($req);
@@ -30,7 +38,7 @@
                 curl_setopt($ch, CURLOPT_VERBOSE, false);
 
                 if ($payload) {
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ]);
                 }
 
@@ -40,8 +48,30 @@
                 return json_decode($res, true);
             }
 
+            /** Get current intercom config */
+            protected function get_config() {
+                return $this->api_call('/configuration');
+            }
+
+            /** Get door IDs and lock status */
+            protected function get_doors() {
+                return array_slice($this->api_call('/doors'), 0, -1);
+            }
+
+            /** Set random administrator pin code */
+            protected function set_admin_pin() {
+                $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                $displaySettings = $this->config['display'];
+                $displaySettings['admin_password'] = $pin;
+                $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
+            }
+
             public function add_rfid(string $code, int $apartment = 0) {
                 // TODO: Implement add_rfid() method.
+                $this->api_call("/apartments/$apartment/rfids", 'POST', [
+                    'door_access' => [1, 2, 3],
+                    'rfids' => [ $code ],
+                ]);
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -86,7 +116,10 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                // TODO: Implement configure_ntp() method.
+                $timeSettings = $this->config['time'];
+                $timeSettings['ntp_pool'] = "$server:$port";
+                $timeSettings['timezone'] = 'GMT+3';
+                $this->api_call('/configuration', 'PATCH', [ 'time' => $timeSettings ]);
             }
 
             public function configure_sip(
@@ -98,11 +131,32 @@
                 string $stun_server = '',
                 int $stun_port = 3478
             ) {
-                // TODO: Implement configure_sip() method.
+                $params = [
+                    'Acc1Login' => $login,
+                    'Acc1Password' => $password,
+                    'Acc1SipServer' => $server,
+                    'Acc1SipServerPort' => $port,
+                    'Acc1SipTransport' => 'tcp',
+                    'Acc1RegInterval' => 1200,
+                    'RegTimeout' => 5,
+                    'RegCycleInterval' => 60,
+                    'RegAttemptsInCycle' => 5,
+                ];
+
+                if ($nat) {
+                    $params['Acc1StunServer'] = $stun_server;
+                    $params['Acc1StunPort'] = $stun_port;
+                }
+
+                $endpoint = '/sip?' . http_build_query($params);
+                $this->api_call($endpoint, 'PATCH');
             }
 
             public function configure_syslog(string $server, int $port) {
-                // TODO: Implement configure_syslog() method.
+                $this->api_call('/settings/syslog', 'PATCH', [
+                    'address' => "$server:$port",
+                    'protocol' => 'udp',
+                ]);
             }
 
             public function configure_user_account(string $password) {
@@ -145,7 +199,16 @@
             }
 
             public function keep_doors_unlocked(bool $unlocked = true) {
-                // TODO: Implement keep_doors_unlocked() method.
+                // TODO: if unlocked, the locks will close after reboot
+                $doors = $this->get_doors();
+
+                foreach ($doors as $door) {
+                    $id = $door['id'];
+                    $this->api_call("/doors/$id", 'PATCH', [
+                        'id' => $id,
+                        'open' => $unlocked,
+                    ]);
+                }
             }
 
             public function line_diag(int $apartment) {
@@ -153,8 +216,13 @@
             }
 
             public function open_door(int $door_number = 0) {
-                $door_number+=1;
-                $this->api_call("/doors/$door_number/open", 'POST');
+                $doors = $this->get_doors();
+                $open = $doors[$door_number]['open'] ?? false;
+
+                if (!$open) {
+                    $door_number+=1;
+                    $this->api_call("/doors/$door_number/open", 'POST');
+                }
             }
 
             public function set_admin_password(string $password) {
@@ -182,7 +250,9 @@
             }
 
             public function set_display_text(string $text = '') {
-                // TODO: Implement set_display_text() method.
+                $displaySettings = $this->config['display'];
+                $displaySettings['text'] = $text;
+                $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
             public function set_public_code(int $code = 0) {
@@ -190,7 +260,12 @@
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
-                // TODO: Implement set_relay_dtmf() method.
+                $this->api_call('/settings/dtmf', 'PATCH', [
+                    'code_length' => 1,
+                    'code1' => (string) $relay_1,
+                    'code2' => (string) $relay_2,
+                    'code3' => (string) $relay_3,
+                ]);
             }
 
             public function set_sos_number(int $number) {
@@ -202,7 +277,19 @@
             }
 
             public function set_unlock_time(int $time) {
-                // TODO: Implement set_unlock_time() method.
+                // TODO: causes a side effect: always closes the relay
+                $doors = $this->get_doors();
+
+                foreach ($doors as $door) {
+                    $id = $door['id'];
+                    $inverted = $this->api_call("/doors/$id/param")['inverted'];
+
+                    $this->api_call("/doors/$id/param", 'PATCH', [
+                        'id' => $id,
+                        'open_timeout' => $time,
+                        'inverted' => $inverted,
+                    ]);
+                }
             }
 
             public function set_video_overlay(string $title = '') {
@@ -210,7 +297,7 @@
             }
 
             public function set_language(string $lang) {
-                // TODO: Implement set_language() method.
+                // not used
             }
 
             public function write_config() {
@@ -223,6 +310,11 @@
 
             public function reset() {
                 $this->api_call('/reset', 'POST');
+            }
+
+            public function prepare() {
+                parent::prepare();
+                $this->set_admin_pin();
             }
         }
     }
