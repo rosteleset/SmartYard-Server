@@ -3,7 +3,7 @@ function initProject(project)
     return project
 end
 
-function getCreateIssueTemplate()
+function getIssueTemplate()
     return {
         ["fields"] = {
             "subject",
@@ -63,7 +63,7 @@ function getActionTemplate(issue, action)
     end
 end
 
-function doAction(issue, action, original)
+function action(issue, action, original)
     if action == "Закрыть" and original["status"] == "opened" then
         issue["status"] = "closed"
         tt.modifyIssue(issue)

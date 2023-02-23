@@ -108,9 +108,7 @@
         loadingStart();
         modules.users.loadUsers(() => {
             modules.groups.loadGroups(() => {
-                QUERY("tt", "workflowCreateIssueTemplate", {
-                    workflow: workflow,
-                }).
+                GET("tt", "createIssueTemplate", workflow).
                 done(response => {
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
@@ -468,7 +466,7 @@
             let action = $(this).text();
 
             loadingStart();
-            QUERY("tt", "workflowActionTemplate", {
+            QUERY("tt", "action", {
                 _id: issue.issue.issueId,
                 action: action,
             }, true).done(r => {
@@ -507,7 +505,7 @@
                         callback: r => {
                             r["issueId"] = issue.issue.issueId;
                             loadingStart();
-                            PUT("tt", "workflowProgressAction", issue.issue.issueId, {
+                            PUT("tt", "doAction", issue.issue.issueId, {
                                 set: r,
                                 action: action,
                             }).
@@ -526,7 +524,7 @@
                 } else {
                     mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
                         loadingStart();
-                        PUT("tt", "workflowProgressAction", issue.issue.issueId, {
+                        PUT("tt", "doAction", issue.issue.issueId, {
                             set: {
                                 issueId: issue.issue.issueId,
                             },

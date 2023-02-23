@@ -9,18 +9,18 @@
         use api\api;
 
         /**
-         * workflowCreateIssueTemplate method
+         * issueTemplate method
          */
 
-        class workflowCreateIssueTemplate extends api {
+        class issueTemplate extends api {
 
             public static function GET($params) {
-                $workflow = @$params["workflow"];
+                $workflow = @$params["_id"];
 
                 if ($workflow) {
                     $w = loadBackend("tt")->loadWorkflow($workflow);
                     if ($w) {
-                        $template = $w->getCreateIssueTemplate();
+                        $template = $w->getIssueTemplate();
 
                         return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
                     }
