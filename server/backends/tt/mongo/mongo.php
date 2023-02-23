@@ -195,6 +195,10 @@
                     $preprocess["%%search"] = trim($params["search"]);
                 }
 
+                if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
+                    $preprocess["%%parent"] = trim($params["parent"]);
+                }
+
                 $query = $this->preprocessFilter($query, $preprocess);
 
                 $projection = [];

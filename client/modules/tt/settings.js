@@ -1189,10 +1189,12 @@
         let f = [];
 
         for (let i in modules.tt.meta.filters) {
-            f.push({
-                id: i,
-                text: modules.tt.meta.filters[i]?(modules.tt.meta.filters[i] + " [" + i + "]"):i,
-            });
+            if (i.charAt(0) !== "#") {
+                f.push({
+                    id: i,
+                    text: modules.tt.meta.filters[i]?(modules.tt.meta.filters[i] + " [" + i + "]"):i,
+                });
+            }
         }
 
         cardForm({
