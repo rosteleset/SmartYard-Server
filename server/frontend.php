@@ -159,7 +159,7 @@
     if (count($_GET)) {
         foreach ($_GET as $key => $value) {
             if ($key == "_token") {
-                $token = $value;
+                $token = urldecode($value);
             } else
             if ($key == "_refresh") {
                 $refresh = true;
@@ -170,7 +170,7 @@
             if ($key === "_") {
                 // prevents timestamps
             } else {
-                $params[$key] = $value;
+                $params[$key] = urldecode($value);
             }
         }
     }
@@ -178,7 +178,7 @@
     if (count($_POST)) {
         foreach ($_POST as $key => $value) {
             if ($key == '_token') {
-                $token = $value;
+                $token = urldecode($value);
             } else
             if ($key == "_refresh") {
                 $refresh = true;
@@ -186,7 +186,7 @@
             if ($key == "_clearCache") {
                 $clearCache = true;
             } else {
-                $params[$key] = $value;
+                $params[$key] = urldecode($value);
             }
         }
     }
