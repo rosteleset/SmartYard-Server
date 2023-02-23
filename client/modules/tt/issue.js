@@ -12,7 +12,7 @@
             let workflows = [];
 
             for (let i in modules.tt.meta.workflows) {
-                workflows[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file;
+                workflows[i] = modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i;
             }
 
             function workflowsByProject(project) {
@@ -117,7 +117,7 @@
                     let workflows = [];
 
                     for (let i in modules.tt.meta.workflows) {
-                        workflows[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file;
+                        workflows[i] = modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i;
                     }
 
                     let projectName = "";

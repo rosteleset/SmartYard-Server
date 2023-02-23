@@ -33,22 +33,16 @@
                 
                 $workflows = $files->searchFiles([ "metadata.type" => "workflow" ]);
 
-                $wx = [];
+                $list = [];
                 foreach ($workflows as $workflow) {
                     try {
-                        $workflow_ = $this->loadWorkflow($workflow["metadata"]["workflow"]);
-                        $name = $workflow_->getWorkflowName();
+                        $list[$workflow["metadata"]["workflow"]] = $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowName();
                     } catch (\Exception $e) {
-                        $name = $workflow["metadata"]["workflow"];
+                        $list[$workflow["metadata"]["workflow"]] = $workflow["metadata"]["workflow"];
                     }
-
-                    $wx[] = [
-                        "file" => $workflow["metadata"]["workflow"],
-                        "name" => $name,
-                    ];
                 }
 
-                return $wx;
+                return $list;
             }
 
             /**
@@ -435,15 +429,11 @@
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
                 $list = [];
-
                 foreach ($filters as $filter) {
-                    $filter = pathinfo($filter["filename"]);
-
                     try {
-                        $f = json_decode($this->getFilter($filter["filename"]), true);
-                        $list[$filter["filename"]] = @$f["name"];
+                        $list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"];
                     } catch (\Exception $e) {
-                        $list[$filter["filename"]] = $filter["filename"];
+                        $list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
                     }
                 }
 

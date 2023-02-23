@@ -1134,16 +1134,11 @@
             }
         }
 
-        let w = {};
-        for (let i in modules.tt.meta.workflows) {
-            w[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i];
-        }
-
         let workflows = [];
-        for (let i in w) {
+        for (let i in modules.tt.meta.workflows) {
             workflows.push({
                 id: i,
-                text: "<span class='text-monospace'>[" + i + "]</span> " + (w[i].name?w[i].name:i),
+                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i),
             });
         }
 
@@ -2077,15 +2072,15 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < modules.tt.meta.workflows.length; i++) {
+                    for (let i in modules.tt.meta.workflows) {
                         rows.push({
-                            uid: modules.tt.meta.workflows[i].file,
+                            uid: i,
                             cols: [
                                 {
-                                    data: modules.tt.meta.workflows[i].file,
+                                    data: i,
                                 },
                                 {
-                                    data: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file,
+                                    data: modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i,
                                 },
                             ],
                             dropDown: {
