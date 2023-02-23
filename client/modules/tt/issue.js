@@ -108,7 +108,7 @@
         loadingStart();
         modules.users.loadUsers(() => {
             modules.groups.loadGroups(() => {
-                GET("tt", "createIssueTemplate", workflow).
+                GET("tt", "issueTemplate", workflow).
                 done(response => {
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
@@ -505,7 +505,7 @@
                         callback: r => {
                             r["issueId"] = issue.issue.issueId;
                             loadingStart();
-                            PUT("tt", "doAction", issue.issue.issueId, {
+                            PUT("tt", "action", issue.issue.issueId, {
                                 set: r,
                                 action: action,
                             }).
@@ -524,7 +524,7 @@
                 } else {
                     mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
                         loadingStart();
-                        PUT("tt", "doAction", issue.issue.issueId, {
+                        PUT("tt", "action", issue.issue.issueId, {
                             set: {
                                 issueId: issue.issue.issueId,
                             },
