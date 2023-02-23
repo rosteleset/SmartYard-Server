@@ -15,6 +15,7 @@
     "userWasAdded": "Пользователь добавлен",
     "userWasDeleted": "Пользователь удален",
     "defaultRoute": "Начальная страница",
+    "persistentToken": "Постоянный токен",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",

@@ -75,6 +75,17 @@
                             $_user["groups"] = $groups->getGroups($uid);
                         }
 
+                        $persistent = false;
+                        $_keys = $this->redis->keys("persistent_*_" . $user[0]["uid"]);
+                        foreach ($_keys as $_key) {
+                            $persistent = explode("_", $_key)[1];
+                            break;
+                        }
+
+                        if ($persistent) {
+                            $_user["persistentToken"] = $persistent;
+                        }
+
                         return $_user;
                     } else {
                         return false;
@@ -196,13 +207,26 @@
              * @return boolean
              */
 
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true, $defaultRoute = '#') {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true, $defaultRoute = '#', $persistentToken = false) {
                 if (!checkInt($uid)) {
                     return false;
                 }
 
                 try {
                     $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled, default_route = :default_route where uid = $uid");
+
+                    if ($persistentToken && strlen(trim($persistentToken)) === 32) {
+                        $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
+                            "uid" => $uid,
+                            "login" => $this->db->get("select login from core_users where uid = $uid", false, false, [ "fieldlify" ]),
+                        ]));
+                    } else {
+                        $_keys = $this->redis->keys("persistent_*_" . $uid);
+                        foreach ($_keys as $_key) {
+                            $this->redis->del($_key);
+                        }
+                    }
+                    
                     return $sth->execute([
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),

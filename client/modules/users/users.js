@@ -38,19 +38,12 @@
         always(modules.users.render);
     },
 
-    doModifyUser: function (uid, realName, eMail, phone, enabled, password, defaultRoute) {
+    doModifyUser: function (user) {
         loadingStart();
-        PUT("accounts", "user", uid, {
-            realName: realName,
-            eMail: eMail,
-            phone: phone,
-            enabled: enabled,
-            password: password,
-            defaultRoute: defaultRoute,
-        }).
+        PUT("accounts", "user", user.uid, user).
         fail(FAIL).
         done(() => {
-            if (uid == myself.uid) {
+            if (user.uid == myself.uid) {
                 whoAmI(true);
             }
             message(i18n("users.userWasChanged"));
@@ -231,6 +224,23 @@
                         }
                     },
                     {
+                        id: "persistentToken",
+                        type: "text",
+                        readonly: false,
+                        value: response.user.persistentToken,
+                        title: i18n("users.persistentToken"),
+                        placeholder: i18n("users.persistentToken"),
+                        button: {
+                            class: "fas fa-magic",
+                            click: prefix => {
+                                $(`#${prefix}persistentToken`).val(md5(Math.random() + (new Date())));
+                            },
+                        },
+                        validate: (v) => {
+                            return $.trim(v) === "" || $.trim(v).length === 32;
+                        }
+                    },
+                    {
                         id: "disabled",
                         type: "select",
                         value: response.user.enabled?"no":"yes",
@@ -253,7 +263,8 @@
                     if (result.delete === "yes") {
                         modules.users.deleteUser(result.uid);
                     } else {
-                        modules.users.doModifyUser(result.uid, result.realName, result.eMail, result.phone, result.disabled === "no", result.password, result.defaultRoute);
+                        result.enabled = result.disabled === "no";
+                        modules.users.doModifyUser(result);
                     }
                 },
             }).show();
