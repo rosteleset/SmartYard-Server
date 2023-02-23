@@ -215,7 +215,7 @@
                 try {
                     $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled, default_route = :default_route where uid = $uid");
 
-                    if ($persistentToken && strlen(trim($persistentToken)) === 32) {
+                    if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid) {
                         $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
                             "uid" => $uid,
                             "login" => $this->db->get("select login from core_users where uid = $uid", false, false, [ "fieldlify" ]),

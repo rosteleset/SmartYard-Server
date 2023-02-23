@@ -227,9 +227,10 @@
                         id: "persistentToken",
                         type: "text",
                         readonly: false,
-                        value: response.user.persistentToken,
+                        value: parseInt(uid)?response.user.persistentToken:'',
                         title: i18n("users.persistentToken"),
                         placeholder: i18n("users.persistentToken"),
+                        hidden: !parseInt(uid),
                         button: {
                             class: "fas fa-magic",
                             click: prefix => {
