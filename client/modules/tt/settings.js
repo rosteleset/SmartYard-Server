@@ -2822,10 +2822,10 @@
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
-            let code = `// function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
+            let code = `//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
             for (let i in v.viewers) {
                 if (v.viewers[i].field == field && v.viewers[i].name == name) {
-                    code = v.viewers[i].code?v.viewers[i].code:`// function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
+                    code = v.viewers[i].code?v.viewers[i].code:`//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
@@ -2889,6 +2889,9 @@
                     },
                     columns: [
                         {
+                            title: i18n("tt.viewer"),
+                        },
+                        {
                             title: i18n("tt.viewerField"),
                         },
                         {
@@ -2911,6 +2914,9 @@
                             rows.push({
                                 uid: key,
                                 cols: [
+                                    {
+                                        data: r.viewers[i].filename,
+                                    },
                                     {
                                         data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
                                     },

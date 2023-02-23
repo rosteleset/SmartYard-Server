@@ -554,6 +554,7 @@
                     "type" => "viewer",
                     "field" => $field,
                     "name" => $name,
+                    "viewer" => $field . "_" . $name,
                 ]);
             }
 
@@ -599,6 +600,7 @@
                 $vs = [];
                 foreach ($viewers as $v) {
                     $vs[] = [
+                        "filename" => $v["metadata"]["viewer"],
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
                         "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue) {\n\treturn val;\n//}\n",

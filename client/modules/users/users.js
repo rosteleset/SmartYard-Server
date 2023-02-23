@@ -314,6 +314,9 @@
                         title: i18n("users.login"),
                     },
                     {
+                        title: i18n("users.blocked"),
+                    },
+                    {
                         title: i18n("users.realName"),
                         fullWidth: true,
                     },
@@ -337,6 +340,10 @@
                                 },
                                 {
                                     data: response.users[i].login,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: response.users[i].enabled?i18n("no"):i18n("yes"),
                                     nowrap: true,
                                 },
                                 {

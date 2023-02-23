@@ -34,7 +34,7 @@
     "customFieldsMenu": "Поля",
     "addProject": "Добавить проект",
     "projectWasChanged": "Проект изменен",
-    "workflow": "Рабочий процесс",
+    "workflow": "Файл",
     "workflows": "Рабочие процессы",
     "workflowsMenu": "Процессы",
     "workflowWasChanged": "Рабочий процесс изменен",
@@ -201,6 +201,7 @@
     "confirmFilterDelete": "Удалить фильтр \"#%s\"?",
     "of": "из",
     "confirmDeleteIssue": "Удалить задачу \"%s\"?",
+    "viewer": "Файл",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

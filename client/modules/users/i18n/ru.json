@@ -16,6 +16,7 @@
     "userWasDeleted": "Пользователь удален",
     "defaultRoute": "Начальная страница",
     "persistentToken": "Постоянный токен",
+    "blocked": "Заблокирован",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",
