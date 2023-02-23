@@ -112,7 +112,11 @@
                 $collection = "fs.files";
                 $db = $this->dbName;
 
-                $cursor = $this->mongo->$db->$collection->find($query);
+                $cursor = $this->mongo->$db->$collection->find($query, [
+                    "sort" => [
+                        "filename" => 1,
+                    ],
+                ]);
 
                 $files = [];
                 foreach ($cursor as $document) {

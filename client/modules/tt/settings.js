@@ -115,20 +115,6 @@
         });
     },
 
-    doAddViewer: function (field, name) {
-        loadingStart();
-        POST("tt", "viewer", false, {
-            field: field,
-            name: name,
-        }).
-        fail(FAIL).
-        fail(modules.tt.settings.renderViewers).
-        done(() => {
-            message(i18n("tt.viewerWasAdded"));
-            location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(field)}&name=${encodeURIComponent(name)}`;
-        });
-    },
-
     doAddCrontab: function (crontab) {
         loadingStart();
         POST("tt", "crontab", false, crontab).
@@ -2827,7 +2813,7 @@
                     },
                 ],
                 callback: r => {
-                    modules.tt.settings.doAddViewer(r.field, r.name)
+                    location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(r.field)}&name=${encodeURIComponent(r.name)}`;
                 },
             }).show();
         }).
@@ -2839,7 +2825,7 @@
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
-            let code = '';
+            let code = `// function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
             for (let i in v.viewers) {
                 if (v.viewers[i].field == field && v.viewers[i].name == name) {
                     code = v.viewers[i].code?v.viewers[i].code:`// function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;

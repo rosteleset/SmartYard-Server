@@ -410,7 +410,7 @@
         let val = issue[field];
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
-            val = modules.tt.viewers[field][v](val, field, issue);
+            val = modules.tt.viewers[field][v](val, issue, field);
         } else {
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
@@ -482,9 +482,9 @@
                 modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
             }
             try {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', modules.tt.meta.viewers[i].code);
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', modules.tt.meta.viewers[i].code);
             } catch (e) {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', "//function $name (val, field, issue) {\n\treturn val;\n//}\n");
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', "//function $name (val, field, issue) {\n\treturn val;\n//}\n");
             }
         }
     },

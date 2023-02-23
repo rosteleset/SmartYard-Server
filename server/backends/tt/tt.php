@@ -536,44 +536,10 @@
             /**
              * @param $field
              * @param $name
-             * @return mixed
-             */
-            public function addViewer($field, $name) {
-                if (!checkStr($name) || !checkStr($field)) {
-                    return false;
-                }
-
-                $files = loadBackend("files");
-
-                if (!$files) {
-                    return false;
-                }
-
-                $viewers = $files->searchFiles([
-                    "metadata.type" => "viewer",
-                    "metadata.field" => $field,
-                    "metadata.name" => $name,
-                ]);
-
-                if (count($viewers)) {
-                    setLastError("viewerAlreadyExists");
-                    return false;
-                }
-
-                return $files->addFile($field . "_" . $name . ".js", $files->contentsToStream("//function $name (val, field, issue) {\n\treturn val;\n//}\n"), [
-                    "type" => "viewer",
-                    "field" => $field,
-                    "name" => $name,
-                ]);
-            }
-
-            /**
-             * @param $field
-             * @param $name
              * @param $code
              * @return mixed
              */
-            public function modifyViewer($field, $name, $code) {
+            public function putViewer($field, $name, $code) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -645,7 +611,7 @@
                     $vs[] = [
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
-                        "code" => $files->streamToContents($files->getFileStream($v["id"])),
+                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue) {\n\treturn val;\n//}\n",
                     ]; 
                 }
 
