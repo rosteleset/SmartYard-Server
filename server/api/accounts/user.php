@@ -181,7 +181,7 @@
                 $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"]);
 
                 if (@$params["password"]) {
-                    $success = $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
+                    $success = $success && $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
                     return self::ANSWER($success, ($success !== false)?false:"notAcceptable");
                 } else {
                     return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
