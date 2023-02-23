@@ -37,7 +37,7 @@
                 foreach ($workflows as $workflow) {
                     try {
                         $workflow_ = $this->loadWorkflow($workflow["metadata"]["workflow"]);
-                        $name = $workflow_->workflowName();
+                        $name = $workflow_->getWorkflowName();
                     } catch (\Exception $e) {
                         $name = $workflow["metadata"]["workflow"];
                     }

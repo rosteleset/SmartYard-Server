@@ -3,7 +3,7 @@ function initProject(project)
     return project
 end
 
-function createIssueTemplate()
+function getCreateIssueTemplate()
     return {
         ["fields"] = {
             "subject",
@@ -26,7 +26,7 @@ end
 -- saLink       - add link to another issue
 -- saSubTask    - create subIssue
 
-function availableActions(issue)
+function getAvailableActions(issue)
     if issue["status"] ~= "closed" then
         return {
             "!saAddComment",
@@ -41,7 +41,7 @@ function availableActions(issue)
     end
 end
 
-function actionTemplate(issue, action)
+function getActionTemplate(issue, action)
     if action == "Закрыть" then
         if issue["status"] ~= "closed" then
             return {
@@ -83,7 +83,7 @@ end
 function viewIssue(issue)
     return {
         ["issue"] = issue,
-        ["actions"] = availableActions(issue),
+        ["actions"] = getAvailableActions(issue),
         ["fields"] = {
             "issueId",
             "project",
@@ -105,6 +105,6 @@ function viewIssue(issue)
     }
 end
 
-function workflowName()
+function getWorkflowName()
     return "Базовый"
 end

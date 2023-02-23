@@ -20,7 +20,7 @@
                 if ($workflow) {
                     $w = loadBackend("tt")->loadWorkflow($workflow);
                     if ($w) {
-                        $template = $w->createIssueTemplate();
+                        $template = $w->getCreateIssueTemplate();
 
                         return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
                     }
