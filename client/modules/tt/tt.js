@@ -497,7 +497,7 @@
         } else {
             filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
-        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}`;
+        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}&_refresh=${Math.random()}`;
     },
 
     selectProject: function (project) {

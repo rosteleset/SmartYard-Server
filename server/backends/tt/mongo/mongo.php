@@ -191,15 +191,11 @@
                     "%%my" => $my,
                 ];
 
-                if ($params && array_key_exists("search", $params)) {
-                    $preprocess["%%search"] = $params["search"];
+                if ($params && array_key_exists("search", $params) && trim($params["search"])) {
+                    $preprocess["%%search"] = trim($params["search"]);
                 }
 
-                error_log(print_r($preprocess, true));
-
                 $query = $this->preprocessFilter($query, $preprocess);
-
-                error_log(print_r($query, true));
 
                 $projection = [];
 
