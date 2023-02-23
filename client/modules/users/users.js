@@ -135,6 +135,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                size: "lg",
                 delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString())?i18n("users.delete"):false,
                 fields: [
                     {
