@@ -181,6 +181,12 @@
                 if ($uid > 0) { // admin cannot be deleted
                     try {
                         $this->db->exec("delete from core_users where uid = $uid");
+
+                        $_keys = $this->redis->keys("persistent_*_" . $uid);
+                        foreach ($_keys as $_key) {
+                            $this->redis->del($_key);
+                        }
+
                         $groups = loadBackend("groups");
                         if ($groups) {
                             $groups->deleteUser($uid);
