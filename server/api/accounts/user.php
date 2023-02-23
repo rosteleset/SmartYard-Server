@@ -180,7 +180,7 @@
             public static function PUT($params) {
                 $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"]);
 
-                if (@$params["password"]) {
+                if (@$params["password"] && (int)$params["_id"]) {
                     $success = $success && $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
                     return self::ANSWER($success, ($success !== false)?false:"notAcceptable");
                 } else {

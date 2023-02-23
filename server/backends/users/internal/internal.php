@@ -215,13 +215,20 @@
                 try {
                     $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled, default_route = :default_route where uid = $uid");
 
-                    if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid) {
+                    if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
                             "uid" => $uid,
                             "login" => $this->db->get("select login from core_users where uid = $uid", false, false, [ "fieldlify" ]),
                         ]));
                     } else {
                         $_keys = $this->redis->keys("persistent_*_" . $uid);
+                        foreach ($_keys as $_key) {
+                            $this->redis->del($_key);
+                        }
+                    }
+
+                    if (!$enabled) {
+                        $_keys = $this->redis->keys("auth_*_" . $uid);
                         foreach ($_keys as $_key) {
                             $this->redis->del($_key);
                         }
