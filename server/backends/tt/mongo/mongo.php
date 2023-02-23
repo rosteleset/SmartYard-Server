@@ -173,6 +173,8 @@
              */
             public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
             {
+                global $params;
+
                 $db = $this->dbName;
 
                 $me = $this->myRoles();
@@ -184,10 +186,20 @@
                 $my = $this->myGroups();
                 $my[] = $this->login;
 
-                $query = $this->preprocessFilter($query, [
+                $preprocess = [
                     "%%me" => $this->login,
                     "%%my" => $my,
-                ]);
+                ];
+
+                if ($params && array_key_exists("search", $params)) {
+                    $preprocess["%%search"] = $params["search"];
+                }
+
+                error_log(print_r($preprocess, true));
+
+                $query = $this->preprocessFilter($query, $preprocess);
+
+                error_log(print_r($query, true));
 
                 $projection = [];
 

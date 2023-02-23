@@ -2424,7 +2424,7 @@
                 },
             ],
             callback: f => {
-                location.href = "#tt.settings&section=filter&filter=" + f.file;
+                location.href = "#tt.settings&section=filter&filter=" + encodeURIComponent(f.file);
             },
         }).show();
     },
@@ -2454,7 +2454,7 @@
                     },
                 ],
                 edit: filter => {
-                    location.href = "#tt.settings&section=filter&filter=" + filter;
+                    location.href = "#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
                 },
                 rows: () => {
                     let rows = [];

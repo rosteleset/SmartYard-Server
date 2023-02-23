@@ -303,8 +303,6 @@ function cardForm(params) {
 
     h += '</form>';
 
-    console.log(h);
-
     function getVal(i) {
         switch (params.fields[i].type) {
             case "select":

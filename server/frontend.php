@@ -144,7 +144,7 @@
     $params = [];
 
     if (count($m) >= 3) {
-        $params["_id"] = $m[2];
+        $params["_id"] = urldecode($m[2]);
     }
 
     $params["_path"] = [

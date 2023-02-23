@@ -191,8 +191,8 @@
                 }
                 
                 $workflows = $files->searchFiles([
-                    "type" => "workflow",
-                    "workflow" => $workflow,
+                    "metadata.type" => "workflow",
+                    "metadata.workflow" => $workflow,
                 ]);
 
                 foreach ($workflows as $w) {
@@ -522,8 +522,8 @@
                 }
                 
                 $filters = $files->searchFiles([
-                    "type" => "filter",
-                    "workflow" => $filter,
+                    "metadata.type" => "filter",
+                    "metadata.filter" => $filter,
                 ]);
 
                 foreach ($filters as $f) {
