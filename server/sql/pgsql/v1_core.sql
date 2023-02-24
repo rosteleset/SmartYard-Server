@@ -20,6 +20,7 @@ CREATE TABLE core_users
     e_mail character varying,
     phone character varying,
     default_route character varying
+    last_login integer
 );
 CREATE UNIQUE INDEX core_users_login on core_users(login);
 CREATE INDEX core_users_real_name on core_users(real_name);

@@ -19,7 +19,8 @@ CREATE TABLE core_users
     real_name text,
     e_mail text,
     phone text,
-    default_route text
+    default_route text,
+    last_login integer
 );
 CREATE UNIQUE INDEX core_users_login on core_users(login);
 CREATE INDEX core_users_real_name on core_users(real_name);
