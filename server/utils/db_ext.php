@@ -13,11 +13,13 @@
         {
             $remap = [];
 
-            foreach ($map as $key => $value) {
-                if (is_null($value)) {
-                    $remap[$key] = $value;
-                } else {
-                    $remap[$key] = trim($value);
+            if ($map) {
+                foreach ($map as $key => $value) {
+                    if (is_null($value)) {
+                        $remap[$key] = $value;
+                    } else {
+                        $remap[$key] = trim($value);
+                    }
                 }
             }
 

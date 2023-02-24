@@ -69,7 +69,7 @@
                         "started" => time(),
                         "updated" => time(),
                     ]));
-                    $this->db->modify("update core_users set last_login = " . time() . " where uid = " . $uid);
+                    $this->db->modify("update core_users set last_login = " . time() . " where uid = " . $uid, false, [ "silent" ]);
                     return [
                         "result" => true,
                         "token" => $token,
