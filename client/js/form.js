@@ -6,7 +6,7 @@ function cardForm(params) {
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
-        h = `<form autocomlete="off"><div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">`;
+        h = `<form autocomplete="off"><div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">`;
         $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
         if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
             $("#modalBody").parent().addClass("modal-" + params.size);
