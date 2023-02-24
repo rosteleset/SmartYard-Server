@@ -448,6 +448,10 @@ function initAll() {
         handle: "#alertModalHeader",
     });
 
+    $("#uploadModalBody").draggable({
+        handle: "#uploadModalHeader",
+    });
+
     if ($.cookie("_server") && $.cookie("_token")) {
         POST("authentication", "ping", false, {
             ua: $.cookie("_ua"),

@@ -16,36 +16,11 @@ const mime2fa = {
 function uploadForm(mimeTypes) {
     mimeTypes = mimeTypes?escapeHTML(mimeTypes.join(",")):"";
 
-    let h = `
-        <div class="card mt-0 mb-0">
-            <div class="card-header">
-                <h3 class="card-title">${i18n("upload")}</h3>
-                <button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right uploadModalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>
-            </div>
-            <div class="card-body table-responsive p-0">
-                <input type="file" id="fileInput" style="display: none" accept="${mimeTypes}"/>
-                <table class="table tform-borderless mt-2 mb-3" style="width: 100%;">
-                    <tbody>
-                        <tr style="display: none">
-                            <td id="fileIcon">&nbsp;</td>
-                            <td id="uploadFileInfo" style="text-align: left; width: 100%;">&nbsp;</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="table tform-borderless">
-                    <tfoot>
-                        <tr>
-                            <td><button id="chooseFileToUpload" class="btn btn-default">${i18n("chooseFile")}...</button></td>
-                            <td style="text-align: right"><button id="uploadButton" class="btn btn-default">${i18n("doUpload")}</button></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    `;
-
-    $("#modalUploadBody").html(h);
-}
+    $("#uploadModalTitle").text(i18n("upload"));
+    $("#uploadModalCancel").attr("title", i18n("cancel"));
+    $("#chooseFileToUpload").text(i18n("chooseFile"));
+    $("#uploadButton").text(i18n("doUpload"));
+}    
 
 function loadFile(mimeTypes, maxSize, callback) {
     uploadForm(mimeTypes);
@@ -110,7 +85,7 @@ function loadFile(mimeTypes, maxSize, callback) {
 
     $("#uploadButton").off("click").on("click", () => {
         if (file) {
-            $('#modalUpload').modal('hide');
+            $('#uploadModal').modal('hide');
 
             fetch(URL.createObjectURL(file)).then(response => {
                 return response.blob();
@@ -135,7 +110,7 @@ function loadFile(mimeTypes, maxSize, callback) {
         }
     });
 
-    autoZ($('#modalUpload')).modal('show');
+    autoZ($('#uploadModal')).modal('show');
 
     xblur();
 
