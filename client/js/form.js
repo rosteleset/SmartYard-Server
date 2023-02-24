@@ -412,11 +412,13 @@ function cardForm(params) {
         target = $(params.target).html(h);
     } else {
         target = modal(h);
+/*
         if (params.title) {
             $("#modal").draggable({
                 handle: "#modalHeader",
             });
         }
+*/
     }
 
     $(".modalFormOk").off("click").on("click", ok);
