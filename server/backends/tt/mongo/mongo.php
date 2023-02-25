@@ -172,6 +172,8 @@
                     }
                 }
 
+                $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
+
                 return $this->mongo->$db->$acr->deleteMany([
                     "issueId" => $issueId,
                 ]);
@@ -455,6 +457,12 @@
                 }
 
                 foreach ($attachments as $attachment) {
+                    $this->addJournalRecord($issueId, "addAttachment", null, [
+                        "date" => round($attachment["date"] / 1000),
+                        "type" => $attachment["type"],
+                        "filename" => $attachment["name"],
+                    ]);
+
                     $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                         "date" => round($attachment["date"] / 1000),
                         "added" => time(),
@@ -491,6 +499,10 @@
                 }
 
                 if ($list && $list[0] && $list[0]["id"]) {
+                    $this->addJournalRecord($issueId, "deleteAttachment", [
+                        "filename" => $filename,
+                    ], null);
+
                     return $files->deleteFile($list[0]["id"]);
                 }
 
