@@ -36,7 +36,7 @@
              */
             public function journal($issue, $action, $old, $new)
             {
-                return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issue, "login" => $this->login, "action" => $action, "old" => $old, "new" => $new ] ]);
+                return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issue, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
             }
 
             /**
@@ -44,7 +44,14 @@
              */
             public function get($issue)
             {
-                return $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc");
+                $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc");
+
+                foreach ($journal as &$record) {
+                    $record["old"] = json_decode($record["old"], true);
+                    $record["new"] = json_decode($record["new"], true);
+                }
+
+                return $journal;
             }
         }
     }

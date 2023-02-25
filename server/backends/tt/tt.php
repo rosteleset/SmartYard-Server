@@ -762,7 +762,7 @@
              * @param $issue
              * @return mixed
              */
-            abstract public function modifyIssue($issue);
+            abstract protected function modifyIssue($issue);
 
             /**
              * @param $issueId
