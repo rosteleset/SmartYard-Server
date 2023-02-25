@@ -36,7 +36,7 @@
              */
             public function journal($issue, $action, $old, $new)
             {
-                if ($old) {
+                if ($old && $new) {
                     foreach ($old as $key => $field) {
                         if (!array_key_exists($key, $new)) {
                             unset($old[$key]);
@@ -53,9 +53,13 @@
             /**
              * @inheritDoc
              */
-            public function get($issue)
+            public function get($issue, $limit = false)
             {
-                $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc");
+                if ($limit) {
+                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc limit $limit");
+                } else {
+                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc");
+                }
 
                 foreach ($journal as &$record) {
                     $record["old"] = json_decode($record["old"], true);
