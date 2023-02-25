@@ -89,7 +89,7 @@
                         }
 
                         if ($this->mongo->$db->$acr->insertOne($issue)->getInsertedId()) {
-                            parent::createIssue($issue);
+                            $this->addJournalRecord($issue["issueId"], "createIssue", null, $issue);
                             return $issue["issueId"];
                         } else {
                             return false;
