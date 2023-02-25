@@ -344,7 +344,7 @@
                     return false;
                 }
 
-                $this->addJournalRecord($issueId, "modifyComment#$commnentIndex", [
+                $this->addJournalRecord($issueId, "modifyComment#$commentIndex", [
                     "author" => $issue["comments"][$commentIndex]["author"],
                     "body" => $issue["comments"][$commentIndex]["body"],
                     "private" => $issue["comments"][$commentIndex]["private"],
@@ -398,6 +398,13 @@
                 if (!$issue) {
                     return false;
                 }
+
+                $this->addJournalRecord($issueId, "deleteComment#$commentIndex", [
+                    "author" => $issue["comments"][$commentIndex]["author"],
+                    "body" => $issue["comments"][$commentIndex]["body"],
+                    "private" => $issue["comments"][$commentIndex]["private"],
+                    "created" => $issue["comments"][$commentIndex]["created"],
+                ], null);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
                     return
