@@ -848,7 +848,7 @@
                 $journal = loadBackend("tt_journal");
 
                 if ($journal) {
-                    $journal->journal($issue, $action, $old, $new)
+                    $journal->journal($issue, $action, $old, $new);
                 }
             }
 
