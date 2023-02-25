@@ -1,16 +1,16 @@
 <?php
 
     /**
-     * "clickhouse" accounting (logging) class
+     * "clickhouse" tt_journal (logging) class
      */
 
-    namespace backends\accounting {
+    namespace backends\tt_journal {
 
         /**
-         * clickhouse accounting (logging) class
+         * clickhouse tt_journal (logging) class
          */
 
-        class clickhouse extends accounting {
+        class clickhouse extends tt_journal {
             private $clickhouse;
 
             /**
@@ -44,7 +44,7 @@
              */
             public function get($issue)
             {
-                //
+                return $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc");
             }
         }
     }

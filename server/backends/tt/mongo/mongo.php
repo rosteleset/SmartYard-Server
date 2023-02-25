@@ -89,6 +89,7 @@
                         }
 
                         if ($this->mongo->$db->$acr->insertOne($issue)->getInsertedId()) {
+                            $this->addJournalRecord($issue["issueId"], "createIssue", null, $issue);
                             return $issue["issueId"];
                         } else {
                             return false;
@@ -495,14 +496,6 @@
             {
                 $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
                 $this->redis->set("ttReCreateIndexes", true);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addJournalRecord($issue, $record)
-            {
-                // TODO: Implement addJournalRecord() method.
             }
         }
     }
