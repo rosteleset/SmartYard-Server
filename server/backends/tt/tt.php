@@ -756,7 +756,10 @@
              * @param $issue
              * @return mixed
              */
-            abstract protected function createIssue($issue);
+            protected function createIssue($issue)
+            {
+                return $this->addJournalRecord($issue["issueId"], "createIssue", null, $issue);
+            }
 
             /**
              * @param $issue
