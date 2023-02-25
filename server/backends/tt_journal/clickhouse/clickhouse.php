@@ -47,6 +47,20 @@
                         }
                     }
                 }
+                if (!$old) {
+                    foreach ($new as $key => $field) {
+                        if (!$field) {
+                            unset($new[$key]);
+                        }
+                    }
+                }
+                if (!$new) {
+                    foreach ($old as $key => $field) {
+                        if (!$field) {
+                            unset($old[$key]);
+                        }
+                    }
+                }
                 return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issue, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
             }
 
