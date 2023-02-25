@@ -36,6 +36,17 @@
              */
             public function journal($issue, $action, $old, $new)
             {
+                if ($old) {
+                    foreach ($old as $key => $field) {
+                        if (!array_key_exists($key, $new)) {
+                            unset($old[$key]);
+                        }
+                        if ($old[$key] == $new[$key]) {
+                            unset($old[$key]);
+                            unset($new[$key]);
+                        }
+                    }
+                }
                 return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issue, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
             }
 

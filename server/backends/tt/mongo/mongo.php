@@ -130,21 +130,12 @@
 
                 if ($issue) {
                     $old = $this->getIssue($issue["issueId"]);
-                    $new = $issue;
-                    foreach ($old as $key => $field) {
-                        if (!array_key_exists($key, $issue)) {
-                            unset($old[$key]);
-                        }
-                        if ($old[$key] == $new[$key]) {
-                            unset($old[$key]);
-                            unset($new[$key]);
-                        }
-                    }
+                    $update = false;
                     if ($old) {
                         $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
                     }
                     if ($update) {
-                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $new);
+                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue);
                     }
                     return $update;
                 }
@@ -302,6 +293,11 @@
                     return false;
                 }
 
+                $this->addJournalRecord($issueId, "addComment", null, [
+                    "body" => $comment,
+                    "private" => $private,
+                ]);
+
                 return $this->mongo->$db->$acr->updateOne(
                     [
                         "issueId" => $issueId,
@@ -347,6 +343,18 @@
                 if (!$issue) {
                     return false;
                 }
+
+                $this->addJournalRecord($issueId, "modifyComment#$commnentIndex", [
+                    "author" => $issue["comments"][$commentIndex]["author"],
+                    "body" => $issue["comments"][$commentIndex]["body"],
+                    "private" => $issue["comments"][$commentIndex]["private"],
+                    "created" => $issue["comments"][$commentIndex]["created"],
+                ], [
+                    "author" => $this->login,
+                    "body" => $comment,
+                    "private" => $private,
+                    "created" => time(),
+                ]);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
                     return $this->mongo->$db->$acr->updateOne(
