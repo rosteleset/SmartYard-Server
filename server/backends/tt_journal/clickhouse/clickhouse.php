@@ -14,9 +14,7 @@
             private $clickhouse;
 
             /**
-             * @param $config
-             * @param $db
-             * @param $redis
+             * @inheritDoc
              */
             function __construct($config, $db, $redis, $login = false)
             {
@@ -34,36 +32,19 @@
             }
 
             /**
-             * @param $params
-             * @param $code
-             * @return void
+             * @inheritDoc
              */
-            public function log($params, $code) {
-                $login = $this->login;
-
-                if (@$params["_id"]) {
-                    $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}/{$params["_id"]}";
-                } else {
-                    $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}";
-                }
-
-                $this->raw($params["_ip"], "frontend", $msg);
+            public function journal($issue, $action, $old, $new)
+            {
+                return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issue, "login" => $this->login, "action" => $action, "old" => $old, "new" => $new ] ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function raw($ip, $unit, $msg)
+            public function get($issue)
             {
-                return $this->clickhouse->insert("syslog", [ [ "date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function get($query)
-            {
-                // TODO: Implement get() method.
+                //
             }
         }
     }

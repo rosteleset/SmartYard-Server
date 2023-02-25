@@ -837,11 +837,20 @@
             abstract public function reCreateIndexes();
 
             /**
-             * @param $issue
-             * @param $record
-             * @return mixed
+             * @param string $issue
+             * @param string $action
+             * @param object $old
+             * @param object $new
+             * @return void
              */
-            abstract public function addJournalRecord($issue, $record);
+            public function addJournalRecord($issue, $action, $old, $new)
+            {
+                $journal = loadBackend("tt_journal");
+
+                if ($journal) {
+                    $journal->journal($issue, $action, $old, $new)
+                }
+            }
 
             /**
              * @param $issue

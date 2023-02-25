@@ -436,6 +436,7 @@ function initAll() {
         modules[currentPage].search($("#searchInput").val());
     });
 
+/*
     $("#confirmModal").draggable({
         handle: "#confirmModalHeader",
     });
@@ -451,6 +452,7 @@ function initAll() {
     $("#uploadModalBody").draggable({
         handle: "#uploadModalHeader",
     });
+*/
 
     if ($.cookie("_server") && $.cookie("_token")) {
         POST("authentication", "ping", false, {

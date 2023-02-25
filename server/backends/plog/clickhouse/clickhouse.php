@@ -23,9 +23,9 @@
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
             private $cron_process_events_scheduler;
 
-            public function __construct($config, $db, $redis)
+            public function __construct($config, $db, $redis, $login = false)
             {
-                parent::__construct($config, $db, $redis);
+                parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
