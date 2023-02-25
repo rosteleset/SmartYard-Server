@@ -458,8 +458,6 @@
 
                 foreach ($attachments as $attachment) {
                     $this->addJournalRecord($issueId, "addAttachment", null, [
-                        "date" => round($attachment["date"] / 1000),
-                        "type" => $attachment["type"],
                         "filename" => $attachment["name"],
                     ]);
 
