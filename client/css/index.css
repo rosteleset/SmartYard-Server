@@ -229,3 +229,9 @@ body::-webkit-scrollbar-thumb {
 .tr-hoverable:hover {
   background: #ccc;
 }
+
+.td-journal {
+  font-size: 14px;
+  vertical-align: top;
+  word-wrap: none;
+}

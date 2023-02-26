@@ -503,15 +503,15 @@
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
                             for (let j in k) {
-                                h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2' style='font-size: 14px; vertical-align: top;' nowrap>";
+                                h += "<tr class='tr-hoverable '>";
+                                h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueFieldTitle(k[j]);
                                 h += "</td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;'>";
+                                h += "<td class='td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;' nowrap><i class='fas fa-fw fa-arrow-right'></i></td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;'>";
+                                h += "<td class='td-journal'><i class='fas fa-fw fa-arrow-right'></i></td>";
+                                h += "<td class='td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
                                 h += "</td>";
                                 h += "</tr>";
@@ -522,12 +522,12 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2' style='font-size: 14px; vertical-align: top;' nowrap>";
+                                h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueFieldTitle(k[j]);
                                 h += "</td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;'>&nbsp;</td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;' nowrap><i class='fas fa-fw fa-plus'></i></td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;'>";
+                                h += "<td class='td-journal'>&nbsp;</td>";
+                                h += "<td class='td-journal'><i class='fas fa-fw fa-plus'></i></td>";
+                                h += "<td class='td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
                                 h += "</td>";
                                 h += "</tr>";
@@ -538,14 +538,14 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2' style='font-size: 14px; vertical-align: top;' nowrap>";
+                                h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueFieldTitle(k[j]);
                                 h += "</td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;'>";
+                                h += "<td class='td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;' nowrap><i class='far fa-fw fa-trash-alt'></i></td>";
-                                h += "<td style='font-size: 14px; vertical-align: top;'>&nbsp;</td>";
+                                h += "<td class='td-journal'><i class='far fa-fw fa-trash-alt'></i></td>";
+                                h += "<td class='td-journal'>&nbsp;</td>";
                                 h += "</tr>";
                             }
                         }
