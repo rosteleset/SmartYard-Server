@@ -21,7 +21,7 @@
                     return API::ERROR(500);
                 }
 
-                $journal = $tt->viewIssue($params["_id"], @!!$params["limit"]);
+                $journal = $tt->getJournal($params["_id"], @!!$params["limit"]);
 
                 return api::ANSWER($journal, "journal");
             }
