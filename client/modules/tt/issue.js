@@ -480,12 +480,12 @@
                     $(".ttJournal").text(i18n("tt.comments"));
                     $("#issueComments").hide();
                     let h = '';
-                    h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
+                    h += `<tr><td style="width: 100%" colspan="3"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
                     for (let i in response.journal) {
                         let action = response.journal[i].action.split("#")[0];
                         let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
                         h += "<tr>";
-                        h += "<td class='pl-1' style='font-size: 14px;' colspan='4'>";
+                        h += "<td class='pl-1' style='font-size: 14px;' colspan='3'>";
                         h += "<div>";
                         h += "#" + (parseInt(i) + 1) + " ";
                         h += ttDate(response.journal[i].date);
@@ -504,10 +504,12 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal' colspan='3'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
-                                h += "<td class='td-journal'>";
+                                h += "</tr>"
+                                h += "<tr>"
+                                h += "<td class='pl-3 td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
                                 h += "<td class='td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
@@ -522,10 +524,12 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal' colspan='3'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
-                                h += "<td class='td-journal'>&nbsp;</td>";
+                                h += "</tr>"
+                                h += "<tr>"
+                                h += "<td class='td-journal pl-3'>&nbsp;</td>";
                                 h += "<td class='td-journal'><i class='fas fa-fw fa-plus ml-2 mr-2'></i></td>";
                                 h += "<td class='td-journal' style='width: 100%;'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
@@ -538,10 +542,12 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal' colspan='3'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
-                                h += "<td class='td-journal'>";
+                                h += "</tr>"
+                                h += "<tr>"
+                                h += "<td class='pl-3 td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
                                 h += "<td class='td-journal'><i class='far fa-fw fa-trash-alt ml-2 mr-2'></i></td>";
