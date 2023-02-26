@@ -296,8 +296,8 @@
                 }
 
                 $this->addJournalRecord($issueId, "addComment", null, [
-                    "body" => $comment,
-                    "private" => $private,
+                    "commentBody" => $comment,
+                    "commentPrivate" => $private,
                 ]);
 
                 return $this->mongo->$db->$acr->updateOne(
@@ -357,15 +357,13 @@
                 }
 
                 $this->addJournalRecord($issueId, "modifyComment#$commentIndex", [
-                    "author" => $issue["comments"][$commentIndex]["author"],
-                    "body" => $issue["comments"][$commentIndex]["body"],
-                    "private" => $issue["comments"][$commentIndex]["private"],
-                    "created" => $issue["comments"][$commentIndex]["created"],
+                    "commentAuthor" => $issue["comments"][$commentIndex]["author"],
+                    "commentBody" => $issue["comments"][$commentIndex]["body"],
+                    "commentPrivate" => $issue["comments"][$commentIndex]["private"],
                 ], [
-                    "author" => $this->login,
-                    "body" => $comment,
-                    "private" => $private,
-                    "created" => time(),
+                    "commentAuthor" => $this->login,
+                    "commentBody" => $comment,
+                    "commentPrivate" => $private,
                 ]);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
@@ -421,10 +419,10 @@
                 }
 
                 $this->addJournalRecord($issueId, "deleteComment#$commentIndex", [
-                    "author" => $issue["comments"][$commentIndex]["author"],
-                    "body" => $issue["comments"][$commentIndex]["body"],
-                    "private" => $issue["comments"][$commentIndex]["private"],
-                    "created" => $issue["comments"][$commentIndex]["created"],
+                    "commentAuthor" => $issue["comments"][$commentIndex]["author"],
+                    "commentBody" => $issue["comments"][$commentIndex]["body"],
+                    "commentPrivate" => $issue["comments"][$commentIndex]["private"],
+                    "commentCreated" => $issue["comments"][$commentIndex]["created"],
                 ], null);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
@@ -487,7 +485,7 @@
 
                 foreach ($attachments as $attachment) {
                     $this->addJournalRecord($issueId, "addAttachment", null, [
-                        "filename" => $attachment["name"],
+                        "attachmentFilename" => $attachment["name"],
                     ]);
 
                     $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
@@ -541,7 +539,7 @@
 
                 if ($list && $list[0] && $list[0]["id"]) {
                     $this->addJournalRecord($issueId, "deleteAttachment", [
-                        "filename" => $filename,
+                        "attachmentFilename" => $filename,
                     ], null);
 
                     return $files->deleteFile($list[0]["id"]) &&

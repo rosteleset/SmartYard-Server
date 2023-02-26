@@ -481,12 +481,12 @@
                     $(".ttJournal").text(i18n("tt.comments"));
                     $("#issueComments").hide();
                     let h = '';
-                    h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
+                    h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
                     for (let i in response.journal) {
                         let action = response.journal[i].action.split("#")[0];
                         let indx = response.journal[i].action.split("#")[1];
                         h += "<tr>";
-                        h += "<td class='pl-1' style='font-size: 14px;'>";
+                        h += "<td class='pl-1' style='font-size: 14px;' colspan='4'>";
                         h += "<div>";
                         h += "#" + (parseInt(i) + 1) + " ";
                         h += ttDate(response.journal[i].date);
@@ -497,11 +497,65 @@
                         h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1));
                         h += "</span>";
                         h += "</div>";
-                        h += "<div class='ml-2 mb-2 mt-1'>";
-                        h += "";
-                        h += "</div>";
                         h += "</td>";
                         h += "</tr>";
+                        if (response.journal[i].old && response.journal[i].new) {
+                            let k = Object.keys(response.journal[i].old);
+                            k = k.concat(Object.keys(response.journal[i].new));
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr>";
+                                h += "<td class='pl-2' style='font-size: 14px;' nowrap>";
+                                h += modules.tt.issueFieldTitle(k[j]);
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;' nowrap>";
+                                h += " => ";
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
+                                h += "</td>";
+                                h += "</tr>";
+                            }
+                        }
+                        if (!response.journal[i].old && response.journal[i].new) {
+                            let k = Object.keys(response.journal[i].new);
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr>";
+                                h += "<td class='pl-2' style='font-size: 14px;' nowrap>";
+                                h += modules.tt.issueFieldTitle(k[j]);
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;'>&nbsp;</td>";
+                                h += "<td style='font-size: 14px;' nowrap>";
+                                h += " ! ";
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
+                                h += "</td>";
+                                h += "</tr>";
+                            }
+                        }
+                        if (response.journal[i].old && !response.journal[i].new) {
+                            let k = Object.keys(response.journal[i].old);
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr>";
+                                h += "<td class='pl-2' style='font-size: 14px;' nowrap>";
+                                h += modules.tt.issueFieldTitle(k[j]);
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;' nowrap>";
+                                h += " X ";
+                                h += "</td>";
+                                h += "<td style='font-size: 14px;'>&nbsp;</td>";
+                                h += "</tr>";
+                            }
+                        }
                     }
                     $("#issueJournal").html(h).show();
                 }).

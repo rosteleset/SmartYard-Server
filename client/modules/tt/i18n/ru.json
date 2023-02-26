@@ -205,6 +205,11 @@
     "journal": "Журнал",
     "journalActionModifyIssue": "Изменение заявки",
     "journalActionAddComment": "Добавление комментария",
+    "journalActionDeleteComment": "Удаление комментария",
+    "journalActionModifyComment": "Изменение  комментария",
+    "commentAuthor": "Автор комментария",
+    "commentBody": "Комментарий",
+    "commentCreated": "Создан",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

@@ -65,6 +65,18 @@
                 case "author":
                     return i18n("tt.author");
 
+                case "commentAuthor":
+                    return i18n("tt.commentAuthor");
+
+                case "commentBody":
+                    return i18n("tt.commentBody");
+    
+                case "commentCreated":
+                    return i18n("tt.commentCreated");
+            
+                case "commentPrivate":
+                    return i18n("tt.commentPrivate");
+        
                 default:
                     return fieldId;
             }
@@ -378,7 +390,7 @@
         }
     },
 
-    issueField2Html: function (issue, field) {
+    issueField2Html: function (issue, field, val) {
         let members = {};
 
         if (modules.groups) {
@@ -407,7 +419,9 @@
             }
         }
 
-        let val = issue[field];
+        if (typeof val === "undefined") {
+            val = issue[field];
+        }
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
             val = modules.tt.viewers[field][v](val, issue, field);
@@ -439,6 +453,10 @@
                         val = members[val]?members[val]:val;
                         break;
     
+                    case "commentPrivate":
+                        val = val ? i18n("yes") : i18n("no");
+                        break;
+        
                     case "status":
                         for (let i in modules.tt.meta.statuses) {
                             if (val == modules.tt.meta.statuses[i].status) {
@@ -459,6 +477,7 @@
     
                     case "created":
                     case "updated":
+                    case "commentCreated":
                         val = ttDate(val);
                         break;
                 }
