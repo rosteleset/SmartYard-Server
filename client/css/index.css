@@ -233,5 +233,5 @@ body::-webkit-scrollbar-thumb {
 .td-journal {
   font-size: 14px;
   vertical-align: top;
-  word-wrap: none;
+  white-space: nowrap;
 }

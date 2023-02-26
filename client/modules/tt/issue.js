@@ -503,15 +503,15 @@
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
                             for (let j in k) {
-                                h += "<tr class='tr-hoverable '>";
+                                h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += modules.tt.issueFieldTitle(k[j]);
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
-                                h += "<td class='td-journal'><i class='fas fa-fw fa-arrow-right'></i></td>";
-                                h += "<td class='td-journal'>";
+                                h += "<td class='td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
+                                h += "<td class='td-journal' style='width: 100%;'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
                                 h += "</td>";
                                 h += "</tr>";
@@ -523,11 +523,11 @@
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += modules.tt.issueFieldTitle(k[j]);
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='td-journal'>&nbsp;</td>";
-                                h += "<td class='td-journal'><i class='fas fa-fw fa-plus'></i></td>";
-                                h += "<td class='td-journal'>";
+                                h += "<td class='td-journal'><i class='fas fa-fw fa-plus ml-2 mr-2'></i></td>";
+                                h += "<td class='td-journal' style='width: 100%;'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
                                 h += "</td>";
                                 h += "</tr>";
@@ -539,13 +539,13 @@
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += modules.tt.issueFieldTitle(k[j]);
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
-                                h += "<td class='td-journal'><i class='far fa-fw fa-trash-alt'></i></td>";
-                                h += "<td class='td-journal'>&nbsp;</td>";
+                                h += "<td class='td-journal'><i class='far fa-fw fa-trash-alt ml-2 mr-2'></i></td>";
+                                h += "<td class='td-journal' style='width: 100%;'>&nbsp;</td>";
                                 h += "</tr>";
                             }
                         }
