@@ -430,6 +430,7 @@
                 switch (field) {
                     case "description":
                     case "subject":
+                    case "commentBody":
                         val = nl2br(escapeHTML(val));
                         break;
     

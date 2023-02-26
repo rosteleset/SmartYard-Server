@@ -225,3 +225,7 @@ body::-webkit-scrollbar-thumb {
   text-decoration: underline;
   color: black;
 }
+
+.tr-hoverable:hover {
+  background: #ccc;
+}
