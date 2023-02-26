@@ -314,6 +314,16 @@
                             ],
                         ],
                     ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$set" => [
+                            "updated" => time(),
+                        ],
+                    ]
                 );
             }
 
@@ -371,6 +381,15 @@
                                 "comments.$commentIndex.private" => $private,
                             ]
                         ]
+                    ) && $this->mongo->$db->$acr->updateOne(
+                        [
+                            "issueId" => $issueId,
+                        ],
+                        [
+                            "\$set" => [
+                                "updated" => time(),
+                            ],
+                        ]
                     );
                 }
 
@@ -411,7 +430,17 @@
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
                     return
                         $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ "comments.$commentIndex" => true ] ]) &&
-                        $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$pull' => [ "comments" => null ] ]);
+                        $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$pull' => [ "comments" => null ] ]) &&
+                        $this->mongo->$db->$acr->updateOne(
+                            [
+                                "issueId" => $issueId,
+                            ],
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        );
                 }
 
                 return false;
@@ -461,7 +490,7 @@
                         "filename" => $attachment["name"],
                     ]);
 
-                    $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                    $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                         "date" => round($attachment["date"] / 1000),
                         "added" => time(),
                         "type" => $attachment["type"],
@@ -469,7 +498,21 @@
                         "project" => $acr,
                         "issueId" => $issueId,
                         "attachman" => $this->login,
-                    ]);
+                    ]) &&
+                    $this->mongo->$db->$acr->updateOne(
+                        [
+                            "issueId" => $issueId,
+                        ],
+                        [
+                            "\$set" => [
+                                "updated" => time(),
+                            ],
+                        ]
+                    );
+
+                    if (!$add) {
+                        return false;
+                    }
                 }
 
                 return true;
@@ -501,7 +544,17 @@
                         "filename" => $filename,
                     ], null);
 
-                    return $files->deleteFile($list[0]["id"]);
+                    return $files->deleteFile($list[0]["id"]) &&
+                        $this->mongo->$db->$acr->updateOne(
+                            [
+                                "issueId" => $issueId,
+                            ],
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        );
                 }
 
                 return false;
