@@ -70,9 +70,9 @@
             public function get($issueId, $limit = false)
             {
                 if ($limit) {
-                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date desc limit $limit");
+                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date limit $limit");
                 } else {
-                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date desc");
+                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date");
                 }
 
                 foreach ($journal as &$record) {

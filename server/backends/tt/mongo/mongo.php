@@ -76,7 +76,7 @@
                             $files = loadBackend("files");
 
                             foreach ($attachments as $attachment) {
-                                $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                                $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                                     "date" => round($attachment["date"] / 1000),
                                     "added" => time(),
                                     "type" => $attachment["type"],
@@ -84,6 +84,9 @@
                                     "project" => $acr,
                                     "issueId" => $issue["issueId"],
                                     "attachman" => $issue["author"],
+                                ]) &&
+                                $this->addJournalRecord($issue["issueId"], "addAttachment", null, [
+                                    "attachmentFilename" => $attachment["name"],
                                 ]);
                             }
                         }
