@@ -204,7 +204,7 @@
     "viewer": "Файл",
     "journal": "Журнал",
     "journalActionModifyIssue": "Изменение заявки",
-    "journalActionAddComment": "Добавление Комментария",
+    "journalActionAddComment": "Добавление комментария",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
