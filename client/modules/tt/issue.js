@@ -508,7 +508,7 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "</tr>"
-                                h += "<tr>"
+                                h += "<tr class='tr-hoverable'>"
                                 h += "<td class='pl-3 td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
@@ -528,7 +528,7 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "</tr>"
-                                h += "<tr>"
+                                h += "<tr class='tr-hoverable'>"
                                 h += "<td class='td-journal pl-3'>&nbsp;</td>";
                                 h += "<td class='td-journal'><i class='fas fa-fw fa-plus ml-2 mr-2'></i></td>";
                                 h += "<td class='td-journal' style='width: 100%;'>";
@@ -546,7 +546,7 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "</tr>"
-                                h += "<tr>"
+                                h += "<tr class='tr-hoverable'>"
                                 h += "<td class='pl-3 td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
