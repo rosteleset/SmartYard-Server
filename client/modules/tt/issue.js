@@ -483,7 +483,7 @@
                     h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
                     for (let i in response.journal) {
                         let action = response.journal[i].action.split("#")[0];
-                        let indx = response.journal[i].action.split("#")[1];
+                        let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
                         h += "<tr>";
                         h += "<td class='pl-1' style='font-size: 14px;' colspan='4'>";
                         h += "<div>";
@@ -493,7 +493,7 @@
                         h += members[response.journal[i].login]?members[response.journal[i].login]:response.journal[i].login;
                         h += "</span>";
                         h += "<span class='ml-2'>";
-                        h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1));
+                        h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1), indx);
                         h += "</span>";
                         h += "</div>";
                         h += "</td>";
