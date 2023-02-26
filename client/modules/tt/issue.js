@@ -551,6 +551,7 @@
                         }
                     }
                     $("#issueJournal").html(h).show();
+                    window.scrollTo(0, document.body.scrollHeight);
                 }).
                 always(loadingDone);          
             } else {
