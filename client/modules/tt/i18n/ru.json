@@ -202,6 +202,9 @@
     "of": "из",
     "confirmDeleteIssue": "Удалить задачу \"%s\"?",
     "viewer": "Файл",
+    "journal": "Журнал",
+    "journalActionModifyIssue": "Изменение заявки",
+    "journalActionAddComment": "Добавление Комментария",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
