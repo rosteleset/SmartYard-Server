@@ -853,6 +853,25 @@
             }
 
             /**
+             * @param string $issueId
+             * @return mixed
+             */
+            public function getJournal($issueId, $limit = false)
+            {
+                $journal = loadBackend("tt_journal");
+
+                if (!$this->myRoles()[explode("-", $issueId)[0]]) {
+                    return false;
+                }
+
+                if ($journal) {
+                    return $journal->get($issueId, $limit);
+                }
+
+                return false;
+            }
+
+            /**
              * @param $issue
              * @return mixed
              */

@@ -15,19 +15,20 @@
         abstract class tt_journal extends backend {
 
             /**
-             * @param string $issue
+             * @param string $issueId
              * @param string $action
              * @param object $old
              * @param object $new
              * @return boolean
              */
-            public abstract function journal($issue, $action, $old, $new);
+            public abstract function journal($issueId, $action, $old, $new);
 
             /**
-             * @param string $issue
+             * @param string $issueId
+             * @param mixed $limit
              * @return mixed
              */
-            public abstract function get($issue);
+            public abstract function get($issueId, $limit = false);
         }
     }
 

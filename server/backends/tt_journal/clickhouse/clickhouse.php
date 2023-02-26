@@ -34,7 +34,7 @@
             /**
              * @inheritDoc
              */
-            public function journal($issue, $action, $old, $new)
+            public function journal($issueId, $action, $old, $new)
             {
                 if ($old && $new) {
                     foreach ($old as $key => $field) {
@@ -61,18 +61,18 @@
                         }
                     }
                 }
-                return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issue, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
+                return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issueId, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function get($issue, $limit = false)
+            public function get($issueId, $limit = false)
             {
                 if ($limit) {
-                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc limit $limit");
+                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date desc limit $limit");
                 } else {
-                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issue' order by date desc");
+                    $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date desc");
                 }
 
                 foreach ($journal as &$record) {
