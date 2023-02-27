@@ -1,5 +1,8 @@
-require("dotenv").config();
-const app = require("./app");
+
+import * as dotenv from 'dotenv'
+dotenv.config()
+
+import app from "./app/index.js";
 const PORT = process.env.KAMAILIO_API_PORT || 50611;
 
 app.listen(PORT, () => {

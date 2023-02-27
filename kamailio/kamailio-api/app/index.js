@@ -1,22 +1,27 @@
-const express = require("express");
-const { json } = require("express");
+import express, {json} from "express";
+import { allowedHostMiddleware } from "./middleware/allowedHostMiddleware.js";
+import rateLimitMiddleware from "./middleware/rateLimiMiddleware.js";
+import router from "./routes/v1/index.js"
+
+//set allowed host in .env to API access
+const allowedHosts = [
+    process.env.ALLOWED_HOST_1,
+    process.env.ALLOWED_HOST_2,
+]
+
 const app = express();
-const router = require("./routes/v1");
 
 app.disable("x-powered-by");
 
 app.use(json());
 
-app.use((req, res, next) => {
-  const ipAddress = req.ip.split(":")[req.ip.split(":").length - 1];
-  if (ipAddress !== process.env.ALLOWED_HOST) {
-    return res.sendStatus(401);
-  }
-  next();
-});
+//rateLimit - optional
+app.use(rateLimitMiddleware);
+
+app.use(allowedHostMiddleware({allowedHosts}));
 
 app.use("/api/v1", router);
 
 app.use("*", (req, res) => res.sendStatus(403));
 
-module.exports = app;
+export default app;
