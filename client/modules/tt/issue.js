@@ -510,11 +510,11 @@
                                 h += "</tr>"
                                 h += "<tr class='tr-hoverable'>"
                                 h += "<td class='pl-3 td-journal'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]] ? response.journal[i].old[k[j]] : false);
                                 h += "</td>";
                                 h += "<td class='td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
                                 h += "<td class='td-journal' style='width: 100%;'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]] ? response.journal[i].new[k[j]] : false);
                                 h += "</td>";
                                 h += "</tr>";
                             }
