@@ -41,7 +41,6 @@ const getSubscriber = async (userName) => {
     });
 };
 
-//TODO:
 const createSubscriber = async ({ userName, domain, password, ha1, ha1b }) => {
   return await pool.query(
     "INSERT INTO subscriber (username, domain, password, ha1, ha1b) VALUES ($1, $2, $3, $4, $5) RETURNING username, password, domain",
@@ -49,7 +48,6 @@ const createSubscriber = async ({ userName, domain, password, ha1, ha1b }) => {
   );
 };
 
-//TODO: clear htable and aor 
 const updateSubscriber = async ({ userName, domain, password, ha1, ha1b }) => {
   return await pool
     .query(

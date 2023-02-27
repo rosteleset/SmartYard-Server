@@ -1,23 +1,23 @@
-import {Router} from "express"
+import { Router } from "express";
 import {
-  getSubscribers,
-  getSubscriberByName,
-  createSubscriber,
-  updateSubscriber,
-  deleteSubscriber,
-} from "../../controllers/index.js"
+  getAll,
+  create,
+  getByName,
+  destroy,
+  update,
+} from "../../controllers/index.js";
 
 const router = Router();
 
-router.get("/", getSubscribers);
+router.get("/", getAll);
 
-router.get("/:userName", getSubscriberByName);
+router.get("/:userName", getByName);
 
-router.post("/", createSubscriber);
+router.post("/", create);
 
-router.put("/", updateSubscriber);
+router.put("/", update);
 
-router.delete("/:userName", deleteSubscriber);
+router.delete("/:userName", destroy);
 
 //TODO: add information about the client registration status
 
