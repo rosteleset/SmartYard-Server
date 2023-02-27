@@ -164,6 +164,8 @@
 
                 $files = loadBackend("files");
 
+                $delete = true;
+
                 if ($files) {
                     $issueFiles = $files->searchFiles([
                         "metadata.issue" => true,
@@ -171,15 +173,30 @@
                     ]);
 
                     foreach ($issueFiles as $file) {
-                        $files->deleteFile($file["id"]);
+                        $delete = $delete && $files->deleteFile($file["id"]) &&
+                        $this->mongo->$db->$project->updateOne(
+                            [
+                                "issueId" => $issueId,
+                            ],
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        ) &&
+                        $this->addJournalRecord($issueId, "deleteAttachment", [
+                            "attachmentFilename" => $filename,
+                        ], null);
                     }
                 }
 
-                $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
-
-                return $this->mongo->$db->$acr->deleteMany([
-                    "issueId" => $issueId,
-                ]);
+                if ($delete) {
+                    return $this->mongo->$db->$acr->deleteMany([
+                        "issueId" => $issueId,
+                    ]) && $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
+                } else {
+                    return false;
+                }
             }
 
             /**

@@ -64,6 +64,12 @@
 
                 case "author":
                     return i18n("tt.author");
+    
+                case "project":
+                    return i18n("tt.project");
+
+                case "workflow":
+                    return i18n("tt.workflowName");
 
                 case "commentAuthor":
                     return i18n("tt.commentAuthor");
@@ -79,7 +85,7 @@
         
                 case "attachmentFilename":
                     return i18n("tt.attachmentFilename");
-                    
+
                 default:
                     return fieldId;
             }
@@ -474,6 +480,24 @@
                         for (let i in modules.tt.meta.resolutions) {
                             if (val == modules.tt.meta.resolutions[i].alias) {
                                 val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
+                                break;
+                            }
+                        }
+                        break;
+                    
+                    case "project":
+                        for (let i in modules.tt.meta.projects) {
+                            if (modules.tt.meta.projects[i].acronym == val) {
+                                val = modules.tt.meta.projects[i].project + " [" + val + "]";
+                                break;
+                            }
+                        }
+                        break;
+
+                    case "workflow":
+                        for (let i in modules.tt.meta.workflows) {
+                            if (i == val) {
+                                val = modules.tt.meta.workflows[i] + " [" + val + "]";
                                 break;
                             }
                         }

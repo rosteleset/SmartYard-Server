@@ -241,7 +241,6 @@
             return h;
         }
 
-        console.log(issue);
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
         let rightFields = [ "status", "resolution", "assigned", "watchers", "created", "updated", "author" ];

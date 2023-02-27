@@ -203,6 +203,7 @@
     "confirmDeleteIssue": "Удалить задачу \"%s\"?",
     "viewer": "Файл",
     "journal": "Журнал",
+    "journalActionCreateIssue": "Создание заявки",
     "journalActionModifyIssue": "Изменение заявки",
     "journalActionAddComment": "Добавление комментария",
     "journalActionDeleteComment": "Удаление комментария [#%s]",
