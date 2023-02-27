@@ -429,8 +429,7 @@
                 ], null);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
-                    return
-                        $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ "comments.$commentIndex" => true ] ]) &&
+                    return $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ "comments.$commentIndex" => true ] ]) &&
                         $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$pull' => [ "comments" => null ] ]) &&
                         $this->mongo->$db->$acr->updateOne(
                             [
@@ -452,6 +451,8 @@
              */
             public function addAttachments($issueId, $attachments)
             {
+                $db = $this->dbName;
+
                 $acr = explode("-", $issueId)[0];
 
                 $projects = $this->getProjects($acr);
@@ -487,11 +488,7 @@
                 }
 
                 foreach ($attachments as $attachment) {
-                    $this->addJournalRecord($issueId, "addAttachment", null, [
-                        "attachmentFilename" => $attachment["name"],
-                    ]);
-
-                    $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                    if (!($files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                         "date" => round($attachment["date"] / 1000),
                         "added" => time(),
                         "type" => $attachment["type"],
@@ -509,9 +506,10 @@
                                 "updated" => time(),
                             ],
                         ]
-                    );
-
-                    if (!$add) {
+                    ) &&
+                    $this->addJournalRecord($issueId, "addAttachment", null, [
+                        "attachmentFilename" => $attachment["name"],
+                    ]))) {
                         return false;
                     }
                 }
@@ -524,6 +522,8 @@
              */
             public function deleteAttachment($issueId, $filename)
             {
+                $db = $this->dbName;
+
                 $project = explode("-", $issueId)[0];
 
                 $roles = $this->myRoles();
@@ -540,25 +540,28 @@
                     $list = $files->searchFiles([ "metadata.issue" => true, "metadata.attachman" => $this->login, "metadata.issueId" => $issueId, "filename" => $filename ]);
                 }
 
-                if ($list && $list[0] && $list[0]["id"]) {
-                    $this->addJournalRecord($issueId, "deleteAttachment", [
-                        "attachmentFilename" => $filename,
-                    ], null);
+                $delete = true;
 
-                    return $files->deleteFile($list[0]["id"]) &&
-                        $this->mongo->$db->$acr->updateOne(
-                            [
-                                "issueId" => $issueId,
-                            ],
-                            [
-                                "\$set" => [
-                                    "updated" => time(),
+                if ($list) {
+                    foreach ($list as $entry) {
+                        $delete = $delete && $files->deleteFile($entry["id"]) &&
+                            $this->mongo->$db->$project->updateOne(
+                                [
+                                    "issueId" => $issueId,
                                 ],
-                            ]
-                        );
+                                [
+                                    "\$set" => [
+                                        "updated" => time(),
+                                    ],
+                                ]
+                            ) &&
+                            $this->addJournalRecord($issueId, "deleteAttachment", [
+                                "attachmentFilename" => $filename,
+                            ], null);
+                    }
                 }
 
-                return false;
+                return $delete;
             }
 
             /**

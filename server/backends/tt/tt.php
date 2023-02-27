@@ -848,8 +848,10 @@
                 $journal = loadBackend("tt_journal");
 
                 if ($journal) {
-                    $journal->journal($issue, $action, $old, $new);
+                    return $journal->journal($issue, $action, $old, $new);
                 }
+
+                return false;
             }
 
             /**

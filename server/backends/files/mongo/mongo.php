@@ -138,7 +138,16 @@
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                $bucket->delete(new \MongoDB\BSON\ObjectId($uuid));
+                if ($bucket) {
+                    try {
+                        $bucket->delete(new \MongoDB\BSON\ObjectId($uuid));
+                        return true;
+                    } catch (\Exception $e) {
+                        setLastError($e->getMessage());
+                    }
+                }
+
+                return false;
             }
 
             /**

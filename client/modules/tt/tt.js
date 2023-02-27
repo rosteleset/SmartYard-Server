@@ -77,6 +77,9 @@
                 case "commentPrivate":
                     return i18n("tt.commentPrivate");
         
+                case "attachmentFilename":
+                    return i18n("tt.attachmentFilename");
+                    
                 default:
                     return fieldId;
             }
