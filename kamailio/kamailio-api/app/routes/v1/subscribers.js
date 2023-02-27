@@ -1,13 +1,13 @@
-const express = require("express");
-const router = express.Router();
-
-const {
+import {Router} from "express"
+import {
   getSubscribers,
   getSubscriberByName,
   createSubscriber,
   updateSubscriber,
   deleteSubscriber,
-} = require("../../controllers");
+} from "../../controllers/index.js"
+
+const router = Router();
 
 router.get("/", getSubscribers);
 
@@ -19,4 +19,6 @@ router.put("/", updateSubscriber);
 
 router.delete("/:userName", deleteSubscriber);
 
-module.exports = router;
+//TODO: add information about the client registration status
+
+export default router;

@@ -1,11 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const subscribers = require("./subscribers");
-const test =  require("./test")
+import {Router} from "express"
+import subscribers from "./subscribers.js"
 
-// tests
-//TODO: add kamailio health info
+const router = Router();
+
 router.use("/subscribers", subscribers);
-router.use("/test", test)
 
-module.exports = router;
+export default router

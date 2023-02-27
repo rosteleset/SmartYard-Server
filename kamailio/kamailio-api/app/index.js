@@ -15,7 +15,7 @@ app.disable("x-powered-by");
 
 app.use(json());
 
-//rateLimit - optional
+//rateLimit middleware - optional for testing
 app.use(rateLimitMiddleware);
 
 app.use(allowedHostMiddleware({allowedHosts}));
