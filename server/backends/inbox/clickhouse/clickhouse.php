@@ -17,9 +17,9 @@
             /**
              * @inheritDoc
              */
-            function __construct($config, $db, $redis)
+            function __construct($config, $db, $redis, $login = false)
             {
-                parent::__construct($config, $db, $redis);
+                parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 

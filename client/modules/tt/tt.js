@@ -65,6 +65,18 @@
                 case "author":
                     return i18n("tt.author");
 
+                case "commentAuthor":
+                    return i18n("tt.commentAuthor");
+
+                case "commentBody":
+                    return i18n("tt.commentBody");
+    
+                case "commentCreated":
+                    return i18n("tt.commentCreated");
+            
+                case "commentPrivate":
+                    return i18n("tt.commentPrivate");
+        
                 default:
                     return fieldId;
             }
@@ -378,7 +390,7 @@
         }
     },
 
-    issueField2Html: function (issue, field) {
+    issueField2Html: function (issue, field, val) {
         let members = {};
 
         if (modules.groups) {
@@ -407,15 +419,18 @@
             }
         }
 
-        let val = issue[field];
+        if (typeof val === "undefined") {
+            val = issue[field];
+        }
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
-            val = modules.tt.viewers[field][v](val, field, issue);
+            val = modules.tt.viewers[field][v](val, issue, field);
         } else {
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
                     case "description":
                     case "subject":
+                    case "commentBody":
                         val = nl2br(escapeHTML(val));
                         break;
     
@@ -439,6 +454,10 @@
                         val = members[val]?members[val]:val;
                         break;
     
+                    case "commentPrivate":
+                        val = val ? i18n("yes") : i18n("no");
+                        break;
+        
                     case "status":
                         for (let i in modules.tt.meta.statuses) {
                             if (val == modules.tt.meta.statuses[i].status) {
@@ -459,6 +478,7 @@
     
                     case "created":
                     case "updated":
+                    case "commentCreated":
                         val = ttDate(val);
                         break;
                 }
@@ -482,9 +502,9 @@
                 modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
             }
             try {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', modules.tt.meta.viewers[i].code);
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', modules.tt.meta.viewers[i].code);
             } catch (e) {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'field', 'issue', "//function $name (val, field, issue) {\n\treturn val;\n//}\n");
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', "//function $name (val, field, issue) {\n\treturn val;\n//}\n");
             }
         }
     },
@@ -497,7 +517,7 @@
         } else {
             filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
-        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}`;
+        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}&_refresh=${Math.random()}`;
     },
 
     selectProject: function (project) {

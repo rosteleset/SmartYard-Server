@@ -54,7 +54,11 @@
                     if ($rememberMe) {
                         $token = md5($uid . ":" . $login . ":" . $password . ":" . $did);
                     } else {
-                        $token = md5(GUIDv4());
+                        if ($did === "Base64") {
+                            $token = md5($uid . ":" . $login . ":" . $password);
+                        } else {
+                            $token = md5(GUIDv4());
+                        }
                     }
                     $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode([
                         "uid" => (string)$uid,
@@ -65,9 +69,13 @@
                         "started" => time(),
                         "updated" => time(),
                     ]));
+                    $this->db->modify("update core_users set last_login = " . time() . " where uid = " . $uid, false, [ "silent" ]);
                     return [
                         "result" => true,
                         "token" => $token,
+                        "login" => $login,
+                        "ua" => $ua,
+                        "uid" => $uid,
                     ];
                 } else {
                     return [
@@ -79,34 +87,82 @@
             }
 
             /**
-             * @param string $token authentication token
+             * @param string $authorization authorization string
              * @param string $ua user agent
              * @return false|array
              */
 
-            public function auth($token, $ua = "", $ip = "") {
-                $keys = $this->redis->keys("auth_" . $token . "_*");
+            public function auth($authorization, $ua = "", $ip = "") {
+                $authorization = explode(" ", $authorization);
 
-                foreach ($keys as $key) {
-                    $auth = json_decode($this->redis->get($key), true);
+                if ($authorization[0] === "Bearer") {
+                    $token = $authorization[1];
 
-                    if ($ua) {
-                        $auth["ua"] = $ua;
+                    $keys = $this->redis->keys("persistent_" . $token . "_*");
+
+                    foreach ($keys as $key) {
+                        $auth = json_decode($this->redis->get($key), true);
+    
+                        if ($ua) {
+                            $auth["ua"] = $ua;
+                        }
+    
+                        if ($ip) {
+                            $auth["ip"] = $ip;
+                        }
+    
+                        $auth["updated"] = time();
+
+                        $auth["token"] = $token;
+    
+                        $this->redis->set($key, json_encode($auth));
+    
+                        $users = loadBackend("users");
+    
+                        if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
+                            return $auth;
+                        } else {
+                            $this->redis->del($key);
+                        }
                     }
+    
+                    $keys = $this->redis->keys("auth_" . $token . "_*");
+    
+                    foreach ($keys as $key) {
+                        $auth = json_decode($this->redis->get($key), true);
+    
+                        if ($ua) {
+                            $auth["ua"] = $ua;
+                        }
+    
+                        if ($ip) {
+                            $auth["ip"] = $ip;
+                        }
+    
+                        $auth["updated"] = time();
+    
+                        $auth["token"] = $token;
 
-                    if ($ip) {
-                        $auth["ip"] = $ip;
+                        $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
+    
+                        $users = loadBackend("users");
+    
+                        if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
+                            return $auth;
+                        } else {
+                            return false;
+                        }
                     }
+                }
 
-                    $auth["updated"] = time();
+                if ($authorization[0] === "Base64") {
+                    $login = base64_decode($authorization[1]);
+                    $password = base64_decode($authorization[2]);
 
-                    $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
+                    $auth = $this->login($login, $password, false, "", "Base64");
 
-                    $users = loadBackend("users");
-                    if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
+                    if ($auth["result"]) {
                         return $auth;
-                    } else {
-                        return false;
                     }
                 }
 

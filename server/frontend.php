@@ -49,7 +49,7 @@
     $db = false;
     $redis = false;
 
-    $token = @trim(explode('Bearer', $_SERVER['HTTP_AUTHORIZATION'])[1]);
+    $http_authorization = @$_SERVER['HTTP_AUTHORIZATION'];
     $refresh = array_key_exists('X-Api-Refresh', apache_request_headers());
 
     try {
@@ -144,7 +144,7 @@
     $params = [];
 
     if (count($m) >= 3) {
-        $params["_id"] = $m[2];
+        $params["_id"] = urldecode($m[2]);
     }
 
     $params["_path"] = [
@@ -159,7 +159,7 @@
     if (count($_GET)) {
         foreach ($_GET as $key => $value) {
             if ($key == "_token") {
-                $token = $value;
+                $http_authorization = "Bearer " . urldecode($value);
             } else
             if ($key == "_refresh") {
                 $refresh = true;
@@ -170,7 +170,7 @@
             if ($key === "_") {
                 // prevents timestamps
             } else {
-                $params[$key] = $value;
+                $params[$key] = urldecode($value);
             }
         }
     }
@@ -178,7 +178,7 @@
     if (count($_POST)) {
         foreach ($_POST as $key => $value) {
             if ($key == '_token') {
-                $token = $value;
+                $http_authorization = "Bearer " . urldecode($value);
             } else
             if ($key == "_refresh") {
                 $refresh = true;
@@ -186,7 +186,7 @@
             if ($key == "_clearCache") {
                 $clearCache = true;
             } else {
-                $params[$key] = $value;
+                $params[$key] = urldecode($value);
             }
         }
     }
@@ -196,7 +196,7 @@
     if ($_RAW && count($_RAW)) {
         foreach ($_RAW as $key => $value) {
             if ($key == '_token') {
-                $token = $value;
+                $http_authorization = "Bearer " . $value;
             } else
             if ($key == "_refresh") {
                 $refresh = true;
@@ -236,8 +236,8 @@
             ]);
         }
     } else {
-        if ($token) {
-            $auth = $backends["authentication"]->auth($token, @$params["ua"], $ip);
+        if ($http_authorization) {
+            $auth = $backends["authentication"]->auth($http_authorization, @$params["ua"], $ip);
             if (!$auth) {
                 $params["_ip"] = $ip;
                 $params["_login"] = '-';
@@ -254,9 +254,10 @@
         }
     }
 
-    if ($token && $auth) {
+    if ($http_authorization && $auth) {
         $params["_uid"] = $auth["uid"];
         $params["_login"] = $auth["login"];
+        $params["_token"] = $auth["token"];
     }
 
     $params["_md5"] = md5(print_r($params, true));
@@ -266,8 +267,6 @@
     $params["_db"] = $db;
 
     $params["_backends"] = $backends;
-
-    $params["_token"] = $token;
 
     $params["_ip"] = $ip;
 

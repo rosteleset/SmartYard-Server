@@ -1,12 +1,13 @@
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
-    let h = '<form autocomlete="off">';
+    let h = '<form autocomplete="off">';
+    
     let files = {};
 
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
-        h = `<form autocomlete="off"><div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">`;
+        h += `<div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">`;
         $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
         if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
             $("#modalBody").parent().addClass("modal-" + params.size);
@@ -303,8 +304,6 @@ function cardForm(params) {
 
     h += '</form>';
 
-    console.log(h);
-
     function getVal(i) {
         switch (params.fields[i].type) {
             case "select":
@@ -413,11 +412,13 @@ function cardForm(params) {
         target = $(params.target).html(h);
     } else {
         target = modal(h);
+/*
         if (params.title) {
             $("#modal").draggable({
                 handle: "#modalHeader",
             });
         }
+*/
     }
 
     $(".modalFormOk").off("click").on("click", ok);

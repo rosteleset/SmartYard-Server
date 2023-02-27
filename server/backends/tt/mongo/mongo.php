@@ -76,7 +76,7 @@
                             $files = loadBackend("files");
 
                             foreach ($attachments as $attachment) {
-                                $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                                $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                                     "date" => round($attachment["date"] / 1000),
                                     "added" => time(),
                                     "type" => $attachment["type"],
@@ -84,11 +84,15 @@
                                     "project" => $acr,
                                     "issueId" => $issue["issueId"],
                                     "attachman" => $issue["author"],
+                                ]) &&
+                                $this->addJournalRecord($issue["issueId"], "addAttachment", null, [
+                                    "attachmentFilename" => $attachment["name"],
                                 ]);
                             }
                         }
 
                         if ($this->mongo->$db->$acr->insertOne($issue)->getInsertedId()) {
+                            $this->addJournalRecord($issue["issueId"], "createIssue", null, $issue);
                             return $issue["issueId"];
                         } else {
                             return false;
@@ -105,7 +109,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyIssue($issue)
+            protected function modifyIssue($issue)
             {
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
@@ -128,7 +132,15 @@
                 $issue["updated"] = time();
 
                 if ($issue) {
-                    return $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                    $old = $this->getIssue($issue["issueId"]);
+                    $update = false;
+                    if ($old) {
+                        $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                    }
+                    if ($update) {
+                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue);
+                    }
+                    return $update;
                 }
 
                 return false;
@@ -163,6 +175,8 @@
                     }
                 }
 
+                $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
+
                 return $this->mongo->$db->$acr->deleteMany([
                     "issueId" => $issueId,
                 ]);
@@ -173,6 +187,8 @@
              */
             public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
             {
+                global $params;
+
                 $db = $this->dbName;
 
                 $me = $this->myRoles();
@@ -184,10 +200,20 @@
                 $my = $this->myGroups();
                 $my[] = $this->login;
 
-                $query = $this->preprocessFilter($query, [
+                $preprocess = [
                     "%%me" => $this->login,
                     "%%my" => $my,
-                ]);
+                ];
+
+                if ($params && array_key_exists("search", $params) && trim($params["search"])) {
+                    $preprocess["%%search"] = trim($params["search"]);
+                }
+
+                if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
+                    $preprocess["%%parent"] = trim($params["parent"]);
+                }
+
+                $query = $this->preprocessFilter($query, $preprocess);
 
                 $projection = [];
 
@@ -272,6 +298,11 @@
                     return false;
                 }
 
+                $this->addJournalRecord($issueId, "addComment", null, [
+                    "commentBody" => $comment,
+                    "commentPrivate" => $private,
+                ]);
+
                 return $this->mongo->$db->$acr->updateOne(
                     [
                         "issueId" => $issueId,
@@ -284,6 +315,16 @@
                                 "author" => $this->login,
                                 "private" => $private,
                             ],
+                        ],
+                    ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$set" => [
+                            "updated" => time(),
                         ],
                     ]
                 );
@@ -318,6 +359,16 @@
                     return false;
                 }
 
+                $this->addJournalRecord($issueId, "modifyComment#$commentIndex", [
+                    "commentAuthor" => $issue["comments"][$commentIndex]["author"],
+                    "commentBody" => $issue["comments"][$commentIndex]["body"],
+                    "commentPrivate" => $issue["comments"][$commentIndex]["private"],
+                ], [
+                    "commentAuthor" => $this->login,
+                    "commentBody" => $comment,
+                    "commentPrivate" => $private,
+                ]);
+
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
                     return $this->mongo->$db->$acr->updateOne(
                         [
@@ -330,6 +381,15 @@
                                 "comments.$commentIndex.author" => $this->login,
                                 "comments.$commentIndex.private" => $private,
                             ]
+                        ]
+                    ) && $this->mongo->$db->$acr->updateOne(
+                        [
+                            "issueId" => $issueId,
+                        ],
+                        [
+                            "\$set" => [
+                                "updated" => time(),
+                            ],
                         ]
                     );
                 }
@@ -361,10 +421,27 @@
                     return false;
                 }
 
+                $this->addJournalRecord($issueId, "deleteComment#$commentIndex", [
+                    "commentAuthor" => $issue["comments"][$commentIndex]["author"],
+                    "commentBody" => $issue["comments"][$commentIndex]["body"],
+                    "commentPrivate" => $issue["comments"][$commentIndex]["private"],
+                    "commentCreated" => $issue["comments"][$commentIndex]["created"],
+                ], null);
+
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
                     return
                         $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ "comments.$commentIndex" => true ] ]) &&
-                        $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$pull' => [ "comments" => null ] ]);
+                        $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$pull' => [ "comments" => null ] ]) &&
+                        $this->mongo->$db->$acr->updateOne(
+                            [
+                                "issueId" => $issueId,
+                            ],
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        );
                 }
 
                 return false;
@@ -410,7 +487,11 @@
                 }
 
                 foreach ($attachments as $attachment) {
-                    $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                    $this->addJournalRecord($issueId, "addAttachment", null, [
+                        "attachmentFilename" => $attachment["name"],
+                    ]);
+
+                    $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                         "date" => round($attachment["date"] / 1000),
                         "added" => time(),
                         "type" => $attachment["type"],
@@ -418,7 +499,21 @@
                         "project" => $acr,
                         "issueId" => $issueId,
                         "attachman" => $this->login,
-                    ]);
+                    ]) &&
+                    $this->mongo->$db->$acr->updateOne(
+                        [
+                            "issueId" => $issueId,
+                        ],
+                        [
+                            "\$set" => [
+                                "updated" => time(),
+                            ],
+                        ]
+                    );
+
+                    if (!$add) {
+                        return false;
+                    }
                 }
 
                 return true;
@@ -446,7 +541,21 @@
                 }
 
                 if ($list && $list[0] && $list[0]["id"]) {
-                    return $files->deleteFile($list[0]["id"]);
+                    $this->addJournalRecord($issueId, "deleteAttachment", [
+                        "attachmentFilename" => $filename,
+                    ], null);
+
+                    return $files->deleteFile($list[0]["id"]) &&
+                        $this->mongo->$db->$acr->updateOne(
+                            [
+                                "issueId" => $issueId,
+                            ],
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        );
                 }
 
                 return false;
@@ -483,14 +592,6 @@
             {
                 $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
                 $this->redis->set("ttReCreateIndexes", true);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addJournalRecord($issue, $record)
-            {
-                // TODO: Implement addJournalRecord() method.
             }
         }
     }

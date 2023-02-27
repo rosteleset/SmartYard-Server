@@ -17,11 +17,11 @@
             /**
              * @inheritDoc
              */
-            public function __construct($config, $db, $redis)
+            public function __construct($config, $db, $redis, $login = false)
             {
                 require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
 
-                parent::__construct($config, $db, $redis);
+                parent::__construct($config, $db, $redis, $login);
 
                 $this->dbName = @$config["backends"]["files"]["db"]?:"rbt";
 
@@ -112,7 +112,11 @@
                 $collection = "fs.files";
                 $db = $this->dbName;
 
-                $cursor = $this->mongo->$db->$collection->find($query);
+                $cursor = $this->mongo->$db->$collection->find($query, [
+                    "sort" => [
+                        "filename" => 1,
+                    ],
+                ]);
 
                 $files = [];
                 foreach ($cursor as $document) {

@@ -33,22 +33,16 @@
                 
                 $workflows = $files->searchFiles([ "metadata.type" => "workflow" ]);
 
-                $wx = [];
+                $list = [];
                 foreach ($workflows as $workflow) {
                     try {
-                        $workflow_ = $this->loadWorkflow($workflow["metadata"]["workflow"]);
-                        $name = $workflow_->workflowName();
+                        $list[$workflow["metadata"]["workflow"]] = $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowName();
                     } catch (\Exception $e) {
-                        $name = $workflow["metadata"]["workflow"];
+                        $list[$workflow["metadata"]["workflow"]] = $workflow["metadata"]["workflow"];
                     }
-
-                    $wx[] = [
-                        "file" => $workflow["metadata"]["workflow"],
-                        "name" => $name,
-                    ];
                 }
 
-                return $wx;
+                return $list;
             }
 
             /**
@@ -191,8 +185,8 @@
                 }
                 
                 $workflows = $files->searchFiles([
-                    "type" => "workflow",
-                    "workflow" => $workflow,
+                    "metadata.type" => "workflow",
+                    "metadata.workflow" => $workflow,
                 ]);
 
                 foreach ($workflows as $w) {
@@ -435,15 +429,11 @@
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
                 $list = [];
-
                 foreach ($filters as $filter) {
-                    $filter = pathinfo($filter["filename"]);
-
                     try {
-                        $f = json_decode($this->getFilter($filter["filename"]), true);
-                        $list[$filter["filename"]] = @$f["name"];
+                        $list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"];
                     } catch (\Exception $e) {
-                        $list[$filter["filename"]] = $filter["filename"];
+                        $list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
                     }
                 }
 
@@ -522,8 +512,8 @@
                 }
                 
                 $filters = $files->searchFiles([
-                    "type" => "filter",
-                    "workflow" => $filter,
+                    "metadata.type" => "filter",
+                    "metadata.filter" => $filter,
                 ]);
 
                 foreach ($filters as $f) {
@@ -536,44 +526,10 @@
             /**
              * @param $field
              * @param $name
-             * @return mixed
-             */
-            public function addViewer($field, $name) {
-                if (!checkStr($name) || !checkStr($field)) {
-                    return false;
-                }
-
-                $files = loadBackend("files");
-
-                if (!$files) {
-                    return false;
-                }
-
-                $viewers = $files->searchFiles([
-                    "metadata.type" => "viewer",
-                    "metadata.field" => $field,
-                    "metadata.name" => $name,
-                ]);
-
-                if (count($viewers)) {
-                    setLastError("viewerAlreadyExists");
-                    return false;
-                }
-
-                return $files->addFile($field . "_" . $name . ".js", $files->contentsToStream("//function $name (val, field, issue) {\n\treturn val;\n//}\n"), [
-                    "type" => "viewer",
-                    "field" => $field,
-                    "name" => $name,
-                ]);
-            }
-
-            /**
-             * @param $field
-             * @param $name
              * @param $code
              * @return mixed
              */
-            public function modifyViewer($field, $name, $code) {
+            public function putViewer($field, $name, $code) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -598,6 +554,7 @@
                     "type" => "viewer",
                     "field" => $field,
                     "name" => $name,
+                    "viewer" => $field . "_" . $name,
                 ]);
             }
 
@@ -643,9 +600,10 @@
                 $vs = [];
                 foreach ($viewers as $v) {
                     $vs[] = [
+                        "filename" => $v["metadata"]["viewer"],
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
-                        "code" => $files->streamToContents($files->getFileStream($v["id"])),
+                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue) {\n\treturn val;\n//}\n",
                     ]; 
                 }
 
@@ -804,7 +762,7 @@
              * @param $issue
              * @return mixed
              */
-            abstract public function modifyIssue($issue);
+            abstract protected function modifyIssue($issue);
 
             /**
              * @param $issueId
@@ -879,11 +837,39 @@
             abstract public function reCreateIndexes();
 
             /**
-             * @param $issue
-             * @param $record
+             * @param string $issue
+             * @param string $action
+             * @param object $old
+             * @param object $new
+             * @return void
+             */
+            public function addJournalRecord($issue, $action, $old, $new)
+            {
+                $journal = loadBackend("tt_journal");
+
+                if ($journal) {
+                    $journal->journal($issue, $action, $old, $new);
+                }
+            }
+
+            /**
+             * @param string $issueId
              * @return mixed
              */
-            abstract public function addJournalRecord($issue, $record);
+            public function getJournal($issueId, $limit = false)
+            {
+                $journal = loadBackend("tt_journal");
+
+                if (!$this->myRoles()[explode("-", $issueId)[0]]) {
+                    return false;
+                }
+
+                if ($journal) {
+                    return $journal->get($issueId, $limit);
+                }
+
+                return false;
+            }
 
             /**
              * @param $issue

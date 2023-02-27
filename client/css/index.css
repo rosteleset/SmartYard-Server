@@ -225,3 +225,13 @@ body::-webkit-scrollbar-thumb {
   text-decoration: underline;
   color: black;
 }
+
+.tr-hoverable:hover {
+  background: #ccc;
+}
+
+.td-journal {
+  font-size: 14px;
+  vertical-align: top;
+  white-space: nowrap;
+}

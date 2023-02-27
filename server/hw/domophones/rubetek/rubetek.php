@@ -11,12 +11,18 @@
             protected string $def_pass = 'api_password';
             protected string $api_prefix = '/api/v1';
 
-            protected array $config = [];
+            protected array $rfids = [];
+            protected array $rfidsToDelete = [];
 
             public function __construct(string $url, string $pass, bool $first_time = false) {
                 parent::__construct($url, $pass, $first_time);
-                $this->config = $this->get_config();
-                print_r($this->config); // TODO: delete later
+                $this->rfids = $this->get_rfids();
+                // print_r($this->config); // TODO: delete later
+            }
+
+            public function __destruct() {
+                parent::__destruct();
+                $this->write_rfids(array_unique(array_diff($this->rfids, $this->rfidsToDelete)));
             }
 
             /** Make an API call */
@@ -48,6 +54,16 @@
                 return json_decode($res, true);
             }
 
+            /** Configure internal reader mode */
+            protected function configure_internal_reader() {
+                $this->api_call('/settings/nfc_reader', 'PATCH', [
+                    'period_reading_ms' => 500,
+                    'disable_sl3' => true,
+                    'code_length' => 4,
+                    'reverse_data_order' => true,
+                ]);
+            }
+
             /** Get current intercom config */
             protected function get_config() {
                 return $this->api_call('/configuration');
@@ -61,17 +77,23 @@
             /** Set random administrator pin code */
             protected function set_admin_pin() {
                 $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $displaySettings = $this->config['display'];
+                $displaySettings = $this->get_config()['display'];
                 $displaySettings['admin_password'] = $pin;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
-            public function add_rfid(string $code, int $apartment = 0) {
-                // TODO: Implement add_rfid() method.
-                $this->api_call("/apartments/$apartment/rfids", 'POST', [
-                    'door_access' => [1, 2, 3],
-                    'rfids' => [ $code ],
+            /** Write array of RFID keys to intercom memory */
+            protected function write_rfids(array $rfids) {
+                $this->api_call('/apartments', 'POST', [
+                    'id' => '0',
+                    'call_type' => 'blocked',
+                    'door_access' => [ 1, 5 ], // 1 - Relay A, internal reader; 5 - Relay B, external reader
+                    'rfids' => array_values($rfids),
                 ]);
+            }
+
+            public function add_rfid(string $code, int $apartment = 0) {
+                $this->rfids[] = $code;
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -79,7 +101,11 @@
             }
 
             public function clear_rfid(string $code = '') {
-                // TODO: Implement clear_rfid() method.
+                if ($code) {
+                    $this->rfidsToDelete[] = $code;
+                } else {
+                    $this->rfids = [];
+                }
             }
 
             public function configure_apartment(
@@ -116,7 +142,7 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                $timeSettings = $this->config['time'];
+                $timeSettings = $this->get_config()['time'];
                 $timeSettings['ntp_pool'] = "$server:$port";
                 $timeSettings['timezone'] = 'GMT+3';
                 $this->api_call('/configuration', 'PATCH', [ 'time' => $timeSettings ]);
@@ -183,8 +209,7 @@
             }
 
             public function get_rfids(): array {
-                // TODO: Implement get_rfids() method.
-                return [];
+                return $this->api_call('/apartments/0')['rfids'] ?? [];
             }
 
             public function get_sysinfo(): array {
@@ -234,7 +259,9 @@
             }
 
             public function set_call_timeout(int $timeout) {
-                // TODO: Implement set_call_timeout() method.
+                $callSettings = $this->get_config()['call'];
+                $callSettings['dial_out_time'] = $timeout;
+                $this->api_call('/settings/call', 'PATCH', $callSettings);
             }
 
             public function set_cms_levels(array $levels) {
@@ -246,11 +273,17 @@
             }
 
             public function set_concierge_number(int $number) {
-                // TODO: Implement set_concierge_number() method.
+                $this->api_call('/settings/concierge', 'PATCH', [
+                    'enabled' => true,
+                    'dial_number' => "$number",
+                    'analog_dial_number' => '',
+                    'call_type' => 'sip',
+                ]);
             }
 
             public function set_display_text(string $text = '') {
-                $displaySettings = $this->config['display'];
+                $displaySettings = $this->get_config()['display'];
+                $displaySettings['welcome_display'] = 1;
                 $displaySettings['text'] = $text;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
@@ -269,11 +302,19 @@
             }
 
             public function set_sos_number(int $number) {
-                // TODO: Implement set_sos_number() method.
+                $this->api_call('/settings/sos', 'PATCH', [
+                    'enabled' => true,
+                    'dial_number' => "$number",
+                    'analog_dial_number' => '',
+                    'call_type' => 'sip',
+                    'backlight_period' => 3,
+                ]);
             }
 
             public function set_talk_timeout(int $timeout) {
-                // TODO: Implement set_talk_timeout() method.
+                $callSettings = $this->get_config()['call'];
+                $callSettings['max_call_time'] = $timeout;
+                $this->api_call('/settings/call', 'PATCH', $callSettings);
             }
 
             public function set_unlock_time(int $time) {
@@ -315,6 +356,7 @@
             public function prepare() {
                 parent::prepare();
                 $this->set_admin_pin();
+                $this->configure_internal_reader();
             }
         }
     }

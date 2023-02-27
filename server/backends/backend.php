@@ -36,6 +36,7 @@
                 $this->db = $db;
                 $this->redis = $redis;
                 $this->login = $login ? : ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
+                
                 switch ($this->login) {
                     case "-":
                         $this->uid = -1;

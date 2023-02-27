@@ -436,6 +436,7 @@ function initAll() {
         modules[currentPage].search($("#searchInput").val());
     });
 
+/*
     $("#confirmModal").draggable({
         handle: "#confirmModalHeader",
     });
@@ -447,6 +448,11 @@ function initAll() {
     $("#alertModal").draggable({
         handle: "#alertModalHeader",
     });
+
+    $("#uploadModalBody").draggable({
+        handle: "#uploadModalHeader",
+    });
+*/
 
     if ($.cookie("_server") && $.cookie("_token")) {
         POST("authentication", "ping", false, {
@@ -476,6 +482,10 @@ function initAll() {
                                     onhashchange = hashChange;
                                 }
                             }
+                            setInterval(() => {
+                                $(".blink-icon.blinking").toggleClass("text-warning");
+                                $(".blink-icon:not(.blinking)").removeClass("text-warning");
+                            }, 1000);
                         }).fail(response => {
                             FAIL(response);
                             showLoginForm();

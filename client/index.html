@@ -177,7 +177,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- confirmModal -->
@@ -230,17 +229,42 @@
     </div>
 
     <!-- modal -->
-    <div class="modal p-0" id="modal" role="dialog" style="padding-top: 4rem!important;">
+    <div class="modal p-0" id="modal" role="dialog" style="padding-top: 4rem!important;; display: none;">
         <div class="modal-dialog p-0" role="document">
             <div class="modal-content p-0" id="modalBody">
             </div>
         </div>
     </div>
 
-    <!-- modalUpload -->
-    <div class="modal p-0" id="modalUpload" role="dialog" style="padding-top: 4rem!important;">
+    <!-- uploadModal -->
+    <div class="modal p-0" id="uploadModal" role="dialog" style="padding-top: 4rem!important;; display: none;">
         <div class="modal-dialog modal-lg p-0" role="document">
-            <div class="modal-content p-0" id="modalUploadBody">
+            <div class="modal-content p-0" id="uploadModalBody">
+                <div class="card mt-0 mb-0">
+                    <div class="card-header" id="uploadModalHeader">
+                        <h3 class="card-title" id="uploadModalTitle">...</h3>
+                        <button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right uploadModalFormCancel" data-dismiss="modal" id="uploadModalCancel"><i class="far fa-fw fa-times-circle"></i></button>
+                    </div>
+                    <div class="card-body table-responsive p-0">
+                        <input type="file" id="fileInput" style="display: none" accept="${mimeTypes}"/>
+                        <table class="table tform-borderless mt-2 mb-3" style="width: 100%;">
+                            <tbody>
+                                <tr style="display: none">
+                                    <td id="fileIcon">&nbsp;</td>
+                                    <td id="uploadFileInfo" style="text-align: left; width: 100%;">&nbsp;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table tform-borderless">
+                            <tfoot>
+                                <tr>
+                                    <td><button id="chooseFileToUpload" class="btn btn-default">...</button></td>
+                                    <td style="text-align: right"><button id="uploadButton" class="btn btn-default">...</button></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

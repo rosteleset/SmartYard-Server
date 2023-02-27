@@ -18,9 +18,9 @@
              * @param $db
              * @param $redis
              */
-            function __construct($config, $db, $redis)
+            function __construct($config, $db, $redis, $login = false)
             {
-                parent::__construct($config, $db, $redis);
+                parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
@@ -39,8 +39,7 @@
              * @return void
              */
             public function log($params, $code) {
-                $login = @($params["_login"]?:$params["login"]);
-                $login = $login?:"-";
+                $login = $this->login;
 
                 if (@$params["_id"]) {
                     $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}/{$params["_id"]}";

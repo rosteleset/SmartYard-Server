@@ -20,14 +20,8 @@
                 return api::ANSWER($success, ($success !== false)?"viewers":"notAcceptable");
             }
 
-            public static function POST($params) {
-                $success = loadBackend("tt")->addViewer($params['field'], $params['name']);
-
-                return api::ANSWER($success);
-            }
-
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyViewer($params['field'], $params["name"], $params['code']);
+                $success = loadBackend("tt")->putViewer($params['field'], $params["name"], $params['code']);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

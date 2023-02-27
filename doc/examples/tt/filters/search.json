@@ -1,0 +1,12 @@
+{
+    "name": "Search filter",
+    "filter": {
+        "$text": {
+            "$search": "%%search"
+        }
+    },
+    "fields": [
+        "subject",
+        "status"
+    ]
+}

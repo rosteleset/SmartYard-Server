@@ -115,20 +115,6 @@
         });
     },
 
-    doAddViewer: function (field, name) {
-        loadingStart();
-        POST("tt", "viewer", false, {
-            field: field,
-            name: name,
-        }).
-        fail(FAIL).
-        fail(modules.tt.settings.renderViewers).
-        done(() => {
-            message(i18n("tt.viewerWasAdded"));
-            location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(field)}&name=${encodeURIComponent(name)}`;
-        });
-    },
-
     doAddCrontab: function (crontab) {
         loadingStart();
         POST("tt", "crontab", false, crontab).
@@ -1148,16 +1134,11 @@
             }
         }
 
-        let w = {};
-        for (let i in modules.tt.meta.workflows) {
-            w[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i];
-        }
-
         let workflows = [];
-        for (let i in w) {
+        for (let i in modules.tt.meta.workflows) {
             workflows.push({
                 id: i,
-                text: "<span class='text-monospace'>[" + i + "]</span> " + (w[i].name?w[i].name:i),
+                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i),
             });
         }
 
@@ -1203,10 +1184,12 @@
         let f = [];
 
         for (let i in modules.tt.meta.filters) {
-            f.push({
-                id: i,
-                text: modules.tt.meta.filters[i]?(modules.tt.meta.filters[i] + " [" + i + "]"):i,
-            });
+            if (i.charAt(0) !== "#") {
+                f.push({
+                    id: i,
+                    text: modules.tt.meta.filters[i]?(modules.tt.meta.filters[i] + " [" + i + "]"):i,
+                });
+            }
         }
 
         cardForm({
@@ -2089,15 +2072,15 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < modules.tt.meta.workflows.length; i++) {
+                    for (let i in modules.tt.meta.workflows) {
                         rows.push({
-                            uid: modules.tt.meta.workflows[i].file,
+                            uid: i,
                             cols: [
                                 {
-                                    data: modules.tt.meta.workflows[i].file,
+                                    data: i,
                                 },
                                 {
-                                    data: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file,
+                                    data: modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i,
                                 },
                             ],
                             dropDown: {
@@ -2424,7 +2407,7 @@
                 },
             ],
             callback: f => {
-                location.href = "#tt.settings&section=filter&filter=" + f.file;
+                location.href = "#tt.settings&section=filter&filter=" + encodeURIComponent(f.file);
             },
         }).show();
     },
@@ -2454,7 +2437,7 @@
                     },
                 ],
                 edit: filter => {
-                    location.href = "#tt.settings&section=filter&filter=" + filter;
+                    location.href = "#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
                 },
                 rows: () => {
                     let rows = [];
@@ -2827,7 +2810,7 @@
                     },
                 ],
                 callback: r => {
-                    modules.tt.settings.doAddViewer(r.field, r.name)
+                    location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(r.field)}&name=${encodeURIComponent(r.name)}`;
                 },
             }).show();
         }).
@@ -2839,10 +2822,10 @@
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
-            let code = '';
+            let code = `//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
             for (let i in v.viewers) {
                 if (v.viewers[i].field == field && v.viewers[i].name == name) {
-                    code = v.viewers[i].code?v.viewers[i].code:`// function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
+                    code = v.viewers[i].code?v.viewers[i].code:`//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
@@ -2906,6 +2889,9 @@
                     },
                     columns: [
                         {
+                            title: i18n("tt.viewer"),
+                        },
+                        {
                             title: i18n("tt.viewerField"),
                         },
                         {
@@ -2928,6 +2914,9 @@
                             rows.push({
                                 uid: key,
                                 cols: [
+                                    {
+                                        data: r.viewers[i].filename,
+                                    },
                                     {
                                         data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
                                     },

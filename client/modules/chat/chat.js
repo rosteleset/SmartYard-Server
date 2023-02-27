@@ -10,7 +10,7 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("chat.chat");
 
-        $("#mainForm").html(i18n("about.chat"));
+        $("#mainForm").html(i18n("chat.chat"));
 
         loadingDone();
     },

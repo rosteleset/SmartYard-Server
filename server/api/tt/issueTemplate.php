@@ -9,25 +9,24 @@
         use api\api;
 
         /**
-         * workflowActionTemplate method
+         * issueTemplate method
          */
 
-        class workflowActionTemplate extends api {
+        class issueTemplate extends api {
 
             public static function GET($params) {
-                $tt = loadBackend("tt");
+                $workflow = @$params["_id"];
 
-                if ($tt) {
-                    $issue = $tt->getIssue($params["_id"]);
+                if ($workflow) {
+                    $w = loadBackend("tt")->loadWorkflow($workflow);
+                    if ($w) {
+                        $template = $w->getIssueTemplate();
 
-                    if ($issue) {
-                        $workflow = $tt->loadWorkflow($issue["workflow"]);
-                        $template = $workflow->actionTemplate($issue, $params["action"]);
                         return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
                     }
                 }
 
-                return api::ERROR();
+                return api::ERROR("notAcceptable");
             }
 
             public static function index() {

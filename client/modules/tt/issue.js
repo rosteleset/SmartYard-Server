@@ -12,7 +12,7 @@
             let workflows = [];
 
             for (let i in modules.tt.meta.workflows) {
-                workflows[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file;
+                workflows[i] = modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i;
             }
 
             function workflowsByProject(project) {
@@ -108,16 +108,14 @@
         loadingStart();
         modules.users.loadUsers(() => {
             modules.groups.loadGroups(() => {
-                QUERY("tt", "workflowCreateIssueTemplate", {
-                    workflow: workflow,
-                }).
+                GET("tt", "issueTemplate", workflow).
                 done(response => {
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
                     let workflows = [];
 
                     for (let i in modules.tt.meta.workflows) {
-                        workflows[modules.tt.meta.workflows[i].file] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:modules.tt.meta.workflows[i].file;
+                        workflows[i] = modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i;
                     }
 
                     let projectName = "";
@@ -309,7 +307,7 @@
             } else
             if (t < Object.keys(issue.actions).length) {
                 h += `<span class="dropdown">`;
-                h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
+                h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
                 let hr = true;
                 for (let i = Object.keys(issue.actions).length - 1; i >= 0; i--) {
@@ -342,6 +340,7 @@
                 h += `</ul></span>`;
             }
         }
+        h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
         h += "</div>";
         h += "</td>";
         h += "<td style='text-align: right;' class='pr-2'>";
@@ -432,11 +431,15 @@
             }
         }
 
+        h += "</table>";
+
+        h += "<table style='width: 100%;' id='issueComments'>";
+
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.comments) {
                 h += "<tr>";
-                h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+                h += "<td class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
                 h += "#" + (parseInt(i) + 1) + " ";
                 h += ttDate(issue.issue.comments[i].created);
@@ -461,14 +464,114 @@
                 h += "</tr>";
             }
         }
+
         h += "</table>";
+
+        h += "<table style='width: 100%; display: none;' id='issueJournal'>";
+        h += "</table>";
+
         $("#mainForm").html(h);
+
+        $(".ttJournal").off("click").on("click", () => {
+            if ($(".ttJournal").text() == i18n("tt.journal")) {
+                loadingStart();
+                GET("tt", "journal", issue.issue.issueId).
+                done(response => {
+                    $(".ttJournal").text(i18n("tt.comments"));
+                    $("#issueComments").hide();
+                    let h = '';
+                    h += `<tr><td style="width: 100%" colspan="3"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
+                    for (let i in response.journal) {
+                        let action = response.journal[i].action.split("#")[0];
+                        let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
+                        h += "<tr>";
+                        h += "<td class='pl-1' style='font-size: 14px;' colspan='3'>";
+                        h += "<div>";
+                        h += "#" + (parseInt(i) + 1) + " ";
+                        h += ttDate(response.journal[i].date);
+                        h += "<span class='ml-2 text-info text-bold'>";
+                        h += members[response.journal[i].login]?members[response.journal[i].login]:response.journal[i].login;
+                        h += "</span>";
+                        h += "<span class='ml-2'>";
+                        h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1), indx);
+                        h += "</span>";
+                        h += "</div>";
+                        h += "</td>";
+                        h += "</tr>";
+                        if (response.journal[i].old && response.journal[i].new) {
+                            let k = Object.keys(response.journal[i].old);
+                            k = k.concat(Object.keys(response.journal[i].new));
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr class='tr-hoverable'>";
+                                h += "<td class='pl-2 td-journal' colspan='3'>";
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                h += "</td>";
+                                h += "</tr>"
+                                h += "<tr class='tr-hoverable'>"
+                                h += "<td class='pl-3 td-journal'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]] ? response.journal[i].old[k[j]] : false);
+                                h += "</td>";
+                                h += "<td class='td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
+                                h += "<td class='td-journal' style='width: 100%;'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]] ? response.journal[i].new[k[j]] : false);
+                                h += "</td>";
+                                h += "</tr>";
+                            }
+                        }
+                        if (!response.journal[i].old && response.journal[i].new) {
+                            let k = Object.keys(response.journal[i].new);
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr class='tr-hoverable'>";
+                                h += "<td class='pl-2 td-journal' colspan='3'>";
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                h += "</td>";
+                                h += "</tr>"
+                                h += "<tr class='tr-hoverable'>"
+                                h += "<td class='td-journal pl-3'>&nbsp;</td>";
+                                h += "<td class='td-journal'><i class='fas fa-fw fa-plus ml-2 mr-2'></i></td>";
+                                h += "<td class='td-journal' style='width: 100%;'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
+                                h += "</td>";
+                                h += "</tr>";
+                            }
+                        }
+                        if (response.journal[i].old && !response.journal[i].new) {
+                            let k = Object.keys(response.journal[i].old);
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr class='tr-hoverable'>";
+                                h += "<td class='pl-2 td-journal' colspan='3'>";
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                h += "</td>";
+                                h += "</tr>"
+                                h += "<tr class='tr-hoverable'>"
+                                h += "<td class='pl-3 td-journal'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
+                                h += "</td>";
+                                h += "<td class='td-journal'><i class='far fa-fw fa-trash-alt ml-2 mr-2'></i></td>";
+                                h += "<td class='td-journal' style='width: 100%;'>&nbsp;</td>";
+                                h += "</tr>";
+                            }
+                        }
+                    }
+                    $("#issueJournal").html(h).show();
+                    window.scrollTo(0, document.body.scrollHeight);
+                }).
+                always(loadingDone);          
+            } else {
+                $(".ttJournal").text(i18n("tt.journal"));
+                $("#issueJournal").hide();
+                $("#issueComments").show();
+        }
+        });
 
         $(".ttIssueAction").off("click").on("click", function () {
             let action = $(this).text();
 
             loadingStart();
-            QUERY("tt", "workflowActionTemplate", {
+            QUERY("tt", "action", {
                 _id: issue.issue.issueId,
                 action: action,
             }, true).done(r => {
@@ -507,7 +610,7 @@
                         callback: r => {
                             r["issueId"] = issue.issue.issueId;
                             loadingStart();
-                            PUT("tt", "workflowProgressAction", issue.issue.issueId, {
+                            PUT("tt", "action", issue.issue.issueId, {
                                 set: r,
                                 action: action,
                             }).
@@ -526,7 +629,7 @@
                 } else {
                     mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
                         loadingStart();
-                        PUT("tt", "workflowProgressAction", issue.issue.issueId, {
+                        PUT("tt", "action", issue.issue.issueId, {
                             set: {
                                 issueId: issue.issue.issueId,
                             },
