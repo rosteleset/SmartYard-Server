@@ -497,7 +497,7 @@
                     case "workflow":
                         for (let i in modules.tt.meta.workflows) {
                             if (i == val) {
-                                val = modules.tt.meta.workflows[i] + " [" + val + "]";
+                                val = modules.tt.meta.workflows[i].name + " [" + val + "]";
                                 break;
                             }
                         }
@@ -544,12 +544,12 @@
         } else {
             filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
-        window.location.href = `#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}&_refresh=${Math.random()}`;
+        window.location.href = `?#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}&_refresh=${Math.random()}`;
     },
 
     selectProject: function (project) {
         $.cookie("_project", project, { expires: 3650, insecure: config.insecureCookie });
-        window.location.href = `#tt&project=${encodeURIComponent(project)}`;
+        window.location.href = `?#tt&project=${encodeURIComponent(project)}`;
     },
 
     renderIssues: function (params) {
@@ -865,7 +865,7 @@
                         });
                     }
                 } else {
-                    window.location.href = "#tt.settings&edit=projects";
+                    window.location.href = "?#tt.settings&edit=projects";
                 }
             }
         }).

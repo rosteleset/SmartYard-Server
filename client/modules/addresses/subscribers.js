@@ -452,7 +452,7 @@
                                     icon: "far fa-envelope",
                                     title: i18n("addresses.subscriberInbox"),
                                     click: subscriberId => {
-                                        location.href = "#addresses.subscriberInbox&subscriberId=" + subscriberId;
+                                        location.href = "?#addresses.subscriberInbox&subscriberId=" + subscriberId;
                                     },
                                 },
                             ]

@@ -86,7 +86,7 @@ function hashChange() {
             } else
             if (route === "default") {
                 if (config.defaultRoute) {
-                    location = config.defaultRoute;
+                    location.href = (config.defaultRoute.charAt(0) == "?")?config.defaultRoute:("?" + config.defaultRoute);
                 } else {
                     loadingDone();
                 }
@@ -476,7 +476,7 @@ function initAll() {
                                 $("#app").show();
                                 if (config.defaultRoute) {
                                     onhashchange = hashChange;
-                                    location = config.defaultRoute;
+                                    location.href = (config.defaultRoute.charAt(0) == "?")?config.defaultRoute:("?" + config.defaultRoute);
                                 } else {
                                     hashChange();
                                     onhashchange = hashChange;

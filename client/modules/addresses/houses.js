@@ -72,13 +72,13 @@
                                     if (route == "addresses" && params["show"] == "street" && params["streetId"] == result.house.streetId) {
                                         modules.addresses.renderStreet(result.house.streetId);
                                     } else {
-                                        location.href = "#addresses&show=street&streetId=" + result.house.streetId;
+                                        location.href = "?#addresses&show=street&streetId=" + result.house.streetId;
                                     }
                                 } else {
                                     if (route == "addresses" && params["show"] == "settlement" && params["streetId"] == result.house.settlementId) {
                                         modules.addresses.renderSettlement(result.house.settlementId);
                                     } else {
-                                        location.href = "#addresses&show=settlement&settlementId=" + result.house.settlementId;
+                                        location.href = "?#addresses&show=settlement&settlementId=" + result.house.settlementId;
                                     }
                                 }
                             } else {
@@ -1542,7 +1542,7 @@
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {
                                                 if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
-                                                    location.href = "#addresses.subscribers&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
+                                                    location.href = "?#addresses.subscribers&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
                                                 }
                                             }
                                         },
@@ -1652,7 +1652,7 @@
                                         title: i18n("addresses.domophone"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].domophoneId,
                                         click: entranceId => {
-                                            location.href = "#addresses.domophones&domophoneId=" + entrances[entranceId].domophoneId;
+                                            location.href = "?#addresses.domophones&domophoneId=" + entrances[entranceId].domophoneId;
                                         },
                                     },
                                     {
@@ -1660,7 +1660,7 @@
                                         title: i18n("addresses.camera"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].cameraId,
                                         click: entranceId => {
-                                            location.href = "#addresses.cameras&cameraId=" + entrances[entranceId].cameraId;
+                                            location.href = "?#addresses.cameras&cameraId=" + entrances[entranceId].cameraId;
                                         },
                                     },
                                     {
@@ -1671,7 +1671,7 @@
                                         title: i18n("addresses.cms"),
                                         disabled: modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
                                         click: entranceId => {
-                                            location.href = "#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].entranceId;
+                                            location.href = "?#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].entranceId;
                                         },
                                     },
                                     {

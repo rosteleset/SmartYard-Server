@@ -283,7 +283,7 @@
             if (regionId == targetRegionId) {
                 modules.addresses.renderRegion(regionId);
             } else {
-                location.href = "#addresses&show=region&regionId=" + regionId;
+                location.href = "?#addresses&show=region&regionId=" + regionId;
             }
         });
     },
@@ -308,13 +308,13 @@
                 if (regionId == targetRegionId) {
                     modules.addresses.renderRegion(regionId);
                 } else {
-                    location.href = "#addresses&show=region&regionId=" + regionId;
+                    location.href = "?#addresses&show=region&regionId=" + regionId;
                 }
             } else {
                 if (areaId == targetAreaId) {
                     modules.addresses.renderRegion(areaId);
                 } else {
-                    location.href = "#addresses&show=area&areaId=" + areaId;
+                    location.href = "?#addresses&show=area&areaId=" + areaId;
                 }
             }
         });
@@ -341,13 +341,13 @@
                 if (areaId == targetAreaId) {
                     modules.addresses.renderArea(areaId);
                 } else {
-                    location.href = "#addresses&show=area&areaId=" + areaId;
+                    location.href = "?#addresses&show=area&areaId=" + areaId;
                 }
             } else {
                 if (cityId == targetCityId) {
                     modules.addresses.renderCity(cityId);
                 } else {
-                    location.href = "#addresses&show=city&cityId=" + cityId;
+                    location.href = "?#addresses&show=city&cityId=" + cityId;
                 }
             }
         });
@@ -374,13 +374,13 @@
                 if (cityId == targetCityId) {
                     modules.addresses.renderCity(cityId);
                 } else {
-                    location.href = "#addresses&show=city&cityId=" + cityId;
+                    location.href = "?#addresses&show=city&cityId=" + cityId;
                 }
             } else {
                 if (settlementId == targetSettlementId) {
                     modules.addresses.renderSettlement(settlementId);
                 } else {
-                    location.href = "#addresses&show=settlement&settlementId=" + settlementId;
+                    location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
                 }
             }
         });
@@ -407,13 +407,13 @@
                 if (settlementId == targetSettlementId) {
                     modules.addresses.renderSettlement(settlementId);
                 } else {
-                    location.href = "#addresses&show=settlement&settlementId=" + settlementId;
+                    location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
                 }
             } else {
                 if (streetId == targetStreetId) {
                     modules.addresses.renderStreet(streetId);
                 } else {
-                    location.href = "#addresses&show=street&streetId=" + streetId;
+                    location.href = "?#addresses&show=street&streetId=" + streetId;
                 }
             }
         });

@@ -651,5 +651,9 @@ function cardForm(params) {
         }
     }
 
+    if (typeof params.done == "function") {
+        params.done(_prefix);
+    }
+
     return target;
 }

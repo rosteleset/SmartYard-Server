@@ -12,7 +12,7 @@
             let workflows = [];
 
             for (let i in modules.tt.meta.workflows) {
-                workflows[i] = modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i;
+                workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
             }
 
             function workflowsByProject(project) {
@@ -34,6 +34,50 @@
                 }
 
                 return w;
+            }
+
+            function catalogByWorkflow(workflow, prefix) {
+                let catalog = [{
+                    id: "-",
+                    text: i18n("tt.catalog"),
+                }];
+                
+                let x = false;
+                
+                for (let i in modules.tt.meta.workflows) {
+                    if (i == workflow) {
+                        if (modules.tt.meta.workflows[i].catalog) {
+                            x = modules.tt.meta.workflows[i].catalog;
+                        }
+                        break;
+                    }
+                }
+                
+                if (x) {
+                    let l1 = [];
+                    for (let i in x) {
+                        let l2 = [];
+                        for (let j in x[i]) {
+                            l2.push({
+                                id: x[i][j],
+                                text: x[i][j],
+                            });
+                        }
+                        catalog.push({
+                            text: i,
+                            inc: l2,
+                        });
+                    }
+                }
+
+                $(`#${prefix}catalog`).html("").select2ToTree({
+                    treeData: {
+                        dataArr: catalog
+                    }, 
+                    maximumSelectionLength: 3
+                });
+
+                return x;
             }
 
             let projects = [];
@@ -72,6 +116,11 @@
                                 minimumResultsForSearch: Infinity,
                                 language: lang["_code"],
                             });
+                            if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+                                $(`#${prefix}catalog`).attr("disabled", false);
+                            } else {
+                                $(`#${prefix}catalog`).attr("disabled", true);
+                            }
                         },
                         validate: v => {
                             return v && v !== '-' && v !== 'undefined';
@@ -83,17 +132,40 @@
                         title: i18n("tt.workflow"),
                         minimumResultsForSearch: Infinity,
                         options: workflowsByProject(current_project),
+                        select: (el, id, prefix) => {
+                            if (catalogByWorkflow(el.val, prefix)) {
+                                $(`#${prefix}catalog`).attr("disabled", false);
+                            } else {
+                                $(`#${prefix}catalog`).attr("disabled", true);
+                            }
+                        },
                         validate: v => {
                             return v && v !== '-' && v !== 'undefined';
                         },
                     },
+                    {
+                        id: "catalog",
+                        type: "select2",
+                        title: i18n("tt.workflow"),
+                        minimumResultsForSearch: Infinity,
+                        validate: (v, prefix) => {
+                            return $(`#${prefix}catalog`).attr("disabled") || (v && v !== '-' && v !== 'undefined');
+                        },
+                    },
                 ],
+                done: function (prefix) {
+                    if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+                        $(`#${prefix}catalog`).attr("disabled", false);
+                    } else {
+                        $(`#${prefix}catalog`).attr("disabled", true);
+                    }
+                },
                 callback: function (result) {
                     if (result.project && result.workflow) {
                         $.cookie("_project", result.project, { expires: 3650, insecure: config.insecureCookie });
                         $.cookie("_workflow", result.workflow, { expires: 3650, insecure: config.insecureCookie });
                     }
-                    location.href = `#tt.issue&action=create&project=${result.project}&workflow=${result.workflow}`;
+                    location.href = `?#tt.issue&action=create&project=${encodeURIComponent(result.project)}&workflow=${encodeURIComponent(result.workflow)}&catalog=${encodeURIComponent(result.catalog)}`;
                 },
             }).show();
         }).
@@ -101,21 +173,24 @@
         always(loadingDone)
     },
 
-    createIssueForm: function (current_project, workflow) {
+    createIssueForm: function (current_project, workflow, catalog) {
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
 
         loadingStart();
         modules.users.loadUsers(() => {
             modules.groups.loadGroups(() => {
-                GET("tt", "issueTemplate", workflow).
+                QUERY("tt", "issueTemplate", {
+                    _id: workflow,
+                    catalog: catalog,
+                }, true).
                 done(response => {
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
                     let workflows = [];
 
                     for (let i in modules.tt.meta.workflows) {
-                        workflows[i] = modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i;
+                        workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
                     }
 
                     let projectName = "";
@@ -162,6 +237,16 @@
                             hidden: true,
                         },
                     ];
+
+                    if (catalog) {
+                        fields.push({
+                            id: "catalog",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.catalog"),
+                            value: catalog,
+                        });
+                    }
 
                     let af = [];
                     if (response.template && response.template.fields) {
@@ -217,7 +302,7 @@
 
     viewIssue: function (issue) {
         issue = JSON.parse(b64_to_utf8(issue));
-        window.location.href = `#tt&issue=${encodeURIComponent(issue.id)}&filter=${encodeURIComponent(issue.filter?issue.filter:"")}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${encodeURIComponent(($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):"")}`;
+        window.location.href = `?#tt&issue=${encodeURIComponent(issue.id)}&filter=${encodeURIComponent(issue.filter?issue.filter:"")}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${encodeURIComponent(($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):"")}`;
     },
 
     renderIssue: function (issue, filter, index, count, search) {
@@ -885,7 +970,7 @@
                 DELETE("tt", "issue", issue.issue.issueId).
                 fail(FAIL).
                 done(() => {
-                    window.location.href = "#tt";
+                    window.location.href = "?#tt";
                 }).
                 fail(loadingDone);
             });
@@ -957,7 +1042,7 @@
         done(() => {
             switch (params.action) {
                 case "create":
-                    modules.tt.issue.createIssueForm(params.project, params.workflow);
+                    modules.tt.issue.createIssueForm(params.project, params.workflow, params.catalog);
                     break;
                 default:
                     loadingDone();

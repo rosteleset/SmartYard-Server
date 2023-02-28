@@ -214,6 +214,7 @@
     "commentAuthor": "Автор комментария",
     "commentBody": "Комментарий",
     "commentCreated": "Создан",
+    "catalog": "Каталог",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

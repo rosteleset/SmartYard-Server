@@ -1138,7 +1138,7 @@
         for (let i in modules.tt.meta.workflows) {
             workflows.push({
                 id: i,
-                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i),
+                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i),
             });
         }
 
@@ -2037,7 +2037,7 @@
                 },
             ],
             callback: f => {
-                location.href = "#tt.settings&section=workflow&workflow=" + f.file;
+                location.href = "?#tt.settings&section=workflow&workflow=" + encodeURIComponent(f.file);
             },
         }).show();
     },
@@ -2067,7 +2067,7 @@
                     },
                 ],
                 edit: workflow => {
-                    location.href = "#tt.settings&section=workflow&workflow=" + workflow;
+                    location.href = "?#tt.settings&section=workflow&workflow=" + encodeURIComponent(workflow);
                 },
                 rows: () => {
                     let rows = [];
@@ -2080,7 +2080,7 @@
                                     data: i,
                                 },
                                 {
-                                    data: modules.tt.meta.workflows[i]?modules.tt.meta.workflows[i]:i,
+                                    data: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i,
                                 },
                             ],
                             dropDown: {
@@ -2407,7 +2407,7 @@
                 },
             ],
             callback: f => {
-                location.href = "#tt.settings&section=filter&filter=" + encodeURIComponent(f.file);
+                location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(f.file);
             },
         }).show();
     },
@@ -2437,7 +2437,7 @@
                     },
                 ],
                 edit: filter => {
-                    location.href = "#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
+                    location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
                 },
                 rows: () => {
                     let rows = [];
@@ -2810,7 +2810,7 @@
                     },
                 ],
                 callback: r => {
-                    location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(r.field)}&name=${encodeURIComponent(r.name)}`;
+                    location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(r.field)}&name=${encodeURIComponent(r.name)}`;
                 },
             }).show();
         }).
@@ -2900,7 +2900,7 @@
                         },
                     ],
                     edit: k => {
-                        location.href = `#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
+                        location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
                     },
                     rows: () => {
                         let rows = [];
