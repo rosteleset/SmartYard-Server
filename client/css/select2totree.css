@@ -69,17 +69,18 @@
 	cursor: pointer;
 }
 .s2-to-tree li.select2-results__option.non-leaf .expand-collapse:before { /* no :: in IE8 */
-	content: "+";
+	content: "\1F5C0";
 	position: absolute;
 	left: -0.35em;
 	top: 0.1em;
 	font-size: larger;
+	padding-right: 5px;
 }
 .s2-to-tree .select2-dropdown[dir*="rtl"] li.select2-results__option.non-leaf .expand-collapse:before {
 	right: -0.35em;
 }
 .s2-to-tree li.select2-results__option.non-leaf.opened .expand-collapse:before {
-	content: "-";
+	content: "\1F5C1";
 }
 
 .s2-to-tree .select2-results__option[aria-disabled="true"] .expand-collapse {
@@ -88,9 +89,9 @@
 
 .s2-to-tree .item-label {
 	display: inline-block;
-	margin-left: 0.5em;
+	margin-left: 1em;
 	padding: 3px;
-	width: calc(100% - 11px); /* IE8 will fit the content */
+	width: calc(100% - 22px); /* IE8 will fit the content */
 }
 .s2-to-tree .select2-dropdown[dir*="rtl"] .item-label {
 	margin-right: 0.5em;
