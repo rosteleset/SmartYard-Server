@@ -74,6 +74,7 @@
 	left: -0.35em;
 	top: 0.1em;
 	font-size: larger;
+	font-weight: bold;
 	padding-right: 5px;
 }
 .s2-to-tree .select2-dropdown[dir*="rtl"] li.select2-results__option.non-leaf .expand-collapse:before {
