@@ -54,7 +54,6 @@
                 }
                 
                 if (x) {
-                    let l1 = [];
                     for (let i in x) {
                         let l2 = [];
                         for (let j in x[i]) {
