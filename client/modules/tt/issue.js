@@ -190,7 +190,7 @@
                     let workflows = [];
 
                     for (let i in modules.tt.meta.workflows) {
-                        workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
+                        workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i) + " [" + i + "]";
                     }
 
                     let projectName = "";
@@ -225,7 +225,7 @@
                             id: "workflowName",
                             type: "text",
                             readonly: true,
-                            title: i18n("tt.workflow"),
+                            title: i18n("tt.workflowName"),
                             value: workflows[workflow],
                         },
                         {
@@ -238,7 +238,7 @@
                         },
                     ];
 
-                    if (catalog) {
+                    if (catalog && catalog != "-") {
                         fields.push({
                             id: "catalog",
                             type: "text",
