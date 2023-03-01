@@ -3,7 +3,7 @@ function initProject(project)
     return project
 end
 
-function getIssueTemplate()
+function getIssueTemplate(catalog)
     return {
         ["fields"] = {
             "subject",
@@ -107,4 +107,12 @@ end
 
 function getWorkflowName()
     return "Базовый"
+end
+
+function getWorkflowCatalog()
+    return {
+        ["Общие"] = {
+            "Пустышка",
+        },
+    }
 end
