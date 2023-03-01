@@ -277,7 +277,7 @@
 
         $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
             'params' => $params,
-        ], false, [ 'fieldlify' ]);
+        ], false, [ 'fieldlify', 'silent' ]);
 
         if ($already) {
             $script_result = "already running";
