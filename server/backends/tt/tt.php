@@ -704,6 +704,10 @@
                 $validFields[] = "comments";
                 $validFields[] = "journal";
 
+                if (!@$issue["catalog"] || $issue["catalog"] == "-") {
+                    unset($issue["catalog"]);
+                }
+
                 $validTags = [];
 
                 foreach ($project["tags"] as $t) {
