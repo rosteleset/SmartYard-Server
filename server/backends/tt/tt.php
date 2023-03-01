@@ -35,18 +35,23 @@
 
                 $list = [];
                 foreach ($workflows as $workflow) {
+                    $name = $workflow["metadata"]["workflow"];
+                    $catalog = false;
                     try {
-                        $list[$workflow["metadata"]["workflow"]] = [
-                            "name" => $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowName(),
-                            "catalog" => $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowCatalog(),
-                        ];
+                        $name = $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowName();
                     } catch (\Exception $e) {
-                        $list[$workflow["metadata"]["workflow"]] = [
-                            "name" => $workflow["metadata"]["workflow"],
-                            "catalog" => false,
-                        ];
+                        //
                     }
-                }
+                    try {
+                        $catalog = $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowCatalog();
+                    } catch (\Exception $e) {
+                        //
+                    }
+                    $list[$workflow["metadata"]["workflow"]] = [
+                        "name" => $name,
+                        "catalog" => $catalog,
+                    ];
+            }
 
                 return $list;
             }
