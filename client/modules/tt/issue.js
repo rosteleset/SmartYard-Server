@@ -58,13 +58,18 @@
                     k.sort();
                     for (let i in k) {
                         let l2 = [];
-                        for (let j in x[k[i]]) {
+                        let u1 = x[k[i]];
+                        let u2 = [];
+                        for (let j in u1) {
+                            u2.push(u1[j]);
+                        }
+                        u2.sort();
+                        for (let j in u2) {
                             l2.push({
-                                id: x[k[i]][j],
-                                text: x[k[i]][j],
+                                id: u2[j],
+                                text: u2[j],
                             });
                         }
-                        l2.sort();
                         catalog.push({
                             text: k[i],
                             inc: l2,
