@@ -692,6 +692,7 @@
                 $validFields[] = "issueId";
                 $validFields[] = "project";
                 $validFields[] = "workflow";
+                $validFields[] = "catalog";
                 $validFields[] = "subject";
                 $validFields[] = "description";
                 $validFields[] = "resolution";

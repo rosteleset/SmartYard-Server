@@ -52,18 +52,21 @@
                         break;
                     }
                 }
-                
+
                 if (x) {
-                    for (let i in x) {
+                    let k = Object.keys(x);
+                    k.sort();
+                    for (let i in k) {
                         let l2 = [];
-                        for (let j in x[i]) {
+                        for (let j in x[k[i]]) {
                             l2.push({
-                                id: x[i][j],
-                                text: x[i][j],
+                                id: x[k[i]][j],
+                                text: x[k[i]][j],
                             });
                         }
+                        l2.sort();
                         catalog.push({
-                            text: i,
+                            text: k[i],
                             inc: l2,
                         });
                     }
@@ -73,7 +76,7 @@
                     treeData: {
                         dataArr: catalog
                     }, 
-                    maximumSelectionLength: 3
+                    maximumSelectionLength: 2,
                 });
 
                 return x;
@@ -313,7 +316,7 @@
         function fieldRow(i) {
             let h = '';
 
-            if (![ "issueId", "comments", "attachments", "journal", "project", "workflow", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+            if (![ "issueId", "comments", "attachments", "journal", "project", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
                 h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
                 h += "<tr>";
                 h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
@@ -327,7 +330,9 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
-        let rightFields = [ "status", "resolution", "assigned", "watchers", "created", "updated", "author" ];
+        console.log(issue);
+
+        let rightFields = [ "workflow", "catalog", "status", "resolution", "assigned", "watchers", "created", "updated", "author" ];
 
         let tags = {};
         let project = false;

@@ -4,6 +4,7 @@ function initProject(project)
 end
 
 function getIssueTemplate(catalog)
+    utils.error_log(catalog)
     return {
         ["fields"] = {
             "subject",
@@ -88,6 +89,7 @@ function viewIssue(issue)
             "issueId",
             "project",
             "workflow",
+            "catalog",
             "subject",
             "created",
             "updated",
@@ -113,6 +115,9 @@ function getWorkflowCatalog()
     return {
         ["Общие"] = {
             "Пустышка",
+        },
+        ["Финансовая/договорная"] = {
+            "Возврат денежных средств"
         },
     }
 end

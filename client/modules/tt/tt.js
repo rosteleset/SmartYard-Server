@@ -85,7 +85,10 @@
         
                 case "attachmentFilename":
                     return i18n("tt.attachmentFilename");
-
+    
+                case "catalog":
+                    return i18n("tt.catalog");
+        
                 default:
                     return fieldId;
             }
