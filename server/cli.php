@@ -91,14 +91,18 @@
         global $db, $params, $script_process_id, $script_parent_pid;
 
         if (@$db) {
-            $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
-                "pid" => getmypid(),
-                "ppid" => $script_parent_pid,
-                "start" => time(),
-                "process" => "cli.php",
-                "params" => $params,
-                "expire" => time() + 24 * 60 * 60,
-            ]);
+            try {
+                $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
+                    "pid" => getmypid(),
+                    "ppid" => $script_parent_pid,
+                    "start" => time(),
+                    "process" => "cli.php",
+                    "params" => $params,
+                    "expire" => time() + 24 * 60 * 60,
+                ]);
+            } catch (\Exception $e) {
+                //
+            }
         }
     }
 
@@ -106,11 +110,15 @@
         global $script_process_id, $db, $script_result;
 
         if (@$db) {
-            $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                "done" => time(),
-                "result" => $script_result,
-                "running_process_id" => $script_process_id,
-            ]);
+            try {
+                $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                    "done" => time(),
+                    "result" => $script_result,
+                    "running_process_id" => $script_process_id,
+                ]);
+            } catch (\Exception $e) {
+                //
+            }
         }
     }
 
@@ -118,19 +126,23 @@
         global $db;
 
         if (@$db) {
-            $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
-                "running_process_id" => "id",
-                "pid" => "pid",
-            ]);
-
-            foreach ($pids as $process) {
-                if (!file_exists( "/proc/{$process['pid']}")) {
-                    $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                        "done" => time(),
-                        "result" => "unknown",
-                        "running_process_id" => $process['id'],
-                    ]);
+            try {
+                $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
+                    "running_process_id" => "id",
+                    "pid" => "pid",
+                ]);
+    
+                foreach ($pids as $process) {
+                    if (!file_exists( "/proc/{$process['pid']}")) {
+                        $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                            "done" => time(),
+                            "result" => "unknown",
+                            "running_process_id" => $process['id'],
+                        ]);
+                    }
                 }
+            } catch (\Exception $e) {
+                //
             }
         }
     }
