@@ -51,7 +51,7 @@
                         "name" => $name,
                         "catalog" => $catalog,
                     ];
-            }
+                }
 
                 return $list;
             }
