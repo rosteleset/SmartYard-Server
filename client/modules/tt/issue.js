@@ -57,9 +57,9 @@
                     let k = Object.keys(x);
                     k.sort();
                     for (let i in k) {
-                        let l2 = [];
                         let u1 = x[k[i]];
                         let u2 = [];
+                        let l2 = [];
                         for (let j in u1) {
                             u2.push(u1[j]);
                         }
