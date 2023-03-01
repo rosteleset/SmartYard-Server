@@ -132,13 +132,15 @@
                     "pid" => "pid",
                 ], [ "silent" ]);
 
-                foreach ($pids as $process) {
-                    if (!file_exists( "/proc/{$process['pid']}")) {
-                        $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                            "done" => time(),
-                            "result" => "unknown",
-                            "running_process_id" => $process['id'],
-                        ], [ "silent" ]);
+                if ($pids) {
+                    foreach ($pids as $process) {
+                        if (!file_exists( "/proc/{$process['pid']}")) {
+                            $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                                "done" => time(),
+                                "result" => "unknown",
+                                "running_process_id" => $process['id'],
+                            ], [ "silent" ]);
+                        }
                     }
                 }
             } catch (\Exception $e) {
