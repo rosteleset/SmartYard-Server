@@ -99,7 +99,7 @@
                     "process" => "cli.php",
                     "params" => $params,
                     "expire" => time() + 24 * 60 * 60,
-                ]);
+                ], [ "silent" ]);
             } catch (\Exception $e) {
                 //
             }
