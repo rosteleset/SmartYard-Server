@@ -130,7 +130,7 @@
                 $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
                     "running_process_id" => "id",
                     "pid" => "pid",
-                ]);
+                ], [ "silent" ]);
 
                 foreach ($pids as $process) {
                     if (!file_exists( "/proc/{$process['pid']}")) {
