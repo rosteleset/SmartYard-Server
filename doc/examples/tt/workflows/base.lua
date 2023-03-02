@@ -31,6 +31,7 @@ function getAvailableActions(issue)
         return {
             "!saAddComment",
             "saAddFile",
+            "saWatch",
             "-",
             "saSubTask",
             "-",
@@ -91,6 +92,7 @@ function viewIssue(issue)
             "project",
             "workflow",
             "catalog",
+            "parent",
             "subject",
             "created",
             "updated",
