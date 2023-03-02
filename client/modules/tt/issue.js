@@ -540,9 +540,7 @@
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
-                h += "<span class='mr-2 text-bold'>";
-                h += `<a class='hoverable' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a>`;
-                h += "</span>";
+                h += `<span class='mr-2 text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</span>`;
                 h += ttDate(issue.issue.childrens.issues[i].created, true);
                 h += "<span class='ml-2'>";
                 h += issue.issue.childrens.issues[i].subject;
@@ -596,6 +594,10 @@
         h += "</table>";
 
         $("#mainForm").html(h);
+
+        $(".ttIssue").off("click").on("click", function () {
+            location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
+        });
 
         $(".ttJournal").off("click").on("click", () => {
             if ($(".ttJournal").text() == i18n("tt.journal")) {

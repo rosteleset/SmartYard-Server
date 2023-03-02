@@ -510,7 +510,7 @@
                         break;
 
                     case "parent":
-                        val = `<a class='hoverable' href='?#tt&issue=${val}'>${val}</a>`;
+                        val = `<span class='hoverable ttIssue text-bold'>${val}</span>`;
                         break;
     
                     case "created":
