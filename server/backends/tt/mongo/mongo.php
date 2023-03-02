@@ -191,7 +191,17 @@
                 }
 
                 if ($delete) {
-                    return $this->mongo->$db->$acr->deleteMany([
+                    $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [
+                        "issueId",
+                    ], [ "created" => 1 ], 0, 32768);
+
+                    if ($childrens && count($childrens["issues"])) {
+                        foreach ($childrens["issues"] as $children) {
+                            $delete = $delete && $this->deleteIssue($children["issueId"]);
+                        }
+                    }
+
+                    return $delete && $this->mongo->$db->$acr->deleteMany([
                         "issueId" => $issueId,
                     ]) && $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
                 } else {
