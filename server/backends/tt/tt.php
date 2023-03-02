@@ -693,6 +693,7 @@
                 $validFields[] = "project";
                 $validFields[] = "workflow";
                 $validFields[] = "catalog";
+                $validFields[] = "parent";
                 $validFields[] = "subject";
                 $validFields[] = "description";
                 $validFields[] = "resolution";
@@ -761,8 +762,21 @@
 
                 $issues = $this->getIssues($acr, [ "issueId" => $issueId ], true);
 
-                if (!$issues || !$issues["issues"] || !$issues["issues"][0]) {
+                if (!$issues || !$issues["issues"] || count($issues["issues"]) != 1 || !$issues["issues"][0]) {
                     return false;
+                }
+
+                $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [
+                    "issueId",
+                    "subject",
+                    "status",
+                    "resolution",
+                    "created",
+                    "updated",
+                ]);
+
+                if ($childrens) {
+                    $issues["issues"][0]["childrens"] = $childrens;
                 }
 
                 return $issues["issues"][0];
