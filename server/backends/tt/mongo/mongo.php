@@ -191,9 +191,7 @@
                 }
 
                 if ($delete) {
-                    $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [
-                        "issueId",
-                    ], [ "created" => 1 ], 0, 32768);
+                    $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [ "issueId" ], [ "created" => 1 ], 0, 32768);
 
                     if ($childrens && count($childrens["issues"])) {
                         foreach ($childrens["issues"] as $children) {
