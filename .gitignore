@@ -18,9 +18,6 @@ RBT/RBT.xcodeproj/
 /server/storage/
 /server/services/nodejs
 /server/mzfc/mongodb/
-/server/backends/tt/workflows/
-/server/backends/tt/filters/
-/server/backends/tt/viewers/
 /server/backends/accounting/custom/
 /server/backends/addresses/custom/
 /server/backends/authentication/custom/
