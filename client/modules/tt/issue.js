@@ -540,12 +540,12 @@
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
-                h += ttDate(issue.issue.childrens.issues[i].created);
-                h += "<span class='ml-2 text-bold'>";
+                h += "<span class='mr-2 text-bold'>";
                 h += `<a class='hoverable' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a>`;
                 h += "</span>";
+                h += ttDate(issue.issue.childrens.issues[i].created);
                 h += "<span class='ml-2'>";
-                h += `<a class='hoverable' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].subject}</a>`;
+                h += issue.issue.childrens.issues[i].subject;
                 h += "</span>";
                 h += "<span class='ml-2'>";
                 h += modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status");
