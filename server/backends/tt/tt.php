@@ -773,6 +773,7 @@
                     "resolution",
                     "created",
                     "updated",
+                    "author",
                 ], [ "created" => 1 ], 0, 32768);
 
                 if ($childrens) {

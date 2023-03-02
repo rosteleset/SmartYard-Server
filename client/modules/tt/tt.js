@@ -89,6 +89,9 @@
                 case "catalog":
                     return i18n("tt.catalog");
         
+                case "parent":
+                    return i18n("tt.parent");
+        
                 default:
                     return fieldId;
             }
@@ -504,6 +507,10 @@
                                 break;
                             }
                         }
+                        break;
+
+                    case "parent":
+                        val = `<a class='hoverable' href='?#tt&issue=${val}'>${val}</a>`;
                         break;
     
                     case "created":

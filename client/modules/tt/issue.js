@@ -348,7 +348,7 @@
 
         console.log(issue);
 
-        let rightFields = [ "project", "workflow", "catalog", "status", "resolution", "assigned", "watchers", "created", "updated", "author" ];
+        let rightFields = [ "project", "workflow", "catalog", "parent", "status", "resolution", "assigned", "watchers", "created", "updated", "author", ];
 
         let tags = {};
         let project = false;
@@ -534,9 +534,31 @@
             }
         }
 
+        if (issue.issue.childrens && issue.issue.childrens.issues && Object.keys(issue.issue.childrens.issues).length) {
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subTasks")}' style="font-size: 11pt;"/></td></tr>`;
+            for (let i in issue.issue.childrens.issues) {
+                h += "<tr>";
+                h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+                h += "<div>";
+                h += ttDate(issue.issue.childrens.issues[i].created);
+                h += "<span class='ml-2 text-bold'>";
+                h += `<a class='hoverable' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a>`;
+                h += "</span>";
+                h += "<span class='ml-2'>";
+                h += `<a class='hoverable' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].subject}</a>`;
+                h += "</span>";
+                h += "<span class='ml-2'>";
+                h += modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status");
+                h += "</span>";
+                h += "</div>";
+                h += "</td>";
+                h += "</tr>";
+            }
+        }
+
         h += "</table>";
 
-        h += "<table style='width: 100%;' id='issueComments'>";
+        h += "<table style='width: 100%;' class='ml-2' id='issueComments'>";
 
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
@@ -570,7 +592,7 @@
 
         h += "</table>";
 
-        h += "<table style='width: 100%; display: none;' id='issueJournal'>";
+        h += "<table style='width: 100%; display: none;' class='ml-2' id='issueJournal'>";
         h += "</table>";
 
         $("#mainForm").html(h);
