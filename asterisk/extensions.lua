@@ -408,6 +408,16 @@ extensions = {
             if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
                 domophoneId = tonumber(from:sub(2))
 
+                -- sokol's crutch
+                if extension:len() < 5 then
+                    log_debug("bad extension, replacing...")
+                    local flats = dm("apartment", {
+                        domophoneId = domophoneId,
+                        flatNumber = tonumber(extension),
+                    })
+                    extension = string.format("1%09d", flats[1].flatId)
+                end
+
                 -- 1000049796, length == 10, first digit == 1 - it's a flatId
                 if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
                     flatId = tonumber(extension:sub(2))

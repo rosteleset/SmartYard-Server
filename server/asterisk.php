@@ -352,6 +352,13 @@
 
                     break;
 
+                case "apartment":
+                    $households = loadBackend("households");
+
+                    echo json_encode($households->getFlats("apartment", $params));
+
+                    break;
+
                 case "subscribers":
                     $households = loadBackend("households");
 
