@@ -543,7 +543,7 @@
                 h += "<span class='mr-2 text-bold'>";
                 h += `<a class='hoverable' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a>`;
                 h += "</span>";
-                h += ttDate(issue.issue.childrens.issues[i].created);
+                h += ttDate(issue.issue.childrens.issues[i].created, true);
                 h += "<span class='ml-2'>";
                 h += issue.issue.childrens.issues[i].subject;
                 h += "</span>";

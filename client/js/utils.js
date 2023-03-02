@@ -493,10 +493,14 @@ function pad2(n) {
     return (n < 10 ? '0' : '') + n;
 }
 
-function ttDate(date) {
+function ttDate(date, dateOnly) {
     if (date) {
-        date = date?(new Date(date * 1000)):(new Date());
-        return date.toLocaleDateString() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
+        date = new Date(date * 1000);
+        if (dateOnly) {
+            return date.toLocaleDateString();
+        } else {
+            return date.toLocaleDateString() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
+        }
     } else {
         return "&nbsp;"
     }
