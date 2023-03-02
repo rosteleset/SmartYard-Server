@@ -543,6 +543,9 @@
                 h += `<span class='mr-2 text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</span>`;
                 h += ttDate(issue.issue.childrens.issues[i].created, true);
                 h += "<span class='ml-2'>";
+                h += modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author");
+                h += "</span>";
+                h += "<span class='ml-2'>";
                 h += issue.issue.childrens.issues[i].subject;
                 h += "</span>";
                 h += "<span class='ml-2'>";
