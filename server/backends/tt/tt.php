@@ -962,10 +962,11 @@
 
                 if (!in_array($this->login, $issue["watchers"])) {
                     $issue["watchers"][] = $this->login;
-                    return $this->modifyIssue($issue);
+                } else {
+                    unset($issue["watchers"][array_search($this->login, $issue["watchers"])]);
                 }
 
-                return true;
+                return $this->modifyIssue($issue);
             }
 
             /**
