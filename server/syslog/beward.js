@@ -25,7 +25,9 @@ syslog.on("message", async ({date, host, message}) => {
         bwMsg.indexOf("Param Change Save To Disk Finish") >= 0 ||
         bwMsg.indexOf("User Mifare CLASSIC key") >= 0 ||
         bwMsg.indexOf("Exits doWriteLoop") >= 0 ||
-        bwMsg.indexOf("busybox-lib: udhcpc:") >= 0
+        bwMsg.indexOf("busybox-lib: udhcpc:") >= 0 ||
+        bwMsg.indexOf("ssl_connect") >= 0 ||
+        bwMsg.indexOf("ipdsConnect") >= 0
     ) {
         return;
     }
