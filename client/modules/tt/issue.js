@@ -383,7 +383,6 @@
             "saAssignToMe",
             "saWatch",
             "saDelete",
-            "saLink",
             "saSubTask",
         ];
 
@@ -996,10 +995,6 @@
                 }).
                 fail(loadingDone);
             });
-        });
-
-        $(".ttSaLink").off("click").on("click", () => {
-            console.log("link");
         });
 
         $(".ttSaSubTask").off("click").on("click", () => {

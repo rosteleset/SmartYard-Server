@@ -24,7 +24,6 @@ end
 -- saAssignToMe - set assigned to myself
 -- saWatch      - add myself to watchers
 -- saDelete     - delete issue
--- saLink       - add link to another issue
 -- saSubTask    - create subIssue
 
 function getAvailableActions(issue)
@@ -32,6 +31,8 @@ function getAvailableActions(issue)
         return {
             "!saAddComment",
             "saAddFile",
+            "-",
+            "saSubTask",
             "-",
             "Закрыть",
         }
@@ -117,7 +118,14 @@ function getWorkflowCatalog()
             "Пустышка",
         },
         ["Финансовая/договорная"] = {
-            "Возврат денежных средств"
+            "Ошибочный платеж",
+            "Возврат денежных средств",
+            "Перерасчет",
+        },
+        ["Абонентская"] = {
+            "Нет мака",
+            "Нет запросов",
+            "Переобжим коннектора",
         },
     }
 end
