@@ -773,7 +773,7 @@
                     "resolution",
                     "created",
                     "updated",
-                ]);
+                ], [ "created" => 1 ],0, 32768);
 
                 if ($childrens) {
                     $issues["issues"][0]["childrens"] = $childrens;

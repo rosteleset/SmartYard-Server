@@ -215,6 +215,8 @@
     "commentBody": "Комментарий",
     "commentCreated": "Создан",
     "catalog": "Каталог",
+    "parent": "\"Родительская\" задача",
+    "subTasks": "Подзадачи",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

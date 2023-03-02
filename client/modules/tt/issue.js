@@ -4,7 +4,7 @@
         moduleLoaded("tt.issue", this);
     },
 
-    createIssue: function (current_project) {
+    createIssue: function (current_project, parent) {
         loadingStart();
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
@@ -132,6 +132,7 @@
                         validate: v => {
                             return v && v !== '-' && v !== 'undefined';
                         },
+                        readonly: !!parent,
                     },
                     {
                         id: "workflow",
@@ -172,7 +173,7 @@
                         $.cookie("_project", result.project, { expires: 3650, insecure: config.insecureCookie });
                         $.cookie("_workflow", result.workflow, { expires: 3650, insecure: config.insecureCookie });
                     }
-                    location.href = `?#tt.issue&action=create&project=${encodeURIComponent(result.project)}&workflow=${encodeURIComponent(result.workflow)}&catalog=${encodeURIComponent(result.catalog)}`;
+                    location.href = `?#tt.issue&action=create&project=${encodeURIComponent(result.project)}&workflow=${encodeURIComponent(result.workflow)}&catalog=${encodeURIComponent(result.catalog)}&parent=${(!!parent)?encodeURIComponent(parent):""}`;
                 },
             }).show();
         }).
@@ -180,7 +181,7 @@
         always(loadingDone)
     },
 
-    createIssueForm: function (current_project, workflow, catalog) {
+    createIssueForm: function (current_project, workflow, catalog, parent) {
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
 
@@ -252,6 +253,16 @@
                             readonly: true,
                             title: i18n("tt.catalog"),
                             value: catalog,
+                        });
+                    }
+
+                    if (parent && parent != "-") {
+                        fields.push({
+                            id: "parent",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.parent"),
+                            value: parent,
                         });
                     }
 
@@ -992,7 +1003,7 @@
         });
 
         $(".ttSaSubTask").off("click").on("click", () => {
-            console.log("subTask");
+            modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
         });
 
         $("#stepPrev").off("click").on("click", () => {
@@ -1053,7 +1064,7 @@
         done(() => {
             switch (params.action) {
                 case "create":
-                    modules.tt.issue.createIssueForm(params.project, params.workflow, params.catalog);
+                    modules.tt.issue.createIssueForm(params.project, params.workflow, params.catalog, params.parent);
                     break;
                 default:
                     loadingDone();
