@@ -1160,7 +1160,7 @@
                         "project_id" => $projectId,
                         "field" => $viewer["field"],
                         "name" => $viewer["name"],
-                    ]);
+                    ], [ "silent" ]);
                 }
 
                 return $n;
