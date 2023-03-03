@@ -1142,7 +1142,7 @@
                     return false;
                 }
 
-                return $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId group by name order by name");
+                return $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId group by field, name order by name");
             }
 
             /**
