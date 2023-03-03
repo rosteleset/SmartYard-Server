@@ -117,7 +117,7 @@ try {
             }
 
             $event_type = (int)$row[plog::COLUMN_EVENT];
-            $e_details['event'] = $event_type;
+            $e_details['event'] = strval($event_type);
             $face = json_decode($row[plog::COLUMN_FACE], false);
             if (isset($face->width) && $face->width > 0 && isset($face->height) && $face->height > 0) {
                 $e_details['detailX']['face'] = [
