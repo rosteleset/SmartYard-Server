@@ -447,6 +447,14 @@
                             id: "users",
                             text: i18n("tt.customFieldTypeUsers"),
                         },
+                        {
+                            id: "issues",
+                            text: i18n("tt.customFieldTypeIssues"),
+                        },
+                        {
+                            id: "geo",
+                            text: i18n("tt.customFieldTypeGeo"),
+                        },
                     ]
                 },
                 {

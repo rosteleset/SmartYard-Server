@@ -383,7 +383,7 @@
             "saAssignToMe",
             "saWatch",
             "saDelete",
-            "saSubTask",
+            "saSubIssue",
         ];
 
         if (!isEmpty(issue.actions)) {
@@ -535,7 +535,7 @@
         }
 
         if (issue.issue.childrens && issue.issue.childrens.issues && Object.keys(issue.issue.childrens.issues).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subTasks")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subIssues")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
@@ -1027,7 +1027,7 @@
             });
         });
 
-        $(".ttSaSubTask").off("click").on("click", () => {
+        $(".ttSaSubIssues").off("click").on("click", () => {
             modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
         });
 
