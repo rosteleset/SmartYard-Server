@@ -601,7 +601,7 @@
                         let lon = $.trim(val.split("[")[1].split(",")[0]);
                         let lat = $.trim(val.split("[")[1].split(",")[1].split("]")[0]);
 
-                        return `<a target="_blank" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${val}</a>`;
+                        return `<a target="_blank" class="hoverable" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${val}</a>`;
 
                     default:
                         return val;
