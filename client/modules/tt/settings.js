@@ -861,6 +861,7 @@
                         placeholder: i18n("tt.customFieldLink"),
                         value: cf.link,
                         hint: i18n("forExample") + " https://example.com/?search=%value%",
+                        hidden: cf.type == "issues" || cf.type == "geo",
                     },
                 ];
 
@@ -1021,6 +1022,7 @@
                             placeholder: i18n("tt.customFieldLink"),
                             value: cf.link,
                             hint: i18n("forExample") + " https://example.com/?search=%value%",
+                            hidden: cf.type === "issues" || cf.type === "geo",
                         },
                         {
                             id: "options",
@@ -1038,7 +1040,7 @@
                             type: "yesno",
                             title: i18n("tt.multiple"),
                             value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
-                            hidden: cf.type === "text",
+                            hidden: cf.type === "text" || cf.type === "geo",
                         },
                         {
                             id: "usersAndGroups",
