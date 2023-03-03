@@ -402,7 +402,9 @@
                         }
 
                     case "geo":
+                        let vx;
                         if (issue && issue["_cf_" + fieldId]) {
+                            vx = issue["_cf_" + fieldId];
                             options = [
                                 {
                                     id: issue["_cf_" + fieldId],
@@ -439,12 +441,13 @@
                                     always(loadingDone);
                                 },
                                 processResults: function (data) {
-                                    let suggestions = [];
+                                    let suggestions = options;
                                     for (let i in data.suggestions) {
-                                        if (parseInt(data.suggestions[i].data.fias_level) === 8) {
+                                        let vl = data.suggestions[i].unrestricted_value + " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]";
+                                        if (parseInt(data.suggestions[i].data.fias_level) === 8 && vx !== vl) {
                                             suggestions.push({
-                                                id: data.suggestions[i].unrestricted_value + " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]",
-                                                text: data.suggestions[i].unrestricted_value + " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]",
+                                                id: vl,
+                                                text: vl,
                                             });
                                         }
                                     }
