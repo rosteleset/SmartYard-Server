@@ -391,7 +391,7 @@ extensions = {
         end,
 
         -- all others
-        [ "_X." ] = function (context, extension)
+        [ "_X!" ] = function (context, extension)
             checkin()
 
             local from = channel.CALLERID("num"):get()

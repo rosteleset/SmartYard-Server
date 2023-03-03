@@ -50,6 +50,7 @@
         ]);
     }
 
+    // TODO: - not use
     class Access
     {
         private static array $allowedHosts = ["127.0.0.1", "192.168.15.81", "172.28.0.1", "192.168.13.39"];
@@ -188,7 +189,8 @@
         return $response;
     }
 
-    Access::check();
+    // disabled, not use this method for testing
+    // Access::check();
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $raw_postdata = file_get_contents("php://input");
