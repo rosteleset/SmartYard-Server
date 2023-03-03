@@ -196,6 +196,8 @@
                         'handset' => $cms_handset_enabled,
                         'sip' => (bool) $sip_numbers,
                     ],
+                    'soundOpenTh' => null, // inheritance from general settings
+                    'typeSound' => 3, // inheritance from general settings
                 ];
 
                 if (count($levels) == 2) {
@@ -213,7 +215,7 @@
             }
 
             public function configure_cms(int $apartment, int $offset) {
-                // не используется
+                // not used
             }
 
             public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
@@ -242,14 +244,14 @@
                 $this->api_call('/camera/md', 'PUT', [
                     'md_enable' => true,
                     'md_frame_shift' => 1,
-                    'md_area_thr' => 100000, // значение из мануала
+                    'md_area_thr' => 100000, // default from manual
                     'md_rect_color' => '0xFF0000',
                     'md_frame_int' => 30,
                     'md_rects_enable' => false,
                     'md_logs_enable' => true,
                     'md_send_snapshot_enable' => true,
                     'md_send_snapshot_interval' => 1,
-                    'snap_send_url' => '192.168.13.60:8080/snapshot' // test,
+                    'snap_send_url' => '',
                 ]);
             }
 
@@ -289,11 +291,11 @@
             }
 
             public function configure_user_account(string $password) {
-                // не используется
+                // not used
             }
 
             public function configure_video_encoding() {
-                // не используется
+                // not used
             }
 
             public function get_audio_levels(): array {
@@ -391,46 +393,29 @@
                 }
             }
 
-            public function set_cms_model(string $model = '') {
-                switch ($model) {
-                    case 'BK-100M':
-                        $id = 'VISIT'; // ВИЗИТ
-                        break;
-                    case 'KMG-100':
-                    case 'KKM-100S2':
-                        $id = 'CYFRAL'; // ЦИФРАЛ
-                        break;
-                    case 'KM100-7.1':
-                    case 'KM100-7.5':
-                        $id = 'ELTIS'; // ЭЛТИС
-                        break;
-                    case 'COM-100U':
-                    case 'COM-220U':
-                        $id = 'METAKOM'; // МЕТАКОМ
-                        break;
-                    case 'FACTORIAL 8x8':
-                        $id = 'FACTORIAL'; // ФАКТОРИАЛ
-                        break;
-                    default:
-                        $id = 'CYFRAL'; // Отключен
-                }
-
-                $this->api_call('/switch/settings', 'PUT', [ 'modelId' => $id ]);
+            public function set_cms_model(string $model = 'KMG-100') {
+                $model_id_map = [
+                    'BK-100M' => 'VISIT',
+                    'KMG-100' => 'CYFRAL',
+                    'KKM-100S2' => 'CYFRAL',
+                    'KM100-7.1' => 'ELTIS',
+                    'KM100-7.5' => 'ELTIS',
+                    'COM-100U' => 'METAKOM',
+                    'COM-220U' => 'METAKOM',
+                    'FACTORIAL 8x8' => 'FACTORIAL',
+                ];
+                $id = $model_id_map[$model];
+                $this->api_call('/switch/settings', 'PUT', ['modelId' => $id]);
                 $this->clear_cms($model);
             }
 
             public function set_concierge_number(int $number) {
-                // TODO: apartment, not number
                 $this->api_call('/panelCode/settings', 'PUT', [ 'consiergeRoom' => (string) $number ]);
                 $this->configure_apartment($number, false, false, [ $number ]);
             }
 
             public function set_display_text(string $text = '') {
-                // TODO: ???
-                $this->api_call('/panelDisplay/settings', 'PUT', [
-                    'strDisplayOff' => !$text,
-                    'imgStr' => $text,
-                ]);
+                // not used
             }
 
             public function set_public_code(int $code = 0) {
@@ -452,7 +437,7 @@
             }
 
             public function set_sos_number(int $number) {
-                // TODO: apartment, not number
+                // TODO: need to wait for custom SIP extensions
                 $this->api_call('/panelCode/settings', 'PUT', [ 'sosRoom' => (string) $number ]);
                 // $this->configure_apartment($number, false, false, [ $number ]);
             }
@@ -538,11 +523,11 @@
             }
 
             public function set_language(string $lang) {
-                // не используется
+                // not used
             }
 
             public function write_config() {
-                // не используется
+                // not used
             }
 
             public function reboot() {
@@ -556,9 +541,7 @@
             public function prepare() {
                 parent::prepare();
                 $this->enable_ddns(false);
-                $this->enable_echo_cancellation(false);
+                $this->enable_echo_cancellation();
             }
-
         }
-
     }
