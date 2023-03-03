@@ -343,7 +343,7 @@
                         $fullText["description"] = "text"; 
                     }
                     if ($project["searchComments"]) {
-                        $fullText["comments"] = "text"; 
+                        $fullText["comments.body"] = "text"; 
                     }
 
                     foreach ($project["customFields"] as $c => $p) {
