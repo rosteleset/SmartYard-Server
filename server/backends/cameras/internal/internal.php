@@ -196,9 +196,8 @@ namespace backends\cameras
                         ]);
                     }
                 }
-
-                return true;
             }
+            return true;
         }
     }
 }

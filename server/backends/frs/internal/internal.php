@@ -217,9 +217,10 @@
              */
             public function cron($part)
             {
-                if ($part === $this->config['backends']['frs']['cron_sync_data_scheduler']) {
+                if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler']) {
                     $this->syncData();
                 }
+                return true;
             }
 
             private function deleteFaceId($face_id)

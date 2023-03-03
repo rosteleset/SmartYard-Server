@@ -851,8 +851,6 @@
                             ":required" => $required,
                         ]);
 
-                        // TODO: create and remove indexes
-
                         if ($cf["type"] === "select") {
                             $t = explode("\n", trim($options));
                             $new = [];

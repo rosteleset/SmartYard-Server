@@ -301,7 +301,68 @@
              */
             public function reCreateIndexes()
             {
-                // TODO: Implement reCreateIndexes() method.
+                $db = $this->dbName;
+
+                // fullText
+                $p_ = $this->getProjects();
+                $c_ = $this->getCustomFields();
+
+                $projects = [];
+                $customFields = [];
+
+                foreach ($c_ as $c) {
+                    $customFields[$c["customFieldId"]] = [
+                        "name" => "_cf_" . $c["field"],
+                        "index" => $c["indx"],
+                        "search" => $c["search"],
+                    ];
+                }
+
+                foreach ($p_ as $p) {
+                    $projects[$p["acronym"]] = [
+                        "searchSubject" => $p["searchSubject"],
+                        "searchDescription" => $p["searchDescription"],
+                        "searchComments" => $p["searchComments"],
+                        "customFields" => [],
+                    ];
+
+                    foreach ($p["customFields"] as $c) {
+                        $projects[$p["acronym"]]["customFields"][$customFields[$c]["name"]] = $customFields[$c];
+                        unset($projects[$p["acronym"]]["customFields"][$customFields[$c]["name"]]["name"]);
+                    }
+                }
+
+                $fullText = [];
+                foreach ($projects as $acr => $project) {
+                    if ($project["searchSubject"]) {
+                        $fullText["subject"] = "text"; 
+                    }
+                    if ($project["searchDescription"]) {
+                        $fullText["description"] = "text"; 
+                    }
+                    if ($project["searchComments"]) {
+                        $fullText["comments"] = "text"; 
+                    }
+
+                    foreach ($project["customFields"] as $c => $p) {
+                        if ($p["index"]) {
+                            $fullText[$c] = "text";
+                        }
+                    }
+
+                    $md5 = md5(print_r($fullText, true));
+
+                    if ($this->redis->get("full_text_search_" . $acr) != $md5) {
+                        try {
+                            $this->mongo->$db->$acr->dropIndex("fullText");
+                        } catch (\Exception $e) {
+                            //
+                        }
+                        $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
+                        $this->redis->set("full_text_search_" . $acr, $md5);
+                        print_r($fullText);
+                    }
+                }
             }
 
             /**
@@ -596,10 +657,7 @@
             public function cron($part)
             {
                 if ($part == "5min") {
-                    if ($this->redis->get("ttReCreateIndexes")) {
-                        $this->redis->delete("ttReCreateIndexes");
-                        $this->reCreateIndexes();
-                    }
+                    $this->reCreateIndexes();
                 }
                 return parent::cron($part);
             }
@@ -610,7 +668,6 @@
             public function deleteCustomField($customFieldId)
             {
                 $this->dbDeleteCustomField($customFieldId);
-                $this->redis->set("ttReCreateIndexes", true);
             }
 
             /**
@@ -619,7 +676,6 @@
             public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
             {
                 $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
-                $this->redis->set("ttReCreateIndexes", true);
             }
         }
     }
