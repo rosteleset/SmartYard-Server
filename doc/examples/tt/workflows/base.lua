@@ -22,9 +22,9 @@ end
 -- saAddComment - add comment
 -- saAddFile    - add file
 -- saAssignToMe - set assigned to myself
--- saWatch      - add/remove myself to/from watchers
+-- saWatch      - add myself to watchers
 -- saDelete     - delete issue
--- saSubTask    - create subIssue
+-- saSubIssue   - create subIssue
 
 function getAvailableActions(issue)
     if issue["status"] ~= "closed" then
@@ -33,7 +33,7 @@ function getAvailableActions(issue)
             "saAddFile",
             "saWatch",
             "-",
-            "saSubTask",
+            "saSubIssue",
             "-",
             "Закрыть",
         }
