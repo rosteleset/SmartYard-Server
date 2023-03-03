@@ -400,6 +400,72 @@
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
                             validate: validate,
                         }
+
+                    case "geo":
+                        if (issue && issue["_cf_" + fieldId]) {
+                            options = [
+                                {
+                                    id: issue["_cf_" + fieldId],
+                                    text: issue["_cf_" + fieldId],
+                                },
+                            ];
+                        }
+                        return {
+                            id: "_cf_" + fieldId,
+                            type: "select2",
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
+                            hint: cf.fieldDescription?cf.fieldDescription:false,
+                            options: options,
+                            value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
+                            validate: validate,
+                            ajax: {
+                                delay: 1000,
+                                transport: function (params, success, failure) {
+                                    loadingStart();
+                                    QUERY("geo", "suggestions", {
+                                        search: params.data.term,
+                                    }).
+                                    then(response => {
+                                        loadingDone();
+                                        success(response);
+                                    }).
+                                    fail(response => {
+                                        FAIL(response);
+                                        loadingDone();
+                                        failure(response);
+                                    }).
+                                    fail(FAIL).
+                                    always(loadingDone);
+                                },
+                                processResults: function (data) {
+                                    let suggestions = [];
+                                    for (let i in data.suggestions) {
+                                        if (parseInt(data.suggestions[i].data.fias_level) === 8) {
+                                            suggestions.push({
+                                                id: data.suggestions[i].unrestricted_value + " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]",
+                                                text: data.suggestions[i].unrestricted_value + " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]",
+                                            });
+                                        }
+                                    }
+                                    return {
+                                        results: suggestions,
+                                    };
+                                },
+                            },
+                        }
+    
+                    case "issues":
+                        return {
+                            id: "_cf_" + fieldId,
+                            type: "select2",
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
+                            hint: cf.fieldDescription?cf.fieldDescription:false,
+                            options: options,
+                            value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
+                            validate: validate,
+                        }
                 }
             }
         }
@@ -520,7 +586,26 @@
                         break;
                 }
             } else {
-                // TODO: add formatting for custom fields
+                field = field.substring(4);
+
+                let type;
+
+                for (let i in modules.tt.meta.customFields) {
+                    if (modules.tt.meta.customFields[i].field == field) {
+                        type = modules.tt.meta.customFields[i].type;
+                    }
+                }
+
+                switch (type) {
+                    case "geo":
+                        let lon = $.trim(val.split("[")[1].split(",")[0]);
+                        let lat = $.trim(val.split("[")[1].split(",")[1].split("]")[0]);
+
+                        return `<a target="_blank" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${val}</a>`;
+
+                    default:
+                        return val;
+                }
             }
         }
 

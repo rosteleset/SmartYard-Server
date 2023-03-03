@@ -49,7 +49,7 @@
 
                 if ($geocoder) {
                     return [
-                        "GET" => "#same(addresses,house,GET)",
+                        "GET",
                     ];
                 }
             }
