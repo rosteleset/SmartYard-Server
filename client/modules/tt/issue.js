@@ -246,7 +246,7 @@
                         },
                     ];
 
-                    if (catalog && catalog != "-") {
+                    if (catalog && catalog !== "-" && catalog !== true) {
                         fields.push({
                             id: "catalog",
                             type: "text",
@@ -256,7 +256,7 @@
                         });
                     }
 
-                    if (parent && parent != "-") {
+                    if (parent && parent !== "-" && parent !== true) {
                         fields.push({
                             id: "parent",
                             type: "text",

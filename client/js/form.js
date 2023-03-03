@@ -105,9 +105,9 @@ function cardForm(params) {
 
         if (!params.singleColumn) {
             if (params.fields[i].hint || params.fields[i].type === "files") {
-                h += `<td class="pb-0 tdform${first}">${params.fields[i].title}</td>`;
+                h += `<td class="pb-0 pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
             } else {
-                h += `<td class="tdform${first}">${params.fields[i].title}</td>`;
+                h += `<td class="pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
             }
         }
 
