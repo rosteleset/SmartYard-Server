@@ -102,16 +102,17 @@ function cardForm(params) {
             h += `<tr>`;
         }
         params.fields[i].type = params.fields[i].type?params.fields[i].type:"text";
+
         if (!params.singleColumn) {
-            if (params.fields[i].hint || params.fields[i].type === "multiselect" || params.fields[i].type === "area") {
-                h += `<td class="tdform tdform-top${first}" style="padding-top: 1px;">${params.fields[i].title}</td>`;
+            if (params.fields[i].hint || params.fields[i].type === "files") {
+                h += `<td class="pb-0 tdform${first}">${params.fields[i].title}</td>`;
             } else {
                 h += `<td class="tdform${first}">${params.fields[i].title}</td>`;
             }
         }
 
-        if (params.fields[i].hint || params.fields[i].type == "files") {
-            h += `<td class="tdform-right${first} pb-1">`;
+        if (params.fields[i].hint || params.fields[i].type === "files") {
+            h += `<td class="pb-0 tdform-right${first}">`;
         } else {
             h += `<td class="tdform-right${first}">`;
         }
@@ -263,7 +264,7 @@ function cardForm(params) {
 
             case "files":
                 h += `<select id="${_prefix}${params.fields[i].id}" class="form-control" multiple="multiple"></select>`;
-                h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}"><i class="far fa-folder-open" style="margin-right: 5px;"></i>${i18n("add")}</span><span class="text-secondary text-xs ml-2">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
+                h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs pl-1" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}"><i class="far fa-folder-open" style="margin-right: 5px;"></i>${i18n("add")}</span><span class="text-secondary text-xs ml-2">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
                 if (params.fields[i].autoload) {
                     setTimeout(() => {
                         $("#" + _prefix + params.fields[i].id + "-add").click();
@@ -273,8 +274,9 @@ function cardForm(params) {
         }
 
         if (params.fields[i].hint) {
-            h += `<span class="text-secondary text-xs">${params.fields[i].hint}</span>`;
+            h += `<span class="text-secondary text-xs pl-1">${params.fields[i].hint}</span>`;
         }
+
         h += `</td>`;
         h += `</tr>`;
     }
