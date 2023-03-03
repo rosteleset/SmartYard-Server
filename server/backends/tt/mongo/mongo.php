@@ -332,8 +332,10 @@
                     }
                 }
 
-                $fullText = [];
                 foreach ($projects as $acr => $project) {
+                    $fullText = [];
+                    $fullText["issueId"] = "text";
+
                     if ($project["searchSubject"]) {
                         $fullText["subject"] = "text"; 
                     }
@@ -345,7 +347,7 @@
                     }
 
                     foreach ($project["customFields"] as $c => $p) {
-                        if ($p["index"]) {
+                        if ($p["search"]) {
                             $fullText[$c] = "text";
                         }
                     }
@@ -360,7 +362,45 @@
                         }
                         $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
                         $this->redis->set("full_text_search_" . $acr, $md5);
-                        print_r($fullText);
+                    }
+                }
+
+                foreach ($projects as $acr => $project) {
+                    $indexes = [
+                        "issueId",
+                        "created",
+                        "subject",
+                        "description",
+                        "status",
+                    ];
+    
+                    foreach ($project["customFields"] as $c => $p) {
+                        if ($p["index"]) {
+                            $indexes[] = $c;
+                        }
+                    }
+
+                    $al = array_map(function ($indexInfo) {
+                        return ['v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace()];
+                    }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
+
+                    $already = [];
+                    foreach ($al as $i) {
+                        if (strpos($i["name"], "index_") === 0) {
+                            $already[] = substr($i["name"], 6);
+                        }
+                    }
+
+                    foreach ($indexes as $i) {
+                        if (!in_array($i, $already)) {
+                            $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "collation" => [ "locale" => @$this->config["language"] ? : "en" ], "name" => "index_" . $i ]);
+                        }
+                    }
+
+                    foreach ($already as $i) {
+                        if (!in_array($i, $indexes)) {
+                            $this->mongo->$db->$acr->dropIndex("index_" . $i);
+                        }
                     }
                 }
             }
