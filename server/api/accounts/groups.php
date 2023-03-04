@@ -52,9 +52,7 @@
             }
 
             public static function index() {
-                $groups = loadBackend("groups");
-
-                if ($groups) {
+                if (loadBackend("groups")) {
                     return [
                         "GET" => "#common",
                     ];
