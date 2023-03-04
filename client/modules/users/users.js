@@ -190,8 +190,8 @@
                         type: "number",
                         readonly: false,
                         value: response.user.tg,
-                        title: i18n("tg"),
-                        placeholder: i18n("tg"),
+                        title: i18n("users.tg"),
+                        placeholder: i18n("users.tg"),
                         validate: (v) => {
                             return $.trim(v) !== "";
                         }

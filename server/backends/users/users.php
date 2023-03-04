@@ -118,7 +118,65 @@
                     return false;
                 }
 
+                if (!in_array($user["notification"], [ "tgEmail", "emailTg", "tg", "email" ])) {
+                    return false;
+                }
 
+                if ($user["notification"] == "tg" && (!$user["tg"] || !@$this->config["telegram"]["bot"])) {
+                    return false;
+                }
+
+                if ($user["notification"] == "email" && (!$user["eMail"] || !$this->config["email"])) {
+                    return false;
+                }
+
+                $message = trim($message);
+                $subject = trim($subject);
+
+                if (!$message) {
+                    return false;
+                }
+
+                function sendTg($tg, $message, $token) {
+                    if ($tg && $token) {
+                        try {
+                            $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($message)), true);
+                            return $tg && @$tg["ok"];
+                        } catch (\Exception $e) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+
+                function sendEmail($email, $subject, $message, $config) {
+                    try {
+                        if ($email && $config) {
+                            return eMail($config, $email, $subject ? : "-", $message) === true;
+                        } else {
+                            return false;
+                        }
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+                }
+
+                if ($user["notification"] == "tg") {
+                    return sendTg($user["tg"], $message, @$this->config["telegram"]["bot"]);
+                }
+
+                if ($user["notification"] == "tgEmail") {
+                    return sendTg(@$user["tg"], $message, @$this->config["telegram"]["bot"]) || sendEmail(@$user["eMail"], $subject, $message, $this->config);
+                }
+
+                if ($user["notification"] == "email") {
+                    return sendEmail($user["eMail"], $subject, $message, $this->config);
+                }
+
+                if ($user["notification"] == "emailTg") {
+                    return sendEmail(@$user["eMail"], $subject, $message, $this->config) || sendTg(@$user["tg"], $message, @$this->config["telegram"]["bot"]);
+                }
             } 
         }
     }
