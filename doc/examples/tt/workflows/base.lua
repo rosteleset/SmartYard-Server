@@ -22,7 +22,7 @@ end
 -- saAddComment - add comment
 -- saAddFile    - add file
 -- saAssignToMe - set assigned to myself
--- saWatch      - add myself to watchers
+-- saWatch      - add (remove) myself to (from) watchers
 -- saDelete     - delete issue
 -- saSubIssue   - create subIssue
 
