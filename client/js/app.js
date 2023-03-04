@@ -85,7 +85,7 @@ function hashChange() {
                 }
             } else
             if (route === "default") {
-                if (config.defaultRoute) {
+                if (config.defaultRoute && config.defaultRoute != "#" && config.defaultRoute != "?#") {
                     location.href = (config.defaultRoute.charAt(0) == "?")?config.defaultRoute:("?" + config.defaultRoute);
                 } else {
                     loadingDone();
