@@ -90,6 +90,7 @@
              * @param string $eMail
              * @param string $phone
              * @param string $tg
+             * @param string $notification
              * @param boolean $enabled
              * @param string $defaultRoute
              * @param mixed $persistentToken
@@ -97,6 +98,27 @@
              * @return boolean
              */
 
-            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $enabled = true, $defaultRoute = '#', $persistentToken = false);
+            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '#', $persistentToken = false);
+
+            /**
+             * @param string $login
+             * @param string $subject
+             * @param string $message
+             */
+            public function notify($login, $subject, $message) {
+                $uid = $this->getUidByLogin($login);
+
+                if (!$uid) {
+                    return false;
+                }
+
+                $user = $this->getUser($uid);
+
+                if (!$user) {
+                    return false;
+                }
+
+
+            } 
         }
     }

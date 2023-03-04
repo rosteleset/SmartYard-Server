@@ -197,6 +197,39 @@
                         }
                     },
                     {
+                        id: "notification",
+                        type: "select",
+                        readonly: false,
+                        value: response.user.notification,
+                        title: i18n("users.notification"),
+                        placeholder: i18n("users.notification"),
+                        options: [
+                            {
+                                value: "none",
+                                text: i18n("users.notificationNone"),
+                            },
+                            {
+                                value: "tgEmail",
+                                text: i18n("users.notificationTgEmail"),
+                            },
+                            {
+                                value: "emailTg",
+                                text: i18n("users.notificationEmailTg"),
+                            },
+                            {
+                                value: "tg",
+                                text: i18n("users.notificationTg"),
+                            },
+                            {
+                                value: "email",
+                                text: i18n("users.notificationEmail"),
+                            },
+                        ],
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
                         id: "password",
                         type: "password",
                         title: i18n("password"),

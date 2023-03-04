@@ -21,6 +21,7 @@ CREATE TABLE core_users
     phone text,
     tg text,
     default_route text,
+    notification text default 'tgEmail',
     last_login integer
 );
 CREATE UNIQUE INDEX core_users_login on core_users(login);

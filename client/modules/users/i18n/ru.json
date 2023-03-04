@@ -18,6 +18,12 @@
     "persistentToken": "Постоянный токен",
     "blocked": "Заблокирован",
     "tg": "Telegram (id)",
+    "notification": "Уведомления",
+    "notificationNone": "Без уведомлений",
+    "notificationTgEmail": "Предпочитаю Telegram",
+    "notificationEmailTg": "Предпочитаю электронную почту",
+    "notificationTg": "Только Telegram",
+    "notificationEmail": "Только электронная почта",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",

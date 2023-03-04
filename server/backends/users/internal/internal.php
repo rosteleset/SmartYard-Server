@@ -56,7 +56,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, default_route from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($user)) {
                         $_user = [
@@ -66,6 +66,7 @@
                             "eMail" => $user[0]["e_mail"],
                             "phone" => $user[0]["phone"],
                             "tg" => $user[0]["tg"],
+                            "notification" => $user[0]["notification"],
                             "enabled" => $user[0]["enabled"],
                             "defaultRoute" => $user[0]["default_route"],
                         ];
@@ -205,13 +206,17 @@
             /**
              * @inheritDoc
              */
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $enabled = true, $defaultRoute = '#', $persistentToken = false) {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '#', $persistentToken = false) {
                 if (!checkInt($uid)) {
                     return false;
                 }
 
+                if (!in_array($notification, [ "none", "tgEmail", "emailTg", "tg", "email" ])) {
+                    return false;
+                }
+                
                 try {
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, enabled = :enabled, default_route = :default_route where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route where uid = $uid");
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
@@ -231,12 +236,13 @@
                             $this->redis->del($_key);
                         }
                     }
-                    
+
                     return $sth->execute([
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
                         ":tg" => trim($tg),
+                        ":notification" => trim($notification),
                         ":enabled" => $enabled?"1":"0",
                         ":default_route" => trim($defaultRoute),
                     ]);

@@ -20,6 +20,7 @@ CREATE TABLE core_users
     e_mail character varying,
     phone character varying,
     tg character varying,
+    notification character varying default 'tgEmail',
     default_route character varying,
     last_login integer
 );

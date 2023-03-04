@@ -178,7 +178,7 @@
             }
 
             public static function PUT($params) {
-                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"]);
+                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"]);
 
                 if (@$params["password"] && (int)$params["_id"]) {
                     $success = $success && $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
