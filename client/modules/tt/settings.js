@@ -1244,7 +1244,7 @@
         done(modules.tt.tt).
         done(() => {
             GET("accounts", "groups").
-            done(response => {
+            always(response => {
                 let personals = {};
 
                 for (let i in response.groups) {
@@ -1342,8 +1342,7 @@
                 fail(FAIL).
                 fail(loadingDone);
             }).
-            fail(FAIL).
-            fail(loadingDone);
+            always(loadingDone);
         }).
         fail(FAIL).
         fail(loadingDone);

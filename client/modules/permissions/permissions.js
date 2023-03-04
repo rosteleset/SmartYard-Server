@@ -466,7 +466,10 @@
     },
 
     render: function () {
+        $("#altForm").hide();
+
         loadingStart();
+
         GET("authorization", "rights", false, true).done(r => {
             modules.permissions.rights = r.rights;
 
