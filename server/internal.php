@@ -50,42 +50,6 @@
         ]);
     }
 
-    // TODO: - not use
-    class Access
-    {
-        private static array $allowedHosts = ["127.0.0.1", "192.168.15.81", "172.28.0.1", "192.168.13.39"];
-
-        public static function getIp()
-        {
-            if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                $ip_address = $_SERVER['HTTP_CLIENT_IP'];
-            }
-            //ip is from proxy
-            elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            }
-            //ip is from remote address
-            else {
-                $ip_address = $_SERVER['REMOTE_ADDR'];
-            }
-
-            return $ip_address;
-        }
-
-        public static function check(): void
-        {
-            $ip = self::getIp();
-            $hosts = self::$allowedHosts;
-            $access = !in_array($ip, $hosts);
-
-            if ($access) {
-                response(403, null,"Access denied","Access denied for this host: $ip");
-//                Response::res(403, "Forbidden", "Access denied for this host: ". $ip);
-                exit();
-            }
-        }
-    }
-
     function response($code = 204, $data = false, $name = false, $message = false) {
     global $response_data_source, $response_cahce_req, $response_cache_ttl;
     $response_codes = [
@@ -188,9 +152,6 @@
         curl_close($curl);
         return $response;
     }
-
-    // disabled, not use this method for testing
-    // Access::check();
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $raw_postdata = file_get_contents("php://input");
