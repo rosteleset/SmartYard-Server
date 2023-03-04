@@ -716,16 +716,19 @@
     
                 let n = 0;
                 for (let i in r.template) {
-                    fields.push(modules.tt.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId));
-                    if (r.template[i] == "comment") {
-                        fields.push({
-                            id: "commentPrivate",
-                            type: "yesno",
-                            title: i18n("tt.commentPrivate"),
-                            value: "1",
-                        });
+                    let fi = modules.tt.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId);
+                    if (fi) {
+                        fields.push(fi);
+                        if (r.template[i] == "comment") {
+                            fields.push({
+                                id: "commentPrivate",
+                                type: "yesno",
+                                title: i18n("tt.commentPrivate"),
+                                value: "1",
+                            });
+                        }
+                        n++;
                     }
-                    n++;
                 }
     
                 if (n) {

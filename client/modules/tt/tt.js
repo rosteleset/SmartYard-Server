@@ -445,7 +445,7 @@
                                 processResults: function (data) {
                                     let suggestions = options;
                                     for (let i in data.suggestions) {
-                                        let vl = " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ] " + data.suggestions[i].unrestricted_value;
+                                        let vl = " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]: " + data.suggestions[i].value;
                                         if (parseInt(data.suggestions[i].data.fias_level) === 8 && vx !== vl) {
                                             suggestions.push({
                                                 id: vl,
@@ -688,7 +688,7 @@
                             for (let i in val) {
                                 let issueId = $.trim(val[i].split("[")[1].split("]")[0]);
                                 let subject = $.trim(val[i].substring(val[i].indexOf("]") + 1));
-                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">${issueId}: ${subject}</a><br/>`;
+                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${subject}</a><br/>`;
                             }
     
                             val = t;
