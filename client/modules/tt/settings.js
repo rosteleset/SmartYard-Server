@@ -2458,6 +2458,7 @@
                             cols: [
                                 {
                                     data: i,
+                                    nowrap: true,
                                 },
                                 {
                                     data: modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i,

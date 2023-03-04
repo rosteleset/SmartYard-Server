@@ -1009,9 +1009,16 @@
             } else {
                 $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
             }
+            loadingDone();
         }).
+        
         fail(FAIL).
-        always(loadingDone);
+        fail(() => {
+            $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
+            $.cookie("_tt_issue_filter_" + $.cookie("_project"), null);
+            $.cookie("_project", null);
+            window.location.href = `?#tt&_refresh=${Math.random()}`;
+        });
     },
 
     route: function (params) {
