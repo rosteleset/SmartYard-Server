@@ -17,6 +17,7 @@
     "defaultRoute": "Начальная страница",
     "persistentToken": "Постоянный токен",
     "blocked": "Заблокирован",
+    "tg": "Telegram (id)",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",
