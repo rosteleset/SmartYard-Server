@@ -878,6 +878,8 @@
         let skip = parseInt(params.skip?params.skip:0);
         let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
 
+        let _refresh = Math.random();
+
         QUERY("tt", "issues", {
             "project": current_project,
             "filter": x?x:'',
@@ -1011,13 +1013,12 @@
             }
             loadingDone();
         }).
-        
         fail(FAIL).
         fail(() => {
             $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
             $.cookie("_tt_issue_filter_" + $.cookie("_project"), null);
             $.cookie("_project", null);
-            window.location.href = `?#tt&_refresh=${Math.random()}`;
+            window.location.href = `?#tt&_refresh=${_refresh}`;
         });
     },
 
