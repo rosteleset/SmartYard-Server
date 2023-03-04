@@ -123,13 +123,13 @@
                     unset($issue["commentPrivate"]);
                 }
 
-                unset(@$issue["comments"]);
-                unset(@$issue["created"]);
-                unset(@$issue["author"]);
-                unset(@$issue["project"]);
-                unset(@$issue["parent"]);
-                unset(@$issue["attachments"]);
-                unset(@$issue["journal"]);
+                unset($issue["comments"]);
+                unset($issue["created"]);
+                unset($issue["author"]);
+                unset($issue["project"]);
+                unset($issue["parent"]);
+                unset($issue["attachments"]);
+                unset($issue["journal"]);
 
                 if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate)) {
                     return false;
