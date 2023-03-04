@@ -123,13 +123,33 @@
                     unset($issue["commentPrivate"]);
                 }
 
-                unset($issue["comments"]);
-                unset($issue["created"]);
-                unset($issue["author"]);
-                unset($issue["project"]);
-                unset($issue["parent"]);
-                unset($issue["attachments"]);
-                unset($issue["journal"]);
+                if (array_key_exists("comments", $issue)) {
+                    unset($issue["comments"]);
+                }
+
+                if (array_key_exists("created", $issue)) {
+                    unset($issue["created"]);
+                }
+
+                if (array_key_exists("author", $issue)) {
+                    unset($issue["author"]);
+                }
+
+                if (array_key_exists("project", $issue)) {
+                    unset($issue["project"]);
+                }
+
+                if (array_key_exists("parent", $issue)) {
+                    unset($issue["parent"]);
+                }
+
+                if (array_key_exists("attachments", $issue)) {
+                    unset($issue["attachments"]);
+                }
+
+                if (array_key_exists("journal", $issue)) {
+                    unset($issue["journal"]);
+                }
 
                 if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate)) {
                     return false;
