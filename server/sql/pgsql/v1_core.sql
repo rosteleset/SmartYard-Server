@@ -19,6 +19,7 @@ CREATE TABLE core_users
     real_name character varying,
     e_mail character varying,
     phone character varying,
+    tg character varying,
     default_route character varying,
     last_login integer
 );

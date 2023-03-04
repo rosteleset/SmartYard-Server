@@ -186,6 +186,17 @@
                         }
                     },
                     {
+                        id: "tg",
+                        type: "number",
+                        readonly: false,
+                        value: response.user.tg,
+                        title: i18n("tg"),
+                        placeholder: i18n("tg"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
                         id: "password",
                         type: "password",
                         title: i18n("password"),

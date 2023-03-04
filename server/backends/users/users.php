@@ -89,6 +89,7 @@
              * @param string $realName
              * @param string $eMail
              * @param string $phone
+             * @param string $tg
              * @param boolean $enabled
              * @param string $defaultRoute
              * @param mixed $persistentToken
@@ -96,6 +97,6 @@
              * @return boolean
              */
 
-            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true, $defaultRoute = '#', $persistentToken = false);
+            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $enabled = true, $defaultRoute = '#', $persistentToken = false);
         }
     }

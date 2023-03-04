@@ -19,6 +19,7 @@ CREATE TABLE core_users
     real_name text,
     e_mail text,
     phone text,
+    tg text,
     default_route text,
     last_login integer
 );
