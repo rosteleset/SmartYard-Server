@@ -977,17 +977,6 @@
             }
 
             /**
-             * @param $issue
-             * @param $linkTo
-             * @param $linkType
-             * @return mixed
-             */
-            public function linkIssue($issue, $linkTo, $linkType)
-            {
-                return true;
-            }
-
-            /**
              * @param $query
              * @param $params
              * @return mixed
