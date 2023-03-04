@@ -1018,7 +1018,9 @@
             $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
             $.cookie("_tt_issue_filter_" + $.cookie("_project"), null);
             $.cookie("_project", null);
-            window.location.href = `?#tt&_refresh=${_refresh}`;
+            if (params["_refresh"] != _refresh) {
+                window.location.href = `?#tt&_refresh=${_refresh}`;
+            }
         });
     },
 
