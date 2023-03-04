@@ -137,10 +137,10 @@
                     return false;
                 }
 
-                function sendTg($tg, $message, $token) {
+                function sendTg($tg, $subject, $message, $token) {
                     if ($tg && $token) {
                         try {
-                            $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($message)), true);
+                            $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
                             return $tg && @$tg["ok"];
                         } catch (\Exception $e) {
                             return false;
@@ -163,11 +163,11 @@
                 }
 
                 if ($user["notification"] == "tg") {
-                    return sendTg($user["tg"], $message, @$this->config["telegram"]["bot"]);
+                    return sendTg($user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
                 }
 
                 if ($user["notification"] == "tgEmail") {
-                    return sendTg(@$user["tg"], $message, @$this->config["telegram"]["bot"]) || sendEmail(@$user["eMail"], $subject, $message, $this->config);
+                    return sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]) || sendEmail(@$user["eMail"], $subject, $message, $this->config);
                 }
 
                 if ($user["notification"] == "email") {
@@ -175,7 +175,7 @@
                 }
 
                 if ($user["notification"] == "emailTg") {
-                    return sendEmail(@$user["eMail"], $subject, $message, $this->config) || sendTg(@$user["tg"], $message, @$this->config["telegram"]["bot"]);
+                    return sendEmail(@$user["eMail"], $subject, $message, $this->config) || sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
                 }
             } 
         }
