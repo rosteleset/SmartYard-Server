@@ -403,6 +403,7 @@
 
                     case "geo":
                         let vx;
+                        
                         if (issue && issue["_cf_" + fieldId]) {
                             vx = issue["_cf_" + fieldId];
                             options = [
@@ -412,6 +413,7 @@
                                 },
                             ];
                         }
+                        
                         return {
                             id: "_cf_" + fieldId,
                             type: "select2",
@@ -443,7 +445,7 @@
                                 processResults: function (data) {
                                     let suggestions = options;
                                     for (let i in data.suggestions) {
-                                        let vl = data.suggestions[i].unrestricted_value + " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]";
+                                        let vl = " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ] " + data.suggestions[i].unrestricted_value;
                                         if (parseInt(data.suggestions[i].data.fias_level) === 8 && vx !== vl) {
                                             suggestions.push({
                                                 id: vl,
@@ -459,6 +461,26 @@
                         }
     
                     case "issues":
+                        let vi = [];
+                        options = [];
+
+                        if (issue && issue["_cf_" + fieldId]) {
+                            let va;
+
+                            if (typeof issue["_cf_" + fieldId] == "string") {
+                                va = [ issue["_cf_" + fieldId] ];
+                            } else {
+                                va = issue["_cf_" + fieldId];
+                            }
+                            for (let i in va) {
+                                vi.push(va[i]);
+                                options.push({
+                                    id: va[i],
+                                    text: va[i],
+                                });
+                            }
+                        }
+
                         return {
                             id: "_cf_" + fieldId,
                             type: "select2",
@@ -466,8 +488,48 @@
                             placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
                             options: options,
-                            value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
+                            multiple: cf.format.indexOf("multiple") >= 0,
+                            value: vi,
                             validate: validate,
+                            ajax: {
+                                delay: 1000,
+                                transport: function (params, success, failure) {
+                                    loadingStart();
+                                    QUERY("tt", "issues", {
+                                        project: project.acronym,
+                                        filter: "#search",
+                                        skip: 0,
+                                        limit: 32768,
+                                        search: params.data.term,
+                                    }).
+                                    then(response => {
+                                        loadingDone();
+                                        success(response);
+                                    }).
+                                    fail(response => {
+                                        FAIL(response);
+                                        loadingDone();
+                                        failure(response);
+                                    }).
+                                    fail(FAIL).
+                                    always(loadingDone);
+                                },
+                                processResults: function (data) {
+                                    let suggestions = options;
+                                    for (let i in data.issues.issues) {
+                                        let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
+                                        if (vi.indexOf(vl) < 0) {
+                                            suggestions.push({
+                                                id: vl,
+                                                text: vl,
+                                            });
+                                        }
+                                    }
+                                    return {
+                                        results: suggestions,
+                                    };
+                                },
+                            },
                         }
                 }
             }
@@ -552,11 +614,15 @@
                         break;
     
                     case "resolution":
-                        for (let i in modules.tt.meta.resolutions) {
-                            if (val == modules.tt.meta.resolutions[i].alias) {
-                                val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
-                                break;
+                        if (val) {
+                            for (let i in modules.tt.meta.resolutions) {
+                                if (val == modules.tt.meta.resolutions[i].alias) {
+                                    val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
+                                    break;
+                                }
                             }
+                        } else {
+                            val = '';
                         }
                         break;
                     
@@ -601,10 +667,35 @@
 
                 switch (type) {
                     case "geo":
-                        let lon = $.trim(val.split("[")[1].split(",")[0]);
-                        let lat = $.trim(val.split("[")[1].split(",")[1].split("]")[0]);
+                        if (val) {
+                            let lon = $.trim(val.split("[")[1].split(",")[0]);
+                            let lat = $.trim(val.split("[")[1].split(",")[1].split("]")[0]);
+    
+                            val = `<a target="_blank" class="hoverable" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${val}</a>`;
+                        } else {
+                            val = '';
+                        }
+                        break;
 
-                        val = `<a target="_blank" class="hoverable" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${val}</a>`;
+                    case "issues":
+                        if (val) {
+                            if (typeof val == "string") {
+                                val = [ val ];
+                            }
+
+                            let t = "";
+
+                            for (let i in val) {
+                                let issueId = $.trim(val[i].split("[")[1].split("]")[0]);
+                                let subject = $.trim(val[i].substring(val[i].indexOf("]") + 1));
+                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">${issueId}: ${subject}</a><br/>`;
+                            }
+    
+                            val = t;
+                        } else {
+                            val = '';
+                        }
+                        break;
 
                     default:
                         break;
