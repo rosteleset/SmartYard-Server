@@ -111,7 +111,7 @@
 
                             foreach ($users as $user) {
                                 $user = $usersBackend->getUser($user);
-                                if ($user["uid"] > 0) {
+                                if ($user && $user["uid"] > 0) {
                                     $_f = false;
                                     foreach ($u as &$_u) {
                                         if ($_u["uid"] == $user["uid"]) {
@@ -135,6 +135,8 @@
                                             "byGroup" => true,
                                         ];
                                     }
+                                } else {
+                                    //
                                 }
                             }
                         }

@@ -116,6 +116,13 @@
                         },
                     ]);
 
+                    $sandbox->registerLibrary("users", [
+                        "notify" => function (...$args) {
+                            $users = loadBackend("users");
+                            return [ $users->notify(...$args) ];
+                        },
+                    ]);
+
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
