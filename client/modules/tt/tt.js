@@ -657,17 +657,17 @@
             } else {
                 field = field.substring(4);
 
-                let type;
-                let cf;
+                let cf = {};
+                let multiple = false;
 
                 for (let i in modules.tt.meta.customFields) {
                     if (modules.tt.meta.customFields[i].field == field) {
                         cf = modules.tt.meta.customFields[i];
-                        type = modules.tt.meta.customFields[i].type;
+                        multiple = cf.format.indexOf("multiple") >= 0;
                     }
                 }
 
-                switch (type) {
+                switch (cf.type) {
                     case "geo":
                         if (val) {
                             let lon = $.trim(val.split("[")[1].split(",")[0]);
@@ -1063,7 +1063,7 @@
             if (params["issue"]) {
                 GET("tt", "issue", params["issue"], true).
                 done(r => {
-                    if (modules.groups) {
+                    if (modules.groups && AVAIL("accounts", "groups")) {
                         modules.users.loadUsers(() => {
                             modules.groups.loadGroups(() => {
                                 modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"], params["search"]);

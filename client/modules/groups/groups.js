@@ -10,13 +10,20 @@
     },
 
     loadGroups: function (callback) {
-        return GET("accounts", "groups").
-        done(groups => {
-            modules.groups.meta = groups.groups;
-        }).
-        always(() => {
+        if (AVAIL("accounts", "groups")) {
+            return GET("accounts", "groups").
+            done(groups => {
+                modules.groups.meta = groups.groups;
+            }).
+            always(() => {
+                if (typeof callback) callback();
+            });
+        } else {
             if (typeof callback) callback();
-        });
+            return new Promise(function(resolve) {
+                resolve(false);
+            });
+        }
     },
 
     /*
