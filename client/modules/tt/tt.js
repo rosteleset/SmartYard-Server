@@ -593,11 +593,11 @@
                             m = m.substring(0, m.length - 2);
                         }
     
-                        val = m;
+                        val = escapeHTML(m);
                         break;
     
                     case "author":
-                        val = members[val]?members[val]:val;
+                        val = escapeHTML(members[val]?members[val]:val);
                         break;
     
                     case "commentPrivate":
@@ -607,7 +607,7 @@
                     case "status":
                         for (let i in modules.tt.meta.statuses) {
                             if (val == modules.tt.meta.statuses[i].status) {
-                                val = modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status;
+                                val = escapeHTML(modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status);
                                 break;
                             }
                         }
@@ -617,7 +617,7 @@
                         if (val) {
                             for (let i in modules.tt.meta.resolutions) {
                                 if (val == modules.tt.meta.resolutions[i].alias) {
-                                    val = modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias;
+                                    val = escapeHTML(modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias);
                                     break;
                                 }
                             }
@@ -658,9 +658,11 @@
                 field = field.substring(4);
 
                 let type;
+                let cf;
 
                 for (let i in modules.tt.meta.customFields) {
                     if (modules.tt.meta.customFields[i].field == field) {
+                        cf = modules.tt.meta.customFields[i];
                         type = modules.tt.meta.customFields[i].type;
                     }
                 }
@@ -671,7 +673,7 @@
                             let lon = $.trim(val.split("[")[1].split(",")[0]);
                             let lat = $.trim(val.split("[")[1].split(",")[1].split("]")[0]);
     
-                            val = `<a target="_blank" class="hoverable" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${val}</a>`;
+                            val = `<a target="_blank" class="hoverable" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${escapeHTML(val)}</a>`;
                         } else {
                             val = '';
                         }
@@ -688,12 +690,37 @@
                             for (let i in val) {
                                 let issueId = $.trim(val[i].split("[")[1].split("]")[0]);
                                 let subject = $.trim(val[i].substring(val[i].indexOf("]") + 1));
-                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${subject}</a><br/>`;
+                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${escapeHTML(subject)}</a><br/>`;
                             }
     
                             val = t;
                         } else {
                             val = '';
+                        }
+                        break;
+
+                    case "text":
+                        break;
+
+                    case "select":
+                        break;
+
+                    case "users":
+                        if (typeof val == "array") {
+                            let m = "";
+    
+                            for (let i in val) {
+                                m += members[val[i]]?members[val[i]]:val[i];
+                                m += ", ";
+                            }
+        
+                            if (m) {
+                                m = m.substring(0, m.length - 2);
+                            }
+        
+                            val = escapeHTML(m);
+                        } else {
+                            val = escapeHTML(members[val]?members[val]:val);
                         }
                         break;
 

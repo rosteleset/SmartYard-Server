@@ -206,7 +206,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '#', $persistentToken = false) {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false) {
                 if (!checkInt($uid)) {
                     return false;
                 }
