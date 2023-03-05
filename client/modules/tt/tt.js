@@ -703,6 +703,25 @@
                         break;
 
                     case "select":
+                        if (multiple) {
+                            let s = "";
+                            let x = [];
+    
+                            for (let i in val) {
+                                x.push(val[i]);
+                            }
+    
+                            for (let i in cf.options) {
+                                if (x.indexOf(cf.options[i].option) >= 0) {
+                                    s += '<i class="far fa-fw fa-check-square mr-1"></i>';
+                                } else {
+                                    s += '<i class="far fa-fw fa-square mr-1"></i>';
+                                }
+                                s += cf.options[i].optionDisplay + "<br/>";
+                            }
+    
+                            val = s;
+                        }
                         break;
 
                     case "users":
