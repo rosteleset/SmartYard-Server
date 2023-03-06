@@ -407,8 +407,14 @@
             }
             if (Object.keys(issue.actions).length - t === 1) {
                 h += `<span class="hoverable text-primary mr-3 ttIssueAction">${la}</span>`;
+                if (issue.showJournal) {
+                    h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
+                }
             } else
             if (t < Object.keys(issue.actions).length) {
+                if (issue.showJournal) {
+                    h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
+                }
                 h += `<span class="dropdown">`;
                 h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
@@ -442,9 +448,6 @@
                 }
                 h += `</ul></span>`;
             }
-        }
-        if (issue.showJournal) {
-            h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
         }
         h += "</div>";
         h += "</td>";
