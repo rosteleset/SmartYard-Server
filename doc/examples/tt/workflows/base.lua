@@ -87,6 +87,7 @@ function viewIssue(issue)
     return {
         ["issue"] = issue,
         ["actions"] = getAvailableActions(issue),
+        ["showJournal"] = true,
         ["fields"] = {
             "issueId",
             "project",
@@ -105,7 +106,6 @@ function viewIssue(issue)
             "tags",
             "attachments",
             "comments",
-            "journal",
         }
     }
 end
