@@ -301,22 +301,6 @@
                             return false;
                         }
                     }
-
-                    $projects = $this->getProjects();
-                    $project = false;
-                    foreach ($projects as $p) {
-                        if ($p["projectId"] == $projectId) {
-                            $project = $p;
-                        }
-                    }
-
-                    foreach ($workflows as $workflow) {
-                        $w = $this->loadWorkflow($workflow);
-                        if (!$w->initProject($project)) {
-                            setLastError("invalidWorflow");
-                            return false;
-                        }
-                    }
                 } catch (\Exception $e) {
                     setLastError("invalidWorflow");
                     error_log(print_r($e, true));

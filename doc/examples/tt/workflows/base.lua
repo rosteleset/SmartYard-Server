@@ -1,8 +1,3 @@
-function initProject(project)
-    utils.error_log(utils.print_r(project))
-    return project
-end
-
 function getIssueTemplate(catalog)
     utils.error_log(catalog)
     return {
