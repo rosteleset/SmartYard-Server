@@ -16,13 +16,20 @@
                 modules.groups.meta = groups.groups;
             }).
             always(() => {
-                if (typeof callback) callback();
+                if (typeof callback == "function") callback();
             });
         } else {
-            if (typeof callback) callback();
-            return new Promise(function(resolve) {
+            if (typeof callback == "function") callback();
+            let p = new Promise(resolve => {
                 resolve(false);
             });
+            p.always = function (f) {
+                if (typeof f == "function") {
+                    f([]);
+                }
+                return p;
+            };
+            return p;
         }
     },
 

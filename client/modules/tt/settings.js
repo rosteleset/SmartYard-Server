@@ -1243,7 +1243,7 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            GET("accounts", "groups").
+            modules.groups.loadGroups().
             always(response => {
                 let personals = {};
 
@@ -1547,7 +1547,7 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            GET("accounts", "groups").
+            modules.groups.loadGroups().
             done(response => {
                 let project = false;
                 for (let i in modules.tt.meta.projects) {
@@ -1962,7 +1962,7 @@
                                         icon: "fas fa-users",
                                         title: i18n("tt.groups"),
                                         click: modules.tt.settings.projectGroups,
-                                        disabled: !AVAIL("accounts", "group", "POST"),
+                                        disabled: !AVAIL("accounts", "groups"),
                                     },
                                 ],
                             }
