@@ -128,6 +128,9 @@
     },
 
     modifyUser: function (uid) {
+        if (!myself.uid) {
+            myself.uid = 0;
+        }
         loadingStart();
         GET("accounts", "user", uid, true).done(response => {
             cardForm({
