@@ -332,7 +332,7 @@
         function fieldRow(i) {
             let h = '';
 
-            if (![ "issueId", "comments", "attachments", "journal", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+            if (![ "issueId", "comments", "attachments", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
                 h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
                 h += "<tr>";
                 h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
@@ -443,7 +443,9 @@
                 h += `</ul></span>`;
             }
         }
-        h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
+        if (issue.showJournal) {
+            h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
+        }
         h += "</div>";
         h += "</td>";
         h += "<td style='text-align: right;' class='pr-2'>";
@@ -693,7 +695,7 @@
                 $(".ttJournal").text(i18n("tt.journal"));
                 $("#issueJournal").hide();
                 $("#issueComments").show();
-        }
+            }
         });
 
         $(".ttIssueAction").off("click").on("click", function () {
