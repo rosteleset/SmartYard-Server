@@ -80,6 +80,7 @@ __pycache__
 /client/config/config.json
 /server/db/internal.db
 /server/config/config.json
+/server/config/config.yml
 /server/vendor
 /server/syslog/config.json
 /.stylelintrc.json

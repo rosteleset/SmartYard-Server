@@ -49,6 +49,10 @@
             [--uninstall-crontabs]
         dvr:
             [--run-record-download=<id>]
+        config:
+            [--print-config]
+            [--write-yaml-config]
+            [--write-json-config]
         \n";
 
         exit(1);
@@ -202,11 +206,17 @@
     }
 
     try {
-        $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
+        $config = @json_decode(file_get_contents("config/config.json"), true);
     } catch (Exception $e) {
-        echo "can't load config file\n";
-        echo strtolower($e->getMessage()) . "\n";
-        exit(1);
+        $config = false;
+    }
+
+    if (!$config) {
+        try {
+            $config = @json_decode(json_encode(yaml_parse_file("config/config.yml")), true);
+        } catch (Exception $e) {
+            $config = false;
+        }
     }
 
     if (!$config) {
@@ -456,6 +466,21 @@
 
             $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $config['api']['mobile'], $uuid));
         }
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--write-yaml-config", $args) && !isset($args["--write-yaml-config"])) {
+        file_put_contents("config/config.yml", yaml_emit($config));
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--write-json-config", $args) && !isset($args["--write-json-config"])) {
+        file_put_contents("config/config.json", json_encode($config, JSON_PRETTY_PRINT));
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--print-config", $args) && !isset($args["--print-config"])) {
+        print_r($config);
         exit(0);
     }
 
