@@ -700,6 +700,16 @@
                         break;
 
                     case "text":
+                        if (cf.format) {
+                            val = sprintf(cf.format, val);
+                        }
+                        
+                        val = nl2br(escapeHTML(val));
+
+                        if (cf.link) {
+                            val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
+                        }
+
                         break;
 
                     case "select":
