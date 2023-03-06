@@ -29,10 +29,7 @@
                 }
                 return p;
             };
-            p.fail = function (f) {
-                if (typeof f == "function") {
-                    f([]);
-                }
+            p.fail = function () {
                 return p;
             };
             p.done = function (f) {
