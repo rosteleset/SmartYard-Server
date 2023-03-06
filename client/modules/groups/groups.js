@@ -15,30 +15,11 @@
             done(groups => {
                 modules.groups.meta = groups.groups;
             }).
-            always(() => {
-                if (typeof callback == "function") callback();
+            always(response => {
+                if (typeof callback == "function") callback(response);
             });
         } else {
-            if (typeof callback == "function") callback();
-            let p = new Promise(resolve => {
-                resolve(false);
-            });
-            p.always = function (f) {
-                if (typeof f == "function") {
-                    f([]);
-                }
-                return p;
-            };
-            p.fail = function () {
-                return p;
-            };
-            p.done = function (f) {
-                if (typeof f == "function") {
-                    f([]);
-                }
-                return p;
-            };
-            return p;
+            if (typeof callback == "function") callback(false);
         }
     },
 

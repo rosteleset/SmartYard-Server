@@ -1243,8 +1243,7 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            modules.groups.loadGroups().
-            always(response => {
+            modules.groups.loadGroups(response => {
                 let personals = {};
 
                 for (let i in response.groups) {
@@ -1341,8 +1340,7 @@
                 }).
                 fail(FAIL).
                 fail(loadingDone);
-            }).
-            always(loadingDone);
+            });
         }).
         fail(FAIL).
         fail(loadingDone);
@@ -1547,8 +1545,7 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            modules.groups.loadGroups().
-            done(response => {
+            modules.groups.loadGroups(response => {
                 let project = false;
                 for (let i in modules.tt.meta.projects) {
                     if (modules.tt.meta.projects[i].projectId == projectId) {
@@ -1638,9 +1635,7 @@
                         return rows;
                     },
                 }).show();
-            }).
-            fail(FAIL).
-            always(loadingDone);
+            });
         }).
         fail(FAIL).
         fail(loadingDone);
