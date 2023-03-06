@@ -29,6 +29,18 @@
                 }
                 return p;
             };
+            p.fail = function (f) {
+                if (typeof f == "function") {
+                    f([]);
+                }
+                return p;
+            };
+            p.done = function (f) {
+                if (typeof f == "function") {
+                    f([]);
+                }
+                return p;
+            };
             return p;
         }
     },
