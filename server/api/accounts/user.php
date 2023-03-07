@@ -166,7 +166,7 @@
         class user extends api {
 
             public static function GET($params) {
-                $user = $params["_backends"]["users"]->getUser($params["_id"]);
+                $user = $params["_backends"]["users"]->getUser(@$params["_id"]);
 
                 return api::ANSWER($user, ($user !== false)?"user":"notFound");
             }
