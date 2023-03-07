@@ -250,8 +250,8 @@
              */
 
             public function getRights() {
-                $users = $this->db->query("select uid, aid, allow from core_users_rights", \PDO::FETCH_ASSOC)->fetchAll();
-                $groups = $this->db->query("select gid, aid, allow from core_groups_rights", \PDO::FETCH_ASSOC)->fetchAll();
+                $users = $this->db->query("select uid, aid, allow from core_users_rights order by uid, aid", \PDO::FETCH_ASSOC)->fetchAll();
+                $groups = $this->db->query("select gid, aid, allow from core_groups_rights order by gid, aid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 return [
                     "users" => $users,
