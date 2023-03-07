@@ -541,7 +541,7 @@
             public function prepare() {
                 parent::prepare();
                 $this->enable_ddns(false);
-                $this->enable_echo_cancellation();
+                $this->enable_echo_cancellation(false); // TODO: wait for fixes
             }
         }
     }
