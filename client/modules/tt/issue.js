@@ -332,7 +332,7 @@
         function fieldRow(i) {
             let h = '';
 
-            if (![ "issueId", "comments", "attachments", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+            if (![ "id", "issueId", "comments", "attachments", "childrens ", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
                 h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
                 h += "<tr>";
                 h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";

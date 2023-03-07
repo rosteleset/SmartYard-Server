@@ -710,7 +710,6 @@
                 $validFields[] = "watchers";
                 $validFields[] = "attachments";
                 $validFields[] = "comments";
-                $validFields[] = "journal";
 
                 if (!@$issue["catalog"] || $issue["catalog"] == "-") {
                     unset($issue["catalog"]);
@@ -885,8 +884,16 @@
             {
                 $journal = loadBackend("tt_journal");
 
+                try {
+                    $issue = $this->getIssue($issueId);
+                    $workflow = $this->loadWorkflow($issue["workflow"]);
+                    $workflow->issueChanged($issue, $action, $old, $new);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
                 if ($journal) {
-                    return $journal->journal($issue, $action, $old, $new);
+                    return $journal->journal($issueId, $action, $old, $new);
                 }
 
                 return false;

@@ -1,4 +1,4 @@
-function getIssueTemplate(catalog)
+function getNewIssueTemplate(catalog)
     utils.error_log(catalog)
     return {
         ["fields"] = {
@@ -26,9 +26,6 @@ function getAvailableActions(issue)
         return {
             "!saAddComment",
             "saAddFile",
-            "saWatch",
-            "-",
-            "saSubIssue",
             "-",
             "Закрыть",
         }
@@ -84,11 +81,9 @@ function viewIssue(issue)
         ["actions"] = getAvailableActions(issue),
         ["showJournal"] = true,
         ["fields"] = {
-            "issueId",
             "project",
             "workflow",
             "catalog",
-            "parent",
             "subject",
             "created",
             "updated",
@@ -98,9 +93,6 @@ function viewIssue(issue)
             "author",
             "assigned",
             "watchers",
-            "tags",
-            "attachments",
-            "comments",
         }
     }
 end
@@ -125,4 +117,8 @@ function getWorkflowCatalog()
             "Переобжим коннектора",
         },
     }
+end
+
+function issueChanged(issue, action, old, new)
+    -- add notifications here
 end
