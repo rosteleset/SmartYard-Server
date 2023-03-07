@@ -83,7 +83,7 @@
 
         "isdn": {
             "backend": "lanta",
-            "common_secret": "<1-- your secret here --!>",
+            "common_secret": "<!-- your secret here --!>",
             "confirm_method": "outgoingCall"
         },
 
@@ -98,11 +98,11 @@
             "username": "default",
             "password": "qqq",
             "database": "default",
-            "time_shift": "<1-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
-            "max_call_length": "<1-- your max call length in seconds for backward processing call events (hint 120) --!>",
-            "ttl_temp_record": "<1-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
-            "ttl_camshot_days": "<1-- your time to live in days for camshots (hint 180 - approx. half year) --!>",
-            "back_time_shift_video_shot": "<1-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>",
+            "time_shift": "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
+            "max_call_length": "<!-- your max call length in seconds for backward processing call events (hint 120) --!>",
+            "ttl_temp_record": "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
+            "ttl_camshot_days": "<!-- your time to live in days for camshots (hint 180 - approx. half year) --!>",
+            "back_time_shift_video_shot": "<!-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>",
             "cron_process_events_scheduler": "minutely"
         },
 
@@ -169,7 +169,7 @@
     },
 
     "telegram": {
-        "bot": "<1-- your telegram bot token here --!>"
+        "bot": "<!-- your telegram bot token here --!>"
     },
 
     "syslog_servers": {
