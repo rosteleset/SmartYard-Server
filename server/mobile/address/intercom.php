@@ -148,6 +148,26 @@ if ($flat_owner && $plog && $flat['plog'] != plog::ACCESS_RESTRICTED_BY_ADMIN) {
     $ret['hiddenPlog'] = $flat['plog'] == plog::ACCESS_ALL ? 'f' : 't';
 }
 
+//check for FRS presence on at least one entrance of the flat
+$frs = loadBackend("frs");
+if ($frs) {
+    $cameras = loadBackend("cameras");
+    $frsDisabled = null;
+    foreach ($flat['entrances'] as $entrance) {
+        $e = $households->getEntrance($entrance['entranceId']);
+        if ($cameras) {
+            $vstream = $cameras->getCamera($e['cameraId']);
+            if (strlen($vstream["frs"]) > 1) {
+                $frsDisabled = 'f';
+                break;
+            }
+        }
+    }
+    if ($frsDisabled != null) {
+        $ret['FRSDisabled'] = $frsDisabled;
+    }
+}
+
 if ($ret) {
     response(200, $ret);
 } else {
