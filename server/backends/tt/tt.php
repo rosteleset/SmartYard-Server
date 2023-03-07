@@ -874,13 +874,13 @@
             abstract public function reCreateIndexes();
 
             /**
-             * @param string $issue
+             * @param string $issueId
              * @param string $action
              * @param object $old
              * @param object $new
              * @return void
              */
-            public function addJournalRecord($issue, $action, $old, $new)
+            public function addJournalRecord($issueId, $action, $old, $new)
             {
                 $journal = loadBackend("tt_journal");
 
