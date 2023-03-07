@@ -196,7 +196,7 @@
                         title: i18n("users.tg"),
                         placeholder: i18n("users.tg"),
                         validate: (v) => {
-                            return $.trim(v) !== "";
+                            return !$.trim(v) || ($.trim(v) !== "");
                         }
                     },
                     {
