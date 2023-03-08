@@ -356,6 +356,10 @@
             },
             columns: [
                 {
+                    title: i18n("users.sessionType"),
+                    nowrap: true,
+                },
+                {
                     title: i18n("users.ip"),
                     nowrap: true,
                 },
@@ -385,6 +389,10 @@
                     rows.push({
                         uid: user.sessions[i].token,
                         cols: [
+                            {
+                                data: user.sessions[i].byPersistentToken?i18n("users.sessionPersistent"):i18n("users.sessionOrdinal"),
+                                nowrap: true,
+                            },
                             {
                                 data: user.sessions[i].ip,
                                 nowrap: true,

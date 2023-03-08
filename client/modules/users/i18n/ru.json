@@ -31,6 +31,9 @@
     "dropSession": "Сбросить сессиию",
     "sessions": "Сессии",
     "confirmDropSession": "Сбросить сессию?",
+    "sessionType": "Тип сессии",
+    "sessionPersistent": "Постоянная",
+    "sessionOrdinal": "Обычная",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",
