@@ -40,7 +40,6 @@
     <!-- wait for fully load -->
     <script type="application/javascript">
         function cfg(c) {
-            console.log(c);
             config = c;
             let l = $.cookie("_lang");
             if (!l) {
@@ -59,11 +58,14 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            $.get("config/config.json", cfg).
+            $.get("config/config.json").
+            done(cfg).
             fail(() => {
-                $.get("config/config.yml", y => {
+                $.get("config/config.yml").
+                done(y => {
                     cfg(jsyaml.load(y));
-                }).fail(() => {
+                }).
+                fail(() => {
                     error("Woops can't get config");
                 });
             });
