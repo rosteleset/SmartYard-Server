@@ -34,28 +34,38 @@
     <link rel="stylesheet" href="css/select2totree.css">
     <!-- app css -->
     <link rel="stylesheet" href="css/index.css">
+    <!-- yaml support -->
+    <script src="js/js-yaml.min.js"></script>
 
     <!-- wait for fully load -->
     <script type="application/javascript">
+        function cfg(c) {
+            console.log(c);
+            config = c;
+            let l = $.cookie("_lang");
+            if (!l) {
+                l = config.defaultLanguage;
+            }
+            if (!l) {
+                l = "ru";
+            }
+            $.get("i18n/" + l + ".json", t => {
+                lang = t;
+                initAll();
+            }).fail(function() {
+                lang = {};
+                initAll();
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
-            $.get("config/config.json", c => {
-                config = c;
-                let l = $.cookie("_lang");
-                if (!l) {
-                    l = config.defaultLanguage;
-                }
-                if (!l) {
-                    l = "ru";
-                }
-                $.get("i18n/" + l + ".json", t => {
-                    lang = t;
-                    initAll();
-                }).fail(function() {
-                    lang = {};
-                    initAll();
+            $.get("config/config.json", cfg).
+            fail(() => {
+                $.get("config/config.yml", y => {
+                    cfg(jsyaml.load(y));
+                }).fail(() => {
+                    error("Woops can't get config");
                 });
-            }).fail(() => {
-                error("Woops can't get config");
             });
         });
     </script>
