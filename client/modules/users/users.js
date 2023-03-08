@@ -329,8 +329,17 @@
         main form (users) render function
      */
 
-    dropSession: function (token) {
-
+    dropSession: function (token, uid) {
+        mConfirm(i18n("users.confirmDropSession"), i18n("users.dropSession"), i18n("users.dropSession"), () => {
+            DELETE("accounts", "user", false, {
+                session: token,
+            }).
+            fail(FAIL).
+            fail(loadingDone).
+            done(() => {
+                location.href = "?#users&sessions=" + uid.toString() + "&_refresh=" + Math.random();
+            });
+        });
     },
 
     showSessions: function (uid) {
@@ -341,7 +350,7 @@
                 altButton: {
                     caption: i18n("close"),
                     click: () => {
-                        $("#altForm").hide();
+                        location.href = "?#users&_refresh=" + Math.random();
                     },
                 },
             },
@@ -396,9 +405,9 @@
                                     icon: "fas fa-trash-alt",
                                     title: i18n("users.dropSession"),
                                     class: "text-danger",
-                                    disabled: user.sessions[i].byPersistentToken,
+                                    disabled: user.sessions[i].byPersistentToken || user.sessions[i].token == $.cookie("_token"),
                                     click: token => {
-                                        modules.users.dropSession(token);
+                                        modules.users.dropSession(token, uid);
                                     },
                                 },
                             ],
@@ -411,7 +420,7 @@
         }).show();
     },
 
-    render: function () {
+    render: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
 
@@ -505,7 +514,7 @@
                                         title: i18n("users.sessions"),
                                         disabled: !response.users[0].lastLogin || !response.users[0].sessions,
                                         click: uid => {
-                                            modules.users.showSessions(uid);
+                                            location.href = "?#users&sessions=" + uid.toString() + "&_refresh=" + Math.random();
                                         },
                                     },
                                 ],
@@ -516,6 +525,10 @@
                     return rows;
                 },
             });
+
+            if (params.sessions && params.sessions !== true) {
+                modules.users.showSessions(params.sessions);
+            }
         }).
         fail(FAIL).
         always(loadingDone);
@@ -524,6 +537,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("users.users");
 
-        modules.users.render();
+        modules.users.render(params);
     }
 }).init();

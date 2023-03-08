@@ -189,7 +189,11 @@
             }
 
             public static function DELETE($params) {
-                $success = $params["_backends"]["users"]->deleteUser($params["_id"]);
+                if (@$params["session"]) {
+                    $success = $params["_backends"]["authentication"]->logout($params["session"], false);
+                } else {
+                    $success = $params["_backends"]["users"]->deleteUser($params["_id"]);
+                }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

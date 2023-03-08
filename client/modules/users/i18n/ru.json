@@ -25,6 +25,12 @@
     "notificationTg": "Только Telegram",
     "notificationEmail": "Только электронная почта",
     "lastLogin": "Последний вход",
+    "ip": "Адрес",
+    "started": "Старт",
+    "updated": "Обновление",
+    "dropSession": "Сбросить сессиию",
+    "sessions": "Сессии",
+    "confirmDropSession": "Сбросить сессию?",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",

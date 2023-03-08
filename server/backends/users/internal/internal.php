@@ -252,6 +252,7 @@
                         $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
                             "uid" => $uid,
                             "login" => $this->db->get("select login from core_users where uid = $uid", false, false, [ "fieldlify" ]),
+                            "started" => time(),
                         ]));
                     } else {
                         $_keys = $this->redis->keys("persistent_*_" . $uid);
