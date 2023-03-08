@@ -11,6 +11,8 @@
             protected string $def_pass = 'api_password';
             protected string $api_prefix = '/api/v1';
 
+            protected string $defaultWebPassword = 'Rubetek34';
+
             protected array $rfids = [];
             protected array $rfidsToDelete = [];
 
@@ -251,7 +253,20 @@
             }
 
             public function set_admin_password(string $password) {
-                // TODO: Implement set_admin_password() method.
+                // TODO: without sleep() the following calls can response "access is forbidden" or "account not found"
+                $this->api_call('/settings/account/password', 'PATCH', [
+                    'account' => 'admin',
+                    'current_password' => $this->defaultWebPassword,
+                    'new_password' => $password,
+                ]);
+                sleep(10);
+
+                $this->api_call('/settings/account/password', 'PATCH', [
+                    'account' => 'api_user',
+                    'current_password' => $this->def_pass,
+                    'new_password' => $password,
+                ]);
+                sleep(10);
             }
 
             public function set_audio_levels(array $levels) {
