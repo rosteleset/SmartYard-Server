@@ -19,8 +19,10 @@
              */
 
             public function getUsers() {
+                global $params;
+                
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled, last_login from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -31,7 +33,27 @@
                             "eMail" => $user["e_mail"],
                             "phone" => $user["phone"],
                             "enabled" => $user["enabled"],
+                            "lastLogin" => $user["last_login"],
                         ];
+                    }
+
+                    $a = loadBackend("authorization");
+
+                    if ($a->allow([
+                        "_uid" => $params["_uid"],
+                        "_path" => [
+                            "api" => "accounts",
+                            "method" => "user",
+                        ],
+                        "_request_method" => "POST",
+                    ])) {
+                        foreach ($_users as &$u) {
+                            $u["sessions"] = [];
+                            $lk = $this->redis->keys("auth_*_{$u["uid"]}");
+                            foreach ($lk as $k) {
+                                $u["sessions"][] = json_decode($this->redis->get($k), true);
+                            }
+                        }
                     }
 
                     return $_users;
