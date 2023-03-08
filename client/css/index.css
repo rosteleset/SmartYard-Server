@@ -44,6 +44,15 @@
   cursor: pointer;
 }
 
+.pointer-input-group:hover {
+  cursor: pointer;
+  background-color: #e9ecef!important;
+}
+
+.pointer-input-group {
+  background-color: #f8f9fa;
+}
+
 .tdform-top {
   vertical-align: top !important;
   white-space: nowrap !important;
