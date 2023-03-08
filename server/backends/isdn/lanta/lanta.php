@@ -11,10 +11,10 @@
          * LanTa's variant of flash calls and sms sending
          */
 
-        require_once __DIR__ . "/../teledome/push.php";
-        require_once __DIR__ . "/../teledome/flashCall.php";
-        require_once __DIR__ . "/../teledome/sms.php";
-        require_once __DIR__ . "/../teledome/incoming.php";
+        require_once __DIR__ . "/../../../traits/backends/isdn/push.php";
+        require_once __DIR__ . "/../../../traits/backends/isdn/flashCall.php";
+        require_once __DIR__ . "/../../../traits/backends/isdn/sms.php";
+        require_once __DIR__ . "/../../../traits/backends/isdn/incoming.php";
 
         class lanta extends isdn
         {
