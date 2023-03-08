@@ -107,5 +107,15 @@
             public function check() {
                 return true;
             }
+
+            /**
+             * @param $uid integer
+             * @param $login string
+             * @return void
+             */
+            public function setCreds($uid, $login) {
+                $this->uid = $uid;
+                $this->login = $login;
+            }
         }
     }

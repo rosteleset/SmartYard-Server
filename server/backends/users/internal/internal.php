@@ -19,8 +19,6 @@
              */
 
             public function getUsers() {
-                global $params;
-                
                 try {
                     $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled, last_login from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
@@ -40,7 +38,7 @@
                     $a = loadBackend("authorization");
 
                     if ($a->allow([
-                        "_uid" => $params["_uid"],
+                        "_uid" => $this->uid,
                         "_path" => [
                             "api" => "accounts",
                             "method" => "user",
@@ -53,6 +51,16 @@
                             foreach ($lk as $k) {
                                 $u["sessions"][] = json_decode($this->redis->get($k), true);
                             }
+                            $pk = $this->redis->keys("persistent_*_{$u["uid"]}");
+                            foreach ($pk as $k) {
+                                $s = json_decode($this->redis->get($k), true);
+                                $s["byPersistentToken"] = true;
+                                $u["sessions"][] = $s;
+                            }
+                        }
+                    } else {
+                        foreach ($_users as &$u) {
+                            unset($u["lastLogin"]);
                         }
                     }
 

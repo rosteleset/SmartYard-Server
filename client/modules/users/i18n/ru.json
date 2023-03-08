@@ -24,6 +24,7 @@
     "notificationEmailTg": "Предпочитаю электронную почту",
     "notificationTg": "Только Telegram",
     "notificationEmail": "Только электронная почта",
+    "lastLogin": "Последний вход",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",

@@ -263,6 +263,10 @@
         $params["_uid"] = $auth["uid"];
         $params["_login"] = $auth["login"];
         $params["_token"] = $auth["token"];
+
+        foreach ($backends as $backend) {
+            $backend->setCreds($auth["uid"], $auth["login"]);
+        }
     }
 
     $params["_md5"] = md5(print_r($params, true));

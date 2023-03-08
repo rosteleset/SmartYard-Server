@@ -329,6 +329,88 @@
         main form (users) render function
      */
 
+    dropSession: function (token) {
+
+    },
+
+    showSessions: function (uid) {
+        cardTable({
+            target: "#altForm",
+            title: {
+                caption: i18n("users.sessions") + " " + i18n("users.uid") + uid,
+                altButton: {
+                    caption: i18n("close"),
+                    click: () => {
+                        $("#altForm").hide();
+                    },
+                },
+            },
+            columns: [
+                {
+                    title: i18n("users.ip"),
+                    nowrap: true,
+                },
+                {
+                    title: i18n("users.started"),
+                    nowrap: true,
+                },
+                {
+                    title: i18n("users.updated"),
+                    nowrap: true,
+                    fullWidth: true,
+                },
+            ],
+            rows: () => {
+                let rows = [];
+
+                let user = {};
+
+                for (let i in modules.users.users) {
+                    if (modules.users.users[i].uid == uid) {
+                        user = modules.users.users[i];
+                        break;
+                    }
+                }
+
+                for (let i in user.sessions) {
+                    rows.push({
+                        uid: user.sessions[i].token,
+                        cols: [
+                            {
+                                data: user.sessions[i].ip,
+                                nowrap: true,
+                            },
+                            {
+                                data: ttDate(user.sessions[i].started),
+                                nowrap: true,
+                            },
+                            {
+                                data: ttDate(user.sessions[i].updated),
+                                nowrap: true,
+                                fullWidth: true,
+                            },
+                        ],
+                        dropDown: {
+                            items: [
+                                {
+                                    icon: "fas fa-trash-alt",
+                                    title: i18n("users.dropSession"),
+                                    class: "text-danger",
+                                    disabled: user.sessions[i].byPersistentToken,
+                                    click: token => {
+                                        modules.users.dropSession(token);
+                                    },
+                                },
+                            ],
+                        },
+                    });
+                }
+
+                return rows;
+            },
+        }).show();
+    },
+
     render: function () {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -336,6 +418,8 @@
         loadingStart();
 
         GET("accounts", "users", false, true).done(response => {
+            modules.users.users = response.users;
+
             cardTable({
                 target: "#mainForm",
                 title: {
@@ -357,6 +441,10 @@
                     },
                     {
                         title: i18n("users.login"),
+                    },
+                    {
+                        title: i18n("users.lastLogin"),
+                        hidden: !(response.users.length && response.users[0].lastLogin),
                     },
                     {
                         title: i18n("users.blocked"),
@@ -388,6 +476,11 @@
                                     nowrap: true,
                                 },
                                 {
+                                    data: ttDate(response.users[i].lastLogin),
+                                    nowrap: true,
+                                    hidden: !response.users[i].lastLogin,
+                                },
+                                {
                                     data: response.users[i].enabled?i18n("no"):i18n("yes"),
                                     nowrap: true,
                                 },
@@ -405,6 +498,18 @@
                                     nowrap: true,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-list-ol",
+                                        title: i18n("users.sessions"),
+                                        disabled: !response.users[0].lastLogin || !response.users[0].sessions,
+                                        click: uid => {
+                                            modules.users.showSessions(uid);
+                                        },
+                                    },
+                                ],
+                            },
                         });
                     }
 
