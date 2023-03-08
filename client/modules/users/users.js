@@ -453,7 +453,7 @@
                     },
                     {
                         title: i18n("users.lastLogin"),
-                        hidden: !(response.users.length && response.users[0].lastLogin),
+                        hidden: !(response.users.length || typeof response.users[0].lastLogin == "undefined"),
                     },
                     {
                         title: i18n("users.blocked"),
@@ -487,7 +487,7 @@
                                 {
                                     data: ttDate(response.users[i].lastLogin),
                                     nowrap: true,
-                                    hidden: !response.users[i].lastLogin,
+                                    hidden: typeof response.users[i].lastLogin == "undefined",
                                 },
                                 {
                                     data: response.users[i].enabled?i18n("no"):i18n("yes"),
@@ -512,7 +512,7 @@
                                     {
                                         icon: "fas fa-list-ol",
                                         title: i18n("users.sessions"),
-                                        disabled: !response.users[0].lastLogin || !response.users[0].sessions,
+                                        disabled: !response.users[0].sessions,
                                         click: uid => {
                                             location.href = "?#users&sessions=" + uid.toString() + "&_refresh=" + Math.random();
                                         },
