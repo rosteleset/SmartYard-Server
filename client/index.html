@@ -48,10 +48,12 @@
             if (!l) {
                 l = "ru";
             }
-            $.get("i18n/" + l + ".json", t => {
+            $.get("i18n/" + l + ".json").
+            done(t => {
                 lang = t;
                 initAll();
-            }).fail(function() {
+            }).
+            fail(function() {
                 lang = {};
                 initAll();
             });
