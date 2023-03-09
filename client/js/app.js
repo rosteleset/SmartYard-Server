@@ -383,9 +383,11 @@ function initAll() {
         }, 100);
     });
 
-    if (parseInt($.cookie("_ls_collapse"))) {
-        $("body").addClass("sidebar-collapse");
-    }
+    setTimeout(() => {
+        if (parseInt($.cookie("_ls_collapse"))) {
+            $("body").addClass("sidebar-collapse");
+        }
+    }, 500);
 
     document.title = i18n("windowTitle");
 
