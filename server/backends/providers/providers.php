@@ -37,11 +37,10 @@
              * @param $logo
              * @param $tokenCommon
              * @param $tokenSms
-             * @param $tokenFlashCall
              * @param $hidden
              * @return mixed
              */
-            abstract public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall, $hidden);
+            abstract public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden);
 
             /**
              * @param $providerId
@@ -51,11 +50,10 @@
              * @param $logo
              * @param $tokenCommon
              * @param $tokenSms
-             * @param $tokenFlashCall
              * @param $hidden
              * @return mixed
              */
-            abstract public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $tokenFlashCall, $hidden);
+            abstract public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden);
 
             /**
              * @param $providerId

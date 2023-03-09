@@ -12,12 +12,11 @@
          */
 
         require_once __DIR__ . "/../../../traits/backends/isdn/push.php";
-        require_once __DIR__ . "/../../../traits/backends/isdn/flashCall.php";
         require_once __DIR__ . "/../../../traits/backends/isdn/sms.php";
         require_once __DIR__ . "/../../../traits/backends/isdn/incoming.php";
 
         class lanta extends isdn
         {
-            use push, flashCall, sms, incoming;
+            use push, sms, incoming;
         }
     }

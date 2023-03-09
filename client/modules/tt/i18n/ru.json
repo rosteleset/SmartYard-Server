@@ -224,6 +224,8 @@
     "customFilterEdit": "Редактировать",
     "customFilterDelete": "Удалить",
     "projectFilterFile": "Файл",
+    "search": "Поиск",
+    "customSearch": "Расширенный поиск",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

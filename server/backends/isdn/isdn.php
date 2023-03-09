@@ -18,18 +18,6 @@
              * @param $id
              * @return string
              */
-            abstract function flashCall($id);
-
-            /**
-             * @param $id
-             * @return string
-             */
-            abstract function getCode($id);
-
-            /**
-             * @param $id
-             * @return string
-             */
             abstract function sendCode($id);
 
             /**

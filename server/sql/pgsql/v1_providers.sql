@@ -7,7 +7,6 @@ CREATE TABLE providers
     base_url character varying,
     logo character varying,
     token_common character varying,                                                                                     -- for push and outgoing calls
-    token_flash_call character varying,
     token_sms character varying,
     hidden integer
 );
