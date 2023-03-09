@@ -512,20 +512,38 @@
                 if (!$filter) {
                     return false;
                 }
-                
-                $filters = $files->searchFiles([
-                    "metadata.type" => "filter",
-                    "metadata.filter" => $filter,
-                ]);
 
-                foreach ($filters as $f) {
-                    $files->deleteFile($f["id"]);
+                if ($owner) {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                        "metadata.owner" => $owner,
+                    ]);
+    
+                    foreach ($filters as $f) {
+                        $files->deleteFile($f["id"]);
+                    }
+    
+                    return $files->addFile($filter . ".json", $files->contentsToStream($body), [
+                        "type" => "filter",
+                        "filter" => $filter,
+                        "owner" => $owner,
+                    ]);
+                } else {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                    ]);
+    
+                    foreach ($filters as $f) {
+                        $files->deleteFile($f["id"]);
+                    }
+    
+                    return $files->addFile($filter . ".json", $files->contentsToStream($body), [
+                        "type" => "filter",
+                        "filter" => $filter,
+                    ]);
                 }
-
-                return $files->addFile($filter . ".json", $files->contentsToStream($body), [
-                    "type" => "filter",
-                    "filter" => $filter,
-                ]);
             }
 
             /**
@@ -533,17 +551,26 @@
              * @param $owner
              * @return boolean
              */
-            public function deleteFilter($filter, $owner = false) {
+            public function deleteFilter($filter, $owner = false)
+            {
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
-                
-                $filters = $files->searchFiles([
-                    "metadata.type" => "filter",
-                    "metadata.filter" => $filter,
-                ]);
+
+                if ($owner) {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                        "metadata.owner" => $owner,
+                    ]);
+                } else {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                    ]);
+                }
 
                 foreach ($filters as $f) {
                     $files->deleteFile($f["id"]);

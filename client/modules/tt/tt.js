@@ -823,10 +823,7 @@
             }
             rtd += `</select></div>`;
             rtd += '<form autocomplete="off">';
-            rtd += `<div class="input-group input-group-sm ${cog}">`;
-            if (AVAIL("tt", "customFilter")) {
-                rtd += `<div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterCustom"><i class="far fa-fw fa-edit"></i></span></div>`;
-            }
+            rtd += `<div class="input-group input-group-sm ${cog} ttSearchInputGroup">`;
             rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton"><i class="fas fa-search"></i></button></div></div>`;
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
@@ -842,6 +839,10 @@
         $("#rightTopDynamic").html(rtd);
 
         current_project = $("#ttProjectSelect").val();
+
+        if (AVAIL("tt", "customFilter") && current_project && current_project !== true) {
+            $(".ttSearchInputGroup").prepend(`<div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterCustom"><i class="fas fa-fw fa-running"></i></span></div>`);
+        }
 
         $("#ttProjectSelect").off("change").on("change", () => {
             modules.tt.selectProject($("#ttProjectSelect").val());
@@ -866,7 +867,7 @@
         });
 
         $(".ttFilterCustom").off("click").on("click", () => {
-            location.href = '?#tt&filter=empty&customSearch=-1&_refresh=' + Math.random();
+            location.href = '?#tt&filter=empty&customSearch=yes&_refresh=' + Math.random();
         });
 
         $("#ttSearchButton").off("click").on("click", () => {
@@ -894,12 +895,7 @@
         filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
         filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
         let personal = "user";
-        let falready = {};
         for (let i in project.filters) {
-            if (falready[project.filters[i].filter]) {
-                continue;
-            }
-            falready[project.filters[i].filter] = true;
             if (parseInt(project.filters[i].personal) > 1000000) {
                 if (personal === "user") {
                     if (fcount) {
@@ -909,7 +905,7 @@
                 }
             }
             if (!parseInt(project.filters[i].personal)) {
-                if (personal === "group") {
+                if (personal === "group" || personal === "user") {
                     if (fcount) {
                         filters += `<li class="dropdown-divider"></li>`;
                     }
@@ -917,13 +913,18 @@
                 }
             }
             if (x == project.filters[i].filter) {
-                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter}</li>`;
+                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter}</li>`;
             } else {
-                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter}</li>`;
+                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter}</li>`;
             }
             fcount++;
         }
         filters += `</ul></span>`;
+
+        if (md5($.cookie("_login") + ":" + modules.tt.meta.filters[x]) == x) {
+            filters += '<span class="ml-2 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
+            filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
+        }
 
         if (!fcount) {
             filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
@@ -1007,15 +1008,13 @@
             let cs = '';
 
             if (params.customSearch && params.customSearch !== true) {
-                let top = 75;
-                let height = 200;
+                let height = 400;
                 cs += '<div class="ml-2 mr-2">';
                 cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
                 cs += `<span id="filterRun" class="hoverable"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
-//                cs += `<span id="filterSave" class="hoverable ml-3"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span>`;
                 cs += `</span>`;
                 cs += '</div>';
             }
@@ -1053,21 +1052,55 @@
                 let editor = ace.edit("filterEditor");
                 editor.setTheme("ace/theme/chrome");
                 editor.session.setMode("ace/mode/json");
-//                editor.setValue(f.body, -1);
                 editor.clearSelection();
                 editor.setFontSize(14);
-                $("#filterSave").off("click").on("click", () => {
-                    loadingStart();
-                    PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
-                    fail(FAIL).
-                    done(() => {
-                        message(i18n("tt.filterWasSaved"));
-                    }).
-                    always(() => {
+                $("#filterRun").off("click").on("click", () => {
+                    let f = false;
+                    try {
+                        f = JSON.parse($.trim(editor.getValue()));
+                    } catch (e) {
+                        f = false;
+                    }
+                    if (f && f.name && f.fields) {
+                        let n = md5($.cookie("_login") + ":" + f.name);
+                        loadingStart();
+                        PUT("tt", "customFilter", n, { "project": current_project, "body": $.trim(editor.getValue()) }).
+                        done(() => {
+                            message(i18n("tt.filterWasSaved"));
+                            $.cookie("_tt_issue_filter_" + current_project, n, { expires: 3650, insecure: config.insecureCookie });
+                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_refresh=' + Math.random();
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    }
+                });
+                if (params.filter && params.filter !== true && params.filter != "empty") {
+                    GET("tt", "customFilter", params.filter).
+                    done(response => {
+                        editor.setValue(response.body, -1);
                         loadingDone();
                     });
-                });
+                }
             }
+
+            $(".customFilterEdit").off("click").on("click", function () {
+                location.href = '?#tt&filter=' + $(this).attr("data-filter") + '&customSearch=yes&_refresh=' + Math.random();
+            });
+
+            $(".customFilterDelete").off("click").on("click", function () {
+                let f = $(this).attr("data-filter");
+                mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[f]), i18n("confirm"), i18n("delete"), () => {
+                    loadingStart();
+                    DELETE("tt", "customFilter", f, { "project": current_project }).
+                    done(() => {
+                        message(i18n("tt.filterWasDeleted"));
+                        $.cookie("_tt_issue_filter_" + current_project, null);
+                        location.href = '?#tt&_refresh=' + Math.random();
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                });
+            });
 
             if (issues.issues) {
                 cardTable({
@@ -1111,7 +1144,9 @@
             } else {
                 $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
             }
-            loadingDone();
+            if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
+                loadingDone();
+            }
         }).
         fail(FAIL).
         fail(() => {

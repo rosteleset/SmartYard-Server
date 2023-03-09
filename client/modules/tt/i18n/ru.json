@@ -134,6 +134,7 @@
     "filterDelete": "Удалить фильтр \"%s\"?",
     "filterWasChanged": "Фильтр изменен",
     "filterWasSaved": "Фильтр сохранен",
+    "filterWasDeleted": "Фильтр удален",
     "workflowWasSaved": "Рабочий процесс сохранен",
     "issueIndx": "#",
     "crontabs": "Расписание",
@@ -219,7 +220,9 @@
     "catalog": "Каталог",
     "parent": "\"Родительская\" задача",
     "subIssue": "Подзадачи",
-    "filterRun": "Выполнить",
+    "filterRun": "Сохранить и выполнить",
+    "customFilterEdit": "Редактировать",
+    "customFilterDelete": "Удалить",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

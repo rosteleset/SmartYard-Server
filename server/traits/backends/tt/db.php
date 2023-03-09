@@ -370,6 +370,8 @@
                 $this->db->modify("delete from tt_projects_filters where filter = :filter", [
                     "filter" => $filter,
                 ]);
+
+                return true;
             }
 
             /**

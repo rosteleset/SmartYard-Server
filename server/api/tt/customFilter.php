@@ -29,13 +29,60 @@
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->putFilter($params["_id"], $params["body"], $params["_login"]);
+                $tt = loadBackend("tt");
+
+                $success = false;
+
+                $projects = $tt->getProjects();
+                
+                $projectId = false;
+                
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == @$params["project"]) {
+                        $projectId = $p["projectId"];
+                        break;
+                    }
+                }
+
+                if ($projectId) {
+                    $tt->addProjectFilter($projectId, $params["_id"], $params["_uid"]);
+                    $success = $tt->putFilter($params["_id"], $params["body"], $params["_login"]);
+                }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
-                $success = loadBackend("tt")->deleteFilter($params["_id"], $params["_login"]);
+                $tt = loadBackend("tt");
+
+                $success = false;
+
+                $projects = $tt->getProjects();
+                
+                $project = false;
+                
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == @$params["project"]) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                if ($project) {
+                    $projectFilterId = false;
+
+                    foreach ($project["filters"] as $f) {
+                        if ($f["filter"] == $params["_id"] && $f["personal"] == $params["_uid"]) {
+                            $projectFilterId = $f["projectFilterId"];
+                            break;
+                        }
+                    }
+
+                    if ($projectFilterId) {
+                        $success = $tt->deleteProjectFilter($projectFilterId) && $tt->deleteFilter($params["_id"], $params["_login"]);
+                    }
+
+                }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
