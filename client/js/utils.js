@@ -218,6 +218,8 @@ function loadingDone(stayHidden) {
 
     if (parseInt($.cookie('_ls_collapse'))) {
         $(document.body).addClass('sidebar-collapse');
+    } else {
+        $(document.body).removeClass('sidebar-collapse');
     }
 
     $(window).resize();
