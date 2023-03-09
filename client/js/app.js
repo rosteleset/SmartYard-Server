@@ -386,6 +386,8 @@ function initAll() {
     setTimeout(() => {
         if (parseInt($.cookie("_ls_collapse"))) {
             $("body").addClass("sidebar-collapse");
+        } else {
+            $("body").removeClass("sidebar-collapse");
         }
     }, 500);
 
