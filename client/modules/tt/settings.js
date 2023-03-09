@@ -1315,11 +1315,11 @@
                                             data: project.filters[i].projectFilterId,
                                         },
                                         {
-                                            data: project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter,
+                                            data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter),
                                             nowrap: true,
                                         },
                                         {
-                                            data: project.filters[i].filter,
+                                            data: trimStr(project.filters[i].filter),
                                             nowrap: true,
                                         },
                                         {
@@ -2460,11 +2460,11 @@
                             uid: i,
                             cols: [
                                 {
-                                    data: i,
+                                    data: trimStr(i),
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i,
+                                    data: trimStr(modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i),
                                 },
                             ],
                             dropDown: {

@@ -515,3 +515,11 @@ function utf8_to_b64(str) {
 function b64_to_utf8(str) {
     return decodeURIComponent(escape(window.atob(str)));
 }
+
+function trimStr(str) {
+    if (str.length > 19) {
+        return str.substring(0, 8) + "..." + str.substring(str.length - 8);
+    } else {
+        return str;
+    }
+}
