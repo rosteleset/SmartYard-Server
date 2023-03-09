@@ -19,7 +19,7 @@
 
                 $tt = loadBackend("tt");
 
-                if (@$params["filter"]) {
+                if (@$params["filter"] && $params["filter"] != "empty") {
                     try {
                         $filter = @json_decode($tt->getFilter($params["filter"]), true);
                         if ($filter) {

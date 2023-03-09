@@ -9,35 +9,33 @@
         use api\api;
 
         /**
-         * filter method
+         * customFilter method
          */
 
-        class filter extends api {
+        class customFilter extends api {
 
             public static function GET($params) {
                 $tt = loadBackend("tt");
 
+                $filter = false;
+
                 if ($tt) {
-                    if (@$params["_id"]) {
-                        if (@$params["_id"]) {
-                            return api::ANSWER($tt->getFilter($params["_id"]), "body");
-                        }
-                    } else {
-                        return api::ANSWER($tt->getFilters(), "filters");
+                    if (@$params["_id"] && @$params["_login"]) {
+                        $filter = $tt->getFilter($params["_id"], $params["_login"]);
                     }
                 }
 
-                return api::ERROR();
+                return api::ANSWER($filter, ($filter !== false)?"body":"notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->putFilter($params["_id"], $params["body"]);
+                $success = loadBackend("tt")->putFilter($params["_id"], $params["body"], $params["_login"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
-                $success = loadBackend("tt")->deleteFilter($params["_id"]);
+                $success = loadBackend("tt")->deleteFilter($params["_id"], $params["_login"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
@@ -45,9 +43,9 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
-                        "GET" => "#same(tt,tt,GET)",
-                        "PUT" => "#same(tt,project,PUT)",
-                        "DELETE" => "#same(tt,project,DELETE)",
+                        "GET",
+                        "PUT",
+                        "DELETE",
                     ];
                 } else {
                     return false;

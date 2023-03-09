@@ -460,19 +460,28 @@
 
             /**
              * @param $filter
+             * @param $owner
              * @return false|string
              */
-            public function getFilter($filter) {
+            public function getFilter($filter, $owner = false) {
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
                 
-                $filters = $files->searchFiles([
-                    "metadata.type" => "filter",
-                    "metadata.filter" => $filter,
-                ]);
+                if ($owner) {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                        "metadata.owner" => $owner,
+                    ]);
+                } else {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                    ]);
+                }
 
                 $filter = false;
                 foreach ($filters as $f) {
@@ -490,9 +499,10 @@
             /**
              * @param $filter
              * @param $body
+             * @param $owner
              * @return boolean
              */
-            public function putFilter($filter, $body) {
+            public function putFilter($filter, $body, $owner = false) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -520,9 +530,10 @@
 
             /**
              * @param $filter
+             * @param $owner
              * @return boolean
              */
-            public function deleteFilter($filter) {
+            public function deleteFilter($filter, $owner = false) {
                 $files = loadBackend("files");
 
                 if (!$files) {

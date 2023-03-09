@@ -364,7 +364,7 @@
             /**
              * @inheritDoc
              */
-            public function deleteFilter($filter) {
+            public function deleteFilter($filter, $owner = false) {
                 parent::deleteFilter($filter);
 
                 $this->db->modify("delete from tt_projects_filters where filter = :filter", [
