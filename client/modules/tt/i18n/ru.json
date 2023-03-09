@@ -223,6 +223,7 @@
     "filterRun": "Сохранить и выполнить",
     "customFilterEdit": "Редактировать",
     "customFilterDelete": "Удалить",
+    "projectFilterFile": "Файл",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

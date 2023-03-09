@@ -1293,11 +1293,15 @@
                             {
                                 title: i18n("tt.projectFilter"),
                                 nowrap: true,
-                                fullWidth: true,
+                            },
+                            {
+                                title: i18n("tt.projectFilterFile"),
+                                nowrap: true,
                             },
                             {
                                 title: i18n("tt.filterPersonal"),
                                 nowrap: true,
+                                fullWidth: true,
                             },
                         ],
                         rows: () => {
@@ -1311,7 +1315,12 @@
                                             data: project.filters[i].projectFilterId,
                                         },
                                         {
-                                            data: project.filters[i].filter?(modules.tt.meta.filters[project.filters[i].filter] + " [" + project.filters[i].filter + "]"):project.filters[i].filter,
+                                            data: project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter,
+                                            nowrap: true,
+                                        },
+                                        {
+                                            data: project.filters[i].filter,
+                                            nowrap: true,
                                         },
                                         {
                                             data: project.filters[i].personal?personals[project.filters[i].personal]:i18n("tt.commonFilter"),
