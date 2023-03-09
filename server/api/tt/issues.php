@@ -30,7 +30,8 @@
                         }
                     } catch (\Exception $e) {
                         setLastError($e->getMessage());
-                        return api::ERROR();
+                        $issues["exception"] = $e->getMessage();
+                        return api::ANSWER($issues, "issues");
                     }
                 }
 

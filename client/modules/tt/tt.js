@@ -953,6 +953,10 @@
             "search": ($.trim(params.search) && params.search !== true)?$.trim(params.search):'',
         }, true).
         done(response => {
+            if (response.issues.exception) {
+                error(i18n("errors." + response.issues.exception), i18n("error"), 30);
+            }
+
             let issues = response.issues;
 
             limit = parseInt(issues.limit);
