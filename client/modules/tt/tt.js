@@ -921,7 +921,7 @@
         }
         filters += `</ul></span>`;
 
-        if (md5($.cookie("_login") + ":" + modules.tt.meta.filters[x]) == x) {
+        if ($.trim(modules.tt.meta.filters[x]) + "-" + md5($.cookie("_login") + ":" + $.trim(modules.tt.meta.filters[x])) == x) {
             filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
             filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
         }
@@ -1061,8 +1061,8 @@
                     } catch (e) {
                         f = false;
                     }
-                    if (f && f.name && f.fields) {
-                        let n = md5($.cookie("_login") + ":" + f.name);
+                    if (f && $.trim(f.name) && f.fields) {
+                        let n = $.trim(f.name) + "-" + md5($.cookie("_login") + ":" + $.trim(f.name));
                         loadingStart();
                         PUT("tt", "customFilter", n, { "project": current_project, "body": $.trim(editor.getValue()) }).
                         done(() => {
