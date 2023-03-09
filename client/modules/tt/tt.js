@@ -823,7 +823,7 @@
             }
             rtd += `</select></div>`;
             rtd += '<form autocomplete="off">';
-            rtd += `<div class="input-group input-group-sm ${cog}"><div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterNew"><i class="far fa-fw fa-edit"></i></span></div><input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton"><i class="fas fa-search"></i></button></div></div>`;
+            rtd += `<div class="input-group input-group-sm ${cog}"><div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterCustom"><i class="far fa-fw fa-edit"></i></span></div><input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton"><i class="fas fa-search"></i></button></div></div>`;
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
@@ -861,8 +861,10 @@
             }
         });
 
-        $(".ttFilterNew").off("click").on("click", () => {
-            console.log("TODO: show filter editor");
+        $(".ttFilterCustom").off("click").on("click", () => {
+            loadingStart();
+            params.customSearch = true;
+            modules.tt.renderIssues(params);
         });
 
         $("#ttSearchButton").off("click").on("click", () => {
@@ -1000,7 +1002,23 @@
                 return h;
             }
 
-            $("#mainForm").html(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager()}</td></tr></table><div class="ml-2 mr-2" id="issuesList"></div>`);
+            let cs = '';
+
+            if (params.customSearch && params.customSearch !== true) {
+                let top = 75;
+                let height = 200;
+                cs += '<div class="ml-2 mr-2">';
+                cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+                cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+                cs += "</div>";
+                cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
+                cs += `<span id="filterRun" class="hoverable"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
+//                cs += `<span id="filterSave" class="hoverable ml-3"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span>`;
+                cs += `</span>`;
+                cs += '</div>';
+            }
+
+            $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}</td><td style="padding-right: 15px;">${pager()}</td></tr></table><div class="ml-2 mr-2" id="issuesList"></div>`);
 
             $(".tt_issues_filter").off("click").on("click", function () {
                 modules.tt.selectFilter($(this).attr("data-filter-name"));
@@ -1028,6 +1046,26 @@
                     fullWidth: i == pKeys.length - 1,
                 });
             };
+
+            if (params.customSearch && params.customSearch !== true) {
+                let editor = ace.edit("filterEditor");
+                editor.setTheme("ace/theme/chrome");
+                editor.session.setMode("ace/mode/json");
+//                editor.setValue(f.body, -1);
+                editor.clearSelection();
+                editor.setFontSize(14);
+                $("#filterSave").off("click").on("click", () => {
+                    loadingStart();
+                    PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("tt.filterWasSaved"));
+                    }).
+                    always(() => {
+                        loadingDone();
+                    });
+                });
+            }
 
             if (issues.issues) {
                 cardTable({
