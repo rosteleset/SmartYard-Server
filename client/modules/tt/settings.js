@@ -2557,7 +2557,12 @@
                 }
 
                 function uidsByProject(projectId) {
-                    let u = [];
+                    let u = [
+                        {
+                            id: "-",
+                            text: "-",
+                        },
+                    ];
 
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].projectId == projectId) {
@@ -2632,7 +2637,7 @@
                             placeholder: i18n("tt.crontabUser"),
                             options: uidsByProject(project),
                             validate: v => {
-                                return $.trim(v) !== "";
+                                return $.trim(v) !== "" && $.trim(v) !== "-";
                             },
                         },
                         {
