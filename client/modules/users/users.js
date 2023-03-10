@@ -116,9 +116,6 @@
                     type: "tel",
                     title: i18n("phone"),
                     placeholder: i18n("phone"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
                 },
             ],
             callback: function (result) {
@@ -184,9 +181,6 @@
                         value: response.user.phone,
                         title: i18n("phone"),
                         placeholder: i18n("phone"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
                     },
                     {
                         id: "tg",
