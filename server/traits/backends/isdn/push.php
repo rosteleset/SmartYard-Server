@@ -23,6 +23,9 @@
                     if ($param != "action" && $param != "secret") {
                         $query = $query . $param . "=" . urlencode($value) . "&";
                     }
+                    if ($param == "action") {
+                        $query = $query . "pushAction=" . urlencode($value) . "&";
+                    }
                 }
                 if ($query) {
                     $query = substr($query, 0, -1);
