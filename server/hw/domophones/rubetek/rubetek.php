@@ -55,6 +55,11 @@
                 ]);
             }
 
+            /** Get all apartment IDs from intercom */
+            protected function get_apartments(): array {
+                return array_column($this->api_call('/apartments'), 'id');
+            }
+
             /** Get current intercom config */
             protected function get_config() {
                 return $this->api_call('/configuration');
@@ -81,14 +86,26 @@
             }
 
             public function clear_apartment(int $apartment = -1) {
-                // TODO: Implement clear_apartment() method.
+                if ($apartment !== -1) {
+                    $this->api_call("/apartments/$apartment", 'DELETE');
+                } else {
+                    foreach ($this->get_apartments() as $apartment) { // TODO: too slow
+                        $this->clear_apartment($apartment);
+                    }
+                }
             }
 
             public function clear_rfid(string $code = '') {
                 if ($code) {
                     $this->api_call("/rfids/$code", 'DELETE');
                 } else {
-                    foreach ($this->get_rfids() as $rfid) {
+                    // Until better times...
+                    // $rfids_chunks = array_chunk($this->get_rfids(), 900);
+                    // foreach ($rfids_chunks as $rfids_chunk) {
+                        // $this->api_call('/rfids_apartment', 'DELETE', [ 'rfids' => $rfids_chunk ]);
+                    // }
+
+                    foreach ($this->get_rfids() as $rfid) { // TODO: too slow
                         $this->clear_rfid($rfid);
                     }
                 }
@@ -102,15 +119,24 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
-                // TODO: Implement configure_apartment() method.
+                $this->api_call('/apartments', 'POST', [
+                    'id' => "$apartment",
+                    'sip_number' => "$sip_numbers[0]" ?? '',
+                    'call_type' => $cms_handset_enabled ? 'sip_0_analog' : 'sip',
+                    'door_access' => [1],
+                    'access_codes' => $private_code_enabled && $private_code ? [ $private_code ] : [],
+                ]);
             }
 
             public function configure_cms(int $apartment, int $offset) {
-                // TODO: Implement configure_cms() method.
+                // not used
             }
 
             public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
-                // TODO: Implement configure_cms_raw() method.
+                $this->api_call('/apartments', 'POST', [
+                    'id' => "$apartment",
+                    'analog_number' => (string) ($index * 100 + $dozens * 10 + $units),
+                ]);
             }
 
             public function configure_gate(array $links) {
@@ -344,6 +370,10 @@
                         'inverted' => $inverted,
                     ]);
                 }
+            }
+
+            public function _set_unlock_time(int $time) {
+                $this->api_call('/settings/door_left_open_timeout', 'PATCH', [ 'timeout' => $time ]);
             }
 
             public function set_video_overlay(string $title = '') {
