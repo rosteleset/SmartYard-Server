@@ -2542,10 +2542,10 @@
                         if (modules.tt.meta.projects[i].projectId == projectId) {
                             for (let j in modules.tt.meta.projects[i].filters) {
                                 for (let k in modules.tt.meta.filters) {
-                                    if (k == modules.tt.meta.projects[i].filters[j]) {
+                                    if (k == modules.tt.meta.projects[i].filters[j].filter && !modules.tt.meta.projects[i].filters[j].personal) {
                                         f.push({
                                             id: k,
-                                            text: $.trim((modules.tt.meta.filters[k]?modules.tt.meta.filters[k]:k) + " [" + k + "]"),
+                                            text: trimStr(modules.tt.meta.filters[k]),
                                         });
                                     }
                                 }
