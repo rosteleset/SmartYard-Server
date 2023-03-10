@@ -536,7 +536,7 @@
                 },
             });
 
-            if (params.sessions && params.sessions !== true) {
+            if (params && params.sessions && params.sessions !== true) {
                 modules.users.showSessions(params.sessions);
             }
         }).
