@@ -13,20 +13,6 @@
 
             protected string $defaultWebPassword = 'Rubetek34';
 
-            protected array $rfids = [];
-            protected array $rfidsToDelete = [];
-
-            public function __construct(string $url, string $pass, bool $first_time = false) {
-                parent::__construct($url, $pass, $first_time);
-                $this->rfids = $this->get_rfids();
-                // print_r($this->config); // TODO: delete later
-            }
-
-            public function __destruct() {
-                parent::__destruct();
-                $this->write_rfids(array_unique(array_diff($this->rfids, $this->rfidsToDelete)));
-            }
-
             /** Make an API call */
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
@@ -47,7 +33,10 @@
 
                 if ($payload) {
                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ]);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'Content-Type: application/json',
+                        'Expect:', // Workaround for the 100-continue expectation
+                    ]);
                 }
 
                 $res = curl_exec($ch);
@@ -84,18 +73,11 @@
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
-            /** Write array of RFID keys to intercom memory */
-            protected function write_rfids(array $rfids) {
-                $this->api_call('/apartments', 'POST', [
-                    'id' => '0',
-                    'call_type' => 'blocked',
-                    'door_access' => [ 1, 5 ], // 1 - Relay A, internal reader; 5 - Relay B, external reader
-                    'rfids' => array_values($rfids),
-                ]);
-            }
-
             public function add_rfid(string $code, int $apartment = 0) {
-                $this->rfids[] = $code;
+                $this->api_call('/rfids', 'POST', [
+                    'rfid' => $code,
+                    'door_access' => [ 1, 5 ] // 1 - Relay A, internal reader; 5 - Relay B, external reader
+                ]);
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -104,9 +86,11 @@
 
             public function clear_rfid(string $code = '') {
                 if ($code) {
-                    $this->rfidsToDelete[] = $code;
+                    $this->api_call("/rfids/$code", 'DELETE');
                 } else {
-                    $this->rfids = [];
+                    foreach ($this->get_rfids() as $rfid) {
+                        $this->clear_rfid($rfid);
+                    }
                 }
             }
 
@@ -192,7 +176,21 @@
             }
 
             public function configure_video_encoding() {
-                // TODO: Implement configure_video_encoding() method.
+                $videoSettings = $this->api_call('/settings/video');
+
+                $videoSettings['channel1']['bitrate'] = '1Mbps';
+                $videoSettings['channel1']['resolution'] = '1280x720';
+
+                $videoSettings['channel2']['bitrate'] = '0.5Mbps';
+                $videoSettings['channel2']['resolution'] = '640x480';
+
+                $videoSettings['channel3']['bitrate'] = '0.5Mbps';
+                $videoSettings['channel3']['resolution'] = '640x480';
+
+                $videoSettings['use_for_sip'] = 'channel1';
+                $videoSettings['use_for_webrtc'] = 'channel1';
+
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
             }
 
             public function get_audio_levels(): array {
@@ -211,7 +209,7 @@
             }
 
             public function get_rfids(): array {
-                return $this->api_call('/apartments/0')['rfids'] ?? [];
+                return array_column($this->api_call('/rfids'), 'rfid');
             }
 
             public function get_sysinfo(): array {
