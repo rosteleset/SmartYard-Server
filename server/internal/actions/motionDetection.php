@@ -33,7 +33,7 @@
 
     $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
 
-   $apiResponse = apiExec($frsUrl . "/api/motionDetection", $payload);
+   $apiResponse = apiExec("POST", $frsUrl . "/api/motionDetection", $payload);
    response(201, $apiResponse);
 
     exit();
