@@ -2499,6 +2499,10 @@
 
                 let crontabs = [
                     {
+                        id: "-",
+                        text: "-",
+                    },
+                    {
                         id: "daily",
                         text: i18n("tt.crontabDaily"),
                     },
@@ -2520,7 +2524,13 @@
                     },
                 ];
 
-                let projectsOptions = [];
+                let projectsOptions = [
+                    {
+                        id: "-",
+                        text: "-",
+                    },
+                ];
+
                 let projects = {};
                 let project = false;
 
@@ -2536,7 +2546,12 @@
                 }
 
                 function filtersByProject(projectId) {
-                    let f = [];
+                    let f = [
+                        {
+                            id: "-",
+                            text: "-",
+                        },
+                    ];
 
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].projectId == projectId) {
@@ -2595,7 +2610,7 @@
                             placeholder: i18n("tt.crontab"),
                             options: crontabs,
                             validate: (v) => {
-                                return $.trim(v) !== "";
+                                return $.trim(v) !== "" && $.trim(v) !== "-";
                             },
                         },
                         {
@@ -2605,7 +2620,7 @@
                             placeholder: i18n("tt.project"),
                             options: projectsOptions,
                             validate: v => {
-                                return parseInt(v);
+                                return parseInt(v) && $.trim(v) !== "-";
                             },
                             select: (el, id, prefix) => {
                                 $(`#${prefix}filter`).html("").select2({
@@ -2627,7 +2642,7 @@
                             placeholder: i18n("tt.filter"),
                             options: filtersByProject(project),
                             validate: v => {
-                                return $.trim(v) !== "";
+                                return $.trim(v) !== "" && $.trim(v) !== "-";
                             },
                         },
                         {
