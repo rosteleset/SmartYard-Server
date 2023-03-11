@@ -123,6 +123,25 @@
                         },
                     ]);
 
+                    $sandbox->registerLibrary("https", [
+                        "POST" => function ($url, $data) {
+                            return [
+                                json_decode(
+                                    file_get_contents($url, false, stream_context_create([
+                                        'http' => [
+                                            'method'  => 'POST',
+                                            'header'  => [
+                                                'Content-Type: application/json; charset=utf-8',
+                                                'Accept: application/json; charset=utf-8',
+                                            ],
+                                            'content' => json_encode($data)
+                                        ],
+                                    ]))
+                                )
+                            ];
+                        },
+                    ]);
+
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
