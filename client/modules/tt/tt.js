@@ -1196,7 +1196,7 @@
                     }
                 }).
                 fail(FAIL).
-                always(loadingDone);
+                fail(loadingDone);
             } else {
                 if (myself.uid) {
                     if (modules.groups) {
@@ -1216,6 +1216,6 @@
             }
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 }).init();

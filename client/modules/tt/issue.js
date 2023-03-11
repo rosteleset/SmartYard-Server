@@ -1082,6 +1082,8 @@
             fail(FAIL).
             fail(loadingDone);
         });
+
+        loadingDone();
     },
 
     route: function (params) {
