@@ -11,6 +11,7 @@ RBT/RBT.xcodeproj/
 /client/lib/qrcodejs/
 /client/lib/loading-bar/
 /client/lib/ace-builds/
+/client/modules/custom/
 /server/lib/PHPMailer/
 /server/lib/htmlpurifier/
 /server/lib/parsedown/
