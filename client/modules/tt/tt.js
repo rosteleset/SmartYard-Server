@@ -629,7 +629,7 @@
                     case "project":
                         for (let i in modules.tt.meta.projects) {
                             if (modules.tt.meta.projects[i].acronym == val) {
-                                val = modules.tt.meta.projects[i].project + " [" + val + "]";
+                                val = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:val;
                                 break;
                             }
                         }
@@ -638,7 +638,7 @@
                     case "workflow":
                         for (let i in modules.tt.meta.workflows) {
                             if (i == val) {
-                                val = modules.tt.meta.workflows[i].name + " [" + val + "]";
+                                val = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:val;
                                 break;
                             }
                         }
