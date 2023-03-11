@@ -1148,7 +1148,7 @@
         for (let i in modules.tt.meta.workflows) {
             workflows.push({
                 id: i,
-                text: "<span class='text-monospace'>[" + i + "]</span> " + (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i),
+                text: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i,
             });
         }
 
