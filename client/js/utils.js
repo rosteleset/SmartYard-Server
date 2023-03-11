@@ -520,8 +520,9 @@ function trimStr(str, len) {
     if (!len) {
         len = 19;
     }
+    let sub = Math.floor((len - 3) / 2);
     if (str.length > len) {
-        return str.substring(0, Math.floor(len / 2)) + "..." + str.substring(str.length - Math.floor(len / 2));
+        return str.substring(0, sub) + "..." + str.substring(str.length - sub);
     } else {
         return str;
     }
