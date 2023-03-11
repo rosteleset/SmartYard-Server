@@ -516,9 +516,12 @@ function b64_to_utf8(str) {
     return decodeURIComponent(escape(window.atob(str)));
 }
 
-function trimStr(str) {
-    if (str.length > 19) {
-        return str.substring(0, 8) + "..." + str.substring(str.length - 8);
+function trimStr(str, len) {
+    if (!len) {
+        len = 19;
+    }
+    if (str.length > len) {
+        return str.substring(0, Math.floor(len / 2)) + "..." + str.substring(str.length - Math.floor(len / 2));
     } else {
         return str;
     }
