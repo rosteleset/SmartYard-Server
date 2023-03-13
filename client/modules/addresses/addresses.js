@@ -1213,11 +1213,16 @@
     timezonesOptions: function () {
         let tz = [];
 
+        let already = {};
+
         for (let i in modules.addresses.timezones) {
-            tz.push({
-                id: modules.addresses.timezones[i],
-                text: modules.addresses.timezones[i],
-            });
+            if (!already[modules.addresses.timezones[i]]) {
+                tz.push({
+                    id: modules.addresses.timezones[i],
+                    text: modules.addresses.timezones[i],
+                });
+            }
+            already[modules.addresses.timezones[i]] = true;
         }
 
         return tz;
