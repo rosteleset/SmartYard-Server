@@ -22,11 +22,11 @@
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].acronym == project) {
                             for (let j in modules.tt.meta.projects[i].workflows) {
-                                let w = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
-                                if (w.charAt(0) != "#") {
+                                let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
+                                if (wn.charAt(0) != "#") {
                                     w.push({
                                         id: modules.tt.meta.projects[i].workflows[j],
-                                        text: w,
+                                        text: wn,
                                         selected: $.cookie("_workflow") == modules.tt.meta.projects[i].workflows[j],
                                     });
                                 }
