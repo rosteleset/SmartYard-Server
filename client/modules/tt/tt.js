@@ -639,6 +639,9 @@
                         for (let i in modules.tt.meta.workflows) {
                             if (i == val) {
                                 val = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:val;
+                                if (val.charAt(0) == "#") {
+                                    val = val.substring(1);
+                                }
                                 break;
                             }
                         }
