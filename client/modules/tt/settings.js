@@ -2086,6 +2086,11 @@
                     let rows = [];
 
                     for (let i in modules.tt.meta.workflows) {
+                        let wn = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
+
+                        if (wn.charAt(0) == "#") {
+                            wn = wn.substring(1);
+                        }
                         rows.push({
                             uid: i,
                             cols: [
@@ -2093,7 +2098,7 @@
                                     data: i,
                                 },
                                 {
-                                    data: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i,
+                                    data: wn,
                                 },
                             ],
                             dropDown: {
