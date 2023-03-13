@@ -18,7 +18,7 @@
              */
             function getRegions()
             {
-                return $this->db->get("select address_region_id, region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region from addresses_regions order by region", false, [
+                return $this->db->get("select address_region_id, region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region, timezone from addresses_regions order by region", false, [
                     "address_region_id" => "regionId",
                     "region_uuid" => "regionUuid",
                     "region_iso_code" => "regionIsoCode",
@@ -26,6 +26,7 @@
                     "region_type" => "regionType",
                     "region_type_full" => "regionTypeFull",
                     "region" => "region",
+                    "timezone" => "timezone",
                 ]);
             }
 
