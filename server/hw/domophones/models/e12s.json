@@ -1,0 +1,12 @@
+{
+    "title": "AKUVOX E12S",
+    "vendor": "AKUVOX",
+    "model": "E12S",
+    "class": "e12s",
+    "syslog": "akuvox",
+    "outputs": 1,
+    "camera": "akuvox",
+    "cmses": [
+
+    ]
+}
