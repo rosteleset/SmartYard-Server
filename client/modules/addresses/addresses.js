@@ -1211,7 +1211,10 @@
     ],
 
     timezonesOptions: function () {
-        let tz = [];
+        let tz = [{
+            id: "-",
+            text: "-",
+        }];
 
         let already = {};
 
