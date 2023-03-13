@@ -39,7 +39,7 @@
                 }
 
                 return $this->db->get(
-                    "select address_region_id, region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region from addresses_regions where address_region_id = :address_region_id",
+                    "select address_region_id, region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region, timezone from addresses_regions where address_region_id = :address_region_id",
                     [
                         ":address_region_id" => $regionId,
                     ],
@@ -51,6 +51,7 @@
                         "region_type" => "regionType",
                         "region_type_full" => "regionTypeFull",
                         "region" => "region",
+                        "timezone" => "timezone",
                     ],
                     [
                         "singlify"
@@ -61,20 +62,21 @@
             /**
              * @inheritDoc
              */
-            function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region)
+            function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone)
             {
                 if (!checkInt($regionId)) {
                     return false;
                 }
 
                 if ($regionId && trim($regionWithType) && trim($region)) {
-                    return $this->db->modify("update addresses_regions set region_uuid = :region_uuid, region_iso_code = :region_iso_code, region_with_type = :region_with_type, region_type = :region_type, region_type_full = :region_type_full, region = :region where address_region_id = $regionId", [
+                    return $this->db->modify("update addresses_regions set region_uuid = :region_uuid, region_iso_code = :region_iso_code, region_with_type = :region_with_type, region_type = :region_type, region_type_full = :region_type_full, region = :region, timezone = :timezone where address_region_id = $regionId", [
                         ":region_uuid" => $regionUuid,
                         ":region_iso_code" => $regionIsoCode,
                         ":region_with_type" => $regionWithType,
                         ":region_type" => $regionType,
                         ":region_type_full" => $regionTypeFull,
                         ":region" => $region,
+                        ":timezone" => $timezone,
                     ]);
                 } else {
                     return false;
@@ -84,16 +86,17 @@
             /**
              * @inheritDoc
              */
-            function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region)
+            function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone)
             {
                 if (trim($regionWithType) && trim($region)) {
-                    return $this->db->insert("insert into addresses_regions (region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region) values (:region_uuid, :region_iso_code, :region_with_type, :region_type, :region_type_full, :region)", [
+                    return $this->db->insert("insert into addresses_regions (region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region, timezone) values (:region_uuid, :region_iso_code, :region_with_type, :region_type, :region_type_full, :region, :timezone)", [
                         ":region_uuid" => $regionUuid,
                         ":region_iso_code" => $regionIsoCode,
                         ":region_with_type" => $regionWithType,
                         ":region_type" => $regionType,
                         ":region_type_full" => $regionTypeFull,
                         ":region" => $region,
+                        ":timezone" => $timezone,
                     ]);
                 } else {
                     return false;

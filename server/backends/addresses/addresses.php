@@ -34,9 +34,10 @@
              * @param $regionType
              * @param $regionTypeFull
              * @param $region
+             * @param $timezone
              * @return boolean
              */
-            abstract function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
+            abstract function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone);
 
             /**
              * @param $regionUuid
@@ -45,9 +46,10 @@
              * @param $regionType
              * @param $regionTypeFull
              * @param $region
+             * @param $timezone
              * @return false|integer
              */
-            abstract function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
+            abstract function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone);
 
             /**
              * @param $regionId

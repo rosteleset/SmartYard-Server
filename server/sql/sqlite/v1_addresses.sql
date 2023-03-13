@@ -7,7 +7,8 @@ CREATE TABLE addresses_regions
     region_with_type text not null,
     region_type text,
     region_type_full text,
-    region text not null
+    region text not null,
+    timezone text
 );
 CREATE UNIQUE INDEX addresses_regions_region_uuid on addresses_regions(region_uuid);
 CREATE UNIQUE INDEX addresses_regions_region on addresses_regions(region);
