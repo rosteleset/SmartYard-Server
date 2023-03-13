@@ -25,7 +25,7 @@ RBT/RBT.xcodeproj/
 /server/backends/authorization/custom/
 /server/backends/cameras/custom/
 /server/backends/configs/custom/
-/server/backends/custom/custom/
+/server/backends/custom/
 /server/backends/dvr/custom/
 /server/backends/dvr_exports/custom/
 /server/backends/files/custom/
@@ -49,7 +49,6 @@ RBT/RBT.xcodeproj/
 /server/backends/authorization/custom/custom.php
 /server/backends/cameras/custom/custom.php
 /server/backends/configs/custom/custom.php
-/server/backends/custom/custom/custom.php
 /server/backends/dvr/custom/custom.php
 /server/backends/dvr_exports/custom/custom.php
 /server/backends/files/custom/custom.php
