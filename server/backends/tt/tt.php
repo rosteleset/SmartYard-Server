@@ -125,7 +125,6 @@
 
                     $sandbox->registerLibrary("https", [
                         "POST" => function ($url, $data) {
-                            error_log($url);
                             return [
                                 json_decode(
                                     file_get_contents($url, false, stream_context_create([
