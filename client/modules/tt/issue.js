@@ -100,7 +100,7 @@
             for (let i in modules.tt.meta.projects) {
                 projects.push({
                     id: modules.tt.meta.projects[i].acronym,
-                    text: $.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"),
+                    text: $.trim(modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym),
                     selected: current_project == modules.tt.meta.projects[i].acronym || $.cookie("_project") == modules.tt.meta.projects[i].acronym,
                 });
             }
@@ -201,7 +201,7 @@
                     let workflows = [];
 
                     for (let i in modules.tt.meta.workflows) {
-                        workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i) + " [" + i + "]";
+                        workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i);
                     }
 
                     let projectName = "";
@@ -211,7 +211,7 @@
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].acronym == current_project) {
                             project = modules.tt.meta.projects[i];
-                            projectName = modules.tt.meta.projects[i].project?$.trim(modules.tt.meta.projects[i].project + " [" + modules.tt.meta.projects[i].acronym + "]"):modules.tt.meta.projects[i].acronym;
+                            projectName = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym;
                             projectId = modules.tt.meta.projects[i].projectId;
                         }
                     }

@@ -167,7 +167,7 @@
                     if (users.users[i].uid) {
                         users_list.push({
                             id: users.users[i].uid,
-                            text: $.trim(users.users[i].realName + " [" + users.users[i].login + "]"),
+                            text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
                         });
                     }
                 }
