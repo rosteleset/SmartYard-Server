@@ -261,7 +261,11 @@ function findBootstrapEnvironment() {
 }
 
 function nl2br(str) {
-    return str.split("\n").join("<br />");
+    if (str) {
+        return str.split("\n").join("<br />");
+    } else {
+        return "";
+    }
 }
 
 function i18n(msg, ...args) {
