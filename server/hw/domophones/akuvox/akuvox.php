@@ -11,6 +11,16 @@
             protected string $def_pass = 'httpapi';
             protected string $api_prefix = '/api';
 
+            protected array $rfidKeys = [];
+
+            public function __destruct() {
+                parent::__destruct();
+
+                if ($this->rfidKeys) {
+                    $this->writeRfids($this->rfidKeys);
+                }
+            }
+
             /** Make an API call */
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
@@ -31,6 +41,9 @@
 
                 if ($payload) {
                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'Expect:', // Workaround for the 100-continue expectation
+                    ]);
                 }
 
                 $res = curl_exec($ch);
@@ -87,8 +100,35 @@
                 ]);
             }
 
+            /** Write RFID keys array to intercom memory */
+            protected function writeRfids(array $rfids) {
+                $this->api_call('', 'POST', [
+                    'target' => 'rfkey',
+                    'action' => 'add',
+                    'data' => [
+                        'item' => $rfids,
+                    ],
+                ]);
+            }
+
             public function add_rfid(string $code, int $apartment = 0) {
-                // TODO: Implement add_rfid() method.
+                $this->rfidKeys[] = [
+                    'ID' => '0',
+                    'Code' => substr($code, 6),
+                    'DoorNum' => '1',
+                    'WebRelay' => '0',
+                    'Tags' => '0',
+                    'Frequency' => '0',
+                    'Mon' => '1',
+                    'Tue' => '1',
+                    'Wed' => '1',
+                    'Thur' => '1',
+                    'Fri' => '1',
+                    'Sat' => '1',
+                    'Sun' => '1',
+                    'TimeEnd' => '00:00',
+                    'TimeStart' => '00:00',
+                ];
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -96,7 +136,19 @@
             }
 
             public function clear_rfid(string $code = '') {
-                // TODO: Implement clear_rfid() method.
+                if ($code) {
+                    $this->api_call('', 'POST', [
+                        'target' => 'rfkey',
+                        'action' => 'del',
+                        'data' => [
+                            'item' => [
+                                [ 'Code' => substr($code, 6) ],
+                            ],
+                        ],
+                    ]);
+                } else {
+                    $this->api_call('/rfkey/clear');
+                }
             }
 
             public function configure_apartment(
@@ -133,7 +185,11 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                // TODO: Implement configure_ntp() method.
+                $this->setConfigParams([
+                    'Config.Settings.SNTP.Enable' => '1',
+                    'Config.Settings.SNTP.TimeZone' => $timezone,
+                    'Config.Settings.SNTP.NTPServer1' => "$server:$port",
+                ]);
             }
 
             public function configure_sip(
@@ -149,7 +205,11 @@
             }
 
             public function configure_syslog(string $server, int $port) {
-                // TODO: Implement configure_syslog() method.
+                $this->setConfigParams([
+                    'Config.Settings.LOGLEVEL.RemoteSyslog' => '1',
+                    'Config.Settings.LOGLEVEL.RemoteServer' => $server,
+                    'Config.Settings.LOGLEVEL.RemoteServerPort' => "$port",
+                ]);
             }
 
             public function configure_user_account(string $password) {
