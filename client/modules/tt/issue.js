@@ -724,8 +724,8 @@
     
                 let n = 0;
                 for (let i in r.template) {
-                    console.log(i, r.template[i]);
-                    let fi = modules.tt.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId);
+                    let fx = (typeof r.template[i] == "string")?r.template[i]:i;
+                    let fi = modules.tt.issueField2FormFieldEditor(issue.issue, fx, project.projectId, (typeof r.template[i] == "string")?false:r.template[i]);
                     if (fi) {
                         fields.push(fi);
                         if (r.template[i] == "comment") {

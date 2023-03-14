@@ -115,7 +115,7 @@
         }
     },
 
-    issueField2FormFieldEditor: function (issue, field, projectId) {
+    issueField2FormFieldEditor: function (issue, field, projectId, filter) {
 
         function peoples(project, withGroups, withUsers) {
             let p = [];
