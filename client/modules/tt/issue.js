@@ -725,7 +725,6 @@
                 let n = 0;
                 for (let i in r.template) {
                     let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
-                    console.log(fx);
                     let fi = modules.tt.issueField2FormFieldEditor(issue.issue, fx, project.projectId, (typeof r.template[i] == "string")?false:r.template[i]);
                     if (fi) {
                         fields.push(fi);
