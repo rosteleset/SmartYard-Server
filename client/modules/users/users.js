@@ -476,7 +476,7 @@
                         title: i18n("eMail"),
                     },
                     {
-                        title: i18n("users.tg"),
+                        title: i18n("users.telegram"),
                         nowrap: true,
                     },
                     {
@@ -518,7 +518,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: response.users[i].tg?response.users[i].tg:i18n("no"),
+                                    data: response.users[i].tg?i18n("yes"):i18n("no"),
                                     nowrap: true,
                                 },
                                 {

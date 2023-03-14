@@ -18,6 +18,7 @@
     "persistentToken": "Постоянный токен",
     "blocked": "Заблокирован",
     "tg": "Telegram (id)",
+    "telegram": "Telegram",
     "notification": "Уведомления",
     "notificationNone": "Без уведомлений",
     "notificationTgEmail": "Предпочитаю Telegram",
