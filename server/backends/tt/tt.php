@@ -318,7 +318,7 @@
              * @return false|integer
              */
 
-            abstract public function addResolution($resolution, $protected = 0);
+            abstract public function addResolution($resolution);
 
             /**
              * @param $resolutionId
