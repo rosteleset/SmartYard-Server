@@ -62,6 +62,23 @@
                 ]);
             }
 
+            /** Enable/disable PNP */
+            protected function enablePnp(bool $enabled = true) {
+                $this->setConfigParams([ 'Config.Autoprovision.PNP.Enable' => $enabled ? '1' : '0']);
+            }
+
+            /** Get params from config section */
+            protected function getConfigParams(array $params) {
+                $res = $this->api_call('', 'POST', [
+                    'target' => 'config',
+                    'action' => 'get',
+                    'data' => [ 'item' => $params ],
+                ]);
+
+                return array_values($res['data']);
+            }
+
+            /** Set data in config section */
             protected function setConfigParams(array $data) {
                 $this->api_call('', 'POST', [
                     'target' => 'config',
@@ -167,8 +184,12 @@
             }
 
             public function get_audio_levels(): array {
-                // TODO: Implement get_audio_levels() method.
-                return [];
+                return $this->getConfigParams([
+                    'Config.Settings.HANDFREE.MicVol',
+                    'Config.Settings.HANDFREE.SpkVol',
+                    'Config.Settings.HANDFREE.AlmVol',
+                    'Config.Settings.HANDFREE.PromptVol',
+                ]);
             }
 
             public function get_cms_allocation(): array {
@@ -196,7 +217,7 @@
             }
 
             public function keep_doors_unlocked(bool $unlocked = true) {
-                // TODO: Implement keep_doors_unlocked() method.
+                // not used
             }
 
             public function line_diag(int $apartment) {
@@ -228,7 +249,15 @@
             }
 
             public function set_audio_levels(array $levels) {
-                // TODO: Implement set_audio_levels() method.
+                if (count($levels) === 4) {
+                    $this->setConfigParams([
+                        'Config.Settings.HANDFREE.VolumeLevel' => '2', // Increase volume level
+                        'Config.Settings.HANDFREE.MicVol' => "$levels[0]",
+                        'Config.Settings.HANDFREE.SpkVol' => "$levels[1]",
+                        'Config.Settings.HANDFREE.AlmVol' => "$levels[2]",
+                        'Config.Settings.HANDFREE.PromptVol' => "$levels[3]",
+                    ]);
+                }
             }
 
             public function set_call_timeout(int $timeout) {
@@ -308,6 +337,7 @@
                 parent::prepare();
                 $this->configureInputsBinding();
                 $this->configureBle(false);
+                $this->enablePnp(false);
             }
         }
     }
