@@ -20,7 +20,7 @@
 
             public function getUsers() {
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled, last_login from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, last_login from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -30,6 +30,7 @@
                             "realName" => $user["real_name"],
                             "eMail" => $user["e_mail"],
                             "phone" => $user["phone"],
+                            "tg" => $user["tg"],
                             "enabled" => $user["enabled"],
                             "lastLogin" => $user["last_login"],
                         ];
