@@ -41,14 +41,10 @@
 
             /** Configure BLE */
             protected function configureBle(bool $enabled = true, int $threshold = -72, int $openDoorInterval = 5) {
-                $this->api_call('', 'POST', [
-                    'target' => 'config',
-                    'action' => 'set',
-                    'data' => [
-                        'Config.DoorSetting.BLE.Enable' => "$enabled",
-                        'Config.DoorSetting.BLE.RssiThreshold' => "$threshold",
-                        'Config.DoorSetting.BLE.Delay' => "$openDoorInterval",
-                    ],
+                $this->setConfigParams([
+                    'Config.DoorSetting.BLE.Enable' => "$enabled",
+                    'Config.DoorSetting.BLE.RssiThreshold' => "$threshold",
+                    'Config.DoorSetting.BLE.Delay' => "$openDoorInterval",
                 ]);
             }
 
@@ -63,6 +59,14 @@
                         'Config.DoorSetting.INPUT.InputRelay' => '1',
                         'Config.DoorSetting.INPUT.InputBRelay' => '1',
                     ],
+                ]);
+            }
+
+            protected function setConfigParams(array $data) {
+                $this->api_call('', 'POST', [
+                    'target' => 'config',
+                    'action' => 'set',
+                    'data' => $data,
                 ]);
             }
 
@@ -132,41 +136,33 @@
             }
 
             public function configure_user_account(string $password) {
-                $this->api_call('', 'POST', [
-                    'target' => 'config',
-                    'action' => 'set',
-                    'data' => [
-                        'Config.Settings.SECURITY.UserAccountEnabled' => '1',
-                        'Config.Settings.WEB_LOGIN.Password02' => $password,
-                    ],
+                $this->setConfigParams([
+                    'Config.Settings.SECURITY.UserAccountEnabled' => '1',
+                    'Config.Settings.WEB_LOGIN.Password02' => $password,
                 ]);
             }
 
             public function configure_video_encoding() {
-                $this->api_call('', 'POST', [
-                    'target' => 'config',
-                    'action' => 'set',
-                    'data' => [
-                        'Config.DoorSetting.RTSP.Enable' => '1',
-                        'Config.DoorSetting.RTSP.Audio' => '1',
-                        'Config.DoorSetting.RTSP.AudioCodec' => '0', // PCMU
-                        'Config.DoorSetting.RTSP.Authorization' => '1',
-                        'Config.DoorSetting.RTSP.MJPEGAuthorization' => '1',
+                $this->setConfigParams([
+                    'Config.DoorSetting.RTSP.Enable' => '1',
+                    'Config.DoorSetting.RTSP.Audio' => '1',
+                    'Config.DoorSetting.RTSP.AudioCodec' => '0', // PCMU
+                    'Config.DoorSetting.RTSP.Authorization' => '1',
+                    'Config.DoorSetting.RTSP.MJPEGAuthorization' => '1',
 
-                        // First stream
-                        'Config.DoorSetting.RTSP.Video' => '1',
-                        'Config.DoorSetting.RTSP.VideoCodec' => '0', // H.264
-                        'Config.DoorSetting.RTSP.H264Resolution' => '5', // 720P
-                        'Config.DoorSetting.RTSP.H264FrameRate' => '30',
-                        'Config.DoorSetting.RTSP.H264BitRate' => '1024',
+                    // First stream
+                    'Config.DoorSetting.RTSP.Video' => '1',
+                    'Config.DoorSetting.RTSP.VideoCodec' => '0', // H.264
+                    'Config.DoorSetting.RTSP.H264Resolution' => '5', // 720P
+                    'Config.DoorSetting.RTSP.H264FrameRate' => '30',
+                    'Config.DoorSetting.RTSP.H264BitRate' => '1024',
 
-                        // Second stream
-                        'Config.DoorSetting.RTSP.Video2' => '1',
-                        'Config.DoorSetting.RTSP.VideoCodec2' => '0', // H.264
-                        'Config.DoorSetting.RTSP.H264Resolution2' => '3', // VGA
-                        'Config.DoorSetting.RTSP.H264FrameRate2' => '30',
-                        'Config.DoorSetting.RTSP.H264BitRate2' => '512',
-                    ],
+                    // Second stream
+                    'Config.DoorSetting.RTSP.Video2' => '1',
+                    'Config.DoorSetting.RTSP.VideoCodec2' => '0', // H.264
+                    'Config.DoorSetting.RTSP.H264Resolution2' => '3', // VGA
+                    'Config.DoorSetting.RTSP.H264FrameRate2' => '30',
+                    'Config.DoorSetting.RTSP.H264BitRate2' => '512',
                 ]);
             }
 
@@ -222,14 +218,10 @@
             }
 
             public function set_admin_password(string $password) {
-                $this->api_call('', 'POST', [
-                    'target' => 'config',
-                    'action' => 'set',
-                    'data' => [
-                        'Config.Settings.WEB_LOGIN.Password' => $password, // WEB
-                        'Config.DoorSetting.APIFCGI.Password' => $password, // API
-                        'Config.DoorSetting.RTSP.Password' => $password, // RTSP
-                    ],
+                $this->setConfigParams([
+                    'Config.Settings.WEB_LOGIN.Password' => $password, // WEB
+                    'Config.DoorSetting.APIFCGI.Password' => $password, // API
+                    'Config.DoorSetting.RTSP.Password' => $password, // RTSP
                 ]);
 
                 sleep(1);
@@ -240,13 +232,9 @@
             }
 
             public function set_call_timeout(int $timeout) {
-                $this->api_call('', 'POST', [
-                    'target' => 'config',
-                    'action' => 'set',
-                    'data' => [
-                        'Config.Settings.CALLTIMEOUT.DialOut' => "$timeout",
-                        'Config.Settings.CALLTIMEOUT.DialIn' => "$timeout",
-                    ],
+                $this->setConfigParams([
+                    'Config.Settings.CALLTIMEOUT.DialOut' => "$timeout",
+                    'Config.Settings.CALLTIMEOUT.DialIn' => "$timeout",
                 ]);
             }
 
@@ -284,11 +272,7 @@
 
             public function set_talk_timeout(int $timeout) {
                 $timeout = round($timeout / 60);
-                $this->api_call('', 'POST', [
-                    'target' => 'config',
-                    'action' => 'set',
-                    'data' => [ 'Config.Features.DOORPHONE.MaxCallTime' => "$timeout" ],
-                ]);
+                $this->setConfigParams([ 'Config.Features.DOORPHONE.MaxCallTime' => "$timeout" ]);
             }
 
             public function set_unlock_time(int $time) {
@@ -301,11 +285,7 @@
 
             public function set_video_overlay(string $title = '') {
                 // TODO: Not working
-                $this->api_call('', 'POST', [
-                    'target' => 'config',
-                    'action' => 'set',
-                    'data' => [ 'Config.DoorSetting.RTSP.OSDText' => $title ],
-                ]);
+                $this->setConfigParams([ 'Config.DoorSetting.RTSP.OSDText' => $title ]);
             }
 
             public function set_language(string $lang) {
