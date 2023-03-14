@@ -132,12 +132,42 @@
             }
 
             public function configure_user_account(string $password) {
-                // TODO: Implement configure_user_account() method.
+                $this->api_call('', 'POST', [
+                    'target' => 'config',
+                    'action' => 'set',
+                    'data' => [
+                        'Config.Settings.SECURITY.UserAccountEnabled' => '1',
+                        'Config.Settings.WEB_LOGIN.Password02' => $password,
+                    ],
+                ]);
             }
 
             public function configure_video_encoding() {
-                // TODO: Implement configure_video_encoding() method.
-                return [];
+                $this->api_call('', 'POST', [
+                    'target' => 'config',
+                    'action' => 'set',
+                    'data' => [
+                        'Config.DoorSetting.RTSP.Enable' => '1',
+                        'Config.DoorSetting.RTSP.Audio' => '1',
+                        'Config.DoorSetting.RTSP.AudioCodec' => '0', // PCMU
+                        'Config.DoorSetting.RTSP.Authorization' => '1',
+                        'Config.DoorSetting.RTSP.MJPEGAuthorization' => '1',
+
+                        // First stream
+                        'Config.DoorSetting.RTSP.Video' => '1',
+                        'Config.DoorSetting.RTSP.VideoCodec' => '0', // H.264
+                        'Config.DoorSetting.RTSP.H264Resolution' => '5', // 720P
+                        'Config.DoorSetting.RTSP.H264FrameRate' => '30',
+                        'Config.DoorSetting.RTSP.H264BitRate' => '1024',
+
+                        // Second stream
+                        'Config.DoorSetting.RTSP.Video2' => '1',
+                        'Config.DoorSetting.RTSP.VideoCodec2' => '0', // H.264
+                        'Config.DoorSetting.RTSP.H264Resolution2' => '3', // VGA
+                        'Config.DoorSetting.RTSP.H264FrameRate2' => '30',
+                        'Config.DoorSetting.RTSP.H264BitRate2' => '512',
+                    ],
+                ]);
             }
 
             public function get_audio_levels(): array {
@@ -210,7 +240,14 @@
             }
 
             public function set_call_timeout(int $timeout) {
-                // TODO: Implement set_call_timeout() method.
+                $this->api_call('', 'POST', [
+                    'target' => 'config',
+                    'action' => 'set',
+                    'data' => [
+                        'Config.Settings.CALLTIMEOUT.DialOut' => "$timeout",
+                        'Config.Settings.CALLTIMEOUT.DialIn' => "$timeout",
+                    ],
+                ]);
             }
 
             public function set_cms_levels(array $levels) {
@@ -234,7 +271,11 @@
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
-                // TODO: Implement set_relay_dtmf() method.
+                $this->api_call('', 'POST', [
+                    'target' => 'relay',
+                    'action' => 'set',
+                    'data' => [ 'Config.DoorSetting.DTMF.Code1' => "$relay_1" ],
+                ]);
             }
 
             public function set_sos_number(int $number) {
@@ -242,7 +283,12 @@
             }
 
             public function set_talk_timeout(int $timeout) {
-                // TODO: Implement set_talk_timeout() method.
+                $timeout = round($timeout / 60);
+                $this->api_call('', 'POST', [
+                    'target' => 'config',
+                    'action' => 'set',
+                    'data' => [ 'Config.Features.DOORPHONE.MaxCallTime' => "$timeout" ],
+                ]);
             }
 
             public function set_unlock_time(int $time) {
@@ -254,7 +300,12 @@
             }
 
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                // TODO: Not working
+                $this->api_call('', 'POST', [
+                    'target' => 'config',
+                    'action' => 'set',
+                    'data' => [ 'Config.DoorSetting.RTSP.OSDText' => $title ],
+                ]);
             }
 
             public function set_language(string $lang) {
