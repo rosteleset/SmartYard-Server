@@ -153,7 +153,7 @@
                         },
                         "PUT" => function ($params) {
                             $custom = loadBackend("custom");
-                            return [ $custom->GEPUTT($params) ];
+                            return [ $custom->PUT($params) ];
                         },
                         "DELETE" => function ($params) {
                             $custom = loadBackend("custom");
