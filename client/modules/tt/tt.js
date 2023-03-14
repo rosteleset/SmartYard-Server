@@ -165,7 +165,7 @@
 
                 for (let i in options) {
                     for (let j in filter) {
-                        if (options[i].id == filter[j]) {
+                        if (options[i].id == filter[j] || options[i].text == filter[j]) {
                             o.push(options[i]);
                             break;
                         }
