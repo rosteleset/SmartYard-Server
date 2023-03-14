@@ -514,6 +514,7 @@
                                 },
                                 {
                                     data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
+                                    click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
                                     nowrap: true,
                                 },
                                 {
