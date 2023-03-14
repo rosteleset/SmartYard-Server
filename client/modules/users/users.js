@@ -519,7 +519,6 @@
                                 },
                                 {
                                     data: response.users[i].tg?response.users[i].tg:i18n("no"),
-                                    click: response.users[i].tg?`tg://openmessage?user_id=${response.users[i].tg}`:false,
                                     nowrap: true,
                                 },
                                 {
