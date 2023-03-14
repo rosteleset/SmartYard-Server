@@ -163,11 +163,12 @@
             if (filter) {
                 let o = [];
 
-                console.log(filter);
-
                 for (let i in options) {
-                    if (filter.indexOf(options[i].id) >= 0) {
-                        o.push(options[i]);
+                    for (let j in filter) {
+                        if (options[i].id == filter[j]) {
+                            o.push(options[i]);
+                            break;
+                        }
                     }
                 }
 
