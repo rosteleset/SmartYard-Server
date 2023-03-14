@@ -70,7 +70,6 @@ CREATE TABLE tt_issue_custom_fields
 (
     issue_custom_field_id integer primary key autoincrement,
     type text not null,
-    workflow integer,                                                                                                   -- managed by workflow, only field_display can be edited, can't be removed by user
     field text not null,
     field_display text not null,
     field_description text,
@@ -89,8 +88,7 @@ CREATE TABLE tt_projects_custom_fields
 (
     project_custom_field_id integer primary key autoincrement,
     project_id integer,
-    issue_custom_field_id integer,
-    workflow integer                                                                                                    -- managed by workflow, can't be removed by user
+    issue_custom_field_id integer
 );
 CREATE UNIQUE INDEX tt_projects_custom_fields_uniq on tt_projects_custom_fields (project_id, issue_custom_field_id);
 
@@ -100,7 +98,6 @@ CREATE TABLE tt_issue_custom_fields_options
     issue_custom_field_option_id integer primary key autoincrement,
     issue_custom_field_id integer,
     option text not null,
-    option_display text,                                                                                                -- only for workflow's fields
     display_order integer
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_fields_options(issue_custom_field_id, option);

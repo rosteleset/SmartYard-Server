@@ -47,14 +47,13 @@ CREATE TABLE tt_issue_resolutions
 (
     issue_resolution_id serial primary key,
     resolution character varying,
-    alias character varying,
-    protected integer default 0
+    alias character varying
 );
 CREATE UNIQUE INDEX tt_issue_resolutions_uniq1 on tt_issue_resolutions(resolution);
 CREATE UNIQUE INDEX tt_issue_resolutions_uniq2 on tt_issue_resolutions(alias);
-INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('fixed', 'fixed', 1);
-INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('can''t fix', 'can''t fix', 1);
-INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('duplicate', 'duplicate', 1);
+INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('fixed', 'fixed');
+INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('can''t fix', 'can''t fix');
+INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('duplicate', 'duplicate');
 
 -- projects <-> resolutions
 CREATE TABLE tt_projects_resolutions
@@ -70,7 +69,6 @@ CREATE TABLE tt_issue_custom_fields
 (
     issue_custom_field_id serial primary key,
     type character varying not null,
-    workflow integer,                                                                                                   -- managed by workflow, only field_display can be edited, can't be removed by user
     field character varying not null,
     field_display character varying not null,
     field_description character varying,
@@ -89,8 +87,7 @@ CREATE TABLE tt_projects_custom_fields
 (
     project_custom_field_id serial primary key,
     project_id integer,
-    issue_custom_field_id integer,
-    workflow integer                                                                                                    -- managed by workflow, can't be removed by user
+    issue_custom_field_id integer
 );
 CREATE UNIQUE INDEX tt_projects_custom_fields_uniq on tt_projects_custom_fields (project_id, issue_custom_field_id);
 
@@ -100,7 +97,6 @@ CREATE TABLE tt_issue_custom_fields_options
     issue_custom_field_option_id serial primary key,
     issue_custom_field_id integer,
     option character varying not null,
-    option_display character varying,                                                                                   -- only for workflow's fields
     display_order integer
 );
 CREATE UNIQUE INDEX tt_issue_custom_fields_options_uniq on tt_issue_custom_fields_options(issue_custom_field_id, option);

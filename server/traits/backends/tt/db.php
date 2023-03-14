@@ -428,14 +428,13 @@
             public function getResolutions()
             {
                 try {
-                    $resolutions = $this->db->query("select issue_resolution_id, resolution, protected, alias from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
+                    $resolutions = $this->db->query("select issue_resolution_id, resolution, alias from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
                     $_resolutions = [];
 
                     foreach ($resolutions as $resolution) {
                         $_resolutions[] = [
                             "resolutionId" => $resolution["issue_resolution_id"],
                             "resolution" => $resolution["resolution"],
-                            "protected" => $resolution["protected"],
                             "alias" => $resolution["alias"],
                         ];
                     }
@@ -450,19 +449,15 @@
             /**
              * @inheritDoc
              */
-            public function addResolution($resolution, $protected = 0)
+            public function addResolution($resolution)
             {
                 $resolution = trim($resolution);
-
-                if (!checkInt($protected)) {
-                    return false;
-                }
 
                 if (!$resolution) {
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_issue_resolutions (resolution, alias, protected) values (:resolution, :resolution, :protected)", [ "resolution" => $resolution, "protected" => $protected ]);
+                return $this->db->insert("insert into tt_issue_resolutions (resolution, alias) values (:resolution, :resolution)", [ "resolution" => $resolution, ]);
             }
 
             /**
@@ -477,7 +472,7 @@
                 }
 
                 return $this->db->modify("update tt_issue_resolutions set resolution = :resolution where issue_resolution_id = $resolutionId", [ "resolution" => $resolution, ]) +
-                    $this->db->modify("update tt_issue_resolutions set alias = :resolution where issue_resolution_id = $resolutionId and protected = 0", [ "resolution" => $resolution, ]);
+                    $this->db->modify("update tt_issue_resolutions set alias = :resolution where issue_resolution_id = $resolutionId", [ "resolution" => $resolution, ]);
             }
 
             /**
@@ -489,7 +484,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId and protected = 0") +
+                return $this->db->modify("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId") +
                     $this->db->modify("delete from tt_projects_resolutions where issue_resolution_id not in (select issue_resolution_id from tt_issue_resolutions)");
             }
 
@@ -544,7 +539,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, workflow, field, field_display, field_description, regex, link, format, editor, indx, search, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, type, field, field_display, field_description, regex, link, format, editor, indx, search, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -562,7 +557,6 @@
                         $_customFields[] = [
                             "customFieldId" => $customField["issue_custom_field_id"],
                             "type" => $customField["type"],
-                            "workflow" => $customField["workflow"],
                             "field" => $customField["field"],
                             "fieldDisplay" => $customField["field_display"],
                             "fieldDescription" => $customField["field_description"],
@@ -600,7 +594,7 @@
                 try {
                     $sth = $this->db->prepare("
                         insert into 
-                            tt_issue_custom_fields (type, field, field_display, workflow)
+                            tt_issue_custom_fields (type, field, field_display)
                         values (:type, :field, :field_display, 0)");
                     if (!$sth->execute([
                         ":type" => $type,
@@ -781,123 +775,92 @@
                 $cf = $cf[0];
 
                 try {
-                    if ($cf["workflow"]) {
-                        $sth = $this->db->prepare("
-                                update
-                                    tt_issue_custom_fields
-                                set 
-                                    field_display = :field_display,
-                                    field_description = :field_description,
-                                    link = :link
-                                where
-                                    issue_custom_field_id = $customFieldId
-                            ");
-                        $sth->execute([
-                            ":field_display" => $fieldDisplay,
-                            ":field_description" => $fieldDescription,
-                            ":link" => $link,
-                        ]);
+                    $sth = $this->db->prepare("
+                        update
+                            tt_issue_custom_fields
+                        set 
+                            field_display = :field_display,
+                            field_description = :field_description,
+                            regex = :regex,
+                            link = :link,
+                            format = :format,
+                            editor = :editor,
+                            indx = :indx,
+                            search = :search,
+                            required = :required
+                        where
+                            issue_custom_field_id = $customFieldId
+                    ");
 
-                        $upd = $this->db->prepare("update tt_issue_custom_fields_options set option_display = :display where issue_custom_field_id = $customFieldId and issue_custom_field_option_id = :option");
+                    $sth->execute([
+                        ":field_display" => $fieldDisplay,
+                        ":field_description" => $fieldDescription,
+                        ":regex" => $regex,
+                        ":link" => $link,
+                        ":format" => $format,
+                        ":editor" => $editor,
+                        ":indx" => $indx,
+                        ":search" => $search,
+                        ":required" => $required,
+                    ]);
 
-                        foreach ($options as $option => $display) {
-                            if (!checkInt($option)) {
-                                return false;
+                    if ($cf["type"] === "select") {
+                        $t = explode("\n", trim($options));
+                        $new = [];
+                        foreach ($t as $i) {
+                            $i = trim($i);
+                            if ($i) {
+                                $new[] = $i;
                             }
-                            $upd->execute([
-                                ":option" => $option,
-                                ":display" => $display,
-                            ]);
                         }
-                    } else {
-                        $sth = $this->db->prepare("
-                            update
-                                tt_issue_custom_fields
-                            set 
-                                field_display = :field_display,
-                                field_description = :field_description,
-                                regex = :regex,
-                                link = :link,
-                                format = :format,
-                                editor = :editor,
-                                indx = :indx,
-                                search = :search,
-                                required = :required
-                            where
-                                issue_custom_field_id = $customFieldId
-                        ");
 
-                        $sth->execute([
-                            ":field_display" => $fieldDisplay,
-                            ":field_description" => $fieldDescription,
-                            ":regex" => $regex,
-                            ":link" => $link,
-                            ":format" => $format,
-                            ":editor" => $editor,
-                            ":indx" => $indx,
-                            ":search" => $search,
-                            ":required" => $required,
-                        ]);
+                        $ins = $this->db->prepare("insert into tt_issue_custom_fields_options (issue_custom_field_id, option, option_display) values ($customFieldId, :option, :option)");
+                        $del = $this->db->prepare("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId and option = :option");
+                        $upd = $this->db->prepare("update tt_issue_custom_fields_options set option_display = :option, display_order = :order where issue_custom_field_id = $customFieldId and option = :option");
 
-                        if ($cf["type"] === "select") {
-                            $t = explode("\n", trim($options));
-                            $new = [];
-                            foreach ($t as $i) {
-                                $i = trim($i);
-                                if ($i) {
-                                    $new[] = $i;
+                        $options = $this->db->query("select option from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId", \PDO::FETCH_ASSOC)->fetchAll();
+                        $old = [];
+                        foreach ($options as $option) {
+                            $old[] = $option["option"];
+                        }
+
+                        foreach ($old as $j) {
+                            $f = false;
+                            foreach ($new as $i) {
+                                if ($i == $j) {
+                                    $f = true;
+                                    break;
                                 }
                             }
-
-                            $ins = $this->db->prepare("insert into tt_issue_custom_fields_options (issue_custom_field_id, option, option_display) values ($customFieldId, :option, :option)");
-                            $del = $this->db->prepare("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId and option = :option");
-                            $upd = $this->db->prepare("update tt_issue_custom_fields_options set option_display = :option, display_order = :order where issue_custom_field_id = $customFieldId and option = :option");
-
-                            $options = $this->db->query("select option from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId", \PDO::FETCH_ASSOC)->fetchAll();
-                            $old = [];
-                            foreach ($options as $option) {
-                                $old[] = $option["option"];
-                            }
-
-                            foreach ($old as $j) {
-                                $f = false;
-                                foreach ($new as $i) {
-                                    if ($i == $j) {
-                                        $f = true;
-                                        break;
-                                    }
-                                }
-                                if (!$f) {
-                                    $del->execute([
-                                        ":option" => $j,
-                                    ]);
-                                }
-                            }
-
-                            foreach ($new as $j) {
-                                $f = false;
-                                foreach ($old as $i) {
-                                    if ($i == $j) {
-                                        $f = true;
-                                        break;
-                                    }
-                                }
-                                if (!$f) {
-                                    $ins->execute([
-                                        ":option" => $j,
-                                    ]);
-                                }
-                            }
-
-                            $n = 1;
-                            foreach ($new as $j) {
-                                $upd->execute([
+                            if (!$f) {
+                                $del->execute([
                                     ":option" => $j,
-                                    ":order" => $n,
                                 ]);
-                                $n++;
                             }
+                        }
 
+                        foreach ($new as $j) {
+                            $f = false;
+                            foreach ($old as $i) {
+                                if ($i == $j) {
+                                    $f = true;
+                                    break;
+                                }
+                            }
+                            if (!$f) {
+                                $ins->execute([
+                                    ":option" => $j,
+                                ]);
+                            }
+                        }
+
+                        $n = 1;
+                        foreach ($new as $j) {
+                            $upd->execute([
+                                ":option" => $j,
+                                ":order" => $n,
+                            ]);
+                            $n++;
                         }
                     }
                 } catch (\Exception $e) {
@@ -923,17 +886,13 @@
                 }
                 $cf = $cf[0];
 
-                if ($cf["workflow"]) {
+                try {
+                    return $this->db->modify("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId") +
+                        $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId") +
+                        $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     return false;
-                } else {
-                    try {
-                        return $this->db->modify("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId") +
-                            $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId") +
-                            $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId");
-                    } catch (\Exception $e) {
-                        error_log(print_r($e, true));
-                        return false;
-                    }
                 }
             }
 
