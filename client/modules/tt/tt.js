@@ -117,6 +117,8 @@
 
     issueField2FormFieldEditor: function (issue, field, projectId, filter) {
 
+        console.log(filter);
+
         function peoples(project, withGroups, withUsers) {
             let p = [];
 
