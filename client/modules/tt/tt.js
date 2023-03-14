@@ -163,6 +163,8 @@
             if (filter) {
                 let o = [];
 
+                console.log(filter);
+
                 for (let i in options) {
                     if (filter.indexOf(options[i].id) >= 0) {
                         o.push(options[i]);
