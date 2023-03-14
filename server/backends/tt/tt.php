@@ -142,6 +142,25 @@
                         },
                     ]);
 
+                    $sandbox->registerLibrary("custom", [
+                        "GET" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->GET($params) ];
+                        },
+                        "POST" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->POST($params) ];
+                        },
+                        "PUT" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->GEPUTT($params) ];
+                        },
+                        "DELETE" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->DELETE($params) ];
+                        },
+                    ]);
+
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
