@@ -723,6 +723,25 @@
                 }
     
                 let n = 0;
+
+                let kx = [];
+                let ky = {};
+
+                for (let i in r.template) {
+                    let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
+                    if (fx.charAt(0) == '%') {
+                        fx = fx.split('%');
+                        kx[fx[1]] = fx[2];
+                        ky[fx[2]] = r.template[i];
+                    } else {
+                        kx.push(fx);
+                        ky[fx] = r.template[i];
+                    }
+                }
+
+                console.log(kx);
+                console.log(ky);
+
                 for (let i in r.template) {
                     let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
                     let fi = modules.tt.issueField2FormFieldEditor(issue.issue, fx, project.projectId, (typeof r.template[i] == "string")?false:r.template[i]);
