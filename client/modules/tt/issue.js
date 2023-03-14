@@ -732,10 +732,10 @@
                     if (fx.charAt(0) == '%') {
                         fx = fx.split('%');
                         kx[fx[1]] = fx[2];
-                        ky[fx[2]] = r.template[i];
+                        ky[fx[2]] = (typeof r.template[i] == "string")?false:r.template[i];
                     } else {
                         kx.push(fx);
-                        ky[fx] = r.template[i];
+                        ky[fx] = (typeof r.template[i] == "string")?false:r.template[i];
                     }
                 }
 
