@@ -2109,6 +2109,9 @@
                     },
                     {
                         title: i18n("tt.resolution"),
+                    },
+                    {
+                        title: i18n("tt.resolutionName"),
                         fullWidth: true,
                     },
                 ],
@@ -2122,6 +2125,9 @@
                             cols: [
                                 {
                                     data: modules.tt.meta.resolutions[i].resolutionId,
+                                },
+                                {
+                                    data: modules.tt.meta.resolutions[i].alias,
                                 },
                                 {
                                     data: modules.tt.meta.resolutions[i].resolution,
