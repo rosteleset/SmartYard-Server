@@ -23,6 +23,8 @@
             fieldId = field;
         }
 
+        console.log(field);
+
         if (fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
