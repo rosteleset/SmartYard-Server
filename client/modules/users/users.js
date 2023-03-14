@@ -476,6 +476,10 @@
                         title: i18n("eMail"),
                     },
                     {
+                        title: i18n("users.tg"),
+                        nowrap: true,
+                    },
+                    {
                         title: i18n("phone"),
                     },
                 ],
@@ -510,6 +514,10 @@
                                 },
                                 {
                                     data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
+                                    nowrap: true,
+                                },
+                                {
+                                    data: response.users[i].tg?response.users[i].tg:i18n("no"),
                                     nowrap: true,
                                 },
                                 {
