@@ -720,9 +720,11 @@
 
     modifyResolution: function (resolutionId) {
         let resolution = '';
+        let alias = '';
 
         for (let i in modules.tt.meta.resolutions) {
             if (modules.tt.meta.resolutions[i].resolutionId == resolutionId) {
+                alias = modules.tt.meta.resolutions[i].alias;
                 resolution = modules.tt.meta.resolutions[i].resolution;
             }
         }
