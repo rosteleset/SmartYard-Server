@@ -77,7 +77,7 @@
 
             /** Enable/disable PNP */
             protected function enablePnp(bool $enabled = true) {
-                $this->setConfigParams([ 'Config.Autoprovision.PNP.Enable' => $enabled ? '1' : '0']);
+                $this->setConfigParams([ 'Config.Autoprovision.PNP.Enable' => $enabled ? '1' : '0' ]);
             }
 
             /** Get params from config section */
@@ -201,7 +201,25 @@
                 string $stun_server = '',
                 int $stun_port = 3478
             ) {
-                // TODO: Implement configure_sip() method.
+                $this->api_call('', 'POST', [
+                    'target' => 'sip',
+                    'action' => 'set',
+                    'data' => [
+                        'Config.Account1.GENERAL.AuthName' => $login,
+                        'Config.Account1.GENERAL.DisplayName' => $login,
+                        'Config.Account1.GENERAL.Enable' => '1',
+                        'Config.Account1.GENERAL.Label' => $login,
+                        'Config.Account1.GENERAL.Pwd' => $password,
+                        'Config.Account1.GENERAL.UserAgent' => $login,
+                        'Config.Account1.GENERAL.UserName' => $login,
+                        'Config.Account1.SIP.Port' => "$port",
+                        'Config.Account1.SIP.Server' => "$server",
+                        'Config.Account1.SIP.TransType' => '1', // TCP
+                        'Config.Account1.STUN.Enable' => $nat ? '1' : '0',
+                        'Config.Account1.STUN.Server' => $stun_server,
+                        'Config.Account1.STUN.Port' => "$stun_port",
+                    ],
+                ]);
             }
 
             public function configure_syslog(string $server, int $port) {
@@ -261,8 +279,11 @@
             }
 
             public function get_rfids(): array {
-                // TODO: Implement get_rfids() method.
-                return [];
+                $items = $this->api_call('/rfkey/get')['data']['item'];
+
+                return array_map(function($code) {
+                    return '000000' . $code;
+                }, array_column($items, 'Code'));
             }
 
             public function get_sysinfo(): array {
