@@ -160,6 +160,13 @@
                             return [ $custom->DELETE($params) ];
                         },
                     ]);
+                    
+                    $sandbox->registerLibrary("mb", [
+                        "substr" => function (...$args) {
+                            return [ mb_substr(...$args) ];
+                        },
+                    ]);
+                    
 
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
