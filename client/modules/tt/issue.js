@@ -712,8 +712,6 @@
                 _id: issue.issue.issueId,
                 action: action,
             }, true).done(r => {
-                console.log(r);
-                
                 let fields = [];
     
                 let project;
@@ -726,6 +724,7 @@
     
                 let n = 0;
                 for (let i in r.template) {
+                    console.log(i, r.template[i]);
                     let fi = modules.tt.issueField2FormFieldEditor(issue.issue, r.template[i], project.projectId);
                     if (fi) {
                         fields.push(fi);

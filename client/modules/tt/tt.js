@@ -23,7 +23,7 @@
             fieldId = field;
         }
 
-        if (fieldId.substring(0, 4) !== "_cf_") {
+        if (fieldId.toString().substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
                 case "issueId":
