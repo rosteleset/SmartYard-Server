@@ -741,9 +741,16 @@
                     readonly: true,
                 },
                 {
-                    id: "resolution",
+                    id: "alias",
                     type: "text",
                     title: i18n("tt.resolution"),
+                    value: alias,
+                    readonly: true,
+                },
+                {
+                    id: "resolution",
+                    type: "text",
+                    title: i18n("tt.resolutionName"),
                     value: resolution,
                 },
             ],
