@@ -729,7 +729,7 @@
                     let fi = modules.tt.issueField2FormFieldEditor(issue.issue, fx, project.projectId, (typeof r.template[i] == "string")?false:r.template[i]);
                     if (fi) {
                         fields.push(fi);
-                        if (r.template[i] == "comment") {
+                        if (fx == "comment") {
                             fields.push({
                                 id: "commentPrivate",
                                 type: "yesno",
