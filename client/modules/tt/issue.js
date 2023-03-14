@@ -739,12 +739,8 @@
                     }
                 }
 
-                console.log(kx);
-                console.log(ky);
-
-                for (let i in r.template) {
-                    let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
-                    let fi = modules.tt.issueField2FormFieldEditor(issue.issue, fx, project.projectId, (typeof r.template[i] == "string")?false:r.template[i]);
+                for (let i in kx) {
+                    let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]]);
                     if (fi) {
                         fields.push(fi);
                         if (fx == "comment") {
