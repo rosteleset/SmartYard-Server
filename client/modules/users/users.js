@@ -519,6 +519,7 @@
                                 },
                                 {
                                     data: response.users[i].tg?response.users[i].tg:i18n("no"),
+                                    click: response.users[i].tg?`https://t.me/${response.users[i].tg}`:false,
                                     nowrap: true,
                                 },
                                 {
