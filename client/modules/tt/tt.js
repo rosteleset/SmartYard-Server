@@ -117,8 +117,6 @@
 
     issueField2FormFieldEditor: function (issue, field, projectId, filter) {
 
-        console.log(filter);
-
         function peoples(project, withGroups, withUsers) {
             let p = [];
 
@@ -159,6 +157,22 @@
             }
 
             return p;
+        }
+
+        function select2Filter(options, filter) {
+            if (filter) {
+                let o = [];
+
+                for (let i in options) {
+                    if (filter.indexOf(options[i].id) >= 0) {
+                        o.push(options[i]);
+                    }
+                }
+
+                return o;
+            } else {
+                return options;
+            }
         }
 
         let fieldId;
@@ -252,7 +266,7 @@
                         id: "resolution",
                         type: "select2",
                         title: modules.tt.issueFieldTitle(field),
-                        options: resolutions,
+                        options: select2Filter(resolutions, filter),
                         value: (issue && issue.resolution)?issue.resolution:-1,
                         validate: v => {
                             return $.trim(v) !== "";
@@ -273,7 +287,7 @@
                         id: "status",
                         type: "select2",
                         title: modules.tt.issueFieldTitle(field),
-                        options: statuses,
+                        options: select2Filter(statuses, filter),
                         value: (issue && issue.status)?issue.status:-1,
                     };
 
@@ -286,7 +300,7 @@
                         multiple: true,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        options: tags,
+                        options: select2Filter(tags, filter),
                         value: (issue && issue.tags)?Object.values(issue.tags):[],
                     };
 
@@ -297,7 +311,7 @@
                         multiple: true,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        options: peoples(project, true, true),
+                        options: select2Filter(peoples(project, true, true), filter),
                         value: (issue && issue.assigned)?Object.values(issue.assigned):[],
                     };
 
@@ -308,7 +322,7 @@
                         multiple: true,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        options: peoples(project, false, true),
+                        options: select2Filter(peoples(project, false, true), filter),
                         value: (issue && issue.watchers)?Object.values(issue.watchers):[],
                     };
 
@@ -375,7 +389,7 @@
                             title: modules.tt.issueFieldTitle(field),
                             placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: options,
+                            options: select2Filter(options, filter),
                             multiple: cf.format.indexOf("multiple") >= 0,
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
                             validate: validate,
@@ -397,7 +411,7 @@
                             title: modules.tt.issueFieldTitle(field),
                             placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: options,
+                            options: select2Filter(options, filter),
                             multiple: cf.format.indexOf("multiple") >= 0,
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
                             validate: validate,
@@ -422,7 +436,7 @@
                             title: modules.tt.issueFieldTitle(field),
                             placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: options,
+                            options: select2Filter(options, filter),
                             value: (issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[],
                             validate: validate,
                             ajax: {
@@ -489,7 +503,7 @@
                             title: modules.tt.issueFieldTitle(field),
                             placeholder: modules.tt.issueFieldTitle(field),
                             hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: options,
+                            options: select2Filter(options, filter),
                             multiple: cf.format.indexOf("multiple") >= 0,
                             value: vi,
                             validate: validate,
