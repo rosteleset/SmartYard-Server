@@ -51,6 +51,7 @@
     "status": "Статус",
     "statusDisplay": "Описание",
     "resolution": "Резолюция",
+    "resolutionName": "Наименование",
     "roleName": "Роль",
     "roleLevel": "Уровень доступа",
     "roleNameDisplay": "Описание",
