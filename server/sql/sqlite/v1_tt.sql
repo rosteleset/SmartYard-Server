@@ -47,14 +47,13 @@ CREATE TABLE tt_issue_resolutions
 (
     issue_resolution_id integer primary key autoincrement,
     resolution text,
-    alias text,
-    protected integer default 0
+    alias text
 );
 CREATE UNIQUE INDEX tt_issue_resolutions_uniq1 on tt_issue_resolutions(resolution);
-CREATE UNIQUE INDEX tt_issue_resolutions_uniq2 on tt_issue_resolutions(alias);
-INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('fixed', 'fixed', 1);
-INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('can''t fix', 'can''t fix', 1);
-INSERT INTO tt_issue_resolutions (resolution, alias, protected) values ('duplicate', 'duplicate', 1);
+CREATE UNIQUE INDEX tt_issue_resolutions_uniq2 on tt_issue_resolutions(alias);f
+INSERT INTO tt_issue_resolutions (resolution, alias) values ('fixed', 'fixed');
+INSERT INTO tt_issue_resolutions (resolution, alias) values ('can''t fix', 'can''t fix');
+INSERT INTO tt_issue_resolutions (resolution, alias) values ('duplicate', 'duplicate');
 
 -- projects <-> resolutions
 CREATE TABLE tt_projects_resolutions
