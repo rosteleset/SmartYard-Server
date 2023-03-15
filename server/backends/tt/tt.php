@@ -114,6 +114,9 @@
                         "addComment" => function (...$args) {
                             return [ $this->addComment(...$args) ];
                         },
+                        "login" => function () {
+                            return [ $this->login ];
+                        }
                     ]);
 
                     $sandbox->registerLibrary("users", [
