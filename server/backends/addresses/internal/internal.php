@@ -1039,9 +1039,9 @@
             {
                 if ($part === "5min") {
                     $this->cleanup();
-
-                    return true;
                 }
+
+                return true;
             }
 
         }
