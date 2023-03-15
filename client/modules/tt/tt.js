@@ -588,6 +588,10 @@
             val = issue[field];
         }
 
+        if (!val || val == "&nbsp;") {
+            return "";
+        }
+
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
             val = modules.tt.viewers[field][v](val, issue, field);
         } else {
