@@ -261,7 +261,7 @@ function findBootstrapEnvironment() {
 }
 
 function nl2br(str) {
-    if (str) {
+    if (str && typeof str == "string") {
         return str.split("\n").join("<br />");
     } else {
         return "";
