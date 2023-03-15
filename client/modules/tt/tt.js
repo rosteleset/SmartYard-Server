@@ -679,6 +679,8 @@
             } else {
                 field = field.substring(4);
 
+                console.log(fiels, val);
+
                 let cf = {};
                 let multiple = false;
 
