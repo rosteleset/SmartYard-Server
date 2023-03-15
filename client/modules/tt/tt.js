@@ -730,6 +730,10 @@
                             case "yesno":
                                 val = parseInt(val)?i18n("yes"):i18n("no");
                                 break;
+
+                            case "datetime-local":
+                                val = ttDate(val);
+                                break;
                         }
                         
                         val = nl2br(escapeHTML(val));
