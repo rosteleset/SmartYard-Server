@@ -732,7 +732,7 @@
                                 break;
 
                             case "datetime-local":
-                                val = ttDate(val);
+                                val = ttDate(Math.round(val / 1000));
                                 break;
                         }
                         
