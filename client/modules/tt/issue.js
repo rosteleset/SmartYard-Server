@@ -410,8 +410,7 @@
             }
             if (Object.keys(issue.actions).length - t === 1) {
                 if (specialActions.indexOf(la) >= 0) {
-                    let a = la.substring(1);
-                    h += `<span class="hoverable text-primary mr-3 tt${a.charAt(0).toUpperCase() + a.substring(1)}">${i18n("tt." + a)}</span>`;
+                    h += `<span class="hoverable text-primary mr-3 tt${la.charAt(0).toUpperCase() + la.substring(1)}">${i18n("tt." + la)}</span>`;
                 } else {
                     h += `<span class="hoverable text-primary mr-3 ttIssueAction">${la}</span>`;
                 }
