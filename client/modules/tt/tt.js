@@ -465,7 +465,7 @@
                                     let suggestions = options;
                                     for (let i in data.suggestions) {
                                         let vl = " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]: " + data.suggestions[i].value;
-                                        if (parseInt(data.suggestions[i].data.fias_level) === 8 && vx !== vl) {
+                                        if ((parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) && vx !== vl) {
                                             suggestions.push({
                                                 id: vl,
                                                 text: vl,

@@ -39,7 +39,7 @@
                         processResults: function (data) {
                             let suggestions = [];
                             for (let i in data.suggestions) {
-                                if (parseInt(data.suggestions[i].data.fias_level) === 8) {
+                                if (parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) {
                                     suggestions.push({
                                         id: data.suggestions[i].data.house_fias_id,
                                         text: data.suggestions[i].value,
