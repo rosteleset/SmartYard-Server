@@ -757,12 +757,7 @@
                         break;
 
                     case "users":
-                        console.log(field);
-                        console.log(cf);
-                        console.log(val);
-                        console.log(typeof val);
-
-                        if (typeof val == "array") {
+                        if (typeof val == "array" || typeof val == "object") {
                             let m = "";
     
                             for (let i in val) {
