@@ -432,8 +432,7 @@ function hashParse() {
 }
 
 function escapeHTML(str) {
-    if (str) {
-        str = str.toString();
+    if (str && typeof str == "string") {
         let escapeChars = {
             '¢': 'cent',
             '£': 'pound',
