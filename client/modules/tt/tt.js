@@ -725,6 +725,12 @@
                         if (cf.format) {
                             val = sprintf(cf.format, val);
                         }
+
+                        switch (cf.editor) {
+                            case "yesno":
+                                val = parseInt(val)?i18n("yes"):i18n("no");
+                                break;
+                        }
                         
                         val = nl2br(escapeHTML(val));
 
