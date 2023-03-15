@@ -75,6 +75,13 @@
                 ]);
             }
 
+            /** Configure RFID readers mode */
+            protected function configureRfidReaders() {
+                $this->setConfigParams([
+                    'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4'
+                ]);
+            }
+
             /** Configure redirect provisioning server */
             protected function configureRps(bool $enabled = true, string $server = '') {
                 $this->setConfigParams([
@@ -451,6 +458,7 @@
                 parent::prepare();
                 $this->configureBle(false);
                 $this->configureInputsBinding();
+                $this->configureRfidReaders();
                 $this->configureRps(false);
                 $this->enablePnp(false);
                 // $this->setLogLevel(4);
