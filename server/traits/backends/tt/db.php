@@ -595,7 +595,7 @@
                     $sth = $this->db->prepare("
                         insert into 
                             tt_issue_custom_fields (type, field, field_display)
-                        values (:type, :field, :field_display, 0)");
+                        values (:type, :field, :field_display)");
                     if (!$sth->execute([
                         ":type" => $type,
                         ":field" => $field,
