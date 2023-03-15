@@ -1,10 +1,5 @@
 function getNewIssueTemplate(catalog)
-    return {
-        ["fields"] = {
-            "_cf_client_id",
-            "description",
-        }
-    }
+    return false
 end
 
 -- special actions:
@@ -17,42 +12,26 @@ end
 -- saSubIssue   - create subIssue
 
 function getAvailableActions(issue)
-    local h = https.POST("https://lfi.bz/tt.php", {
-        ["action"] = "ping",
-        ["ptp"] = "tpt",
-    })
-
-    utils.error_log(utils.print_r(h))
-
     if issue["status"] ~= "closed" then
         return {
+            "!Координация",
+            "-",
             "!saAddComment",
             "saAddFile",
             "-",
             "Закрыть",
         }
-    else
-        return {
-            "Переоткрыть",
-        }
     end
 end
 
 function getActionTemplate(issue, action)
-    if action == "Закрыть" then
+    if action == "Координация" then
         if issue["status"] ~= "closed" then
             return {
-                "resolution",
-                "comment",
-            }
-        else
-            return false
-        end
-    end
-    if action == "Переоткрыть" then
-        if issue["status"] == "closed" then
-            return {
-                "comment",
+                "_cf_installers",
+                "_cf_visit_date",
+                "_cf_execution_time",
+                "_cf_can_change",
             }
         else
             return false
@@ -61,21 +40,16 @@ function getActionTemplate(issue, action)
 end
 
 function action(issue, action, original)
-    if action == "Закрыть" and original["status"] == "opened" then
-        issue["status"] = "closed"
-        tt.modifyIssue(issue)
-    end
-    if action == "Переоткрыть" and original["status"] == "closed" then
-        issue["status"] = "opened"
-        issue["resolution"] = ""
+    if action == "Координация" and original["status"] == "opened" then
+        issue["resolution"] = "Координация"
+        issue["workflow"] = "installation"
+        issue["_cf_coordinator"] = tt.login()
         tt.modifyIssue(issue)
     end
 end
 
 function createIssue(issue)
-    issue["status"] = "opened";
-    issue["subject"] = "АВТО: Подключение абонента"
-    return tt.createIssue(issue)
+    return false
 end
 
 function viewIssue(issue)
@@ -97,6 +71,11 @@ function viewIssue(issue)
             "description",
             "assigned",
             "watchers",
+            "_cf_can_change",
+            "_cf_coordinator",
+            "_cf_execution_time",
+            "_cf_installers",
+            "_cf_visit_date",
         }
     }
 end
