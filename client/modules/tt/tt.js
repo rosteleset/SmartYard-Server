@@ -689,8 +689,6 @@
                     }
                 }
 
-                console.log(field, cf, val);
-
                 switch (cf.type) {
                     case "geo":
                         if (val) {
@@ -759,6 +757,11 @@
                         break;
 
                     case "users":
+                        console.log(field);
+                        console.log(cf);
+                        console.log(val);
+                        console.log(typeof val);
+
                         if (typeof val == "array") {
                             let m = "";
     
