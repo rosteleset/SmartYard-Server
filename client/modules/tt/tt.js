@@ -679,8 +679,6 @@
             } else {
                 field = field.substring(4);
 
-                console.log(field, val);
-
                 let cf = {};
                 let multiple = false;
 
@@ -690,6 +688,8 @@
                         multiple = cf.format.indexOf("multiple") >= 0;
                     }
                 }
+
+                console.log(field, cf, val);
 
                 switch (cf.type) {
                     case "geo":
