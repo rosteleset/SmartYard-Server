@@ -17,10 +17,11 @@ syslog.on("message", async ({ date, host, message }) => {
         msg.indexOf("Couldn't resolve host name") >= 0 ||
         msg.indexOf("AKUVOX DCLIENT") >=0 ||
         msg.indexOf("Autoprovision") >= 0 ||
-        msg.indexOf("OPENDOOR_LOG") >= 0 ||
+        msg.indexOf("RFID szBuf") >= 0 ||
         msg.indexOf("lighttpd") >= 0 ||
         msg.indexOf("api.fcgi") >= 0 ||
-        msg.indexOf("fcgiserver") >= 0
+        msg.indexOf("fcgiserver") >= 0 ||
+        msg.indexOf("sipmain") >= 0
     ) {
         return;
     }
@@ -47,18 +48,16 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Opening door by RFID key
-    if (true) {
-
-    }
-
-    // Opening door by personal code
-    if (true) {
-
+    if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) { // TODO: check with external reader
+        const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
+        if (status === "Successful") {
+            await API.openDoor({ date: now, ip: host, detail: rfid, by: "rfid" });
+        }
     }
 
     // Opening door by button pressed
-    if (true) {
-
+    if (msg.indexOf("OPENDOOR_LOG:Type:INPUT") >= 0) {
+        await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
     }
 
     // All calls are done
