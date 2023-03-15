@@ -75,6 +75,14 @@
                 ]);
             }
 
+            /** Configure redirect provisioning server */
+            protected function configureRps(bool $enabled = true, string $server = '') {
+                $this->setConfigParams([
+                    'Config.DoorSetting.CLOUDSERVER.RpsEnable' => $enabled ? '1' : '0',
+                    'Config.DoorSetting.CLOUDSERVER.RpsServer' => $server,
+                ]);
+            }
+
             /** Enable/disable PNP */
             protected function enablePnp(bool $enabled = true) {
                 $this->setConfigParams([ 'Config.Autoprovision.PNP.Enable' => $enabled ? '1' : '0' ]);
@@ -99,6 +107,16 @@
                     'data' => $data,
                 ]);
             }
+
+            // TODO: not working
+//            /** Set logging level */
+//            protected function setLogLevel(int $level = 3) {
+//                $this->api_call('', 'POST', [
+//                    'target' => 'log',
+//                    'action' => 'set',
+//                    'data' => [ 'Config.Settings.LOGLEVEL.Level' => "$level" ],
+//                ]);
+//            }
 
             /** Write RFID keys array to intercom memory */
             protected function writeRfids(array $rfids) {
@@ -132,7 +150,9 @@
             }
 
             public function clear_apartment(int $apartment = -1) {
-                // TODO: Implement clear_apartment() method.
+                $this->setConfigParams([
+                    'Config.Programable.SOFTKEY01.Param1' => ';;;;;;;',
+                ]);
             }
 
             public function clear_rfid(string $code = '') {
@@ -159,7 +179,9 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
-                // TODO: Implement configure_apartment() method.
+                $this->setConfigParams([
+                    'Config.Programable.SOFTKEY01.Param1' => implode(';', array_pad($sip_numbers, 8, null)),
+                ]);
             }
 
             public function configure_cms(int $apartment, int $offset) {
@@ -175,13 +197,24 @@
             }
 
             public function configure_md(
-                int $sensitivity = 4,
+                int $sensitivity = 3,
                 int $left = 0,
                 int $top = 0,
-                int $width = 705,
-                int $height = 576
+                int $width = 100,
+                int $height = 100
             ) {
-                // TODO: Implement configure_md() method.
+                $this->setConfigParams([
+                    'Config.DoorSetting.MOTION_DETECT.Enable' => '2', // Video detection
+                    'Config.DoorSetting.MOTION_DETECT.Interval' => '1',
+                    'Config.DoorSetting.MOTION_DETECT.TFTPEnable' => '0',
+                    'Config.DoorSetting.MOTION_DETECT.FTPEnable' => '1',
+                    'Config.DoorSetting.MOTION_DETECT.SendType' => '0',
+                    'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => "$sensitivity",
+                    'Config.DoorSetting.MOTION_DETECT.AreaStartWidth' => "$left",
+                    'Config.DoorSetting.MOTION_DETECT.AreaEndWidth' => "$width",
+                    'Config.DoorSetting.MOTION_DETECT.AreaStartHeight' => "$top",
+                    'Config.DoorSetting.MOTION_DETECT.AreaEndHeight' => "$height",
+                ]);
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
@@ -416,9 +449,11 @@
 
             public function prepare() {
                 parent::prepare();
-                $this->configureInputsBinding();
                 $this->configureBle(false);
+                $this->configureInputsBinding();
+                $this->configureRps(false);
                 $this->enablePnp(false);
+                // $this->setLogLevel(4);
             }
         }
     }
