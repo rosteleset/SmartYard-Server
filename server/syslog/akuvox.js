@@ -8,7 +8,7 @@ const { port } = urlParser(akuvox);
 
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
-    const msg = message.replace(/<\d+>[A-Za-z]+ \d+ \d+:\d+:\d+(?:\s*:)?\s*/, "").trim();
+    let msg = message.replace(/<\d+>[A-Za-z]+ \d+ \d+:\d+:\d+(?:\s*:)?\s*/, "").trim();
 
     // Spam messages filter
     if (
@@ -19,10 +19,13 @@ syslog.on("message", async ({ date, host, message }) => {
         msg.indexOf("lighttpd") >= 0 ||
         msg.indexOf("api.fcgi") >= 0 ||
         msg.indexOf("fcgiserver") >= 0 ||
-        msg.indexOf("sipmain") >= 0
+        msg.indexOf("sipmain") >= 0 ||
+        msg.indexOf("RFID_TYPE_WIEGAND") >= 0
     ) {
         return;
     }
+
+    msg = msg.split(': ')[1];
 
     console.log(`${now} || ${host} || ${msg}`);
 
@@ -36,7 +39,7 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Opening door by RFID key
-    if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) { // TODO: check with external reader
+    if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) {
         const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
         if (status === "Successful") {
             await API.openDoor({ date: now, ip: host, detail: rfid, by: "rfid" });
