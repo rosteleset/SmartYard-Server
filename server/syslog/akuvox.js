@@ -42,7 +42,7 @@ syslog.on("message", async ({ date, host, message }) => {
     if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) {
         const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
         if (status === "Successful") {
-            await API.openDoor({ date: now, ip: host, detail: rfid, by: "rfid" });
+            await API.openDoor({ date: now, ip: host, detail: '000000' + rfid, by: "rfid" });
         }
     }
 
