@@ -73,6 +73,13 @@
                 ];
             }
 
+            /** Configure general audio settings */
+            protected function configureAudio() {
+                $this->setConfigParams([
+                    'Config.Settings.HANDFREE.VolumeLevel' => '2', // Increase volume level
+                ]);
+            }
+
             /** Configure BLE */
             protected function configureBle(bool $enabled = true, int $threshold = -72, int $openDoorInterval = 5) {
                 $this->setConfigParams([
@@ -392,7 +399,6 @@
             public function set_audio_levels(array $levels) {
                 if (count($levels) === 4) {
                     $this->setConfigParams([
-                        'Config.Settings.HANDFREE.VolumeLevel' => '2', // Increase volume level
                         'Config.Settings.HANDFREE.MicVol' => "$levels[0]",
                         'Config.Settings.HANDFREE.SpkVol' => "$levels[1]",
                         'Config.Settings.HANDFREE.AlmVol' => "$levels[2]",
@@ -476,6 +482,7 @@
 
             public function prepare() {
                 parent::prepare();
+                $this->configureAudio();
                 $this->configureBle(false);
                 $this->configureInputsBinding();
                 $this->configureRfidReaders();

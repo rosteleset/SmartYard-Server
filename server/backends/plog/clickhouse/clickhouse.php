@@ -918,6 +918,74 @@
                             }
                         }
 
+                        if ($unit == "akuvox") {
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                ["SIP_LOG:MSG_S2P_TRYING", true, false, false, 1],
+                                ["SIP_LOG:MSG_S2P_RINGBACK", true, false, false, 1],
+                                ["SIP_LOG:MSG_S2P_ESTABLISHED_CALL", false, true, false, 1],
+                                ["DTMF_LOG:Receive", false, false, true, 1],
+                                ["DTMF_LOG:From", false, false, true, 1],
+                                ["DTMF_LOG:Successful", false, false, true, 1],
+                                ["SIP_LOG:Call Finished", false, false, false, 1],
+                                ["SIP_LOG:Call Failed", false, false, false, 1],
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
+
+                                if (strpos($msg, $pattern) !== false) {
+                                    // Get call ID
+                                    if (strpos($msg, 'SIP_LOG') !== false) {
+                                        $now_call_id = explode('=', $msg)[1];
+                                    }
+
+                                    // Get flat ID
+                                    if (strpos($msg, 'DTMF_LOG:From') !== false) {
+                                        $number = explode(' ', $msg)[1];
+                                        $now_flat_id = substr($number, 1);
+                                    }
+
+                                    $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
+                                        || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
+                                        || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
+                                        || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+
+                                    if ($call_start_lost) {
+                                        break;
+                                    }
+
+                                    $event_data[self::COLUMN_DATE] = $item["date"];
+
+                                    if (isset($now_call_id) && !isset($call_id)) {
+                                        $call_id = $now_call_id;
+                                    }
+                                    if (isset($now_sip_call_id) && !isset($sip_call_id)) {
+                                        $sip_call_id = $now_sip_call_id;
+                                    }
+                                    if (isset($now_flat_number) && !isset($flat_number)) {
+                                        $flat_number = $now_flat_number;
+                                    }
+                                    if (isset($now_flat_id) && !isset($flat_id)) {
+                                        $flat_id = $now_flat_id;
+                                    }
+                                    if ($flag_talk_started) {
+                                        $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                    }
+                                    if ($flag_door_opened) {
+                                        $event_data[self::COLUMN_OPENED] = 1;
+                                    }
+                                    if ($flag_start) {
+                                        $call_start_found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
                         if ($call_start_found) {
                             break;
                         }
