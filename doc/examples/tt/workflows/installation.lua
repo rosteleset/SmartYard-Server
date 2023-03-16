@@ -53,6 +53,9 @@ function viewIssue(issue)
         ["issue"] = issue,
         ["actions"] = getAvailableActions(issue),
         ["showJournal"] = true,
+        ["rightFields"] = {
+            "_cf_installers",
+        },
         ["fields"] = {
             "project",
             "workflow",
@@ -66,6 +69,7 @@ function viewIssue(issue)
             "_cf_execution_time",
             "_cf_installers",
             "_cf_visit_date",
+            "_cf_can_change",
         }
     }
 end
