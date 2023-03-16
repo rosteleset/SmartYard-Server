@@ -6,11 +6,9 @@ const API = require("./utils/api");
 const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(akuvox);
 
-const gateRabbits = [];
-
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
-    const msg = message.replace(/<\d+>[A-Za-z]+ \d+ \d+:\d+:\d+(?:\s*:)?\s*/, "").trim();
+    let msg = message.replace(/<\d+>[A-Za-z]+ \d+ \d+:\d+:\d+(?:\s*:)?\s*/, "").trim();
 
     // Spam messages filter
     if (
@@ -21,15 +19,18 @@ syslog.on("message", async ({ date, host, message }) => {
         msg.indexOf("lighttpd") >= 0 ||
         msg.indexOf("api.fcgi") >= 0 ||
         msg.indexOf("fcgiserver") >= 0 ||
-        msg.indexOf("sipmain") >= 0
+        msg.indexOf("sipmain") >= 0 ||
+        msg.indexOf("RFID_TYPE_WIEGAND") >= 0
     ) {
         return;
     }
 
+    msg = msg.split(': ')[1];
+
     console.log(`${now} || ${host} || ${msg}`);
 
     // Send message to syslog storage
-    // await API.sendLog({ date: now, ip: host, unit: "is", msg: msg }); TODO: uncomment later
+    await API.sendLog({ date: now, ip: host, unit: "is", msg: msg });
 
     // Motion detection: start
     if (msg.indexOf("Requst SnapShot") >= 0) {
@@ -37,18 +38,8 @@ syslog.on("message", async ({ date, host, message }) => {
         await mdTimer(host, 5000);
     }
 
-    // Call in gate mode with prefix: potential white rabbit
-    if (true) {
-
-    }
-
-    // Incoming DTMF for white rabbit: sending rabbit gate update
-    if (true) {
-
-    }
-
     // Opening door by RFID key
-    if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) { // TODO: check with external reader
+    if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) {
         const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
         if (status === "Successful") {
             await API.openDoor({ date: now, ip: host, detail: rfid, by: "rfid" });
@@ -61,8 +52,9 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // All calls are done
-    if (true) {
-
+    if (msg.indexOf("SIP_LOG:Call Failed") >= 0 || msg.indexOf("SIP_LOG:Call Finished") >= 0) {
+        const callId = parseInt(msg.split("=")[1]); // after power on starts from 200002 and increments
+        await API.callFinished({ date: now, ip: host, callId: callId});
     }
 });
 
