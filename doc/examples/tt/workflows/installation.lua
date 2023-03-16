@@ -14,12 +14,8 @@ end
 function getAvailableActions(issue)
     if issue["status"] ~= "closed" then
         return {
-            "!Координация",
-            "-",
             "!saAddComment",
             "saAddFile",
-            "-",
-            "Закрыть",
         }
     end
 end
@@ -57,31 +53,29 @@ function viewIssue(issue)
         ["issue"] = issue,
         ["actions"] = getAvailableActions(issue),
         ["showJournal"] = true,
+        ["rightFields"] = {
+            "_cf_installers",
+        },
         ["fields"] = {
             "project",
             "workflow",
-            "catalog",
             "subject",
             "author",
-            "created",
-            "updated",
-            "status",
-            "resolution",
             "_cf_client_id",
             "description",
             "assigned",
             "watchers",
-            "_cf_can_change",
             "_cf_coordinator",
             "_cf_execution_time",
             "_cf_installers",
             "_cf_visit_date",
+            "_cf_can_change",
         }
     }
 end
 
 function getWorkflowName()
-    return "#Подключение абонента"
+    return "#Монтажные работы"
 end
 
 function getWorkflowCatalog()

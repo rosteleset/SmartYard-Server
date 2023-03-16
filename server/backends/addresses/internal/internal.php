@@ -87,7 +87,7 @@
             /**
              * @inheritDoc
              */
-            function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone)
+            function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone = "-")
             {
                 if (trim($regionWithType) && trim($region)) {
                     return $this->db->insert("insert into addresses_regions (region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region, timezone) values (:region_uuid, :region_iso_code, :region_with_type, :region_type, :region_type_full, :region, :timezone)", [
@@ -1039,9 +1039,9 @@
             {
                 if ($part === "5min") {
                     $this->cleanup();
-
-                    return true;
                 }
+
+                return true;
             }
 
         }

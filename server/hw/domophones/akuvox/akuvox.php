@@ -52,6 +52,34 @@
                 return json_decode($res, true);
             }
 
+            /** Add RFID to RFID keys array */
+            protected function addRfid(string $code) {
+                $this->rfidKeys[] = [
+                    'ID' => '0',
+                    'Code' => $code,
+                    'DoorNum' => '1',
+                    'WebRelay' => '0',
+                    'Tags' => '0',
+                    'Frequency' => '0',
+                    'Mon' => '1',
+                    'Tue' => '1',
+                    'Wed' => '1',
+                    'Thur' => '1',
+                    'Fri' => '1',
+                    'Sat' => '1',
+                    'Sun' => '1',
+                    'TimeEnd' => '00:00',
+                    'TimeStart' => '00:00',
+                ];
+            }
+
+            /** Configure general audio settings */
+            protected function configureAudio() {
+                $this->setConfigParams([
+                    'Config.Settings.HANDFREE.VolumeLevel' => '2', // Increase volume level
+                ]);
+            }
+
             /** Configure BLE */
             protected function configureBle(bool $enabled = true, int $threshold = -72, int $openDoorInterval = 5) {
                 $this->setConfigParams([
@@ -72,6 +100,21 @@
                         'Config.DoorSetting.INPUT.InputRelay' => '1',
                         'Config.DoorSetting.INPUT.InputBRelay' => '1',
                     ],
+                ]);
+            }
+
+            /** Configure RFID readers mode */
+            protected function configureRfidReaders() {
+                $this->setConfigParams([
+                    'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4'
+                ]);
+            }
+
+            /** Configure redirect provisioning server */
+            protected function configureRps(bool $enabled = true, string $server = '') {
+                $this->setConfigParams([
+                    'Config.DoorSetting.CLOUDSERVER.RpsEnable' => $enabled ? '1' : '0',
+                    'Config.DoorSetting.CLOUDSERVER.RpsServer' => $server,
                 ]);
             }
 
@@ -100,6 +143,16 @@
                 ]);
             }
 
+            // TODO: not working
+//            /** Set logging level */
+//            protected function setLogLevel(int $level = 3) {
+//                $this->api_call('', 'POST', [
+//                    'target' => 'log',
+//                    'action' => 'set',
+//                    'data' => [ 'Config.Settings.LOGLEVEL.Level' => "$level" ],
+//                ]);
+//            }
+
             /** Write RFID keys array to intercom memory */
             protected function writeRfids(array $rfids) {
                 $this->api_call('', 'POST', [
@@ -112,27 +165,16 @@
             }
 
             public function add_rfid(string $code, int $apartment = 0) {
-                $this->rfidKeys[] = [
-                    'ID' => '0',
-                    'Code' => substr($code, 6),
-                    'DoorNum' => '1',
-                    'WebRelay' => '0',
-                    'Tags' => '0',
-                    'Frequency' => '0',
-                    'Mon' => '1',
-                    'Tue' => '1',
-                    'Wed' => '1',
-                    'Thur' => '1',
-                    'Fri' => '1',
-                    'Sat' => '1',
-                    'Sun' => '1',
-                    'TimeEnd' => '00:00',
-                    'TimeStart' => '00:00',
-                ];
+                // Need to duplicate one RFID code for supporting external Wiegand reader
+                // Intercom doesn't support partial match mode
+                $this->addRfid(substr($code, 6)); // RFID code for internal reader
+                $this->addRfid('00' . substr($code, 8)); // RFID code for external reader
             }
 
             public function clear_apartment(int $apartment = -1) {
-                // TODO: Implement clear_apartment() method.
+                $this->setConfigParams([
+                    'Config.Programable.SOFTKEY01.Param1' => ';;;;;;;',
+                ]);
             }
 
             public function clear_rfid(string $code = '') {
@@ -142,12 +184,23 @@
                         'action' => 'del',
                         'data' => [
                             'item' => [
-                                [ 'Code' => substr($code, 6) ],
+                                [ 'Code' => substr($code, 6) ], // RFID for internal reader
+                                [ 'Code' => '00' . substr($code, 8) ] // RFID for external reader
                             ],
                         ],
                     ]);
                 } else {
-                    $this->api_call('/rfkey/clear');
+                    // $this->api_call('/rfkey/clear'); // Bad endpoint, need to reboot intercom after this
+
+                    $items = array_map(function($code) {
+                        return array('Code' => substr($code, 6));
+                    }, $this->get_rfids());
+
+                    $this->api_call('', 'POST', [
+                        'target' => 'rfkey',
+                        'action' => 'del',
+                        'data' => [ 'item' => $items ],
+                    ]);
                 }
             }
 
@@ -159,7 +212,9 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
-                // TODO: Implement configure_apartment() method.
+                $this->setConfigParams([
+                    'Config.Programable.SOFTKEY01.Param1' => implode(';', array_pad($sip_numbers, 8, null)),
+                ]);
             }
 
             public function configure_cms(int $apartment, int $offset) {
@@ -175,13 +230,24 @@
             }
 
             public function configure_md(
-                int $sensitivity = 4,
+                int $sensitivity = 3,
                 int $left = 0,
                 int $top = 0,
-                int $width = 705,
-                int $height = 576
+                int $width = 100,
+                int $height = 100
             ) {
-                // TODO: Implement configure_md() method.
+                $this->setConfigParams([
+                    'Config.DoorSetting.MOTION_DETECT.Enable' => '2', // Video detection
+                    'Config.DoorSetting.MOTION_DETECT.Interval' => '1',
+                    'Config.DoorSetting.MOTION_DETECT.TFTPEnable' => '0',
+                    'Config.DoorSetting.MOTION_DETECT.FTPEnable' => '1',
+                    'Config.DoorSetting.MOTION_DETECT.SendType' => '0',
+                    'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => "$sensitivity",
+                    'Config.DoorSetting.MOTION_DETECT.AreaStartWidth' => "$left",
+                    'Config.DoorSetting.MOTION_DETECT.AreaEndWidth' => "$width",
+                    'Config.DoorSetting.MOTION_DETECT.AreaStartHeight' => "$top",
+                    'Config.DoorSetting.MOTION_DETECT.AreaEndHeight' => "$height",
+                ]);
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
@@ -205,6 +271,7 @@
                     'target' => 'sip',
                     'action' => 'set',
                     'data' => [
+                        'Config.Features.DOORPHONE.EnableButtonHangup' => '0', // for a stable work of call done events
                         'Config.Account1.GENERAL.AuthName' => $login,
                         'Config.Account1.GENERAL.DisplayName' => $login,
                         'Config.Account1.GENERAL.Enable' => '1',
@@ -332,7 +399,6 @@
             public function set_audio_levels(array $levels) {
                 if (count($levels) === 4) {
                     $this->setConfigParams([
-                        'Config.Settings.HANDFREE.VolumeLevel' => '2', // Increase volume level
                         'Config.Settings.HANDFREE.MicVol' => "$levels[0]",
                         'Config.Settings.HANDFREE.SpkVol' => "$levels[1]",
                         'Config.Settings.HANDFREE.AlmVol' => "$levels[2]",
@@ -416,9 +482,13 @@
 
             public function prepare() {
                 parent::prepare();
-                $this->configureInputsBinding();
+                $this->configureAudio();
                 $this->configureBle(false);
+                $this->configureInputsBinding();
+                $this->configureRfidReaders();
+                $this->configureRps(false);
                 $this->enablePnp(false);
+                // $this->setLogLevel(4);
             }
         }
     }

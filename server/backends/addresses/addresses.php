@@ -49,7 +49,7 @@
              * @param $timezone
              * @return false|integer
              */
-            abstract function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone);
+            abstract function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone = "-");
 
             /**
              * @param $regionId
