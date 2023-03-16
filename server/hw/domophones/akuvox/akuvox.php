@@ -183,7 +183,17 @@
                         ],
                     ]);
                 } else {
-                    $this->api_call('/rfkey/clear'); // Bad endpoint, need to reboot intercom after this
+                    // $this->api_call('/rfkey/clear'); // Bad endpoint, need to reboot intercom after this
+
+                    $items = array_map(function($code) {
+                        return array('Code' => substr($code, 6));
+                    }, $this->get_rfids());
+
+                    $this->api_call('', 'POST', [
+                        'target' => 'rfkey',
+                        'action' => 'del',
+                        'data' => [ 'item' => $items ],
+                    ]);
                 }
             }
 
