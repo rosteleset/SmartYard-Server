@@ -128,7 +128,6 @@
         "dvr_exports": {
             "backend": "filesystem",
             "dvr_files_path": "/path/to/dvr/files/on/your/local/filesystem",
-            "dvr_files_location_prefix": "https://example.com/path/to/temp/dvr/files/",
             "dvr_files_ttl": 259200
         },
 
