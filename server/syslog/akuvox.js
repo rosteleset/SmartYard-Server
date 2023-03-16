@@ -6,8 +6,6 @@ const API = require("./utils/api");
 const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(akuvox);
 
-const gateRabbits = [];
-
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
     const msg = message.replace(/<\d+>[A-Za-z]+ \d+ \d+:\d+:\d+(?:\s*:)?\s*/, "").trim();
@@ -29,22 +27,12 @@ syslog.on("message", async ({ date, host, message }) => {
     console.log(`${now} || ${host} || ${msg}`);
 
     // Send message to syslog storage
-    // await API.sendLog({ date: now, ip: host, unit: "is", msg: msg }); TODO: uncomment later
+    await API.sendLog({ date: now, ip: host, unit: "is", msg: msg });
 
     // Motion detection: start
     if (msg.indexOf("Requst SnapShot") >= 0) {
         await API.motionDetection({ date: now, ip: host, motionActive: true });
         await mdTimer(host, 5000);
-    }
-
-    // Call in gate mode with prefix: potential white rabbit
-    if (true) {
-
-    }
-
-    // Incoming DTMF for white rabbit: sending rabbit gate update
-    if (true) {
-
     }
 
     // Opening door by RFID key
@@ -61,8 +49,9 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // All calls are done
-    if (true) {
-
+    if (msg.indexOf("SIP_LOG:Call Failed") >= 0 || msg.indexOf("SIP_LOG:Call Finished") >= 0) {
+        const callId = parseInt(msg.split("=")[1]); // after power on starts from 200002 and increments
+        await API.callFinished({ date: now, ip: host, callId: callId});
     }
 });
 
