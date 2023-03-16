@@ -30,7 +30,7 @@ syslog.on("message", async ({ date, host, message }) => {
     console.log(`${now} || ${host} || ${msg}`);
 
     // Send message to syslog storage
-    await API.sendLog({ date: now, ip: host, unit: "is", msg: msg });
+    await API.sendLog({ date: now, ip: host, unit: "akuvox", msg: msg });
 
     // Motion detection: start
     if (msg.indexOf("Requst SnapShot") >= 0) {
