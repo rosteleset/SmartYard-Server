@@ -353,6 +353,12 @@
 
         let rightFields = [ "project", "workflow", "catalog", "parent", "status", "resolution", "assigned", "watchers", "created", "updated", "author", ];
 
+        if (issue.rightFields) {
+            for (let i in issue.rightFields) {
+                rightFields.push(issue.rightFields[i]);
+            }
+        }
+
         let tags = {};
         let project = false;
 

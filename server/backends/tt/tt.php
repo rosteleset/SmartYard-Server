@@ -116,6 +116,12 @@
                         },
                         "login" => function () {
                             return [ $this->login ];
+                        },
+                        "myRoles" => function () {
+                            return [ $this->myRoles() ];
+                        },
+                        "myGroups" => function () {
+                            return [ $this->myGroups() ];
                         }
                     ]);
 
