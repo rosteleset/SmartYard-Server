@@ -8,7 +8,7 @@ const { port } = urlParser(akuvox);
 
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
-    let msg = message.replace(/<\d+>[A-Za-z]+ \d+ \d+:\d+:\d+(?:\s*:)?\s*/, "").trim();
+    let msg = message.replace(/<\d+>[A-Za-z]+\s+\d+ \d+:\d+:\d+(?:\s*:)?\s*/, "").trim();
 
     // Spam messages filter
     if (
