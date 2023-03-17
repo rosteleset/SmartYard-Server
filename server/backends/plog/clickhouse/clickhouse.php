@@ -964,8 +964,6 @@
                                     }
 
                                     $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
-                                        || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
-                                        || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
                                         || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
 
                                     if ($call_start_lost) {
@@ -976,12 +974,6 @@
 
                                     if (isset($now_call_id) && !isset($call_id)) {
                                         $call_id = $now_call_id;
-                                    }
-                                    if (isset($now_sip_call_id) && !isset($sip_call_id)) {
-                                        $sip_call_id = $now_sip_call_id;
-                                    }
-                                    if (isset($now_flat_number) && !isset($flat_number)) {
-                                        $flat_number = $now_flat_number;
                                     }
                                     if (isset($now_flat_id) && !isset($flat_id)) {
                                         $flat_id = $now_flat_id;
