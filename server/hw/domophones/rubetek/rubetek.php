@@ -46,7 +46,7 @@
             }
 
             /** Configure internal reader mode */
-            protected function configure_internal_reader() {
+            protected function configureInternalReader() {
                 $this->api_call('/settings/nfc_reader', 'PATCH', [
                     'period_reading_ms' => 500,
                     'disable_sl3' => true,
@@ -56,24 +56,24 @@
             }
 
             /** Get all apartment IDs from intercom */
-            protected function get_apartments(): array {
+            protected function getApartments(): array {
                 return array_column($this->api_call('/apartments'), 'id');
             }
 
             /** Get current intercom config */
-            protected function get_config() {
+            protected function getConfig() {
                 return $this->api_call('/configuration');
             }
 
             /** Get door IDs and lock status */
-            protected function get_doors() {
+            protected function getDoors() {
                 return array_slice($this->api_call('/doors'), 0, -1);
             }
 
             /** Set random administrator pin code */
-            protected function set_admin_pin() {
+            protected function setAdminPin() {
                 $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $displaySettings = $this->get_config()['display'];
+                $displaySettings = $this->getConfig()['display'];
                 $displaySettings['admin_password'] = $pin;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
@@ -89,8 +89,8 @@
                 if ($apartment !== -1) {
                     $this->api_call("/apartments/$apartment", 'DELETE');
                 } else {
-                    foreach ($this->get_apartments() as $apartment) { // TODO: too slow
-                        $this->clear_apartment($apartment);
+                    foreach ($this->getApartments() as $apartment) { // TODO: too slow
+                        $this->api_call("/apartments/$apartment", 'DELETE');
                     }
                 }
             }
@@ -154,7 +154,7 @@
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                $timeSettings = $this->get_config()['time'];
+                $timeSettings = $this->getConfig()['time'];
                 $timeSettings['ntp_pool'] = "$server:$port";
                 $timeSettings['timezone'] = 'GMT+3';
                 $this->api_call('/configuration', 'PATCH', [ 'time' => $timeSettings ]);
@@ -198,7 +198,11 @@
             }
 
             public function configure_user_account(string $password) {
-                // TODO: Implement configure_user_account() method.
+                $this->api_call('/settings/account', 'POST', [
+                    'account' => 'user',
+                    'password' => $password,
+                    'role' => 'operator',
+                ]);
             }
 
             public function configure_video_encoding() {
@@ -251,7 +255,7 @@
 
             public function keep_doors_unlocked(bool $unlocked = true) {
                 // TODO: if unlocked, the locks will close after reboot
-                $doors = $this->get_doors();
+                $doors = $this->getDoors();
 
                 foreach ($doors as $door) {
                     $id = $door['id'];
@@ -267,7 +271,7 @@
             }
 
             public function open_door(int $door_number = 0) {
-                $doors = $this->get_doors();
+                $doors = $this->getDoors();
                 $open = $doors[$door_number]['open'] ?? false;
 
                 if (!$open) {
@@ -298,7 +302,7 @@
             }
 
             public function set_call_timeout(int $timeout) {
-                $callSettings = $this->get_config()['call'];
+                $callSettings = $this->getConfig()['call'];
                 $callSettings['dial_out_time'] = $timeout;
                 $this->api_call('/settings/call', 'PATCH', $callSettings);
             }
@@ -321,14 +325,14 @@
             }
 
             public function set_display_text(string $text = '') {
-                $displaySettings = $this->get_config()['display'];
+                $displaySettings = $this->getConfig()['display'];
                 $displaySettings['welcome_display'] = 1;
                 $displaySettings['text'] = $text;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
             public function set_public_code(int $code = 0) {
-                // TODO: Implement set_public_code() method.
+                // not used
             }
 
             public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
@@ -351,14 +355,14 @@
             }
 
             public function set_talk_timeout(int $timeout) {
-                $callSettings = $this->get_config()['call'];
+                $callSettings = $this->getConfig()['call'];
                 $callSettings['max_call_time'] = $timeout;
                 $this->api_call('/settings/call', 'PATCH', $callSettings);
             }
 
             public function set_unlock_time(int $time) {
                 // TODO: causes a side effect: always closes the relay
-                $doors = $this->get_doors();
+                $doors = $this->getDoors();
 
                 foreach ($doors as $door) {
                     $id = $door['id'];
@@ -398,8 +402,8 @@
 
             public function prepare() {
                 parent::prepare();
-                $this->set_admin_pin();
-                $this->configure_internal_reader();
+                $this->setAdminPin();
+                $this->configureInternalReader();
             }
         }
     }
