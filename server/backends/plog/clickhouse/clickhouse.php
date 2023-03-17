@@ -409,6 +409,20 @@
                 return false;
             }
 
+            // Get flat ID by domophone ID
+            private function getFlatIdByDomophoneId($domophone_id)
+            {
+                $households = loadBackend('households');
+                $result = $households->getFlats('domophoneId', $domophone_id);
+
+                // Only if one apartment is linked
+                if ($result && count($result) === 1 && $result[0]) {
+                    return $result[0]['flatId'];
+                }
+
+                return false;
+            }
+
             private function getEntranceCount($flat_id)
             {
                 $households = loadBackend('households');
@@ -1006,6 +1020,8 @@
                         $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id);
                     } elseif (isset($flat_number)) {
                         $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByNumber($flat_number, $domophone_id);
+                    } else {
+                        $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByDomophoneId($domophone_id);
                     }
 
                     if (!isset($event_data[self::COLUMN_FLAT_ID])) {
