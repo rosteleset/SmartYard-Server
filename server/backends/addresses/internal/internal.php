@@ -63,8 +63,12 @@
             /**
              * @inheritDoc
              */
-            function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone)
+            function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone = "-")
             {
+                if ($timezone == "-") {
+                    $timezone = null;
+                }
+
                 if (!checkInt($regionId)) {
                     return false;
                 }
@@ -89,6 +93,10 @@
              */
             function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone = "-")
             {
+                if ($timezone == "-") {
+                    $timezone = null;
+                }
+
                 if (trim($regionWithType) && trim($region)) {
                     return $this->db->insert("insert into addresses_regions (region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region, timezone) values (:region_uuid, :region_iso_code, :region_with_type, :region_type, :region_type_full, :region, :timezone)", [
                         ":region_uuid" => $regionUuid,
@@ -125,9 +133,9 @@
                     if (!checkInt($regionId)) {
                         return false;
                     }
-                    $query = "select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area from addresses_areas where address_region_id = $regionId order by area";
+                    $query = "select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area, timezone from addresses_areas where address_region_id = $regionId order by area";
                 } else {
-                    $query = "select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area from addresses_areas order by area";
+                    $query = "select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area, timezone from addresses_areas order by area";
                 }
                 return $this->db->get($query, false, [
                     "address_area_id" => "areaId",
@@ -137,6 +145,7 @@
                     "area_type" => "areaType",
                     "area_type_full" => "areaTypeFull",
                     "area" => "area",
+                    "timezone" => "timezone",
                 ]);
             }
 
@@ -149,7 +158,7 @@
                     return false;
                 }
 
-                return $this->db->get("select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area from addresses_areas where address_area_id = $areaId", false,
+                return $this->db->get("select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area, timezone from addresses_areas where address_area_id = $areaId", false,
                     [
                         "address_area_id" => "areaId",
                         "address_region_id" => "regionId",
@@ -158,6 +167,7 @@
                         "area_type" => "areaType",
                         "area_type_full" => "areaTypeFull",
                         "area" => "area",
+                        "timezone" => "timezone",
                     ],
                     [
                         "singlify"
@@ -168,8 +178,12 @@
             /**
              * @inheritDoc
              */
-            function modifyArea($areaId, $regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area)
+            function modifyArea($areaId, $regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area, $timezone = "-")
             {
+                if ($timezone == "-") {
+                    $timezone = null;
+                }
+
                 if (!checkInt($areaId)) {
                     return false;
                 }
@@ -179,13 +193,14 @@
                 }
 
                 if ($areaId && trim($areaWithType) && trim($area)) {
-                    return $this->db->modify("update addresses_areas set address_region_id = :address_region_id, area_uuid = :area_uuid, area_with_type = :area_with_type, area_type = :area_type, area_type_full = :area_type_full, area = :area where address_area_id = $areaId", [
+                    return $this->db->modify("update addresses_areas set address_region_id = :address_region_id, area_uuid = :area_uuid, area_with_type = :area_with_type, area_type = :area_type, area_type_full = :area_type_full, area = :area, timezone = :timezone where address_area_id = $areaId", [
                         ":address_region_id" => $regionId,
                         ":area_uuid" => $areaUuid,
                         ":area_with_type" => $areaWithType,
                         ":area_type" => $areaType,
                         ":area_type_full" => $areaTypeFull,
                         ":area" => $area,
+                        ":timezone" => $timezone,
                     ]);
                 } else {
                     return false;
@@ -195,20 +210,25 @@
             /**
              * @inheritDoc
              */
-            function addArea($regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area)
+            function addArea($regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area, $timezone = "-")
             {
+                if ($timezone == "-") {
+                    $timezone = null;
+                }
+
                 if (!checkInt($regionId)) {
                     return false;
                 }
 
                 if (trim($areaWithType) && trim($area)) {
-                    return $this->db->insert("insert into addresses_areas (address_region_id, area_uuid, area_with_type, area_type, area_type_full, area) values (:address_region_id, :area_uuid, :area_with_type, :area_type, :area_type_full, :area)", [
+                    return $this->db->insert("insert into addresses_areas (address_region_id, area_uuid, area_with_type, area_type, area_type_full, area, timezone) values (:address_region_id, :area_uuid, :area_with_type, :area_type, :area_type_full, :area, :timezone)", [
                         ":address_region_id" => $regionId?:null,
                         ":area_uuid" => $areaUuid,
                         ":area_with_type" => $areaWithType,
                         ":area_type" => $areaType,
                         ":area_type_full" => $areaTypeFull,
                         ":area" => $area,
+                        ":timezone" => $timezone,
                     ]);
                 } else {
                     return false;
@@ -245,12 +265,12 @@
                 }
 
                 if ($regionId) {
-                    $query = "select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city from addresses_cities where address_region_id = $regionId and coalesce(address_area_id, 0) = 0 order by city";
+                    $query = "select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city, timezone from addresses_cities where address_region_id = $regionId and coalesce(address_area_id, 0) = 0 order by city";
                 } else
                 if ($areaId) {
-                    $query = "select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city from addresses_cities where address_area_id = $areaId and coalesce(address_region_id, 0) = 0 order by city";
+                    $query = "select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city, timezone from addresses_cities where address_area_id = $areaId and coalesce(address_region_id, 0) = 0 order by city";
                 } else {
-                    $query = "select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city from addresses_cities order by city";
+                    $query = "select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city, timezone from addresses_cities order by city";
                 }
 
                 return $this->db->get($query, false, [
@@ -262,6 +282,7 @@
                     "city_type" => "cityType",
                     "city_type_full" => "cityTypeFull",
                     "city" => "city",
+                    "timezone" => "timezone",
                 ]);
             }
 
@@ -274,7 +295,7 @@
                     return false;
                 }
 
-                return $this->db->get("select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city from addresses_cities where address_city_id = $cityId", false,
+                return $this->db->get("select address_city_id, address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city, timezone from addresses_cities where address_city_id = $cityId", false,
                     [
                         "address_city_id" => "cityId",
                         "address_region_id" => "regionId",
@@ -284,6 +305,7 @@
                         "city_type" => "cityType",
                         "city_type_full" => "cityTypeFull",
                         "city" => "city",
+                        "timezone" => "timezone",
                     ],
                     [
                         "singlify"
@@ -294,8 +316,12 @@
             /**
              * @inheritDoc
              */
-            function modifyCity($cityId, $regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city)
+            function modifyCity($cityId, $regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city, $timezone = "-")
             {
+                if ($timezone == "-") {
+                    $timezone = null;
+                }
+
                 if (!checkInt($cityId)) {
                     return false;
                 }
@@ -317,7 +343,7 @@
                 }
 
                 if (trim($cityWithType) && trim($city)) {
-                    return $this->db->modify("update addresses_cities set address_region_id = :address_region_id, address_area_id = :address_area_id, city_uuid = :city_uuid, city_with_type = :city_with_type, city_type = :city_type, city_type_full = :city_type_full, city = :city where address_city_id = $cityId", [
+                    return $this->db->modify("update addresses_cities set address_region_id = :address_region_id, address_area_id = :address_area_id, city_uuid = :city_uuid, city_with_type = :city_with_type, city_type = :city_type, city_type_full = :city_type_full, city = :city, timezone = :timezone where address_city_id = $cityId", [
                         ":address_region_id" => $regionId,
                         ":address_area_id" => $areaId,
                         ":city_uuid" => $cityUuid,
@@ -325,6 +351,7 @@
                         ":city_type" => $cityType,
                         ":city_type_full" => $cityTypeFull,
                         ":city" => $city,
+                        ":timezone" => $timezone,
                     ]);
                 } else {
                     return false;
@@ -334,8 +361,12 @@
             /**
              * @inheritDoc
              */
-            function addCity($regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city)
+            function addCity($regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city, $timezone = "-")
             {
+                if ($timezone == "-") {
+                    $timezone = null;
+                }
+
                 if ($regionId && $areaId) {
                     return false;
                 }
@@ -353,7 +384,7 @@
                 }
 
                 if (trim($cityWithType) && trim($city)) {
-                    return $this->db->insert("insert into addresses_cities (address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city) values (:address_region_id, :address_area_id, :city_uuid, :city_with_type, :city_type, :city_type_full, :city)", [
+                    return $this->db->insert("insert into addresses_cities (address_region_id, address_area_id, city_uuid, city_with_type, city_type, city_type_full, city, timezone) values (:address_region_id, :address_area_id, :city_uuid, :city_with_type, :city_type, :city_type_full, :city, :timezone)", [
                         ":address_region_id" => $regionId?:null,
                         ":address_area_id" => $areaId?:null,
                         ":city_uuid" => $cityUuid,
@@ -361,6 +392,7 @@
                         ":city_type" => $cityType,
                         ":city_type_full" => $cityTypeFull,
                         ":city" => $city,
+                        ":timezone" => $timezone,
                     ]);
                 } else {
                     return false;

@@ -755,7 +755,7 @@
         always(modules.addresses.renderRegions);
     },
 
-    doAddArea: function (regionId, areaUuid, areaWithType, areaType, areaTypeFull, area) {
+    doAddArea: function (regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, timezone) {
         loadingStart();
         POST("addresses", "area", false, {
             regionId,
@@ -764,6 +764,7 @@
             areaType,
             areaTypeFull,
             area,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -774,7 +775,7 @@
         });
     },
 
-    doAddCity: function (regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city) {
+    doAddCity: function (regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city, timezone) {
         loadingStart();
         POST("addresses", "city", false, {
             regionId,
@@ -784,6 +785,7 @@
             cityType,
             cityTypeFull,
             city,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -888,7 +890,7 @@
         always(modules.addresses.renderRegions);
     },
 
-    doModifyArea: function (areaId, regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, targetRegionId) {
+    doModifyArea: function (areaId, regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, targetRegionId, timezone) {
         loadingStart();
         PUT("addresses", "area", areaId, {
             regionId,
@@ -896,7 +898,8 @@
             areaWithType,
             areaType,
             areaTypeFull,
-            area
+            area,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -911,7 +914,7 @@
         });
     },
 
-    doModifyCity: function (cityId, regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city, targetRegionId, targetAreaId) {
+    doModifyCity: function (cityId, regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city, targetRegionId, targetAreaId, timezone) {
         loadingStart();
         PUT("addresses", "city", cityId, {
             areaId,
@@ -920,7 +923,8 @@
             cityWithType,
             cityType,
             cityTypeFull,
-            city
+            city,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -1354,12 +1358,23 @@
                         },
                         value: area.area,
                     },
+                    {
+                        id: "timezone",
+                        type: "select2",
+                        title: i18n("addresses.timezone"),
+                        placeholder: i18n("addresses.timezone"),
+                        options: modules.addresses.timezonesOptions(),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: area.timezone,
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules.addresses.deleteArea(result.areaId, parseInt(area.regionId));
                     } else {
-                        modules.addresses.doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId));
+                        modules.addresses.doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId), result.timezone);
                     }
                 },
             }).show();
@@ -1490,12 +1505,23 @@
                         },
                         value: city.city,
                     },
+                    {
+                        id: "timezone",
+                        type: "select2",
+                        title: i18n("addresses.timezone"),
+                        placeholder: i18n("addresses.timezone"),
+                        options: modules.addresses.timezonesOptions(),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: city.timezone,
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules.addresses.deleteCity(result.cityId, parseInt(city.regionId), parseInt(city.areaId));
                     } else {
-                        modules.addresses.doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId));
+                        modules.addresses.doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId), result.timezone);
                     }
                 },
             }).show();
@@ -2043,9 +2069,19 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "timezone",
+                    type: "select2",
+                    title: i18n("addresses.timezone"),
+                    placeholder: i18n("addresses.timezone"),
+                    options: modules.addresses.timezonesOptions(),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
             ],
             callback: function (result) {
-                modules.addresses.doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+                modules.addresses.doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, result.timezone);
             },
         }).show();
     },
@@ -2104,9 +2140,19 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "timezone",
+                    type: "select2",
+                    title: i18n("addresses.timezone"),
+                    placeholder: i18n("addresses.timezone"),
+                    options: modules.addresses.timezonesOptions(),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
             ],
             callback: function (result) {
-                modules.addresses.doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
+                modules.addresses.doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, result.timezone);
             },
         }).show();
     },
