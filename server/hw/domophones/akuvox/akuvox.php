@@ -143,16 +143,6 @@
                 ]);
             }
 
-            // TODO: not working
-//            /** Set logging level */
-//            protected function setLogLevel(int $level = 3) {
-//                $this->api_call('', 'POST', [
-//                    'target' => 'log',
-//                    'action' => 'set',
-//                    'data' => [ 'Config.Settings.LOGLEVEL.Level' => "$level" ],
-//                ]);
-//            }
-
             /** Write RFID keys array to intercom memory */
             protected function writeRfids(array $rfids) {
                 $this->api_call('', 'POST', [
@@ -289,7 +279,7 @@
                 ]);
             }
 
-            public function configure_syslog(string $server, int $port) {
+            public function configure_syslog(string $server, int $port) { // TODO: need to reboot after that
                 $this->setConfigParams([
                     'Config.Settings.LOGLEVEL.RemoteSyslog' => '1',
                     'Config.Settings.LOGLEVEL.RemoteServer' => $server,
@@ -488,7 +478,6 @@
                 $this->configureRfidReaders();
                 $this->configureRps(false);
                 $this->enablePnp(false);
-                // $this->setLogLevel(4);
             }
         }
     }
