@@ -6,9 +6,9 @@
 
         class beward extends cameras {
 
-            public $user = 'admin';
+            public string $user = 'admin';
 
-            protected $def_pass = 'admin';
+            protected string $def_pass = 'admin';
 
             /** Сделать API-вызов */
             protected function api_call($method, $params = [], $post = false, $referer = false) {

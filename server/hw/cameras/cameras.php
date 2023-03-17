@@ -9,10 +9,10 @@
 
         abstract class cameras extends hw {
 
-            public $user;
-            public $pass;
+            public string $user;
+            public string $pass;
 
-            protected $def_pass;
+            protected string $def_pass;
 
             /**
              * @throws Exception если камера недоступна

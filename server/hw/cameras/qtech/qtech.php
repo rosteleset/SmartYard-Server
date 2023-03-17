@@ -6,10 +6,10 @@
 
         class qtech extends cameras {
 
-            public $user = 'admin';
+            public string $user = 'admin';
 
-            protected $api_prefix = '/api/';
-            protected $def_pass = 'admin';
+            protected string $def_pass = 'admin';
+            protected string $api_prefix = '/api/';
 
             /** Сделать API-вызов */
             protected function api_call(string $target, string $action, array $data = null) {
