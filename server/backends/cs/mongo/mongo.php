@@ -15,14 +15,14 @@
             /**
              * @inheritDoc
              */
-            public function getCS()
+            public function getCS($sheet, $date)
             {
             }
 
             /**
              * @inheritDoc
              */
-            public function putCS()
+            public function putCS($sheet, $date, $data)
             {
             }
 
