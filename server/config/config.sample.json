@@ -156,7 +156,13 @@
                     "url": "http://127.0.0.1:9051"
                 }
             ]
+        },
+
+        "cs": {
+            "backend": "mongo",
+            "mosquitto_secret": "<!-- your mosquitto secret here --!>"
         }
+
     },
 
     "email": {

@@ -1,4 +1,3 @@
----
 language: ru
 api:
   frontend: https://example.com/frontend
@@ -12,7 +11,8 @@ mobile:
   city_cams: false
   support_phone: +7(4752)429999
   chat: true
-  chat_url: <!-- your chat url or remove it and use talkMe by default with options below--!>
+  chat_url: <!-- your chat url or remove it and use talkMe by default with options
+    below--!>
   talk_me_id: <!-- put your talkMe chat id here --!>
   talk_me_domain: <!-- put your talkMe chat domain id here --!>
   talk_me_token: <!-- put your talkMe chat rest Api Token here --!>
@@ -54,7 +54,7 @@ backends:
     backend: internal
   isdn:
     backend: lanta
-    common_secret: <1-- your secret here --!>
+    common_secret: <!-- your secret here --!>
     confirm_method: outgoingCall
   inbox:
     backend: clickhouse
@@ -65,11 +65,16 @@ backends:
     username: default
     password: qqq
     database: default
-    time_shift: <1-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>
-    max_call_length: <1-- your max call length in seconds for backward processing call events (hint 120) --!>
-    ttl_temp_record: <1-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>
-    ttl_camshot_days: <1-- your time to live in days for camshots (hint 180 - approx. half year) --!>
-    back_time_shift_video_shot: <1-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>
+    time_shift: <!-- your time shift in seconds from current time as the end timepoint
+      for processing plog_* tables (hint 60) --!>
+    max_call_length: <!-- your max call length in seconds for backward processing
+      call events (hint 120) --!>
+    ttl_temp_record: <!-- your time to live in seconds for temporary data in plog_*
+      tables (hint 86400 - one day) --!>
+    ttl_camshot_days: <!-- your time to live in days for camshots (hint 180 - approx.
+      half year) --!>
+    back_time_shift_video_shot: <!-- your back time shift in seconds for receiving
+      video shot from media server (hint 3) --!>
     cron_process_events_scheduler: minutely
   configs:
     backend: json
@@ -81,7 +86,7 @@ backends:
       url: https://video.server.hostname:8443
       token: <!-- mediaserver security token here (only if you use it) --!>
       management_ip: 127.0.0.1
-      management_port: "8086"
+      management_port: '8086'
       management_token: <!-- management token --!>
   dvr_exports:
     backend: filesystem
@@ -103,6 +108,9 @@ backends:
     servers:
     - title: First server
       url: http://127.0.0.1:9051
+  cs:
+    backend: mongo
+    mosquitto_secret: <!-- your mosquitto secret here --!>
 email:
   server: 127.0.0.1
   port: 587
@@ -110,7 +118,7 @@ email:
   password: qwerty
   from: RBT
 telegram:
-  bot: <1-- your telegram bot token here --!>
+  bot: <!-- your telegram bot token here --!>
 syslog_servers:
   beward:
   - syslog.udp:127.0.0.1:45450
@@ -126,4 +134,3 @@ syslog_servers:
   - syslog.udp:127.0.0.1:45455
 ntp_servers:
 - ntp:127.0.0.1:123
-...
