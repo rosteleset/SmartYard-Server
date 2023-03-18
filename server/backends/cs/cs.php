@@ -21,7 +21,7 @@
             /**
              * @return false|array
              */
-            abstract public function putCS($sheet, $date);
+            abstract public function putCS($sheet, $date, $data);
 
             /**
              * @return false|array
