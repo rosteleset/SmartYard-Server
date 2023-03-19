@@ -3,7 +3,14 @@
         if (AVAIL("cs", "sheets")) {
             leftSide("fas fa-fw fa-table", i18n("cs.cs"), "#cs", "tt");
         }
-        moduleLoaded("cs", this);
+        
+        if (AVAIL("cs", "sheet", "PUT")) {
+            loadSubModules("tt", [
+                "sheet",
+            ], this);
+        } else {
+            moduleLoaded("cs", this);
+        }
     },
 
     route: function (params) {
