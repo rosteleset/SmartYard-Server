@@ -32,10 +32,11 @@
                     "metadata.date" => $date,
                 ]);
 
-                $cs = "{}";
+                $cs = "{\n\t\"sheet\": \"$sheet\",\n\t\"date\": \"$date\"\n}";
 
                 foreach ($css as $s) {
-                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ? : "{}";
+                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ? : $cs;
+                    break;
                 }
 
                 return $cs;
