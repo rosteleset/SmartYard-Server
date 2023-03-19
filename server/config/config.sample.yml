@@ -110,7 +110,12 @@ backends:
       url: http://127.0.0.1:9051
   cs:
     backend: mongo
-    mosquitto_secret: <!-- your mosquitto secret here --!>
+  mqtt:
+    backend: internal
+    ws: wss://<!-- your server here --!>
+    mqtt: mqtt://<!-- your server here -->
+    username: rbt
+    password: <!-- your mosquitto password here --!>
 email:
   server: 127.0.0.1
   port: 587
