@@ -159,7 +159,7 @@
         },
 
         "cs": {
-            "backend": "mongo"
+            "backend": "internal"
         },
 
         "mqtt": {

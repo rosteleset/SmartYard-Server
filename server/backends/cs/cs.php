@@ -16,16 +16,63 @@
             /**
              * @return mixed
              */
-            abstract public function getCS($sheet, $date);
+            public function getCS($sheet, $date)
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                $css = $files->searchFiles([
+                    "metadata.type" => "csheet",
+                    "metadata.sheet" => $sheet,
+                    "metadata.date" => $date,
+                ]);
+
+                $cs = "{}";
+
+                foreach ($css as $s) {
+                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ? : "{}";
+                }
+
+                return $cs;
+            }
 
             /**
              * @return false|array
              */
-            abstract public function putCS($sheet, $date, $data);
+            public function putCS($sheet, $date, $data)
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                $css = $files->searchFiles([
+                    "metadata.type" => "csheet",
+                    "metadata.sheet" => $sheet,
+                    "metadata.date" => $date,
+                ]);
+
+                foreach ($css as $s) {
+                    $cs = $files->deleteFile($s["id"]);
+                }
+
+                return $files->addFile($sheet . "_" . $date . ".json", $files->contentsToStream($data), [
+                    "type" => "csheet",
+                    "sheet" => $sheet,
+                    "date" => $date,
+                ]);
+            }
 
             /**
              * @return false|array
              */
-            abstract public function getCSes();
+            public function getCSes()
+            {
+
+            }
         }
     }
