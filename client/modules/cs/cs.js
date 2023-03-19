@@ -3,9 +3,9 @@
         if (AVAIL("cs", "sheets")) {
             leftSide("fas fa-fw fa-table", i18n("cs.cs"), "#cs", "tt");
         }
-        
+
         if (AVAIL("cs", "sheet", "PUT")) {
-            loadSubModules("tt", [
+            loadSubModules("cs", [
                 "sheet",
             ], this);
         } else {
