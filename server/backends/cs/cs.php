@@ -60,7 +60,7 @@
                     $cs = $files->deleteFile($s["id"]);
                 }
 
-                return $files->addFile($sheet . "_" . $date . ".json", $files->contentsToStream($data), [
+                return $files->addFile($date . "_" . $sheet . ".json", $files->contentsToStream($data), [
                     "type" => "csheet",
                     "sheet" => $sheet,
                     "date" => $date,
@@ -72,7 +72,15 @@
              */
             public function getCSes()
             {
+                $files = loadBackend("files");
 
+                if (!$files) {
+                    return false;
+                }
+
+                return $files->searchFiles([
+                    "metadata.type" => "csheet",
+                ]);
             }
         }
     }
