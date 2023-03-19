@@ -14,6 +14,8 @@
 
         abstract class cs extends backend {
             /**
+             * @param $sheet
+             * @param $date
              * @return mixed
              */
             public function getCS($sheet, $date)
@@ -40,7 +42,10 @@
             }
 
             /**
-             * @return false|array
+             * @param $sheet
+             * @param $date
+             * @param $data
+             * @return boolean
              */
             public function putCS($sheet, $date, $data)
             {
@@ -65,6 +70,31 @@
                     "sheet" => $sheet,
                     "date" => $date,
                 ]);
+            }
+
+            /**
+             * @param $date
+             * @return boolean
+             */
+            public function deleteCS($sheet, $date)
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                $css = $files->searchFiles([
+                    "metadata.type" => "csheet",
+                    "metadata.sheet" => $sheet,
+                    "metadata.date" => $date,
+                ]);
+
+                foreach ($css as $s) {
+                    $cs = $files->deleteFile($s["id"]);
+                }
+
+                return true;
             }
 
             /**
