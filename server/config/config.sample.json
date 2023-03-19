@@ -159,10 +159,16 @@
         },
 
         "cs": {
-            "backend": "mongo",
-            "mosquitto_secret": "<!-- your mosquitto secret here --!>"
-        }
+            "backend": "mongo"
+        },
 
+        "mqtt": {
+            "backend": "internal",
+            "ws": "wss://<!-- your server here --!>",
+            "mqtt": "mqtt://<!-- your server here -->",
+            "username": "rbt",
+            "password": "<!-- your mosquitto password here --!>"
+        }
     },
 
     "email": {
