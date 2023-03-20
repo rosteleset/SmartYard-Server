@@ -118,8 +118,8 @@
                 }).
                 done(response => {
                     console.log(response);
-                    if (response && response.sheet && response.sheet.data) {
-                        console.log(response.sheet.data);
+                    if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
+                        console.log(response.sheet.sheet.data);
                     } else {
                         $("#mainForm").html(i18n("cs.csNotFound"));
                     }
