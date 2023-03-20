@@ -18,7 +18,7 @@
              * @param $date
              * @return mixed
              */
-            public function getCS($sheet, $date)
+            public function getCS($sheet, $date, $extended = false)
             {
                 $files = loadBackend("files");
 

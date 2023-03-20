@@ -34,7 +34,7 @@
                 if (loadBackend("tt")) {
                     return [
                         "GET" => "#same(tt,issue,GET)",
-                        "PUT",
+                        "PUT" => "#same(tt,issue,GET)",
                     ];
                 } else {
                     return false;

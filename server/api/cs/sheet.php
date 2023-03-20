@@ -20,7 +20,7 @@
                 $sheet = false;
 
                 if ($cs) {
-                    $sheets = $cs->getCS($params["sheet"], $params["date"]);
+                    $sheet = $cs->getCS($params["sheet"], $params["date"], @(int)$params["extended"]);
                 }
 
                 return api::ANSWER($sheet, ($sheet !== false)?"sheet":"notFound");
