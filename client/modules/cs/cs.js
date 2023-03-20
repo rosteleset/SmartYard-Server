@@ -111,6 +111,12 @@
                 }
             });
 
+            $("#deleteCSsheet").off("click").on("click", () => {
+                if ($("#csSheet").val() && $("#csDate").val()) {
+                    console.log($("#csSheet").val(), $("#csDate").val());
+                }
+            });
+
             if ($("#csSheet").val() && $("#csDate").val()) {
                 QUERY("cs", "sheet", {
                     "sheet": $("#csSheet").val(),
