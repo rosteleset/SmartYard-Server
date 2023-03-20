@@ -20,7 +20,8 @@ syslog.on("message", async ({ date, host, message }) => {
         msg.indexOf("api.fcgi") >= 0 ||
         msg.indexOf("fcgiserver") >= 0 ||
         msg.indexOf("sipmain") >= 0 ||
-        msg.indexOf("RFID_TYPE_WIEGAND") >= 0
+        msg.indexOf("RFID_TYPE_WIEGAND") >= 0 ||
+        msg.indexOf("netconfig") >= 0
     ) {
         return;
     }
