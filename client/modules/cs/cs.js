@@ -49,7 +49,7 @@
 
             datesOptions = "";
             for (let i in dates) {
-                if (sheets[i] == $.cookie("_sheet_date")) {
+                if (dates[i] == $.cookie("_sheet_date")) {
                     datesOptions += "<option selected='selected'>" + escapeHTML(dates[i]) + "</option>";
                 } else {
                     datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
@@ -62,9 +62,9 @@
             rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control">${datesOptions}</select></div>`;
     
             if (AVAIL("cs", "sheet", "PUT")) {
-                rtd += `<div class="nav-item mr-0 pr-0 align-middle"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="far fa-lg fa-fw fa-plus-square"></i></span></div>`;
+                rtd += `<div class="nav-item mr-0 pr-0 align-middle"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
                 rtd += `<div class="nav-item mr-0 pr-0"><span id="editCSsheet" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
-                rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="far fa-lg fa-fw fa-minus-square"></i></span></div>`;
+                rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
             }
     
             rtd += "</span>";
@@ -103,6 +103,12 @@
                         location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                     },
                 }).show();
+            });
+
+            $("#editCSsheet").off("click").on("click", () => {
+                if ($("#csSheet").val() && $("#csDate").val()) {
+                    location.href = "?#cs.sheet&sheet=" + encodeURIComponent($("#csSheet").val()) + "&date=" + encodeURIComponent($("#csDate").val());
+                }
             });
 
             if ($("#csSheet").val() && $("#csDate").val()) {
