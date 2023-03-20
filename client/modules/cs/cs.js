@@ -22,62 +22,113 @@
         GET("cs", "sheets").
         fail(FAIL).
         fail(() => {
-            $("#mainForm").html(i18n("cs.cs"));
+            $("#mainForm").html(i18n("cs.csNotFound"));
         }).
         fail(loadingDone).
-        done(r1 => {
-            console.log(r1);
-        });
+        done(response => {
+            let sheets = [];
+            let dates = [];
 
-        let rtd = "<div class='form-inline'>";
+            for (let i in response.sheets) {
+                if (sheets.indexOf(response.sheets[i].metadata.sheet) < 0) {
+                    sheets.push(response.sheets[i].metadata.sheet);
+                }
+                if (dates.indexOf(response.sheets[i].metadata.date) < 0) {
+                    dates.push(response.sheets[i].metadata.date);
+                }
+            }
 
-        rtd += `<div class="input-group input-group-sm mr-2" style="width: 150px;"><select id="csSheet" class="form-control"></select></div>`;
-        rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control"></select></div>`;
+            sheetsOptions = "";
+            for (let i in sheets) {
+                if (sheets[i] == $.cookie("_sheet_name")) {
+                    sheetsOptions += "<option selected='selected'>" + escapeHTML(sheets[i]) + "</option>";
+                } else {
+                    sheetsOptions += "<option>" + escapeHTML(sheets[i]) + "</option>";
+                }
+            }
 
-        if (AVAIL("cs", "sheet", "PUT")) {
-            rtd += `<div class="nav-item mr-0 pr-0 align-middle"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="far fa-lg fa-fw fa-plus-square"></i></span></div>`;
-            rtd += `<div class="nav-item mr-0 pr-0"><span id="editCSsheet" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
-            rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="far fa-lg fa-fw fa-minus-square"></i></span></div>`;
-        }
+            datesOptions = "";
+            for (let i in dates) {
+                if (sheets[i] == $.cookie("_sheet_date")) {
+                    datesOptions += "<option selected='selected'>" + escapeHTML(dates[i]) + "</option>";
+                } else {
+                    datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
+                }
+            }
 
-        rtd += "</span>";
+            let rtd = "<div class='form-inline'>";
 
-        $("#rightTopDynamic").html(rtd);
-
-        $("#addCSsheet").off("click").on("click", () => {
-            cardForm({
-                title: i18n("cs.addSheet"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                fields: [
-                    {
-                        id: "sheet",
-                        type: "select2",
-                        title: i18n("cs.sheet"),
-                        placeholder: i18n("cs.sheet"),
-                        tags: true,
-                        createTags: true,
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
+            rtd += `<div class="input-group input-group-sm mr-2" style="width: 150px;"><select id="csSheet" class="form-control">${sheetsOptions}</select></div>`;
+            rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control">${datesOptions}</select></div>`;
+    
+            if (AVAIL("cs", "sheet", "PUT")) {
+                rtd += `<div class="nav-item mr-0 pr-0 align-middle"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="far fa-lg fa-fw fa-plus-square"></i></span></div>`;
+                rtd += `<div class="nav-item mr-0 pr-0"><span id="editCSsheet" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
+                rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="far fa-lg fa-fw fa-minus-square"></i></span></div>`;
+            }
+    
+            rtd += "</span>";
+    
+            $("#rightTopDynamic").html(rtd);
+    
+            $("#addCSsheet").off("click").on("click", () => {
+                cardForm({
+                    title: i18n("cs.addSheet"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    fields: [
+                        {
+                            id: "sheet",
+                            type: "select2",
+                            title: i18n("cs.sheet"),
+                            placeholder: i18n("cs.sheet"),
+                            tags: true,
+                            createTags: true,
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "date",
+                            type: "date",
+                            title: i18n("cs.date"),
+                            placeholder: i18n("cs.date"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                    ],
+                    callback: result => {
+                        location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                     },
-                    {
-                        id: "date",
-                        type: "date",
-                        title: i18n("cs.date"),
-                        placeholder: i18n("cs.date"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                ],
-                callback: result => {
-                    location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
-                },
-            }).show();
-        });
+                }).show();
+            });
 
-        loadingDone();
+            if ($("#csSheet").val() && $("#csDate").val()) {
+                QUERY("cs", "sheet", {
+                    "sheet": $("#csSheet").val(),
+                    "date": $("#csDate").val(),
+                    "extended": 1,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                fail(() => {
+                    $("#mainForm").html(i18n("cs.csNotFound"));
+                }).
+                done(response => {
+                    console.log(response);
+                    if (response && response.sheet && response.sheet.data) {
+                        console.log(response.sheet.data);
+                    } else {
+                        $("#mainForm").html(i18n("cs.csNotFound"));
+                    }
+                    loadingDone();
+                });
+            } else {
+                $("#mainForm").html(i18n("cs.csNotFound"));
+                loadingDone();
+            }
+        });
     },
 }).init();

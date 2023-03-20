@@ -39,7 +39,14 @@
                     break;
                 }
 
-                return $cs;
+                if ($extended) {
+                    return [
+                        "sheet" => json_decode($cs),
+                        "cells" => [ ],
+                    ];
+                } else {
+                    return $cs;
+                }
             }
 
             /**

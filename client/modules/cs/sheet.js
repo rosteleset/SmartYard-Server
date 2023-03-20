@@ -5,6 +5,8 @@
     },
 
     route: function (params) {
+        $("#rightTopDynamic").html("");
+
         QUERY("cs", "sheet", {
             "sheet": params.sheet,
             "date": params.date,
@@ -47,5 +49,4 @@
         }).
         done(loadingDone);
     },
-
 }).init();
