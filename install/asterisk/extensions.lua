@@ -114,7 +114,7 @@ end
 
 function blacklist(flatId)
     local flat = dm("flat", flatId)
-    if flat.autoBlock > 0 or flat.manualBlock > 0 then
+    if flat.autoBlock > 0 or flat.manualBlock > 0 or flat.adminBlock > 0 then
         log_debug("blacklist: yes")
         app.Answer()
         app.Wait(2)

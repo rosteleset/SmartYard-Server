@@ -132,6 +132,7 @@
     "apartment": "Домофонный номер",
     "apartmentLevels": "Уровни домофона",
     "manualBlock": "Домофония отключена",
+    "adminBlock": "Домофония отключена администратором",
     "openCode": "Код открытия двери",
     "autoOpen": "Автооткрытие до",
     "whiteRabbit": "&quot;Белый кролик&quot;",

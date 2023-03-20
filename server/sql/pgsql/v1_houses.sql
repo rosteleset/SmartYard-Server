@@ -77,6 +77,7 @@ CREATE TABLE houses_flats
 -- domophone's specific flat settings
     manual_block integer,                                                                                               -- 1/0 manaul blocking (by abonent?)
     auto_block integer,                                                                                                 -- 1/0 auto block (by billing system?)
+    admin_block integer,                                                                                                -- 1/0 blocked by admin
     open_code character varying,                                                                                        -- door open code
     auto_open integer,                                                                                                  -- UNIX timestamp
     white_rabbit integer,                                                                                               -- 1/0

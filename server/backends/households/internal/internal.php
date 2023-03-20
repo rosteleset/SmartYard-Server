@@ -30,6 +30,7 @@
                         plog,
                         coalesce(auto_block, 0) auto_block, 
                         manual_block, 
+                        admin_block,
                         open_code, 
                         auto_open, 
                         white_rabbit, 
@@ -49,6 +50,7 @@
                     "plog" => "plog",
                     "auto_block" => "autoBlock",
                     "manual_block" => "manualBlock",
+                    "admin_block" => "adminBlock",
                     "open_code" => "openCode",
                     "auto_open" => "autoOpen",
                     "white_rabbit" => "whiteRabbit",
@@ -406,24 +408,25 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
+            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $adminBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
                 $autoOpen = (int)strtotime($autoOpen);
 
-                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
+                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($adminBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
 
                     if ($openCode == "!") {
                         // TODO add unique check !!!
                         $openCode = 11000 + rand(0, 88999);
                     }
 
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, admin_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :admin_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
                         ":code" => $code,
                         ":plog" => $plog,
                         ":manual_block" => $manualBlock,
+                        ":admin_block" => $adminBlock,
                         ":open_code" => $openCode,
                         ":auto_open" => $autoOpen,
                         ":white_rabbit" => $whiteRabbit,
@@ -475,6 +478,11 @@
                         return false;
                     }
 
+                    if (array_key_exists("adminBlock", $params) && !checkInt($params["adminBlock"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (array_key_exists("whiteRabbit", $params) && !checkInt($params["whiteRabbit"])) {
                         setLastError("invalidParams");
                         return false;
@@ -514,6 +522,7 @@
                         "code" => "code",
                         "plog" => "plog",
                         "manual_block" => "manualBlock",
+                        "admin_block" => "adminBlock",
                         "open_code" => "openCode",
                         "auto_open" => "autoOpen",
                         "white_rabbit" => "whiteRabbit",
