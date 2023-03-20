@@ -152,6 +152,26 @@
                     if ( $path[0] == '/' ) $path = substr($path,1);
                     $stream = $path;
                     $ranges = $this->getRangesForNimble( $dvr['management_ip'], $dvr['management_port'], $stream, $dvr['management_token'] );
+                } elseif ($dvr['type'] == 'macroscop') {
+                    // Macroscop Server
+                    // $date = DateTime::createFromFormat("Y-m-d\TH:i:s.uP", "2018-02-23T11:29:16.434Z");
+                    $parsed_url = parse_url($cam['dvrStream']);
+                    
+                    $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+                    $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+                    $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+                    $pass     = ($user || $pass) ? "$pass@" : '';
+                    // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                    $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    
+                    $request_url = "$scheme$user$pass$host$port/archivefragments$query";
+
+                    $ranges = json_decode(file_get_contents($request_url), true);
+
+                    return $ranges;
+               
                 } else {
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
