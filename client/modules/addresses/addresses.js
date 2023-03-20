@@ -642,7 +642,7 @@
         let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
 
         function link(target, text, id) {
-            return `<a href="#addresses&show=${target}&${target}Id=${id}">${text}</a>`;
+            return `<a href="?#addresses&show=${target}&${target}Id=${id}">${text}</a>`;
         }
 
         function region(id) {

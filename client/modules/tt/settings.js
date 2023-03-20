@@ -2940,9 +2940,9 @@
         for (let i in sections) {
             top += `<li class="nav-item d-none d-sm-inline-block">`;
             if (sections[i] === section) {
-                top += `<a href="#tt.settings&section=${sections[i]}" class="nav-link text-primary nav-item-back-selected">${i18n("tt." + sections[i])}</a>`;
+                top += `<a href="?#tt.settings&section=${sections[i]}" class="nav-link text-primary nav-item-back-selected">${i18n("tt." + sections[i])}</a>`;
             } else {
-                top += `<a href="#tt.settings&section=${sections[i]}" class="nav-link text-dark nav-item-back-hover">${i18n("tt." + sections[i])}</a>`;
+                top += `<a href="?#tt.settings&section=${sections[i]}" class="nav-link text-dark nav-item-back-hover">${i18n("tt." + sections[i])}</a>`;
             }
             top += `</li>`;
         }

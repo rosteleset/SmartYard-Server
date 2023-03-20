@@ -862,13 +862,13 @@
             rtd += `<div class="input-group input-group-sm ${cog} ttSearchInputGroup">`;
             rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div></div>`;
             if (AVAIL("tt", "project", "POST")) {
-                rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
+                rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
             rtd += `</div>`;
             rtd += '</form>';
         } else {
             if (AVAIL("tt", "project", "POST")) {
-                rtd += `<div class="nav-item mr-0 pr-0"><a href="#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
+                rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings&edit=projects" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
         }
 
