@@ -145,7 +145,6 @@
              */
             public function getRanges($cam, $subscriberId) {
                 $dvr = $this->getDVRServerByStream($cam['dvrStream']);
-
                 if ($dvr['type'] == 'nimble') {
                     // Nimble Server
                     $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
@@ -166,10 +165,18 @@
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
                     
-                    $request_url = "$scheme$user$pass$host$port/archivefragments$query";
+                    $request_url = "$scheme$user$pass$host$port/archivefragments$query&fromtime=".urlencode("01.01.2022 00:00:00")."&totime=".urlencode("01.01.2222 23:59:59")."&responsetype=json";
+                    // print($request_url);
+                    $fragments = json_decode(file_get_contents($request_url), true)["Fragments"];
+                    $ranges = [];
 
-                    $ranges = json_decode(file_get_contents($request_url), true);
-
+                    foreach ($fragments as $frag) {
+                        $from = DateTime::createFromFormat("Y-m-d\TH:i:s.uP", $frag["FromTime"])->getTimestamp();
+                        $to = DateTime::createFromFormat("Y-m-d\TH:i:s.uP", $frag["ToTime"])->getTimestamp();
+                        $duration = $to - $from;
+                        $ranges[] = [ "from" => $from, "duration" => $duration ];
+                    }
+                    
                     return $ranges;
                
                 } else {
