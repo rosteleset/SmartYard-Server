@@ -188,9 +188,9 @@
                                             if (l == rows[i]) {
                                                 f = true;
                                                 if (s[k].rows[l].class) {
-                                                    h += '<td class="' + s[k].rows[l].class + ' dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                                    h += '<td class="' + s[k].rows[l].class + ' dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
                                                 } else {
-                                                    h += '<td class="dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                                    h += '<td class="dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
                                                 }
                                                 break;
                                             }
@@ -200,9 +200,9 @@
                                 }
                                 if (!f) {
                                     if (response.sheet.sheet.emptyClass) {
-                                        h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                        h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
                                     } else {
-                                        h += '<td data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                        h += '<td data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
                                     }
                                 }
                             }
@@ -217,11 +217,42 @@
                             let cell = $(this);
 
                             if (cell.hasClass(response.sheet.sheet.blockedClass)) {
-                                $(".dataCell").removeClass(response.sheet.sheet.blockedClass);
+                                let cl = cell.attr("class").split(" ");
+                                for (let i in cl) {
+                                    if (cl[i].substring(0, 3) == "bg-") {
+                                        cell.removeClass(cl[i]);
+                                    }
+                                }
+                                if (cell.attr("data-class")) {
+                                    cell.addClass(cell.attr("data-class"));
+                                }
                             } else {
-                                console.log(cell.attr("class"));
-                                $(".dataCell").removeClass(response.sheet.sheet.blockedClass);
-                                cell.toggleClass(response.sheet.sheet.blockedClass);
+                                let cl = cell.attr("class").split(" ");
+                                let b = [];
+                                for (let i in cl) {
+                                    if (cl[i].substring(0, 3) == "bg-") {
+                                        cell.removeClass(cl[i]);
+                                        b.push(cl[i]);
+                                    }
+                                }
+                                if (b.length) {
+                                    cell.attr("data-class", b.join(" "));
+                                } else {
+                                    cell.attr("data-class", "");
+                                }
+                                $(".dataCell." + response.sheet.sheet.blockedClass).each(function () {
+                                    let c = $(this);
+                                    let cl = c.attr("class").split(" ");
+                                    for (let i in cl) {
+                                        if (cl[i].substring(0, 3) == "bg-") {
+                                            c.removeClass(cl[i]);
+                                        }
+                                    }
+                                    if (c.attr("data-class")) {
+                                        c.addClass(c.attr("data-class"));
+                                    }
+                                });
+                                cell.addClass(response.sheet.sheet.blockedClass);
                             }
 
                             console.log(colsMd5[cell.attr("data-col")], rowsMd5[cell.attr("data-row")]);
