@@ -171,8 +171,17 @@
                     $ranges = [];
 
                     foreach ($fragments as $frag) {
-                        $from = DateTime::createFromFormat("Y-m-d\TH:i:s.uP", $frag["FromTime"])->getTimestamp();
-                        $to = DateTime::createFromFormat("Y-m-d\TH:i:s.uP", $frag["ToTime"])->getTimestamp();
+                        $from = date_create_from_format("Y-m-d\TH:i:s.u?P", $frag["FromTime"]);
+                        if (!$from) {
+                            $from = date_create_from_format("Y-m-d\TH:i:s.uP", $frag["FromTime"]);
+                        }
+                        $to = date_create_from_format("Y-m-d\TH:i:s.u?P", $frag["ToTime"]);
+                        if (!$to) {
+                            $to = date_create_from_format("Y-m-d\TH:i:s.uP", $frag["ToTime"]);
+                        }
+                        
+                        $from = $from->getTimestamp();
+                        $to = $from->getTimestamp();
                         $duration = $to - $from;
                         $ranges[] = [ "from" => $from, "duration" => $duration ];
                     }
