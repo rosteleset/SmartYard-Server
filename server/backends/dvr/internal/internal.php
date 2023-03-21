@@ -193,7 +193,7 @@
                         }
                     }
                     
-                    return [ "stream" => $channel_id, "ranges" => $ranges];
+                    return [ [ "stream" => $channel_id, "ranges" => $ranges] ];
                
                 } else {
                     // Flussonic Server by default
