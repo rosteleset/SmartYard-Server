@@ -215,47 +215,52 @@
 
                         $(".dataCell").off("click").on("click", function () {
                             let cell = $(this);
+                            let login = md5($.cookie("_login"));
 
-                            if (cell.hasClass(response.sheet.sheet.blockedClass)) {
-                                let cl = cell.attr("class").split(" ");
-                                for (let i in cl) {
-                                    if (cl[i].substring(0, 3) == "bg-") {
-                                        cell.removeClass(cl[i]);
-                                    }
-                                }
-                                if (cell.attr("data-class")) {
-                                    cell.addClass(cell.attr("data-class"));
-                                }
-                            } else {
-                                let cl = cell.attr("class").split(" ");
-                                let b = [];
-                                for (let i in cl) {
-                                    if (cl[i].substring(0, 3) == "bg-") {
-                                        cell.removeClass(cl[i]);
-                                        b.push(cl[i]);
-                                    }
-                                }
-                                if (b.length) {
-                                    cell.attr("data-class", b.join(" "));
-                                } else {
-                                    cell.attr("data-class", "");
-                                }
-                                $(".dataCell." + response.sheet.sheet.blockedClass).each(function () {
-                                    let c = $(this);
-                                    let cl = c.attr("class").split(" ");
+                            if (cell.hasClass(response.sheet.sheet.reservedClass)) {
+
+                            } else
+                            if (cell.hasClass(login) || !cell.hasClass("login")) {
+                                if (cell.hasClass(response.sheet.sheet.blockedClass)) {
+                                    let cl = cell.attr("class").split(" ");
                                     for (let i in cl) {
                                         if (cl[i].substring(0, 3) == "bg-") {
-                                            c.removeClass(cl[i]);
+                                            cell.removeClass([ cl[i], "login", login ]);
                                         }
                                     }
-                                    if (c.attr("data-class")) {
-                                        c.addClass(c.attr("data-class"));
+                                    if (cell.attr("data-class")) {
+                                        cell.addClass(cell.attr("data-class"));
                                     }
-                                });
-                                cell.addClass(response.sheet.sheet.blockedClass);
+                                } else {
+                                    let cl = cell.attr("class").split(" ");
+                                    let b = [];
+                                    for (let i in cl) {
+                                        if (cl[i].substring(0, 3) == "bg-") {
+                                            cell.removeClass([ cl[i], login, "login" ]);
+                                            b.push(cl[i]);
+                                        }
+                                    }
+                                    if (b.length) {
+                                        cell.attr("data-class", b.join(" "));
+                                    } else {
+                                        cell.attr("data-class", "");
+                                    }
+                                    $(".dataCell." + response.sheet.sheet.blockedClass + "." + login).each(function () {
+                                        let c = $(this);
+                                        let cl = c.attr("class").split(" ");
+                                        for (let i in cl) {
+                                            if (cl[i].substring(0, 3) == "bg-") {
+                                                c.removeClass(cl[i]);
+                                            }
+                                        }
+                                        if (c.attr("data-class")) {
+                                            c.addClass(c.attr("data-class"));
+                                        }
+                                    });
+                                    cell.addClass([ response.sheet.sheet.blockedClass, login, "login" ]);
+                                    console.log(colsMd5[cell.attr("data-col")], rowsMd5[cell.attr("data-row")]);
+                                }
                             }
-
-                            console.log(colsMd5[cell.attr("data-col")], rowsMd5[cell.attr("data-row")]);
                         });
                     } else {
                         $("#mainForm").html(i18n("cs.csNotFound"));
