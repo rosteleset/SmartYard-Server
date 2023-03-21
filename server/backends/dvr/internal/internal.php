@@ -181,7 +181,7 @@
                         }
                         
                         $from = $from->getTimestamp();
-                        $to = $from->getTimestamp();
+                        $to = $to->getTimestamp();
                         $duration = $to - $from;
                         $ranges[] = [ "from" => $from, "duration" => $duration ];
                     }
