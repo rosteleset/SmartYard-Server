@@ -165,6 +165,11 @@
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
                     
+                    if (isset($parsed_url['query'])) {
+                        $channel_id = parse_str($parsed_url['query'])['channelid'];
+                        $channel_id = isset($channel_id) ? $channel_id : '';
+                    }
+                    
                     $request_url = "$scheme$user$pass$host$port/archivefragments$query&fromtime=".urlencode("01.01.2022 00:00:00")."&totime=".urlencode("01.01.2222 23:59:59")."&responsetype=json";
                     // print($request_url);
                     $fragments = json_decode(file_get_contents($request_url), true)["Fragments"];
@@ -186,7 +191,7 @@
                         $ranges[] = [ "from" => $from, "duration" => $duration ];
                     }
                     
-                    return $ranges;
+                    return [ "ranges" => $ranges, "stream" => $channel_id];
                
                 } else {
                     // Flussonic Server by default
