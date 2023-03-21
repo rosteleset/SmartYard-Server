@@ -129,9 +129,103 @@
                     $("#mainForm").html(i18n("cs.csNotFound"));
                 }).
                 done(response => {
-                    console.log(response);
+                    let cols = [];
+                    let rows = [];
+                    let colsMd5 = {};
+                    let rowsMd5 = {};
+
                     if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
-                        console.log(response.sheet.sheet.data);
+                        let s = response.sheet.sheet.data;
+                        for (let i in s) {
+                            if (cols.indexOf(s[i].col) < 0) {
+                                cols.push(s[i].col);
+                                colsMd5[md5(s[i].col)] = s[i].col;
+                            }
+                            for (let j in s[i].rows) {
+                                if (rows.indexOf(j) < 0) {
+                                    rows.push(j);
+                                    rowsMd5[md5(j)] = j;
+                                }
+                            }
+                        }
+
+                        cols.sort();
+                        rows.sort();
+
+                        let h = '';
+                        h += '<table width="100%" class="mt-3 table table-hover table-bordered">';
+                        h += '<thead>';
+                        h += '<tr>';
+                        h += '<td>&nbsp;</td>';
+                        for (let i in cols) {
+                            let c = false;
+                            for (let j in s) {
+                                if (cols[i] == s[j].col) {
+                                    c = s[j];
+                                }
+                            }
+                            if (c && c.class) {
+                                h += '<td class="' + c.class + '">' + escapeHTML(cols[i]) + '</td>';
+                            } else {
+                                h += '<td>' + escapeHTML(cols[i]) + '</td>';
+                            }
+                        }
+                        h += '</tr>';
+                        h += '</thead>';
+                        h += '<tbody>';
+                        for (let i in rows) {
+                            h += '<tr>';
+                            if (response.sheet.sheet.timeClass) {
+                                h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(rows[i]) + '</td>';
+                            } else {
+                                h += '<td>' + escapeHTML(rows[i]) + '</td>';
+                            }
+                            for (let j in cols) {
+                                let f = false;
+                                for (let k in s) {
+                                    if (cols[j] == s[k].col) {
+                                        for (let l in s[k].rows) {
+                                            if (l == rows[i]) {
+                                                f = true;
+                                                if (s[k].rows[l].class) {
+                                                    h += '<td class="' + s[k].rows[l].class + ' dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                                } else {
+                                                    h += '<td class="dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                if (!f) {
+                                    if (response.sheet.sheet.emptyClass) {
+                                        h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                    } else {
+                                        h += '<td data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '">&nbsp;</td>';
+                                    }
+                                }
+                            }
+                            h += '</tr>';
+                        }
+                        h += '</tbody>';
+                        h += '</table>';
+                        
+                        $("#mainForm").html(h);
+
+                        $(".dataCell").off("click").on("click", function () {
+                            let cell = $(this);
+
+                            if (cell.hasClass(response.sheet.sheet.blockedClass)) {
+                                $(".dataCell").removeClass(response.sheet.sheet.blockedClass);
+                            } else {
+                                console.log(cell.attr("class"));
+                                $(".dataCell").removeClass(response.sheet.sheet.blockedClass);
+                                cell.toggleClass(response.sheet.sheet.blockedClass);
+                            }
+
+                            console.log(colsMd5[cell.attr("data-col")], rowsMd5[cell.attr("data-row")]);
+                        });
                     } else {
                         $("#mainForm").html(i18n("cs.csNotFound"));
                     }

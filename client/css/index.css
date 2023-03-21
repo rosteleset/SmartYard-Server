@@ -236,7 +236,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .tr-hoverable:hover {
-  background: #ccc;
+  background: #ccc!important;
 }
 
 .td-journal {
