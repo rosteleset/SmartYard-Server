@@ -2,6 +2,18 @@
 
 const app = require('express')();
 const mqtt = require('mqtt');
+const redis = require('redis')
+
+var expired = redis.createClient();
+expired.connect().then(() => {
+    expired.sendCommand([ 'config', 'set', 'notify-keyspace-events', 'Ex']).then(() => {
+        expired.subscribe('__keyevent@0__:expired', (k, e) => {
+            if (e == '__keyevent@0__:expired') {
+                console.log(k);
+            }
+        });
+    });
+});
 
 const client = mqtt.connect("wss://tt.lanta.me/mqtt", {
     username: "rbt",
