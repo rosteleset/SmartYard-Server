@@ -244,3 +244,11 @@ body::-webkit-scrollbar-thumb {
   vertical-align: top;
   white-space: nowrap;
 }
+
+.bg-lightgray, .bg-lightgray>a {
+  color: #0000!important;
+}
+
+.bg-lightgray {
+  background-color: #cfcfcf!important;
+}

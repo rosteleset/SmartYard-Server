@@ -172,10 +172,31 @@
                                     }
                                 }
                                 if (c && c.class) {
-                                    h += '<td class="' + c.class + '">' + escapeHTML(cols[i]) + '</td>';
+                                    h += '<td class="' + c.class + '">';
                                 } else {
-                                    h += '<td>' + escapeHTML(cols[i]) + '</td>';
+                                    h += '<td>';
                                 }
+                                h += "<span class='hoverable column' data-col='" + md5(cols[i]) + "'>" + escapeHTML(cols[i]) + "</span>";
+                                if (c.assigned && c.assigned.length) {
+                                    for (let j in c.assigned) {
+                                        let u = false;
+                                        for (let k in modules.users.meta) {
+                                            if (modules.users.meta[k].login == c.assigned[j]) {
+                                                u = modules.users.meta[k].realName;
+                                                break;
+                                            }
+                                        }
+                                        h += "<br/>";
+                                        if (response.sheet.sheet.loginClass) {
+                                            h += "<span class='" + response.sheet.sheet.loginClass + "'>"
+                                        } else {
+                                            h += "<span>";
+                                        }
+                                        h += u?u:c.assigned[j];
+                                        h += "</span>";
+                                    }
+                                }
+                                h += "</td>";
                             }
                             h += '</tr>';
                             h += '</thead>';
@@ -233,7 +254,7 @@
                                             if (cell.attr("data-class")) {
                                                 cell.addClass(cell.attr("data-class"));
                                             }
-                                        }, i18n("cs.coordinate"), i18n("unReserve"));
+                                        }, i18n("cs.coordinate"), i18n("cs.unReserve"));
                                     }
                                 } else
                                 if (cell.hasClass(login) || !cell.hasClass("login")) {
@@ -279,9 +300,14 @@
                                         }, () => {
                                             cell.removeClass(response.sheet.sheet.blockedClass);
                                             cell.addClass(response.sheet.sheet.reservedClass);
-                                        }, i18n("cs.coordinate"), i18n("reserve"));
+                                        }, i18n("cs.coordinate"), i18n("cs.reserve"));
                                     }
                                 }
+                            });
+
+                            $(".column").off("click").on("click", function () {
+                                let cell = $(this);
+                                console.log(colsMd5[cell.attr("data-col")]);
                             });
 
                             loadIssues(loadingDone);
