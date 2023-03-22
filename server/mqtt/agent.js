@@ -2,13 +2,12 @@
 
 const app = require('express')();
 const mqtt = require('mqtt');
-const redis = require('redis')
+const redis = require('redis').createClient();
 const fs = require('fs');
 
-var expired = redis.createClient();
-expired.connect().then(() => {
-    expired.sendCommand([ 'config', 'set', 'notify-keyspace-events', 'Ex' ]).then(() => {
-        expired.subscribe('__keyevent@0__:expired', (k, e) => {
+redis.connect().then(() => {
+    redis.sendCommand([ 'config', 'set', 'notify-keyspace-events', 'Ex' ]).then(() => {
+        redis.subscribe('__keyevent@0__:expired', (k, e) => {
             if (e == '__keyevent@0__:expired') {
                 console.log(k);
             }
@@ -23,13 +22,13 @@ const client = mqtt.connect(mqtt_config.ws, {
     password: mqtt_config.password,
 });
 
-client.subscribe("cs/cell");
-
-client.on("message", console.log);
-
 client.publish("cs/cell", JSON.stringify({
-    action: "block",
-    cell: "123456",
+    action: "claim",
+    sheet: "sheet",
+    date: "date",
+    col: "col",
+    row: "row",
+    login: "login",
 }));
 
 app.use(require('body-parser').urlencoded({ extended: true }));
