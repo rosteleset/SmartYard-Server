@@ -84,11 +84,11 @@
     },
 
     clearCell: function (col, row) {
-
+        // clear cell initial classes
     },
 
     restoreCell: function (col, row) {
-
+        // restore cell initial classes
     },
 
     renderCS: function () {
