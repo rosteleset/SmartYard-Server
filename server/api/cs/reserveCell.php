@@ -20,7 +20,7 @@
                 $success = false;
 
                 if ($cs) {
-                    $success = $cs->setCell("reserveCell", $params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
+                    $success = $cs->setCell("reserve", $params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
                 }
 
                 return api::ANSWER($success);
@@ -32,7 +32,7 @@
                 $success = false;
 
                 if ($cs) {
-                    $success = $cs->setCell("freeCell", $params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
+                    $success = $cs->setCell("free", $params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
                 }
 
                 return api::ANSWER($success);

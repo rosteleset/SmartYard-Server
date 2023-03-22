@@ -133,9 +133,64 @@
             {
                 switch ($action) {
                     case "claim":
-                        break;
-
                     case "unClaim":
+                        $keys = $this->redis->keys("cell_{$sheet}_{$date}_*");
+
+                        foreach ($keys as $key) {
+                            $cell = json_decode($this->redis->get($key), true);
+                            if ($cell["login"] == $this->login) {
+                                $this->redis->delete($key);
+                                $payload = explode("_", $key);
+                                file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
+                                    'http' => [
+                                        'method'  => 'POST',
+                                        'header'  => [
+                                            'Content-Type: application/json; charset=utf-8',
+                                            'Accept: application/json; charset=utf-8',
+                                        ],
+                                        'content' => json_encode([
+                                            "topic" => "cs/cell",
+                                            "payload" => [
+                                                "action" => "unClaim",
+                                                "sheet" => $payload[1],
+                                                "date" => $payload[2],
+                                                "col" => $payload[3],
+                                                "row" => $payload[4],
+                                                "uid" => $payload[5],
+                                            ],
+                                        ]),
+                                    ],
+                                ]));
+                            }
+                        }
+
+                        if ($action == "claim") {
+                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", 60, json_encode([
+                                "login" => $this->login,
+                            ]));
+                        }
+
+                        file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
+                            'http' => [
+                                'method'  => 'POST',
+                                'header'  => [
+                                    'Content-Type: application/json; charset=utf-8',
+                                    'Accept: application/json; charset=utf-8',
+                                ],
+                                'content' => json_encode([
+                                    "topic" => "cs/cell",
+                                    "payload" => [
+                                        "action" => $action,
+                                        "sheet" => $sheet,
+                                        "date" => $date,
+                                        "col" => $col,
+                                        "row" => $row,
+                                        "uid" => $uid,
+                                        "login" => $this->login,
+                                    ],
+                                ]),
+                            ],
+                        ]));
                         break;
 
                     case "reserve":

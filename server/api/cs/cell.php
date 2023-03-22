@@ -20,7 +20,11 @@
                 $sheet = false;
                 
                 if ($cs) {
-                    $success = $cs->getCell($params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
+                    if (@$params["uid"]) {
+                        $success = $cs->getCellByUID($params["uid"]);
+                    } else {
+                        $success = $cs->getCellByXYZ($params["sheet"], $patams["date"], $params["col"], $params["row"]);
+                    }
                 }
 
                 return api::ANSWER($sheet, ($sheet !== false)?"sheet":"notFound");
@@ -32,7 +36,7 @@
                 $success = false;
 
                 if ($cs && ($params["action"] == "claim" || $params["action"] == "unClaim")) {
-                    $success = $cs->setCell($params["action"], $params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
+                    $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"]);
                 }
 
                 return api::ANSWER($success);
