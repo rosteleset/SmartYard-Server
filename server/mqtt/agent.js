@@ -28,6 +28,7 @@ client.publish("cs/cell", JSON.stringify({
     date: "date",
     col: "col",
     row: "row",
+    uid: "uid",
     login: "login",
 }));
 

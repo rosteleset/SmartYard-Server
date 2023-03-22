@@ -20,14 +20,70 @@
     mqttMsg: function (topic, payload) {
         console.log(topic);
         console.log(payload);
+
+        let login = md5($.cookie("_login"));
+
+        if (cell.hasClass(response.sheet.sheet.reservedClass)) {
+            if (cell.hasClass("login")) {
+                mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
+
+                }, () => {
+                    cell.removeClass(response.sheet.sheet.reservedClass);
+                    if (cell.attr("data-class")) {
+                        cell.addClass(cell.attr("data-class"));
+                    }
+                }, i18n("cs.coordinate"), i18n("cs.unReserve"));
+            }
+        } else
+        if (cell.hasClass(login) || !cell.hasClass("login")) {
+            if (cell.hasClass(response.sheet.sheet.blockedClass)) {
+                let cl = cell.attr("class").split(" ");
+                for (let i in cl) {
+                    if (cl[i].substring(0, 3) == "bg-") {
+                        cell.removeClass([ cl[i], "login", login ]);
+                    }
+                }
+                if (cell.attr("data-class")) {
+                    cell.addClass(cell.attr("data-class"));
+                }
+            } else {
+                let cl = cell.attr("class").split(" ");
+                let b = [];
+                for (let i in cl) {
+                    if (cl[i].substring(0, 3) == "bg-") {
+                        cell.removeClass([ cl[i], login, "login" ]);
+                        b.push(cl[i]);
+                    }
+                }
+                if (b.length) {
+                    cell.attr("data-class", b.join(" "));
+                } else {
+                    cell.attr("data-class", "");
+                }
+                $(".dataCell." + response.sheet.sheet.blockedClass + "." + login).each(function () {
+                    let c = $(this);
+                    let cl = c.attr("class").split(" ");
+                    for (let i in cl) {
+                        if (cl[i].substring(0, 3) == "bg-") {
+                            c.removeClass(cl[i]);
+                        }
+                    }
+                    if (c.attr("data-class")) {
+                        c.addClass(c.attr("data-class"));
+                    }
+                });
+                cell.addClass([ response.sheet.sheet.blockedClass, login, "login" ]);
+                console.log(colsMd5[cell.attr("data-col")], rowsMd5[cell.attr("data-row")]);
+                mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                }, () => {
+                    cell.removeClass(response.sheet.sheet.blockedClass);
+                    cell.addClass(response.sheet.sheet.reservedClass);
+                }, i18n("cs.coordinate"), i18n("cs.reserve"));
+            }
+        }
     },
 
-    route: function (params) {
-        $("#subTop").html("");
-        $("#altForm").hide();
-
-        document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
-
+    renderCS: function () {
         function loadIssues(callback) {
             if (typeof callback) {
                 callback();
@@ -35,6 +91,8 @@
         }
 
         function loadSheet() {
+            loadingStart();
+
             GET("cs", "sheets").
             fail(FAIL).
             fail(() => {
@@ -74,7 +132,7 @@
     
                 let rtd = "<div class='form-inline'>";
     
-                rtd += `<div class="input-group input-group-sm mr-2" style="width: 150px;"><select id="csSheet" class="form-control">${sheetsOptions}</select></div>`;
+                rtd += `<div class="input-group input-group-sm mr-2" style="width: 200px;"><div class="input-group-prepend"><span class="input-group-text pointer-input-group csRefresh" title="${i18n("cs.refresh")}"><i class="fas fa-fw fa-sync-alt"></i></span></div><select id="csSheet" class="form-control">${sheetsOptions}</select></div>`;
                 rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control">${datesOptions}</select></div>`;
         
                 if (AVAIL("cs", "sheet", "PUT")) {
@@ -132,6 +190,8 @@
                         console.log($("#csSheet").val(), $("#csDate").val());
                     }
                 });
+
+                $(".csRefresh").off("click").on("click", modules.cs.renderCS);
     
                 if ($("#csSheet").val() && $("#csDate").val()) {
                     QUERY("cs", "sheet", {
@@ -224,10 +284,11 @@
                                             for (let l in s[k].rows) {
                                                 if (l == rows[i]) {
                                                     f = true;
+                                                    let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + cols[j] + ":" + rows[i]);
                                                     if (s[k].rows[l].class) {
-                                                        h += '<td class="' + s[k].rows[l].class + ' dataCell pointer" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
+                                                        h += '<td class="' + s[k].rows[l].class + ' dataCell pointer" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '" data-uid="' + uid + '"></td>';
                                                     } else {
-                                                        h += '<td class="dataCell pointer" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
+                                                        h += '<td class="dataCell pointer" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '" data-uid="' + uid + '"></td>';
                                                     }
                                                     break;
                                                 }
@@ -252,70 +313,12 @@
     
                             $(".dataCell").off("click").on("click", function () {
                                 let cell = $(this);
-                                let login = md5($.cookie("_login"));
 
                                 if ($(".spinner-small").length) {
                                     return;
-                                } 
-    
-                                if (cell.hasClass(response.sheet.sheet.reservedClass)) {
-                                    if (cell.hasClass("login")) {
-                                        mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
-    
-                                        }, () => {
-                                            cell.removeClass(response.sheet.sheet.reservedClass);
-                                            if (cell.attr("data-class")) {
-                                                cell.addClass(cell.attr("data-class"));
-                                            }
-                                        }, i18n("cs.coordinate"), i18n("cs.unReserve"));
-                                    }
-                                } else
-                                if (cell.hasClass(login) || !cell.hasClass("login")) {
-                                    if (cell.hasClass(response.sheet.sheet.blockedClass)) {
-                                        let cl = cell.attr("class").split(" ");
-                                        for (let i in cl) {
-                                            if (cl[i].substring(0, 3) == "bg-") {
-                                                cell.removeClass([ cl[i], "login", login ]);
-                                            }
-                                        }
-                                        if (cell.attr("data-class")) {
-                                            cell.addClass(cell.attr("data-class"));
-                                        }
-                                    } else {
-                                        let cl = cell.attr("class").split(" ");
-                                        let b = [];
-                                        for (let i in cl) {
-                                            if (cl[i].substring(0, 3) == "bg-") {
-                                                cell.removeClass([ cl[i], login, "login" ]);
-                                                b.push(cl[i]);
-                                            }
-                                        }
-                                        if (b.length) {
-                                            cell.attr("data-class", b.join(" "));
-                                        } else {
-                                            cell.attr("data-class", "");
-                                        }
-                                        $(".dataCell." + response.sheet.sheet.blockedClass + "." + login).each(function () {
-                                            let c = $(this);
-                                            let cl = c.attr("class").split(" ");
-                                            for (let i in cl) {
-                                                if (cl[i].substring(0, 3) == "bg-") {
-                                                    c.removeClass(cl[i]);
-                                                }
-                                            }
-                                            if (c.attr("data-class")) {
-                                                c.addClass(c.attr("data-class"));
-                                            }
-                                        });
-                                        cell.addClass([ response.sheet.sheet.blockedClass, login, "login" ]);
-                                        console.log(colsMd5[cell.attr("data-col")], rowsMd5[cell.attr("data-row")]);
-                                        mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
-                                        }, () => {
-                                            cell.removeClass(response.sheet.sheet.blockedClass);
-                                            cell.addClass(response.sheet.sheet.reservedClass);
-                                        }, i18n("cs.coordinate"), i18n("cs.reserve"));
-                                    }
                                 }
+
+                                cell.addClass("spinner-small");
                             });
 
                             $(".column").off("click").on("click", function () {
@@ -325,12 +328,12 @@
 
                             loadIssues(loadingDone);
                         } else {
-                            $("#mainForm").html(i18n("cs.csNotFound"));
+                            $("#mainForm").html(i18n("cs.notFound"));
                             loadingDone();
                         }
                     });
                 } else {
-                    $("#mainForm").html(i18n("cs.csNotFound"));
+                    $("#mainForm").html(i18n("cs.notFound"));
                     loadingDone();
                 }
             });
@@ -343,5 +346,14 @@
         }).
         fail(loadingDone).
         done(loadSheet);
+    },
+
+    route: function (params) {
+        $("#subTop").html("");
+        $("#altForm").hide();
+
+        document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
+
+        modules.cs.renderCS();
     },
 }).init();
