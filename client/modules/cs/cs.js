@@ -35,6 +35,7 @@
 
             switch (payload["action"]) {
                 case "claim":
+                    modules.cs.clearCell(cell);
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.attr("data-login", payload.login);
                     mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
@@ -52,11 +53,6 @@
                     }, i18n("cs.coordinate"), i18n("cs.unReserve"));
                     break;
                 
-                case "unClaim":
-                    cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
-                    cell.attr("data-login", false);
-                    break;
-                
                 case "reserve":
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
@@ -64,8 +60,10 @@
                     break;
 
                 case "free":
+                case "unClaim":
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
+                    modules.cs.restoreCell(cell);
                     cell.attr("data-login", false);
                     break;
             }
@@ -78,17 +76,47 @@
             if (cell) {
                 cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
+                modules.cs.restoreCell(cell);
                 cell.attr("data-login", false);
             }
         }
     },
 
-    clearCell: function (col, row) {
-        // clear cell initial classes
+    clearCell: function (cell) {
+        let col = cell.attr("data-col");
+        let row = cell.attr("data-row");
+
+        for (let i in modules.cs.currentSheet.sheet.data) {
+            if (col == md5(modules.cs.currentSheet.sheet.data[i].col)) {
+                for (let j in modules.cs.currentSheet.sheet.data[i].rows) {
+                    if (row == md5(j)) {
+                        if (modules.cs.currentSheet.sheet.data[i].rows[j].class) {
+                            let c = modules.cs.currentSheet.sheet.data[i].rows[j].class.split(" ");
+                            for (let k in c) {
+                                cell.removeClass(c[k]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
 
-    restoreCell: function (col, row) {
-        // restore cell initial classes
+    restoreCell: function (cell) {
+        let col = cell.attr("data-col");
+        let row = cell.attr("data-row");
+
+        for (let i in modules.cs.currentSheet.sheet.data) {
+            if (col == md5(modules.cs.currentSheet.sheet.data[i].col)) {
+                for (let j in modules.cs.currentSheet.sheet.data[i].rows) {
+                    if (row == md5(j)) {
+                        if (modules.cs.currentSheet.sheet.data[i].rows[j].class) {
+                            cell.addClass(modules.cs.currentSheet.sheet.data[i].rows[j].class);
+                        }
+                    }
+                }
+            }
+        }
     },
 
     renderCS: function () {
