@@ -167,7 +167,7 @@
                     
                     if (isset($parsed_url['query'])) {
                         parse_str($parsed_url['query'], $parsed_query);
-                        $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channel_id'] : '';
+                        $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
                     }
                     
                     $request_url = "$scheme$user$pass$host$port/archivefragments$query&fromtime=".urlencode("01.01.2022 00:00:00")."&totime=".urlencode("01.01.2222 23:59:59")."&responsetype=json";
