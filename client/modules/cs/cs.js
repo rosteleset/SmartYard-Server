@@ -25,9 +25,6 @@
     },
 
     mqttManualMsg: function (topic, payload) {
-        console.log(topic);
-        console.log(payload);
-
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
         if (cell) {
@@ -248,8 +245,6 @@
 
                         modules.cs.currentSheet = response.sheet;
     
-                        console.log(response);
-
                         if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                             let s = response.sheet.sheet.data;
                             for (let i in s) {
