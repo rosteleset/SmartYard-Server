@@ -15,7 +15,7 @@
             modules.users.meta = users.users;
         }).
         always(() => {
-            if (typeof callback) callback();
+            if (typeof callback == "function") callback();
         });
     },
 

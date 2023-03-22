@@ -12,7 +12,7 @@
         {
             "col": "МКД1",
             "class": "font-weight-bold",
-            "assigned": [ "dshilkin", "amalytin" ],
+            "assigned": [ "mmikel", "nick" ],
             "rows": {
                 "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
                 "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
@@ -22,7 +22,7 @@
         {
             "col": "МКД2",
             "class": "font-weight-bold",
-            "assigned": [ "dmiheev", "vlipatov" ],
+            "assigned": [ "sbca", "yad" ],
             "rows": {
                 "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
                 "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
