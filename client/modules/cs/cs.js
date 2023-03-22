@@ -83,6 +83,14 @@
         }
     },
 
+    clearCell: function (col, row) {
+
+    },
+
+    restoreCell: function (col, row) {
+
+    },
+
     renderCS: function () {
         function loadIssues(callback) {
             if (typeof callback) {
