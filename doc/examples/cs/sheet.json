@@ -1,27 +1,63 @@
 {
     "sheet": "МКД",
     "date": "2023-03-22",
-    "firstColClass": "font-weight-bold",
+    "timeClass": "font-weight-bold",
+    "emptyClass": "bg-secondary",
+    "blockedClass": "bg-primary",
+    "reservedClass": "bg-danger",
+    "coordinatedIssueClass": "",
+    "assignedIssueClass": "",
+    "issueDoneClass": "",
     "data": [
         {
             "col": "МКД1",
             "class": "font-weight-bold",
             "assigned": [ "dshilkin", "amalytin" ],
-            "rows": [
-                { "08:00": { "class": "bg-warning" } }, { "09:00": {} }, { "10:00": {} }, { "11:00": {} }, 
-                { "12:00": {} }, { "13:00": { "class": "bg-warning" } }, { "14:00": {} }, { "15:00": {} }, 
-                { "16:00": {} }, { "17:00": {} }, { "18:00": {} }, { "19:00": {} }
-            ]
+            "rows": {
+                "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
+                "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
+                "16:00": {}, "17:00": {}, "18:00": {}, "19:00": {}
+            }
         },
         {
             "col": "МКД2",
             "class": "font-weight-bold",
             "assigned": [ "dmiheev", "vlipatov" ],
-            "rows": [
-                { "08:00": { "class": "bg-warning" } }, { "09:00": {} }, { "10:00": {} }, { "11:00": {} }, 
-                { "12:00": {} }, { "13:00": { "class": "bg-warning" } }, { "14:00": {} }, { "15:00": {} }, 
-                { "16:00": {} }, { "17:00": {} }, { "18:00": {} }, { "19:00": {} }
-            ]
+            "rows": {
+                "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
+                "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
+                "16:00": {}, "17:00": {}, "19:00": {}
+            }
+        },
+        {
+            "col": "МКД3",
+            "class": "font-weight-bold",
+            "assigned": [ "dmiheev", "vlipatov" ],
+            "rows": {
+                "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
+                "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
+                "16:00": {}, "17:00": {}, "18:00": {}, "19:00": {}
+            }
+        },
+        {
+            "col": "МКД4",
+            "class": "font-weight-bold",
+            "assigned": [ "dmiheev", "vlipatov" ],
+            "rows": {
+                "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
+                "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
+                "16:00": {}, "17:00": {}, "18:00": {}, "19:00": {}
+            }
+        },
+        {
+            "col": "МКД5",
+            "class": "font-weight-bold",
+            "assigned": [ "dmiheev", "vlipatov" ],
+            "rows": {
+                "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
+                "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
+                "16:00": {}, "17:00": {}, "18:00": {}, "19:00": {}
+            }
         }
     ]
 }

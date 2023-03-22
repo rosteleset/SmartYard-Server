@@ -218,7 +218,16 @@
                             let login = md5($.cookie("_login"));
 
                             if (cell.hasClass(response.sheet.sheet.reservedClass)) {
+                                if (cell.hasClass("login")) {
+                                    mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
 
+                                    }, () => {
+                                        cell.removeClass(response.sheet.sheet.reservedClass);
+                                        if (cell.attr("data-class")) {
+                                            cell.addClass(cell.attr("data-class"));
+                                        }
+                                    }, i18n("cs.coordinate"), i18n("unReserve"));
+                                }
                             } else
                             if (cell.hasClass(login) || !cell.hasClass("login")) {
                                 if (cell.hasClass(response.sheet.sheet.blockedClass)) {
@@ -259,6 +268,11 @@
                                     });
                                     cell.addClass([ response.sheet.sheet.blockedClass, login, "login" ]);
                                     console.log(colsMd5[cell.attr("data-col")], rowsMd5[cell.attr("data-row")]);
+                                    mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                                    }, () => {
+                                        cell.removeClass(response.sheet.sheet.blockedClass);
+                                        cell.addClass(response.sheet.sheet.reservedClass);
+                                    }, i18n("cs.coordinate"), i18n("reserve"));
                                 }
                             }
                         });
