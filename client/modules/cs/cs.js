@@ -36,7 +36,7 @@
             GET("cs", "sheets").
             fail(FAIL).
             fail(() => {
-                $("#mainForm").html(i18n("cs.errorLOadingSheet"));
+                $("#mainForm").html(i18n("cs.errorLoadingSheet"));
             }).
             fail(loadingDone).
             done(response => {
@@ -140,7 +140,7 @@
                     fail(FAIL).
                     fail(loadingDone).
                     fail(() => {
-                        $("#mainForm").html(i18n("cs.errorLOadingSheet"));
+                        $("#mainForm").html(i18n("cs.errorLoadingSheet"));
                     }).
                     done(response => {
                         let cols = [];
@@ -337,7 +337,7 @@
         modules.users.loadUsers("users", "users").
         fail(FAIL).
         fail(() => {
-            $("#mainForm").html(i18n("cs.errorLOadingSheet"));
+            $("#mainForm").html(i18n("cs.errorLoadingSheet"));
         }).
         fail(loadingDone).
         done(loadSheet);
