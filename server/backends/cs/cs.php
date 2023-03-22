@@ -167,6 +167,7 @@
                         if ($action == "claim") {
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", 60, json_encode([
                                 "login" => $this->login,
+                                "mode" => "claim",
                             ]));
                         }
 
@@ -191,12 +192,52 @@
                                 ]),
                             ],
                         ]));
+
                         break;
 
                     case "reserve":
+                        try {
+                            $cell = json_decode($this->redis->get($this->redis->keys("cell_*_" . $uid)[0]), true);
+                        } catch (\Exception $e) {
+                            $cell = false;
+                        }
+
+                        if ($cell) {
+                            error_log(print_r($cell, true));
+                            if ($cell["login"] == $this->login) {
+                                $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", 60 * 60 * 24 * 30, json_encode([
+                                    "login" => $this->login,
+                                    "mode" => "reserve",
+                                ]));
+        
+                                file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
+                                    'http' => [
+                                        'method'  => 'POST',
+                                        'header'  => [
+                                            'Content-Type: application/json; charset=utf-8',
+                                            'Accept: application/json; charset=utf-8',
+                                        ],
+                                        'content' => json_encode([
+                                            "topic" => "cs/cell",
+                                            "payload" => [
+                                                "action" => "reserve",
+                                                "sheet" => $sheet,
+                                                "date" => $date,
+                                                "col" => $col,
+                                                "row" => $row,
+                                                "uid" => $uid,
+                                                "login" => $this->login,
+                                            ],
+                                        ]),
+                                    ],
+                                ]));
+                            }
+                        }
+
                         break;
 
                     case "free":
+
                         break;
                 }
 

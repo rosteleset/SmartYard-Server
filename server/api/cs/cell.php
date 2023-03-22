@@ -23,7 +23,7 @@
                     if (@$params["uid"]) {
                         $success = $cs->getCellByUID($params["uid"]);
                     } else {
-                        $success = $cs->getCellByXYZ($params["sheet"], $patams["date"], $params["col"], $params["row"]);
+                        $success = $cs->getCellByXYZ($params["sheet"], $params["date"], $params["col"], $params["row"]);
                     }
                 }
 

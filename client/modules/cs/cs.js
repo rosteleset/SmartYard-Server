@@ -39,7 +39,7 @@
                         //
                     }, () => {
                         cell.addClass("spinner-small");
-                        PUT("cs", "cell", false, {
+                        PUT("cs", "reserveCell", false, {
                             action: "reserve",
                             sheet: md5($("#csSheet").val()),
                             date: md5($("#csDate").val()),
@@ -47,19 +47,37 @@
                             row: cell.attr("data-row"),
                             uid: cell.attr("data-uid"),
                         });
-                    }, i18n("cs.coordinate"), i18n("cs.unReserve"));
+                    }, i18n("cs.coordinate"), i18n("cs.reserve"));
                     break;
                 
                 case "reserve":
+                    modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.attr("data-login", payload.login);
+                    mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
+                        //
+                    }, () => {
+                        cell.addClass("spinner-small");
+                        PUT("cs", "reserveCell", false, {
+                            action: "free",
+                            sheet: md5($("#csSheet").val()),
+                            date: md5($("#csDate").val()),
+                            col: cell.attr("data-col"),
+                            row: cell.attr("data-row"),
+                            uid: cell.attr("data-uid"),
+                        });
+                    }, i18n("cs.coordinate"), i18n("cs.reserve"));
                     break;
 
                 case "free":
+                    cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
+                    modules.cs.restoreCell(cell);
+                    cell.attr("data-login", false);
+                    break;
+
                 case "unClaim":
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
-                    cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     modules.cs.restoreCell(cell);
                     cell.attr("data-login", false);
                     break;
