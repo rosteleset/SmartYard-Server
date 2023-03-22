@@ -1,10 +1,12 @@
 ({
     init: function () {
-        if (AVAIL("cs", "sheets")) {
-            leftSide("fas fa-fw fa-table", i18n("cs.cs"), "#cs", "tt");
+        if (parseInt(myself.uid) > 0) {
+            if (AVAIL("cs", "sheets")) {
+                leftSide("fas fa-fw fa-table", i18n("cs.cs"), "#cs", "tt");
+            }
         }
 
-        if (AVAIL("cs", "sheet", "PUT") && parseInt(myself.uid) > 0) {
+        if (AVAIL("cs", "sheet", "PUT")) {
             loadSubModules("cs", [
                 "sheet",
             ], this);
