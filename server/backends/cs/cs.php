@@ -120,5 +120,61 @@
                     "metadata.type" => "csheet",
                 ]);
             }
+
+            /**
+             * @param $action
+             * @param $sheet
+             * @param $date
+             * @param $col
+             * @param $row
+             * @param $uid
+             */
+            public function setCell($action, $sheet, $date, $col, $row, $uid)
+            {
+                switch ($action) {
+                    case "claim":
+                        break;
+
+                    case "unClaim":
+                        break;
+
+                    case "reserve":
+                        break;
+
+                    case "free":
+                        break;
+                }
+
+                return true;
+            }
+
+            /**
+             * @param $sheet
+             * @param $date
+             * @param $col
+             * @param $row
+             */
+            public function getCellByXYZ($sheet, $date, $col, $row)
+            {
+
+            }
+
+            /**
+             * @param $uid
+             */
+            public function getCellByUID($uid)
+            {
+
+            }
+
+            /**
+             * @param $sheet
+             * @param $date
+             */
+            public function cells($sheet, $date)
+            {
+
+            }
+            
         }
     }

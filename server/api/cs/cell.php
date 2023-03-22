@@ -18,6 +18,10 @@
                 $cs = loadBackend("cs");
 
                 $sheet = false;
+                
+                if ($cs) {
+                    $success = $cs->getCell($params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
+                }
 
                 return api::ANSWER($sheet, ($sheet !== false)?"sheet":"notFound");
             }
@@ -27,7 +31,11 @@
 
                 $success = false;
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                if ($cs && ($params["action"] == "claim" || $params["action"] == "unClaim")) {
+                    $success = $cs->setCell($params["action"], $params["sheet"], $patams["date"], $params["col"], $params["row"], $params["uid"]);
+                }
+
+                return api::ANSWER($success);
             }
 
             public static function index() {

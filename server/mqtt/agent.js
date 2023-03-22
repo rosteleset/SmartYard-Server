@@ -6,11 +6,11 @@ const mqtt = require('mqtt');
 const redis = require('redis').createClient();
 const fs = require('fs');
 
-const mqtt_config = JSON.parse(fs.readFileSync(__dirname + "/../config/config.json").toString()).backends.mqtt;
+const config = JSON.parse(fs.readFileSync(__dirname + "/../config/config.json").toString()).backends.mqtt;
 
-const client = mqtt.connect(mqtt_config.ws, {
-    username: mqtt_config.username,
-    password: mqtt_config.password,
+const client = mqtt.connect(config.ws, {
+    username: config.username,
+    password: config.password,
 });
 
 redis.connect().then(() => {
