@@ -216,9 +216,9 @@
                                                 if (l == rows[i]) {
                                                     f = true;
                                                     if (s[k].rows[l].class) {
-                                                        h += '<td class="' + s[k].rows[l].class + ' dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
+                                                        h += '<td class="' + s[k].rows[l].class + ' dataCell pointer" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
                                                     } else {
-                                                        h += '<td class="dataCell" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
+                                                        h += '<td class="dataCell pointer" data-col="' + md5(cols[j]) + '" data-row="' + md5(rows[i]) + '"></td>';
                                                     }
                                                     break;
                                                 }
