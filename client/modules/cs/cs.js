@@ -73,7 +73,14 @@
     },
 
     mqttRedisExpireMsg: function (topic, payload) {
-        //
+        if (payload.key.substring(0, 5) == "cell_") {
+            let cell = $(".dataCell[data-uid=" + payload.key.split("_")[5] + "]");
+            if (cell) {
+                cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
+                cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
+                cell.attr("data-login", false);
+            }
+        }
     },
 
     renderCS: function () {
