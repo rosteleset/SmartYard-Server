@@ -23,11 +23,14 @@ const client = mqtt.connect(mqtt_config.ws, {
     password: mqtt_config.password,
 });
 
-client.subscribe("mqtt/demo");
+client.subscribe("cs/cell");
 
 client.on("message", console.log);
 
-client.publish("mqtt/demo", "hello world!");
+client.publish("cs/cell", JSON.stringify({
+    action: "block",
+    cell: "123456",
+}));
 
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.listen(8082, '127.0.0.1');

@@ -18,7 +18,9 @@
              */
             public function getConfig()
             {
-                return $this->config["backend"]["mqtt"];
+                $cfg = $this->config["backends"]["mqtt"];
+                unset($cfg["backend"]);
+                return $cfg;
             }
         }
     }

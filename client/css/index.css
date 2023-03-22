@@ -252,3 +252,9 @@ body::-webkit-scrollbar-thumb {
 .bg-lightgray {
   background-color: #cfcfcf!important;
 }
+
+.spinner-small {
+    background-image:url('../img/spinnerSmall.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+}

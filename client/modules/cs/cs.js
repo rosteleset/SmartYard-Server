@@ -11,6 +11,13 @@
         } else {
             moduleLoaded("cs", this);
         }
+
+        modules.mqtt.subscribe("cs/cell", modules.cs.mqttMsg);
+    },
+
+    mqttMsg: function (topic, payload) {
+        console.log(topic);
+        console.log(payload);
     },
 
     route: function (params) {
@@ -244,6 +251,10 @@
                             $(".dataCell").off("click").on("click", function () {
                                 let cell = $(this);
                                 let login = md5($.cookie("_login"));
+
+                                if ($(".spinner-small").length) {
+                                    return;
+                                } 
     
                                 if (cell.hasClass(response.sheet.sheet.reservedClass)) {
                                     if (cell.hasClass("login")) {
