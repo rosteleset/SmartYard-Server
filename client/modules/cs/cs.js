@@ -27,60 +27,48 @@
     mqttManualMsg: function (topic, payload) {
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
+        console.log(topic, payload);
+
         if (cell) {
             cell.removeClass("spinner-small");
 
             switch (payload["action"]) {
-                case "claim":
+                case "claimed":
                     modules.cs.clearCell(cell);
+                    cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.attr("data-login", payload.login);
-                    mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
-                        //
-                    }, () => {
-                        cell.addClass("spinner-small");
-                        PUT("cs", "reserveCell", false, {
-                            action: "reserve",
-                            sheet: md5($("#csSheet").val()),
-                            date: md5($("#csDate").val()),
-                            col: cell.attr("data-col"),
-                            row: cell.attr("data-row"),
-                            uid: cell.attr("data-uid"),
-                        });
-                    }, i18n("cs.coordinate"), i18n("cs.reserve"));
+                    if (payload.login == $.cookie("_login")) {
+                        mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                            //
+                        }, () => {
+                            cell.addClass("spinner-small");
+                            PUT("cs", "reserveCell", false, {
+                                action: "reserve",
+                                sheet: md5($("#csSheet").val()),
+                                date: md5($("#csDate").val()),
+                                col: cell.attr("data-col"),
+                                row: cell.attr("data-row"),
+                                uid: cell.attr("data-uid"),
+                            });
+                        }, i18n("cs.coordinate"), i18n("cs.reserve"));
+                    }
                     break;
                 
-                case "reserve":
+                case "reserved":
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.attr("data-login", payload.login);
-                    mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
-                        //
-                    }, () => {
-                        cell.addClass("spinner-small");
-                        PUT("cs", "reserveCell", false, {
-                            action: "free",
-                            sheet: md5($("#csSheet").val()),
-                            date: md5($("#csDate").val()),
-                            col: cell.attr("data-col"),
-                            row: cell.attr("data-row"),
-                            uid: cell.attr("data-uid"),
-                        });
-                    }, i18n("cs.coordinate"), i18n("cs.reserve"));
                     break;
 
-                case "free":
+                case "released":
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
-                    modules.cs.restoreCell(cell);
-                    cell.attr("data-login", false);
-                    break;
-
-                case "unClaim":
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     modules.cs.restoreCell(cell);
                     cell.attr("data-login", false);
                     break;
+
             }
         }
     },
@@ -371,17 +359,24 @@
                                     return;
                                 }
 
-                                if (cell.hasClass(modules.cs.currentSheet.sheet.blockedClass) && cell.attr("data-login") == $.cookie("_login")) {
-                                    cell.addClass("spinner-small");
+                                if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
+                                    if (cell.attr("data-login") == $.cookie("_login")) {
+                                        console.log("buuugagggaa");  
+                                    }
+                                } else
+                                if (cell.hasClass(modules.cs.currentSheet.sheet.blockedClass)) {
+                                    if (cell.attr("data-login") == $.cookie("_login")) {
+                                        cell.addClass("spinner-small");
 
-                                    PUT("cs", "cell", false, {
-                                        action: "unClaim",
-                                        sheet: md5($("#csSheet").val()),
-                                        date: md5($("#csDate").val()),
-                                        col: cell.attr("data-col"),
-                                        row: cell.attr("data-row"),
-                                        uid: cell.attr("data-uid"),
-                                    });
+                                        PUT("cs", "cell", false, {
+                                            action: "unClaim",
+                                            sheet: md5($("#csSheet").val()),
+                                            date: md5($("#csDate").val()),
+                                            col: cell.attr("data-col"),
+                                            row: cell.attr("data-row"),
+                                            uid: cell.attr("data-uid"),
+                                        });
+                                    }
                                 } else {
                                     cell.addClass("spinner-small");
 
@@ -392,9 +387,9 @@
                                         col: cell.attr("data-col"),
                                         row: cell.attr("data-row"),
                                         uid: cell.attr("data-uid"),
+                                        expire: 60,
                                     });
                                 }
-
                             });
 
                             $(".column").off("click").on("click", function () {

@@ -128,9 +128,11 @@
              * @param $col
              * @param $row
              * @param $uid
+             * @param $expire
              */
-            public function setCell($action, $sheet, $date, $col, $row, $uid)
+            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0)
             {
+                $expire = (int)($expire ? : 60);
                 switch ($action) {
                     case "claim":
                     case "unClaim":
@@ -151,7 +153,7 @@
                                         'content' => json_encode([
                                             "topic" => "cs/cell",
                                             "payload" => [
-                                                "action" => "unClaim",
+                                                "action" => "released",
                                                 "sheet" => $payload[1],
                                                 "date" => $payload[2],
                                                 "col" => $payload[3],
@@ -165,33 +167,35 @@
                         }
 
                         if ($action == "claim") {
-                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", 60, json_encode([
+                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
-                                "mode" => "claim",
+                                "mode" => "claimed",
+                                "expire" => $expire,
+                                "claimed" => time(),
+                            ]));
+
+                            file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
+                                'http' => [
+                                    'method'  => 'POST',
+                                    'header'  => [
+                                        'Content-Type: application/json; charset=utf-8',
+                                        'Accept: application/json; charset=utf-8',
+                                    ],
+                                    'content' => json_encode([
+                                        "topic" => "cs/cell",
+                                        "payload" => [
+                                            "action" => "claimed",
+                                            "sheet" => $sheet,
+                                            "date" => $date,
+                                            "col" => $col,
+                                            "row" => $row,
+                                            "uid" => $uid,
+                                            "login" => $this->login,
+                                        ],
+                                    ]),
+                                ],
                             ]));
                         }
-
-                        file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
-                            'http' => [
-                                'method'  => 'POST',
-                                'header'  => [
-                                    'Content-Type: application/json; charset=utf-8',
-                                    'Accept: application/json; charset=utf-8',
-                                ],
-                                'content' => json_encode([
-                                    "topic" => "cs/cell",
-                                    "payload" => [
-                                        "action" => $action,
-                                        "sheet" => $sheet,
-                                        "date" => $date,
-                                        "col" => $col,
-                                        "row" => $row,
-                                        "uid" => $uid,
-                                        "login" => $this->login,
-                                    ],
-                                ]),
-                            ],
-                        ]));
 
                         break;
 
@@ -202,41 +206,74 @@
                             $cell = false;
                         }
 
-                        if ($cell) {
-                            error_log(print_r($cell, true));
-                            if ($cell["login"] == $this->login) {
-                                $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", 60 * 60 * 24 * 30, json_encode([
-                                    "login" => $this->login,
-                                    "mode" => "reserve",
-                                ]));
-        
-                                file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
-                                    'http' => [
-                                        'method'  => 'POST',
-                                        'header'  => [
-                                            'Content-Type: application/json; charset=utf-8',
-                                            'Accept: application/json; charset=utf-8',
-                                        ],
-                                        'content' => json_encode([
-                                            "topic" => "cs/cell",
-                                            "payload" => [
-                                                "action" => "reserve",
-                                                "sheet" => $sheet,
-                                                "date" => $date,
-                                                "col" => $col,
-                                                "row" => $row,
-                                                "uid" => $uid,
-                                                "login" => $this->login,
-                                            ],
-                                        ]),
+                        if ($cell && $cell["login"] == $this->login) {
+                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
+                                "login" => $this->login,
+                                "mode" => "reserved",
+                                "expire" => $expire,
+                                "reserved" => time(),
+                            ]));
+    
+                            file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
+                                'http' => [
+                                    'method'  => 'POST',
+                                    'header'  => [
+                                        'Content-Type: application/json; charset=utf-8',
+                                        'Accept: application/json; charset=utf-8',
                                     ],
-                                ]));
-                            }
+                                    'content' => json_encode([
+                                        "topic" => "cs/cell",
+                                        "payload" => [
+                                            "action" => "reserved",
+                                            "sheet" => $sheet,
+                                            "date" => $date,
+                                            "col" => $col,
+                                            "row" => $row,
+                                            "uid" => $uid,
+                                            "login" => $this->login,
+                                        ],
+                                    ]),
+                                ],
+                            ]));
                         }
 
                         break;
 
                     case "free":
+                        try {
+                            $cell = json_decode($this->redis->get($this->redis->keys("cell_*_" . $uid)[0]), true);
+                        } catch (\Exception $e) {
+                            $cell = false;
+                        }
+
+                        if ($cell) {
+                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", 60 * 60 * 24 * 30, json_encode([
+                                "login" => $this->login,
+                                "mode" => "reserved",
+                            ]));
+    
+                            file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
+                                'http' => [
+                                    'method'  => 'POST',
+                                    'header'  => [
+                                        'Content-Type: application/json; charset=utf-8',
+                                        'Accept: application/json; charset=utf-8',
+                                    ],
+                                    'content' => json_encode([
+                                        "topic" => "cs/cell",
+                                        "payload" => [
+                                            "action" => "reserved",
+                                            "sheet" => $sheet,
+                                            "date" => $date,
+                                            "col" => $col,
+                                            "row" => $row,
+                                            "uid" => $uid,
+                                            "login" => $this->login,
+                                        ],
+                                    ]),
+                                ],
+                            ]));
+                        }
 
                         break;
                 }
