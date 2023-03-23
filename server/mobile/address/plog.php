@@ -14,6 +14,7 @@
  *
  * @apiSuccess {object[]} - массив объектов
  * @apiSuccess {string="Y-m-d H:i:s"} -.date дата
+ * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {UUID} -.uuid UUID события (уникален)
  * @apiSuccess {UUID} [-.image] UUID картинки (может повторяться для "дублирующихся" событий)
  * @apiSuccess {integer} -.objectId идентификатор объекта (домофона)

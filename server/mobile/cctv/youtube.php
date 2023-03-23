@@ -14,6 +14,7 @@
  * @apiSuccess {Object[]} - массив c роликами
  * @apiSuccess {Number} -.id id камеры
  * @apiSuccess {String="Y-m-d H:i:s"} -.eventTime время события
+ * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {String} -.title заголовок
  * @apiSuccess {String} -.description описание
  * @apiSuccess {String} -.thumbnailsDefault превью

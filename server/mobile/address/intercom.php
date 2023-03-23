@@ -27,6 +27,7 @@
  * @apiSuccess {string="t","f"} -.CMS КМС разрешено
  * @apiSuccess {string="t","f"} -.VoIP VoIP разрешен
  * @apiSuccess {string="Y-m-d H:i:s"} -.autoOpen дата до которой работает автооткрытие двери
+ * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {string="0","1","2","3","5","7","10"} -.whiteRabbit автооткрытие двери
  * @apiSuccess {string="t","f"} [_.paperBill] печатать бумажные платежки
  * @apiSuccess {string="t","f"} _.disablePlog="f" прекратить "следить" за квартирой
