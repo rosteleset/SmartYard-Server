@@ -14,6 +14,7 @@
  *
  * @apiSuccess {Object[]} - массив объектов
  * @apiSuccess {String="Y-m-d"} -.day дата (день)
+ * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {Number} -.events количество событий
  *
  *

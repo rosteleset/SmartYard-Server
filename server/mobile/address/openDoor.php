@@ -30,7 +30,7 @@
     $blocked = true;
     foreach($subscriber['flats'] as $flat) {
         $flatDetail = $households->getFlat($flat['flatId']);
-        if ($flatDetail['autoBlock']) {
+        if ($flatDetail['autoBlock'] || $flatDetail['adminBlock']) {
             continue;
         }
 

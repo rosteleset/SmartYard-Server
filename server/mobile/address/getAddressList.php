@@ -89,7 +89,7 @@
             
             // TODO: проверить обработку блокировки
             // 
-            if ($flatDetail['autoBlock']) {
+            if ($flatDetail['autoBlock'] || $flatDetail['adminBlock']) {
                 $door['blocked'] = "Услуга домофонии заблокирована";
             }
 
