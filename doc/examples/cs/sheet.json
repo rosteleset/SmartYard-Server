@@ -8,6 +8,7 @@
     "coordinatedIssueClass": "",
     "assignedIssueClass": "",
     "issueDoneClass": "",
+    "cellAvailCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + \" \" + ({ 'Утро': '08:00', 'День': '12:00', 'Вечер': '16:00' })[cellTime]))",
     "data": [
         {
             "col": "МКД1",
