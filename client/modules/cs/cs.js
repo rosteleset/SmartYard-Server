@@ -48,6 +48,7 @@
                                 col: cell.attr("data-col"),
                                 row: cell.attr("data-row"),
                                 uid: cell.attr("data-uid"),
+                                expire: 60 * 60 * 24 *7,
                             });
                         }, i18n("cs.coordinate"), i18n("cs.reserve"));
                     }
