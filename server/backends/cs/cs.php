@@ -135,12 +135,17 @@
                 $expire = (int)($expire ? : 60);
                 switch ($action) {
                     case "claim":
-                    case "unClaim":
+                    case "release":
+                    case "release-force":
                         $keys = $this->redis->keys("cell_{$sheet}_{$date}_*");
 
                         foreach ($keys as $key) {
                             $cell = json_decode($this->redis->get($key), true);
-                            if ($cell["login"] == $this->login) {
+                            if (
+                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
+                                ($action == "release-force" && $cell["login"] == $this->login && $cell["mode"] == "reserved") ||
+                                ($action == "release-force" && $cell["mode"] == "reserved")
+                            ) {
                                 $this->redis->delete($key);
                                 $payload = explode("_", $key);
                                 file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
@@ -212,44 +217,6 @@
                                 "mode" => "reserved",
                                 "expire" => $expire,
                                 "reserved" => time(),
-                            ]));
-    
-                            file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
-                                'http' => [
-                                    'method'  => 'POST',
-                                    'header'  => [
-                                        'Content-Type: application/json; charset=utf-8',
-                                        'Accept: application/json; charset=utf-8',
-                                    ],
-                                    'content' => json_encode([
-                                        "topic" => "cs/cell",
-                                        "payload" => [
-                                            "action" => "reserved",
-                                            "sheet" => $sheet,
-                                            "date" => $date,
-                                            "col" => $col,
-                                            "row" => $row,
-                                            "uid" => $uid,
-                                            "login" => $this->login,
-                                        ],
-                                    ]),
-                                ],
-                            ]));
-                        }
-
-                        break;
-
-                    case "free":
-                        try {
-                            $cell = json_decode($this->redis->get($this->redis->keys("cell_*_" . $uid)[0]), true);
-                        } catch (\Exception $e) {
-                            $cell = false;
-                        }
-
-                        if ($cell) {
-                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", 60 * 60 * 24 * 30, json_encode([
-                                "login" => $this->login,
-                                "mode" => "reserved",
                             ]));
     
                             file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([

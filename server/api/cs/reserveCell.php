@@ -32,7 +32,7 @@
                 $success = false;
 
                 if ($cs) {
-                    $success = $cs->setCell("free", $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"]);
+                    $success = $cs->setCell("release-force", $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"]);
                 }
 
                 return api::ANSWER($success);

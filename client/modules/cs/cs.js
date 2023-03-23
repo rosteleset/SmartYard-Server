@@ -27,8 +27,6 @@
     mqttManualMsg: function (topic, payload) {
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
-        console.log(topic, payload);
-
         if (cell) {
             cell.removeClass("spinner-small");
 
@@ -77,6 +75,7 @@
         if (payload.key.substring(0, 5) == "cell_") {
             let cell = $(".dataCell[data-uid=" + payload.key.split("_")[5] + "]");
             if (cell) {
+                cell.removeClass("spinner-small");
                 cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                 modules.cs.restoreCell(cell);
@@ -369,7 +368,7 @@
                                         cell.addClass("spinner-small");
 
                                         PUT("cs", "cell", false, {
-                                            action: "unClaim",
+                                            action: "release",
                                             sheet: md5($("#csSheet").val()),
                                             date: md5($("#csDate").val()),
                                             col: cell.attr("data-col"),
