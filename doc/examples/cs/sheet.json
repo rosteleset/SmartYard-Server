@@ -1,8 +1,8 @@
 {
     "sheet": "МКД",
-    "date": "2023-03-22",
+    "date": "2023-03-24",
     "timeClass": "font-weight-bold",
-    "emptyClass": "bg-secondary",
+    "emptyClass": "bg-lightgray",
     "blockedClass": "bg-primary",
     "reservedClass": "bg-danger",
     "issueCoordinatedClass": "",

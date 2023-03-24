@@ -255,6 +255,12 @@
 
                         modules.cs.currentSheet = response.sheet;
 
+                        if (modules.cs.currentSheet.sheet.cellAvailableCheck) {
+                            modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return ${modules.cs.currentSheet.sheet.cellAvailableCheck};`);
+                        } else {
+                            modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return true;`);
+                        }
+
                         console.log(modules.cs.currentSheet);
     
                         if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
@@ -329,7 +335,7 @@
                                     for (let k in s) {
                                         if (modules.cs.cols[j] == s[k].col) {
                                             for (let l in s[k].rows) {
-                                                if (l == modules.cs.rows[i]) {
+                                                if (l == modules.cs.rows[i] && modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, l)) {
                                                     f = true;
                                                     let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
                                                     if (s[k].rows[l].class) {
