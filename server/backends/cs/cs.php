@@ -40,9 +40,17 @@
                 }
 
                 if ($extended) {
+                    $cells = $this->redis->keys("cell_" . md5($sheet) . "_" . md5($date) . "_*");
+                    if ($cells) {
+                        $cells = $this->redis->mget($cells);
+
+                        foreach ($cells as &$cell) {
+                            $cell = json_decode($cell, true);
+                        }
+                    }
                     return [
                         "sheet" => json_decode($cs),
-                        "cells" => [ ],
+                        "cells" => $cells ? $cells : false,
                     ];
                 } else {
                     return $cs;
@@ -176,6 +184,11 @@
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "claimed",
+                                "sheet" => $sheet,
+                                "date" => $date,
+                                "col" => $col,
+                                "row" => $row,
+                                "uid" => $uid,
                                 "expire" => $expire,
                                 "claimed" => time(),
                             ]));
@@ -216,6 +229,11 @@
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "reserved",
+                                "sheet" => $sheet,
+                                "date" => $date,
+                                "col" => $col,
+                                "row" => $row,
+                                "uid" => $uid,
                                 "expire" => $expire,
                                 "reserved" => time(),
                             ]));

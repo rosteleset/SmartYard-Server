@@ -48,8 +48,9 @@
                                 col: cell.attr("data-col"),
                                 row: cell.attr("data-row"),
                                 uid: cell.attr("data-uid"),
-                                expire: 60 * 60 * 24 *7,
-                            });
+                                expire: 60 * 60 * 24 * 7,
+                            }).
+                            fail(FAIL);
                         }, i18n("cs.coordinate"), i18n("cs.reserve"));
                     }
                     break;
@@ -250,6 +251,8 @@
                         modules.cs.rowsMd5 = {};
 
                         modules.cs.currentSheet = response.sheet;
+
+                        console.log(modules.cs.currentSheet);
     
                         if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                             let s = response.sheet.sheet.data;
@@ -375,7 +378,8 @@
                                             col: cell.attr("data-col"),
                                             row: cell.attr("data-row"),
                                             uid: cell.attr("data-uid"),
-                                        });
+                                        }).
+                                        fail(FAIL);
                                     }
                                 } else {
                                     cell.addClass("spinner-small");
@@ -388,7 +392,8 @@
                                         row: cell.attr("data-row"),
                                         uid: cell.attr("data-uid"),
                                         expire: 60,
-                                    });
+                                    }).
+                                    fail(FAIL);
                                 }
                             });
 
