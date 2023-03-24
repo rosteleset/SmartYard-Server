@@ -5,10 +5,20 @@
     "emptyClass": "bg-secondary",
     "blockedClass": "bg-primary",
     "reservedClass": "bg-danger",
-    "coordinatedIssueClass": "",
-    "assignedIssueClass": "",
+    "issueCoordinatedClass": "",
+    "issueAssignedClass": "",
     "issueDoneClass": "",
-    "cellAvailCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + \" \" + ({ 'Утро': '08:00', 'День': '12:00', 'Вечер': '16:00' })[cellTime]))",
+    "loginClass": "font-weight-normal",
+    "cellAvailableCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + ' ' + ({ '08:00': '08:00', '09:00': '09:00', '10:00': '10:00' , '11:00': '11:00', '12:00': '12:00', '13:00': '13:00', '14:00': '14:00', '15:00': '15:00', '16:00': '16:00', '17:00': '17:00', '18:00': '18:00', '19:00': '19:00' })[cellTime]))",
+    "issuesCoordinatedQuery": {
+
+    },
+    "issuesAssignedQuery": {
+
+    },
+    "issuesDoneQuery": {
+
+    },
     "data": [
         {
             "col": "МКД1",
