@@ -50,7 +50,10 @@
                                 uid: cell.attr("data-uid"),
                                 expire: 60 * 60 * 24 * 7,
                             }).
-                            fail(FAIL);
+                            fail(FAIL).
+                            fail(() => {
+                                cell.removeClass("spinner-small");
+                            });
                         }, i18n("cs.coordinate"), i18n("cs.reserve"));
                     }
                     break;
@@ -363,8 +366,41 @@
                                 }
 
                                 if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
+                                    if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != $.cookie("_login")) {
+                                        cell.addClass("spinner-small");
+                                            
+                                        PUT("cs", "reserveCell", false, {
+                                            action: "release-force",
+                                            sheet: md5($("#csSheet").val()),
+                                            date: md5($("#csDate").val()),
+                                            col: cell.attr("data-col"),
+                                            row: cell.attr("data-row"),
+                                            uid: cell.attr("data-uid"),
+                                        }).
+                                        fail(FAIL).
+                                        fail(() => {
+                                            cell.removeClass("spinner-small");
+                                        });
+                                    } else
                                     if (cell.attr("data-login") == $.cookie("_login")) {
-                                        console.log("buuugagggaa");  
+                                        mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
+                                            //
+                                        }, () => {
+                                            cell.addClass("spinner-small");
+                                            
+                                            PUT("cs", "cell", false, {
+                                                action: "release",
+                                                sheet: md5($("#csSheet").val()),
+                                                date: md5($("#csDate").val()),
+                                                col: cell.attr("data-col"),
+                                                row: cell.attr("data-row"),
+                                                uid: cell.attr("data-uid"),
+                                            }).
+                                            fail(FAIL).
+                                            fail(() => {
+                                                cell.removeClass("spinner-small");
+                                            });
+                                        }, i18n("cs.coordinate"), i18n("cs.unReserve"));
                                     }
                                 } else
                                 if (cell.hasClass(modules.cs.currentSheet.sheet.blockedClass)) {
@@ -379,7 +415,10 @@
                                             row: cell.attr("data-row"),
                                             uid: cell.attr("data-uid"),
                                         }).
-                                        fail(FAIL);
+                                        fail(FAIL).
+                                        fail(() => {
+                                            cell.removeClass("spinner-small");
+                                        });
                                     }
                                 } else {
                                     cell.addClass("spinner-small");
@@ -393,7 +432,10 @@
                                         uid: cell.attr("data-uid"),
                                         expire: 60,
                                     }).
-                                    fail(FAIL);
+                                    fail(FAIL).
+                                    fail(() => {
+                                        cell.removeClass("spinner-small");
+                                    });
                                 }
                             });
 
