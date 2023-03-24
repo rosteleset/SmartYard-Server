@@ -402,6 +402,18 @@
                                 console.log(modules.cs.colsMd5[cell.attr("data-col")]);
                             });
 
+                            for (let i in modules.cs.currentSheet.cells) {
+                                switch (modules.cs.currentSheet.cells[i].mode) {
+                                    case "claimed":
+                                        $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                                        break;
+                                    
+                                    case "reserved":
+                                        $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                                        break;
+                                }
+                            }
+
                             loadIssues(loadingDone);
                         } else {
                             $("#mainForm").html(i18n("cs.notFound"));
