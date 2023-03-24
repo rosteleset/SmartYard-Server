@@ -261,8 +261,6 @@
                             modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return true;`);
                         }
 
-                        console.log(modules.cs.currentSheet);
-    
                         if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                             let s = response.sheet.sheet.data;
                             for (let i in s) {
