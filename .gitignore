@@ -94,3 +94,6 @@ package-lock.json
 /server/integration.php
 /asterisk/config.lua
 /asterisk/extconfig.conf
+/server/mqtt/node_modules
+/server/mqtt/package.json
+/server/mqtt/package-lock.json
