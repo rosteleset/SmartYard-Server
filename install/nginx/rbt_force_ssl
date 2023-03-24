@@ -10,30 +10,6 @@ server {
                 root /var/www/html;
         }
 
-        return 301 https://$host$request_uri;
-}
-
-server {
-        listen 443 ssl http2 default_server;
-        listen [::]:443 ssl http2 default_server;
-        ssl_certificate /etc/ssl/cert.pem;
-        ssl_certificate_key /etc/ssl/key.pem;
-
-        location / {
-                root /opt/rbt/client;
-                try_files $uri $uri/ =404;
-        }
-
-        location /frontend {
-                rewrite ^.*$ /frontend.php last;
-        }
-
-        location = /frontend.php {
-                root /opt/rbt/server;
-                include snippets/fastcgi-php.conf;
-                fastcgi_pass unix:/var/run/php/php-fpm.sock;
-        }
-
         location /asterisk {
                 rewrite ^.*$ /asterisk.php last;
         }
@@ -53,6 +29,31 @@ server {
         location = /internal.php {
                 allow 127.0.0.1;
                 deny all;
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        return 301 https://$host$request_uri;
+}
+
+server {
+        listen 443 ssl http2 default_server;
+        listen [::]:443 ssl http2 default_server;
+        
+        ssl_certificate /etc/ssl/cert.pem;
+        ssl_certificate_key /etc/ssl/key.pem;
+
+        location / {
+                root /opt/rbt/client;
+                try_files $uri $uri/ =404;
+        }
+
+        location /frontend {
+                rewrite ^.*$ /frontend.php last;
+        }
+
+        location = /frontend.php {
                 root /opt/rbt/server;
                 include snippets/fastcgi-php.conf;
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
