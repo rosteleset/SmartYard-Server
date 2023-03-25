@@ -22,6 +22,20 @@
 
         modules.mqtt.subscribe("cs/cell", modules.cs.mqttManualMsg);
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
+
+        setInterval(() => {
+            $(".dataCell").each(function () {
+                let cell = $(this);
+
+                if (!modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, modules.cs.rowsMd5[cell.attr("data-row")])) {
+                    modules.cs.clearCell(cell);
+                    cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
+                    cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
+                    cell.removeClass("pointer");
+                    cell.addClass(modules.cs.currentSheet.sheet.emptyClass);
+                }
+            });
+        }, 1000);
     },
 
     mqttManualMsg: function (topic, payload) {
@@ -383,6 +397,10 @@
                                 let cell = $(this);
 
                                 if ($(".spinner-small").length) {
+                                    return;
+                                }
+
+                                if (cell.hasClass(modules.cs.currentSheet.sheet.emptyClass)) {
                                     return;
                                 }
 
