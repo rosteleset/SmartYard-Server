@@ -282,7 +282,7 @@
                 if (!x[t.gid]) {
                     x[t.gid] = {};
                 }
-                if (!x[t.gid][m[t.aid].api]) {
+                if (m[t.aid] && m[t.aid].api && !x[t.gid][m[t.aid].api]) {
                     x[t.gid][m[t.aid].api] = {
                         _aid: t.aid,
                     };
