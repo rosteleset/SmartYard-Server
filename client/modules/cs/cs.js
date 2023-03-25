@@ -264,7 +264,7 @@
 
                         modules.cs.currentSheet = response.sheet;
 
-                        if (modules.cs.currentSheet.sheet.cellAvailableCheck) {
+                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.cellAvailableCheck) {
                             modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return ${modules.cs.currentSheet.sheet.cellAvailableCheck};`);
                         } else {
                             modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return true;`);
