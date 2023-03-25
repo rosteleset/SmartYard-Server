@@ -292,9 +292,11 @@
                         _aid: t.aid,
                     };
                 }
-                x[t.gid][m[t.aid].api][m[t.aid].method][m[t.aid].action] = {
-                    _aid: t.aid,
-                    allow: t.allow,
+                if (m[t.aid] && m[t.aid].api) {
+                    x[t.gid][m[t.aid].api][m[t.aid].method][m[t.aid].action] = {
+                        _aid: t.aid,
+                        allow: t.allow,
+                    }
                 }
             }
         } else {
