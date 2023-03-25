@@ -345,7 +345,7 @@
                                                 if (s[k].rows[l] == modules.cs.rows[i] && modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
                                                     f = true;
                                                     let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
-                                                    if (modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
+                                                    if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
                                                         h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></td>';
                                                     } else {
                                                         h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></td>';
