@@ -11,6 +11,7 @@
     "loginClass": "font-weight-normal",
     "cellAvailableCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + ' ' + ({ '08:00': '08:00', '09:00': '09:00', '10:00': '10:00' , '11:00': '11:00', '12:00': '12:00', '13:00': '13:00', '14:00': '14:00', '15:00': '15:00', '16:00': '16:00', '17:00': '17:00', '18:00': '18:00', '19:00': '19:00' })[cellTime])).getTime()",
     "project": "RTL",
+    "action": "Координация",
     "sheetField": "_cf_sheet_name",
     "dateField": "_cf_sheet_date",
     "colField": "_cf_sheet_col",
