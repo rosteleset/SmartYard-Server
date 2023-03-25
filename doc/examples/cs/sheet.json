@@ -1,6 +1,6 @@
 {
     "sheet": "МКД",
-    "date": "2023-03-24",
+    "date": "2023-03-22",
     "timeClass": "font-weight-bold",
     "emptyClass": "bg-lightgray",
     "blockedClass": "bg-primary",
@@ -10,6 +10,14 @@
     "issueDoneClass": "",
     "loginClass": "font-weight-normal",
     "cellAvailableCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + ' ' + ({ '08:00': '08:00', '09:00': '09:00', '10:00': '10:00' , '11:00': '11:00', '12:00': '12:00', '13:00': '13:00', '14:00': '14:00', '15:00': '15:00', '16:00': '16:00', '17:00': '17:00', '18:00': '18:00', '19:00': '19:00' })[cellTime])).getTime()",
+    "project": "RTL",
+    "sheetField": "_cf_sheet_name",
+    "dateField": "_cf_sheet_date",
+    "colField": "_cf_sheet_col",
+    "rowField": "_cf_sheet_cell",
+    "cellsField": "_cf_sheet_cells",
+    "cenChangeField": "_cf_can_change",
+    "assignedField": "_cf_installers",
     "issuesCoordinatedQuery": {
 
     },
@@ -23,7 +31,7 @@
         {
             "col": "МКД1",
             "class": "font-weight-bold",
-            "assigned": [ "mmikel", "nick" ],
+            "logins": [ "mmikel", "nick" ],
             "rows": {
                 "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
                 "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
@@ -33,7 +41,7 @@
         {
             "col": "МКД2",
             "class": "font-weight-bold",
-            "assigned": [ "sbca", "yad" ],
+            "logins": [ "sbca", "yad" ],
             "rows": {
                 "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
                 "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
@@ -43,7 +51,7 @@
         {
             "col": "МКД3",
             "class": "font-weight-bold",
-            "assigned": [ "dmiheev", "vlipatov" ],
+            "logins": [ "dmiheev", "vlipatov" ],
             "rows": {
                 "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
                 "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
@@ -53,7 +61,7 @@
         {
             "col": "МКД4",
             "class": "font-weight-bold",
-            "assigned": [ "dmiheev", "vlipatov" ],
+            "logins": [ "dmiheev", "vlipatov" ],
             "rows": {
                 "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
                 "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},
@@ -63,7 +71,7 @@
         {
             "col": "МКД5",
             "class": "font-weight-bold",
-            "assigned": [ "dmiheev", "vlipatov" ],
+            "logins": [ "dmiheev", "vlipatov" ],
             "rows": {
                 "08:00": { "class": "bg-warning" }, "09:00": {}, "10:00": {}, "11:00": {},
                 "12:00": {}, "13:00": { "class": "bg-warning" }, "14:00": {}, "15:00": {},

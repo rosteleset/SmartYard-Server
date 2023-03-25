@@ -297,11 +297,11 @@
                                     h += '<td>';
                                 }
                                 h += "<span class='hoverable column' data-col='" + md5(modules.cs.cols[i]) + "'>" + escapeHTML(modules.cs.cols[i]) + "</span>";
-                                if (c.assigned && c.assigned.length) {
-                                    for (let j in c.assigned) {
+                                if (c.logins && c.logins.length) {
+                                    for (let j in c.logins) {
                                         let u = false;
                                         for (let k in modules.users.meta) {
-                                            if (modules.users.meta[k].login == c.assigned[j]) {
+                                            if (modules.users.meta[k].login == c.logins[j]) {
                                                 u = modules.users.meta[k].realName;
                                                 break;
                                             }
@@ -312,7 +312,7 @@
                                         } else {
                                             h += "<span>";
                                         }
-                                        h += u?u:c.assigned[j];
+                                        h += u?u:c.logins[j];
                                         h += "</span>";
                                     }
                                 }
