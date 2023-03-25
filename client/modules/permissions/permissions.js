@@ -287,7 +287,7 @@
                         _aid: t.aid,
                     };
                 }
-                if (!x[t.gid][m[t.aid].api][m[t.aid].method]) {
+                if (m[t.aid] && m[t.aid].api && !x[t.gid][m[t.aid].api][m[t.aid].method]) {
                     x[t.gid][m[t.aid].api][m[t.aid].method] = {
                         _aid: t.aid,
                     };
