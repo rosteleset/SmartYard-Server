@@ -27,9 +27,7 @@
     mqttManualMsg: function (topic, payload) {
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
-        console.log(cell);
-
-        if (cell) {
+        if (cell && cell.length == 1) {
             cell.removeClass("spinner-small");
 
             switch (payload["action"]) {
@@ -80,8 +78,7 @@
     mqttRedisExpireMsg: function (topic, payload) {
         if (payload.key.substring(0, 5) == "cell_") {
             let cell = $(".dataCell[data-uid=" + payload.key.split("_")[5] + "]");
-            console.log(cell);
-            if (cell) {
+            if (cell && cell.length == 1) {
                 cell.removeClass("spinner-small");
                 cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
