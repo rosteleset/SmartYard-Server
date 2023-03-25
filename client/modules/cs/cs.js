@@ -32,6 +32,7 @@
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.removeClass("pointer");
+                    cell.removeClass("dataCell");
                     cell.addClass(modules.cs.currentSheet.sheet.emptyClass);
                 }
             });
