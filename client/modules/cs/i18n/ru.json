@@ -15,6 +15,7 @@
     "reserve": "Зарезервировать",
     "coordinateOrUnReserve": "Скоординировать или снять с резерва?",
     "unReserve": "Снять с резерва",
+    "confirmDeleteSheet": "Удалить лист координации \"%s\" за \"%s\"?",
     "methods": {
         "cs": {
             "_title": "Лист координации",

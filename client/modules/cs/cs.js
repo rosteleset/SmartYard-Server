@@ -229,7 +229,16 @@
     
                 $("#deleteCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
-                        console.log($("#csSheet").val(), $("#csDate").val());
+                        mConfirm(i18n("cs.confirmDeleteSheet", $("#csSheet").val(), $("#csDate").val()), i18n("confirm"), i18n("delete"), () => {
+                            loadingStart();
+                            DELETE("cs", "sheet", false, {
+                                sheet: $("#csSheet").val(),
+                                date: $("#csDate").val(),
+                            }).
+                            fail(FAIL).
+                            fail(loadingDone).
+                            done(modules.cs.renderCS);
+                        })
                     }
                 });
 
