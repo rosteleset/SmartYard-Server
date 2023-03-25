@@ -175,7 +175,26 @@
                             return [ mb_substr(...$args) ];
                         },
                     ]);
-                    
+
+                    $sandbox->registerLibrary("mqtt", [
+                        "broadcast" => function ($topic, $payload) {
+                            return [
+                                file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
+                                    'http' => [
+                                        'method'  => 'POST',
+                                        'header'  => [
+                                            'Content-Type: application/json; charset=utf-8',
+                                            'Accept: application/json; charset=utf-8',
+                                        ],
+                                        'content' => json_encode([
+                                            "topic" => $topic,
+                                            "payload" => $payload,
+                                        ]),
+                                    ],
+                                ]))
+                            ];
+                        },
+                    ]);
 
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
                 } catch (\Exception $e) {
