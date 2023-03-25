@@ -27,6 +27,8 @@
     mqttManualMsg: function (topic, payload) {
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
+        console.log(cell);
+
         if (cell) {
             cell.removeClass("spinner-small");
 
@@ -71,7 +73,6 @@
                     modules.cs.restoreCell(cell);
                     cell.attr("data-login", false);
                     break;
-
             }
         }
     },
@@ -79,6 +80,7 @@
     mqttRedisExpireMsg: function (topic, payload) {
         if (payload.key.substring(0, 5) == "cell_") {
             let cell = $(".dataCell[data-uid=" + payload.key.split("_")[5] + "]");
+            console.log(cell);
             if (cell) {
                 cell.removeClass("spinner-small");
                 cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
@@ -93,7 +95,7 @@
         let col = cell.attr("data-col");
         let row = cell.attr("data-row");
 
-        if (modules.cs.currentSheet.sheet.specialRows.indexOf(modules.cs.rowsMd5[row]) >= 0) {
+        if (modules.cs && modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows.indexOf(modules.cs.rowsMd5[row]) >= 0) {
             for (let i in modules.cs.currentSheet.sheet.data) {
                 if (col == md5(modules.cs.currentSheet.sheet.data[i].col)) {
                     for (let j in modules.cs.currentSheet.sheet.data[i].rows) {
