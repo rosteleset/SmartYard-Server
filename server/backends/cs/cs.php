@@ -81,6 +81,18 @@
                     $cs = $files->deleteFile($s["id"]);
                 }
 
+                try {
+                    $data_parsed = json_decode($data, true);
+                } catch (\Exception $e) {
+                    $data_parsed = false;
+                }
+
+                if ($data_parsed) {
+                    $data_parsed["sheet"] = $sheet;
+                    $data_parsed["date"] = $date;
+                    $data = json_encode($data_parsed);
+                }
+
                 return $files->addFile($date . "_" . $sheet . ".json", $files->contentsToStream($data), [
                     "type" => "csheet",
                     "sheet" => $sheet,
