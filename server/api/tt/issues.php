@@ -44,7 +44,12 @@
                 $tt = loadBackend("tt");
 
                 if ($tt && @$params["query"]) {
-                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5);
+                    try {
+                        $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5);
+                    } catch (\Exception $e) {
+                        setLastError($e->getMessage());
+                        return api::ERROR();
+                    }
                 }
 
                 return api::ANSWER($issues, ($issues !== false)?"issues":"notFound");
