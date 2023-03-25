@@ -17,7 +17,6 @@
     "colField": "_cf_sheet_col",
     "rowField": "_cf_sheet_cell",
     "cellsField": "_cf_sheet_cells",
-    "cenChangeField": "_cf_can_change",
     "assignedField": "_cf_installers",
     "issuesCoordinatedQuery": {
 
