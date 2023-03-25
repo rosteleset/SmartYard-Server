@@ -38,7 +38,7 @@
                     cell.attr("data-login", payload.login);
                     if (payload.login == $.cookie("_login")) {
                         mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
-                            //
+                            console.log("coordinate: ", modules.cs.currentSheet.sheet.sheet, modules.cs.currentSheet.sheet.date, modules.cs.colsMd5[cell.attr("data-col")], modules.cs.rowsMd5[cell.attr("data-row")]);
                         }, () => {
                             cell.addClass("spinner-small");
                             PUT("cs", "reserveCell", false, {
@@ -93,15 +93,12 @@
         let col = cell.attr("data-col");
         let row = cell.attr("data-row");
 
-        for (let i in modules.cs.currentSheet.sheet.data) {
-            if (col == md5(modules.cs.currentSheet.sheet.data[i].col)) {
-                for (let j in modules.cs.currentSheet.sheet.data[i].rows) {
-                    if (row == md5(j)) {
-                        if (modules.cs.currentSheet.sheet.data[i].rows[j].class) {
-                            let c = modules.cs.currentSheet.sheet.data[i].rows[j].class.split(" ");
-                            for (let k in c) {
-                                cell.removeClass(c[k]);
-                            }
+        if (modules.cs.currentSheet.sheet.specialRows.indexOf(modules.cs.rowsMd5[row]) >= 0) {
+            for (let i in modules.cs.currentSheet.sheet.data) {
+                if (col == md5(modules.cs.currentSheet.sheet.data[i].col)) {
+                    for (let j in modules.cs.currentSheet.sheet.data[i].rows) {
+                        if (row == md5(modules.cs.currentSheet.sheet.data[i].rows[j])) {
+                            cell.removeClass(modules.cs.currentSheet.sheet.specialRowClass);
                         }
                     }
                 }
@@ -113,12 +110,12 @@
         let col = cell.attr("data-col");
         let row = cell.attr("data-row");
 
-        for (let i in modules.cs.currentSheet.sheet.data) {
-            if (col == md5(modules.cs.currentSheet.sheet.data[i].col)) {
-                for (let j in modules.cs.currentSheet.sheet.data[i].rows) {
-                    if (row == md5(j)) {
-                        if (modules.cs.currentSheet.sheet.data[i].rows[j].class) {
-                            cell.addClass(modules.cs.currentSheet.sheet.data[i].rows[j].class);
+        if (modules.cs.currentSheet.sheet.specialRows.indexOf(modules.cs.rowsMd5[row]) >= 0) {
+            for (let i in modules.cs.currentSheet.sheet.data) {
+                if (col == md5(modules.cs.currentSheet.sheet.data[i].col)) {
+                    for (let j in modules.cs.currentSheet.sheet.data[i].rows) {
+                        if (row == md5(modules.cs.currentSheet.sheet.data[i].rows[j])) {
+                            cell.addClass(modules.cs.currentSheet.sheet.specialRowClass);
                         }
                     }
                 }
@@ -175,7 +172,7 @@
     
                 let rtd = "<div class='form-inline'>";
     
-                rtd += `<div class="input-group input-group-sm mr-2" style="width: 200px;"><div class="input-group-prepend"><span class="input-group-text pointer-input-group csRefresh" title="${i18n("cs.refresh")}"><i class="fas fa-fw fa-sync-alt"></i></span></div><select id="csSheet" class="form-control">${sheetsOptions}</select></div>`;
+                rtd += `<div class="input-group input-group-sm mr-2" style="width: 200px;"><div class="input-group-prepend"><span class="input-group-text pointer-input-group" title="${i18n("cs.refresh")}" id="csRefresh"><i class="fas fa-fw fa-sync-alt"></i></span></div><select id="csSheet" class="form-control">${sheetsOptions}</select></div>`;
                 rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control">${datesOptions}</select></div>`;
         
                 if (AVAIL("cs", "sheet", "PUT")) {
@@ -217,6 +214,8 @@
                             },
                         ],
                         callback: result => {
+                            $.cookie("_sheet_name", result.sheet, { expires: 3650, insecure: config.insecureCookie });
+                            $.cookie("_sheet_date", result.date, { expires: 3650, insecure: config.insecureCookie });
                             location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                         },
                     }).show();
@@ -234,7 +233,17 @@
                     }
                 });
 
-                $(".csRefresh").off("click").on("click", modules.cs.renderCS);
+                $("#csSheet").off("change").on("change", () => {
+                    $.cookie("_sheet_name", $("#csSheet").val(), { expires: 3650, insecure: config.insecureCookie });
+                    modules.cs.renderCS();
+                });
+
+                $("#csDate").off("change").on("change", () => {
+                    $.cookie("_sheet_date", $("#csDate").val(), { expires: 3650, insecure: config.insecureCookie });
+                    modules.cs.renderCS();
+                });
+
+                $("#csRefresh").off("click").on("click", modules.cs.renderCS);
     
                 if ($("#csSheet").val() && $("#csDate").val()) {
                     QUERY("cs", "sheet", {
@@ -269,9 +278,9 @@
                                     modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                                 }
                                 for (let j in s[i].rows) {
-                                    if (modules.cs.rows.indexOf(j) < 0) {
-                                        modules.cs.rows.push(j);
-                                        modules.cs.rowsMd5[md5(j)] = j;
+                                    if (modules.cs.rows.indexOf(s[i].rows[j]) < 0) {
+                                        modules.cs.rows.push(s[i].rows[j]);
+                                        modules.cs.rowsMd5[md5(s[i].rows[j])] = s[i].rows[j];
                                     }
                                 }
                             }
@@ -333,11 +342,11 @@
                                     for (let k in s) {
                                         if (modules.cs.cols[j] == s[k].col) {
                                             for (let l in s[k].rows) {
-                                                if (l == modules.cs.rows[i] && modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, l)) {
+                                                if (s[k].rows[l] == modules.cs.rows[i] && modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
                                                     f = true;
                                                     let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
-                                                    if (s[k].rows[l].class) {
-                                                        h += '<td class="' + s[k].rows[l].class + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></td>';
+                                                    if (modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
+                                                        h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></td>';
                                                     } else {
                                                         h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></td>';
                                                     }
@@ -388,7 +397,7 @@
                                     } else
                                     if (cell.attr("data-login") == $.cookie("_login")) {
                                         mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
-                                            //
+                                            console.log("coordinate: ", modules.cs.currentSheet.sheet.sheet, modules.cs.currentSheet.sheet.date, modules.cs.colsMd5[cell.attr("data-col")], modules.cs.rowsMd5[cell.attr("data-row")]);
                                         }, () => {
                                             cell.addClass("spinner-small");
                                             

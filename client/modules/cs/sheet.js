@@ -28,7 +28,20 @@
             let editor = ace.edit("sheetEditor");
             editor.setTheme("ace/theme/chrome");
             editor.session.setMode("ace/mode/json");
-            editor.setValue(response.sheet, -1);
+            let pretty = false;
+            try {
+                pretty = JSON.parse(response.sheet);
+            } catch (_) {
+                //
+            }
+            if (pretty) {
+                pretty.sheet = params.sheet;
+                pretty.date = params.date;
+                pretty = JSON.stringify(pretty, null, 4);  
+                editor.setValue(pretty, -1);
+            } else {
+                editor.setValue(response.sheet, -1);
+            }
             editor.clearSelection();
             editor.setFontSize(14);
             $("#sheetSave").off("click").on("click", () => {
