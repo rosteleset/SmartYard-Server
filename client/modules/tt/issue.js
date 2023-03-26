@@ -321,6 +321,111 @@
         always(loadingDone);
     },
 
+    issueAction: function (issueId, action, callback, prefferredValues) {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        fail(FAIL).
+        fail(loadingDone).
+        done(() => {
+            GET("tt", "issue", issueId, true).
+            fail(FAIL).
+            fail(loadingDone).
+            done(response => {
+                let issue = response.issue;
+                QUERY("tt", "action", {
+                    _id: issue.issue.issueId,
+                    action: action,
+                }, true).done(r => {
+                    let fields = [];
+        
+                    let project;
+        
+                    for (let i in modules.tt.meta.projects) {
+                        if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
+                            project = modules.tt.meta.projects[i];
+                        }
+                    }
+        
+                    let n = 0;
+        
+                    let kx = [];
+                    let ky = {};
+        
+                    for (let i in r.template) {
+                        let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
+                        if (fx.charAt(0) == '%') {
+                            fx = fx.split('%');
+                            kx[fx[1]] = fx[2];
+                            ky[fx[2]] = (typeof r.template[i] == "string")?false:r.template[i];
+                        } else {
+                            kx.push(fx);
+                            ky[fx] = (typeof r.template[i] == "string")?false:r.template[i];
+                        }
+                    }
+        
+                    for (let i in kx) {
+                        let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]]);
+                        if (fi) {
+                            fields.push(fi);
+                            if (kx[i] == "comment") {
+                                fields.push({
+                                    id: "commentPrivate",
+                                    type: "yesno",
+                                    title: i18n("tt.commentPrivate"),
+                                    value: "1",
+                                });
+                            }
+                            n++;
+                        }
+                    }
+        
+                    if (n) {
+                        cardForm({
+                            title: action,
+                            apply: action,
+                            fields: fields,
+                            footer: true,
+                            borderless: true,
+                            size: "lg",
+                            callback: r => {
+                                r["issueId"] = issue.issue.issueId;
+                                loadingStart();
+                                PUT("tt", "action", issue.issue.issueId, {
+                                    set: r,
+                                    action: action,
+                                }).
+                                fail(FAIL).
+                                always(() => {
+                                    if (typeof callback === "function") {
+                                        callback();
+                                    }
+                                });
+                            },
+                        });
+                    } else {
+                        mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
+                            loadingStart();
+                            PUT("tt", "action", issue.issue.issueId, {
+                                set: {
+                                    issueId: issue.issue.issueId,
+                                },
+                                action: action,
+                            }).
+                            fail(FAIL).
+                            always(() => {
+                                if (typeof callback === "function") {
+                                    callback();
+                                }
+                            });
+                        });
+                    }
+                }).
+                fail(FAIL).
+                always(loadingDone);
+            });
+        });
+    },
+
     viewIssue: function (issue) {
         issue = JSON.parse(b64_to_utf8(issue));
         window.location.href = `?#tt&issue=${encodeURIComponent(issue.id)}&filter=${encodeURIComponent(issue.filter?issue.filter:"")}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${encodeURIComponent(($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):"")}`;
@@ -717,105 +822,15 @@
         $(".ttIssueAction").off("click").on("click", function () {
             let action = $(this).text();
 
-            loadingStart();
-            QUERY("tt", "action", {
-                _id: issue.issue.issueId,
-                action: action,
-            }, true).done(r => {
-                let fields = [];
-    
-                let project;
-    
-                for (let i in modules.tt.meta.projects) {
-                    if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
-                        project = modules.tt.meta.projects[i];
-                    }
-                }
-    
-                let n = 0;
-
-                let kx = [];
-                let ky = {};
-
-                for (let i in r.template) {
-                    let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
-                    if (fx.charAt(0) == '%') {
-                        fx = fx.split('%');
-                        kx[fx[1]] = fx[2];
-                        ky[fx[2]] = (typeof r.template[i] == "string")?false:r.template[i];
-                    } else {
-                        kx.push(fx);
-                        ky[fx] = (typeof r.template[i] == "string")?false:r.template[i];
-                    }
-                }
-
-                for (let i in kx) {
-                    let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]]);
-                    if (fi) {
-                        fields.push(fi);
-                        if (kx[i] == "comment") {
-                            fields.push({
-                                id: "commentPrivate",
-                                type: "yesno",
-                                title: i18n("tt.commentPrivate"),
-                                value: "1",
-                            });
-                        }
-                        n++;
-                    }
-                }
-    
-                if (n) {
-                    cardForm({
-                        title: action,
-                        apply: action,
-                        fields: fields,
-                        footer: true,
-                        borderless: true,
-                        size: "lg",
-                        callback: r => {
-                            r["issueId"] = issue.issue.issueId;
-                            loadingStart();
-                            PUT("tt", "action", issue.issue.issueId, {
-                                set: r,
-                                action: action,
-                            }).
-                            fail(FAIL).
-                            always(() => {
-                                modules.tt.route({
-                                    issue: issue.issue.issueId,
-                                    filter: filter,
-                                    index: index,
-                                    count: count,
-                                    search: search,
-                                });
-                            });
-                        },
-                    });
-                } else {
-                    mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
-                        loadingStart();
-                        PUT("tt", "action", issue.issue.issueId, {
-                            set: {
-                                issueId: issue.issue.issueId,
-                            },
-                            action: action,
-                        }).
-                        fail(FAIL).
-                        always(() => {
-                            modules.tt.route({
-                                issue: issue.issue.issueId,
-                                filter: filter,
-                                index: index,
-                                count: count,
-                                search: search,
-                            });
-                        });
-                    });
-                }
-            }).
-            fail(FAIL).
-            always(loadingDone);
+            modules.tt.issue.issueAction(issue.issue.issueId, action, () => {
+                modules.tt.route({
+                    issue: issue.issue.issueId,
+                    filter: filter,
+                    index: index,
+                    count: count,
+                    search: search,
+                });
+            });
         });
 
         $(".ttSaAddComment").off("click").on("click", () => {
