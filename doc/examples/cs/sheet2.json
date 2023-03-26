@@ -1,6 +1,6 @@
 {
     "sheet": "МКД",
-    "date": "2023-03-25",
+    "date": "2023-03-28",
     "timeClass": "font-weight-bold",
     "emptyClass": "bg-lightgray",
     "blockedClass": "bg-primary",
@@ -9,9 +9,10 @@
     "issueAssignedClass": "",
     "issueDoneClass": "",
     "loginClass": "font-weight-normal",
-    "cellAvailableCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + ' ' + ({ '08:00': '08:00', '09:00': '09:00', '10:00': '10:00' , '11:00': '11:00', '12:00': '12:00', '13:00': '13:00', '14:00': '14:00', '14:30': '14:30', '15:00': '15:00', '16:00': '16:00', '17:00': '17:00', '18:00': '18:00', '19:00': '19:00' })[cellTime])).getTime()",
+    "cellAvailableCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + ' ' + cellTime)).getTime()",
     "project": "RTL",
-    "action": "Координация",
+    "coordinateAction": "Координация",
+    "workflowAction": "Отправить",
     "sheetField": "_cf_sheet_name",
     "dateField": "_cf_sheet_date",
     "colField": "_cf_sheet_col",
@@ -26,6 +27,13 @@
         "13:00"
     ],
     "specialRowClass": "bg-warning",
+    "weights": {
+        "МКД5": 4,
+        "МКД4": 2,
+        "МКД3": 1,
+        "МКД2": 3,
+        "МКД1": 5
+    },
     "data": [
         {
             "col": "МКД1",
@@ -34,6 +42,7 @@
                 "mmikel",
                 "nick"
             ],
+            "workflow": "base",
             "rows": [
                 "08:00",
                 "09:00",
