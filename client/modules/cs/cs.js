@@ -307,9 +307,27 @@
                                     }
                                 }
                             }
+
+                            function sf(a, b) {
+                                if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.weights) {
+                                    if (typeof modules.cs.currentSheet.sheet.weights[a] !== "undefined") {
+                                        a = modules.cs.currentSheet.sheet.weights[a];
+                                    }
+                                    if (typeof modules.cs.currentSheet.sheet.weights[b] !== "undefined") {
+                                        b = modules.cs.currentSheet.sheet.weights[b];
+                                    }
+                                }
+                                if (a > b) {
+                                    return 1;
+                                }
+                                if (a < b) {
+                                    return -1;
+                                }
+                                return 0;
+                            }
     
-                            modules.cs.cols.sort();
-                            modules.cs.rows.sort();
+                            modules.cs.cols.sort(sf);
+                            modules.cs.rows.sort(sf);
     
                             let h = '';
                             h += '<table width="100%" class="mt-3 table table-hover table-bordered">';
