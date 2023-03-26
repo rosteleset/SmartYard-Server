@@ -22,6 +22,7 @@
 
         modules.mqtt.subscribe("cs/cell", modules.cs.mqttManualMsg);
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
+        modules.mqtt.subscribe("issue/change", modules.cs.mqttIssueChanged);
 
         setInterval(() => {
             $(".dataCell").each(function () {
@@ -53,7 +54,7 @@
                     cell.attr("data-login", payload.login);
                     if (payload.login == $.cookie("_login")) {
                         mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
-                            console.log("coordinate: ", modules.cs.currentSheet.sheet.sheet, modules.cs.currentSheet.sheet.date, modules.cs.colsMd5[cell.attr("data-col")], modules.cs.rowsMd5[cell.attr("data-row")]);
+                            modules.cs.coordinate(cell);
                         }, () => {
                             cell.addClass("spinner-small");
                             PUT("cs", "reserveCell", false, {
@@ -103,6 +104,10 @@
         }
     },
 
+    mqttIssueChanged: function (topic, payload) {
+        //
+    },
+
     clearCell: function (cell) {
         let col = cell.attr("data-col");
         let row = cell.attr("data-row");
@@ -135,6 +140,30 @@
                 }
             }
         }
+    },
+
+    coordinate: function (cell) {
+        let workflow = "";
+        let logins = [];
+        for (let i in modules.cs.currentSheet.sheet.data) {
+            if (modules.cs.currentSheet.sheet.data[i].col == modules.cs.colsMd5[cell.attr("data-col")]) {
+                if (typeof modules.cs.currentSheet.sheet.data[i].workflow !== "undefined") {
+                    workflow = modules.cs.currentSheet.sheet.data[i].workflow;
+                }
+                if (typeof modules.cs.currentSheet.sheet.data[i].logins !== "undefined") {
+                    logins = modules.cs.currentSheet.sheet.data[i].logins;
+                }
+            }
+        }
+        console.log(
+            "coordinate",
+            modules.cs.currentSheet.sheet.sheet,
+            modules.cs.currentSheet.sheet.date,
+            modules.cs.colsMd5[cell.attr("data-col")],
+            modules.cs.rowsMd5[cell.attr("data-row")],
+            workflow,
+            logins,
+        );
     },
 
     renderCS: function () {
@@ -442,7 +471,7 @@
                                     } else
                                     if (cell.attr("data-login") == $.cookie("_login")) {
                                         mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
-                                            console.log("coordinate: ", modules.cs.currentSheet.sheet.sheet, modules.cs.currentSheet.sheet.date, modules.cs.colsMd5[cell.attr("data-col")], modules.cs.rowsMd5[cell.attr("data-row")]);
+                                            modules.cs.coordinate(cell);
                                         }, () => {
                                             cell.addClass("spinner-small");
                                             
