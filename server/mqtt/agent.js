@@ -33,7 +33,7 @@ app.post('/broadcast', express.json({ type: '*/*' }), (req, res) => {
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.listen(8082, '127.0.0.1');
 
-process.on('SIGINT', function() {
+process.on('SIGINT', () => {
     console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
     process.exit(0);
 });
