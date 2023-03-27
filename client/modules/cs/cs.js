@@ -20,9 +20,10 @@
             moduleLoaded("cs", this);
         }
 
-        modules.mqtt.subscribe("cs/cell", modules.cs.mqttManualMsg);
+        modules.mqtt.subscribe("cs/cell", modules.cs.mqttCellMsg);
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
-        modules.mqtt.subscribe("issue/change", modules.cs.mqttIssueChanged);
+        modules.mqtt.subscribe("issue/changed", modules.cs.mqttIssueChanged);
+        modules.mqtt.subscribe("issue/coordinated", modules.cs.mqttIssueCoordinated);
 
         setInterval(() => {
             $(".dataCell").each(function () {
@@ -40,7 +41,7 @@
         }, 1000);
     },
 
-    mqttManualMsg: function (topic, payload) {
+    mqttCellMsg: function (topic, payload) {
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
         if (cell && cell.length == 1) {
@@ -106,6 +107,10 @@
 
     mqttIssueChanged: function (topic, payload) {
         //
+    },
+
+    mqttIssueCoordinated: function (topic, payload) {
+        console.log(payload);
     },
 
     clearCell: function (cell) {
@@ -197,9 +202,23 @@
     },
 
     renderCS: function () {
+
         function loadIssues(callback) {
-            if (typeof callback === "function") {
-                callback();
+            if (modules.cs.currentSheet.sheet.issuesCoordinatedQuery) {
+                modules.cs.currentSheet.sheet.issuesCoordinatedQuery.preprocess = {};
+                modules.cs.currentSheet.sheet.issuesCoordinatedQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
+                modules.cs.currentSheet.sheet.issuesCoordinatedQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
+                console.log(modules.cs.currentSheet.sheet.issuesCoordinatedQuery);
+                POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesCoordinatedQuery).
+                fail(FAIL).
+                done(r => {
+                    console.log(r);
+                }).
+                always(() => {
+                    if (typeof callback === "function") {
+                        callback();
+                    }
+                })
             }
         }
 

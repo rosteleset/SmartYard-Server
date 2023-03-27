@@ -238,10 +238,8 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [])
             {
-                global $params;
-
                 $db = $this->dbName;
 
                 $me = $this->myRoles();
@@ -253,20 +251,20 @@
                 $my = $this->myGroups();
                 $my[] = $this->login;
 
-                $preprocess = [
-                    "%%me" => $this->login,
-                    "%%my" => $my,
-                ];
-
-                if ($params && array_key_exists("search", $params) && trim($params["search"])) {
-                    $preprocess["%%search"] = trim($params["search"]);
-                }
-
-                if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
-                    $preprocess["%%parent"] = trim($params["parent"]);
-                }
+                $preprocess["%%me"] = $this->login;
+                $preprocess["%%my"] = $my;
 
                 $query = $this->preprocessFilter($query, $preprocess);
+
+                error_log(print_r([
+                    $collection,
+                    $query,
+                    $fields,
+                    $sort,
+                    $skip,
+                    $limit,
+                    $preprocess,
+                ], true));
 
                 $projection = [];
 

@@ -27,7 +27,7 @@ app.post('/broadcast', express.json({ type: '*/*' }), (req, res) => {
     if (req.body && req.body.topic && req.body.payload) {
         client.publish(req.body.topic, JSON.stringify(req.body.payload));
     }
-    res.status(200).end();
+    res.status(200).send("OK").end();
 });
 
 app.use(require('body-parser').urlencoded({ extended: true }));
