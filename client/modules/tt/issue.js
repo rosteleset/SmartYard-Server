@@ -365,7 +365,7 @@
                     }
         
                     for (let i in kx) {
-                        let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]], prefferredValues[kx[i]]);
+                        let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]], prefferredValues ? prefferredValues[kx[i]] : prefferredValues);
                         if (fi) {
                             fields.push(fi);
                             if (kx[i] == "comment") {

@@ -5,6 +5,7 @@
     colsMd5: false,
     rowsMd5: false,
     issues: {},
+    issuesInSheet: {},
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -106,10 +107,10 @@
     },
 
     mqttIssueChanged: function (topic, payload) {
-        console.log(toipc, payload);
-
         if ($("#csSheet:visible").length) {
-            //
+            if (modules.cs.issues[payload]) {
+                modules.cs.renderCS(true);
+            }
         }
     },
 
@@ -201,8 +202,9 @@
         }).show();
     },
 
-    renderCS: function () {
+    renderCS: function (silent) {
         modules.cs.issues = {};
+        modules.cs.issuesInSheet = {};
 
         function loadIssues(callback) {
             if (modules.cs.currentSheet.sheet.issuesQuery) {
@@ -232,17 +234,23 @@
                                         }
                                         if (k - start < cells) {
                                             modules.cs.issues[r.issues.issues[i].issueId] = true;
-                                            let cell = $(`.dataCell[data-col=${md5(col)}][data-row=${md5(modules.cs.currentSheet.sheet.data[j].rows[k])}]`);
+                                            if (!modules.cs.issuesInSheet) {
+                                                modules.cs.issuesInSheet = {};
+                                            }
+                                            let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + col + ":" + modules.cs.currentSheet.sheet.data[j].rows[k]);
+                                            if (!modules.cs.issuesInSheet[uid]) {
+                                                modules.cs.issuesInSheet[uid] = "";
+                                            }
                                             if (installers && !done) {
-                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`);
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else
                                             if (!installers && done) {
-                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`);
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else
                                             if (installers && done) {
-                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`);
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else {
-                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</span><br />`);
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             }
                                         }
                                     }
@@ -250,11 +258,6 @@
                             }
                         }
                     }
-                    $(".csIssueSpan").off("click").on("click", function (e) {
-                        let cell = $(this);
-                        location.href = "?#tt&issue=" + cell.text();
-                        e.stopPropagation();
-                    });
                 }).
                 always(() => {
                     if (typeof callback === "function") {
@@ -268,8 +271,259 @@
             }
         }
 
+        function renderSheet(response) {
+            if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.cellAvailableCheck) {
+                modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return ${modules.cs.currentSheet.sheet.cellAvailableCheck};`);
+            } else {
+                modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return true;`);
+            }
+
+            if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
+                let s = response.sheet.sheet.data;
+                for (let i in s) {
+                    if (modules.cs.cols.indexOf(s[i].col) < 0) {
+                        modules.cs.cols.push(s[i].col);
+                        modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
+                    }
+                    for (let j in s[i].rows) {
+                        if (modules.cs.rows.indexOf(s[i].rows[j]) < 0) {
+                            modules.cs.rows.push(s[i].rows[j]);
+                            modules.cs.rowsMd5[md5(s[i].rows[j])] = s[i].rows[j];
+                        }
+                    }
+                }
+
+                function sf(a, b) {
+                    if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.weights) {
+                        if (typeof modules.cs.currentSheet.sheet.weights[a] !== "undefined") {
+                            a = modules.cs.currentSheet.sheet.weights[a];
+                        }
+                        if (typeof modules.cs.currentSheet.sheet.weights[b] !== "undefined") {
+                            b = modules.cs.currentSheet.sheet.weights[b];
+                        }
+                    }
+                    if (a > b) {
+                        return 1;
+                    }
+                    if (a < b) {
+                        return -1;
+                    }
+                    return 0;
+                }
+
+                modules.cs.cols.sort(sf);
+                modules.cs.rows.sort(sf);
+
+                let h = '';
+                h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
+                h += '<thead>';
+                h += '<tr>';
+                h += '<td>&nbsp;</td>';
+                for (let i in modules.cs.cols) {
+                    let c = false;
+                    for (let j in s) {
+                        if (modules.cs.cols[i] == s[j].col) {
+                            c = s[j];
+                        }
+                    }
+                    if (c && c.class) {
+                        h += '<td class="' + c.class + '" nowrap>';
+                    } else {
+                        h += '<td nowrap>';
+                    }
+                    h += "<span class='hoverable column' data-col='" + md5(modules.cs.cols[i]) + "'>" + escapeHTML(modules.cs.cols[i]) + "</span>";
+                    if (c.logins && c.logins.length) {
+                        for (let j in c.logins) {
+                            let u = false;
+                            for (let k in modules.users.meta) {
+                                if (modules.users.meta[k].login == c.logins[j]) {
+                                    u = modules.users.meta[k].realName;
+                                    break;
+                                }
+                            }
+                            h += "<br/>";
+                            if (response.sheet.sheet.loginClass) {
+                                h += "<span class='" + response.sheet.sheet.loginClass + "'>"
+                            } else {
+                                h += "<span>";
+                            }
+                            h += u?u:c.logins[j];
+                            h += "</span>";
+                        }
+                    }
+                    h += "</td>";
+                }
+                h += '</tr>';
+                h += '</thead>';
+                h += '<tbody>';
+                for (let i in modules.cs.rows) {
+                    h += '<tr>';
+                    if (response.sheet.sheet.timeClass) {
+                        h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                    } else {
+                        h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                    }
+                    for (let j in modules.cs.cols) {
+                        let f = false;
+                        for (let k in s) {
+                            if (modules.cs.cols[j] == s[k].col) {
+                                for (let l in s[k].rows) {
+                                    if (s[k].rows[l] == modules.cs.rows[i] && modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
+                                        f = true;
+                                        let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
+                                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
+                                            h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                            if (modules.cs.issuesInSheet[uid]) {
+                                                h += modules.cs.issuesInSheet[uid];
+                                            }
+                                            h += '</td>';
+                                        } else {
+                                            h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                            if (modules.cs.issuesInSheet[uid]) {
+                                                h += modules.cs.issuesInSheet[uid];
+                                            }
+                                            h += '</td>';
+                                        }
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        if (!f) {
+                            if (response.sheet.sheet.emptyClass) {
+                                h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                            } else {
+                                h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                            }
+                        }
+                    }
+                    h += '</tr>';
+                }
+                h += '</tbody>';
+                h += '</table>';
+                
+                $("#mainForm").html(h);
+
+                $(".dataCell").off("click").on("click", function () {
+                    let cell = $(this);
+
+                    if ($(".spinner-small").length) {
+                        return;
+                    }
+
+                    if (cell.hasClass(modules.cs.currentSheet.sheet.emptyClass)) {
+                        return;
+                    }
+
+                    if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
+                        if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != $.cookie("_login")) {
+                            cell.addClass("spinner-small");
+                                
+                            PUT("cs", "reserveCell", false, {
+                                action: "release-force",
+                                sheet: md5($("#csSheet").val()),
+                                date: md5($("#csDate").val()),
+                                col: cell.attr("data-col"),
+                                row: cell.attr("data-row"),
+                                uid: cell.attr("data-uid"),
+                            }).
+                            fail(FAIL).
+                            fail(() => {
+                                cell.removeClass("spinner-small");
+                            });
+                        } else
+                        if (cell.attr("data-login") == $.cookie("_login")) {
+                            mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
+                                modules.cs.coordinate(cell);
+                            }, () => {
+                                cell.addClass("spinner-small");
+                                
+                                PUT("cs", "cell", false, {
+                                    action: "release",
+                                    sheet: md5($("#csSheet").val()),
+                                    date: md5($("#csDate").val()),
+                                    col: cell.attr("data-col"),
+                                    row: cell.attr("data-row"),
+                                    uid: cell.attr("data-uid"),
+                                }).
+                                fail(FAIL).
+                                fail(() => {
+                                    cell.removeClass("spinner-small");
+                                });
+                            }, i18n("cs.coordinate"), i18n("cs.unReserve"));
+                        }
+                    } else
+                    if (cell.hasClass(modules.cs.currentSheet.sheet.blockedClass)) {
+                        if (cell.attr("data-login") == $.cookie("_login")) {
+                            cell.addClass("spinner-small");
+
+                            PUT("cs", "cell", false, {
+                                action: "release",
+                                sheet: md5($("#csSheet").val()),
+                                date: md5($("#csDate").val()),
+                                col: cell.attr("data-col"),
+                                row: cell.attr("data-row"),
+                                uid: cell.attr("data-uid"),
+                            }).
+                            fail(FAIL).
+                            fail(() => {
+                                cell.removeClass("spinner-small");
+                            });
+                        }
+                    } else {
+                        cell.addClass("spinner-small");
+
+                        PUT("cs", "cell", false, {
+                            action: "claim",
+                            sheet: md5($("#csSheet").val()),
+                            date: md5($("#csDate").val()),
+                            col: cell.attr("data-col"),
+                            row: cell.attr("data-row"),
+                            uid: cell.attr("data-uid"),
+                            expire: 60,
+                        }).
+                        fail(FAIL).
+                        fail(() => {
+                            cell.removeClass("spinner-small");
+                        });
+                    }
+                });
+
+                $(".column").off("click").on("click", function () {
+                    let cell = $(this);
+                    console.log(modules.cs.colsMd5[cell.attr("data-col")]);
+                });
+
+                for (let i in modules.cs.currentSheet.cells) {
+                    switch (modules.cs.currentSheet.cells[i].mode) {
+                        case "claimed":
+                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            break;
+                        
+                        case "reserved":
+                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            break;
+                    }
+                }
+
+                $(".csIssueSpan").off("click").on("click", function (e) {
+                    let cell = $(this);
+                    location.href = "?#tt&issue=" + cell.text();
+                    e.stopPropagation();
+                });
+
+                loadingDone();
+            } else {
+                $("#mainForm").html(i18n("cs.notFound"));
+                loadingDone();
+            }
+        }
+
         function loadSheet() {
-            loadingStart();
+            if (!silent) {
+                loadingStart();
+            }
 
             GET("cs", "sheets").
             fail(FAIL).
@@ -411,238 +665,9 @@
 
                         modules.cs.currentSheet = response.sheet;
 
-                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.cellAvailableCheck) {
-                            modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return ${modules.cs.currentSheet.sheet.cellAvailableCheck};`);
-                        } else {
-                            modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return true;`);
-                        }
-
-                        if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
-                            let s = response.sheet.sheet.data;
-                            for (let i in s) {
-                                if (modules.cs.cols.indexOf(s[i].col) < 0) {
-                                    modules.cs.cols.push(s[i].col);
-                                    modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
-                                }
-                                for (let j in s[i].rows) {
-                                    if (modules.cs.rows.indexOf(s[i].rows[j]) < 0) {
-                                        modules.cs.rows.push(s[i].rows[j]);
-                                        modules.cs.rowsMd5[md5(s[i].rows[j])] = s[i].rows[j];
-                                    }
-                                }
-                            }
-
-                            function sf(a, b) {
-                                if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.weights) {
-                                    if (typeof modules.cs.currentSheet.sheet.weights[a] !== "undefined") {
-                                        a = modules.cs.currentSheet.sheet.weights[a];
-                                    }
-                                    if (typeof modules.cs.currentSheet.sheet.weights[b] !== "undefined") {
-                                        b = modules.cs.currentSheet.sheet.weights[b];
-                                    }
-                                }
-                                if (a > b) {
-                                    return 1;
-                                }
-                                if (a < b) {
-                                    return -1;
-                                }
-                                return 0;
-                            }
-    
-                            modules.cs.cols.sort(sf);
-                            modules.cs.rows.sort(sf);
-    
-                            let h = '';
-                            h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
-                            h += '<thead>';
-                            h += '<tr>';
-                            h += '<td>&nbsp;</td>';
-                            for (let i in modules.cs.cols) {
-                                let c = false;
-                                for (let j in s) {
-                                    if (modules.cs.cols[i] == s[j].col) {
-                                        c = s[j];
-                                    }
-                                }
-                                if (c && c.class) {
-                                    h += '<td class="' + c.class + '" nowrap>';
-                                } else {
-                                    h += '<td nowrap>';
-                                }
-                                h += "<span class='hoverable column' data-col='" + md5(modules.cs.cols[i]) + "'>" + escapeHTML(modules.cs.cols[i]) + "</span>";
-                                if (c.logins && c.logins.length) {
-                                    for (let j in c.logins) {
-                                        let u = false;
-                                        for (let k in modules.users.meta) {
-                                            if (modules.users.meta[k].login == c.logins[j]) {
-                                                u = modules.users.meta[k].realName;
-                                                break;
-                                            }
-                                        }
-                                        h += "<br/>";
-                                        if (response.sheet.sheet.loginClass) {
-                                            h += "<span class='" + response.sheet.sheet.loginClass + "'>"
-                                        } else {
-                                            h += "<span>";
-                                        }
-                                        h += u?u:c.logins[j];
-                                        h += "</span>";
-                                    }
-                                }
-                                h += "</td>";
-                            }
-                            h += '</tr>';
-                            h += '</thead>';
-                            h += '<tbody>';
-                            for (let i in modules.cs.rows) {
-                                h += '<tr>';
-                                if (response.sheet.sheet.timeClass) {
-                                    h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
-                                } else {
-                                    h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
-                                }
-                                for (let j in modules.cs.cols) {
-                                    let f = false;
-                                    for (let k in s) {
-                                        if (modules.cs.cols[j] == s[k].col) {
-                                            for (let l in s[k].rows) {
-                                                if (s[k].rows[l] == modules.cs.rows[i] && modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
-                                                    f = true;
-                                                    let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
-                                                    if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
-                                                        h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></td>';
-                                                    } else {
-                                                        h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></td>';
-                                                    }
-                                                    break;
-                                                }
-                                            }
-                                            break;
-                                        }
-                                    }
-                                    if (!f) {
-                                        if (response.sheet.sheet.emptyClass) {
-                                            h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
-                                        } else {
-                                            h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
-                                        }
-                                    }
-                                }
-                                h += '</tr>';
-                            }
-                            h += '</tbody>';
-                            h += '</table>';
-                            
-                            $("#mainForm").html(h);
-    
-                            $(".dataCell").off("click").on("click", function () {
-                                let cell = $(this);
-
-                                if ($(".spinner-small").length) {
-                                    return;
-                                }
-
-                                if (cell.hasClass(modules.cs.currentSheet.sheet.emptyClass)) {
-                                    return;
-                                }
-
-                                if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
-                                    if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != $.cookie("_login")) {
-                                        cell.addClass("spinner-small");
-                                            
-                                        PUT("cs", "reserveCell", false, {
-                                            action: "release-force",
-                                            sheet: md5($("#csSheet").val()),
-                                            date: md5($("#csDate").val()),
-                                            col: cell.attr("data-col"),
-                                            row: cell.attr("data-row"),
-                                            uid: cell.attr("data-uid"),
-                                        }).
-                                        fail(FAIL).
-                                        fail(() => {
-                                            cell.removeClass("spinner-small");
-                                        });
-                                    } else
-                                    if (cell.attr("data-login") == $.cookie("_login")) {
-                                        mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
-                                            modules.cs.coordinate(cell);
-                                        }, () => {
-                                            cell.addClass("spinner-small");
-                                            
-                                            PUT("cs", "cell", false, {
-                                                action: "release",
-                                                sheet: md5($("#csSheet").val()),
-                                                date: md5($("#csDate").val()),
-                                                col: cell.attr("data-col"),
-                                                row: cell.attr("data-row"),
-                                                uid: cell.attr("data-uid"),
-                                            }).
-                                            fail(FAIL).
-                                            fail(() => {
-                                                cell.removeClass("spinner-small");
-                                            });
-                                        }, i18n("cs.coordinate"), i18n("cs.unReserve"));
-                                    }
-                                } else
-                                if (cell.hasClass(modules.cs.currentSheet.sheet.blockedClass)) {
-                                    if (cell.attr("data-login") == $.cookie("_login")) {
-                                        cell.addClass("spinner-small");
-
-                                        PUT("cs", "cell", false, {
-                                            action: "release",
-                                            sheet: md5($("#csSheet").val()),
-                                            date: md5($("#csDate").val()),
-                                            col: cell.attr("data-col"),
-                                            row: cell.attr("data-row"),
-                                            uid: cell.attr("data-uid"),
-                                        }).
-                                        fail(FAIL).
-                                        fail(() => {
-                                            cell.removeClass("spinner-small");
-                                        });
-                                    }
-                                } else {
-                                    cell.addClass("spinner-small");
-
-                                    PUT("cs", "cell", false, {
-                                        action: "claim",
-                                        sheet: md5($("#csSheet").val()),
-                                        date: md5($("#csDate").val()),
-                                        col: cell.attr("data-col"),
-                                        row: cell.attr("data-row"),
-                                        uid: cell.attr("data-uid"),
-                                        expire: 60,
-                                    }).
-                                    fail(FAIL).
-                                    fail(() => {
-                                        cell.removeClass("spinner-small");
-                                    });
-                                }
-                            });
-
-                            $(".column").off("click").on("click", function () {
-                                let cell = $(this);
-                                console.log(modules.cs.colsMd5[cell.attr("data-col")]);
-                            });
-
-                            for (let i in modules.cs.currentSheet.cells) {
-                                switch (modules.cs.currentSheet.cells[i].mode) {
-                                    case "claimed":
-                                        $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
-                                        break;
-                                    
-                                    case "reserved":
-                                        $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
-                                        break;
-                                }
-                            }
-
-                            loadIssues(loadingDone);
-                        } else {
-                            $("#mainForm").html(i18n("cs.notFound"));
-                            loadingDone();
-                        }
+                        loadIssues(() => {
+                            renderSheet(response);
+                        });
                     });
                 } else {
                     $("#mainForm").html(i18n("cs.notFound"));
