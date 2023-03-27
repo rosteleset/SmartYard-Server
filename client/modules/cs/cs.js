@@ -380,7 +380,7 @@
                                             h += modules.cs.issuesInSheet[uid];
                                         }
                                         h += '</td>';
-                                    break;
+                                        break;
                                     }
                                 }
                                 break;
