@@ -150,7 +150,7 @@
              * @param $uid
              * @param $expire
              */
-            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0)
+            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "")
             {
                 $expire = (int)($expire ? : 60);
                 switch ($action) {
@@ -222,6 +222,7 @@
                                             "row" => $row,
                                             "uid" => $uid,
                                             "login" => $this->login,
+                                            "sid" => $sid,
                                         ],
                                     ]),
                                 ],
@@ -267,6 +268,7 @@
                                             "row" => $row,
                                             "uid" => $uid,
                                             "login" => $this->login,
+                                            "sid" => $sid,
                                         ],
                                     ]),
                                 ],

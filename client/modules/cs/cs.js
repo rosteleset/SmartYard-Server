@@ -6,6 +6,7 @@
     rowsMd5: false,
     issues: {},
     issuesInSheet: {},
+    sid: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -25,6 +26,8 @@
         modules.mqtt.subscribe("cs/cell", modules.cs.mqttCellMsg);
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
         modules.mqtt.subscribe("issue/changed", modules.cs.mqttIssueChanged);
+
+        modules.cs.sid = md5(Math.random() + (new Date()).getTime() + $.cookie("_login"));
 
         setInterval(() => {
             $(".dataCell").each(function () {
@@ -54,7 +57,8 @@
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.attr("data-login", payload.login);
-                    if (payload.login == $.cookie("_login")) {
+                    console.log(payload);
+                    if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
                         mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
                             modules.cs.coordinate(cell);
                         }, () => {
@@ -66,6 +70,7 @@
                                 col: cell.attr("data-col"),
                                 row: cell.attr("data-row"),
                                 uid: cell.attr("data-uid"),
+                                sid: modules.cs.sid,
                                 expire: 60 * 60 * 24 * 7,
                             }).
                             fail(FAIL).
@@ -423,6 +428,7 @@
                                 col: cell.attr("data-col"),
                                 row: cell.attr("data-row"),
                                 uid: cell.attr("data-uid"),
+                                sid: modules.cs.sid,
                             }).
                             fail(FAIL).
                             fail(() => {
@@ -442,6 +448,7 @@
                                     col: cell.attr("data-col"),
                                     row: cell.attr("data-row"),
                                     uid: cell.attr("data-uid"),
+                                    sid: modules.cs.sid,
                                 }).
                                 fail(FAIL).
                                 fail(() => {
@@ -461,6 +468,7 @@
                                 col: cell.attr("data-col"),
                                 row: cell.attr("data-row"),
                                 uid: cell.attr("data-uid"),
+                                sid: modules.cs.sid,
                             }).
                             fail(FAIL).
                             fail(() => {
@@ -477,6 +485,7 @@
                             col: cell.attr("data-col"),
                             row: cell.attr("data-row"),
                             uid: cell.attr("data-uid"),
+                            sid: modules.cs.sid,
                             expire: 60,
                         }).
                         fail(FAIL).

@@ -36,7 +36,7 @@
                 $success = false;
 
                 if ($cs && ($params["action"] == "claim" || $params["action"] == "release")) {
-                    $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"]);
+                    $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"]);
                 }
 
                 return api::ANSWER($success);
