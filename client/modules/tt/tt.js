@@ -689,7 +689,7 @@
                 for (let i in modules.tt.meta.customFields) {
                     if (modules.tt.meta.customFields[i].field == field) {
                         cf = modules.tt.meta.customFields[i];
-                        multiple = cf.format.indexOf("multiple") >= 0;
+                        multiple = cf && cf.format && cf.format.indexOf("multiple") >= 0;
                     }
                 }
 
@@ -699,7 +699,7 @@
                             let lon = $.trim(val.split("[")[1].split(",")[0]);
                             let lat = $.trim(val.split("[")[1].split(",")[1].split("]")[0]);
     
-                            val = `<a target="_blank" class="hoverable" href="https://yandex.ru/maps/13/tambov/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${escapeHTML(val)}</a>`;
+                            val = `<a target="_blank" class="hoverable" href="https://yandex.ru/maps/13/?ll=${lon}%2C${lat}&mode=whatshere&whatshere%5Bpoint%5D=${lon}%2C${lat}&whatshere%5Bzoom%5D=19.33&z=19">${escapeHTML(val)}</a>`;
                         } else {
                             val = '';
                         }

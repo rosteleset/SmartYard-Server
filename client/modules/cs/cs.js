@@ -7,6 +7,8 @@
     issues: {},
     issuesInSheet: {},
     sid: false,
+    hasChanges: false,
+    idle: true,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -43,6 +45,13 @@
                 }
             });
         }, 1000);
+
+        setInterval(() => {
+            if ($("#csSheet:visible").length && modules.cs.hasChanges && modules.cs.idle) {
+                modules.cs.hasChanges = false;
+                modules.cs.renderCS(true);
+            }
+        }, 100);
     },
 
     mqttCellMsg: function (topic, payload) {
@@ -114,7 +123,16 @@
     mqttIssueChanged: function (topic, payload) {
         if ($("#csSheet:visible").length) {
             if (modules.cs.issues[payload]) {
-                modules.cs.renderCS(true);
+                modules.cs.hasChanges = true;
+            } else {
+                GET("tt", "issue", payload).
+                done(r => {
+                    if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.sheet && modules.cs.currentSheet.sheet.fields.date) {
+                        if (modules.cs.currentSheet.sheet.sheet == r.issue.issue[modules.cs.currentSheet.sheet.fields.sheet] && modules.cs.currentSheet.sheet.date == r.issue.issue[modules.cs.currentSheet.sheet.fields.date]) {
+                            modules.cs.hasChanges = true;
+                        }
+                    }
+                });
             }
         }
     },
@@ -208,6 +226,7 @@
     },
 
     renderCS: function (silent) {
+        modules.cs.idle = false;
         modules.cs.issues = {};
         modules.cs.issuesInSheet = {};
 
@@ -217,8 +236,12 @@
                 modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
                 modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
                 modules.cs.currentSheet.sheet.issuesQuery.project = modules.cs.currentSheet.sheet.project;
+
                 POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
                 fail(FAIL).
+                fail(() => {
+                    modules.cs.idle = true;
+                }).
                 done(r => {
                     for (let i in r.issues.issues) {
                         let col = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.col];
@@ -433,6 +456,7 @@
                             }).
                             fail(FAIL).
                             fail(() => {
+                                modules.cs.idle = true;
                                 cell.removeClass("spinner-small");
                             });
                         } else
@@ -453,6 +477,7 @@
                                 }).
                                 fail(FAIL).
                                 fail(() => {
+                                    modules.cs.idle = true;
                                     cell.removeClass("spinner-small");
                                 });
                             }, i18n("cs.coordinate"), i18n("cs.unReserve"));
@@ -473,6 +498,7 @@
                             }).
                             fail(FAIL).
                             fail(() => {
+                                modules.cs.idle = true;
                                 cell.removeClass("spinner-small");
                             });
                         }
@@ -491,6 +517,7 @@
                         }).
                         fail(FAIL).
                         fail(() => {
+                            modules.cs.idle = true;
                             cell.removeClass("spinner-small");
                         });
                     }
@@ -519,9 +546,11 @@
                     e.stopPropagation();
                 });
 
+                modules.cs.idle = true;
                 loadingDone();
             } else {
                 $("#mainForm").html(i18n("cs.notFound"));
+                modules.cs.idle = true;
                 loadingDone();
             }
         }
@@ -534,6 +563,7 @@
             GET("cs", "sheets").
             fail(FAIL).
             fail(() => {
+                modules.cs.idle = true;
                 $("#mainForm").html(i18n("cs.errorLoadingSheet"));
             }).
             fail(loadingDone).
@@ -661,6 +691,7 @@
                     fail(FAIL).
                     fail(loadingDone).
                     fail(() => {
+                        modules.cs.idle = true;
                         $("#mainForm").html(i18n("cs.errorLoadingSheet"));
                     }).
                     done(response => {
@@ -677,6 +708,7 @@
                     });
                 } else {
                     $("#mainForm").html(i18n("cs.notFound"));
+                    modules.cs.idle = true;
                     loadingDone();
                 }
             });
@@ -685,6 +717,7 @@
         modules.users.loadUsers("users", "users").
         fail(FAIL).
         fail(() => {
+            modules.cs.idle = true;
             $("#mainForm").html(i18n("cs.errorLoadingSheet"));
         }).
         fail(loadingDone).
