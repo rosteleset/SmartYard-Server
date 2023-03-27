@@ -168,7 +168,7 @@
 
     renderCS: function () {
         function loadIssues(callback) {
-            if (typeof callback) {
+            if (typeof callback === "function") {
                 callback();
             }
         }
