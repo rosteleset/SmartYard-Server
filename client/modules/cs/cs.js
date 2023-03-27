@@ -373,18 +373,14 @@
                                         let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
                                         if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
                                             h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            if (modules.cs.issuesInSheet[uid]) {
-                                                h += modules.cs.issuesInSheet[uid];
-                                            }
-                                            h += '</td>';
                                         } else {
                                             h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            if (modules.cs.issuesInSheet[uid]) {
-                                                h += modules.cs.issuesInSheet[uid];
-                                            }
-                                            h += '</td>';
                                         }
-                                        break;
+                                        if (modules.cs.issuesInSheet[uid]) {
+                                            h += modules.cs.issuesInSheet[uid];
+                                        }
+                                        h += '</td>';
+                                    break;
                                     }
                                 }
                                 break;
