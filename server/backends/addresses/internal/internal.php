@@ -194,7 +194,7 @@
 
                 if ($areaId && trim($areaWithType) && trim($area)) {
                     return $this->db->modify("update addresses_areas set address_region_id = :address_region_id, area_uuid = :area_uuid, area_with_type = :area_with_type, area_type = :area_type, area_type_full = :area_type_full, area = :area, timezone = :timezone where address_area_id = $areaId", [
-                        ":address_region_id" => $regionId,
+                        ":address_region_id" => $regionId ? : null,
                         ":area_uuid" => $areaUuid,
                         ":area_with_type" => $areaWithType,
                         ":area_type" => $areaType,
@@ -222,7 +222,7 @@
 
                 if (trim($areaWithType) && trim($area)) {
                     return $this->db->insert("insert into addresses_areas (address_region_id, area_uuid, area_with_type, area_type, area_type_full, area, timezone) values (:address_region_id, :area_uuid, :area_with_type, :area_type, :area_type_full, :area, :timezone)", [
-                        ":address_region_id" => $regionId?:null,
+                        ":address_region_id" => $regionId ? : null,
                         ":area_uuid" => $areaUuid,
                         ":area_with_type" => $areaWithType,
                         ":area_type" => $areaType,
@@ -344,8 +344,8 @@
 
                 if (trim($cityWithType) && trim($city)) {
                     return $this->db->modify("update addresses_cities set address_region_id = :address_region_id, address_area_id = :address_area_id, city_uuid = :city_uuid, city_with_type = :city_with_type, city_type = :city_type, city_type_full = :city_type_full, city = :city, timezone = :timezone where address_city_id = $cityId", [
-                        ":address_region_id" => $regionId ? $regionId : null,
-                        ":address_area_id" => $areaId ? $areaId : null,
+                        ":address_region_id" => $regionId ? : null,
+                        ":address_area_id" => $areaId ? : null,
                         ":city_uuid" => $cityUuid,
                         ":city_with_type" => $cityWithType,
                         ":city_type" => $cityType,
@@ -653,8 +653,8 @@
 
                 if (trim($streetWithType) && trim($street)) {
                     return $this->db->modify("update addresses_streets set address_city_id = :address_city_id, address_settlement_id = :address_settlement_id, street_uuid = :street_uuid, street_with_type = :street_with_type, street_type = :street_type, street_type_full = :street_type_full, street = :street where address_street_id = $streetId", [
-                        ":address_city_id" => $cityId ? : $cityId,
-                        ":address_settlement_id" => $settlementId ? : $settlementId,
+                        ":address_city_id" => $cityId ? : null,
+                        ":address_settlement_id" => $settlementId ? : null,
                         ":street_uuid" => $streetUuid,
                         ":street_with_type" => $streetWithType,
                         ":street_type" => $streetType,
@@ -805,8 +805,8 @@
 
                 if (trim($houseFull) && trim($house)) {
                     return $this->db->modify("update addresses_houses set address_settlement_id = :address_settlement_id, address_street_id = :address_street_id, house_uuid = :house_uuid, house_type = :house_type, house_type_full = :house_type_full, house_full = :house_full, house = :house where address_house_id = $houseId", [
-                        ":address_settlement_id" => $settlementId ? : $settlementId,
-                        ":address_street_id" => $streetId ? : $streetId,
+                        ":address_settlement_id" => $settlementId ? : null,
+                        ":address_street_id" => $streetId ? : null,
                         ":house_uuid" => $houseUuid,
                         ":house_type" => $houseType,
                         ":house_type_full" => $houseTypeFull,
