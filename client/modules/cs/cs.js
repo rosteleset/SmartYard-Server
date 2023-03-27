@@ -165,8 +165,7 @@
                 {
                     id: "issueId",
                     type: "text",
-                    title: i18n("tt.issue"),
-                    hidden: true,
+                    title: i18n("tt.issueId"),
                 },
             ],
             callback: result => {
@@ -192,9 +191,7 @@
                 if (workflow) {
                     prefferredValues["workflow"] = workflow;
                 }
-                tt.issue.issueAction(result.issueId, modules.cs.currentSheet.sheet.action, () => {
-                    modules.cs.renderCS();
-                }, prefferredValues)
+                modules.tt.issue.issueAction(result.issueId, modules.cs.currentSheet.sheet.action, modules.cs.renderCS, prefferredValues)
             },
         }).show();
     },

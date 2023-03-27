@@ -324,6 +324,7 @@
     issueAction: function (issueId, action, callback, prefferredValues) {
         loadingStart();
         GET("tt", "tt", false, true).
+        done(modules.tt.tt).
         fail(FAIL).
         fail(loadingDone).
         done(() => {

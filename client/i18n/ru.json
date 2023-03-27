@@ -54,6 +54,7 @@
     "errors": {
         "404caption": "Ой! Страница не найдена.",
         "404message": "Похоже, мы не можем найти нужную Вам страницу.<br />Попробуйте перейти на <a href=\"#\">начальную страницу</a>.",
+        "404": "Объект не найден",
         "redis": "Ошибка подключения к redis серверу",
         "notFound": "Ничего не найдено",
         "noGravatar": "Gravatar не найден<br/><a href='https://ru.gravatar.com/' target='_blank' class='text-bold hover'>[Установить]</a>",

@@ -2239,9 +2239,6 @@
                         title: i18n("tt.customFieldType"),
                     },
                     {
-                        title: i18n("tt.customFieldWorflow"),
-                    },
-                    {
                         title: i18n("tt.customFieldDisplay"),
                         fullWidth: true,
                     },
@@ -2263,9 +2260,6 @@
                                 {
                                     data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type.charAt(0).toUpperCase() + modules.tt.meta.customFields[i].type.slice(1)),
                                     nowrap: true,
-                                },
-                                {
-                                    data: modules.tt.meta.customFields[i].workflow?i18n("yes"):i18n("no"),
                                 },
                                 {
                                     data: modules.tt.meta.customFields[i].fieldDisplay,

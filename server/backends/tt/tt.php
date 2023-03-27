@@ -90,6 +90,12 @@
                         "implode" => function (...$args) {
                             return [ implode(...$args) ];
                         },
+                        "time" => function (...$args) {
+                            return [ time(...$args) ];
+                        },
+                        "date" => function (...$args) {
+                            return [ date(...$args) ];
+                        },
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
