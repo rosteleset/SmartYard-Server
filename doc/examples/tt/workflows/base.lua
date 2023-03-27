@@ -121,4 +121,5 @@ end
 
 function issueChanged(issue, action, old, new)
     -- add notifications here
+    return mqtt.broadcast("issue/changed", issue["issueId"])
 end

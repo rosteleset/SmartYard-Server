@@ -4,6 +4,7 @@
     rows: false,
     colsMd5: false,
     rowsMd5: false,
+    issues: {},
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -23,7 +24,6 @@
         modules.mqtt.subscribe("cs/cell", modules.cs.mqttCellMsg);
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
         modules.mqtt.subscribe("issue/changed", modules.cs.mqttIssueChanged);
-        modules.mqtt.subscribe("issue/coordinated", modules.cs.mqttIssueCoordinated);
 
         setInterval(() => {
             $(".dataCell").each(function () {
@@ -106,11 +106,11 @@
     },
 
     mqttIssueChanged: function (topic, payload) {
-        //
-    },
+        console.log(toipc, payload);
 
-    mqttIssueCoordinated: function (topic, payload) {
-        console.log(payload);
+        if ($("#csSheet:visible").length) {
+            //
+        }
     },
 
     clearCell: function (cell) {
@@ -202,6 +202,7 @@
     },
 
     renderCS: function () {
+        modules.cs.issues = {};
 
         function loadIssues(callback) {
             if (modules.cs.currentSheet.sheet.issuesQuery) {
@@ -218,7 +219,7 @@
                         let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
                         let done = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.done];
 
-                        console.log(col, row, cells, installers, done);
+                        console.log(r.issues.issues[i].issueId, col, row, cells, installers, done);
                         
                         let start = -1;
 
@@ -230,6 +231,7 @@
                                             start = k;
                                         }
                                         if (k - start < cells) {
+                                            modules.cs.issues[r.issues.issues[i].issueId] = true;
                                             let cell = $(`.dataCell[data-col=${md5(col)}][data-row=${md5(modules.cs.currentSheet.sheet.data[j].rows[k])}]`);
                                             if (installers && !done) {
                                                 cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`);
@@ -452,7 +454,7 @@
                             modules.cs.rows.sort(sf);
     
                             let h = '';
-                            h += '<table width="100%" class="mt-3 table table-hover table-bordered">';
+                            h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                             h += '<thead>';
                             h += '<tr>';
                             h += '<td>&nbsp;</td>';
