@@ -155,15 +155,48 @@
                 }
             }
         }
-        console.log(
-            "coordinate",
-            modules.cs.currentSheet.sheet.sheet,
-            modules.cs.currentSheet.sheet.date,
-            modules.cs.colsMd5[cell.attr("data-col")],
-            modules.cs.rowsMd5[cell.attr("data-row")],
-            workflow,
-            logins,
-        );
+        cardForm({
+            title: i18n("cs.selectIssue"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            size: "lg",
+            fields: [
+                {
+                    id: "issueId",
+                    type: "text",
+                    title: i18n("tt.issue"),
+                    hidden: true,
+                },
+            ],
+            callback: result => {
+                prefferredValues = {};
+                if (modules.cs.currentSheet.sheet.sheetField) {
+                    prefferredValues[modules.cs.currentSheet.sheet.sheetField] = modules.cs.currentSheet.sheet.sheet;
+                }
+                if (modules.cs.currentSheet.sheet.dateField) {
+                    prefferredValues[modules.cs.currentSheet.sheet.dateField] = modules.cs.currentSheet.sheet.date;
+                }
+                if (modules.cs.currentSheet.sheet.colField) {
+                    prefferredValues[modules.cs.currentSheet.sheet.colField] = modules.cs.colsMd5[cell.attr("data-col")];
+                }
+                if (modules.cs.currentSheet.sheet.rowField) {
+                    prefferredValues[modules.cs.currentSheet.sheet.rowField] = modules.cs.rowsMd5[cell.attr("data-row")];
+                }
+                if (modules.cs.currentSheet.sheet.cellsField) {
+                    prefferredValues[modules.cs.currentSheet.sheet.cellsField] = "1";
+                }
+                if (modules.cs.currentSheet.sheet.assignedField && logins) {
+                    prefferredValues[modules.cs.currentSheet.sheet.assignedField] = logins;
+                }
+                if (workflow) {
+                    prefferredValues["workflow"] = workflow;
+                }
+                tt.issue.issueAction(result.issueId, modules.cs.currentSheet.sheet.action, () => {
+                    modules.cs.renderCS();
+                }, prefferredValues)
+            },
+        }).show();
     },
 
     renderCS: function () {
