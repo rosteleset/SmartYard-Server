@@ -256,16 +256,6 @@
 
                 $query = $this->preprocessFilter($query, $preprocess);
 
-                error_log(print_r([
-                    $collection,
-                    $query,
-                    $fields,
-                    $sort,
-                    $skip,
-                    $limit,
-                    $preprocess,
-                ], true));
-
                 $projection = [];
 
                 if ($fields === true) {
