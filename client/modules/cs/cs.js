@@ -232,15 +232,15 @@
                                         if (k - start < cells) {
                                             let cell = $(`.dataCell[data-col=${md5(col)}][data-row=${md5(modules.cs.currentSheet.sheet.data[j].rows[k])}]`);
                                             if (installers && !done) {
-                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`);
                                             } else
                                             if (!installers && done) {
-                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`);
                                             } else
                                             if (installers && done) {
-                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`);
                                             } else {
-                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                                cell.append(`<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</span><br />`);
                                             }
                                         }
                                     }
@@ -248,6 +248,11 @@
                             }
                         }
                     }
+                    $(".csIssueSpan").off("click").on("click", function (e) {
+                        let cell = $(this);
+                        location.href = "?#tt&issue=" + cell.text();
+                        e.stopPropagation();
+                    });
                 }).
                 always(() => {
                     if (typeof callback === "function") {
@@ -459,9 +464,9 @@
                                     }
                                 }
                                 if (c && c.class) {
-                                    h += '<td class="' + c.class + '">';
+                                    h += '<td class="' + c.class + '" nowrap>';
                                 } else {
-                                    h += '<td>';
+                                    h += '<td nowrap>';
                                 }
                                 h += "<span class='hoverable column' data-col='" + md5(modules.cs.cols[i]) + "'>" + escapeHTML(modules.cs.cols[i]) + "</span>";
                                 if (c.logins && c.logins.length) {
