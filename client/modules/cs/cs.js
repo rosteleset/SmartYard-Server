@@ -216,6 +216,7 @@
                 modules.cs.currentSheet.sheet.issuesQuery.preprocess = {};
                 modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
                 modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
+                modules.cs.currentSheet.sheet.issuesQuery.project = modules.cs.currentSheet.sheet.project;
                 POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
                 fail(FAIL).
                 done(r => {
