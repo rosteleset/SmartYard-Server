@@ -175,23 +175,23 @@
             ],
             callback: result => {
                 prefferredValues = {};
-                if (modules.cs.currentSheet.sheet.sheetField) {
-                    prefferredValues[modules.cs.currentSheet.sheet.sheetField] = modules.cs.currentSheet.sheet.sheet;
+                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.sheet) {
+                    prefferredValues[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                 }
-                if (modules.cs.currentSheet.sheet.dateField) {
-                    prefferredValues[modules.cs.currentSheet.sheet.dateField] = modules.cs.currentSheet.sheet.date;
+                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.date) {
+                    prefferredValues[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                 }
-                if (modules.cs.currentSheet.sheet.colField) {
-                    prefferredValues[modules.cs.currentSheet.sheet.colField] = modules.cs.colsMd5[cell.attr("data-col")];
+                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.col) {
+                    prefferredValues[modules.cs.currentSheet.sheet.fields.col] = modules.cs.colsMd5[cell.attr("data-col")];
                 }
-                if (modules.cs.currentSheet.sheet.rowField) {
-                    prefferredValues[modules.cs.currentSheet.sheet.rowField] = modules.cs.rowsMd5[cell.attr("data-row")];
+                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.row) {
+                    prefferredValues[modules.cs.currentSheet.sheet.fields.row] = modules.cs.rowsMd5[cell.attr("data-row")];
                 }
-                if (modules.cs.currentSheet.sheet.cellsField) {
-                    prefferredValues[modules.cs.currentSheet.sheet.cellsField] = "1";
+                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.cells) {
+                    prefferredValues[modules.cs.currentSheet.sheet.fields.cells] = "1";
                 }
-                if (modules.cs.currentSheet.sheet.assignedField && logins) {
-                    prefferredValues[modules.cs.currentSheet.sheet.assignedField] = logins;
+                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.assigned && logins) {
+                    prefferredValues[modules.cs.currentSheet.sheet.fields.assigned] = logins;
                 }
                 if (workflow) {
                     prefferredValues["workflow"] = workflow;
@@ -204,21 +204,60 @@
     renderCS: function () {
 
         function loadIssues(callback) {
-            if (modules.cs.currentSheet.sheet.issuesCoordinatedQuery) {
-                modules.cs.currentSheet.sheet.issuesCoordinatedQuery.preprocess = {};
-                modules.cs.currentSheet.sheet.issuesCoordinatedQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
-                modules.cs.currentSheet.sheet.issuesCoordinatedQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
-                console.log(modules.cs.currentSheet.sheet.issuesCoordinatedQuery);
-                POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesCoordinatedQuery).
+            if (modules.cs.currentSheet.sheet.issuesQuery) {
+                modules.cs.currentSheet.sheet.issuesQuery.preprocess = {};
+                modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
+                modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
+                POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
                 fail(FAIL).
                 done(r => {
-                    console.log(r);
+                    for (let i in r.issues.issues) {
+                        let col = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.col];
+                        let row = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.row];
+                        let cells = parseInt(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells]);
+                        let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
+                        let done = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.done];
+
+                        console.log(col, row, cells, installers, done);
+                        
+                        let start = -1;
+
+                        for (let j in modules.cs.currentSheet.sheet.data) {
+                            if (modules.cs.currentSheet.sheet.data[j].col == col) {
+                                for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
+                                    if (modules.cs.currentSheet.sheet.data[j].rows[k] == row || start >= 0) {
+                                        if (start < 0) {
+                                            start = k;
+                                        }
+                                        if (k - start < cells) {
+                                            let cell = $(`.dataCell[data-col=${md5(col)}][data-row=${md5(modules.cs.currentSheet.sheet.data[j].rows[k])}]`);
+                                            if (installers && !done) {
+                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                            } else
+                                            if (!installers && done) {
+                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                            } else
+                                            if (installers && done) {
+                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                            } else {
+                                                cell.append(`<a href="?#tt&issue=${r.issues.issues[i].issueId}" class="pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</a><br />`);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }).
                 always(() => {
                     if (typeof callback === "function") {
                         callback();
                     }
                 })
+            } else {
+                if (typeof callback === "function") {
+                    callback();
+                }
             }
         }
 

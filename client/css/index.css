@@ -254,7 +254,15 @@ body::-webkit-scrollbar-thumb {
 }
 
 .spinner-small {
-    background-image:url('../img/spinnerSmall.svg');
-    background-repeat: no-repeat;
-    background-position: center center;
+  background-image:url('../img/spinnerSmall.svg');
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.text-decoration-line-through {
+  text-decoration: line-through;
+}
+
+.text-decoration-underline {
+  text-decoration: underline;
 }
