@@ -628,10 +628,17 @@ function mConfirm(body, title, button, callback) {
     xblur();
 }
 
-function mYesNo(body, title, callbackYes, callbackNo, yes, no) {
+let mYesNoTimeout = 0;
+
+function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
+    if (mYesNoTimeout) {
+        clearTimeout(mYesNoTimeout);
+    }
+
     if (!title) {
         title = i18n("confirm");
     }
+
     $('#yesnoModalLabel').html(title);
     $('#yesnoModalBody').html(body);
     $('#yesnoModalButtonYes').html(yes?yes:i18n("yes")).off('click').on('click', () => {
@@ -644,6 +651,13 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no) {
     });
     autoZ($('#yesnoModal')).modal('show');
     xblur();
+
+    if (timeout) {
+        mYesNoTimeout = setTimeout(() => {
+            mYesNoTimeout = 0;
+            $('#yesnoModal').modal('hide');
+        }, timeout);
+    }
 }
 
 function mAlert(body, title, callback, title_button, main_button) {

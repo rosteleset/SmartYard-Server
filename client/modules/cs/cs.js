@@ -77,7 +77,7 @@
                             fail(() => {
                                 cell.removeClass("spinner-small");
                             });
-                        }, i18n("cs.coordinate"), i18n("cs.reserve"));
+                        }, i18n("cs.coordinate"), i18n("cs.reserve"), 55 * 1000);
                     }
                     break;
                 
