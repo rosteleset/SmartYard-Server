@@ -28,6 +28,7 @@
         modules.mqtt.subscribe("cs/cell", modules.cs.mqttCellMsg);
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
         modules.mqtt.subscribe("issue/changed", modules.cs.mqttIssueChanged);
+        modules.mqtt.subscribe("sheet/changed", modules.cs.mqttSheetChanged);
 
         modules.cs.sid = md5(guid());
 
@@ -132,6 +133,16 @@
                         }
                     }
                 });
+            }
+        }
+    },
+
+    mqttSheetChanged: function (topic, payload) {
+        if ($("#csSheet:visible").length) {
+            if (modules.cs.currentSheet && modules.cs.currentSheet.sheet) {
+                if (modules.cs.currentSheet.sheet.sheet == payload.sheet && modules.cs.currentSheet.sheet.date == payload.date) {
+                    modules.cs.hasChanges = true;
+                }
             }
         }
     },
