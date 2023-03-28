@@ -29,7 +29,7 @@
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
         modules.mqtt.subscribe("issue/changed", modules.cs.mqttIssueChanged);
 
-        modules.cs.sid = md5(Math.random() + (new Date()).getTime() + $.cookie("_login"));
+        modules.cs.sid = md5(guid());
 
         setInterval(() => {
             $(".dataCell").each(function () {
@@ -351,6 +351,22 @@
                 modules.cs.cols.sort(sf);
                 modules.cs.rows.sort(sf);
 
+                function colMenu(col) {
+                    let mid = md5(guid());
+
+                    let h = `<span class="dropdown">`;
+                    h += `<span id="${mid}" class="pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${col}</span>`;
+                    h += `<ul class="dropdown-menu" aria-labelledby="${mid}">`;
+                    h += `<li class="pointer dropdown-item colMenuSetAssigners" data-col="${md5(col)}">${i18n("cs.setAssigners")}</li>`;
+                    h += `<li class="dropdown-divider"></li>`;
+                    h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
+                    h += `<li class="pointer dropdown-item colMenuAssignUnassigned" data-col="${md5(col)}">${i18n("cs.assignUnassigned")}</li>`;
+                    h += `<li class="pointer dropdown-item colMenuReAssign" data-col="${md5(col)}">${i18n("cs.reAssign")}</li>`;
+                    h += `</ul></span>`;
+
+                    return h;
+                }
+
                 let h = '';
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 h += '<thead>';
@@ -368,7 +384,7 @@
                     } else {
                         h += '<td nowrap>';
                     }
-                    h += "<span class='hoverable column' data-col='" + md5(modules.cs.cols[i]) + "'>" + escapeHTML(modules.cs.cols[i]) + "</span>";
+                    h += "<span>" + colMenu(modules.cs.cols[i]) + "</span>";
                     if (c.logins && c.logins.length) {
                         for (let j in c.logins) {
                             let u = false;
@@ -437,6 +453,30 @@
                 h += '</table>';
                 
                 $("#mainForm").html(h);
+
+                $(".colMenuSetAssigners").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    console.log("colMenuSetAssigners", col);
+                });
+
+                $(".colMenuAssignAll").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    console.log("colMenuAssignAll", col);
+                });
+                
+                $(".colMenuAssignUnassigned").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    console.log("colMenuAssignUnassigned", col);
+                });
+                
+                $(".colMenuReAssign").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    console.log("colMenuReAssign", col);
+                });
 
                 $(".dataCell").off("click").on("click", function () {
                     let cell = $(this);
@@ -529,11 +569,6 @@
                             cell.removeClass("spinner-small");
                         });
                     }
-                });
-
-                $(".column").off("click").on("click", function () {
-                    let cell = $(this);
-                    console.log(modules.cs.colsMd5[cell.attr("data-col")]);
                 });
 
                 for (let i in modules.cs.currentSheet.cells) {
