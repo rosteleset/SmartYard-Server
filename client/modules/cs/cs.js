@@ -236,6 +236,10 @@
     },
 
     renderCS: function (silent) {
+        if (!silent) {
+            loadingStart();
+        }
+
         modules.cs.idle = false;
         modules.cs.issues = {};
         modules.cs.issuesInSheet = {};
@@ -601,10 +605,6 @@
         }
 
         function loadSheet() {
-            if (!silent) {
-                loadingStart();
-            }
-
             GET("cs", "sheets").
             fail(FAIL).
             fail(() => {
