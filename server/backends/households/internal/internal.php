@@ -1384,7 +1384,7 @@
                 return
                     $this->db->modify("update houses_subscribers_mobile set push_token = null where push_token = :push_token", [ "push_token" => $token ])
                     or
-                    $this->db->modify("update houses_subscribers_mobile set voip_token = null where voip_token = :voip_token", [ "voip_token" => $token ]);
+                    $this->db->modify("update houses_subscribers_mobile set voip_token = null and push_token_type = 0 where voip_token = :voip_token", [ "voip_token" => $token ]);
             }
 
             /**

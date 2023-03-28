@@ -34,8 +34,13 @@
                 $result = trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["common_secret"] . "&" . $query));
 
                 if (strtolower(explode(":", $result)[0]) !== "ok") {
-                    loadBackend("households")->dismissToken($push["token"]);
+                    error_log("isdn push send error:\n query = $query\n result = $result\n");
+
+                    if (strtolower($result) === "err:broken") {
+                        loadBackend("households")->dismissToken($push["token"]);
+                    }
                 }
+                
 
                 return $result;
             }
