@@ -140,8 +140,8 @@
                         $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
                     }
                     date_default_timezone_set('UTC');
-                    $from_time = urlencode(date("Y.m.d H:i:s", $start));
-                    $to_time = urlencode(date("Y.m.d H:i:s", $finish));
+                    $from_time = urlencode(date("d.m.Y H:i:s", $start));
+                    $to_time = urlencode(date("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/exportarchive$query&fromtime=$from_time&totime=$to_time";
                     
@@ -187,7 +187,7 @@
                         $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
                     }
                     date_default_timezone_set('UTC');
-                    $start_time = urlencode(date("Y.m.d H:i:s", $time));
+                    $start_time = urlencode(date("d.m.Y H:i:s", $time));
 
                     $request_url = "$scheme$user$pass$host$port/site$query&withcontenttype=true&mode=archive&starttime=$start_time&resolutionx=480&resolutiony=270&streamtype=mainvideo";
                     
