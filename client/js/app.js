@@ -1144,3 +1144,12 @@ function AVAIL(api, method, request_method) {
         return available && available[api];
     }
 }
+
+$(window).off("resize").on("resize", () => {
+    if ($("#editorContainer").length) {
+        // TODO f..ck!
+        let top = 75;
+        let height = $(window).height() - top;
+        $("#editorContainer").css("height", height + "px");
+    }
+});
