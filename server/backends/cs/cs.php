@@ -93,11 +93,13 @@
                     $data = json_encode($data_parsed);
                 }
 
+                $mqtt = loadBackend("mqtt");
+
                 return $files->addFile($date . "_" . $sheet . ".json", $files->contentsToStream($data), [
                     "type" => "csheet",
                     "sheet" => $sheet,
                     "date" => $date,
-                ]);
+                ]) && $mqtt->broadcast("sheet/changed", [ "sheet" => $sheet, "date" => $date ]);
             }
 
             /**
@@ -122,7 +124,7 @@
                     $cs = $files->deleteFile($s["id"]);
                 }
 
-                return true;
+                return $mqtt->broadcast("sheet/changed", [ "sheet" => $sheet, "date" => $date ]);
             }
 
             /**

@@ -184,21 +184,8 @@
 
                     $sandbox->registerLibrary("mqtt", [
                         "broadcast" => function ($topic, $payload) {
-                            return [
-                                file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
-                                    'http' => [
-                                        'method'  => 'POST',
-                                        'header'  => [
-                                            'Content-Type: application/json; charset=utf-8',
-                                            'Accept: application/json; charset=utf-8',
-                                        ],
-                                        'content' => json_encode([
-                                            "topic" => $topic,
-                                            "payload" => $payload,
-                                        ]),
-                                    ],
-                                ]))
-                            ];
+                            $mqtt = loadBackend("mqtt");
+                            return [ $mqtt->broadcast($topic, $payload) ];
                         },
                     ]);
 
