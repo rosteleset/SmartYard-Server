@@ -1068,7 +1068,7 @@
         for (let i in modules.tt.meta.workflows) {
             workflows.push({
                 id: i,
-                text: modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i,
+                text: modules.tt.meta.workflows[i].name?((modules.tt.meta.workflows[i].name.charAt(0) == "#")?modules.tt.meta.workflows[i].name.substring(1):modules.tt.meta.workflows[i].name):i,
             });
         }
 
