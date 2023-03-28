@@ -47,12 +47,13 @@
             });
         }, 1000);
 
-        setInterval(() => {
+        (function refresh() {
             if ($("#csSheet:visible").length && modules.cs.hasChanges && modules.cs.idle) {
                 modules.cs.hasChanges = false;
                 modules.cs.renderCS(true);
             }
-        }, 100);
+            setTimeout(refresh, Math.random() * 1000 + 1000);
+        })();
     },
 
     mqttCellMsg: function (topic, payload) {
