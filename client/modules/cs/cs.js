@@ -738,7 +738,9 @@
                     modules.cs.renderCS();
                 });
 
-                $("#csRefresh").off("click").on("click", modules.cs.renderCS);
+                $("#csRefresh").off("click").on("click", () => {
+                    modules.cs.renderCS();
+                });
     
                 if ($("#csSheet").val() && $("#csDate").val()) {
                     QUERY("cs", "sheet", {
