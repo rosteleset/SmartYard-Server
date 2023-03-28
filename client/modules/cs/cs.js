@@ -230,7 +230,9 @@
                 if (workflow) {
                     prefferredValues["workflow"] = workflow;
                 }
-                modules.tt.issue.issueAction(result.issueId, modules.cs.currentSheet.sheet.action, modules.cs.renderCS, prefferredValues)
+                modules.tt.issue.issueAction(result.issueId, modules.cs.currentSheet.sheet.action, () => {
+                    modules.cs.renderCS();
+                }, prefferredValues)
             },
         }).show();
     },
@@ -723,7 +725,9 @@
                             }).
                             fail(FAIL).
                             fail(loadingDone).
-                            done(modules.cs.renderCS);
+                            done(() => {
+                                modules.cs.renderCS();
+                            });
                         })
                     }
                 });
