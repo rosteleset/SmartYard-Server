@@ -164,6 +164,10 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    if (isset($dvr['token'])) {
+                        $token = $dvr['token'];
+                        $query = $query + "&$token";
+                    }
                     
                     if (isset($parsed_url['query'])) {
                         parse_str($parsed_url['query'], $parsed_query);
