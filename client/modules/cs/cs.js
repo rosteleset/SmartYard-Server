@@ -35,7 +35,7 @@
             $(".dataCell").each(function () {
                 let cell = $(this);
 
-                if (!modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, modules.cs.rowsMd5[cell.attr("data-row")])) {
+                if (modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, modules.cs.rowsMd5[cell.attr("data-row")])) {
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
@@ -258,7 +258,7 @@
                         let row = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.row];
                         let cells = parseInt(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells]);
                         let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
-                        let done = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.done];
+                        let done = modules.cs.issueDone(r.issues.issues[i]);
 
                         let start = -1;
 
@@ -279,15 +279,15 @@
                                                 modules.cs.issuesInSheet[uid] = "";
                                             }
                                             if (installers && !done) {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else
                                             if (!installers && done) {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else
                                             if (installers && done) {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             }
                                         }
                                     }
@@ -309,12 +309,6 @@
         }
 
         function renderSheet(response) {
-            if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.cellAvailableCheck) {
-                modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return ${modules.cs.currentSheet.sheet.cellAvailableCheck};`);
-            } else {
-                modules.cs.cellAvailable = new Function ("sheetDate", "cellTime", `return true;`);
-            }
-
             if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                 let s = response.sheet.sheet.data;
                 for (let i in s) {
@@ -421,13 +415,21 @@
                         for (let k in s) {
                             if (modules.cs.cols[j] == s[k].col) {
                                 for (let l in s[k].rows) {
-                                    if (s[k].rows[l] == modules.cs.rows[i] && modules.cs.cellAvailable(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
+                                    if (s[k].rows[l] == modules.cs.rows[i]) {
                                         f = true;
                                         let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
-                                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
-                                            h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                        if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
+                                            if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
+                                                h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                            } else {
+                                                h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                            }
                                         } else {
-                                            h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                            if (response.sheet.sheet.emptyClass) {
+                                                h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                            } else {
+                                                h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                            }
                                         }
                                         if (modules.cs.issuesInSheet[uid]) {
                                             h += modules.cs.issuesInSheet[uid];
@@ -758,6 +760,18 @@
 
                         modules.cs.currentSheet = response.sheet;
 
+                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.expireCondition) {
+                            modules.cs.cellExpired = new Function ("sheetDate", "cellTime", `return ${modules.cs.currentSheet.sheet.expireCondition};`);
+                        } else {
+                            modules.cs.cellExpired = new Function ("sheetDate", "cellTime", `return false;`);
+                        }
+            
+                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.doneCondition) {
+                            modules.cs.issueDone = new Function ("issue", `return ${modules.cs.currentSheet.sheet.doneCondition};`);
+                        } else {
+                            modules.cs.issueDone = new Function ("issue", `return false;`);
+                        }
+            
                         loadIssues(() => {
                             renderSheet(response);
                         });
