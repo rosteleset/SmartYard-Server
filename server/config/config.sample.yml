@@ -82,9 +82,11 @@ backends:
     backend: internal
     servers:
     - title: Local server
+      # type: nimble, flussonic or macroscop
       type: nimble
       url: https://video.server.hostname:8443
       token: <!-- mediaserver security token here (only if you use it) --!>
+      # management keys below are only for nimble
       management_ip: 127.0.0.1
       management_port: '8086'
       management_token: <!-- management token --!>

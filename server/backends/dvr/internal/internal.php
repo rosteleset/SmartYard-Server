@@ -115,6 +115,35 @@
                     $md5raw = md5($str2hash, true);
                     $base64hash = base64_encode($md5raw);
                     $request_url = "http://$host:$port/manage/dvr/export_mp4/$stream?start=$start&end=$end&salt=$salt&hash=$base64hash";
+                } elseif ($dvr['type'] == 'macroscop') {    
+                    // Example: 
+                    // http://127.0.0.1:8080/exportarchive?login=root&password=&channelid=e6f2848c-f361-44b9-bbec-1e54eae777c0&fromtime=02.06.2022 08:47:05&totime=02.06.2022 08:49:05
+
+                    $parsed_url = parse_url($cam['dvrStream']);
+                    
+                    $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+                    $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+                    $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+                    $pass     = ($user || $pass) ? "$pass@" : '';
+                    // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                    $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    
+                    $token = $this->getDVRTokenForCam($cam, $subscriberId);
+                    if ($token !== '') {
+                        $query = $query . "&$token";
+                    }
+
+                    if (isset($parsed_url['query'])) {
+                        parse_str($parsed_url['query'], $parsed_query);
+                        $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
+                    }
+                    date_default_timezone_set('UTC');
+                    $from_time = urlencode(date("Y.m.d H:i:s", $start));
+                    $to_time = urlencode(date("Y.m.d H:i:s", $finish));
+
+                    $request_url = "$scheme$user$pass$host$port/exportarchive$query&fromtime=$from_time&totime=$to_time";
                     
                 } else {
                     // Flussonic Server by default
@@ -129,12 +158,40 @@
             /**
              * @inheritDoc
              */
-            public function getUrlOfMP4Screenshot($cam, $time = false) {
+            public function getUrlOfScreenshot($cam, $time = false) {
                 $prefix = $cam['dvrStream'];
                 if (!$time) $time = now();
-
-                if (loadBackend("dvr")->getDVRServerByStream($prefix)['type'] == 'nimble') {
+                $type = loadBackend("dvr")->getDVRServerByStream($prefix)['type'];
+                
+                if ($type == 'nimble') {
                     return "$prefix/dvr_thumbnail_$time.mp4";
+                } elseif ($type == 'macroscop') {
+                    $parsed_url = parse_url($cam['dvrStream']);
+                    
+                    $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+                    $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+                    $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+                    $pass     = ($user || $pass) ? "$pass@" : '';
+                    // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                    $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    
+                    if (isset($dvr['token'])) {
+                        $token = $dvr['token'];
+                        $query = $query . "&$token";
+                    }
+
+                    if (isset($parsed_url['query'])) {
+                        parse_str($parsed_url['query'], $parsed_query);
+                        $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
+                    }
+                    date_default_timezone_set('UTC');
+                    $start_time = urlencode(date("Y.m.d H:i:s", $time));
+
+                    $request_url = "$scheme$user$pass$host$port/site$query&withcontenttype=true&mode=archive&starttime=$start_time&resolutionx=480&resolutiony=270&streamtype=mainvideo";
+                    
+                    return $request_url;
                 } else {
                     return "$prefix/$time-preview.mp4";
                 }
@@ -164,8 +221,9 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-                    if (isset($dvr['token'])) {
-                        $token = $dvr['token'];
+
+                    $token = $this->getDVRTokenForCam($cam, $subscriberId);
+                    if ($token !== '') {
                         $query = $query . "&$token";
                     }
 

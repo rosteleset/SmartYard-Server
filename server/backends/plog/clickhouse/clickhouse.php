@@ -116,7 +116,12 @@
                             if ($prefix) {
                                 $ts_event = $date - $this->back_time_shift_video_shot;
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                                system("ffmpeg -y -i " . loadBackend("dvr")->getUrlOfMP4Screenshot($cameras[0], $ts_event) . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
+                                if (substr($urlOfScreenshot,-4) === ".mp4") {
+                                    system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                } else {
+                                    file_put_contents($filename, file_get_contents($urlOfScreenshot));
+                                }
                                 if (file_exists($filename)) {
                                     $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
                                         "camshot",

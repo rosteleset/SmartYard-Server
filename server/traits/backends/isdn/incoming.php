@@ -19,7 +19,7 @@
             function confirmNumbers()
             {
                 return [
-                    "88002220374"
+                    "88002220374" // or can use number "+74752429949", if you are ouside of Russian Federation
                 ];
             }
 
