@@ -26,6 +26,7 @@
     "notificationTg": "Только Telegram",
     "notificationEmail": "Только электронная почта",
     "lastLogin": "Последний вход",
+    "lastAction": "Последнее действие",
     "ip": "Адрес",
     "started": "Старт",
     "updated": "Обновление",

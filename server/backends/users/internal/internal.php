@@ -33,6 +33,7 @@
                             "tg" => $user["tg"],
                             "enabled" => $user["enabled"],
                             "lastLogin" => $user["last_login"],
+                            "lastAction" => $this->redis->get("last_" . md5($user["login"])),
                         ];
                     }
 
@@ -62,6 +63,7 @@
                     } else {
                         foreach ($_users as &$u) {
                             unset($u["lastLogin"]);
+                            unset($u["lastAction"]);
                         }
                     }
 

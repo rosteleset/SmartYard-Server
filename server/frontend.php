@@ -279,6 +279,10 @@
 
     $params["_ip"] = $ip;
 
+    if ($params["_login"]) {
+        $redis->set("last_" . md5($params["_login"]), time());
+    }
+
     if ($api == "accounts" && $method == "forgot") {
         forgot($params);
     } else
