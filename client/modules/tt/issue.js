@@ -499,6 +499,7 @@
             "saWatch",
             "saDelete",
             "saSubIssue",
+            "saCoordinate",
         ];
 
         if (!isEmpty(issue.actions)) {
@@ -1082,6 +1083,11 @@
 
         $(".ttSaSubIssues").off("click").on("click", () => {
             modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
+        });
+
+        $(".ttSaCoordinate").off("click").on("click", () => {
+            $.cookie("_coordinate_issue", issue.issue["issueId"]);
+            location.href = "?#cs";
         });
 
         $("#stepPrev").off("click").on("click", () => {

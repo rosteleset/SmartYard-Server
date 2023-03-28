@@ -66,7 +66,6 @@
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.attr("data-login", payload.login);
-                    console.log(payload);
                     if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
                         mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
                             modules.cs.coordinate(cell);
@@ -195,6 +194,17 @@
                     id: "issueId",
                     type: "text",
                     title: i18n("tt.issueId"),
+                    value: $.cookie("_coordinate_issue")?$.cookie("_coordinate_issue"):"",
+                    button: {
+                        class: "fas fa-recycle",
+                        click: p => {
+                            $("#" + p + "issueId").val("");
+                            $.cookie("_coordinate_issue", null);
+                        }
+                    },
+                    validate: v => {
+                        return v && $.trim(v) && v !== '-' && v !== 'undefined';
+                    }
                 },
             ],
             callback: result => {
@@ -250,8 +260,6 @@
                         let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
                         let done = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.done];
 
-                        console.log(r.issues.issues[i].issueId, col, row, cells, installers, done);
-                        
                         let start = -1;
 
                         for (let j in modules.cs.currentSheet.sheet.data) {
@@ -579,6 +587,9 @@
                         dates.push(response.sheets[i].metadata.date);
                     }
                 }
+
+                sheets.sort();
+                dates.sort();
     
                 sheetsOptions = "";
                 for (let i in sheets) {
@@ -614,6 +625,15 @@
                 $("#rightTopDynamic").html(rtd);
         
                 $("#addCSsheet").off("click").on("click", () => {
+                    let sheetsOptions = [];
+
+                    for (let i in sheets) {
+                        sheetsOptions.push({
+                            id: sheets[i],
+                            text: sheets[i],
+                        });
+                    }
+
                     cardForm({
                         title: i18n("cs.addSheet"),
                         footer: true,
@@ -627,6 +647,7 @@
                                 placeholder: i18n("cs.sheet"),
                                 tags: true,
                                 createTags: true,
+                                options: sheetsOptions,
                                 validate: (v) => {
                                     return $.trim(v) !== "";
                                 }
