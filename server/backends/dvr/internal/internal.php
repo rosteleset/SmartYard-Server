@@ -161,7 +161,8 @@
             public function getUrlOfScreenshot($cam, $time = false) {
                 $prefix = $cam['dvrStream'];
                 if (!$time) $time = now();
-                $type = loadBackend("dvr")->getDVRServerByStream($prefix)['type'];
+                $dvr = loadBackend("dvr")->getDVRServerByStream($prefix);
+                $type = $dvr['type'];
                 
                 if ($type == 'nimble') {
                     return "$prefix/dvr_thumbnail_$time.mp4";
