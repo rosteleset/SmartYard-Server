@@ -735,7 +735,7 @@
             case "street":
                 let st = street(id);
                 if (link) {
-                    return st.parent + sp + link("srteet", st.streetWithType, id);
+                    return st.parent + sp + link("street", st.streetWithType, id);
                 } else {
                     return st.parent + sp + st.streetWithType;
                 }
