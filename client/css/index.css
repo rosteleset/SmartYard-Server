@@ -266,3 +266,25 @@ body::-webkit-scrollbar-thumb {
 .text-decoration-underline {
   text-decoration: underline;
 }
+
+.dropdown-menu .dropdown-menu {
+	top: auto;
+	left: 100%;
+	transform: translateY(-2rem);
+}
+
+.dropdown-item + .dropdown-menu {
+	display: none;
+}
+
+.dropdown-item.submenu::after {
+	content: '▸';
+  text-align: right;
+  float: right;
+	margin-left: 0.5rem;
+}
+
+.dropdown-item:hover + .dropdown-menu,
+.dropdown-menu:hover {
+	display: block;
+}

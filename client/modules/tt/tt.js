@@ -928,33 +928,43 @@
         let fcount = 0;
         let filters = `<span class="dropdown">`;
 
-        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")}</span>`;
-        filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-        let personal = "user";
+        let filtersTree = {};
         for (let i in project.filters) {
-            if (parseInt(project.filters[i].personal) > 1000000) {
-                if (personal === "user") {
-                    if (fcount) {
-                        filters += `<li class="dropdown-divider"></li>`;
-                    }
-                    personal = "group";
+            let tree = (project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter).split("/");
+            (function h(ft, tree, filter) {
+                let t = $.trim(tree[0]);
+                if (tree.length == 1) {
+                    ft[t] = filter;
+                } else {
+                    ft[t] = {};
+                    tree.shift();
+                    h(ft[t], tree, filter);
                 }
-            }
-            if (!parseInt(project.filters[i].personal)) {
-                if (personal === "group" || personal === "user") {
-                    if (fcount) {
-                        filters += `<li class="dropdown-divider"></li>`;
-                    }
-                    personal = "common";
-                }
-            }
-            if (x == project.filters[i].filter) {
-                filters += `<li class="pointer dropdown-item tt_issues_filter text-bold" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter}</li>`;
-            } else {
-                filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${project.filters[i].filter}">${project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter}</li>`;
-            }
-            fcount++;
+            })(filtersTree, tree, project.filters[i]);
         }
+
+        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-chevron-right'></i>")}</span>`;
+        filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+
+        (function hh(t) {
+            for (let i in t) {
+                if (t[i].filter) {
+                    if (x == t[i].filter) {
+                        filters += `<li class="pointer dropdown-item tt_issues_filter active" data-filter-name="${t[i].filter}">${i}</li>`;
+                    } else {
+                        filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${t[i].filter}">${i}</li>`;
+                    }
+                    fcount++;
+                } else {
+                    filters += `<li class="dropdown-item submenu">${i}</li>`;
+                    filters += '<div class="dropdown-menu">';
+                    hh(t[i]);
+                    filters += '</div>';
+                    filters += `</li>`;
+                }
+            }
+        })(filtersTree);
+
         filters += `</ul></span>`;
 
         let fp = -1;
@@ -1116,7 +1126,7 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             $.cookie("_tt_issue_filter_" + current_project, n, { expires: 3650, insecure: config.insecureCookie });
-                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_refresh=' + Math.random();
+                            location.href = '?#tt';
                         }).
                         fail(FAIL).
                         fail(loadingDone);
