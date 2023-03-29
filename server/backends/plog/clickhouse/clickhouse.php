@@ -432,7 +432,10 @@
             {
                 $households = loadBackend('households');
                 $result = $households->getEntrances('flatId', $flat_id);
-                return count($result);
+                if ($result)
+                    return count($result);
+
+                return 0;
             }
 
             private function getPlogHidden($flat_id) {
