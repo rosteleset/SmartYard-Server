@@ -689,7 +689,7 @@
                         s.parent = a.parent + sp + link("area", a.areaWithType, a.areaId);
                     } else {
                         let c = city(s.cityId);
-                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
+                        s.parent = c.parent + sp + link("city", c.city, c.cityId);
                     }
                     return s;
                 }
@@ -702,10 +702,10 @@
                     let s = modules.addresses.meta.streets[i];
                     if (s.cityId) {
                         let c = city(s.cityId);
-                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
+                        s.parent = c.parent + sp + link("city", c.city, c.cityId);
                     } else {
                         let e = settlement(s.settlementId);
-                        s.parent = e.parent + sp + link("settlement", e.settlementWithType, e.settlementId);
+                        s.parent = e.parent + sp + link("settlement", e.settlement, e.settlementId);
                     }
                     return s;
                 }
@@ -722,22 +722,22 @@
 
             case "city":
                 let c = city(id);
-                return c.parent + sp + c.cityWithType;
+                return c.parent + sp + c.city;
 
             case "settlement":
                 let se = settlement(id);
                 if (link) {
-                    return se.parent + sp + link("settlement", se.settlementWithType, id);
+                    return se.parent + sp + link("settlement", se.settlement, id);
                 } else {
-                    return se.parent + sp + se.settlementWithType;
+                    return se.parent + sp + se.settlement;
                 }
 
             case "street":
                 let st = street(id);
                 if (link) {
-                    return st.parent + sp + link("street", st.streetWithType, id);
+                    return st.parent + sp + link("street", st.street, id);
                 } else {
-                    return st.parent + sp + st.streetWithType;
+                    return st.parent + sp + st.street;
                 }
 
             default:
