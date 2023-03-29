@@ -183,10 +183,6 @@
                         $query = $query . "&$token";
                     }
 
-                    if (isset($parsed_url['query'])) {
-                        parse_str($parsed_url['query'], $parsed_query);
-                        $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
-                    }
                     date_default_timezone_set('UTC');
                     $start_time = urlencode(date("d.m.Y H:i:s", $time));
 
