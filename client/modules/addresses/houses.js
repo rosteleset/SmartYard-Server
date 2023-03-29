@@ -1477,7 +1477,6 @@
     loadHouse: function(houseId, callback) {
         QUERY("addresses", "addresses", {
             houseId: houseId,
-            include: "houses",
         }).
         done(modules.addresses.addresses).
         fail(FAILPAGE).
@@ -1490,7 +1489,7 @@
                             modules.addresses.houses.meta = {};
                         }
                         modules.addresses.houses.meta.house = modules.addresses.meta.houses[i];
-                        subTop(modules.addresses.houses.meta.house.houseFull);
+                        subTop(modules.addresses.path((modules.addresses.meta.houses[i].settlementId?"settlement":"street"), modules.addresses.meta.houses[i].settlementId?modules.addresses.meta.houses[i].settlementId:modules.addresses.meta.houses[i].streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + modules.addresses.houses.meta.house.houseFull);
                         f = true;
                     }
                 }
