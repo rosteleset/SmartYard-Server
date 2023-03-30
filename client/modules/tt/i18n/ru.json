@@ -30,6 +30,7 @@
     "createIssueTitle": "Новая задача",
     "statuses": "Статусы",
     "resolutions": "Резолюции",
+    "customField": "Настраиваемое поле",
     "customFields": "Настраиваемые поля",
     "customFieldsMenu": "Поля",
     "addProject": "Добавить проект",
