@@ -438,36 +438,6 @@
 
         search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
         
-        function fieldRow(i) {
-            let h = '';
-
-            if (![ "id", "issueId", "comments", "attachments", "childrens ", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
-                let f = false;
-
-                if (issue.fields[i].substring(0, 4) == "_cf_") {
-                    for (let j in modules.tt.meta.customFields) {
-                        if (issue.fields[i] == "_cf_" + modules.tt.meta.customFields[j].field) {
-                            f = true;
-                            break;
-                        }
-                    }
-                } else {
-                    f = true;
-                }
-
-                if (f) {
-                    h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
-                    h += "<tr>";
-                    h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
-                    h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
-                    h += "<td>";
-                    h += "</tr>";
-                }
-            }
-
-            return h;
-        }
-
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
 
         console.log(issue);
@@ -492,6 +462,36 @@
 
         for (let i in project.tags) {
             tags[project.tags[i].tag] = project.tags[i];
+        }
+
+        function fieldRow(i) {
+            let h = '';
+
+            if (![ "id", "issueId", "comments", "attachments", "childrens ", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+                let f = false;
+
+                if (issue.fields[i].substring(0, 4) == "_cf_") {
+                    for (let j in modules.tt.meta.customFields) {
+                        if (issue.fields[i] == "_cf_" + modules.tt.meta.customFields[j].field && project.customFields.indexOf(modules.tt.meta.customFields[j].customFieldId) >= 0) {
+                            f = true;
+                            break;
+                        }
+                    }
+                } else {
+                    f = true;
+                }
+
+                if (f) {
+                    h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
+                    h += "<tr>";
+                    h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
+                    h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
+                    h += "<td>";
+                    h += "</tr>";
+                }
+            }
+
+            return h;
         }
 
         let h = "";
