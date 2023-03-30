@@ -2279,7 +2279,7 @@
                         title: i18n("tt.customFieldCatalog"),
                     },
                     {
-                        title: i18n("tt.customFieldField"),
+                        title: i18n("tt.customField"),
                     },
                     {
                         title: i18n("tt.customFieldType"),
