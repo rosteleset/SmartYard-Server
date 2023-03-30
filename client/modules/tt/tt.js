@@ -1068,7 +1068,7 @@
             if (params.customSearch && params.customSearch !== true) {
                 let height = 400;
                 cs += '<div class="ml-2 mr-2">';
-                cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+                cs += `<div id='filterEditorContainer' style='width: 100%; height: ${height}px;'>`;
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
@@ -1126,8 +1126,7 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             $.cookie("_tt_issue_filter_" + current_project, n, { expires: 3650, insecure: config.insecureCookie });
-                            location.href = '?#tt';
-                        }).
+                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_refresh=' + Math.random();                        }).
                         fail(FAIL).
                         fail(loadingDone);
                     }
