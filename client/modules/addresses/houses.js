@@ -3,6 +3,10 @@
         moduleLoaded("addresses.houses", this);
     },
 
+    houseId: 0,
+    settlementId: 0,
+    streetId: 0,
+
     houseMagic: function () {
         cardForm({
             title: i18n("addresses.address"),
@@ -1475,6 +1479,10 @@
     },
 
     loadHouse: function(houseId, callback) {
+        modules.addresses.houses.houseId = 0;
+        modules.addresses.houses.settlementId = 0;
+        modules.addresses.houses.streetId = 0;
+
         QUERY("addresses", "addresses", {
             houseId: houseId,
         }).
@@ -1489,6 +1497,9 @@
                             modules.addresses.houses.meta = {};
                         }
                         modules.addresses.houses.meta.house = modules.addresses.meta.houses[i];
+                        modules.addresses.houses.houseId = houseId;
+                        modules.addresses.houses.settlementId = modules.addresses.meta.houses[i].settlementId?modules.addresses.meta.houses[i].settlementId:0;
+                        modules.addresses.houses.streetId = modules.addresses.meta.houses[i].streetId?modules.addresses.meta.houses[i].streetId:0;
                         subTop(modules.addresses.path((modules.addresses.meta.houses[i].settlementId?"settlement":"street"), modules.addresses.meta.houses[i].settlementId?modules.addresses.meta.houses[i].settlementId:modules.addresses.meta.houses[i].streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + modules.addresses.houses.meta.house.houseFull);
                         f = true;
                     }
@@ -1574,7 +1585,7 @@
                                         click: flatId => {
                                             for (let i in modules.addresses.houses.meta.flats) {
                                                 if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
-                                                    location.href = "?#addresses.subscribers&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&house=" + encodeURIComponent($("#subTop").text());
+                                                    location.href = "?#addresses.subscribers&flatId=" + flatId + "&houseId=" + houseId + "&flat=" + encodeURIComponent(modules.addresses.houses.meta.flats[i].flat) + "&settlementId=" + modules.addresses.houses.settlementId + "&streetId=" + modules.addresses.houses.streetId;
                                                 }
                                             }
                                         },
