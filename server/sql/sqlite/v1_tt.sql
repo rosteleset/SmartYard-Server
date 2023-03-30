@@ -68,6 +68,7 @@ CREATE UNIQUE INDEX tt_projects_resolutions_uniq on tt_projects_resolutions(proj
 CREATE TABLE tt_issue_custom_fields
 (
     issue_custom_field_id integer primary key autoincrement,
+    catalog text,
     type text not null,
     field text not null,
     field_display text not null,

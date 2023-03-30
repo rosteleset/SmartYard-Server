@@ -33,9 +33,10 @@
         always(modules.tt.settings.renderResolutions);
     },
 
-    doAddCustomField: function (type, field, fieldDisplay) {
+    doAddCustomField: function (catalog, type, field, fieldDisplay) {
         loadingStart();
         POST("tt", "customField", false, {
+            catalog: catalog,
             type: type,
             field: field,
             fieldDisplay: fieldDisplay,
@@ -411,6 +412,17 @@
     },
 
     addCustomField: function () {
+        let cfc = [];
+        let a = {};
+        for (let i in modules.tt.meta.customFields) {
+            if (modules.tt.meta.customFields[i].catalog && !a[modules.tt.meta.customFields[i].catalog]) {
+                a[modules.tt.meta.customFields[i].catalog] = true;
+                cfc.push({
+                    id: modules.tt.meta.customFields[i].catalog,
+                    text: modules.tt.meta.customFields[i].catalog,
+                });
+            }
+        }
         $("#altForm").hide();
         cardForm({
             title: i18n("tt.addCustomField"),
@@ -427,6 +439,15 @@
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
+                },
+                {
+                    id: "catalog",
+                    type: "select2",
+                    title: i18n("tt.customFieldCatalog"),
+                    placeholder: i18n("tt.customFieldCatalog"),
+                    tags: true,
+                    createTags: true,
+                    options: cfc,
                 },
                 {
                     id: "type",
@@ -468,7 +489,7 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddCustomField(result.type, result.field, result.fieldDisplay);
+                modules.tt.settings.doAddCustomField(result.catalog, result.type, result.field, result.fieldDisplay);
             },
         }).show();
     },
@@ -821,6 +842,18 @@
         fail(FAIL).
         done(modules.tt.tt).
         done(() => {
+            let cfc = [];
+            let a = {};
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].catalog && !a[modules.tt.meta.customFields[i].catalog]) {
+                    a[modules.tt.meta.customFields[i].catalog] = true;
+                    cfc.push({
+                        id: modules.tt.meta.customFields[i].catalog,
+                        text: modules.tt.meta.customFields[i].catalog,
+                    });
+                }
+            }
+
             let cf = {};
             for (let i in modules.tt.meta.customFields) {
                 if (modules.tt.meta.customFields[i].customFieldId == customFieldId) {
@@ -847,6 +880,16 @@
                         title: i18n("tt.customFieldField"),
                         readonly: true,
                         value: cf.field,
+                    },
+                    {
+                        id: "catalog",
+                        type: "select2",
+                        title: i18n("tt.customFieldCatalog"),
+                        placeholder: i18n("tt.customFieldCatalog"),
+                        tags: true,
+                        createTags: true,
+                        options: cfc,
+                        value: cf.catalog,
                     },
                     {
                         id: "type",
@@ -2233,6 +2276,9 @@
                         title: i18n("tt.customFieldId"),
                     },
                     {
+                        title: i18n("tt.customFieldCatalog"),
+                    },
+                    {
                         title: i18n("tt.customFieldField"),
                     },
                     {
@@ -2253,6 +2299,9 @@
                             cols: [
                                 {
                                     data: modules.tt.meta.customFields[i].customFieldId,
+                                },
+                                {
+                                    data: modules.tt.meta.customFields[i].catalog?modules.tt.meta.customFields[i].catalog:"-",
                                 },
                                 {
                                     data: modules.tt.meta.customFields[i].field,

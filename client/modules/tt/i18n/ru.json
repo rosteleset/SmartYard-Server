@@ -55,6 +55,7 @@
     "roleName": "Роль",
     "roleLevel": "Уровень доступа",
     "roleNameDisplay": "Описание",
+    "customFieldCatalog": "Группа",
     "customFieldField": "Поле (в коде)",
     "customFieldType": "Тип",
     "customFieldWorflow": "Авто",

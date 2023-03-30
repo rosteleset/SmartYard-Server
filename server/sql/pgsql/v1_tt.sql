@@ -68,6 +68,7 @@ CREATE UNIQUE INDEX tt_projects_resolutions_uniq on tt_projects_resolutions(proj
 CREATE TABLE tt_issue_custom_fields
 (
     issue_custom_field_id serial primary key,
+    catalog character varying,
     type character varying not null,
     field character varying not null,
     field_display character varying not null,

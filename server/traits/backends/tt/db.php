@@ -539,7 +539,7 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, type, field, field_display, field_description, regex, link, format, editor, indx, search, required from tt_issue_custom_fields order by field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("select issue_custom_field_id, catalog, type, field, field_display, field_description, regex, link, format, editor, indx, search, required from tt_issue_custom_fields order by catalog, field", \PDO::FETCH_ASSOC)->fetchAll();
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -556,6 +556,7 @@
 
                         $_customFields[] = [
                             "customFieldId" => $customField["issue_custom_field_id"],
+                            "catalog" => $customField["catalog"],
                             "type" => $customField["type"],
                             "field" => $customField["field"],
                             "fieldDisplay" => $customField["field_display"],
@@ -581,8 +582,9 @@
             /**
              * @inheritDoc
              */
-            public function addCustomField($type, $field, $fieldDisplay)
+            public function addCustomField($catalog, $type, $field, $fieldDisplay)
             {
+                $catalog = trim($catalog);
                 $type = trim($type);
                 $field = trim($field);
                 $fieldDisplay = trim($fieldDisplay);
@@ -594,9 +596,10 @@
                 try {
                     $sth = $this->db->prepare("
                         insert into 
-                            tt_issue_custom_fields (type, field, field_display)
-                        values (:type, :field, :field_display)");
+                            tt_issue_custom_fields (catalog, type, field, field_display)
+                        values (:catalog, :type, :field, :field_display)");
                     if (!$sth->execute([
+                        ":catalog" => $catalog,
                         ":type" => $type,
                         ":field" => $field,
                         ":field_display" => $fieldDisplay,
@@ -750,7 +753,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
+            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
             {
                 if (!checkInt($customFieldId)) {
                     return false;
@@ -768,6 +771,8 @@
                     return false;
                 }
 
+                $catalog = trim($catalog);
+
                 $cf = $this->db->query("select * from tt_issue_custom_fields where issue_custom_field_id = $customFieldId", \PDO::FETCH_ASSOC)->fetchAll();
                 if (count($cf) !== 1) {
                     return false;
@@ -779,6 +784,7 @@
                         update
                             tt_issue_custom_fields
                         set 
+                            catalog = :catalog,
                             field_display = :field_display,
                             field_description = :field_description,
                             regex = :regex,
@@ -793,6 +799,7 @@
                     ");
 
                     $sth->execute([
+                        ":catalog" => $catalog,
                         ":field_display" => $fieldDisplay,
                         ":field_description" => $fieldDescription,
                         ":regex" => $regex,

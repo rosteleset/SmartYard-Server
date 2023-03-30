@@ -396,13 +396,14 @@
             abstract public function getCustomFields();
 
             /**
+             * @param $catalog
              * @param $type
              * @param $field
              * @param $fieldDisplay
              * @return false|integer
              */
 
-            abstract public function addCustomField($type, $field, $fieldDisplay);
+            abstract public function addCustomField($catalog, $type, $field, $fieldDisplay);
 
             /**
              * @param $projectId
@@ -451,6 +452,7 @@
 
             /**
              * @param $customFieldId
+             * @param $catalog
              * @param $fieldDisplay
              * @param $fieldDescription
              * @param $regex
@@ -463,7 +465,7 @@
              * @param $editor
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
+            abstract public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
 
             /**
              * @param $customFieldId
