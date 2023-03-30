@@ -875,13 +875,6 @@
                 target: "#altForm",
                 fields: [
                     {
-                        id: "field",
-                        type: "text",
-                        title: i18n("tt.customFieldField"),
-                        readonly: true,
-                        value: cf.field,
-                    },
-                    {
                         id: "catalog",
                         type: "select2",
                         title: i18n("tt.customFieldCatalog"),
@@ -890,6 +883,13 @@
                         createTags: true,
                         options: cfc,
                         value: cf.catalog,
+                    },
+                    {
+                        id: "field",
+                        type: "text",
+                        title: i18n("tt.customFieldField"),
+                        readonly: true,
+                        value: cf.field,
                     },
                     {
                         id: "type",
