@@ -1126,7 +1126,8 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             $.cookie("_tt_issue_filter_" + current_project, n, { expires: 3650, insecure: config.insecureCookie });
-                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_refresh=' + Math.random();                        }).
+                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_refresh=' + Math.random();                        
+                        }).
                         fail(FAIL).
                         fail(loadingDone);
                     }
