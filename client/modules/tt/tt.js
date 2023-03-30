@@ -931,16 +931,14 @@
         let filtersTree = {};
         for (let i in project.filters) {
             let tree = (project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter).split("/");
-            (function h(ft, tree, filter) {
-                let t = $.trim(tree[0]);
-                if (tree.length == 1) {
-                    ft[t] = filter;
-                } else {
-                    ft[t] = {};
-                    tree.shift();
-                    h(ft[t], tree, filter);
+            let f = filtersTree;
+            for (let j = 0; j < tree.length - 1; j++) {
+                if (!f[tree[j]]) {
+                    f[tree[j]] = {};
                 }
-            })(filtersTree, tree, project.filters[i]);
+                f = f[tree[j]];
+            }
+            f[tree[tree.length - 1]] = project.filters[i];
         }
 
         filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-chevron-right'></i>")}</span>`;
