@@ -442,12 +442,21 @@
             let h = '';
 
             if (![ "id", "issueId", "comments", "attachments", "childrens ", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
-                h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
-                h += "<tr>";
-                h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
-                h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
-                h += "<td>";
-                h += "</tr>";
+                let f = false;
+                for (let j in modules.tt.meta.customFields) {
+                    if (issue.fields[i] == "_cf_" + modules.tt.meta.customFields[j]) {
+                        f = true;
+                        break;
+                    }
+                }
+                if (f) {
+                    h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
+                    h += "<tr>";
+                    h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
+                    h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
+                    h += "<td>";
+                    h += "</tr>";
+                }
             }
 
             return h;
