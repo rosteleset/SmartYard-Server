@@ -948,7 +948,7 @@
             for (let i in t) {
                 if (t[i].filter) {
                     if (x == t[i].filter) {
-                        filters += `<li class="pointer dropdown-item tt_issues_filter active" data-filter-name="${t[i].filter}">${i}</li>`;
+                        filters += `<li class="pointer dropdown-item tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">${i}</li>`;
                     } else {
                         filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${t[i].filter}">${i}</li>`;
                     }
