@@ -941,20 +941,29 @@
             f[tree[tree.length - 1]] = project.filters[i];
         }
 
-        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-chevron-right'></i>")}</span>`;
+        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
         filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
 
         (function hh(t) {
             for (let i in t) {
                 if (t[i].filter) {
                     if (x == t[i].filter) {
-                        filters += `<li class="pointer dropdown-item tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">${i}</li>`;
+                        filters += `<li class="pointer dropdown-item tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">`;
                     } else {
-                        filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${t[i].filter}">${i}</li>`;
+                        filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${t[i].filter}">`;
                     }
+                    if (parseInt(t[i].personal) > 1000000) {
+                        filters += '<i class="fas fa-fw fa-users mr-2"></i>';
+                    } else
+                    if (parseInt(t[i].personal)) {
+                        filters += '<i class="fas fa-fw fa-user mr-2"></i>';
+                    } else {
+                        filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
+                    }
+                    filters += i + "</li>";
                     fcount++;
                 } else {
-                    filters += `<li class="dropdown-item submenu pointer">${i}</li>`;
+                    filters += `<li class="dropdown-item submenu pointer"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
                     filters += '<div class="dropdown-menu">';
                     hh(t[i]);
                     filters += '</div>';
