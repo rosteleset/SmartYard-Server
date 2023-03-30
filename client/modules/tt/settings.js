@@ -868,7 +868,7 @@
             }
 
             cardForm({
-                title: i18n("tt.customFieldField") + " " + i18n("tt.customFieldId") + customFieldId,
+                title: i18n("tt.customField") + " " + i18n("tt.customFieldId") + customFieldId,
                 footer: true,
                 borderless: true,
                 topApply: true,
@@ -2279,7 +2279,7 @@
                         title: i18n("tt.customFieldCatalog"),
                     },
                     {
-                        title: i18n("tt.customField"),
+                        title: i18n("tt.customFieldField"),
                     },
                     {
                         title: i18n("tt.customFieldType"),
