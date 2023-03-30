@@ -443,12 +443,18 @@
 
             if (![ "id", "issueId", "comments", "attachments", "childrens ", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
                 let f = false;
-                for (let j in modules.tt.meta.customFields) {
-                    if (issue.fields[i] == "_cf_" + modules.tt.meta.customFields[j]) {
-                        f = true;
-                        break;
+
+                if (issue.fields[i].substring(0, 4) == "_cf_") {
+                    for (let j in modules.tt.meta.customFields) {
+                        if (issue.fields[i] == "_cf_" + modules.tt.meta.customFields[j]) {
+                            f = true;
+                            break;
+                        }
                     }
+                } else {
+                    f = true;
                 }
+                
                 if (f) {
                     h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
                     h += "<tr>";
