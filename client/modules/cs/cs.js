@@ -249,6 +249,22 @@
         }).show();
     },
 
+    colMenu: function (col) {
+        let mid = md5(guid());
+
+        let h = `<span class="dropdown">`;
+        h += `<span id="${mid}" class="pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${col}</span>`;
+        h += `<ul class="dropdown-menu" aria-labelledby="${mid}">`;
+        h += `<li class="pointer dropdown-item colMenuSetAssigners" data-col="${md5(col)}">${i18n("cs.setAssigners")}</li>`;
+        h += `<li class="dropdown-divider"></li>`;
+        h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
+        h += `<li class="pointer dropdown-item colMenuAssignUnassigned" data-col="${md5(col)}">${i18n("cs.assignUnassigned")}</li>`;
+        h += `<li class="pointer dropdown-item colMenuReAssign" data-col="${md5(col)}">${i18n("cs.reAssign")}</li>`;
+        h += `</ul></span>`;
+
+        return h;
+    },
+
     renderCS: function (silent) {
         if (!silent) {
             loadingStart();
@@ -362,22 +378,6 @@
 
                 modules.cs.cols.sort(sf);
                 modules.cs.rows.sort(sf);
-
-                function colMenu(col) {
-                    let mid = md5(guid());
-
-                    let h = `<span class="dropdown">`;
-                    h += `<span id="${mid}" class="pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${col}</span>`;
-                    h += `<ul class="dropdown-menu" aria-labelledby="${mid}">`;
-                    h += `<li class="pointer dropdown-item colMenuSetAssigners" data-col="${md5(col)}">${i18n("cs.setAssigners")}</li>`;
-                    h += `<li class="dropdown-divider"></li>`;
-                    h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
-                    h += `<li class="pointer dropdown-item colMenuAssignUnassigned" data-col="${md5(col)}">${i18n("cs.assignUnassigned")}</li>`;
-                    h += `<li class="pointer dropdown-item colMenuReAssign" data-col="${md5(col)}">${i18n("cs.reAssign")}</li>`;
-                    h += `</ul></span>`;
-
-                    return h;
-                }
 
                 let h = '';
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';

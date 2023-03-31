@@ -858,6 +858,11 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
 function loadModule() {
     let module = moduleLoadQueue.shift();
     if (!module) {
+        for (let i in modules) {
+            if (typeof modules[i].allLoaded == "function") {
+                modules[i].allLoaded();
+            }
+        }
         hashChange();
         onhashchange = hashChange;
         $("#app").show();
