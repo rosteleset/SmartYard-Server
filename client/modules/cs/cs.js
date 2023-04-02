@@ -396,7 +396,7 @@
                     } else {
                         h += '<td nowrap>';
                     }
-                    h += "<span>" + colMenu(modules.cs.cols[i]) + "</span>";
+                    h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                     if (c.logins && c.logins.length) {
                         for (let j in c.logins) {
                             let u = false;
