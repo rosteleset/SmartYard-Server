@@ -42,6 +42,7 @@
                 $res = curl_exec($ch);
                 curl_close($ch);
 
+                echo $res . PHP_EOL;
                 return json_decode($res, true);
             }
 
@@ -124,7 +125,7 @@
                     'sip_number' => "$sip_numbers[0]" ?? '',
                     'call_type' => $cms_handset_enabled ? 'sip_0_analog' : 'sip',
                     'door_access' => [1],
-                    'access_codes' => $private_code_enabled && $private_code ? [ $private_code ] : [],
+                    'access_codes' => $private_code_enabled && $private_code ? [ "$private_code" ] : [],
                 ]);
             }
 
@@ -381,7 +382,14 @@
             }
 
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                $this->api_call('/settings/osd', 'PATCH', [
+                    'show_name' => true,
+                    'name' => $title,
+                    'show_datetime' => true,
+                    'date_format' => 'DD.MM.YYYY',
+                    'use_24h_clock' => true,
+                    'weekdays' => true,
+                ]);
             }
 
             public function set_language(string $lang) {
