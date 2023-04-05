@@ -2,6 +2,8 @@
 
     namespace hw\domophones {
 
+        use backends\cs\cs;
+
         require_once __DIR__ . '/../domophones.php';
 
         abstract class rubetek extends domophones {
@@ -42,7 +44,17 @@
                 $res = curl_exec($ch);
                 curl_close($ch);
 
+                echo $res . PHP_EOL;
                 return json_decode($res, true);
+            }
+
+            /** Configure external reader mode */
+            protected function configureExternalReader() {
+                $this->api_call('/settings/wiegand', 'PATCH', [
+                    'type' => 26,
+                    'mute_notifications' => true,
+                    'reverse_data_order' => false,
+                ]);
             }
 
             /** Configure internal reader mode */
@@ -71,8 +83,13 @@
             }
 
             /** Set random administrator pin code */
-            protected function setAdminPin() {
-                $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+            protected function setAdminPin($enabled = true) {
+                if ($enabled) {
+                    $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                } else {
+                    $pin = '';
+                }
+
                 $displaySettings = $this->getConfig()['display'];
                 $displaySettings['admin_password'] = $pin;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
@@ -124,7 +141,7 @@
                     'sip_number' => "$sip_numbers[0]" ?? '',
                     'call_type' => $cms_handset_enabled ? 'sip_0_analog' : 'sip',
                     'door_access' => [1],
-                    'access_codes' => $private_code_enabled && $private_code ? [ $private_code ] : [],
+                    'access_codes' => $private_code_enabled && $private_code ? [ "$private_code" ] : [],
                 ]);
             }
 
@@ -312,7 +329,18 @@
             }
 
             public function set_cms_model(string $model = '') {
-                // TODO: Implement set_cms_model() method.
+                switch ($model) {
+                    case 'FE-12D':
+                        $mode = 'digital';
+                        break;
+                    default:
+                        $mode = 'analog';
+                        break;
+                }
+
+                $analogSettings = $this->api_call('/settings/analog');
+                $analogSettings['mode'] = $mode;
+                $this->api_call('/configuration', 'PATCH', [ 'analog' => $analogSettings ]);
             }
 
             public function set_concierge_number(int $number) {
@@ -381,7 +409,14 @@
             }
 
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                $this->api_call('/settings/osd', 'PATCH', [
+                    'show_name' => true,
+                    'name' => $title,
+                    'show_datetime' => true,
+                    'date_format' => 'DD.MM.YYYY',
+                    'use_24h_clock' => true,
+                    'weekdays' => true,
+                ]);
             }
 
             public function set_language(string $lang) {
@@ -402,8 +437,9 @@
 
             public function prepare() {
                 parent::prepare();
-                $this->setAdminPin();
+                $this->setAdminPin(false);
                 $this->configureInternalReader();
+                $this->configureExternalReader();
             }
         }
     }

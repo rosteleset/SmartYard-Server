@@ -1,7 +1,7 @@
 {
     "title": "METAKOM COM-100U",
     "model": "COM-100U",
-    "dozen_start": 1,
+    "dozen_start": 0,
     "cms": {
         "COM-100U.1/0": {
             "1": 10,

@@ -92,8 +92,8 @@ package-lock.json
 !/server/syslog/package.json
 /server/test.php
 /server/integration.php
-/asterisk/config.lua
-/asterisk/extconfig.conf
 /server/mqtt/node_modules
 /server/mqtt/package.json
 /server/mqtt/package-lock.json
+/install/asterisk/config.lua
+/install/asterisk/extconfig.conf
