@@ -4,6 +4,7 @@ CREATE TABLE tt_projects
     project_id serial primary key,
     acronym character varying not null,
     project character varying not null,
+    owner character varying,
     max_file_size integer default 16777216,
     search_subject integer default 1,
     search_description integer default 1,
@@ -143,8 +144,8 @@ CREATE TABLE tt_tags
     tag_id serial primary key,
     project_id integer not null,
     tag character varying,
-    foreground text,
-    background text
+    foreground character varying,
+    background character varying
 );
 CREATE UNIQUE INDEX tt_tags_uniq on tt_tags (project_id, tag);
 
