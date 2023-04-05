@@ -27,6 +27,9 @@
         ],
         "akuvox": [
             "syslog.udp:127.0.0.1:45455"
+        ],
+        "rubetek": [
+            "syslog.udp:127.0.0.1:45456"
         ]
     }
 }
