@@ -2,8 +2,6 @@
 
     namespace hw\domophones {
 
-        use backends\cs\cs;
-
         require_once __DIR__ . '/../domophones.php';
 
         abstract class rubetek extends domophones {
@@ -241,18 +239,28 @@
             }
 
             public function get_audio_levels(): array {
-                // TODO: Implement get_audio_levels() method.
-                return [];
+                $audioSettings = $this->getConfig()['audio'];
+                return [
+                    $audioSettings['sip']['volume'],
+                    $audioSettings['sip']['mic_sensitivity'],
+                    $audioSettings['analog']['volume'],
+                    $audioSettings['analog']['mic_sensitivity'],
+                    $audioSettings['notify_speaker_volume'],
+                ];
             }
 
             public function get_cms_allocation(): array {
-                // TODO: Implement get_cms_allocation() method.
                 return [];
             }
 
             public function get_cms_levels(): array {
-                // TODO: Implement get_cms_levels() method.
-                return [];
+                $analogSettings = $this->api_call('/settings/analog');
+                return [
+                    $analogSettings['analog_line_voltage_idle'],
+                    $analogSettings['analog_line_voltage_lifted'],
+                    $analogSettings['analog_line_voltage_button_pressed'],
+                    $analogSettings['digi_line_voltage_lifted'],
+                ];
             }
 
             public function get_rfids(): array {
@@ -284,7 +292,7 @@
             }
 
             public function line_diag(int $apartment) {
-                // TODO: Implement line_diag() method.
+                // TODO: MQTT?
             }
 
             public function open_door(int $door_number = 0) {
@@ -315,7 +323,17 @@
             }
 
             public function set_audio_levels(array $levels) {
-                // TODO: Implement set_audio_levels() method.
+                if (count($levels) === 5) {
+                    $audioSettings = $this->getConfig()['audio'];
+
+                    $audioSettings['sip']['volume'] = $levels[0];
+                    $audioSettings['sip']['mic_sensitivity'] = $levels[1];
+                    $audioSettings['analog']['volume'] = $levels[2];
+                    $audioSettings['analog']['mic_sensitivity'] = $levels[3];
+                    $audioSettings['notify_speaker_volume'] = $levels[4];
+
+                    $this->api_call('/configuration', 'PATCH', [ 'audio' => $audioSettings ]);
+                }
             }
 
             public function set_call_timeout(int $timeout) {
@@ -325,7 +343,16 @@
             }
 
             public function set_cms_levels(array $levels) {
-                // TODO: Implement set_cms_levels() method.
+                if (count($levels) === 4) {
+                    $analogSettings = $this->api_call('/settings/analog');
+
+                    $analogSettings['analog_line_voltage_idle'] = $levels[0];
+                    $analogSettings['analog_line_voltage_lifted'] = $levels[1];
+                    $analogSettings['analog_line_voltage_button_pressed'] = $levels[2];
+                    $analogSettings['digi_line_voltage_lifted'] = $levels[3];
+
+                    $this->api_call('/configuration', 'PATCH', [ 'analog' => $analogSettings ]);
+                }
             }
 
             public function set_cms_model(string $model = '') {
