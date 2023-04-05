@@ -2,6 +2,8 @@
 
     namespace hw\domophones {
 
+        use backends\cs\cs;
+
         require_once __DIR__ . '/../domophones.php';
 
         abstract class rubetek extends domophones {
@@ -46,6 +48,15 @@
                 return json_decode($res, true);
             }
 
+            /** Configure external reader mode */
+            protected function configureExternalReader() {
+                $this->api_call('/settings/wiegand', 'PATCH', [
+                    'type' => 26,
+                    'mute_notifications' => true,
+                    'reverse_data_order' => false,
+                ]);
+            }
+
             /** Configure internal reader mode */
             protected function configureInternalReader() {
                 $this->api_call('/settings/nfc_reader', 'PATCH', [
@@ -72,8 +83,13 @@
             }
 
             /** Set random administrator pin code */
-            protected function setAdminPin() {
-                $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+            protected function setAdminPin($enabled = true) {
+                if ($enabled) {
+                    $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                } else {
+                    $pin = '';
+                }
+
                 $displaySettings = $this->getConfig()['display'];
                 $displaySettings['admin_password'] = $pin;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
@@ -313,7 +329,18 @@
             }
 
             public function set_cms_model(string $model = '') {
-                // TODO: Implement set_cms_model() method.
+                switch ($model) {
+                    case 'FE-12D':
+                        $mode = 'digital';
+                        break;
+                    default:
+                        $mode = 'analog';
+                        break;
+                }
+
+                $analogSettings = $this->api_call('/settings/analog');
+                $analogSettings['mode'] = $mode;
+                $this->api_call('/configuration', 'PATCH', [ 'analog' => $analogSettings ]);
             }
 
             public function set_concierge_number(int $number) {
@@ -410,8 +437,9 @@
 
             public function prepare() {
                 parent::prepare();
-                $this->setAdminPin();
+                $this->setAdminPin(false);
                 $this->configureInternalReader();
+                $this->configureExternalReader();
             }
         }
     }
