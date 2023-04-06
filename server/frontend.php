@@ -242,7 +242,7 @@
         }
     } else {
         if ($http_authorization) {
-            $auth = $backends["authentication"]->auth($http_authorization, @$params["ua"], $ip);
+            $auth = $backends["authentication"]->auth($http_authorization, @$_SERVER["HTTP_USER_AGENT"], $ip);
             if (!$auth) {
                 $params["_ip"] = $ip;
                 $params["_login"] = '-';

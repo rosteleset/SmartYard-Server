@@ -252,7 +252,6 @@ function login() {
                 login: login,
                 password: password,
                 rememberMe: rememberMe === "on",
-                ua: $.cookie("_ua"),
                 did: $.cookie("_did"),
             }),
             success: response => {
@@ -367,10 +366,6 @@ function initAll() {
 
     $(document.body).css("background-color", '#e9ecef');
 
-    if (!$.cookie("_ua")) {
-        $.cookie("_ua", $.browser.ua, { expires: 3650, insecure: config.insecureCookie });
-    }
-
     if (!$.cookie("_did")) {
         $.cookie("_did", guid(), { expires: 3650, insecure: config.insecureCookie });
     }
@@ -459,9 +454,7 @@ function initAll() {
 */
 
     if ($.cookie("_server") && $.cookie("_token")) {
-        POST("authentication", "ping", false, {
-            ua: $.cookie("_ua"),
-        }).done((a, b) => {
+        POST("authentication", "ping", false).done((a, b) => {
             if (b === "nocontent") {
                 GET("authorization", "available").done(a => {
                     if (a && a.available) {
