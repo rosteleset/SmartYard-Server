@@ -11,14 +11,10 @@ const lastCallsDone = {};
 
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
-    const msg = message
+    const msg = message.split(": ")[1].trim();
+    const msgParts = msg.split(/[,:]/).filter(Boolean).map(part => part.trim());
 
-    // Spam messages filter
-    if (
-        false
-    ) {
-        return;
-    }
+    console.log(msgParts); // TODO: delete later
 
     console.log(`${now} || ${host} || ${msg}`);
 
@@ -41,18 +37,40 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Opening door by RFID key
-    if (true) {
+    if (msgParts[3] === 'Access allowed by public RFID') {
+        let door = 0;
+        const rfid = msgParts[2].padStart(14, 0);
 
+        if (rfid[6] === '0' && rfid[7] === '0') {
+            door = 1;
+        }
+
+        await API.openDoor({ date: now, ip: host, door: door, detail: rfid, by: "rfid" });
     }
 
     // Opening door by personal code
-    if (true) {
-
+    if (msgParts[4] === 'Access allowed by apartment code') {
+        const code = parseInt(msgParts[2]);
+        await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
     }
 
     // Opening door by button pressed
-    if (true) {
+    if (msgParts[3] === 'Exit button pressed') {
+        let door = 0;
+        let detail = "main";
 
+        switch (msgParts[2]) {
+            case "Input B":
+                door = 1;
+                detail = "second";
+                break;
+            case "Input C":
+                door = 2;
+                detail = "third";
+                break;
+        }
+
+        await API.openDoor({ date: now, ip: host, door: door, detail: detail, by: "button" });
     }
 
     // All calls are done

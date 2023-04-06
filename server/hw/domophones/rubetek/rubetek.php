@@ -58,7 +58,7 @@
             /** Configure internal reader mode */
             protected function configureInternalReader() {
                 $this->api_call('/settings/nfc_reader', 'PATCH', [
-                    'period_reading_ms' => 500,
+                    'period_reading_ms' => 2000,
                     'disable_sl3' => true,
                     'code_length' => 4,
                     'reverse_data_order' => true,
