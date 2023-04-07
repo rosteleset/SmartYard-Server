@@ -730,12 +730,12 @@
                 $this->set_params($params);
             }
 
-            public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
+            public function setDtmf(string $code1, string $code2, string $code3, string $codeOut) {
                 $params = $this->params_to_str([
                     'Config.DoorSetting.DTMF.Option' => 0,
-                    'Config.DoorSetting.DTMF.Code1' => $relay_1,
-                    'Config.DoorSetting.DTMF.Code2' => $relay_2,
-                    'Config.DoorSetting.DTMF.Code3' => $relay_3,
+                    'Config.DoorSetting.DTMF.Code1' => $code1,
+                    'Config.DoorSetting.DTMF.Code2' => $code2,
+                    'Config.DoorSetting.DTMF.Code3' => $code3,
                 ]);
                 $this->set_params($params);
             }

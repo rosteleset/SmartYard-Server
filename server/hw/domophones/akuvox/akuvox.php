@@ -424,11 +424,11 @@
                 // not used
             }
 
-            public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
+            public function setDtmf(string $code1, string $code2, string $code3, string $codeOut) {
                 $this->api_call('', 'POST', [
                     'target' => 'relay',
                     'action' => 'set',
-                    'data' => [ 'Config.DoorSetting.DTMF.Code1' => "$relay_1" ],
+                    'data' => [ 'Config.DoorSetting.DTMF.Code1' => $code1 ],
                 ]);
             }
 

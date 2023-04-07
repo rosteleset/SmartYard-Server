@@ -426,12 +426,12 @@
                 }
             }
 
-            public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
+            public function setDtmf(string $code1, string $code2, string $code3, string $codeOut) {
                 $this->api_call('/sip/options', 'PUT', [
                     'dtmf' => [
-                        '1' => (string) $relay_1,
-                        '2' => (string) $relay_2,
-                        '3' => (string) $relay_3,
+                        '1' => $code1,
+                        '2' => $code2,
+                        '3' => $code3,
                     ]
                 ]);
             }

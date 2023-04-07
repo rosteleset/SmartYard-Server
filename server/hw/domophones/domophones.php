@@ -185,8 +185,8 @@
             /** Задать публичный код доступа */
             abstract public function set_public_code(int $code = 0);
 
-            /** Задать DTMF-коды для открытия дверей */
-            abstract public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3);
+            /** Set DTMF codes to open doors */
+            abstract public function setDtmf(string $code1, string $code2, string $code3, string $codeOut);
 
             /** Задать SIP-номер для кнопки SOS */
             abstract public function set_sos_number(int $number);
@@ -220,7 +220,7 @@
                 int $sip_port,
                 int $ntp_port,
                 int $syslog_port,
-                int $main_door_dtmf = 1,
+                string $main_door_dtmf = '1',
                 array $audio_levels = [],
                 array $cms_levels = [],
                 string $cms_model = '',
@@ -238,7 +238,7 @@
                 $this->set_cms_levels($cms_levels);
                 $this->configure_ntp($ntp_server, $ntp_port, 'GMT+03:00');
                 $this->configure_sip($sip_username, $this->pass, $sip_server, $sip_port, $nat, $stun_server, $stun_port);
-                $this->set_relay_dtmf($main_door_dtmf, 2, 3);
+                $this->setDtmf($main_door_dtmf, '2', '3', '1');
                 $this->configure_syslog($syslog_server, $syslog_port);
                 $this->clear_rfid();
                 $this->clear_apartment();
