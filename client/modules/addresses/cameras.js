@@ -135,6 +135,9 @@
                     type: "text",
                     title: i18n("addresses.cameraName"),
                     placeholder: i18n("addresses.cameraName"),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    },
                 },
                 {
                     id: "dvrStream",
@@ -352,6 +355,9 @@
                         title: i18n("addresses.cameraName"),
                         placeholder: i18n("addresses.cameraName"),
                         value: camera.name,
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
                     },
                     {
                         id: "dvrStream",
