@@ -604,8 +604,8 @@
                 // не используется
             }
 
-            public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
-                // не используется
+            public function setDtmf(string $code1, string $code2, string $code3, string $codeOut) {
+                // not used
             }
 
             public function set_sos_number(int $number) {
