@@ -221,20 +221,23 @@
             }
 
             public function configure_video_encoding() {
+                // Multiple calls to work correctly
                 $videoSettings = $this->api_call('/settings/video');
 
                 $videoSettings['channel1']['bitrate'] = '1Mbps';
                 $videoSettings['channel1']['resolution'] = '1280x720';
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
 
                 $videoSettings['channel2']['bitrate'] = '0.5Mbps';
-                $videoSettings['channel2']['resolution'] = '640x480';
+                $videoSettings['channel2']['resolution'] = '720x480';
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
 
                 $videoSettings['channel3']['bitrate'] = '0.5Mbps';
                 $videoSettings['channel3']['resolution'] = '640x480';
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
 
                 $videoSettings['use_for_sip'] = 'channel1';
                 $videoSettings['use_for_webrtc'] = 'channel1';
-
                 $this->api_call('/settings/video', 'PATCH', $videoSettings);
             }
 
@@ -390,12 +393,14 @@
                 // not used
             }
 
-            public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
+            public function setDtmf(string $code1, string $code2, string $code3, string $codeOut) {
                 $this->api_call('/settings/dtmf', 'PATCH', [
                     'code_length' => 1,
-                    'code1' => (string) $relay_1,
-                    'code2' => (string) $relay_2,
-                    'code3' => (string) $relay_3,
+                    'code1' => $code1,
+                    'code2' => $code2,
+                    'code3' => $code3,
+                    'out_code' => $codeOut,
+                    'out_mode' => 'SIP-INFO',
                 ]);
             }
 
