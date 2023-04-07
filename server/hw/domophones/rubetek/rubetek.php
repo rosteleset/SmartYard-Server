@@ -203,6 +203,11 @@
 
                 $endpoint = '/sip?' . http_build_query($params);
                 $this->api_call($endpoint, 'PATCH');
+
+                $this->api_call('/settings/incoming_call', 'PATCH', [
+                    'enable_proxy_to_analog' => true,
+                    'own_number' => '',
+                ]);
             }
 
             public function configure_syslog(string $server, int $port) {
