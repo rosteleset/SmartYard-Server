@@ -1,6 +1,6 @@
 ({
     init: function () {
-        leftSide("fas fa-fw fa-mail-bulk blink-icon notifications", i18n("notifications.notifications"), "#notifications", "tt");
+        leftSide("fas fa-fw fa-mail-bulk blink-icon notifications", i18n("notifications.notifications"), "?#notifications", "tt");
         moduleLoaded("notifications", this);
     },
 

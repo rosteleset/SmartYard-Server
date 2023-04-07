@@ -13,7 +13,7 @@
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("cs", "sheets")) {
-                leftSide("fas fa-fw fa-table", i18n("cs.cs"), "#cs", "tt");
+                leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
             }
         }
 

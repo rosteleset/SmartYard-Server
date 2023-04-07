@@ -9,7 +9,7 @@
 
     init: function () {
         if (AVAIL("authorization", "rights")) {
-            leftSide("fas fa-fw fa-balance-scale-right", i18n("permissions.permissions"), "#permissions", "accounts");
+            leftSide("fas fa-fw fa-balance-scale-right", i18n("permissions.permissions"), "?#permissions", "accounts");
         }
         moduleLoaded("permissions", this);
     },

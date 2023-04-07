@@ -6,7 +6,11 @@
 
     init: function () {
         if (AVAIL("tt", "tt")) {
-            leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "#tt", "tt");
+            if (parseInt(myself.uid) == 0) {
+                leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings&edit=projects", "tt");
+            } else {
+                leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
+            }
         }
         loadSubModules("tt", [
             "issue",

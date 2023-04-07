@@ -1,6 +1,6 @@
 ({
     init: function () {
-        leftSide("fas fa-fw fa-info-circle", i18n("about.about"), "#about", "about");
+        leftSide("fas fa-fw fa-info-circle", i18n("about.about"), "?#about", "about");
         moduleLoaded("about", this);
     },
 
