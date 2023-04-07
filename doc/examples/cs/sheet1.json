@@ -1,31 +1,46 @@
 {
     "sheet": "МКД",
-    "date": "2023-03-25",
+    "date": "2023-04-06",
     "timeClass": "font-weight-bold",
     "emptyClass": "bg-lightgray",
     "blockedClass": "bg-primary",
-    "reservedClass": "bg-danger",
-    "issueCoordinatedClass": "",
-    "issueAssignedClass": "",
-    "issueDoneClass": "",
+    "reservedClass": "bg-purple",
+    "issueCoordinatedClass": "font-weight-bold",
+    "issueAssignedClass": "bg-success",
+    "issueDoneClass": "text-decoration-line-through",
     "loginClass": "font-weight-normal",
-    "cellAvailableCheck": "(new Date()).getTime() + 30 * 60 * 1000 < (new Date(sheetDate + ' ' + ({ 'Утро': '08:00', 'День': '12:00', 'Вечер': '16:00' })[cellTime])).getTime()",
+    "expireCondition": "(new Date()).getTime() + 30 * 60 * 1000 >= (new Date(sheetDate + ' ' + cellTime)).getTime()",
+    "doneCondition": "issue._cf_install_done",
     "project": "RTL",
     "action": "Координация",
-    "sheetField": "_cf_sheet_name",
-    "dateField": "_cf_sheet_date",
-    "colField": "_cf_sheet_col",
-    "rowField": "_cf_sheet_cell",
-    "cellsField": "_cf_sheet_cells",
-    "assignedField": "_cf_installers",
-    "issuesCoordinatedQuery": {},
-    "issuesAssignedQuery": {},
-    "issuesDoneQuery": {},
+    "fields": {
+        "sheet": "_cf_sheet",
+        "date": "_cf_sheet_date",
+        "col": "_cf_sheet_col",
+        "row": "_cf_sheet_cell",
+        "cells": "_cf_sheet_cells",
+        "assigned": "_cf_installers"
+    },
+    "issuesQuery": {
+        "query": {
+            "_cf_sheet": "%%sheet",
+            "_cf_sheet_date": "%%date"
+        },
+        "fields": [
+            "_cf_sheet_col",
+            "_cf_sheet_cell",
+            "_cf_sheet_cells",
+            "_cf_installers",
+            "_cf_install_done"
+        ],
+        "limit": 500
+    },
     "specialRows": [
         "08:00",
         "13:00"
     ],
-    "specialRowClass": "bg-warning",
+    "specialRowClass": "bg-primary",
+    "weights": [],
     "data": [
         {
             "col": "МКД1",
@@ -34,10 +49,20 @@
                 "mmikel",
                 "nick"
             ],
+            "workflow": "base",
             "rows": [
-                "Утро",
-                "День",
-                "Вечер"
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
             ]
         },
         {
@@ -48,22 +73,18 @@
                 "yad"
             ],
             "rows": [
-                "Утро",
-                "День",
-                "Вечер"
-            ]
-        },
-        {
-            "col": "МКД3",
-            "class": "font-weight-bold",
-            "logins": [
-                "dmiheev",
-                "vlipatov"
-            ],
-            "rows": [
-                "Утро",
-                "День",
-                "Вечер"
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
             ]
         },
         {
@@ -74,9 +95,18 @@
                 "vlipatov"
             ],
             "rows": [
-                "Утро",
-                "День",
-                "Вечер"
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
             ]
         },
         {
@@ -87,10 +117,19 @@
                 "vlipatov"
             ],
             "rows": [
-                "Утро",
-                "День",
-                "Вечер"
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
             ]
-       }
+        }
     ]
 }
