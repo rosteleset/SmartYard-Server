@@ -21,9 +21,10 @@ syslog.on("message", async ({ date, host, message }) => {
     // Send message to syslog storage
     // await API.sendLog({ date: now, ip: host, unit: "rubetek", msg: isMsg }); // TODO: uncomment
 
-    // Motion detection: start
-    if (true) {
-
+    // Motion detection (face detection): start
+    if (msgParts[2] === 'The face was detected and sent to the server') {
+        await API.motionDetection({ date: now, ip: host, motionActive: true });
+        await mdTimer(host, 5000);
     }
 
     // Call in gate mode with prefix: potential white rabbit
