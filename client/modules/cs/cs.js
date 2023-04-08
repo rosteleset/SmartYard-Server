@@ -9,6 +9,7 @@
     sid: false,
     hasChanges: false,
     idle: true,
+    preCoordinate: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -69,28 +70,85 @@
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.attr("data-login", payload.login);
                     if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
-                        mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
-                            modules.cs.coordinate(cell);
-                        }, () => {
-                            cell.addClass("spinner-small");
-                            PUT("cs", "reserveCell", false, {
-                                action: "reserve",
-                                sheet: md5($("#csSheet").val()),
-                                date: md5($("#csDate").val()),
-                                col: cell.attr("data-col"),
-                                row: cell.attr("data-row"),
-                                uid: cell.attr("data-uid"),
-                                sid: modules.cs.sid,
-                                expire: 60 * 60 * 24 * 7,
-                            }).
-                            fail(FAIL).
-                            fail(() => {
-                                cell.removeClass("spinner-small");
-                            });
-                        }, i18n("cs.coordinate"), i18n("cs.reserve"), 55 * 1000);
+                        switch (parseInt(payload.step)) {
+                            case 0:
+                                mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                                    cell.addClass("spinner-small");
+                                    PUT("cs", "reserveCell", false, {
+                                        action: "claim",
+                                        step: 1,
+                                        sheet: md5($("#csSheet").val()),
+                                        date: md5($("#csDate").val()),
+                                        col: cell.attr("data-col"),
+                                        row: cell.attr("data-row"),
+                                        uid: cell.attr("data-uid"),
+                                        sid: modules.cs.sid,
+                                        expire: 60 * 60 * 24 * 7,
+                                    }).
+                                    fail(FAIL).
+                                    fail(() => {
+                                        cell.removeClass("spinner-small");
+                                    });
+                                }, () => {
+                                    cell.addClass("spinner-small");
+                                    PUT("cs", "reserveCell", false, {
+                                        action: "reserve",
+                                        sheet: md5($("#csSheet").val()),
+                                        date: md5($("#csDate").val()),
+                                        col: cell.attr("data-col"),
+                                        row: cell.attr("data-row"),
+                                        uid: cell.attr("data-uid"),
+                                        sid: modules.cs.sid,
+                                        expire: 60 * 60 * 24 * 7,
+                                    }).
+                                    fail(FAIL).
+                                    fail(() => {
+                                        cell.removeClass("spinner-small");
+                                    });
+                                }, i18n("cs.coordinate"), i18n("cs.reserve"), 55 * 1000);
+                                break;
+
+                            case 1:
+                                modules.cs.clearCell(cell);
+                                cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
+                                cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
+                                cell.attr("data-login", payload.login);
+                                if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
+                                    modules.cs.coordinate(cell);
+                                }
+                                break;
+
+                            case 2:
+                                prefferredValues = {};
+                                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.sheet) {
+                                    prefferredValues[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
+                                }
+                                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.date) {
+                                    prefferredValues[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
+                                }
+                                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.col) {
+                                    prefferredValues[modules.cs.currentSheet.sheet.fields.col] = modules.cs.colsMd5[cell.attr("data-col")];
+                                }
+                                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.row) {
+                                    prefferredValues[modules.cs.currentSheet.sheet.fields.row] = modules.cs.rowsMd5[cell.attr("data-row")];
+                                }
+                                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.cells) {
+                                    prefferredValues[modules.cs.currentSheet.sheet.fields.cells] = "1";
+                                }
+                                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.assigned && logins) {
+                                    prefferredValues[modules.cs.currentSheet.sheet.fields.assigned] = logins;
+                                }
+                                if (workflow) {
+                                    prefferredValues["workflow"] = workflow;
+                                }
+                                modules.tt.issue.issueAction(modules.cs.preCoordinate.issueId, modules.cs.currentSheet.sheet.action, () => {
+                                    modules.cs.renderCS();
+                                }, prefferredValues);
+                            break;
+                        }
                     }
                     break;
-                
+
                 case "reserved":
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
@@ -220,31 +278,23 @@
                 },
             ],
             callback: result => {
-                prefferredValues = {};
-                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.sheet) {
-                    prefferredValues[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
-                }
-                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.date) {
-                    prefferredValues[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
-                }
-                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.col) {
-                    prefferredValues[modules.cs.currentSheet.sheet.fields.col] = modules.cs.colsMd5[cell.attr("data-col")];
-                }
-                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.row) {
-                    prefferredValues[modules.cs.currentSheet.sheet.fields.row] = modules.cs.rowsMd5[cell.attr("data-row")];
-                }
-                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.cells) {
-                    prefferredValues[modules.cs.currentSheet.sheet.fields.cells] = "1";
-                }
-                if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.assigned && logins) {
-                    prefferredValues[modules.cs.currentSheet.sheet.fields.assigned] = logins;
-                }
-                if (workflow) {
-                    prefferredValues["workflow"] = workflow;
-                }
-                modules.tt.issue.issueAction(result.issueId, modules.cs.currentSheet.sheet.action, () => {
-                    modules.cs.renderCS();
-                }, prefferredValues)
+                modules.cs.preCoordinate = result;
+                cell.addClass("spinner-small");
+                PUT("cs", "reserveCell", false, {
+                    action: "claim",
+                    step: 2,
+                    sheet: md5($("#csSheet").val()),
+                    date: md5($("#csDate").val()),
+                    col: cell.attr("data-col"),
+                    row: cell.attr("data-row"),
+                    uid: cell.attr("data-uid"),
+                    sid: modules.cs.sid,
+                    expire: 60 * 60 * 24 * 7,
+                }).
+                fail(FAIL).
+                fail(() => {
+                    cell.removeClass("spinner-small");
+                });
             },
         }).show();
     },
@@ -575,6 +625,7 @@
 
                         PUT("cs", "cell", false, {
                             action: "claim",
+                            step: 0,
                             sheet: md5($("#csSheet").val()),
                             date: md5($("#csDate").val()),
                             col: cell.attr("data-col"),

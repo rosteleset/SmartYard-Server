@@ -152,7 +152,7 @@
              * @param $uid
              * @param $expire
              */
-            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "")
+            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0)
             {
                 $expire = (int)($expire ? : 60);
                 switch ($action) {
@@ -195,10 +195,11 @@
                             }
                         }
 
-                        if ($action == "claim" || $action == "reclaim") {
+                        if ($action == "claim") {
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "claimed",
+                                "step" => $step,
                                 "sheet" => $sheet,
                                 "date" => $date,
                                 "col" => $col,
@@ -218,7 +219,7 @@
                                     'content' => json_encode([
                                         "topic" => "cs/cell",
                                         "payload" => [
-                                            "action" => ($action == "claim")?"claimed":"reclaimed",
+                                            "action" => "claimed",
                                             "sheet" => $sheet,
                                             "date" => $date,
                                             "col" => $col,
