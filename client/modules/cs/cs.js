@@ -173,9 +173,6 @@
                                         uid: cell.attr("data-uid"),
                                         sid: modules.cs.sid,
                                     }).
-                                    done(() => {
-                                        modules.cs.renderCS();
-                                    }).
                                     fail(FAIL).
                                     fail(() => {
                                         modules.cs.idle = true;
