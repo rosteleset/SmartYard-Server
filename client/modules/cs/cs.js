@@ -58,6 +58,8 @@
     },
 
     mqttCellMsg: function (topic, payload) {
+        console.log(payload);
+        
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
         if (cell && cell.length == 1) {
