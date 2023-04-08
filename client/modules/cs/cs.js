@@ -476,20 +476,13 @@
                     h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                     if (c.logins && c.logins.length) {
                         for (let j in c.logins) {
-                            let u = false;
-                            for (let k in modules.users.meta) {
-                                if (modules.users.meta[k].login == c.logins[j]) {
-                                    u = modules.users.meta[k].realName;
-                                    break;
-                                }
-                            }
                             h += "<br/>";
                             if (response.sheet.sheet.loginClass) {
                                 h += "<span class='" + response.sheet.sheet.loginClass + "'>"
                             } else {
                                 h += "<span>";
                             }
-                            h += u?u:c.logins[j];
+                            h += modules.users.login2name(c.logins[j]);
                             h += "</span>";
                         }
                     }
