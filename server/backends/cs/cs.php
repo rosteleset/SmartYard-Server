@@ -220,6 +220,7 @@
                                         "topic" => "cs/cell",
                                         "payload" => [
                                             "action" => "claimed",
+                                            "step" => $step,
                                             "sheet" => $sheet,
                                             "date" => $date,
                                             "col" => $col,
