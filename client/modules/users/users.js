@@ -19,6 +19,21 @@
         });
     },
 
+    login2name: function (login) {
+        let u = login;
+        
+        for (let k in modules.users.meta) {
+            if (modules.users.meta[k].login == login) {
+                if (modules.users.meta[k].realName) {
+                    u = modules.users.meta[k].realName;
+                }
+                break;
+            }
+        }
+
+        return u;
+    },
+
     /*
         action functions
      */

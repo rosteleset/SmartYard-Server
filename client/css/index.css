@@ -288,3 +288,17 @@ body::-webkit-scrollbar-thumb {
 .dropdown-menu:hover {
 	display: block;
 }
+
+.data-login {
+  position: relative;
+}
+
+.data-login::after {
+  content: attr(data-login-display);
+  position: absolute;
+  display: inline-block;
+  top: 0px;
+  right: 0px;
+  padding-right: 3px;
+  font-size: small;
+}

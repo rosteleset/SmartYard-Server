@@ -68,7 +68,7 @@
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
-                    cell.attr("data-login", payload.login);
+                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
                     if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
                         switch (parseInt(payload.step)) {
                             case 0:
@@ -112,7 +112,7 @@
                                 modules.cs.clearCell(cell);
                                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                                 cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
-                                cell.attr("data-login", payload.login);
+                                cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
                                 if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
                                     modules.cs.coordinate(cell);
                                 }
@@ -191,14 +191,14 @@
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
-                    cell.attr("data-login", payload.login);
+                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
                     break;
 
                 case "released":
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     modules.cs.restoreCell(cell);
-                    cell.attr("data-login", false);
+                    cell.attr("data-login", false).attr("data-login-display", false);
                     break;
             }
         }
@@ -212,7 +212,7 @@
                 cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                 modules.cs.restoreCell(cell);
-                cell.attr("data-login", false);
+                cell.attr("data-login", false).attr("data-login-display", false);
             }
         }
     },
@@ -469,9 +469,9 @@
                         }
                     }
                     if (c && c.class) {
-                        h += '<td class="' + c.class + '" nowrap>';
+                        h += '<th class="' + c.class + '" nowrap>';
                     } else {
-                        h += '<td nowrap>';
+                        h += '<th nowrap>';
                     }
                     h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                     if (c.logins && c.logins.length) {
@@ -493,7 +493,7 @@
                             h += "</span>";
                         }
                     }
-                    h += "</td>";
+                    h += "</th>";
                 }
                 h += '</tr>';
                 h += '</thead>';
@@ -672,11 +672,11 @@
                 for (let i in modules.cs.currentSheet.cells) {
                     switch (modules.cs.currentSheet.cells[i].mode) {
                         case "claimed":
-                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
                             break;
                         
                         case "reserved":
-                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
                             break;
                     }
                 }
