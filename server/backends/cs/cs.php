@@ -165,6 +165,7 @@
                             $cell = json_decode($this->redis->get($key), true);
                             if (
                                 ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
+                                ($action == "reclaim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && $cell["uid"] == $uid) ||
                                 ($action == "release-force" && $cell["mode"] == "reserved" && $cell["uid"] == $uid)
@@ -194,7 +195,7 @@
                             }
                         }
 
-                        if ($action == "claim") {
+                        if ($action == "claim" || $action == "reclaim") {
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "claimed",
@@ -217,7 +218,7 @@
                                     'content' => json_encode([
                                         "topic" => "cs/cell",
                                         "payload" => [
-                                            "action" => "claimed",
+                                            "action" => ($action == "claim")?"claimed":"reclaimed",
                                             "sheet" => $sheet,
                                             "date" => $date,
                                             "col" => $col,
