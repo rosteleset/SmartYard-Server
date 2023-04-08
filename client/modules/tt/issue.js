@@ -321,7 +321,7 @@
         always(loadingDone);
     },
 
-    issueAction: function (issueId, action, callback, prefferredValues) {
+    issueAction: function (issueId, action, callback, prefferredValues, timeout) {
         loadingStart();
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
@@ -388,6 +388,7 @@
                             footer: true,
                             borderless: true,
                             size: "lg",
+                            timeout: timeout,
                             callback: r => {
                                 r["issueId"] = issue.issue.issueId;
                                 loadingStart();

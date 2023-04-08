@@ -121,7 +121,7 @@
                             case 2:
                                 let workflow = "";
                                 let logins = [];
-                                
+
                                 for (let i in modules.cs.currentSheet.sheet.data) {
                                     if (modules.cs.currentSheet.sheet.data[i].col == modules.cs.colsMd5[cell.attr("data-col")]) {
                                         if (typeof modules.cs.currentSheet.sheet.data[i].workflow !== "undefined") {
@@ -164,8 +164,24 @@
                                 }
 
                                 modules.tt.issue.issueAction(modules.cs.preCoordinate.issueId, modules.cs.currentSheet.sheet.action, () => {
-                                    modules.cs.renderCS();
-                                }, prefferredValues);
+                                    PUT("cs", "cell", false, {
+                                        action: "release",
+                                        sheet: md5($("#csSheet").val()),
+                                        date: md5($("#csDate").val()),
+                                        col: cell.attr("data-col"),
+                                        row: cell.attr("data-row"),
+                                        uid: cell.attr("data-uid"),
+                                        sid: modules.cs.sid,
+                                    }).
+                                    done(() => {
+                                        modules.cs.renderCS();
+                                    }).
+                                    fail(FAIL).
+                                    fail(() => {
+                                        modules.cs.idle = true;
+                                        cell.removeClass("spinner-small");
+                                    });
+                                }, prefferredValues, 55 * 1000);
                             break;
                         }
                     }
@@ -269,6 +285,7 @@
             borderless: true,
             topApply: true,
             size: "lg",
+            timeout: 55 * 1000,
             fields: [
                 {
                     id: "issueId",

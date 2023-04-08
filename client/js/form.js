@@ -414,6 +414,15 @@ function cardForm(params) {
         target = $(params.target).html(h);
     } else {
         target = modal(h);
+
+        if (params.timeout) {
+            $('#modal').attr("data-prefix", _prefix);
+            setTimeout(() => {
+                if ($('#modal').attr("data-prefix") == _prefix) {
+                    $('#modal').modal('hide');
+                }
+            }, params.timeout);
+        }
 /*
         if (params.title) {
             $("#modal").draggable({
