@@ -105,7 +105,7 @@
                                     fail(() => {
                                         cell.removeClass("spinner-small");
                                     });
-                                }, i18n("cs.coordinate"), i18n("cs.reserve"), 55 * 1000);
+                                }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
                                 break;
 
                             case 1:
@@ -181,7 +181,7 @@
                                         modules.cs.idle = true;
                                         cell.removeClass("spinner-small");
                                     });
-                                }, prefferredValues, 55 * 1000);
+                                }, prefferredValues, 58 * 1000);
                             break;
                         }
                     }
@@ -285,7 +285,7 @@
             borderless: true,
             topApply: true,
             size: "lg",
-            timeout: 55 * 1000,
+            timeout: 58 * 1000,
             fields: [
                 {
                     id: "issueId",
