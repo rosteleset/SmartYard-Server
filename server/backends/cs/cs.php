@@ -165,7 +165,6 @@
                             $cell = json_decode($this->redis->get($key), true);
                             if (
                                 ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "reclaim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && $cell["uid"] == $uid) ||
                                 ($action == "release-force" && $cell["mode"] == "reserved" && $cell["uid"] == $uid)

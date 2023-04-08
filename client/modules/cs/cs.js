@@ -83,7 +83,7 @@
                                         row: cell.attr("data-row"),
                                         uid: cell.attr("data-uid"),
                                         sid: modules.cs.sid,
-                                        expire: 60 * 60 * 24 * 7,
+                                        expire: 60,
                                     }).
                                     fail(FAIL).
                                     fail(() => {
@@ -316,7 +316,7 @@
                     row: cell.attr("data-row"),
                     uid: cell.attr("data-uid"),
                     sid: modules.cs.sid,
-                    expire: 60 * 60 * 24 * 7,
+                    expire: 60,
                 }).
                 fail(FAIL).
                 fail(() => {
