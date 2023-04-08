@@ -2966,14 +2966,14 @@
 
         let sections = [
             "projects",
-            "workflowsMenu",
+            "workflows",
             "filters",
             "crontabs",
             "statuses",
             "resolutions",
             "roles",
-            "customFieldsMenu",
-            "viewersMenu",
+            "customs",
+            "viewers",
         ];
 
         let section = params["section"]?params["section"]:"projects";
@@ -2993,7 +2993,7 @@
         $("#leftTopDynamic").html(top);
 
         switch (section) {
-            case "workflowsMenu":
+            case "workflows":
                 modules.tt.settings.renderWorkflows();
                 break;
 
@@ -3025,7 +3025,7 @@
                 modules.tt.settings.renderRoles();
                 break;
 
-            case "customFieldsMenu":
+            case "customs":
                 modules.tt.settings.renderCustomFields();
                 break;
 
@@ -3033,7 +3033,7 @@
                 modules.tt.settings.renderViewer(params["field"], params["name"]);
                 break;
 
-            case "viewersMenu":
+            case "viewers":
                 modules.tt.settings.renderViewers();
                 break;
 
