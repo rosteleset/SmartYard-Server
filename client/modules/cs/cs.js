@@ -58,8 +58,6 @@
     },
 
     mqttCellMsg: function (topic, payload) {
-        console.log(payload);
-        
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
         if (cell && cell.length == 1) {
@@ -76,7 +74,7 @@
                             case 0:
                                 mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
                                     cell.addClass("spinner-small");
-                                    PUT("cs", "reserveCell", false, {
+                                    PUT("cs", "cell", false, {
                                         action: "claim",
                                         step: 1,
                                         sheet: md5($("#csSheet").val()),
@@ -282,7 +280,7 @@
             callback: result => {
                 modules.cs.preCoordinate = result;
                 cell.addClass("spinner-small");
-                PUT("cs", "reserveCell", false, {
+                PUT("cs", "cell", false, {
                     action: "claim",
                     step: 2,
                     sheet: md5($("#csSheet").val()),
