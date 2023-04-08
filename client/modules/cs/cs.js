@@ -119,28 +119,50 @@
                                 break;
 
                             case 2:
+                                let workflow = "";
+                                let logins = [];
+                                
+                                for (let i in modules.cs.currentSheet.sheet.data) {
+                                    if (modules.cs.currentSheet.sheet.data[i].col == modules.cs.colsMd5[cell.attr("data-col")]) {
+                                        if (typeof modules.cs.currentSheet.sheet.data[i].workflow !== "undefined") {
+                                            workflow = modules.cs.currentSheet.sheet.data[i].workflow;
+                                        }
+                                        if (typeof modules.cs.currentSheet.sheet.data[i].logins !== "undefined") {
+                                            logins = modules.cs.currentSheet.sheet.data[i].logins;
+                                        }
+                                    }
+                                }
+
                                 prefferredValues = {};
+
                                 if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.sheet) {
                                     prefferredValues[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                                 }
+
                                 if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.date) {
                                     prefferredValues[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                                 }
+
                                 if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.col) {
                                     prefferredValues[modules.cs.currentSheet.sheet.fields.col] = modules.cs.colsMd5[cell.attr("data-col")];
                                 }
+
                                 if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.row) {
                                     prefferredValues[modules.cs.currentSheet.sheet.fields.row] = modules.cs.rowsMd5[cell.attr("data-row")];
                                 }
+
                                 if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.cells) {
                                     prefferredValues[modules.cs.currentSheet.sheet.fields.cells] = "1";
                                 }
+
                                 if (modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.assigned && logins) {
                                     prefferredValues[modules.cs.currentSheet.sheet.fields.assigned] = logins;
                                 }
+
                                 if (workflow) {
                                     prefferredValues["workflow"] = workflow;
                                 }
+
                                 modules.tt.issue.issueAction(modules.cs.preCoordinate.issueId, modules.cs.currentSheet.sheet.action, () => {
                                     modules.cs.renderCS();
                                 }, prefferredValues);
@@ -241,18 +263,6 @@
     },
 
     coordinate: function (cell) {
-        let workflow = "";
-        let logins = [];
-        for (let i in modules.cs.currentSheet.sheet.data) {
-            if (modules.cs.currentSheet.sheet.data[i].col == modules.cs.colsMd5[cell.attr("data-col")]) {
-                if (typeof modules.cs.currentSheet.sheet.data[i].workflow !== "undefined") {
-                    workflow = modules.cs.currentSheet.sheet.data[i].workflow;
-                }
-                if (typeof modules.cs.currentSheet.sheet.data[i].logins !== "undefined") {
-                    logins = modules.cs.currentSheet.sheet.data[i].logins;
-                }
-            }
-        }
         cardForm({
             title: i18n("cs.selectIssue"),
             footer: true,
