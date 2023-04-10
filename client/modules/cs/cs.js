@@ -223,6 +223,7 @@
     },
 
     mqttIssueChanged: function (topic, payload) {
+        console.log(topic, payload);
         if ($("#csSheet:visible").length) {
             if (modules.cs.issues[payload]) {
                 modules.cs.csChanged();
