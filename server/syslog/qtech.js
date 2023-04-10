@@ -46,7 +46,7 @@ syslog.on("message", async ({ date, host, message }) => {
         delete callDoneFlow[host]; // Cleanup broken call (if exist)
 
         // Call in gate mode with prefix: potential white rabbit
-        if (qtMsgParts[3].length === 6) {
+        if (qtMsgParts[3].length === 6) { // TODO: wtf??? check
             const number = qtMsgParts[3];
 
             gateRabbits[host] = {

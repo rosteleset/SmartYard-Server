@@ -7,19 +7,16 @@ const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(rubetek);
 
 const gateRabbits = [];
-const lastCallsDone = {};
 
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
     const msg = message.split(": ")[1].trim();
     const msgParts = msg.split(/[,:]/).filter(Boolean).map(part => part.trim());
 
-    console.log(msgParts); // TODO: delete later
-
     console.log(`${now} || ${host} || ${msg}`);
 
     // Send message to syslog storage
-    // await API.sendLog({ date: now, ip: host, unit: "rubetek", msg: isMsg }); // TODO: uncomment
+    await API.sendLog({ date: now, ip: host, unit: "rubetek", msg: msg });
 
     // Motion detection (face detection): start
     if (msgParts[2] === 'The face was detected and sent to the server') {
@@ -27,14 +24,27 @@ syslog.on("message", async ({ date, host, message }) => {
         await mdTimer(host, 5000);
     }
 
-    // Call in gate mode with prefix: potential white rabbit
-    if (true) {
+    // Call start
+    // TODO: unstable, wait for fix
+    if (msgParts[5] === 'Dial to apartment') {
+        const number = msgParts[4];
 
+        // Call in gate mode with prefix: potential white rabbit
+        if (msgParts[3] === 'false' && number.length > 4 && number.length < 10) {
+            gateRabbits[host] = {
+                ip: host,
+                prefix: parseInt(number.substring(0, 4)),
+                apartment: parseInt(number.substring(4)),
+            };
+        }
     }
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
-    if (true) {
-
+    if (msgParts[4] === 'Open door by DTMF') {
+        if (gateRabbits[host]) {
+            const { ip, prefix, apartment } = gateRabbits[host];
+            await API.setRabbitGates({ date: now, ip, prefix, apartment });
+        }
     }
 
     // Opening door by RFID key
