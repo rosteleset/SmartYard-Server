@@ -334,6 +334,8 @@
         h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
         h += `<li class="pointer dropdown-item colMenuAssignUnassigned" data-col="${md5(col)}">${i18n("cs.assignUnassigned")}</li>`;
         h += `<li class="pointer dropdown-item colMenuReAssign" data-col="${md5(col)}">${i18n("cs.reAssign")}</li>`;
+        h += `<li class="dropdown-divider"></li>`;
+        h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
         h += `</ul></span>`;
 
         return h;
@@ -457,7 +459,7 @@
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 h += '<thead>';
                 h += '<tr>';
-                h += '<td>&nbsp;</td>';
+                h += '<th>&nbsp;</th>';
                 for (let i in modules.cs.cols) {
                     let c = false;
                     for (let j in s) {
@@ -466,9 +468,9 @@
                         }
                     }
                     if (c && c.class) {
-                        h += '<th class="' + c.class + '" nowrap>';
+                        h += '<th class="' + c.class + '" nowrap style="vertical-align: top!important;">';
                     } else {
-                        h += '<th nowrap>';
+                        h += '<th nowrap style="vertical-align: top!important;">';
                     }
                     h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                     if (c.logins && c.logins.length) {
@@ -544,7 +546,50 @@
                 $(".colMenuSetAssigners").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
-                    console.log("colMenuSetAssigners", col);
+                    let u = [];
+                    for (let i in modules.users.meta) {
+                        if (parseInt(modules.users.meta[i].uid)) {
+                            u.push({
+                                id: modules.users.meta[i].login,
+                                text: modules.users.meta[i].realName,
+                            });
+                        }
+                    }
+
+                    cardForm({
+                        title: i18n("cs.setColLogins"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        fields: [
+                            {
+                                id: "logins",
+                                type: "select2",
+                                title: i18n("cs.colLogins"),
+                                placeholder: i18n("cs.colLogins"),
+                                multiple: true,
+                                options: u,
+                            },
+                        ],
+                        callback: result => {
+                            for (let i in modules.cs.currentSheet.sheet.data) {
+                                if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                                    modules.cs.currentSheet.sheet.data[i].logins = result.logins;
+                                    loadingStart();
+                                    PUT("cs", "sheet", false, {
+                                        "sheet": modules.cs.currentSheet.sheet.sheet,
+                                        "date": modules.cs.currentSheet.sheet.date,
+                                        "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
+                                    }).
+                                    fail(FAIL).
+                                    done(() => {
+                                        message(i18n("cs.sheetWasSaved"));
+                                    });
+                                    break;
+                                }
+                            }
+                        },
+                    }).show();
                 });
 
                 $(".colMenuAssignAll").off("click").on("click", function () {
@@ -563,6 +608,12 @@
                     let col = $(this).attr("data-col");
 
                     console.log("colMenuReAssign", col);
+                });
+
+                $(".colClearAssigners").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    console.log("colClearAssigners", col);
                 });
 
                 $(".dataCell").off("click").on("click", function () {
@@ -589,7 +640,7 @@
                                 uid: cell.attr("data-uid"),
                                 sid: modules.cs.sid,
                             }).
-                            fail(FAIL).
+                            fail(FAIL). 
                             fail(() => {
                                 modules.cs.idle = true;
                                 cell.removeClass("spinner-small");
