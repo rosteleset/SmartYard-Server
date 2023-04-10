@@ -155,7 +155,21 @@
             }
 
             public function configure_gate(array $links) {
-                // TODO: Implement configure_gate() method.
+                if ($links) {
+                    foreach ($links as $link) {
+                        $this->api_call('/apart_ranges', 'POST', [
+                            'house' => (string) $link['prefix'],
+                            'address' => $link['addr'],
+                            'start_number' => $link['begin'],
+                            'end_number' => $link['end'],
+                            'call_number' => 'XXXXYYYY',
+                            'call_type' => 'sip',
+                            'door_access' => [ 1, 2, 3 ],
+                        ]);
+                    }
+                } else {
+                    $this->api_call('/apart_ranges', 'DELETE');
+                }
             }
 
             public function configure_md(
