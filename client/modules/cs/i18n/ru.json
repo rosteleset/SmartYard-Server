@@ -19,11 +19,11 @@
     "selectIssue": "Укажите задачу",
     "setAssigners": "Указать исполнителей",
     "assignAll": "Переназначить всех",
-    "assignUnassigned": "Назначить неназначенных",
-    "reAssign": "Переназначить назначенных",
+    "assignUnassigned": "Назначить исполнителей",
+    "reAssign": "Переназначить исполнителей",
+    "clearAssigners": "Снять назначенных",
     "setColLogins": "Указать исполнителей",
     "colLogins": "Исполнители",
-    "clearAssigners": "Снять назначенных",
     "methods": {
         "cs": {
             "_title": "Лист координации",
