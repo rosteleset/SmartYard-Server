@@ -7,9 +7,9 @@
     issues: {},
     issuesInSheet: {},
     sid: false,
-    hasChanges: false,
     idle: true,
     preCoordinate: false,
+    csChangedTimeout: -1,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -47,14 +47,22 @@
                 }
             });
         }, 1000);
+    },
 
-        (function refresh() {
-            if ($("#csSheet:visible").length && modules.cs.hasChanges && modules.cs.idle) {
-                modules.cs.hasChanges = false;
-                modules.cs.renderCS(true);
+    csChanged: function () {
+        clearTimeout(modules.cs.csChangedTimeout);
+
+        function refresh() {
+            if ($("#csSheet:visible").length) {
+                if (modules.cs.idle) {
+                    modules.cs.renderCS(true);
+                } else {
+                    modules.cs.csChangedTimeout = setTimeout(refresh, Math.random() * 1000 + 1000);
+                }
             }
-            setTimeout(refresh, Math.random() * 1000 + 1000);
-        })();
+        }
+        
+        modules.cs.csChangedTimeout = setTimeout(refresh, Math.random() * 1000 + 1000);
     },
 
     mqttCellMsg: function (topic, payload) {
@@ -217,13 +225,13 @@
     mqttIssueChanged: function (topic, payload) {
         if ($("#csSheet:visible").length) {
             if (modules.cs.issues[payload]) {
-                modules.cs.hasChanges = true;
+                modules.cs.csChanged();
             } else {
                 GET("tt", "issue", payload).
                 done(r => {
                     if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.fields && modules.cs.currentSheet.sheet.fields.sheet && modules.cs.currentSheet.sheet.fields.date) {
                         if (modules.cs.currentSheet.sheet.sheet == r.issue.issue[modules.cs.currentSheet.sheet.fields.sheet] && modules.cs.currentSheet.sheet.date == r.issue.issue[modules.cs.currentSheet.sheet.fields.date]) {
-                            modules.cs.hasChanges = true;
+                            modules.cs.csChanged();
                         }
                     }
                 });
@@ -235,7 +243,7 @@
         if ($("#csSheet:visible").length) {
             if (modules.cs.currentSheet && modules.cs.currentSheet.sheet) {
                 if (modules.cs.currentSheet.sheet.sheet == payload.sheet && modules.cs.currentSheet.sheet.date == payload.date) {
-                    modules.cs.hasChanges = true;
+                    modules.cs.csChanged();
                 }
             }
         }
