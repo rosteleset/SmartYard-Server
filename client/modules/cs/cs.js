@@ -613,7 +613,18 @@
                 $(".colMenuAssignAll").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
-                    console.log("colMenuAssignAll", col);
+                    let logins = [];
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            logins = modules.cs.currentSheet.sheet.data[i].logins;
+                            break;
+                        }
+                    }
+
+                    if (logins) {
+//
+                    }
                 });
                 
                 $(".colMenuAssignUnassigned").off("click").on("click", function () {
