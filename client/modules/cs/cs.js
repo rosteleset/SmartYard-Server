@@ -61,7 +61,7 @@
                 }
             }
         }
-        
+
         modules.cs.csChangedTimeout = setTimeout(refresh, Math.random() * 1000 + 1000);
     },
 
@@ -564,6 +564,15 @@
                         }
                     }
 
+                    let logins = [];
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            logins = modules.cs.currentSheet.sheet.data[i].logins;
+                            break;
+                        }
+                    }
+
                     cardForm({
                         title: i18n("cs.setColLogins"),
                         footer: true,
@@ -576,6 +585,7 @@
                                 title: i18n("cs.colLogins"),
                                 placeholder: i18n("cs.colLogins"),
                                 multiple: true,
+                                value: logins,
                                 options: u,
                             },
                         ],
