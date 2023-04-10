@@ -160,8 +160,8 @@
                         $this->api_call('/apart_ranges', 'POST', [
                             'house' => (string) $link['prefix'],
                             'address' => $link['addr'],
-                            'start_number' => $link['begin'],
-                            'end_number' => $link['end'],
+                            'start_number' => (int) $link['begin'],
+                            'end_number' => (int) $link['end'],
                             'call_number' => 'XXXXYYYY',
                             'call_type' => 'sip',
                             'door_access' => [ 1, 2, 3 ],
