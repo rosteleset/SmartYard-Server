@@ -372,7 +372,7 @@
                             url = new URL(response.domophones.domophones[i].url);
                         } catch (e) {
                             url = {
-                                host: response.domophones.domophones[i].url;
+                                host: response.domophones.domophones[i].url,
                             }
                         }
                         let comment = response.domophones.domophones[i].comment;
