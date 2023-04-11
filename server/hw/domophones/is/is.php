@@ -325,12 +325,12 @@
 
             public function get_sysinfo(): array {
                 $info = $this->api_call('/system/info');
-                $versions = $this->api_call('/v2/system/versions')['opt'];
+                $versions = $this->api_call('/system/versions');
 
-                $sysinfo['DeviceID'] = $info['chipId'];
+                $sysinfo['DeviceID'] = $info['deviceID'];
                 $sysinfo['DeviceModel'] = $info['model'];
-                $sysinfo['HardwareVersion'] = $versions['versions']['hw']['name'];
-                $sysinfo['SoftwareVersion'] = $versions['name'];
+                $sysinfo['HardwareVersion'] = $versions['hw'];
+                $sysinfo['SoftwareVersion'] = $versions['sw'];
 
                 return $sysinfo;
             }
