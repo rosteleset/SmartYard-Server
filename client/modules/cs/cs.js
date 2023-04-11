@@ -339,9 +339,9 @@
         h += `<ul class="dropdown-menu" aria-labelledby="${mid}">`;
         h += `<li class="pointer dropdown-item colMenuSetAssigners" data-col="${md5(col)}">${i18n("cs.setAssigners")}</li>`;
         h += `<li class="dropdown-divider"></li>`;
-        h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
         h += `<li class="pointer dropdown-item colMenuAssignUnassigned" data-col="${md5(col)}">${i18n("cs.assignUnassigned")}</li>`;
         h += `<li class="pointer dropdown-item colMenuReAssign" data-col="${md5(col)}">${i18n("cs.reAssign")}</li>`;
+        h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
         h += `<li class="dropdown-divider"></li>`;
         h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
         h += `</ul></span>`;
