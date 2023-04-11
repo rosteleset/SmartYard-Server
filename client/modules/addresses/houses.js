@@ -341,7 +341,14 @@
                 })
 
                 for (let i in response.cameras.cameras) {
-                    let url = new URL(response.cameras.cameras[i].url);
+                    let url;
+                    try {
+                        url = new URL(response.cameras.cameras[i].url);
+                    } catch (e) {
+                        url = {
+                            host: response.cameras.cameras[i].url,
+                        }
+                    }
                     let comment = response.cameras.cameras[i].comment;
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
@@ -360,7 +367,14 @@
                     for (let i in response.domophones.domophones) {
                         if (first === false) first = response.domophones.domophones[i].domophoneId;
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
-                        let url = new URL(response.domophones.domophones[i].url);
+                        let url;
+                        try {
+                            url = new URL(response.domophones.domophones[i].url);
+                        } catch (e) {
+                            url = {
+                                host: response.domophones.domophones[i].url;
+                            }
+                        }
                         let comment = response.domophones.domophones[i].comment;
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
@@ -908,7 +922,14 @@
 
                 for (let i in response.domophones.domophones) {
                     modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
-                    let url = new URL(response.domophones.domophones[i].url);
+                    let url;
+                    try {
+                        url = new URL(response.domophones.domophones[i].url);
+                    } catch (e) {
+                        url = {
+                            host: response.domophones.domophones[i].url,
+                        }
+                    }
                     let comment = response.domophones.domophones[i].comment;
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
@@ -1834,7 +1855,14 @@
             })
 
             for (let i in response.cameras.cameras) {
-                let url = new URL(response.cameras.cameras[i].url);
+                let url;
+                try {
+                    url = new URL(response.cameras.cameras[i].url);
+                } catch (e) {
+                    url = {
+                        host: response.cameras.cameras[i].url,
+                    }
+                }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
                     text:  url.host + " [" + response.cameras.cameras[i].name + "]",
