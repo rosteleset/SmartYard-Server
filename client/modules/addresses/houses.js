@@ -884,7 +884,14 @@
             });
 
             for (let i in response.cameras.cameras) {
-                let url = new URL(response.cameras.cameras[i].url);
+                let url;
+                try {
+                    url = new URL(response.cameras.cameras[i].url);
+                } catch (e) {
+                    url = {
+                        host: response.cameras.cameras[i].url,
+                    }
+                }
                 let comment = response.cameras.cameras[i].comment;
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
