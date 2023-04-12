@@ -159,6 +159,8 @@
 
                 $issue["updated"] = time();
 
+                error_log(print_r($issue, true));
+
                 if ($issue) {
                     $old = $this->getIssue($issue["issueId"]);
                     $update = false;
