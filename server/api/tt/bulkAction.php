@@ -24,6 +24,8 @@
 
                     if ($issues && count($issues)) {
                         foreach ($issues["issues"] as $issue) {
+                            $set = $params["set"];
+                            $set["issueId"] = $issue["issueId"];
                             $success = $success && $tt->loadWorkflow($issue["workflow"])->action($params["set"], $params["action"], $issue);
                         }
 
