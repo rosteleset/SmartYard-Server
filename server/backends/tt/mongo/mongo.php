@@ -111,7 +111,6 @@
              */
             protected function modifyIssue($issue)
             {
-                error_log(print_r($issue, true));
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
@@ -159,8 +158,6 @@
                 $issue = $this->checkIssue($issue);
 
                 $issue["updated"] = time();
-
-                error_log(print_r($issue, true));
 
                 if ($issue) {
                     $old = $this->getIssue($issue["issueId"]);
