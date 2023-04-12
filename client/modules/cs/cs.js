@@ -380,8 +380,6 @@
 
                         let start = -1;
 
-                        console.log(installers);
-
                         for (let j in modules.cs.currentSheet.sheet.data) {
                             if (modules.cs.currentSheet.sheet.data[j].col == col) {
                                 for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
@@ -398,13 +396,13 @@
                                             if (!modules.cs.issuesInSheet[uid]) {
                                                 modules.cs.issuesInSheet[uid] = "";
                                             }
-                                            if (installers && !done) {
+                                            if (installers && installers.length && !done) {
                                                 modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else
-                                            if (!installers && done) {
+                                            if ((!installers || !installers.length) && done) {
                                                 modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else
-                                            if (installers && done) {
+                                            if (installers && installers.length && done) {
                                                 modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                             } else {
                                                 modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueCoordinatedClass}">${r.issues.issues[i].issueId}</span><br />`;
