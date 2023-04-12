@@ -111,6 +111,7 @@
              */
             protected function modifyIssue($issue)
             {
+                error_log(print_r($issue, true));
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
