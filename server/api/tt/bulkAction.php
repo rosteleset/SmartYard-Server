@@ -25,9 +25,11 @@
                     if ($issues && count($issues)) {
                         foreach ($issues["issues"] as $issue) {
                             foreach ($params["set"] as $key => $value) {
-                                $issue[$key] = $value;
+                                if ($key != "issueId") {
+                                    $issue[$key] = $value;
+                                }
                             }
-                            $success = $success && $tt->loadWorkflow($issue["workflow"])->action($params["set"], $params["action"], $issue);
+                            $success = $success && $tt->loadWorkflow($issue["workflow"])->action($issue, $params["action"], $tt->getIssue($issue["issueId"]));
                         }
 
                         return api::ANSWER($success);
