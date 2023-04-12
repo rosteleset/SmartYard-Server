@@ -18,7 +18,7 @@
                 $tt = loadBackend("tt");
 
                 if ($tt) {
-                    $issues = $tt->getIssues($params[ "project" ], $params[ "query" ], [ "issueId", "workflow" ]);
+                    $issues = $tt->getIssues($params["project"], $params["query"], [ "issueId", "workflow" ]);
 
                     $success = true;
 

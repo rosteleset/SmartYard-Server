@@ -614,16 +614,37 @@
                     let col = $(this).attr("data-col");
 
                     let logins = [];
+                    let col_name = "";
 
                     for (let i in modules.cs.currentSheet.sheet.data) {
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                             logins = modules.cs.currentSheet.sheet.data[i].logins;
+                            col_name = modules.cs.currentSheet.sheet.data[i].col;
                             break;
                         }
                     }
 
-                    if (logins) {
-//
+                    if (col_name && logins) {
+                        let bulk = {
+                            project: modules.cs.currentSheet.sheet.project,
+                            query: {
+                                "status": "opened",
+                            },
+                            action: modules.cs.currentSheet.sheet.setAssignedAction,
+                            set: {
+                                "_cf_installers": logins,
+                            }
+                        };
+                        bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
+                        bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
+                        bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
+                        PUT("tt", "bulkAction", false, bulk).
+                        fail(FAIL).
+                        done(() => {
+                            mAlert("done");
+                        });
+                    } else {
+                        mAlert(i18n("cs.loginsNotSet"));
                     }
                 });
                 
