@@ -638,7 +638,6 @@
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
-                        console.log(bulk);
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
@@ -664,7 +663,37 @@
                 $(".colClearAssigners").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
-                    console.log("colClearAssigners", col);
+                    let col_name = "";
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            col_name = modules.cs.currentSheet.sheet.data[i].col;
+                            break;
+                        }
+                    }
+
+                    if (col_name) {
+                        let bulk = {
+                            project: modules.cs.currentSheet.sheet.project,
+                            query: {
+                                "status": "opened",
+                            },
+                            action: modules.cs.currentSheet.sheet.setAssignedAction,
+                            set: {
+                                "_cf_installers": "",
+                            }
+                        };
+                        bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
+                        bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
+                        bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
+                        PUT("tt", "bulkAction", false, bulk).
+                        fail(FAIL).
+                        done(() => {
+                            mAlert("done");
+                        });
+                    } else {
+                        mAlert(i18n("cs.columnNotFound"));
+                    }
                 });
 
                 $(".dataCell").off("click").on("click", function () {
