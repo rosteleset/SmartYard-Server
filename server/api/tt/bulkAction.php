@@ -18,7 +18,7 @@
                 $tt = loadBackend("tt");
 
                 if ($tt) {
-                    $issues = $tt->getIssues($params["project"], $params["query"], [ "issueId", "workflow" ]);
+                    $issues = $tt->getIssues($params["project"], $params["query"], [ "issueId", "workflow", "status" ]);
 
                     $success = true;
 
@@ -26,7 +26,6 @@
                         foreach ($issues["issues"] as $issue) {
                             $set = $params["set"];
                             $set["issueId"] = $issue["issueId"];
-                            error_log(print_r($issue, true));
                             $success = $success && $tt->loadWorkflow($issue["workflow"])->action($params["set"], $params["action"], $issue);
                         }
 
