@@ -8,7 +8,7 @@
 
             public string $user = 'admin';
 
-            protected string $def_pass = 'admin';
+            protected string $def_pass = 'httpapi';
             protected string $api_prefix = '/api/';
 
             /** Сделать API-вызов */
