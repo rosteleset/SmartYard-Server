@@ -380,6 +380,8 @@
 
                         let start = -1;
 
+                        console.log(installers);
+
                         for (let j in modules.cs.currentSheet.sheet.data) {
                             if (modules.cs.currentSheet.sheet.data[j].col == col) {
                                 for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
