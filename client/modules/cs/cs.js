@@ -680,7 +680,7 @@
                             },
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
                             set: {
-                                "_cf_installers": "",
+                                "_cf_installers": [],
                             }
                         };
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
