@@ -638,7 +638,7 @@
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
-                            mAlert("done");
+                            message(i18n("cs.done"));
                         });
                     } else {
                         mAlert(i18n("cs.loginsNotSet"));
@@ -674,7 +674,7 @@
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
-                            mAlert("done");
+                            message(i18n("cs.done"));
                         });
                     } else {
                         mAlert(i18n("cs.columnNotFound"));
