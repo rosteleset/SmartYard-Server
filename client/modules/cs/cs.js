@@ -638,6 +638,7 @@
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
+                        console.log(bulk);
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
