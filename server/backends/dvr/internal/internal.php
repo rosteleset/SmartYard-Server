@@ -255,7 +255,7 @@
                     ];
                     
                     $completed = false;
-                    $done = false;
+                    $active = false;
                     $attempts_count = 30;
                     while(!$completed && $attempts_count > 0) {
                         $curl = curl_init();
@@ -278,12 +278,12 @@
                         var_dump($task_id_response);
                         curl_close($curl);
                         $success = @$task_id_response["success"] ?: false;
-                        $done = @$task_id_response["done"] ?: false;
-                        if ($success != 1 || $done) return false;
+                        $active = @$task_id_response["active"] ?: false;
+                        if ($success != 1 || !$active) return false;
                         sleep(2);
                         $attempts_count = $attempts_count - 1;
                     }
-                    if (!$done) return false;
+                    if (!$active) return false;
 
                     // 4. получаем Url для загрузки файла
                     // GET https://server:port/jit-export-download?sid={sid}&task_id={task_id}
