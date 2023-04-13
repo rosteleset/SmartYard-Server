@@ -292,9 +292,11 @@
                 $dvr = loadBackend("dvr")->getDVRServerByStream($prefix);
                 $type = $dvr['type'];
                 
-                if ($type == 'nimble') {
+                switch($type) {
+                case 'nimble':
                     return "$prefix/dvr_thumbnail_$time.mp4";
-                } elseif ($type == 'macroscop') {
+                    break;
+                case 'macroscop':
                     $parsed_url = parse_url($cam['dvrStream']);
                     
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
@@ -317,7 +319,8 @@
                     $request_url = "$scheme$user$pass$host$port/site$query&withcontenttype=true&mode=archive&starttime=$start_time&resolutionx=480&resolutiony=270&streamtype=mainvideo";
                     
                     return $request_url;
-                } elseif ($type == 'trassir') {
+                    break;
+                case 'trassir':
                     // Example: 
                     // 1. Получить sid
                     // GET https://server:port/login?username={username}&password={password}
@@ -365,9 +368,11 @@
                     $timestamp = urlencode(date("Y-m-d H:i:s", $time));
                     $request_url = "$scheme$user$pass$host$port/screenshot/$guid?timestamp=$timestamp&sid=$sid";
                     return $request_url;
-                } else {
+                    break;
+                default: 
                     return "$prefix/$time-preview.mp4";
                 }
+                return false;
             }
 
             /**
