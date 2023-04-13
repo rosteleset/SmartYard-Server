@@ -128,7 +128,7 @@
                 "admin": true,
             };
 
-            if (withGroups) {
+            if (withGroups && modules.groups) {
                 for (let i in project.groups) {
                     for (let j in modules.groups.meta) {
                         if (modules.groups.meta[j].gid == project.groups[i].gid && !already[modules.groups.meta[j].acronym]) {
