@@ -118,7 +118,8 @@
                 $items = $this->api_call('/user/get')['data']['item'];
 
                 foreach ($items as $item) {
-                    $fullCode = explode(';', $item['CardCode'])[1];
+                    $codes = explode(';', $item['CardCode']);
+                    $fullCode = $codes[1] ?? $codes[0];
                     if (strpos($code, $fullCode) !== false) {
                         return $item['ID'];
                     }
