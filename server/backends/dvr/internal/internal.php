@@ -204,7 +204,7 @@
                     $payload = [
                             "resource_guid" => $guid, // GUID Канала
                             "start_ts" => $start * 1000000,
-                            "end_ts" => $end * 1000000,
+                            "end_ts" => $finish * 1000000,
                             "is_hardware" => 0,
                             "prefer_substream" => 0
                     ];
