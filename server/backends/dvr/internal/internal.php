@@ -181,7 +181,13 @@
                     $to_time = urlencode(date("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/login?$token";
-                    $sid_response = json_decode(file_get_contents($request_url), true);
+                    $arrContextOptions=array(
+                        "ssl"=>array(
+                            "verify_peer"=>false,
+                            "verify_peer_name"=>false,
+                        ),
+                    );
+                    $sid_response = json_decode(file_get_contents($request_url, false, stream_context_create($arrContextOptions)), true);
                     $sid = @$sid_response["sid"] ?: false;
                     if (!$sid || !$guid) break;
 
@@ -359,7 +365,13 @@
                     $to_time = urlencode(date("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/login?$token";
-                    $sid_response = json_decode(file_get_contents($request_url), true);
+                    $arrContextOptions=array(
+                        "ssl"=>array(
+                            "verify_peer"=>false,
+                            "verify_peer_name"=>false,
+                        ),
+                    );
+                    $sid_response = json_decode(file_get_contents($request_url,false, stream_context_create($arrContextOptions)), true);
                     $sid = @$sid_response["sid"] ?: false;
                     if (!$sid || !$guid) break;
 
