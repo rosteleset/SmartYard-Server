@@ -1160,7 +1160,7 @@
             if (i.charAt(0) !== "#") {
                 f.push({
                     id: i,
-                    text: modules.tt.meta.filters[i]?(modules.tt.meta.filters[i] + " [" + i + "]"):i,
+                    text: modules.tt.meta.filters[i]?(trimStr(modules.tt.meta.filters[i]) + " [" + trimStr(i) + "]"):i,
                 });
             }
         }
