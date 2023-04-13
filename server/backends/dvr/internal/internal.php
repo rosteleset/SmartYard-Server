@@ -181,6 +181,7 @@
                     $to_time = urlencode(date("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/login?$token";
+                    print $request_url;
                     $arrContextOptions=array(
                         "ssl"=>array(
                             "verify_peer"=>false,
@@ -188,6 +189,7 @@
                         ),
                     );
                     $sid_response = json_decode(file_get_contents($request_url, false, stream_context_create($arrContextOptions)), true);
+                    print $sid_response;
                     $sid = @$sid_response["sid"] ?: false;
                     if (!$sid || !$guid) break;
 
@@ -221,8 +223,10 @@
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                
+                    print $url;
+                    print $payload;
                     $task_id_response = json_decode(curl_exec($curl), true);
+                    print $task_id_response;
                     curl_close($curl);
                     $success = @$task_id_response["success"] ?: false;
                     $task_id = @$task_id_response["task_id"] ?: false;
@@ -268,8 +272,10 @@
                         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
                 
-
+                        print $url;
+                        print $payload;
                         $task_id_response = json_decode(curl_exec($curl), true);
+                        print $task_id_response;
                         curl_close($curl);
                         $success = @$task_id_response["success"] ?: false;
                         $done = @$task_id_response["done"] ?: false;
@@ -283,6 +289,7 @@
                     // GET https://server:port/jit-export-download?sid={sid}&task_id={task_id}
                     
                     $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
+                    print $request_url;
                     break;
                 default:
                     // Flussonic Server by default
