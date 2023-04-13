@@ -254,10 +254,9 @@
                             "task_id" => $task_id
                     ];
                     
-                    $completed = false;
                     $active = false;
                     $attempts_count = 30;
-                    while(!$completed && $attempts_count > 0) {
+                    while(!$active && $attempts_count > 0) {
                         $curl = curl_init();
                         curl_setopt($curl, CURLOPT_POST, 1);
                         if ($payload) {
@@ -279,7 +278,7 @@
                         curl_close($curl);
                         $success = @$task_id_response["success"] ?: false;
                         $active = @$task_id_response["active"] ?: false;
-                        if ($success != 1 || !$active) return false;
+                        if ($success == 1 || $active) break;
                         sleep(2);
                         $attempts_count = $attempts_count - 1;
                     }
