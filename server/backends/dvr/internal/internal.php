@@ -145,6 +145,83 @@
 
                     $request_url = "$scheme$user$pass$host$port/exportarchive$query&fromtime=$from_time&totime=$to_time";
                     
+                } elseif ($dvr['type'] == 'trassir') {    
+                    // Example: 
+                    // 1. Получить sid
+                    // GET https://server:port/login?username={username}&password={password}
+                    // {
+                    //     "success": 1,
+                    //     "sid": {sid} // Уникальный идентификатор сессии, используется для остальных запросов
+                    // }
+                    $parsed_url = parse_url($cam['dvrStream']);
+                    
+                    $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+                    $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+                    $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+                    $pass     = ($user || $pass) ? "$pass@" : '';
+                    // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                    $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    
+                    $token = $this->getDVRTokenForCam($cam, $subscriberId);
+                    if ($token !== '') {
+                        $query = $query . "&$token";
+                    }
+
+                    $guid = false;
+                    if (isset($parsed_url['query'])) {
+                        parse_str($parsed_url['query'], $parsed_query);
+                        $guid = isset($parsed_query['channel']) ? $parsed_query['channel'] : '';
+                    }
+                    date_default_timezone_set('UTC');
+                    $from_time = urlencode(date("d.m.Y H:i:s", $start));
+                    $to_time = urlencode(date("d.m.Y H:i:s", $finish));
+
+                    $request_url = "$scheme$user$pass$host$port/login?$token";
+                    $sid_response = json_decode(file_get_contents($request_url), true);
+                    $sid = @$sid_response["sid"] ?: false;
+                    if (!$sid || !$guid) break;
+
+                    // 2. Запустить задачу на скачивание 
+                    // POST https://server:port/jit-export-create-task?sid={sid}
+                    // {
+                    //     "resource_guid": {guid}, // GUID Канала
+                    //     "start_ts": 1596552540000000,
+                    //     "end_ts": 1596552600000000,
+                    //     "is_hardware": 0,
+                    //     "prefer_substream": 0
+                    // }
+                    $url = "$scheme$user$pass$host$port/jit-export-create-task?sid=$sid";
+                    $payload = [
+                            "resource_guid" => $guid, // GUID Канала
+                            "start_ts" => $start * 1000000,
+                            "end_ts" => $end * 1000000,
+                            "is_hardware" => 0,
+                            "prefer_substream" => 0
+                    ];
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    if ($payload) {
+                        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                            'Content-Type: appplication/json'
+                        ));
+                        
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+                    }
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+                    $task_id_response = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+                    $success = @$task_id_response["success"] ?: false;
+                    $task_id = @$task_id_response["task_id"] ?: false;
+                    if ($success != 1 || !$task_id) break;
+
+                    // 3. получаем Url для загрузки файла
+                    // GET https://server:port/jit-export-download?sid={sid}&task_id={task_id}
+                    $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
+                    
                 } else {
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
@@ -188,6 +265,54 @@
 
                     $request_url = "$scheme$user$pass$host$port/site$query&withcontenttype=true&mode=archive&starttime=$start_time&resolutionx=480&resolutiony=270&streamtype=mainvideo";
                     
+                    return $request_url;
+                } elseif ($type == 'trassir') {
+                    // Example: 
+                    // 1. Получить sid
+                    // GET https://server:port/login?username={username}&password={password}
+                    // {
+                    //     "success": 1,
+                    //     "sid": {sid} // Уникальный идентификатор сессии, используется для остальных запросов
+                    // }
+                    $parsed_url = parse_url($cam['dvrStream']);
+                    
+                    $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+                    $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+                    $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+                    $pass     = ($user || $pass) ? "$pass@" : '';
+                    // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                    $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    
+                    $token = $this->getDVRTokenForCam($cam, $subscriberId);
+                    if ($token !== '') {
+                        $query = $query . "&$token";
+                    }
+
+                    $guid = false;
+                    if (isset($parsed_url['query'])) {
+                        parse_str($parsed_url['query'], $parsed_query);
+                        $guid = isset($parsed_query['channel']) ? $parsed_query['channel'] : '';
+                    }
+                    date_default_timezone_set('UTC');
+                    $from_time = urlencode(date("d.m.Y H:i:s", $start));
+                    $to_time = urlencode(date("d.m.Y H:i:s", $finish));
+
+                    $request_url = "$scheme$user$pass$host$port/login?$token";
+                    $sid_response = json_decode(file_get_contents($request_url), true);
+                    $sid = @$sid_response["sid"] ?: false;
+                    if (!$sid || !$guid) break;
+
+                    // 2. получение скриншота:
+                    // GET https://server:port/screenshot/{guid}?timestamp={timestamp}&sid={sid}
+
+                    // guid - GUID канала
+                    // timestamp - Время формата YYYY-MM-DD HH:MM:SS / YYYY-MM-DDTHH:MM:SS / YYYYMMDD-HHMMSS / YYYYMMDDTHHMMSS
+                    // sid - Идентификатор сессии
+                    
+                    $timestamp = urlencode(date("Y-m-d H:i:s", $time));
+                    $request_url = "$scheme$user$pass$host$port/screenshot/$guid?timestamp=$timestamp&sid=$sid";
                     return $request_url;
                 } else {
                     return "$prefix/$time-preview.mp4";
@@ -253,7 +378,11 @@
                     }
                     
                     return [ [ "stream" => $channel_id, "ranges" => $ranges] ];
-               
+                } elseif ($dvr['type'] == 'trassir') {
+                    // Trassir Server
+                    // Not implemented yet.
+                    // Client uses direct request for ranges 
+                    return [];
                 } else {
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
