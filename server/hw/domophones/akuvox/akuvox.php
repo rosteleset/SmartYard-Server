@@ -52,27 +52,6 @@
                 return json_decode($res, true);
             }
 
-            /** Add RFID to RFID keys array */
-            protected function addRfid(string $code) {
-                $this->rfidKeys[] = [
-                    'ID' => '0',
-                    'Code' => $code,
-                    'DoorNum' => '1',
-                    'WebRelay' => '0',
-                    'Tags' => '0',
-                    'Frequency' => '0',
-                    'Mon' => '1',
-                    'Tue' => '1',
-                    'Wed' => '1',
-                    'Thur' => '1',
-                    'Fri' => '1',
-                    'Sat' => '1',
-                    'Sun' => '1',
-                    'TimeEnd' => '00:00',
-                    'TimeStart' => '00:00',
-                ];
-            }
-
             /** Configure general audio settings */
             protected function configureAudio() {
                 $this->setConfigParams([
@@ -124,7 +103,7 @@
             }
 
             /** Get params from config section */
-            protected function getConfigParams(array $params) {
+            protected function getConfigParams(array $params): array {
                 $res = $this->api_call('', 'POST', [
                     'target' => 'config',
                     'action' => 'get',
@@ -132,6 +111,20 @@
                 ]);
 
                 return array_values($res['data']);
+            }
+
+            /** Get RFID key ID by card code */
+            protected function getRfidId($code): string {
+                $items = $this->api_call('/user/get')['data']['item'];
+
+                foreach ($items as $item) {
+                    $fullCode = explode(';', $item['CardCode'])[1];
+                    if (strpos($code, $fullCode) !== false) {
+                        return $item['ID'];
+                    }
+                }
+
+                return '';
             }
 
             /** Set data in config section */
@@ -146,7 +139,7 @@
             /** Write RFID keys array to intercom memory */
             protected function writeRfids(array $rfids) {
                 $this->api_call('', 'POST', [
-                    'target' => 'rfkey',
+                    'target' => 'user',
                     'action' => 'add',
                     'data' => [
                         'item' => $rfids,
@@ -155,10 +148,21 @@
             }
 
             public function add_rfid(string $code, int $apartment = 0) {
-                // Need to duplicate one RFID code for supporting external Wiegand reader
+                // Need to duplicate one RFID code for supporting external Wiegand-26 reader
                 // Intercom doesn't support partial match mode
-                $this->addRfid(substr($code, 6)); // RFID code for internal reader
-                $this->addRfid('00' . substr($code, 8)); // RFID code for external reader
+                $internalRfid = substr($code, 6);
+                $externalRfid = '00' . substr($code, 8);
+
+                if ($internalRfid === $externalRfid) {
+                    $codeToPanel = $internalRfid;
+                } else {
+                    $codeToPanel = $internalRfid . ';' . $externalRfid;
+                }
+
+                $this->rfidKeys[] = [
+                    'CardCode' => $codeToPanel,
+                    'ScheduleRelay' => '1001-1;'
+                ];
             }
 
             public function clear_apartment(int $apartment = -1) {
@@ -170,27 +174,16 @@
             public function clear_rfid(string $code = '') {
                 if ($code) {
                     $this->api_call('', 'POST', [
-                        'target' => 'rfkey',
+                        'target' => 'user',
                         'action' => 'del',
                         'data' => [
                             'item' => [
-                                [ 'Code' => substr($code, 6) ], // RFID for internal reader
-                                [ 'Code' => '00' . substr($code, 8) ] // RFID for external reader
+                                [ 'ID' => $this->getRfidId($code) ],
                             ],
                         ],
                     ]);
                 } else {
-                    // $this->api_call('/rfkey/clear'); // Bad endpoint, need to reboot intercom after this
-
-                    $items = array_map(function($code) {
-                        return array('Code' => substr($code, 6));
-                    }, $this->get_rfids());
-
-                    $this->api_call('', 'POST', [
-                        'target' => 'rfkey',
-                        'action' => 'del',
-                        'data' => [ 'item' => $items ],
-                    ]);
+                    $this->api_call('/user/clear');
                 }
             }
 
@@ -261,7 +254,6 @@
                     'target' => 'sip',
                     'action' => 'set',
                     'data' => [
-                        'Config.Features.DOORPHONE.EnableButtonHangup' => '0', // for a stable work of call done events
                         'Config.Account1.GENERAL.AuthName' => $login,
                         'Config.Account1.GENERAL.DisplayName' => $login,
                         'Config.Account1.GENERAL.Enable' => '1',
@@ -336,11 +328,11 @@
             }
 
             public function get_rfids(): array {
-                $items = $this->api_call('/rfkey/get')['data']['item'];
+                $items = $this->api_call('/user/get')['data']['item'];
 
                 return array_map(function($code) {
-                    return '000000' . $code;
-                }, array_column($items, 'Code'));
+                    return '000000' . explode(';', $code)[1];
+                }, array_column($items, 'CardCode'));
             }
 
             public function get_sysinfo(): array {
@@ -449,8 +441,7 @@
                 ]);
             }
 
-            public function set_video_overlay(string $title = '') {
-                // TODO: Not working
+            public function set_video_overlay(string $title = '') { // TODO: English only
                 $this->setConfigParams([ 'Config.DoorSetting.RTSP.OSDText' => $title ]);
             }
 
