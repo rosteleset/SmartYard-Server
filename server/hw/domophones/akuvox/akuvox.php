@@ -331,7 +331,8 @@
                 $items = $this->api_call('/user/get')['data']['item'];
 
                 return array_map(function($code) {
-                    return '000000' . explode(';', $code)[1];
+                    $codes = explode(';', $code);
+                    return '000000' . ($codes[1] ?? $codes[0]);
                 }, array_column($items, 'CardCode'));
             }
 
