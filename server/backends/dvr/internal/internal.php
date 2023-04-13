@@ -191,7 +191,7 @@
                     $sid_response = json_decode(file_get_contents($request_url, false, stream_context_create($arrContextOptions)), true);
                     var_dump($sid_response);
                     $sid = @$sid_response["sid"] ?: false;
-                    if (!$sid || !$guid) break;
+                    if (!$sid || !$guid) return false;
 
                     // 2. Запустить задачу на скачивание 
                     // POST https://server:port/jit-export-create-task?sid={sid}
@@ -230,7 +230,7 @@
                     curl_close($curl);
                     $success = @$task_id_response["success"] ?: false;
                     $task_id = @$task_id_response["task_id"] ?: false;
-                    if ($success != 1 || !$task_id) break;
+                    if ($success != 1 || !$task_id) return false;
 
                     // 3. проверяем готовность файла для скачивания
                     // POST https://server:port/jit-export-task-status?sid={sid}
@@ -279,17 +279,18 @@
                         curl_close($curl);
                         $success = @$task_id_response["success"] ?: false;
                         $done = @$task_id_response["done"] ?: false;
-                        if ($success != 1 || $done) break;
+                        if ($success != 1 || $done) return false;
                         sleep(2);
                         $attempts_count = $attempts_count - 1;
                     }
-                    if (!$done) break;
+                    if (!$done) return false;
 
                     // 4. получаем Url для загрузки файла
                     // GET https://server:port/jit-export-download?sid={sid}&task_id={task_id}
                     
                     $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
                     print $request_url;
+                    return $request_url;
                     break;
                 default:
                     // Flussonic Server by default
