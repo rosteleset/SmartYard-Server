@@ -98,7 +98,7 @@
              */
             public function getUrlOfRecord($cam, $subscriberId, $start, $finish) {
                 $dvr = $this->getDVRServerByStream($cam['dvrStream']);
-                        
+                $request_url = false;
                 if ($dvr['type'] == 'nimble') {
                     // Nimble Server
                     $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
@@ -218,8 +218,57 @@
                     $task_id = @$task_id_response["task_id"] ?: false;
                     if ($success != 1 || !$task_id) break;
 
-                    // 3. получаем Url для загрузки файла
+                    // 3. проверяем готовность файла для скачивания
+                    // POST https://server:port/jit-export-task-status?sid={sid}
+                    // sid - Идентификатор сессии
+                    // Тело запроса:
+                    // {
+                    //     "task_id": {task_id}
+                    // }
+                    // Корректный ответ от сервера:
+                    // {
+                    //     "success": 1,
+                    //     "active" : true, // состояние задачи
+                    //     "done" : false, // индикатор завершения задачи на сервере
+                    //     "progress" : 3, // процент завершения задачи
+                    //     "sended" : 30456, // количество байт видео, отосланных сервером
+                    // }
+                    
+                    $url = "$scheme$user$pass$host$port/jit-export-task-status?sid=$sid";
+                    
+                    $payload = [
+                            "task_id" => $task_id
+                    ];
+                    
+                    $completed = false;
+                    $done = false;
+                    $attempts_count = 30;
+                    while(!$completed && $attempts_count > 0) {
+                        $curl = curl_init();
+                        curl_setopt($curl, CURLOPT_POST, 1);
+                        if ($payload) {
+                            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                                'Content-Type: appplication/json'
+                            ));
+                            
+                            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+                        }
+                        curl_setopt($curl, CURLOPT_URL, $url);
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+                        $task_id_response = json_decode(curl_exec($curl), true);
+                        curl_close($curl);
+                        $success = @$task_id_response["success"] ?: false;
+                        $done = @$task_id_response["done"] ?: false;
+                        if ($success != 1 || $done) break;
+                        sleep(2);
+                        $attempts_count = $attempts_count - 1;
+                    }
+                    if (!$done) break;
+
+                    // 4. получаем Url для загрузки файла
                     // GET https://server:port/jit-export-download?sid={sid}&task_id={task_id}
+                    
                     $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
                     
                 } else {
