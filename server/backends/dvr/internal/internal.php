@@ -99,7 +99,8 @@
             public function getUrlOfRecord($cam, $subscriberId, $start, $finish) {
                 $dvr = $this->getDVRServerByStream($cam['dvrStream']);
                 $request_url = false;
-                if ($dvr['type'] == 'nimble') {
+                switch ($dvr['type']) {
+                case 'nimble':
                     // Nimble Server
                     $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
                     if ( $path[0] == '/' ) $path = substr($path,1);
@@ -115,7 +116,8 @@
                     $md5raw = md5($str2hash, true);
                     $base64hash = base64_encode($md5raw);
                     $request_url = "http://$host:$port/manage/dvr/export_mp4/$stream?start=$start&end=$end&salt=$salt&hash=$base64hash";
-                } elseif ($dvr['type'] == 'macroscop') {    
+                    break;
+                case 'macroscop':    
                     // Example: 
                     // http://127.0.0.1:8080/exportarchive?login=root&password=&channelid=e6f2848c-f361-44b9-bbec-1e54eae777c0&fromtime=02.06.2022 08:47:05&totime=02.06.2022 08:49:05
 
@@ -144,8 +146,8 @@
                     $to_time = urlencode(date("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/exportarchive$query&fromtime=$from_time&totime=$to_time";
-                    
-                } elseif ($dvr['type'] == 'trassir') {    
+                    break;
+                case 'trassir':    
                     // Example: 
                     // 1. Получить sid
                     // GET https://server:port/login?username={username}&password={password}
@@ -270,8 +272,8 @@
                     // GET https://server:port/jit-export-download?sid={sid}&task_id={task_id}
                     
                     $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
-                    
-                } else {
+                    break;
+                default:
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
                     $from = $start;
