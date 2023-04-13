@@ -189,7 +189,7 @@
                         ),
                     );
                     $sid_response = json_decode(file_get_contents($request_url, false, stream_context_create($arrContextOptions)), true);
-                    print $sid_response;
+                    var_dump($sid_response);
                     $sid = @$sid_response["sid"] ?: false;
                     if (!$sid || !$guid) break;
 
@@ -223,10 +223,10 @@
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                    print $url;
-                    print $payload;
+                    var_dump($url);
+                    var_dump($payload);
                     $task_id_response = json_decode(curl_exec($curl), true);
-                    print $task_id_response;
+                    var_dump($task_id_response);
                     curl_close($curl);
                     $success = @$task_id_response["success"] ?: false;
                     $task_id = @$task_id_response["task_id"] ?: false;
@@ -272,10 +272,10 @@
                         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
                 
-                        print $url;
-                        print $payload;
+                        var_dump($url);
+                        var_dump($payload);
                         $task_id_response = json_decode(curl_exec($curl), true);
-                        print $task_id_response;
+                        var_dump($task_id_response);
                         curl_close($curl);
                         $success = @$task_id_response["success"] ?: false;
                         $done = @$task_id_response["done"] ?: false;
