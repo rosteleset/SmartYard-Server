@@ -290,7 +290,7 @@
                     fields: fields,
                     callback: modules.tt.issue.doCreateIssue,
                     cancel: () => {
-                        history.back();
+                        location.href = "?#tt";
                     },
                 });
 
@@ -298,7 +298,7 @@
             }).
             fail(FAIL).
             fail(() => {
-                history.back();
+                location.href = "?#tt";
             });
         }
 
@@ -1165,9 +1165,6 @@
 
         GET("tt", "tt").
         fail(FAIL).
-        fail(() => {
-            history.back();
-        }).
         done(modules.tt.tt).
         done(() => {
             switch (params.action) {
