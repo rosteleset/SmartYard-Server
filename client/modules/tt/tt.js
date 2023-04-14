@@ -1240,7 +1240,7 @@
             if (params["issue"]) {
                 GET("tt", "issue", params["issue"], true).
                 done(r => {
-                    if (modules.groups && AVAIL("accounts", "groups")) {
+                    if (modules.groups) {
                         modules.users.loadUsers(() => {
                             modules.groups.loadGroups(() => {
                                 modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"], params["search"]);
