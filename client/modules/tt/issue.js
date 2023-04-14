@@ -80,6 +80,8 @@
                     }
                 }
 
+                console.log(catalog);
+
                 $(`#${prefix}catalog`).html("").select2({
                     data: catalog,
                     minimumResultsForSearch: 0,
@@ -92,7 +94,7 @@
             let projects = [];
 
             projects.push({
-                id: "",
+                id: "-",
                 text: "-",
             });
 
