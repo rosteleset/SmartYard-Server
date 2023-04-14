@@ -75,16 +75,15 @@
                         }
                         catalog.push({
                             text: k[i],
-                            inc: l2,
+                            children: l2,
                         });
                     }
                 }
 
-                $(`#${prefix}catalog`).html("").select2ToTree({
-                    treeData: {
-                        dataArr: catalog
-                    }, 
-                    maximumSelectionLength: 2,
+                $(`#${prefix}catalog`).html("").select2({
+                    data: catalog,
+                    minimumResultsForSearch: 0,
+                    language: lang["_code"],
                 });
 
                 return x;
@@ -157,7 +156,7 @@
                     {
                         id: "catalog",
                         type: "select2",
-                        title: i18n("tt.workflow"),
+                        title: i18n("tt.catalog"),
                         minimumResultsForSearch: Infinity,
                         validate: (v, prefix) => {
                             return $(`#${prefix}catalog`).attr("disabled") || (v && v !== '-' && v !== 'undefined');
