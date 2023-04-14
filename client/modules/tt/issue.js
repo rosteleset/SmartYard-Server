@@ -460,7 +460,11 @@
 
         search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
         
-        document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
+        try {
+            document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
+        } catch (e) {
+            document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
+        }
 
         let rightFields = [ "project", "workflow", "catalog", "parent", "status", "resolution", "assigned", "watchers", "created", "updated", "author", ];
 
