@@ -1252,7 +1252,7 @@
                         });
                     }
                 }).
-                fail(FAIL).
+                fail(FAILPAGE).
                 fail(loadingDone);
             } else {
                 if (parseInt(myself.uid)) {
