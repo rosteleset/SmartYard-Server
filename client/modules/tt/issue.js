@@ -56,7 +56,7 @@
                     }
                 }
 
-                console.log(x);
+                console.log(workflow, prefix, x);
 
                 if (x) {
                     let k = Object.keys(x);
