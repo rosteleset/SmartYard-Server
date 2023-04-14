@@ -56,6 +56,8 @@
                     }
                 }
 
+                console.log(x);
+
                 if (x) {
                     let k = Object.keys(x);
                     k.sort();
