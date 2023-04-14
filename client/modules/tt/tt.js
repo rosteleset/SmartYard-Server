@@ -996,7 +996,7 @@
         }
 
         if (myself.uid) {
-            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a></li>`);
+            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</span></li>`);
         }
 
         $(".createIssue").off("click").on("click", () => {

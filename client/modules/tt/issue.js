@@ -175,7 +175,7 @@
                         $.cookie("_project", result.project, { expires: 3650, insecure: config.insecureCookie });
                         $.cookie("_workflow", result.workflow, { expires: 3650, insecure: config.insecureCookie });
                     }
-                    location.href = `?#tt.issue&action=create&project=${encodeURIComponent(result.project)}&workflow=${encodeURIComponent(result.workflow)}&catalog=${encodeURIComponent(result.catalog)}&parent=${(!!parent)?encodeURIComponent(parent):""}`;
+                    modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent)?encodeURIComponent(parent):"");
                 },
             }).show();
         }).
@@ -184,132 +184,141 @@
     },
 
     createIssueForm: function (current_project, workflow, catalog, parent) {
-        $("#leftTopDynamic").html("");
-        $("#rightTopDynamic").html("");
-
         loadingStart();
+        GET("tt", "tt").
+        fail(FAIL).
+        fail(loadingDone).
+        done(modules.tt.tt).
+        done(() => {
+            loadingDone();
 
-        function ciForm(current_project, workflow, catalog, parent) {
-            QUERY("tt", "issueTemplate", {
-                _id: workflow,
-                catalog: catalog,
-            }, true).
-            done(response => {
-                document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
-
-                let workflows = [];
-
-                for (let i in modules.tt.meta.workflows) {
-                    workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i);
-                }
-
-                let projectName = "";
-                let project = false;
-                let projectId = -1;
-
-                for (let i in modules.tt.meta.projects) {
-                    if (modules.tt.meta.projects[i].acronym == current_project) {
-                        project = modules.tt.meta.projects[i];
-                        projectName = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym;
-                        projectId = modules.tt.meta.projects[i].projectId;
+            $("#leftTopDynamic").html("");
+            $("#rightTopDynamic").html("");
+    
+            loadingStart();
+    
+            function ciForm(current_project, workflow, catalog, parent) {
+                QUERY("tt", "issueTemplate", {
+                    _id: workflow,
+                    catalog: catalog,
+                }, true).
+                done(response => {
+                    document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
+    
+                    let workflows = [];
+    
+                    for (let i in modules.tt.meta.workflows) {
+                        workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i);
                     }
-                }
-
-                let fields = [
-                    {
-                        id: "projectName",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.project"),
-                        value: projectName,
-                    },
-                    {
-                        id: "projectAcronym",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.projectAcronym"),
-                        value: project.acronym,
-                        hidden: true,
-                    },
-                    {
-                        id: "workflowName",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.workflowName"),
-                        value: workflows[workflow],
-                    },
-                    {
-                        id: "workflow",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.workflow"),
-                        value: workflow,
-                        hidden: true,
-                    },
-                ];
-
-                if (catalog && catalog !== "-" && catalog !== true) {
-                    fields.push({
-                        id: "catalog",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.catalog"),
-                        value: catalog,
-                    });
-                }
-
-                if (parent && parent !== "-" && parent !== true) {
-                    fields.push({
-                        id: "parent",
-                        type: "text",
-                        readonly: true,
-                        title: i18n("tt.parent"),
-                        value: parent,
-                    });
-                }
-
-                let af = [];
-                if (response.template && response.template.fields) {
-                    for (let i in response.template.fields) {
-                        if (af.indexOf(response.template.fields[i]) < 0) {
-                            let f = modules.tt.issueField2FormFieldEditor(false, response.template.fields[i], projectId);
-                            if (f) {
-                                fields.push(f);
-                                af.push(response.template.fields[i]);
+    
+                    let projectName = "";
+                    let project = false;
+                    let projectId = -1;
+    
+                    for (let i in modules.tt.meta.projects) {
+                        if (modules.tt.meta.projects[i].acronym == current_project) {
+                            project = modules.tt.meta.projects[i];
+                            projectName = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym;
+                            projectId = modules.tt.meta.projects[i].projectId;
+                        }
+                    }
+    
+                    let fields = [
+                        {
+                            id: "projectName",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.project"),
+                            value: projectName,
+                        },
+                        {
+                            id: "projectAcronym",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.projectAcronym"),
+                            value: project.acronym,
+                            hidden: true,
+                        },
+                        {
+                            id: "workflowName",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.workflowName"),
+                            value: workflows[workflow],
+                        },
+                        {
+                            id: "workflow",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.workflow"),
+                            value: workflow,
+                            hidden: true,
+                        },
+                    ];
+    
+                    if (catalog && catalog !== "-" && catalog !== true) {
+                        fields.push({
+                            id: "catalog",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.catalog"),
+                            value: catalog,
+                        });
+                    }
+    
+                    if (parent && parent !== "-" && parent !== true) {
+                        fields.push({
+                            id: "parent",
+                            type: "text",
+                            readonly: true,
+                            title: i18n("tt.parent"),
+                            value: parent,
+                        });
+                    }
+    
+                    let af = [];
+                    if (response.template && response.template.fields) {
+                        for (let i in response.template.fields) {
+                            if (af.indexOf(response.template.fields[i]) < 0) {
+                                let f = modules.tt.issueField2FormFieldEditor(false, response.template.fields[i], projectId);
+                                if (f) {
+                                    fields.push(f);
+                                    af.push(response.template.fields[i]);
+                                }
                             }
                         }
                     }
-                }
-
-                cardForm({
-                    title: i18n("tt.createIssueTitle"),
-                    footer: true,
-                    borderless: true,
-                    target: "#mainForm",
-                    apply: "create",
-                    fields: fields,
-                    callback: modules.tt.issue.doCreateIssue,
-                    cancel: () => {
-                        location.href = "?#tt";
-                    },
+    
+                    cardForm({
+                        title: i18n("tt.createIssueTitle"),
+                        footer: true,
+                        borderless: true,
+                        target: "#mainForm",
+                        apply: "create",
+                        fields: fields,
+                        callback: modules.tt.issue.doCreateIssue,
+                        cancel: () => {
+                            location.href = "?#tt&_refresh=" + Math.random();
+                        },
+                    });
+    
+                    loadingDone();
+                }).
+                fail(FAIL).
+                fail(() => {
+                    location.href = "?#tt&_refresh=" + Math.random();
                 });
-
-                loadingDone();
-            }).
-            fail(FAIL).
-            fail(() => {
-                location.href = "?#tt";
-            });
-        }
-
-        modules.users.loadUsers(() => {
-            if (modules.groups) {
-                modules.groups.loadGroups(() => {
-                    ciForm(current_project, workflow, catalog, parent);
-                });
-            } else {
-                ciForm(current_project, workflow, catalog, parent);
             }
+    
+            modules.users.loadUsers(() => {
+                if (modules.groups) {
+                    modules.groups.loadGroups(() => {
+                        ciForm(current_project, workflow, catalog, parent);
+                    });
+                } else {
+                    ciForm(current_project, workflow, catalog, parent);
+                }
+            });
         });
     },
 
@@ -1097,7 +1106,7 @@
                 DELETE("tt", "issue", issue.issue.issueId).
                 fail(FAIL).
                 done(() => {
-                    window.location.href = "?#tt";
+                    window.location.href = "?#tt&_refresh=" + Math.random();
                 }).
                 fail(loadingDone);
             });
@@ -1157,25 +1166,5 @@
         });
 
         loadingDone();
-    },
-
-    route: function (params) {
-        $("#altForm").hide();
-        $("#subTop").html("");
-
-        GET("tt", "tt").
-        fail(FAIL).
-        done(modules.tt.tt).
-        done(() => {
-            switch (params.action) {
-                case "create":
-                    modules.tt.issue.createIssueForm(params.project, params.workflow, params.catalog, params.parent);
-                    break;
-                default:
-                    loadingDone();
-                    page404();
-                    break;
-            }
-        });
     },
 }).init();
