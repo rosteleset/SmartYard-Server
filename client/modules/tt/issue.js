@@ -42,7 +42,7 @@
             function catalogByWorkflow(workflow, prefix) {
                 let catalog = [{
                     id: "-",
-                    text: i18n("tt.catalog"),
+                    text: "-",
                 }];
                 
                 let x = false;
