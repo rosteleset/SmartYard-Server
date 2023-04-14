@@ -35,6 +35,10 @@
 
                 $issue = $workflow->viewIssue($issue);
 
+                if (!$issue) {
+                    return API::ERROR(404);
+                }
+
                 return api::ANSWER($issue, "issue");
             }
 
