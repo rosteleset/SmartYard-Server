@@ -1252,8 +1252,7 @@
                         });
                     }
                 }).
-                fail(FAILPAGE).
-                fail(loadingDone);
+                fail(FAILPAGE);
             } else {
                 if (parseInt(myself.uid)) {
                     if (modules.groups) {
