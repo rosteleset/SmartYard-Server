@@ -56,8 +56,6 @@
                     }
                 }
 
-                console.log(workflow, prefix, x);
-
                 if (x) {
                     let k = Object.keys(x);
                     k.sort();
@@ -81,8 +79,6 @@
                         });
                     }
                 }
-
-                console.log(catalog);
 
                 $(`#${prefix}catalog`).html("").select2({
                     data: catalog,
@@ -147,7 +143,7 @@
                         minimumResultsForSearch: Infinity,
                         options: workflowsByProject(current_project),
                         select: (el, id, prefix) => {
-                            if (catalogByWorkflow(el.val, prefix)) {
+                            if (catalogByWorkflow(el.val(), prefix)) {
                                 $(`#${prefix}catalog`).attr("disabled", false);
                             } else {
                                 $(`#${prefix}catalog`).attr("disabled", true);
