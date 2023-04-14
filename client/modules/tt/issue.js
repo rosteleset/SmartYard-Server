@@ -80,6 +80,8 @@
                     }
                 }
 
+                console.log(catalog);
+
                 $(`#${prefix}catalog`).html("").select2({
                     data: catalog,
                     minimumResultsForSearch: 0,
