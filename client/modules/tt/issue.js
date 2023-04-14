@@ -116,7 +116,6 @@
                 noHover: true,
                 topApply: true,
                 apply: "create",
-                singleColumn: true,
                 fields: [
                     {
                         id: "project",
@@ -144,7 +143,7 @@
                     {
                         id: "workflow",
                         type: "select2",
-                        title: i18n("tt.workflow"),
+                        title: i18n("tt.workflowName"),
                         minimumResultsForSearch: Infinity,
                         options: workflowsByProject(current_project),
                         select: (el, id, prefix) => {
