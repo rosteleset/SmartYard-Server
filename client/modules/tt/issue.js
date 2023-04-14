@@ -80,8 +80,6 @@
                     }
                 }
 
-                console.log(catalog);
-
                 $(`#${prefix}catalog`).html("").select2({
                     data: catalog,
                     minimumResultsForSearch: 0,
@@ -450,8 +448,6 @@
         search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
         
         document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
-
-        console.log(issue);
 
         let rightFields = [ "project", "workflow", "catalog", "parent", "status", "resolution", "assigned", "watchers", "created", "updated", "author", ];
 
