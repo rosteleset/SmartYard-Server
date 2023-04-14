@@ -16,7 +16,12 @@
             }
 
             function workflowsByProject(project) {
-                let w = [];
+                let w = [
+                    {
+                        id: "-",
+                        text: "-",
+                    }
+                ];
 
                 if (project) {
                     for (let i in modules.tt.meta.projects) {
