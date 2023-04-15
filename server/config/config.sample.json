@@ -115,7 +115,7 @@
             "servers": [
                 {
                     "title": "Local server",
-                    "type": "nimble or flussonic or macroscop",
+                    "type": "nimble or flussonic or  or trassir",
                     "url": "https://video.server.hostname:8443",
                     "token": "<!-- mediaserver security token here (only if you use it) --!>",
                     "management_ip": "127.0.0.1",

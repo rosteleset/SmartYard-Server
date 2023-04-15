@@ -82,7 +82,7 @@ backends:
     backend: internal
     servers:
     - title: Local server
-      # type: nimble, flussonic or macroscop
+      # type: nimble, flussonic, macroscop or trassir
       type: nimble
       url: https://video.server.hostname:8443
       token: <!-- mediaserver security token here (only if you use it) --!>

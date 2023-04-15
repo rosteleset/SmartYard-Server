@@ -102,7 +102,13 @@
                         echo "Fetching record form {$request_url} to " . $task['filename']  . "\n";
                         
                         $files = loadBackend("files");
-                        $file = fopen($request_url, "r");
+                        $arrContextOptions=array(
+                            "ssl"=>array(
+                                "verify_peer"=>false,
+                                "verify_peer_name"=>false,
+                            ),
+                        );
+                        $file = fopen($request_url, "r", false, stream_context_create($arrContextOptions));
                         $fileId = $files->addFile($task['filename'], $file, [
                             "camId" => $task['cameraId'],
                             "start" => $task['start'],
