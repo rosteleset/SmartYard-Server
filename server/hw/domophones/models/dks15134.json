@@ -1,0 +1,15 @@
+{
+    "title": "BEWARD DKS15134",
+    "vendor": "BEWARD",
+    "model": "DKS15134",
+    "class": "dks15134",
+    "syslog": "beward",
+    "outputs": 2,
+    "camera": "beward",
+    "cmses": [
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105",
+        "kkm-108"
+    ]
+}
