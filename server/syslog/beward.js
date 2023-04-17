@@ -59,7 +59,6 @@ syslog.on("message", async ({date, host, message}) => {
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (bwMsg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
-        console.log(gateRabbits);
         if (gateRabbits[host]) {
             const { ip, prefix, apartment } = gateRabbits[host];
             await API.setRabbitGates({ date: now, ip, prefix, apartment });
