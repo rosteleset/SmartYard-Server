@@ -25,7 +25,7 @@
             public static function PUT($params) {
                 $addresses = loadBackend("addresses");
 
-                $success = $addresses->modifyHouse($params["_id"], $params["settlementId"], $params["streetId"], $params["housetUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
+                $success = $addresses->modifyHouse($params["_id"], $params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
