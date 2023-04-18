@@ -21,7 +21,7 @@
             public function getCS($sheet, $date, $extended = false)
             {
                 $files = loadBackend("files");
-iP
+
                 if (!$files) {
                     return false;
                 }
