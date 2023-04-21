@@ -36,25 +36,17 @@ CREATE UNIQUE INDEX tt_projects_filters_uniq on tt_projects_filters (project_id,
 CREATE TABLE tt_issue_statuses                                                                                          -- !!! managed by workflows !!!
 (
     issue_status_id integer primary key autoincrement,
-    status text not null,                                                                                               -- internal (workflow)
-    status_display text not null                                                                                        -- human readable value
+    status text not null
 );
 CREATE UNIQUE INDEX tt_issue_stauses_uniq on tt_issue_statuses(status);
-INSERT INTO tt_issue_statuses (status, status_display) values ('opened', '');
-INSERT INTO tt_issue_statuses (status, status_display) values ('closed', '');
 
 -- issues resolutions
 CREATE TABLE tt_issue_resolutions
 (
     issue_resolution_id integer primary key autoincrement,
-    resolution text,
-    alias text
+    resolution text
 );
-CREATE UNIQUE INDEX tt_issue_resolutions_uniq1 on tt_issue_resolutions(resolution);
-CREATE UNIQUE INDEX tt_issue_resolutions_uniq2 on tt_issue_resolutions(alias);f
-INSERT INTO tt_issue_resolutions (resolution, alias) values ('fixed', 'fixed');
-INSERT INTO tt_issue_resolutions (resolution, alias) values ('can''t fix', 'can''t fix');
-INSERT INTO tt_issue_resolutions (resolution, alias) values ('duplicate', 'duplicate');
+CREATE UNIQUE INDEX tt_issue_resolutions_uniq on tt_issue_resolutions(resolution);
 
 -- projects <-> resolutions
 CREATE TABLE tt_projects_resolutions

@@ -263,7 +263,7 @@
                     for (let i in modules.tt.meta.resolutions) {
                         if (project.resolutions.indexOf(modules.tt.meta.resolutions[i].resolutionId) >= 0) {
                             resolutions.push({
-                                id: modules.tt.meta.resolutions[i].alias,
+                                id: modules.tt.meta.resolutions[i].resolution,
                                 text: modules.tt.meta.resolutions[i].resolution,
                             });
                         }
@@ -286,7 +286,7 @@
                     for (let i in modules.tt.meta.statuses) {
                         statuses.push({
                             id: modules.tt.meta.statuses[i].status,
-                            text: modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status,
+                            text: modules.tt.meta.statuses[i].status,
                         });
                     }
 
@@ -632,22 +632,16 @@
                         break;
         
                     case "status":
-                        for (let i in modules.tt.meta.statuses) {
-                            if (val == modules.tt.meta.statuses[i].status) {
-                                val = escapeHTML(modules.tt.meta.statuses[i].statusDisplay?modules.tt.meta.statuses[i].statusDisplay:modules.tt.meta.statuses[i].status);
-                                break;
-                            }
+                        if (val) {
+                            val = escapeHTML(val);
+                        } else {
+                            val = '';
                         }
                         break;
     
                     case "resolution":
                         if (val) {
-                            for (let i in modules.tt.meta.resolutions) {
-                                if (val == modules.tt.meta.resolutions[i].alias) {
-                                    val = escapeHTML(modules.tt.meta.resolutions[i].resolution?modules.tt.meta.resolutions[i].resolution:modules.tt.meta.resolution[i].alias);
-                                    break;
-                                }
-                            }
+                            val = escapeHTML(val);
                         } else {
                             val = '';
                         }

@@ -21,6 +21,18 @@
         always(modules.tt.settings.renderProjects);
     },
 
+    doAddStatus: function (status) {
+        loadingStart();
+        POST("tt", "status", false, {
+            status: status,
+        }).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.statusWasAdded"));
+        }).
+        always(modules.tt.settings.renderStatuses);
+    },
+
     doAddResolution: function (resolution) {
         loadingStart();
         POST("tt", "resolution", false, {
@@ -245,10 +257,10 @@
         always(modules.tt.settings.renderProjects);
     },
 
-    doModifyStatus: function (statusId, display) {
+    doModifyStatus: function (statusId, status) {
         loadingStart();
         PUT("tt", "status", statusId, {
-            statusDisplay: display,
+            status: status,
         }).
         fail(FAIL).
         done(() => {
@@ -384,6 +396,29 @@
             ],
             callback: function (result) {
                 modules.tt.settings.doAddProject(result.acronym, result.project);
+            },
+        }).show();
+    },
+
+    addStatus: function () {
+        cardForm({
+            title: i18n("tt.addStatus"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "status",
+                    type: "text",
+                    title: i18n("tt.status"),
+                    placeholder: i18n("tt.status"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                modules.tt.settings.doAddStatus(result.status);
             },
         }).show();
     },
@@ -698,7 +733,6 @@
         for (let i in modules.tt.meta.statuses) {
             if (modules.tt.meta.statuses[i].statusId == statusId) {
                 status = modules.tt.meta.statuses[i].status;
-                display = modules.tt.meta.statuses[i].statusDisplay;
             }
         }
 
@@ -720,32 +754,27 @@
                     type: "text",
                     title: i18n("tt.status"),
                     value: status,
-                    readonly: true,
-                },
-                {
-                    id: "display",
-                    type: "text",
-                    title: i18n("tt.statusDisplay"),
-                    placeholder: i18n("tt.statusDisplay"),
-                    value: display,
                     validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
             ],
+            delete: i18n("tt.statusDelete"),
             callback: function (result) {
-                modules.tt.settings.doModifyStatus(statusId, result.display);
+                if (result.delete === "yes") {
+                    modules.tt.settings.deleteStatus(statusId);
+                } else {
+                    modules.tt.settings.doModifyStatus(statusId, result.status);
+                }
             },
         }).show();
     },
 
     modifyResolution: function (resolutionId) {
         let resolution = '';
-        let alias = '';
 
         for (let i in modules.tt.meta.resolutions) {
             if (modules.tt.meta.resolutions[i].resolutionId == resolutionId) {
-                alias = modules.tt.meta.resolutions[i].alias;
                 resolution = modules.tt.meta.resolutions[i].resolution;
             }
         }
@@ -761,13 +790,6 @@
                     type: "text",
                     title: i18n("tt.resolutionId"),
                     value: resolutionId,
-                    readonly: true,
-                },
-                {
-                    id: "alias",
-                    type: "text",
-                    title: i18n("tt.resolution"),
-                    value: alias,
                     readonly: true,
                 },
                 {
@@ -1082,6 +1104,12 @@
     deleteCustomField: function (customFieldId) {
         mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDelete")}`, () => {
             modules.tt.settings.doDeleteCustomField(customFieldId);
+        });
+    },
+
+    deleteStatus: function (statusId) {
+        mConfirm(i18n("tt.confirmStatusDelete", statusId.toString()), i18n("confirm"), `danger:${i18n("tt.statusDelete")}`, () => {
+            modules.tt.settings.doDeleteStatus(statusId);
         });
     },
 
@@ -2104,6 +2132,10 @@
             cardTable({
                 target: "#mainForm",
                 title: {
+                    button: {
+                        caption: i18n("tt.addStatus"),
+                        click: modules.tt.settings.addStatus,
+                    },
                     caption: i18n("tt.statuses"),
                     filter: true,
                 },
@@ -2114,9 +2146,6 @@
                     {
                         title: i18n("tt.status"),
                         nowrap: true,
-                    },
-                    {
-                        title: i18n("tt.statusDisplay"),
                         fullWidth: true,
                     },
                 ],
@@ -2133,9 +2162,6 @@
                                 },
                                 {
                                     data: modules.tt.meta.statuses[i].status,
-                                },
-                                {
-                                    data: modules.tt.meta.statuses[i].statusDisplay,
                                 },
                             ],
                         });
@@ -2170,9 +2196,6 @@
                     },
                     {
                         title: i18n("tt.resolution"),
-                    },
-                    {
-                        title: i18n("tt.resolutionName"),
                         fullWidth: true,
                     },
                 ],
@@ -2186,9 +2209,6 @@
                             cols: [
                                 {
                                     data: modules.tt.meta.resolutions[i].resolutionId,
-                                },
-                                {
-                                    data: modules.tt.meta.resolutions[i].alias,
                                 },
                                 {
                                     data: modules.tt.meta.resolutions[i].resolution,

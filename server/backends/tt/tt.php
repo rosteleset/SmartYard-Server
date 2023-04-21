@@ -347,13 +347,27 @@
             abstract public function getStatuses();
 
             /**
+             * @param $status
+             * @return false|integer
+             */
+
+             abstract public function addStatus($status);
+
+             /**
              * @param $statusId
              * @param $display
              * @return boolean
              */
 
-            abstract public function moodifyStatus($statusId, $display);
+             abstract public function modifyStatus($statusId, $display);
 
+             /**
+              * @param $statusId
+              * @return boolean
+              */
+ 
+             abstract public function deleteStatus($statusId);
+ 
             /**
              * @return false|array
              */

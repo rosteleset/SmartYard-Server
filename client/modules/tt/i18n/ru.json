@@ -228,6 +228,9 @@
     "projectFilterFile": "Файл",
     "search": "Поиск",
     "customSearch": "Расширенный поиск",
+    "statusDelete": "Удалить статус",
+    "addStatus": "Добавить статус",
+    "confirmStatusDelete": "Удалить статус \"#%s\"?",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

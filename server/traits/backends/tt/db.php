@@ -380,14 +380,13 @@
             public function getStatuses()
             {
                 try {
-                    $statuses = $this->db->query("select issue_status_id, status, status_display from tt_issue_statuses order by status", \PDO::FETCH_ASSOC)->fetchAll();
+                    $statuses = $this->db->query("select issue_status_id, status from tt_issue_statuses order by status", \PDO::FETCH_ASSOC)->fetchAll();
                     $_statuses = [];
 
                     foreach ($statuses as $statuse) {
                         $_statuses[] = [
                             "statusId" => $statuse["issue_status_id"],
                             "status" => $statuse["status"],
-                            "statusDisplay" => $statuse["status_display"],
                         ];
                     }
 
@@ -401,18 +400,32 @@
             /**
              * @inheritDoc
              */
-            public function moodifyStatus($statusId, $display)
+            public function addStatus($status)
             {
-                $display = trim($display);
+                $status = trim($status);
 
-                if (!checkInt($statusId) || !$display) {
+                if (!$status) {
+                    return false;
+                }
+
+                return $this->db->insert("insert into tt_issue_statuses (status) values (:status)", [ "status" => $status, ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyStatus($statusId, $status)
+            {
+                $status = trim($status);
+
+                if (!checkInt($statusId) || !$status) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_issue_statuses set status_display = :status_display where issue_status_id = $statusId");
+                    $sth = $this->db->prepare("update tt_issue_statuses set status = :status where issue_status_id = $statusId");
                     $sth->execute([
-                        ":status_display" => $display,
+                        ":status" => $status,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -425,17 +438,28 @@
             /**
              * @inheritDoc
              */
+            public function deleteStatus($statusId)
+            {
+                if (!checkInt($statusId)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from tt_issue_statuses where issue_status_id = $statusId");
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getResolutions()
             {
                 try {
-                    $resolutions = $this->db->query("select issue_resolution_id, resolution, alias from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
+                    $resolutions = $this->db->query("select issue_resolution_id, resolution from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
                     $_resolutions = [];
 
                     foreach ($resolutions as $resolution) {
                         $_resolutions[] = [
                             "resolutionId" => $resolution["issue_resolution_id"],
                             "resolution" => $resolution["resolution"],
-                            "alias" => $resolution["alias"],
                         ];
                     }
 
@@ -457,7 +481,7 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_issue_resolutions (resolution, alias) values (:resolution, :resolution)", [ "resolution" => $resolution, ]);
+                return $this->db->insert("insert into tt_issue_resolutions (resolution) values (:resolution)", [ "resolution" => $resolution, ]);
             }
 
             /**
@@ -471,8 +495,7 @@
                     return false;
                 }
 
-                return $this->db->modify("update tt_issue_resolutions set resolution = :resolution where issue_resolution_id = $resolutionId", [ "resolution" => $resolution, ]) +
-                    $this->db->modify("update tt_issue_resolutions set alias = :resolution where issue_resolution_id = $resolutionId", [ "resolution" => $resolution, ]);
+                return $this->db->modify("update tt_issue_resolutions set resolution = :resolution where issue_resolution_id = $resolutionId", [ "resolution" => $resolution, ]);
             }
 
             /**
@@ -484,8 +507,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId") +
-                    $this->db->modify("delete from tt_projects_resolutions where issue_resolution_id not in (select issue_resolution_id from tt_issue_resolutions)");
+                return $this->db->modify("delete from tt_issue_resolutions where issue_resolution_id = $resolutionId");
             }
 
             /**
