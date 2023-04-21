@@ -727,7 +727,6 @@
     },
 
     modifyStatus: function (statusId) {
-        let display = '';
         let status = '';
 
         for (let i in modules.tt.meta.statuses) {
