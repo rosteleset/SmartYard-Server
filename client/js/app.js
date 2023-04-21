@@ -1129,6 +1129,7 @@ function FAILPAGE(response) {
         error(i18n("errors.unknown"), i18n("error"), 30);
         pageError();
     }
+    loadingDone();
 }
 
 function AVAIL(api, method, request_method) {

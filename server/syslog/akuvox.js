@@ -21,7 +21,11 @@ syslog.on("message", async ({ date, host, message }) => {
         msg.indexOf("fcgiserver") >= 0 ||
         msg.indexOf("sipmain") >= 0 ||
         msg.indexOf("RFID_TYPE_WIEGAND") >= 0 ||
-        msg.indexOf("netconfig") >= 0
+        msg.indexOf("netconfig") >= 0 ||
+        msg.indexOf("Invalid SenderSSRC") >= 0 ||
+        msg.indexOf("Listen") >= 0 ||
+        msg.indexOf("Waiting") >= 0 ||
+        msg.indexOf("Sending") >= 0
     ) {
         return;
     }

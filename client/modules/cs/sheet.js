@@ -11,10 +11,7 @@
             "sheet": params.sheet,
             "date": params.date,
         }).
-        fail(FAIL).
-        fail(() => {
-            history.back();
-        }).
+        fail(FAILPAGE).
         done(response => {
             // TODO f..ck!
             let top = 75;
@@ -59,7 +56,7 @@
                     loadingDone();
                 });
             });
-        }).
-        done(loadingDone);
+            loadingDone();
+        });
     },
 }).init();

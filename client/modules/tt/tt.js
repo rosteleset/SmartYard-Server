@@ -128,7 +128,7 @@
                 "admin": true,
             };
 
-            if (withGroups) {
+            if (withGroups && modules.groups) {
                 for (let i in project.groups) {
                     for (let j in modules.groups.meta) {
                         if (modules.groups.meta[j].gid == project.groups[i].gid && !already[modules.groups.meta[j].acronym]) {
@@ -996,7 +996,7 @@
         }
 
         if (myself.uid) {
-            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><a href="javascript:void(0)" class="nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</a></li>`);
+            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</span></li>`);
         }
 
         $(".createIssue").off("click").on("click", () => {
@@ -1240,7 +1240,7 @@
             if (params["issue"]) {
                 GET("tt", "issue", params["issue"], true).
                 done(r => {
-                    if (modules.groups && AVAIL("accounts", "groups")) {
+                    if (modules.groups) {
                         modules.users.loadUsers(() => {
                             modules.groups.loadGroups(() => {
                                 modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"], params["search"]);
@@ -1252,8 +1252,7 @@
                         });
                     }
                 }).
-                fail(FAIL).
-                fail(loadingDone);
+                fail(FAILPAGE);
             } else {
                 if (parseInt(myself.uid)) {
                     if (modules.groups) {

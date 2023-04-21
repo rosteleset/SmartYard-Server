@@ -166,12 +166,16 @@ function cardForm(params) {
                     h += ` multiple="multiple"`;
                 }
                 h += `>`;
-                for (let j in params.fields[i].options) {
-                    if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                        h += `<option value="${params.fields[i].options[j].value}" selected data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
-                    } else {
-                        h += `<option value="${params.fields[i].options[j].value}" data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
+                if (typeof params.fields[i].options === "object") {
+                    for (let j in params.fields[i].options) {
+                        if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
+                            h += `<option value="${params.fields[i].options[j].value}" selected data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
+                        } else {
+                            h += `<option value="${params.fields[i].options[j].value}" data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
+                        }
                     }
+                } else {
+                    h += params.fields[i].options;
                 }
                 h += `</select>`;
                 h += `</div>`;

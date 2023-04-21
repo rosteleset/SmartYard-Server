@@ -943,13 +943,13 @@
                 if (regionId == targetRegionId) {
                     modules.addresses.renderRegion(regionId);
                 } else {
-                    location.href = "?#addresses&show=region&regionId=" + regionId;
+                    location.href = "?#addresses&show=region&regionId=" + targetRegionId + "&_refresh=" + Math.random();
                 }
             } else {
                 if (areaId == targetAreaId) {
-                    modules.addresses.renderRegion(areaId);
+                    modules.addresses.renderArea(areaId);
                 } else {
-                    location.href = "?#addresses&show=area&areaId=" + areaId;
+                    location.href = "?#addresses&show=area&areaId=" + targetAreaId + "&_refresh=" + Math.random();
                 }
             }
         });
