@@ -28,9 +28,9 @@
                         flat,
                         code,
                         plog,
+                        coalesce(manual_block, 0) manual_block, 
+                        coalesce(admin_block, 0) admin_block,
                         coalesce(auto_block, 0) auto_block, 
-                        manual_block, 
-                        admin_block,
                         open_code, 
                         auto_open, 
                         white_rabbit, 
@@ -48,9 +48,9 @@
                     "flat" => "flat",
                     "code" => "code",
                     "plog" => "plog",
-                    "auto_block" => "autoBlock",
                     "manual_block" => "manualBlock",
                     "admin_block" => "adminBlock",
+                    "auto_block" => "autoBlock",
                     "open_code" => "openCode",
                     "auto_open" => "autoOpen",
                     "white_rabbit" => "whiteRabbit",
@@ -483,6 +483,11 @@
                         return false;
                     }
 
+                    if (array_key_exists("autoBlock", $params) && !checkInt($params["autoBlock"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (array_key_exists("whiteRabbit", $params) && !checkInt($params["whiteRabbit"])) {
                         setLastError("invalidParams");
                         return false;
@@ -523,6 +528,7 @@
                         "plog" => "plog",
                         "manual_block" => "manualBlock",
                         "admin_block" => "adminBlock",
+                        "auto_block" => "autoBlock",
                         "open_code" => "openCode",
                         "auto_open" => "autoOpen",
                         "white_rabbit" => "whiteRabbit",
