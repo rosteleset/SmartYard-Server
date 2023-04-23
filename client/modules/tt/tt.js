@@ -382,218 +382,220 @@
                         };
                 }
         } else {
-            // custom field
-            fieldId = fieldId.substring(4);
+            if (fieldId) {
+                // custom field
+                fieldId = fieldId.substring(4);
 
-            let cf = false;
-            for (let i in modules.tt.meta.customFields) {
-                if (modules.tt.meta.customFields[i].field === fieldId) {
-                    cf = modules.tt.meta.customFields[i];
-                    break;
-                }
-            }
-
-            if (cf) {
-                let validate = false;
-                if (cf.required && !cf.regex) {
-                    validate = new Function ("v", `return v && $.trim(v) !== "";`);
-                } else
-                if (!cf.required && cf.regex) {
-                    validate = new Function ("v", `return /${cf.regex}/.test(v);`);
-                } else
-                if (cf.required && cf.regex) {
-                    validate = new Function ("v", `return v && $.trim(v) !== "" && /${cf.regex}/.test(v);`);
+                let cf = false;
+                for (let i in modules.tt.meta.customFields) {
+                    if (modules.tt.meta.customFields[i].field === fieldId) {
+                        cf = modules.tt.meta.customFields[i];
+                        break;
+                    }
                 }
 
-                let options = [];
+                if (cf) {
+                    let validate = false;
+                    if (cf.required && !cf.regex) {
+                        validate = new Function ("v", `return v && $.trim(v) !== "";`);
+                    } else
+                    if (!cf.required && cf.regex) {
+                        validate = new Function ("v", `return /${cf.regex}/.test(v);`);
+                    } else
+                    if (cf.required && cf.regex) {
+                        validate = new Function ("v", `return v && $.trim(v) !== "" && /${cf.regex}/.test(v);`);
+                    }
 
-                switch (cf.type) {
-                    case "text":
-                        if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno" ].indexOf(cf.editor) < 0) {
-                            cf.editor = "text";
-                        }
+                    let options = [];
 
-                        return {
-                            id: "_cf_" + fieldId,
-                            type: cf.editor,
-                            title: modules.tt.issueFieldTitle(field),
-                            placeholder: modules.tt.issueFieldTitle(field),
-                            hint: cf.fieldDescription?cf.fieldDescription:false,
-                            value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:""),
-                            validate: validate,
-                        }
-
-                    case "select":
-                        for (let i in cf.options) {
-                            options.push({
-                                id: cf.options[i].option,
-                                text: cf.options[i].optionDisplay,
-                            });
-                        }
-                        return {
-                            id: "_cf_" + fieldId,
-                            type: "select2",
-                            title: modules.tt.issueFieldTitle(field),
-                            placeholder: modules.tt.issueFieldTitle(field),
-                            hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: select2Filter(options, filter),
-                            multiple: cf.format.indexOf("multiple") >= 0,
-                            value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
-                            validate: validate,
-                        }
-
-                    case "users":
-                        if (cf.format.split(" ").includes("users")) {
-                            options = peoples(project, false, true);
-                        } else
-                        if (cf.format.split(" ").includes("groups")) {
-                            options = peoples(project, true, false);
-                        } else
-                        if (cf.format.split(" ").includes("usersAndGroups")) {
-                            options = peoples(project, true, true);
-                        }
-                        return {
-                            id: "_cf_" + fieldId,
-                            type: "select2",
-                            title: modules.tt.issueFieldTitle(field),
-                            placeholder: modules.tt.issueFieldTitle(field),
-                            hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: select2Filter(options, filter),
-                            multiple: cf.format.indexOf("multiple") >= 0,
-                            value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
-                            validate: validate,
-                        }
-
-                    case "geo":
-                        let vx;
-                        
-                        if (issue && issue["_cf_" + fieldId]) {
-                            vx = issue["_cf_" + fieldId];
-                            options = [
-                                {
-                                    id: issue["_cf_" + fieldId],
-                                    text: issue["_cf_" + fieldId],
-                                },
-                            ];
-                        }
-                        
-                        return {
-                            id: "_cf_" + fieldId,
-                            type: "select2",
-                            title: modules.tt.issueFieldTitle(field),
-                            placeholder: modules.tt.issueFieldTitle(field),
-                            hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: select2Filter(options, filter),
-                            value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
-                            validate: validate,
-                            ajax: {
-                                delay: 1000,
-                                transport: function (params, success, failure) {
-                                    loadingStart();
-                                    QUERY("geo", "suggestions", {
-                                        search: params.data.term,
-                                    }).
-                                    then(response => {
-                                        loadingDone();
-                                        success(response);
-                                    }).
-                                    fail(response => {
-                                        FAIL(response);
-                                        loadingDone();
-                                        failure(response);
-                                    }).
-                                    fail(FAIL).
-                                    always(loadingDone);
-                                },
-                                processResults: function (data) {
-                                    let suggestions = options;
-                                    for (let i in data.suggestions) {
-                                        let vl = " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]: " + data.suggestions[i].value;
-                                        if ((parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) && vx !== vl) {
-                                            suggestions.push({
-                                                id: vl,
-                                                text: vl,
-                                            });
-                                        }
-                                    }
-                                    return {
-                                        results: suggestions,
-                                    };
-                                },
-                            },
-                        }
-    
-                    case "issues":
-                        let vi = [];
-                        options = [];
-
-                        if (issue && issue["_cf_" + fieldId]) {
-                            let va;
-
-                            if (typeof issue["_cf_" + fieldId] == "string") {
-                                va = [ issue["_cf_" + fieldId] ];
-                            } else {
-                                va = issue["_cf_" + fieldId];
+                    switch (cf.type) {
+                        case "text":
+                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno" ].indexOf(cf.editor) < 0) {
+                                cf.editor = "text";
                             }
-                            for (let i in va) {
-                                vi.push(va[i]);
+
+                            return {
+                                id: "_cf_" + fieldId,
+                                type: cf.editor,
+                                title: modules.tt.issueFieldTitle(field),
+                                placeholder: modules.tt.issueFieldTitle(field),
+                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:""),
+                                validate: validate,
+                            }
+
+                        case "select":
+                            for (let i in cf.options) {
                                 options.push({
-                                    id: va[i],
-                                    text: va[i],
+                                    id: cf.options[i].option,
+                                    text: cf.options[i].optionDisplay,
                                 });
                             }
-                        }
+                            return {
+                                id: "_cf_" + fieldId,
+                                type: "select2",
+                                title: modules.tt.issueFieldTitle(field),
+                                placeholder: modules.tt.issueFieldTitle(field),
+                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                options: select2Filter(options, filter),
+                                multiple: cf.format.indexOf("multiple") >= 0,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                validate: validate,
+                            }
 
-                        return {
-                            id: "_cf_" + fieldId,
-                            type: "select2",
-                            title: modules.tt.issueFieldTitle(field),
-                            placeholder: modules.tt.issueFieldTitle(field),
-                            hint: cf.fieldDescription?cf.fieldDescription:false,
-                            options: select2Filter(options, filter),
-                            multiple: cf.format.indexOf("multiple") >= 0,
-                            value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
-                            validate: validate,
-                            ajax: {
-                                delay: 1000,
-                                transport: function (params, success, failure) {
-                                    loadingStart();
-                                    QUERY("tt", "issues", {
-                                        project: project.acronym,
-                                        filter: "#search",
-                                        skip: 0,
-                                        limit: 32768,
-                                        search: params.data.term,
-                                    }).
-                                    then(response => {
-                                        loadingDone();
-                                        success(response);
-                                    }).
-                                    fail(response => {
-                                        FAIL(response);
-                                        loadingDone();
-                                        failure(response);
-                                    }).
-                                    fail(FAIL).
-                                    always(loadingDone);
-                                },
-                                processResults: function (data) {
-                                    let suggestions = options;
-                                    for (let i in data.issues.issues) {
-                                        let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
-                                        if (vi.indexOf(vl) < 0) {
-                                            suggestions.push({
-                                                id: vl,
-                                                text: vl,
-                                            });
+                        case "users":
+                            if (cf.format.split(" ").includes("users")) {
+                                options = peoples(project, false, true);
+                            } else
+                            if (cf.format.split(" ").includes("groups")) {
+                                options = peoples(project, true, false);
+                            } else
+                            if (cf.format.split(" ").includes("usersAndGroups")) {
+                                options = peoples(project, true, true);
+                            }
+                            return {
+                                id: "_cf_" + fieldId,
+                                type: "select2",
+                                title: modules.tt.issueFieldTitle(field),
+                                placeholder: modules.tt.issueFieldTitle(field),
+                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                options: select2Filter(options, filter),
+                                multiple: cf.format.indexOf("multiple") >= 0,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                validate: validate,
+                            }
+
+                        case "geo":
+                            let vx;
+                            
+                            if (issue && issue["_cf_" + fieldId]) {
+                                vx = issue["_cf_" + fieldId];
+                                options = [
+                                    {
+                                        id: issue["_cf_" + fieldId],
+                                        text: issue["_cf_" + fieldId],
+                                    },
+                                ];
+                            }
+                            
+                            return {
+                                id: "_cf_" + fieldId,
+                                type: "select2",
+                                title: modules.tt.issueFieldTitle(field),
+                                placeholder: modules.tt.issueFieldTitle(field),
+                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                options: select2Filter(options, filter),
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                validate: validate,
+                                ajax: {
+                                    delay: 1000,
+                                    transport: function (params, success, failure) {
+                                        loadingStart();
+                                        QUERY("geo", "suggestions", {
+                                            search: params.data.term,
+                                        }).
+                                        then(response => {
+                                            loadingDone();
+                                            success(response);
+                                        }).
+                                        fail(response => {
+                                            FAIL(response);
+                                            loadingDone();
+                                            failure(response);
+                                        }).
+                                        fail(FAIL).
+                                        always(loadingDone);
+                                    },
+                                    processResults: function (data) {
+                                        let suggestions = options;
+                                        for (let i in data.suggestions) {
+                                            let vl = " [ " + data.suggestions[i].data.geo_lon + ", " + data.suggestions[i].data.geo_lat + " ]: " + data.suggestions[i].value;
+                                            if ((parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) && vx !== vl) {
+                                                suggestions.push({
+                                                    id: vl,
+                                                    text: vl,
+                                                });
+                                            }
                                         }
-                                    }
-                                    return {
-                                        results: suggestions,
-                                    };
+                                        return {
+                                            results: suggestions,
+                                        };
+                                    },
                                 },
-                            },
-                        }
+                            }
+        
+                        case "issues":
+                            let vi = [];
+                            options = [];
+
+                            if (issue && issue["_cf_" + fieldId]) {
+                                let va;
+
+                                if (typeof issue["_cf_" + fieldId] == "string") {
+                                    va = [ issue["_cf_" + fieldId] ];
+                                } else {
+                                    va = issue["_cf_" + fieldId];
+                                }
+                                for (let i in va) {
+                                    vi.push(va[i]);
+                                    options.push({
+                                        id: va[i],
+                                        text: va[i],
+                                    });
+                                }
+                            }
+
+                            return {
+                                id: "_cf_" + fieldId,
+                                type: "select2",
+                                title: modules.tt.issueFieldTitle(field),
+                                placeholder: modules.tt.issueFieldTitle(field),
+                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                options: select2Filter(options, filter),
+                                multiple: cf.format.indexOf("multiple") >= 0,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
+                                validate: validate,
+                                ajax: {
+                                    delay: 1000,
+                                    transport: function (params, success, failure) {
+                                        loadingStart();
+                                        QUERY("tt", "issues", {
+                                            project: project.acronym,
+                                            filter: "#search",
+                                            skip: 0,
+                                            limit: 32768,
+                                            search: params.data.term,
+                                        }).
+                                        then(response => {
+                                            loadingDone();
+                                            success(response);
+                                        }).
+                                        fail(response => {
+                                            FAIL(response);
+                                            loadingDone();
+                                            failure(response);
+                                        }).
+                                        fail(FAIL).
+                                        always(loadingDone);
+                                    },
+                                    processResults: function (data) {
+                                        let suggestions = options;
+                                        for (let i in data.issues.issues) {
+                                            let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
+                                            if (vi.indexOf(vl) < 0) {
+                                                suggestions.push({
+                                                    id: vl,
+                                                    text: vl,
+                                                });
+                                            }
+                                        }
+                                        return {
+                                            results: suggestions,
+                                        };
+                                    },
+                                },
+                            }
+                    }
                 }
             }
         }
