@@ -302,21 +302,6 @@
                         }
                     }
 
-                    /*
-                    let af = [];
-                    if (response.template && response.template.fields) {
-                        for (let i in response.template.fields) {
-                            if (af.indexOf(response.template.fields[i]) < 0) {
-                                let f = modules.tt.issueField2FormFieldEditor(false, response.template.fields[i], projectId);
-                                if (f) {
-                                    fields.push(f);
-                                    af.push(response.template.fields[i]);
-                                }
-                            }
-                        }
-                    }
-                    */
-
                     cardForm({
                         title: i18n("tt.createIssueTitle"),
                         footer: true,
