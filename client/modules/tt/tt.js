@@ -209,6 +209,8 @@
             }
         }
 
+        console.log(fieldId);
+
         if (fieldId && fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
