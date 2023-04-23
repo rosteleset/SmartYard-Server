@@ -280,6 +280,29 @@
                         });
                     }
     
+                    let kx = [];
+                    let ky = {};
+        
+                    for (let i in response.template) {
+                        let fx = ((typeof response.template[i] == "string")?response.template[i]:i).toString();
+                        if (fx.charAt(0) == '%') {
+                            fx = fx.split('%');
+                            kx[fx[1]] = fx[2];
+                            ky[fx[2]] = (typeof response.template[i] == "string")?false:response.template[i];
+                        } else {
+                            kx.push(fx);
+                            ky[fx] = (typeof response.template[i] == "string")?false:response.template[i];
+                        }
+                    }
+        
+                    for (let i in kx) {
+                        let fi = modules.tt.issueField2FormFieldEditor(false, kx[i], projectId, ky[kx[i]]);
+                        if (fi) {
+                            fields.push(fi);
+                        }
+                    }
+
+                    /*
                     let af = [];
                     if (response.template && response.template.fields) {
                         for (let i in response.template.fields) {
@@ -292,7 +315,8 @@
                             }
                         }
                     }
-    
+                    */
+
                     cardForm({
                         title: i18n("tt.createIssueTitle"),
                         footer: true,
