@@ -209,7 +209,7 @@
             }
         }
 
-        if (fieldId.substring(0, 4) !== "_cf_") {
+        if (fieldId && fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
                 case "issueId":
