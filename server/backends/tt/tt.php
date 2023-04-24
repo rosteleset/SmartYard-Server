@@ -308,7 +308,7 @@
              * @return string
              */
 
-            public function getWrokflowLibsCode()
+            public function getWorkflowLibsCode()
             {
                 $files = loadBackend("files");
 
