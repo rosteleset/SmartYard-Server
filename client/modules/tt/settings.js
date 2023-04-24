@@ -2062,7 +2062,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("tt.workflows") + " <a href='?#tt.settings&section=libs' class='ml-3'>" + i18n("tt.libs") + "</a>",
+                    caption: i18n("tt.workflows") + " <a href='?#tt.settings&section=libs' class='ml-3 hoverable pointer'>" + i18n("tt.libs") + "</a>",
                     button: {
                         caption: i18n("tt.addWorkflow"),
                         click: modules.tt.settings.addWorkflow,
@@ -2205,7 +2205,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("tt.workflowLibs") + " <a href='?#tt.settings&section=workflows' class='ml-3'>" + i18n("tt.workflows") + "</a>",
+                    caption: i18n("tt.workflowLibs") + " <a href='?#tt.settings&section=workflows' class='ml-3 hoverable pointer'>" + i18n("tt.workflows") + "</a>",
                     button: {
                         caption: i18n("tt.addWorkflowLib"),
                         click: modules.tt.settings.addWorkflowLib,
