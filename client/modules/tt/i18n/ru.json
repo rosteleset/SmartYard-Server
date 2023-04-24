@@ -231,6 +231,13 @@
     "statusDelete": "Удалить статус",
     "addStatus": "Добавить статус",
     "confirmStatusDelete": "Удалить статус \"#%s\"?",
+    "worflowLibSave": "Сохранить",
+    "workflowLibWasSaved": "Библиотека сохранена",
+    "workFlowLibs": "Библиотеки",
+    "confirmWorkflowLibDelete": "Удалить Библиотеку \"%s\"?",
+    "addWorkflowLib": "Добавить библиотеку",
+    "workflowLib": "Библиотека",
+    "deleteWorkflowLib": "Удалить библиотеку?",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
