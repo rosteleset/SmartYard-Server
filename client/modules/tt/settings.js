@@ -2132,9 +2132,9 @@
             let height = $(window).height() - top;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
-            h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += `<pre class="ace-editor mt-2" id="libEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.worflowLibSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.worflowLibSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("libEditor");
             editor.setTheme("ace/theme/chrome");
@@ -2142,7 +2142,7 @@
             editor.setValue(l.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
-            $("#workflowSave").off("click").on("click", () => {
+            $("#libSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("tt", "lib", lib, { "body": $.trim(editor.getValue()) }).
                 fail(FAIL).
