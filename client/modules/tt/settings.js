@@ -2205,7 +2205,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("tt.workflowLibs"),
+                    caption: i18n("tt.workflowLibs") + " <a href='?#tt.settings&section=workflows' class='ml-3'>" + i18n("tt.workflows") + "</a>",
                     button: {
                         caption: i18n("tt.addWorkflowLib"),
                         click: modules.tt.settings.addWorkflowLib,
