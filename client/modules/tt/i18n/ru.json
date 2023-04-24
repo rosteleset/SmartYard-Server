@@ -238,6 +238,8 @@
     "addWorkflowLib": "Добавить библиотеку",
     "workflowLib": "Библиотека",
     "deleteWorkflowLib": "Удалить библиотеку?",
+    "libs": "Библиотеки",
+    "lib": "Библиотека",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
