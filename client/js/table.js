@@ -122,7 +122,7 @@ function cardTable(params) {
             }
             h += `>`;
             if (typeof params.edit === "function") {
-                h += `<td class="hoverable ${editClass}" uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
+                h += `<td class="hoverable pointer ${editClass}" uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
             }
             for (let j in rows[i].cols) {
                 if (rows[i].cols[j].hidden) {
