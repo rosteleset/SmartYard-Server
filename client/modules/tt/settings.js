@@ -2062,7 +2062,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("tt.workflows"),
+                    caption: i18n("tt.workflows") + " <h href=''>" + i18n("tt.libs") + "</h>",
                     button: {
                         caption: i18n("tt.addWorkflow"),
                         click: modules.tt.settings.addWorkflow,
