@@ -18,7 +18,7 @@
                 $lib = loadBackend("tt")->getWorkflowLib($params["_id"]);
 
                 if ($lib !== false) {
-                    return api::ANSWER($workflow, "body");
+                    return api::ANSWER($lib, "body");
                 } else {
                     return api::ERROR("inaccessible");
                 }
