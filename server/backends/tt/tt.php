@@ -201,7 +201,7 @@
              * @return string
              */
 
-            public function getWorkflow($workflow) {
+             public function getWorkflow($workflow) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -275,6 +275,115 @@
 
                 foreach ($workflows as $w) {
                     $files->deleteFile($w["id"]);
+                    break;
+                }
+
+                return true;
+            }
+
+            public function getWrokflowLibs()
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                ]);
+
+                $wls = "";
+
+                foreach ($libs as $l) {
+                    $wls .= $files->streamToContents($files->getFileStream($l["id"])) . "\n\n";
+                }
+
+                return $wls;
+            }
+
+            /**
+             * @param $lib
+             * @return string
+             */
+
+             public function getWorkflowLib($lib)
+             {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                    "metadata.lib" => $lib,
+                ]);
+
+                $lib = false;
+                foreach ($libs as $l) {
+                    $lib = $l;
+                    break;
+                }
+
+                if (!$lib) {
+                    return "";
+                }
+
+                return $files->streamToContents($files->getFileStream($lib["id"]));
+            }
+
+            /**
+             * @param $lib
+             * @param $body
+             * @return boolean
+             */
+            public function putWorkflowLib($lib, $body) 
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                if (!$lib) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                    "metadata.lib" => $lib,
+                ]);
+
+                foreach ($libs as $l) {
+                    $files->deleteFile($l["id"]);
+                }
+
+                return $files->addFile($lib . ".lua", $files->contentsToStream($body), [
+                    "type" => "workflow.lib",
+                    "lib" => $lib,
+                ]);
+            }
+
+            /**
+             * @param $workflow
+             * @return boolean
+             */
+            public function deleteWorkflowLib($lib) 
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                    "metadata.lib" => $lib,
+                ]);
+
+                foreach ($libs as $l) {
+                    $files->deleteFile($l["id"]);
                     break;
                 }
 
