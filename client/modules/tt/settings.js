@@ -2123,6 +2123,140 @@
         always(loadingDone);
     },
 
+    renderWorkflowLib: function (lib) {
+        loadingStart();
+        GET("tt", "lib", lib, true).
+        done(l => {
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.worflowLibSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("libEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/lua");
+            editor.setValue(l.body, -1);
+            editor.clearSelection();
+            editor.setFontSize(14);
+            $("#workflowSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "lib", lib, { "body": $.trim(editor.getValue()) }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.workflowLibWasSaved"));
+                }).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
+    deleteWorkflowLib: function (lib) {
+        mConfirm(i18n("tt.confirmWorkflowLibDelete", lib), i18n("confirm"), i18n("delete"), () => {
+            loadingStart();
+            DELETE("tt", "lib", lib, false).
+            fail(err => {
+                FAIL(err);
+                loadingDone();
+            }).
+            done(() => {
+                modules.tt.settings.renderWorkflowLibs();
+            });
+        });
+    },
+
+    addWorkflowLib: function () {
+        cardForm({
+            title: i18n("tt.addWorkflowLib"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "file",
+                    type: "text",
+                    title: i18n("tt.workflowLib"),
+                    placeholder: i18n("tt.workflowLib"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: f => {
+                location.href = "?#tt.settings&section=lib&lib=" + encodeURIComponent(f.file);
+            },
+        }).show();
+    },
+
+    renderWorkflowLibs: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    caption: i18n("tt.workflowLibs"),
+                    button: {
+                        caption: i18n("tt.addWorkflowLib"),
+                        click: modules.tt.settings.addWorkflowLib,
+                    },
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.workflowLib"),
+                        fullWidth: true,
+                    },
+                ],
+                edit: lib => {
+                    location.href = "?#tt.settings&section=lib&lib=" + encodeURIComponent(lib);
+                },
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules.tt.meta.workflowLibs) {
+                        let wl = modules.tt.meta.workflowLibs[i];
+
+                        rows.push({
+                            uid: wl,
+                            cols: [
+                                {
+                                    data: wl,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "far fa-trash-alt",
+                                        title: i18n("tt.deleteWorkflowLib"),
+                                        class: "text-danger",
+                                        click: lib => {
+                                            modules.tt.settings.deleteWorkflowLib(lib);
+                                        },
+                                    },
+                                ],
+                            },
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     renderStatuses: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -2995,6 +3129,7 @@
         let sections = [
             "projects",
             "workflows",
+            "libs",
             "filters",
             "crontabs",
             "statuses",
@@ -3029,6 +3164,14 @@
                 modules.tt.settings.renderWorkflow(params["workflow"]);
                 break;
 
+            case "libs":
+                modules.tt.settings.renderWorkflowLibs();
+                break;
+
+            case "lib":
+                modules.tt.settings.renderWorkflowLib(params["lib"]);
+                break;
+    
             case "filters":
                 modules.tt.settings.renderFilters();
                 break;

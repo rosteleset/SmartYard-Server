@@ -31,7 +31,7 @@
                 $this->sandbox = $sandbox;
 
                 try {
-                    $code = $this->sandbox->loadString($tt->getWorkflowLibs() . $tt->getWorkflow($workflow));
+                    $code = $this->sandbox->loadString($tt->getWorkflowLibsCode() . $tt->getWorkflow($workflow));
                     $code->call();
                 } catch (\Exception $e) {
                     throw new \Exception("workflow not found");

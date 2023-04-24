@@ -281,7 +281,34 @@
                 return true;
             }
 
-            public function getWrokflowLibs()
+            /**
+             * get available workflows
+             *
+             * @return array
+             */
+
+             public function getWorkflowLibs() {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([ "metadata.type" => "workflow.lib" ]);
+
+                $list = [];
+                foreach ($libs as $lib) {
+                    $list[] = $workflow["metadata"]["lib"];
+                }
+
+                return $list;
+            }
+
+            /**
+             * @return string
+             */
+
+            public function getWrokflowLibsCode()
             {
                 $files = loadBackend("files");
 

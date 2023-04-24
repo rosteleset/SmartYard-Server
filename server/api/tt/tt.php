@@ -21,6 +21,7 @@
                     $meta = [
                         "projects" => $tt->getProjects(),
                         "workflows" => $tt->getWorkflows(),
+                        "workflowLibs" => $tt->getWorkflowLibs(),
                         "filters" => $tt->getFilters(),
                         "statuses" => $tt->getStatuses(),
                         "resolutions" => $tt->getResolutions(),
