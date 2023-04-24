@@ -3129,7 +3129,6 @@
         let sections = [
             "projects",
             "workflows",
-            "libs",
             "filters",
             "crontabs",
             "statuses",
