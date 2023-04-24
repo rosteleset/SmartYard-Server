@@ -298,7 +298,7 @@
 
                 $list = [];
                 foreach ($libs as $lib) {
-                    $list[] = $workflow["metadata"]["lib"];
+                    $list[] = $lib["metadata"]["lib"];
                 }
 
                 return $list;
