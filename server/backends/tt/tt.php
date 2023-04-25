@@ -84,6 +84,12 @@
                         "array_values" => function (...$args) {
                             return [ array_values(...$args) ];
                         },
+                        "in_array" => function (...$args) {
+                            return [ in_array(...$args) ];
+                        },
+                        "array_key_exists" => function (...$args) {
+                            return [ array_key_exists(...$args) ];
+                        },
                         "explode" => function (...$args) {
                             return [ explode(...$args) ];
                         },
