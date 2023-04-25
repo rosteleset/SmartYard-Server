@@ -414,16 +414,13 @@
                                 cf.editor = "text";
                             }
 
-                            if (cf.editor == "datetime-local") {
-                                cf.editor = "datetime-local-sec";
-                            }
-
                             return {
                                 id: "_cf_" + fieldId,
                                 type: cf.editor,
                                 title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
+                                sec: true,
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:""),
                                 validate: validate,
                             }
