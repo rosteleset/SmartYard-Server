@@ -102,6 +102,9 @@
                         "date" => function (...$args) {
                             return [ date(...$args) ];
                         },
+                        "strtotime" => function (...$args) {
+                            return [ strtotime(...$args) ];
+                        }
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
