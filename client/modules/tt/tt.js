@@ -414,6 +414,10 @@
                                 cf.editor = "text";
                             }
 
+                            if (cf.editor == "datetime-local") {
+                                cf.editor = "datetime-local-sec";
+                            }
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: cf.editor,
@@ -776,7 +780,7 @@
                                 break;
 
                             case "datetime-local":
-                                val = ttDate(Math.round(val / 1000));
+                                val = ttDate(val);
                                 break;
                         }
                         

@@ -241,9 +241,10 @@ function cardForm(params) {
             case "time":
             case "datetime":
             case "datetime-local":
+            case "datetime-local-sec":
             case "password":
             case "color":
-                if (params.fields[i].type === "datetime") {
+                if (params.fields[i].type === "datetime" || params.fields[i].type === "datetime-local-sec") {
                     params.fields[i].type = "datetime-local"
                 }
                 if (params.fields[i].button) {
@@ -328,7 +329,10 @@ function cardForm(params) {
 
             case "datetime-local":
                 return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
-
+    
+            case "datetime-local-sec":
+                return strtotime($(`#${_prefix}${params.fields[i].id}`).val());
+        
             case "multiselect":
                 let o = [];
                 $(`.checkBoxOption-${params.fields[i].id}`).each(function () {
@@ -487,7 +491,11 @@ function cardForm(params) {
                 case "datetime-local":
                     $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value / 1000) + 'T' + date('H:i', params.fields[i].value / 1000));
                     break;
-
+    
+                case "datetime-local-sec":
+                    $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value) + 'T' + date('H:i', params.fields[i].value));
+                    break;
+    
                 case "multiselect":
                     $(`.checkBoxOption-${params.fields[i].id}`).prop("checked", false);
                     for (let j in params.fields[i].value) {
