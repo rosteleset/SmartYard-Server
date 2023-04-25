@@ -253,7 +253,8 @@
 
                 $preprocess["%%me"] = $this->login;
                 $preprocess["%%my"] = $my;
-                $preprocess["%%today"] = date("Y-M-d");
+                $preprocess["%%date"] = date("Y-M-d");
+                $preprocess["%%time"] = date("H:i");
                 $preprocess["%%yesterday"] = date("Y-M-d", strtotime("-1 day"));
                 $preprocess["%%tomorrow"] = date("Y-M-d", strtotime("+1 day"));
                 $preprocess["%%now"] = date("Y-m-d H:i");
