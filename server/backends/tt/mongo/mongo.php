@@ -254,12 +254,12 @@
                 $preprocess["%%me"] = $this->login;
                 $preprocess["%%my"] = $my;
 
-                $preprocess["%%date"] = date("Y-M-d");
-                $preprocess["%%yesterday"] = date("Y-M-d", strtotime("-1 day"));
-                $preprocess["%%tomorrow"] = date("Y-M-d", strtotime("+1 day"));
+                $preprocess["%%strToday"] = date("Y-M-d");
+                $preprocess["%%strYesterday"] = date("Y-M-d", strtotime("-1 day"));
+                $preprocess["%%strTomorrow"] = date("Y-M-d", strtotime("+1 day"));
 
-                $preprocess["%%timestampDate"] = strtotime(date("Y-M-d"));
                 $preprocess["%%timestamp"] = time();
+                $preprocess["%%timestampToday"] = strtotime(date("Y-M-d"));
                 $preprocess["%%timestampYesterday"] = strtotime(date("Y-M-d", strtotime("-1 day")));
                 $preprocess["%%timestampTomorrow"] = strtotime(date("Y-M-d", strtotime("+1 day")));
                 
