@@ -253,6 +253,10 @@
 
                 $preprocess["%%me"] = $this->login;
                 $preprocess["%%my"] = $my;
+                $preprocess["%%today"] = date("Y-M-d");
+                $preprocess["%%yesterday"] = date("Y-M-d", strtotime("-1 day"));
+                $preprocess["%%tomorrow"] = date("Y-M-d", strtotime("+1 day"));
+                $preprocess["%%now"] = date("Y-m-d H:i");
 
                 $query = $this->preprocessFilter($query, $preprocess);
 
