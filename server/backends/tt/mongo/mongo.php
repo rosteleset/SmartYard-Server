@@ -253,12 +253,16 @@
 
                 $preprocess["%%me"] = $this->login;
                 $preprocess["%%my"] = $my;
+
                 $preprocess["%%date"] = date("Y-M-d");
-                $preprocess["%%time"] = date("H:i");
                 $preprocess["%%yesterday"] = date("Y-M-d", strtotime("-1 day"));
                 $preprocess["%%tomorrow"] = date("Y-M-d", strtotime("+1 day"));
-                $preprocess["%%now"] = date("Y-m-d H:i");
 
+                $preprocess["%%timestampDate"] = strtotime(date("Y-M-d"));
+                $preprocess["%%timestamp"] = time();
+                $preprocess["%%timestampYesterday"] = strtotime(date("Y-M-d", strtotime("-1 day")));
+                $preprocess["%%timestampTomorrow"] = strtotime(date("Y-M-d", strtotime("+1 day")));
+                
                 $query = $this->preprocessFilter($query, $preprocess);
 
                 $projection = [];
