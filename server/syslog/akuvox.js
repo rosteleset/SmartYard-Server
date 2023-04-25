@@ -25,7 +25,10 @@ syslog.on("message", async ({ date, host, message }) => {
         msg.indexOf("Invalid SenderSSRC") >= 0 ||
         msg.indexOf("Listen") >= 0 ||
         msg.indexOf("Waiting") >= 0 ||
-        msg.indexOf("Sending") >= 0
+        msg.indexOf("Sending") >= 0 ||
+        msg.indexOf("don't support play dtmf kecode") >= 0 ||
+        msg.indexOf("Upload Server is empty") >= 0 ||
+        msg.indexOf("spk not enable now!") >= 0
     ) {
         return;
     }
