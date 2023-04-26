@@ -42,6 +42,9 @@
                 case "comment":
                     return i18n("tt.comment");
 
+                case "optionalComment":
+                    return i18n("tt.comment");
+    
                 case "resolution":
                     return i18n("tt.resolution");
 
@@ -257,6 +260,14 @@
                         },
                     };
 
+                case "optionalComment":
+                    return {
+                        id: "comment",
+                        type: "area",
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
+                    };
+    
                 case "resolution":
                     let resolutions = [];
 
