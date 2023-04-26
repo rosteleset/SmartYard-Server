@@ -267,6 +267,13 @@
                 $preprocess["%%timestamp+7days"] = strtotime(date("Y-M-d", strtotime("+7 day")));
                 $preprocess["%%timestamp+1month"] = strtotime(date("Y-M-d", strtotime("+1 month")));
                 $preprocess["%%timestamp+1year"] = strtotime(date("Y-M-d", strtotime("+1 year")));
+                $preprocess["%%timestamp-2days"] = strtotime(date("Y-M-d", strtotime("-2 day")));
+                $preprocess["%%timestamp-3days"] = strtotime(date("Y-M-d", strtotime("-3 day")));
+                $preprocess["%%timestamp-7days"] = strtotime(date("Y-M-d", strtotime("-7 day")));
+                $preprocess["%%timestamp-1month"] = strtotime(date("Y-M-d", strtotime("-1 month")));
+                $preprocess["%%timestamp-1year"] = strtotime(date("Y-M-d", strtotime("-1 year")));
+                $preprocess["%%timestamp-2year"] = strtotime(date("Y-M-d", strtotime("-2 year")));
+                $preprocess["%%timestamp-3year"] = strtotime(date("Y-M-d", strtotime("-3 year")));
                 
                 $query = $this->preprocessFilter($query, $preprocess);
 
