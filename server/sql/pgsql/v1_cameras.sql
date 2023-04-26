@@ -9,6 +9,7 @@ CREATE TABLE cameras
     credentials character varying not null,                                                                             -- plaintext:login:password, token:token, or something else
     name character varying,
     dvr_stream character varying,
+    timezone character varying, 
     lat real,
     lon real,
     direction real,
