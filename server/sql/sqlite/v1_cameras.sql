@@ -9,6 +9,7 @@ CREATE TABLE cameras
     credentials text not null,                                                                                          -- plaintext:login:password, token:token, or something else
     name text,
     dvr_stream text,
+    timezone text,
     lat real,
     lon real,
     direction real,
