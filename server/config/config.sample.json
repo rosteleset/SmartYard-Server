@@ -22,7 +22,8 @@
         "phonePattern": "7 (###) ###-##-##",
         "tt_project": "TDM",
         "tt_workflow": "mobile",
-        "tt_user": "mobile"
+        "tt_user": "mobile",
+        "time_zone": "Europe/Moscow"
     },
 
     "db": {
