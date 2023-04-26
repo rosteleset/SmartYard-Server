@@ -20,6 +20,7 @@ mobile:
   tt_project: TDM
   tt_workflow: mobile
   tt_user: mobile
+  time_zone: Europe/Moscow
 db:
   dsn: pgsql:host=127.0.0.1;port=5432;dbname=rbt
   username: rbt
@@ -82,11 +83,9 @@ backends:
     backend: internal
     servers:
     - title: Local server
-      # type: nimble, flussonic, macroscop or trassir
-      type: nimble
+      type: nimble or flussonic or  or trassir
       url: https://video.server.hostname:8443
       token: <!-- mediaserver security token here (only if you use it) --!>
-      # management keys below are only for nimble
       management_ip: 127.0.0.1
       management_port: '8086'
       management_token: <!-- management token --!>
@@ -111,10 +110,10 @@ backends:
     - title: First server
       url: http://127.0.0.1:9051
   cs:
-    backend: mongo
+    backend: internal
   mqtt:
     backend: internal
-    agent: "http://127.0.0.1:8082/broadcast"
+    agent: http://127.0.0.1:8082/broadcast
     ws: wss://<!-- your server here --!>
     mqtt: mqtt://<!-- your server here -->
     username: rbt
@@ -141,6 +140,6 @@ syslog_servers:
   akuvox:
   - syslog.udp:127.0.0.1:45455
   rubetek:
-  - syslog.udp:127.0.0.1:45456
+  - syslog.udp:192.168.13.60:45456
 ntp_servers:
 - ntp:127.0.0.1:123
