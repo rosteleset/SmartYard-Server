@@ -351,21 +351,20 @@
                     return false;
                 }
 
-                if (!$shared) {
-                    $prefix = 0;
-                }
-
                 if (!checkStr($callerId)) {
                     return false;
                 }
 
-                if ($shared) {
-                    $r1 = $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
-                        ":prefix" => $prefix,
-                    ]) !== false;
-                } else {
-                    $r1 = $this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") !== false;
+                if (!$shared) {
+                    if ($this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") === false) {
+                        return false;
+                    }
+                    $prefix = 0;
                 }
+
+                $r1 = $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
+                    ":prefix" => $prefix,
+                ]) !== false;
 
                 return
                     $r1
