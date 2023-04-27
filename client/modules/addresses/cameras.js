@@ -158,6 +158,17 @@
                     },
                 },
                 {
+                    id: "timezone",
+                    type: "select2",
+                    title: i18n("addresses.timezone"),
+                    placeholder: i18n("addresses.timezone"),
+                    options: modules.addresses.timezonesOptions(),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    },
+                    value: "-",
+                },
+                {
                     id: "frs",
                     type: "select2",
                     title: i18n("addresses.frs"),
@@ -377,6 +388,17 @@
                                 return true;
                             }
                         },
+                    },
+                    {
+                        id: "timezone",
+                        type: "select2",
+                        title: i18n("addresses.timezone"),
+                        placeholder: i18n("addresses.timezone"),
+                        options: modules.addresses.timezonesOptions(),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: camera.timezone,
                     },
                     {
                         id: "frs",
