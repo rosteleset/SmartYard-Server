@@ -46,6 +46,12 @@ syslog.on("message", async ({ date, host, message }) => {
         await mdTimer(host, 5000);
     }
 
+    // Opening door by DTMF
+    if (msg.indexOf("DTMF_LOG:From") >= 0) {
+        const apartmentId = parseInt(msg.split(" ")[1].substring(1));
+        await API.setRabbitGates({ date: now, ip: host, apartmentId: apartmentId });
+    }
+
     // Opening door by RFID key
     if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) {
         const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);

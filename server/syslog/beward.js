@@ -47,21 +47,27 @@ syslog.on("message", async ({date, host, message}) => {
         await API.motionDetection({ date: now, ip: host, motionActive: false });
     }
 
+    // Opening door by DTMF or CMS handset
+    if (bwMsg.indexOf("Opening door by DTMF command") >= 0 || bwMsg.indexOf("Opening door by CMS handset") >= 0) {
+        const apartmentNumber = parseInt(bwMsg.split("apartment")[1]);
+        await API.setRabbitGates({ date: now, ip: host, apartmentNumber });
+    }
+
     // Call in gate mode with prefix: potential white rabbit
     if (bwMsg.indexOf("Redirecting CMS call to") >= 0) {
         const dst = bwMsg.split("to")[1].split("for")[0];
         gateRabbits[host] = {
             ip: host,
             prefix: parseInt(dst.substring(0, 5)),
-            apartment: parseInt(dst.substring(5)),
+            apartmentNumber: parseInt(dst.substring(5)),
         };
     }
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (bwMsg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
         if (gateRabbits[host]) {
-            const { ip, prefix, apartment } = gateRabbits[host];
-            await API.setRabbitGates({ date: now, ip, prefix, apartment });
+            const { ip, prefix, apartmentNumber } = gateRabbits[host];
+            await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
         }
     }
 

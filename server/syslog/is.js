@@ -41,6 +41,8 @@ syslog.on("message", async ({ date, host, message }) => {
         await mdTimer(host, 5000);
     }
 
+    // TODO: Opening door by DTMF or CMS handset
+
     // Call in gate mode with prefix: potential white rabbit
     if (/^Calling to \d+ house \d+ flat/.test(isMsg)) {
         const house = isMsg.split("to")[1].split("house")[0].trim();
@@ -49,15 +51,15 @@ syslog.on("message", async ({ date, host, message }) => {
         gateRabbits[host] = {
             ip: host,
             prefix: house,
-            apartment: flat,
+            apartmentNumber: flat,
         };
     }
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (isMsg.indexOf("Open main door by DTMF") >= 0) {
         if (gateRabbits[host]) {
-            const { ip, prefix, apartment } = gateRabbits[host];
-            await API.setRabbitGates({ date: now, ip, prefix, apartment });
+            const { ip, prefix, apartmentNumber } = gateRabbits[host];
+            await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
         }
     }
 

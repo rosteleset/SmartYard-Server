@@ -34,16 +34,18 @@ syslog.on("message", async ({ date, host, message }) => {
             gateRabbits[host] = {
                 ip: host,
                 prefix: parseInt(number.substring(0, 4)),
-                apartment: parseInt(number.substring(4)),
+                apartmentNumber: parseInt(number.substring(4)),
             };
         }
     }
 
+    // TODO: Opening door by DTMF or CMS handset
+
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (msgParts[4] === 'Open door by DTMF') {
         if (gateRabbits[host]) {
-            const { ip, prefix, apartment } = gateRabbits[host];
-            await API.setRabbitGates({ date: now, ip, prefix, apartment });
+            const { ip, prefix, apartmentNumber } = gateRabbits[host];
+            await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
         }
     }
 
