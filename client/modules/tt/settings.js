@@ -1014,7 +1014,7 @@
                         type: "area",
                         title: i18n("tt.customFieldOptions"),
                         placeholder: i18n("tt.customFieldOptions"),
-                        value: options,
+                        value: $.trim(options),
                         hidden: cf.type !== "select",
                         validate: (v, prefix) => {
                             return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
@@ -1072,6 +1072,7 @@
                 ],
                 delete: i18n("tt.customFieldDelete"),
                 callback: function (result) {
+                    result.options = $.trim(result.options);
                     if (result.delete === "yes") {
                         modules.tt.settings.deleteCustomField(customFieldId);
                     } else {
