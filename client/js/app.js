@@ -1117,7 +1117,7 @@ function FAIL(response) {
     if (response && response.responseJSON && response.responseJSON.error) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         if (response.responseJSON.error == "tokenNotFound") {
-            $.cookie("_token", false);
+            $.cookie("_token", null);
         }
     } else {
         error(i18n("errors.unknown"), i18n("error"), 30);
