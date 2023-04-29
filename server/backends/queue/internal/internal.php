@@ -57,6 +57,10 @@
              */
             function cron($part)
             {
+                $this->db->modify("delete from core_running_processes where done is not null and expire < :expire", [
+                    "expire" => time(),
+                ]);
+
                 if (@$this->tasks[$part]) {
                     foreach ($this->tasks[$part] as $task) {
                         $this->$task();
@@ -66,10 +70,6 @@
                 } else {
                     return parent::cron($part);
                 }
-
-                $this->db->modify("delete from core_running_processes where done is not null and expire < :expire", [
-                    "expire" => time(),
-                ]);
             }
 
             /**
