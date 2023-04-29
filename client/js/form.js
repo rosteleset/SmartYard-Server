@@ -107,7 +107,11 @@ function cardForm(params) {
             if (params.fields[i].hint || params.fields[i].type === "files") {
                 h += `<td class="pb-0 pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
             } else {
-                h += `<td class="pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
+                if (params.fields[i].type == "select2") {
+                    h += `<td class="tdform${first}" style="vertical-align: top!important; padding-top: 19px!important;">${params.fields[i].title}</td>`;
+                } else {
+                    h += `<td class="pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
+                }
             }
         }
 
