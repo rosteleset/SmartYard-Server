@@ -226,10 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $path = substr($path, strlen($server['path']));
     }
 
-    if ($path && $path[0] == '/') {
-        $path = substr($path, 1);
-    }
-
+    $path = trim($path, '/');
     $m = explode('/', $path);
 
     array_unshift($m, "mobile");
