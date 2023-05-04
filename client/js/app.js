@@ -229,7 +229,7 @@ function login() {
     let login = $.trim($("#loginBoxLogin").val());
     let password = $.trim($("#loginBoxPassword").val());
     let server = $.trim($("#loginBoxServer").val());
-    let rememberMe = $("#loginBoxRemember").val() == "on";
+    let rememberMe = ($("#loginBoxRemember").val() == "on")?1:0;
 
     while (server[server.length - 1] === "/") {
         server = server.substring(0, server.length - 1);
