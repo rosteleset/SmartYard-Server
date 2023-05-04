@@ -152,7 +152,7 @@ function showLoginForm() {
     if (!$("#loginBoxServer").val()) {
         $("#loginBoxServer").val(config.defaultServer);
     }
-    $("#loginBoxRemember").attr("checked", $.cookie("_rememberMe") === "on");
+    $("#loginBoxRemember").attr("checked", parseInt($.cookie("_remember_me")));
 
     let server = $("#loginBoxServer").val();
 
@@ -222,20 +222,22 @@ function login() {
         return;
     }
 
+    $.cookie("_test", null);
+
     loadingStart();
 
     let login = $.trim($("#loginBoxLogin").val());
     let password = $.trim($("#loginBoxPassword").val());
     let server = $.trim($("#loginBoxServer").val());
-    let rememberMe = $("#loginBoxRemember").val();
+    let rememberMe = $("#loginBoxRemember").val() == "on";
 
     while (server[server.length - 1] === "/") {
         server = server.substring(0, server.length - 1);
     }
 
-    $.cookie("_rememberMe", rememberMe, { expires: 3650, insecure: config.insecureCookie });
+    $.cookie("_remember_me", rememberMe, { expires: 3650, insecure: config.insecureCookie });
 
-    if (rememberMe === "on") {
+    if (rememberMe) {
         $.cookie("_login", login, { expires: 3650, insecure: config.insecureCookie });
         $.cookie("_server", server, { expires: 3650, insecure: config.insecureCookie });
     } else {
@@ -251,12 +253,12 @@ function login() {
             data: JSON.stringify({
                 login: login,
                 password: password,
-                rememberMe: rememberMe === "on",
+                rememberMe: rememberMe,
                 did: $.cookie("_did"),
             }),
             success: response => {
                 if (response && response.token) {
-                    if (rememberMe === "on") {
+                    if (rememberMe) {
                         $.cookie("_token", response.token, { expires: 3650, insecure: config.insecureCookie });
                     } else {
                         $.cookie("_token", response.token);
@@ -372,6 +374,7 @@ function initAll() {
 
     loadingStart();
 
+/*
     $("#leftSideToggler").parent().parent().on("click", () => {
         setTimeout(() => {
             $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 3650, insecure: config.insecureCookie });
@@ -385,6 +388,7 @@ function initAll() {
             $("body").removeClass("sidebar-collapse");
         }
     }, 500);
+*/
 
     document.title = i18n("windowTitle");
 
@@ -740,11 +744,13 @@ function loadingDone(stayHidden) {
         $('#app').removeClass("invisible");
     }
 
+/*
     if (parseInt($.cookie('_ls_collapse'))) {
         $(document.body).addClass('sidebar-collapse');
     } else {
         $(document.body).removeClass('sidebar-collapse');
     }
+*/
 
     $(window).resize();
 }
