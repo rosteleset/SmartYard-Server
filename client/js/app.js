@@ -13,7 +13,6 @@ var available = false;
 var badge = false;
 var currentModule = false;
 var lStoreEngine = false;
-var lStoreData = {};
 
 function hashChange() {
     let [ route, params, hash ] = hashParse();
@@ -1033,6 +1032,8 @@ function lStore(key, val) {
 
         try {
             wdb = new IdbKvStore("rbt");
+
+            window.lStoreData = {};
 
             wdb.on("add", function (change) {
                 lStoreData[change.key] = change.value;
