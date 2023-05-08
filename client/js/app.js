@@ -1084,7 +1084,7 @@ function lStore(key, val) {
                 if (val === null) {
                     $.cookie(key, val);
                 } else {
-                    $.cookie(key, val, { expires: 3650, insecure: config.insecureCookie });
+                    $.cookie(key, JSON.stringify(val), { expires: 3650, insecure: config.insecureCookie });
                 }
             } else {
                 if (val === null) {
@@ -1098,7 +1098,12 @@ function lStore(key, val) {
             return true;
         } else {
             if (lStoreEngine === "cookie") {
-                return $.cookie(key);
+                try {
+                    return JSON.parse($.cookie(key));
+                } catch (e) {
+                    $.cookie(key, null);
+                    return null;
+                }
             } else {
                 return lStoreData[key];
             }
