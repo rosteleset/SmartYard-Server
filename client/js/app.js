@@ -12,6 +12,8 @@ var myself = false;
 var available = false;
 var badge = false;
 var currentModule = false;
+var lStoreEngine = false;
+var lStoreData = {};
 
 function hashChange() {
     let [ route, params, hash ] = hashParse();
@@ -135,7 +137,7 @@ function pageError(error) {
 }
 
 function changeLanguage() {
-    $.cookie("_lang", $("#loginBoxLang").val(), { expires: 3650, insecure: config.insecureCookie });
+    lStore("_lang", $("#loginBoxLang").val());
     location.reload();
 }
 
@@ -147,12 +149,11 @@ function showLoginForm() {
     $("#forgotForm").hide();
     $("#loginForm").show();
 
-    $("#loginBoxLogin").val($.cookie("_login"));
-    $("#loginBoxServer").val($.cookie("_server"));
+    $("#loginBoxLogin").val(lStore("_login"));
+    $("#loginBoxServer").val(lStore("_server"));
     if (!$("#loginBoxServer").val()) {
         $("#loginBoxServer").val(config.defaultServer);
     }
-    $("#loginBoxRemember").attr("checked", parseInt($.cookie("_remember_me")));
 
     let server = $("#loginBoxServer").val();
 
@@ -181,7 +182,7 @@ function showForgotPasswordForm() {
     $("#loginForm").hide();
     $("#forgotForm").show();
 
-    $("#forgotBoxServer").val($.cookie("_server"));
+    $("#forgotBoxServer").val(lStore("_server"));
     if (!$("#forgotBoxServer").val()) {
         $("#forgotBoxServer").val($("#loginBoxServer").val());
     }
@@ -213,37 +214,18 @@ function ping(server) {
 }
 
 function login() {
-    let test = md5(new Date() + Math.random());
-
-    $.cookie("_test", test, { insecure: config.insecureCookie });
-
-    if ($.cookie("_test") != test) {
-        error(i18n("errors.cantStoreCookie"), i18n("error"), 30);
-        return;
-    }
-
-    $.cookie("_test", null);
-
     loadingStart();
 
     let login = $.trim($("#loginBoxLogin").val());
     let password = $.trim($("#loginBoxPassword").val());
     let server = $.trim($("#loginBoxServer").val());
-    let rememberMe = ($("#loginBoxRemember").val() == "on")?1:0;
 
     while (server[server.length - 1] === "/") {
         server = server.substring(0, server.length - 1);
     }
 
-    $.cookie("_remember_me", rememberMe, { expires: 3650, insecure: config.insecureCookie });
-
-    if (rememberMe) {
-        $.cookie("_login", login, { expires: 3650, insecure: config.insecureCookie });
-        $.cookie("_server", server, { expires: 3650, insecure: config.insecureCookie });
-    } else {
-        $.cookie("_login", login);
-        $.cookie("_server", server);
-    }
+    lStore("_login", login);
+    lStore("_server", server);
 
     ping(server).then(() => {
         return jQuery.ajax({
@@ -253,16 +235,12 @@ function login() {
             data: JSON.stringify({
                 login: login,
                 password: password,
-                rememberMe: rememberMe,
-                did: $.cookie("_did"),
+                rememberMe: true,
+                did: lStore("_did"),
             }),
             success: response => {
                 if (response && response.token) {
-                    if (rememberMe) {
-                        $.cookie("_token", response.token, { expires: 3650, insecure: config.insecureCookie });
-                    } else {
-                        $.cookie("_token", response.token);
-                    }
+                    lStore("_token", response.token);
                     location.reload();
                 } else {
                     error(i18n("errors.unknown"), i18n("error"), 30);
@@ -287,7 +265,7 @@ function logout() {
     POST("authentication", "logout", false, {
         mode: "all",
     }).always(() => {
-        $.cookie("_token", "");
+        lStore("_token", null);
         location.reload();
     });
 }
@@ -302,7 +280,7 @@ function forgot() {
     }
 
     if (email) {
-        $.cookie("_server", $("#loginBoxServer").val());
+        lStore("_server", $("#loginBoxServer").val());
         $.get(server + "/accounts/forgot?eMail=" + email);
         message(i18n("forgotMessage"));
         showLoginForm();
@@ -349,16 +327,6 @@ function whoAmI(force) {
 }
 
 function initAll() {
-    if (!$.cookie("_cookie")) {
-        warning(i18n("cookieWarning"), false, 3600);
-        $.cookie("_cookie", "1", { expires: 3650, insecure: config.insecureCookie });
-    }
-
-    if (!$.cookie("_https") && window.location.protocol === 'http:') {
-        warning(i18n("httpsWarning"), false, 3600);
-        $.cookie("_https", "1", { expires: 3650, insecure: config.insecureCookie });
-    }
-
     if (config.logo) {
         setFavicon("img/" + config.logo + "Icon.png");
         $("#leftSideToggler").attr("src", "img/" + config.logo + ".png");
@@ -368,27 +336,7 @@ function initAll() {
 
     $(document.body).css("background-color", '#e9ecef');
 
-    if (!$.cookie("_did")) {
-        $.cookie("_did", guid(), { expires: 3650, insecure: config.insecureCookie });
-    }
-
     loadingStart();
-
-/*
-    $("#leftSideToggler").parent().parent().on("click", () => {
-        setTimeout(() => {
-            $.cookie("_ls_collapse", $("body").hasClass("sidebar-collapse")?"1":"0", { expires: 3650, insecure: config.insecureCookie });
-        }, 100);
-    });
-
-    setTimeout(() => {
-        if (parseInt($.cookie("_ls_collapse"))) {
-            $("body").addClass("sidebar-collapse");
-        } else {
-            $("body").removeClass("sidebar-collapse");
-        }
-    }, 500);
-*/
 
     document.title = i18n("windowTitle");
 
@@ -399,7 +347,7 @@ function initAll() {
 
     let l = "";
     for (let i in config.languages) {
-        if ($.cookie("_lang") == i) {
+        if (lStore("_lang") == i) {
             l += `<option value='${i}' selected>${config.languages[i]}</option>`;
         } else {
             l += `<option value='${i}'>${config.languages[i]}</option>`;
@@ -409,7 +357,6 @@ function initAll() {
 
     $("#loginBoxLoginButton").text(i18n("loginAction"));
     $("#loginBoxForgotPassword").text(i18n("passowrdForgot"));
-    $("#loginBoxRememberLabel").text(i18n("rememberMe"));
 
     $("#forgotBoxTitle").text(i18n("forgotFormTitle"));
     $("#forgotBoxEMail").attr("placeholder", i18n("eMail"));
@@ -439,25 +386,39 @@ function initAll() {
         modules[currentPage].search($("#searchInput").val());
     });
 
-/*
-    $("#confirmModal").draggable({
-        handle: "#confirmModalHeader",
-    });
+    /*
+        $("#confirmModal").draggable({
+            handle: "#confirmModalHeader",
+        });
 
-    $("#yesnoModal").draggable({
-        handle: "#yesnoModalHeader",
-    });
+        $("#yesnoModal").draggable({
+            handle: "#yesnoModalHeader",
+        });
 
-    $("#alertModal").draggable({
-        handle: "#alertModalHeader",
-    });
+        $("#alertModal").draggable({
+            handle: "#alertModalHeader",
+        });
 
-    $("#uploadModalBody").draggable({
-        handle: "#uploadModalHeader",
-    });
-*/
+        $("#uploadModalBody").draggable({
+            handle: "#uploadModalHeader",
+        });
+    */
 
-    if ($.cookie("_server") && $.cookie("_token")) {
+    if (!lStore("_cookie")) {
+        warning(i18n("cookieWarning"), false, 3600);
+        lStore("_cookie", "1");
+    }
+
+    if (!lStore("_https") && window.location.protocol === 'http:') {
+        warning(i18n("httpsWarning"), false, 3600);
+        lStore("_https", "1");
+    }
+
+    if (!lStore("_did")) {
+        lStore("_did", guid());
+    }
+
+    if (lStore("_server") && lStore("_token")) {
         POST("authentication", "ping", false).done((a, b) => {
             if (b === "nocontent") {
                 GET("authorization", "available").done(a => {
@@ -466,7 +427,7 @@ function initAll() {
                             uid: -1,
                         };
                         whoAmI().done(() => {
-//                            window.onbeforeunload = () => false;
+    //                            window.onbeforeunload = () => false;
                             available = a.available;
                             if (config && config.modules) {
                                 for (let i in config.modules) {
@@ -509,6 +470,11 @@ function initAll() {
         });
     } else {
         showLoginForm();
+    }
+
+    if (!lStore()) {
+        loadingDone();
+        return;
     }
 }
 
@@ -744,14 +710,6 @@ function loadingDone(stayHidden) {
         $('#app').removeClass("invisible");
     }
 
-/*
-    if (parseInt($.cookie('_ls_collapse'))) {
-        $(document.body).addClass('sidebar-collapse');
-    } else {
-        $(document.body).removeClass('sidebar-collapse');
-    }
-*/
-
     $(window).resize();
 }
 
@@ -866,7 +824,7 @@ function loadModule() {
         onhashchange = hashChange;
         $("#app").show();
     } else {
-        let l = $.cookie("_lang");
+        let l = lStore("_lang");
         if (!l) {
             l = config.defaultLanguage;
         }
@@ -1067,11 +1025,103 @@ function trimStr(str, len) {
     }
 }
 
+function lStore(key, val) {
+    if (!lStoreEngine) {
+        let wdb;
+        
+        let t = guid();
+
+        try {
+            wdb = new IdbKvStore("rbt");
+
+            wdb.on("add", function (change) {
+                lStoreData[change.key] = change.value;
+            });
+
+            wdb.on("set", function (change) {
+                lStoreData[change.key] = change.value;
+            });
+
+            wdb.on("remove", function (change) {
+                delete lStoreData[change.key];
+            });
+
+            wdb.set("test", t);
+
+            if (!IdbKvStore.BROADCAST_SUPPORT) {
+                throw true;
+            }
+
+            wdb.remove("test");
+        } catch (e) {
+            wdb = false;
+        }
+
+        if (wdb) {
+            lStoreEngine = wdb;
+        } else {
+            $.cookie("test", t, { insecure: config.insecureCookie });
+
+            if ($.cookie("test") != t) {
+                error(i18n("errors.cantStoreCookie"), i18n("error"), 30);
+                return false;
+            }
+        
+            $.cookie("test", null);
+
+            lStoreEngine = "cookie";
+        }
+    }
+
+    if (key && typeof key !== "function") {
+        if (typeof(val) != "undefined") {
+            if (lStoreEngine === "cookie") {
+                if (val === null) {
+                    $.cookie(key, val);
+                } else {
+                    $.cookie(key, val, { expires: 3650, insecure: config.insecureCookie });
+                }
+            } else {
+                if (val === null) {
+                    delete lStoreData[key];
+                    lStoreEngine.remove(key);
+                } else {
+                    lStoreData[key] = val;
+                    lStoreEngine.set(key, val);
+                }
+            }
+            return true;
+        } else {
+            if (lStoreEngine === "cookie") {
+                return $.cookie(key);
+            } else {
+                return lStoreData[key];
+            }
+        }
+    } else {
+        if (lStoreEngine === "cookie") {
+            if (typeof key === "function") {
+                key();
+            }
+        } else {
+            lStoreEngine.json((err, kv) => {
+                if (!err && kv) {
+                    lStoreData = kv;
+                }
+                if (typeof key === "function") {
+                    key();
+                }
+            });
+        }
+        return true;
+    }
+}
+
 function QUERY(api, method, query, fresh) {
     return $.ajax({
-        url: $.cookie("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
+        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
         beforeSend: xhr => {
-            xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
+            xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
             if (fresh) {
                 xhr.setRequestHeader("X-Api-Refresh", "1");
             }
@@ -1083,9 +1133,9 @@ function QUERY(api, method, query, fresh) {
 
 function GET(api, method, id, fresh) {
     return $.ajax({
-        url: $.cookie("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
+        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
         beforeSend: xhr => {
-            xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
+            xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
             if (fresh) {
                 xhr.setRequestHeader("X-Api-Refresh", "1");
             }
@@ -1097,9 +1147,9 @@ function GET(api, method, id, fresh) {
 
 function AJAX(type, api, method, id, query) {
     return $.ajax({
-        url: $.cookie("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
+        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
         beforeSend: xhr => {
-            xhr.setRequestHeader("Authorization", "Bearer " + $.cookie("_token"));
+            xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
         },
         type: type,
         contentType: "json",
@@ -1123,7 +1173,7 @@ function FAIL(response) {
     if (response && response.responseJSON && response.responseJSON.error) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         if (response.responseJSON.error == "tokenNotFound") {
-            $.cookie("_token", null);
+            lStore("_token", null);
         }
     } else {
         error(i18n("errors.unknown"), i18n("error"), 30);

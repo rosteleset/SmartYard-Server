@@ -872,23 +872,23 @@
     selectFilter: function (filter, skip, limit, search) {
         if (filter) {
             if (filter !== "#search") {
-                $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter, { expires: 3650, insecure: config.insecureCookie });
+                lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter);
             }
         } else {
-            filter = $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val());
+            filter = lStore("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
         window.location.href = `?#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}&_refresh=${Math.random()}`;
     },
 
     selectProject: function (project) {
-        $.cookie("_project", project, { expires: 3650, insecure: config.insecureCookie });
+        lStore("_project", project);
         window.location.href = `?#tt&project=${encodeURIComponent(project)}`;
     },
 
     renderIssues: function (params) {
         let rtd = '';
 
-        let current_project = params["project"]?params["project"]:$.cookie("_project");
+        let current_project = params["project"]?params["project"]:lStore("_project");
 
         let pn = {};
 
@@ -972,7 +972,7 @@
         let x = false;
 
         try {
-            x = params["filter"]?params["filter"]:$.cookie("_tt_issue_filter_" + current_project);
+            x = params["filter"]?params["filter"]:lStore("_tt_issue_filter_" + current_project);
         } catch (e) {
             //
         }
@@ -1034,7 +1034,7 @@
             }
         }
 
-        if ($.trim(modules.tt.meta.filters[x]) + "-" + md5($.cookie("_login") + ":" + $.trim(modules.tt.meta.filters[x])) == x && fp == myself.uid) {
+        if ($.trim(modules.tt.meta.filters[x]) + "-" + md5(lStore("_login") + ":" + $.trim(modules.tt.meta.filters[x])) == x && fp == myself.uid) {
             filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
             filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
         }
@@ -1179,12 +1179,12 @@
                         f = false;
                     }
                     if (f && $.trim(f.name) && f.fields) {
-                        let n = $.trim(f.name) + "-" + md5($.cookie("_login") + ":" + $.trim(f.name));
+                        let n = $.trim(f.name) + "-" + md5(lStore("_login") + ":" + $.trim(f.name));
                         loadingStart();
                         PUT("tt", "customFilter", n, { "project": current_project, "body": $.trim(editor.getValue()) }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            $.cookie("_tt_issue_filter_" + current_project, n, { expires: 3650, insecure: config.insecureCookie });
+                            lStore("_tt_issue_filter_" + current_project, n);
                             location.href = '?#tt&filter=' + n + '&customSearch=yes&_refresh=' + Math.random();                        
                         }).
                         fail(FAIL).
@@ -1211,7 +1211,7 @@
                     DELETE("tt", "customFilter", f, { "project": current_project }).
                     done(() => {
                         message(i18n("tt.filterWasDeleted"));
-                        $.cookie("_tt_issue_filter_" + current_project, null);
+                        lStore("_tt_issue_filter_" + current_project, null);
                         location.href = '?#tt&_refresh=' + Math.random();
                     }).
                     fail(FAIL).
@@ -1267,9 +1267,9 @@
         }).
         fail(FAIL).
         fail(() => {
-            $.cookie("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
-            $.cookie("_tt_issue_filter_" + $.cookie("_project"), null);
-            $.cookie("_project", null);
+            lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
+            lStore("_tt_issue_filter_" + lStore("_project"), null);
+            lStore("_project", null);
             if (params["_refresh"] != _refresh) {
                 window.location.href = `?#tt&_refresh=${_refresh}`;
             }

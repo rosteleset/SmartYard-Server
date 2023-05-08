@@ -32,7 +32,7 @@
                                     w.push({
                                         id: modules.tt.meta.projects[i].workflows[j],
                                         text: wn,
-                                        selected: $.cookie("_workflow") == modules.tt.meta.projects[i].workflows[j],
+                                        selected: lStore("_workflow") == modules.tt.meta.projects[i].workflows[j],
                                     });
                                 }
                             }
@@ -105,7 +105,7 @@
                 projects.push({
                     id: modules.tt.meta.projects[i].acronym,
                     text: $.trim(modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym),
-                    selected: current_project == modules.tt.meta.projects[i].acronym || $.cookie("_project") == modules.tt.meta.projects[i].acronym,
+                    selected: current_project == modules.tt.meta.projects[i].acronym || lStore("_project") == modules.tt.meta.projects[i].acronym,
                 });
             }
 
@@ -176,8 +176,8 @@
                 },
                 callback: function (result) {
                     if (result.project && result.workflow) {
-                        $.cookie("_project", result.project, { expires: 3650, insecure: config.insecureCookie });
-                        $.cookie("_workflow", result.workflow, { expires: 3650, insecure: config.insecureCookie });
+                        lStore("_project", result.project);
+                        lStore("_workflow", result.workflow);
                     }
                     modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent)?encodeURIComponent(parent):"");
                 },
@@ -694,13 +694,13 @@
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
                 if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
-                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == $.cookie("_login")) {
+                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == lStore("_login")) {
                         h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteAttachment'></i>";
                     }
                 }
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
-                h += "<a class='hoverable' href='" + $.cookie("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent($.cookie("_token")) + "' target='_blank'>";
+                h += "<a class='hoverable' href='" + lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token")) + "' target='_blank'>";
                 h += $.trim(issue.issue.attachments[i].filename);
                 h += "</a>";
                 h += "</div>";
@@ -753,7 +753,7 @@
                     h += "<i class='fas fa-fw fa-eye ml-2 text-success'></i>";
                 }
                 if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
-                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == $.cookie("_login")) {
+                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {
                         h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
                     }
                 }
@@ -1100,7 +1100,7 @@
         });
 
         $(".ttSaWatch").off("click").on("click", () => {
-            mConfirm(issue.issue.watchers.indexOf($.cookie("_login"))?i18n("tt.confirmWatch"):i18n("tt.confirmUnWatch"), i18n("confirm"), i18n("tt.saWatch"), () => {
+            mConfirm(issue.issue.watchers.indexOf(lStore("_login"))?i18n("tt.confirmWatch"):i18n("tt.confirmUnWatch"), i18n("confirm"), i18n("tt.saWatch"), () => {
                 loadingStart();
                 PUT("tt", "issue", issue.issue.issueId, {
                     "action": "watch"
@@ -1136,7 +1136,7 @@
         });
 
         $(".ttSaCoordinate").off("click").on("click", () => {
-            $.cookie("_coordinate_issue", issue.issue["issueId"]);
+            lStore("_coordinate_issue", issue.issue["issueId"]);
             location.href = "?#cs";
         });
 

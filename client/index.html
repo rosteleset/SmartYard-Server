@@ -41,21 +41,23 @@
     <script type="application/javascript">
         function cfg(c) {
             config = c;
-            let l = $.cookie("_lang");
-            if (!l) {
-                l = config.defaultLanguage;
-            }
-            if (!l) {
-                l = "ru";
-            }
-            $.get("i18n/" + l + ".json").
-            done(t => {
-                lang = t;
-                initAll();
-            }).
-            fail(function() {
-                lang = {};
-                initAll();
+            lStore(() => {
+                let l = lStore("_lang");
+                if (!l) {
+                    l = config.defaultLanguage;
+                }
+                if (!l) {
+                    l = "ru";
+                }
+                $.get("i18n/" + l + ".json").
+                done(t => {
+                    lang = t;
+                    initAll();
+                }).
+                fail(function() {
+                    lang = {};
+                    initAll();
+                });
             });
         }
 
@@ -321,17 +323,11 @@
                         </select>
                     </div>
                     <div class="row">
-                        <div class="col-8">
-                            <div class="icheck-primary">
-                                <input type="checkbox" id="loginBoxRemember">
-                                <label for="loginBoxRemember" id="loginBoxRememberLabel"></label>
-                            </div>
-                        </div>
                         <div class="col-4">
                             <button type="button" class="btn btn-primary btn-block" onclick="login()" id="loginBoxLoginButton"></button>
                         </div>
                     </div>
-                    <p id="loginBoxForgot" class="mb-1 mt-3" style="display: none;">
+                    <p id="loginBoxForgot" class="mb-1 mt-2" style="display: none;">
                         <a href="javascript:void(0)" onclick="showForgotPasswordForm()" id="loginBoxForgotPassword"></a>
                     </p>
                 </div>
@@ -421,6 +417,8 @@
     <script src="js/select2totree.js"></script>
     <!-- MQTT cliemt -->
     <script src="js/mqtt.min.js"></script>
+    <!-- KV store -->
+    <script src="js/idbkvstore.min.js"></script>
     <!-- APP -->
     <script src="js/app.js"></script>
 

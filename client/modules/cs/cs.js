@@ -77,7 +77,7 @@
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
-                    if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
+                    if (payload.login == lStore("_login") && payload.sid == modules.cs.sid) {
                         switch (parseInt(payload.step)) {
                             case 0:
                                 mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
@@ -121,7 +121,7 @@
                                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                                 cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
                                 cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
-                                if (payload.login == $.cookie("_login") && payload.sid == modules.cs.sid) {
+                                if (payload.login == lStore("_login") && payload.sid == modules.cs.sid) {
                                     modules.cs.coordinate(cell);
                                 }
                                 break;
@@ -296,12 +296,12 @@
                     id: "issueId",
                     type: "text",
                     title: i18n("tt.issueId"),
-                    value: $.cookie("_coordinate_issue")?$.cookie("_coordinate_issue"):"",
+                    value: lStore("_coordinate_issue")?lStore("_coordinate_issue"):"",
                     button: {
                         class: "fas fa-recycle",
                         click: p => {
                             $("#" + p + "issueId").val("");
-                            $.cookie("_coordinate_issue", null);
+                            lStore("_coordinate_issue", null);
                         }
                     },
                     validate: v => {
@@ -693,7 +693,7 @@
                     }
 
                     if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
-                        if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != $.cookie("_login")) {
+                        if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != lStore("_login")) {
                             cell.addClass("spinner-small");
                                 
                             PUT("cs", "reserveCell", false, {
@@ -711,7 +711,7 @@
                                 cell.removeClass("spinner-small");
                             });
                         } else
-                        if (cell.attr("data-login") == $.cookie("_login")) {
+                        if (cell.attr("data-login") == lStore("_login")) {
                             mYesNo(i18n("cs.coordinateOrUnReserve"), i18n("cs.action"), () => {
                                 modules.cs.coordinate(cell);
                             }, () => {
@@ -735,7 +735,7 @@
                         }
                     } else
                     if (cell.hasClass(modules.cs.currentSheet.sheet.blockedClass)) {
-                        if (cell.attr("data-login") == $.cookie("_login")) {
+                        if (cell.attr("data-login") == lStore("_login")) {
                             cell.addClass("spinner-small");
 
                             PUT("cs", "cell", false, {
@@ -828,7 +828,7 @@
     
                 sheetsOptions = "";
                 for (let i in sheets) {
-                    if (sheets[i] == $.cookie("_sheet_name")) {
+                    if (sheets[i] == lStore("_sheet_name")) {
                         sheetsOptions += "<option selected='selected'>" + escapeHTML(sheets[i]) + "</option>";
                     } else {
                         sheetsOptions += "<option>" + escapeHTML(sheets[i]) + "</option>";
@@ -837,7 +837,7 @@
     
                 datesOptions = "";
                 for (let i in dates) {
-                    if (dates[i] == $.cookie("_sheet_date")) {
+                    if (dates[i] == lStore("_sheet_date")) {
                         datesOptions += "<option selected='selected'>" + escapeHTML(dates[i]) + "</option>";
                     } else {
                         datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
@@ -898,8 +898,8 @@
                             },
                         ],
                         callback: result => {
-                            $.cookie("_sheet_name", result.sheet, { expires: 3650, insecure: config.insecureCookie });
-                            $.cookie("_sheet_date", result.date, { expires: 3650, insecure: config.insecureCookie });
+                            lStore("_sheet_name", result.sheet);
+                            lStore("_sheet_date", result.date);
                             location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                         },
                     }).show();
@@ -929,12 +929,12 @@
                 });
 
                 $("#csSheet").off("change").on("change", () => {
-                    $.cookie("_sheet_name", $("#csSheet").val(), { expires: 3650, insecure: config.insecureCookie });
+                    lStore("_sheet_name", $("#csSheet").val());
                     modules.cs.renderCS();
                 });
 
                 $("#csDate").off("change").on("change", () => {
-                    $.cookie("_sheet_date", $("#csDate").val(), { expires: 3650, insecure: config.insecureCookie });
+                    lStore("_sheet_date", $("#csDate").val());
                     modules.cs.renderCS();
                 });
 

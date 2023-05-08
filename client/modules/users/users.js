@@ -427,7 +427,7 @@
                                         icon: "fas fa-trash-alt",
                                         title: i18n("users.dropSession"),
                                         class: "text-danger",
-                                        disabled: user.sessions[i].byPersistentToken || user.sessions[i].token == $.cookie("_token"),
+                                        disabled: user.sessions[i].byPersistentToken || user.sessions[i].token == lStore("_token"),
                                         click: token => {
                                             modules.users.dropSession(token, uid);
                                         },
