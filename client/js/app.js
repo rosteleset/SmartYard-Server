@@ -403,6 +403,10 @@ function initAll() {
         });
     */
 
+    if (lStoreEngine && lStoreEngine !== "cookie") {
+        lStore("_cookie", "1");
+    }
+
     if (!lStore("_cookie")) {
         warning(i18n("cookieWarning"), false, 3600);
         lStore("_cookie", "1");
