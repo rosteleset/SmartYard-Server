@@ -68,6 +68,14 @@
                 ]);
             }
 
+            /** Configure hang up after open door by DTMF */
+            protected function configureHangUpAfterOpen(bool $enabled = true, int $timeout = 5) {
+                $this->setConfigParams([
+                    'Config.Settings.CALLTIMEOUT.OpenRelayType' => $enabled ? '2' : '1',
+                    'Config.Settings.CALLTIMEOUT.OpenRelay' => "$timeout",
+                ]);
+            }
+
             /** Configure binding of inputs to the relay */
             protected function configureInputsBinding() {
                 $this->api_call('', 'POST', [
@@ -467,6 +475,7 @@
                 parent::prepare();
                 $this->configureAudio();
                 $this->configureBle(false);
+                $this->configureHangUpAfterOpen(false);
                 $this->configureInputsBinding();
                 $this->configureRfidReaders();
                 $this->configureRps(false);
