@@ -34,7 +34,7 @@ server {
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
         }
 
-        return 301 https://$host$request_uri;
+        return 302 https://$host$request_uri;
 }
 
 server {
