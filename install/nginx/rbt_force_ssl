@@ -14,7 +14,7 @@ server {
                 rewrite ^.*$ /asterisk.php last;
         }
 
-        location = /asterisk.php {
+        location /asterisk.php {
                 allow 127.0.0.1;
                 deny all;
                 root /opt/rbt/server;
@@ -26,7 +26,7 @@ server {
                 rewrite ^.*$ /internal.php last;
         }
 
-        location = /internal.php {
+        location /internal.php {
                 allow 127.0.0.1;
                 deny all;
                 root /opt/rbt/server;
