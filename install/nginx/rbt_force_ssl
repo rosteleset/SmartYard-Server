@@ -6,7 +6,7 @@ map $http_upgrade $connection_upgrade {
 server {
         listen 80 default_server;
 
-        location ~* /.well-known {
+        location /.well-known {
                 root /var/www/html;
         }
 
@@ -14,7 +14,7 @@ server {
                 rewrite ^.*$ /asterisk.php last;
         }
 
-        location ~* /asterisk.php {
+        location = /asterisk.php {
                 allow 127.0.0.1;
                 deny all;
                 root /opt/rbt/server;
@@ -26,7 +26,7 @@ server {
                 rewrite ^.*$ /internal.php last;
         }
 
-        location ~* /internal.php {
+        location = /internal.php {
                 allow 127.0.0.1;
                 deny all;
                 root /opt/rbt/server;
@@ -34,7 +34,9 @@ server {
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
         }
 
-        return 302 https://$host$request_uri;
+        location / {
+                return 302 https://$host$request_uri;
+        }
 }
 
 server {
