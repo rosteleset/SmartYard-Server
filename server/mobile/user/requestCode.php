@@ -9,7 +9,7 @@
  *
  * @apiParam {String{11}} userPhone номер телефона
  *
- * @apiSuccess {string="sms","outgoingCall","flashCall"} [method="sms"] способ авторизации
+ * @apiSuccess {string="sms","outgoingCall"} [method="sms"] способ авторизации
  * @apiSuccess {string[]} [confirmationNumbers] список номеров для авторизации исходящим звонком (outgoingCall)
  *
  * @apiErrorExample Ошибки
@@ -32,13 +32,6 @@
                 response(200, [ "method" => "outgoingCall", "confirmationNumbers" => $isdn->confirmNumbers()]);
                 break;
 
-            case 'flashCall':
-                $isdn->flashCall($user_phone);
-                $redis->del("userpin_".$user_phone);
-                $redis->del("userpin.attempts_".$user_phone);
-                response(200, [ "method" => "flashCall" ]);
-                break;
-            
             default:
                 // smsCode - default
                 $already = $redis->get("userpin_".$user_phone);

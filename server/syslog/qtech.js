@@ -46,22 +46,24 @@ syslog.on("message", async ({ date, host, message }) => {
         delete callDoneFlow[host]; // Cleanup broken call (if exist)
 
         // Call in gate mode with prefix: potential white rabbit
-        if (qtMsgParts[3].length === 6) {
+        if (qtMsgParts[3].length === 6) { // TODO: wtf??? check
             const number = qtMsgParts[3];
 
             gateRabbits[host] = {
                 ip: host,
                 prefix: parseInt(number.substring(0, 4)),
-                apartment: parseInt(number.substring(4)),
+                apartmentNumber: parseInt(number.substring(4)),
             };
         }
     }
 
+    // TODO: Opening door by DTMF or CMS handset
+
     // Incoming DTMF for white rabbit: sending rabbit gate update
     if (qtMsgParts[2] === "Open Door By DTMF") {
         if (gateRabbits[host]) {
-            const { ip, prefix, apartment } = gateRabbits[host];
-            await API.setRabbitGates({ date: now, ip, prefix, apartment });
+            const { ip, prefix, apartmentNumber } = gateRabbits[host];
+            await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
         }
     }
 

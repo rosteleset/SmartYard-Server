@@ -23,7 +23,7 @@ class API {
      *
      * @param {number} date event date in timestamp format
      * @param {string} ip device IP address
-     * @param {"beward"|"qtech"|"is"} unit device vendor
+     * @param {"beward"|"qtech"|"is"|"akuvox"|"rubetek"} unit device vendor
      * @param {string} msg syslog message
      */
     async sendLog({ date, ip, unit, msg }) {
@@ -83,11 +83,18 @@ class API {
      * @param {number} date event date in timestamp format
      * @param {string} ip device IP address
      * @param {number} prefix house prefix
-     * @param {number} apartment apartment number
+     * @param {number} apartmentNumber apartment number
+     * @param {number} apartmentId apartment ID
      */
-    async setRabbitGates({ date, ip, prefix, apartment }) {
+    async setRabbitGates({ date, ip, prefix = 0, apartmentNumber = 0, apartmentId = 0 }) {
         try {
-            return await internalAPI.post("/actions/setRabbitGates", { date, ip, prefix, apartment });
+            return await internalAPI.post("/actions/setRabbitGates", {
+                date,
+                ip,
+                prefix,
+                apartmentNumber,
+                apartmentId
+            });
         } catch (error) {
             console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message); // TODO: hm
         }

@@ -20,7 +20,7 @@
 
             public function getUsers() {
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, enabled from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, last_login from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -30,8 +30,41 @@
                             "realName" => $user["real_name"],
                             "eMail" => $user["e_mail"],
                             "phone" => $user["phone"],
+                            "tg" => $user["tg"],
                             "enabled" => $user["enabled"],
+                            "lastLogin" => $user["last_login"],
+                            "lastAction" => $this->redis->get("last_" . md5($user["login"])),
                         ];
+                    }
+
+                    $a = loadBackend("authorization");
+
+                    if ($a->allow([
+                        "_uid" => $this->uid,
+                        "_path" => [
+                            "api" => "accounts",
+                            "method" => "user",
+                        ],
+                        "_request_method" => "POST",
+                    ])) {
+                        foreach ($_users as &$u) {
+                            $u["sessions"] = [];
+                            $lk = $this->redis->keys("auth_*_{$u["uid"]}");
+                            foreach ($lk as $k) {
+                                $u["sessions"][] = json_decode($this->redis->get($k), true);
+                            }
+                            $pk = $this->redis->keys("persistent_*_{$u["uid"]}");
+                            foreach ($pk as $k) {
+                                $s = json_decode($this->redis->get($k), true);
+                                $s["byPersistentToken"] = true;
+                                $u["sessions"][] = $s;
+                            }
+                        }
+                    } else {
+                        foreach ($_users as &$u) {
+                            unset($u["lastLogin"]);
+                            unset($u["lastAction"]);
+                        }
                     }
 
                     return $_users;
@@ -56,7 +89,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, enabled, default_route from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($user)) {
                         $_user = [
@@ -65,6 +98,8 @@
                             "realName" => $user[0]["real_name"],
                             "eMail" => $user[0]["e_mail"],
                             "phone" => $user[0]["phone"],
+                            "tg" => $user[0]["tg"],
+                            "notification" => $user[0]["notification"],
                             "enabled" => $user[0]["enabled"],
                             "defaultRoute" => $user[0]["default_route"],
                         ];
@@ -202,29 +237,25 @@
             }
 
             /**
-             * modify user data
-             *
-             * @param integer $uid
-             * @param string $realName
-             * @param string $eMail
-             * @param string $phone
-             * @param boolean $enabled
-             *
-             * @return boolean
+             * @inheritDoc
              */
-
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $enabled = true, $defaultRoute = '#', $persistentToken = false) {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false) {
                 if (!checkInt($uid)) {
                     return false;
                 }
 
+                if (!in_array($notification, [ "none", "tgEmail", "emailTg", "tg", "email" ])) {
+                    return false;
+                }
+                
                 try {
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, enabled = :enabled, default_route = :default_route where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route where uid = $uid");
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
                             "uid" => $uid,
                             "login" => $this->db->get("select login from core_users where uid = $uid", false, false, [ "fieldlify" ]),
+                            "started" => time(),
                         ]));
                     } else {
                         $_keys = $this->redis->keys("persistent_*_" . $uid);
@@ -239,11 +270,13 @@
                             $this->redis->del($_key);
                         }
                     }
-                    
+
                     return $sth->execute([
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail),
                         ":phone" => trim($phone),
+                        ":tg" => trim($tg),
+                        ":notification" => trim($notification),
                         ":enabled" => $enabled?"1":"0",
                         ":default_route" => trim($defaultRoute),
                     ]);
@@ -302,7 +335,7 @@
                     "delete from core_users_rights where uid not in (select uid from core_users)",
                     "delete from core_groups_rights where gid not in (select gid from core_groups)",
                     "delete from core_users_groups where uid not in (select uid from core_users)",
-                    "delete from core_users_groups where gid not in (select uid from core_groups)",
+                    "delete from core_users_groups where gid not in (select gid from core_groups)",
                 ];
 
                 for ($i = 0; $i < count($c); $i++) {

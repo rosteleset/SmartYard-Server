@@ -364,14 +364,14 @@
                 // не используется
             }
 
-            public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
+            public function setDtmf(string $code1, string $code2, string $code3, string $codeOut) {
                 $this->api_call('cgi-bin/sip_cgi', [
                     'action' => 'set',
-                    'DtmfSignal1' => $relay_1,
+                    'DtmfSignal1' => $code1,
                     'DtmfBreakCall1' => 'off',
-                    'DtmfSignal2' => $relay_2,
+                    'DtmfSignal2' => $code2,
                     'DtmfBreakCall2' => 'off',
-                    'DtmfSignal3' => $relay_3,
+                    'DtmfSignal3' => $code3,
                     'DtmfBreakCall3' => 'off',
                     'DtmfSignalAll' => '',
                     'DtmfBreakCallAll' => 'off',

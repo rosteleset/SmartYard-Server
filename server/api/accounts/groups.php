@@ -42,15 +42,17 @@
         class groups extends api {
 
             public static function GET($params) {
-                $groups = loadBackend("groups")->getGroups(false);
+                $groups = loadBackend("groups");
+                
+                if ($groups) {
+                    $groups = $groups->getGroups(false);
+                }
 
                 return api::ANSWER($groups, ($groups !== false)?"groups":"notFound");
             }
 
             public static function index() {
-                $groups = loadBackend("groups");
-
-                if ($groups) {
+                if (loadBackend("groups")) {
                     return [
                         "GET" => "#common",
                     ];

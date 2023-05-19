@@ -35,11 +35,22 @@
 
                 $list = [];
                 foreach ($workflows as $workflow) {
+                    $name = $workflow["metadata"]["workflow"];
+                    $catalog = false;
                     try {
-                        $list[$workflow["metadata"]["workflow"]] = $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowName();
+                        $name = $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowName();
                     } catch (\Exception $e) {
-                        $list[$workflow["metadata"]["workflow"]] = $workflow["metadata"]["workflow"];
+                        //
                     }
+                    try {
+                        $catalog = $this->loadWorkflow($workflow["metadata"]["workflow"])->getWorkflowCatalog();
+                    } catch (\Exception $e) {
+                        //
+                    }
+                    $list[$workflow["metadata"]["workflow"]] = [
+                        "name" => $name,
+                        "catalog" => $catalog,
+                    ];
                 }
 
                 return $list;
@@ -73,12 +84,27 @@
                         "array_values" => function (...$args) {
                             return [ array_values(...$args) ];
                         },
+                        "in_array" => function (...$args) {
+                            return [ in_array(...$args) ];
+                        },
+                        "array_key_exists" => function (...$args) {
+                            return [ array_key_exists(...$args) ];
+                        },
                         "explode" => function (...$args) {
                             return [ explode(...$args) ];
                         },
                         "implode" => function (...$args) {
                             return [ implode(...$args) ];
                         },
+                        "time" => function (...$args) {
+                            return [ time(...$args) ];
+                        },
+                        "date" => function (...$args) {
+                            return [ date(...$args) ];
+                        },
+                        "strtotime" => function (...$args) {
+                            return [ strtotime(...$args) ];
+                        }
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
@@ -103,6 +129,73 @@
                         "addComment" => function (...$args) {
                             return [ $this->addComment(...$args) ];
                         },
+                        "login" => function () {
+                            return [ $this->login ];
+                        },
+                        "myRoles" => function () {
+                            return [ $this->myRoles() ];
+                        },
+                        "myGroups" => function () {
+                            return [ $this->myGroups() ];
+                        }
+                    ]);
+
+                    $sandbox->registerLibrary("users", [
+                        "notify" => function (...$args) {
+                            $users = loadBackend("users");
+                            return [ $users->notify(...$args) ];
+                        },
+                    ]);
+
+                    $sandbox->registerLibrary("https", [
+                        "POST" => function ($url, $data) {
+                            return [
+                                json_decode(
+                                    file_get_contents($url, false, stream_context_create([
+                                        'http' => [
+                                            'method'  => 'POST',
+                                            'header'  => [
+                                                'Content-Type: application/json; charset=utf-8',
+                                                'Accept: application/json; charset=utf-8',
+                                            ],
+                                            'content' => json_encode($data)
+                                        ],
+                                    ]))
+                                ),
+                            ];
+                        },
+                    ]);
+
+                    $sandbox->registerLibrary("custom", [
+                        "GET" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->GET($params) ];
+                        },
+                        "POST" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->POST($params) ];
+                        },
+                        "PUT" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->PUT($params) ];
+                        },
+                        "DELETE" => function ($params) {
+                            $custom = loadBackend("custom");
+                            return [ $custom->DELETE($params) ];
+                        },
+                    ]);
+                    
+                    $sandbox->registerLibrary("mb", [
+                        "substr" => function (...$args) {
+                            return [ mb_substr(...$args) ];
+                        },
+                    ]);
+
+                    $sandbox->registerLibrary("mqtt", [
+                        "broadcast" => function ($topic, $payload) {
+                            $mqtt = loadBackend("mqtt");
+                            return [ $mqtt->broadcast($topic, $payload) ];
+                        },
                     ]);
 
                     return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
@@ -117,7 +210,7 @@
              * @return string
              */
 
-            public function getWorkflow($workflow) {
+             public function getWorkflow($workflow) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -198,6 +291,142 @@
             }
 
             /**
+             * get available workflows
+             *
+             * @return array
+             */
+
+             public function getWorkflowLibs() {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([ "metadata.type" => "workflow.lib" ]);
+
+                $list = [];
+                foreach ($libs as $lib) {
+                    $list[] = $lib["metadata"]["lib"];
+                }
+
+                return $list;
+            }
+
+            /**
+             * @return string
+             */
+
+            public function getWorkflowLibsCode()
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                ]);
+
+                $wls = "";
+
+                foreach ($libs as $l) {
+                    $wls .= $files->streamToContents($files->getFileStream($l["id"])) . "\n\n";
+                }
+
+                return $wls;
+            }
+
+            /**
+             * @param $lib
+             * @return string
+             */
+
+             public function getWorkflowLib($lib)
+             {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                    "metadata.lib" => $lib,
+                ]);
+
+                $lib = false;
+                foreach ($libs as $l) {
+                    $lib = $l;
+                    break;
+                }
+
+                if (!$lib) {
+                    return "";
+                }
+
+                return $files->streamToContents($files->getFileStream($lib["id"]));
+            }
+
+            /**
+             * @param $lib
+             * @param $body
+             * @return boolean
+             */
+            public function putWorkflowLib($lib, $body) 
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+
+                if (!$lib) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                    "metadata.lib" => $lib,
+                ]);
+
+                foreach ($libs as $l) {
+                    $files->deleteFile($l["id"]);
+                }
+
+                return $files->addFile($lib . ".lua", $files->contentsToStream($body), [
+                    "type" => "workflow.lib",
+                    "lib" => $lib,
+                ]);
+            }
+
+            /**
+             * @param $workflow
+             * @return boolean
+             */
+            public function deleteWorkflowLib($lib) 
+            {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $libs = $files->searchFiles([
+                    "metadata.type" => "workflow.lib",
+                    "metadata.lib" => $lib,
+                ]);
+
+                foreach ($libs as $l) {
+                    $files->deleteFile($l["id"]);
+                    break;
+                }
+
+                return true;
+            }
+
+            /**
              * get projects
              *
              * @return false|array[]
@@ -263,13 +492,27 @@
             abstract public function getStatuses();
 
             /**
+             * @param $status
+             * @return false|integer
+             */
+
+             abstract public function addStatus($status);
+
+             /**
              * @param $statusId
              * @param $display
              * @return boolean
              */
 
-            abstract public function moodifyStatus($statusId, $display);
+             abstract public function modifyStatus($statusId, $display);
 
+             /**
+              * @param $statusId
+              * @return boolean
+              */
+ 
+             abstract public function deleteStatus($statusId);
+ 
             /**
              * @return false|array
              */
@@ -281,7 +524,7 @@
              * @return false|integer
              */
 
-            abstract public function addResolution($resolution, $protected = 0);
+            abstract public function addResolution($resolution);
 
             /**
              * @param $resolutionId
@@ -312,13 +555,14 @@
             abstract public function getCustomFields();
 
             /**
+             * @param $catalog
              * @param $type
              * @param $field
              * @param $fieldDisplay
              * @return false|integer
              */
 
-            abstract public function addCustomField($type, $field, $fieldDisplay);
+            abstract public function addCustomField($catalog, $type, $field, $fieldDisplay);
 
             /**
              * @param $projectId
@@ -367,6 +611,7 @@
 
             /**
              * @param $customFieldId
+             * @param $catalog
              * @param $fieldDisplay
              * @param $fieldDescription
              * @param $regex
@@ -379,7 +624,7 @@
              * @param $editor
              * @return boolean
              */
-            abstract public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
+            abstract public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
 
             /**
              * @param $customFieldId
@@ -442,19 +687,28 @@
 
             /**
              * @param $filter
+             * @param $owner
              * @return false|string
              */
-            public function getFilter($filter) {
+            public function getFilter($filter, $owner = false) {
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
                 
-                $filters = $files->searchFiles([
-                    "metadata.type" => "filter",
-                    "metadata.filter" => $filter,
-                ]);
+                if ($owner) {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                        "metadata.owner" => $owner,
+                    ]);
+                } else {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                    ]);
+                }
 
                 $filter = false;
                 foreach ($filters as $f) {
@@ -472,9 +726,10 @@
             /**
              * @param $filter
              * @param $body
+             * @param $owner
              * @return boolean
              */
-            public function putFilter($filter, $body) {
+            public function putFilter($filter, $body, $owner = false) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -484,37 +739,65 @@
                 if (!$filter) {
                     return false;
                 }
-                
-                $filters = $files->searchFiles([
-                    "metadata.type" => "filter",
-                    "metadata.filter" => $filter,
-                ]);
 
-                foreach ($filters as $f) {
-                    $files->deleteFile($f["id"]);
+                if ($owner) {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                        "metadata.owner" => $owner,
+                    ]);
+    
+                    foreach ($filters as $f) {
+                        $files->deleteFile($f["id"]);
+                    }
+    
+                    return $files->addFile($filter . ".json", $files->contentsToStream($body), [
+                        "type" => "filter",
+                        "filter" => $filter,
+                        "owner" => $owner,
+                    ]);
+                } else {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                    ]);
+    
+                    foreach ($filters as $f) {
+                        $files->deleteFile($f["id"]);
+                    }
+    
+                    return $files->addFile($filter . ".json", $files->contentsToStream($body), [
+                        "type" => "filter",
+                        "filter" => $filter,
+                    ]);
                 }
-
-                return $files->addFile($filter . ".json", $files->contentsToStream($body), [
-                    "type" => "filter",
-                    "filter" => $filter,
-                ]);
             }
 
             /**
              * @param $filter
+             * @param $owner
              * @return boolean
              */
-            public function deleteFilter($filter) {
+            public function deleteFilter($filter, $owner = false)
+            {
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
-                
-                $filters = $files->searchFiles([
-                    "metadata.type" => "filter",
-                    "metadata.filter" => $filter,
-                ]);
+
+                if ($owner) {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                        "metadata.owner" => $owner,
+                    ]);
+                } else {
+                    $filters = $files->searchFiles([
+                        "metadata.type" => "filter",
+                        "metadata.filter" => $filter,
+                    ]);
+                }
 
                 foreach ($filters as $f) {
                     $files->deleteFile($f["id"]);
@@ -681,6 +964,8 @@
                 $validFields[] = "issueId";
                 $validFields[] = "project";
                 $validFields[] = "workflow";
+                $validFields[] = "catalog";
+                $validFields[] = "parent";
                 $validFields[] = "subject";
                 $validFields[] = "description";
                 $validFields[] = "resolution";
@@ -690,7 +975,10 @@
                 $validFields[] = "watchers";
                 $validFields[] = "attachments";
                 $validFields[] = "comments";
-                $validFields[] = "journal";
+
+                if (!@$issue["catalog"] || $issue["catalog"] == "-") {
+                    unset($issue["catalog"]);
+                }
 
                 $validTags = [];
 
@@ -745,8 +1033,22 @@
 
                 $issues = $this->getIssues($acr, [ "issueId" => $issueId ], true);
 
-                if (!$issues || !$issues["issues"] || !$issues["issues"][0]) {
+                if (!$issues || !$issues["issues"] || count($issues["issues"]) != 1 || !$issues["issues"][0]) {
                     return false;
+                }
+
+                $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [
+                    "issueId",
+                    "subject",
+                    "status",
+                    "resolution",
+                    "created",
+                    "updated",
+                    "author",
+                ], [ "created" => 1 ], 0, 32768);
+
+                if ($childrens) {
+                    $issues["issues"][0]["childrens"] = $childrens;
                 }
 
                 return $issues["issues"][0];
@@ -837,19 +1139,29 @@
             abstract public function reCreateIndexes();
 
             /**
-             * @param string $issue
+             * @param string $issueId
              * @param string $action
              * @param object $old
              * @param object $new
              * @return void
              */
-            public function addJournalRecord($issue, $action, $old, $new)
+            public function addJournalRecord($issueId, $action, $old, $new)
             {
                 $journal = loadBackend("tt_journal");
 
-                if ($journal) {
-                    $journal->journal($issue, $action, $old, $new);
+                try {
+                    $issue = $this->getIssue($issueId);
+                    $workflow = $this->loadWorkflow($issue["workflow"]);
+                    $workflow->issueChanged($issue, $action, $old, $new);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                 }
+
+                if ($journal) {
+                    return $journal->journal($issueId, $action, $old, $new);
+                }
+
+                return false;
             }
 
             /**
@@ -929,21 +1241,11 @@
 
                 if (!in_array($this->login, $issue["watchers"])) {
                     $issue["watchers"][] = $this->login;
-                    return $this->modifyIssue($issue);
+                } else {
+                    unset($issue["watchers"][array_search($this->login, $issue["watchers"])]);
                 }
 
-                return true;
-            }
-
-            /**
-             * @param $issue
-             * @param $linkTo
-             * @param $linkType
-             * @return mixed
-             */
-            public function linkIssue($issue, $linkTo, $linkType)
-            {
-                return true;
+                return $this->modifyIssue($issue);
             }
 
             /**
@@ -953,11 +1255,13 @@
              */
             public function preprocessFilter($query, $params)
             {
-                array_walk_recursive($query, function (&$item, $key, $params) {
-                    if (array_key_exists($item, $params)) {
-                        $item = $params[$item];
-                    }
-                }, $params);
+                if ($query) {
+                    array_walk_recursive($query, function (&$item, $key, $params) {
+                        if (array_key_exists($item, $params)) {
+                            $item = $params[$item];
+                        }
+                    }, $params);
+                }
                 return $query;
             }
         }

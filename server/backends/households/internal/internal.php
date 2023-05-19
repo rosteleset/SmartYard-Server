@@ -28,8 +28,9 @@
                         flat,
                         code,
                         plog,
+                        coalesce(manual_block, 0) manual_block, 
+                        coalesce(admin_block, 0) admin_block,
                         coalesce(auto_block, 0) auto_block, 
-                        manual_block, 
                         open_code, 
                         auto_open, 
                         white_rabbit, 
@@ -47,8 +48,9 @@
                     "flat" => "flat",
                     "code" => "code",
                     "plog" => "plog",
-                    "auto_block" => "autoBlock",
                     "manual_block" => "manualBlock",
+                    "admin_block" => "adminBlock",
+                    "auto_block" => "autoBlock",
                     "open_code" => "openCode",
                     "auto_open" => "autoOpen",
                     "white_rabbit" => "whiteRabbit",
@@ -349,21 +351,20 @@
                     return false;
                 }
 
-                if (!$shared) {
-                    $prefix = 0;
-                }
-
                 if (!checkStr($callerId)) {
                     return false;
                 }
 
-                if ($shared) {
-                    $r1 = $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
-                        ":prefix" => $prefix,
-                    ]) !== false;
-                } else {
-                    $r1 = $this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") !== false;
+                if (!$shared) {
+                    if ($this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") === false) {
+                        return false;
+                    }
+                    $prefix = 0;
                 }
+
+                $r1 = $this->db->modify("update houses_houses_entrances set prefix = :prefix where house_entrance_id = $entranceId and address_house_id = $houseId", [
+                    ":prefix" => $prefix,
+                ]) !== false;
 
                 return
                     $r1
@@ -406,24 +407,25 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
+            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $adminBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
             {
                 $autoOpen = (int)strtotime($autoOpen);
 
-                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
+                if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($adminBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
 
                     if ($openCode == "!") {
                         // TODO add unique check !!!
                         $openCode = 11000 + rand(0, 88999);
                     }
 
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, admin_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :admin_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
                         ":code" => $code,
                         ":plog" => $plog,
                         ":manual_block" => $manualBlock,
+                        ":admin_block" => $adminBlock,
                         ":open_code" => $openCode,
                         ":auto_open" => $autoOpen,
                         ":white_rabbit" => $whiteRabbit,
@@ -475,6 +477,16 @@
                         return false;
                     }
 
+                    if (array_key_exists("adminBlock", $params) && !checkInt($params["adminBlock"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if (array_key_exists("autoBlock", $params) && !checkInt($params["autoBlock"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (array_key_exists("whiteRabbit", $params) && !checkInt($params["whiteRabbit"])) {
                         setLastError("invalidParams");
                         return false;
@@ -514,6 +526,8 @@
                         "code" => "code",
                         "plog" => "plog",
                         "manual_block" => "manualBlock",
+                        "admin_block" => "adminBlock",
+                        "auto_block" => "autoBlock",
                         "open_code" => "openCode",
                         "auto_open" => "autoOpen",
                         "white_rabbit" => "whiteRabbit",
@@ -1645,6 +1659,10 @@
                 $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2");
 
                 $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id not in (select camera_id from cameras)");
+                $n += $this->db->modify("delete from houses_cameras_flats where camera_id not in (select camera_id from cameras)");
+                $n += $this->db->modify("delete from houses_cameras_houses where camera_id not in (select camera_id from cameras)");
+                $n += $this->db->modify("delete from houses_cameras_subscribers where camera_id not in (select camera_id from cameras)");
+
                 $n += $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)");
                 $n += $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)");
                 $n += $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)");
@@ -1669,15 +1687,13 @@
                             ]);
                         }
                     }
-
-                    return true;
                 }
 
                 if ($part === "5min") {
                     $this->cleanup();
-
-                    return true;
                 }
+
+                return true;
             }
         }
     }

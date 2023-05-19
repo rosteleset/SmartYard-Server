@@ -1,0 +1,21 @@
+[Unit]
+Description=Asterisk PBX and telephony daemon
+After=network.target
+
+[Service]
+Type=simple
+Environment=HOME=/var/lib/asterisk
+WorkingDirectory=/var/lib/asterisk
+User=asterisk
+Group=asterisk
+ExecStart=/usr/sbin/asterisk -mqf -C /etc/asterisk/asterisk.conf
+ExecReload=/usr/sbin/asterisk -rx 'core reload'
+LimitCORE=infinity
+Restart=always
+RestartSec=4
+StandardOutput=null
+PrivateTmp=true
+ExecStartPre=+/bin/bash -c '[ ! -d "/var/run/asterisk" ] && /bin/mkdir /var/run/asterisk ; /bin/chown -R asterisk:asterisk /var/{lib,log,run,spool}/asterisk'
+
+[Install]
+WantedBy=multi-user.target

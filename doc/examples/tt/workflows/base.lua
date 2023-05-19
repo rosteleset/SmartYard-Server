@@ -1,9 +1,5 @@
-function initProject(project)
-    utils.error_log(utils.print_r(project))
-    return project
-end
-
-function getIssueTemplate()
+function getNewIssueTemplate(catalog)
+    utils.error_log(catalog)
     return {
         ["fields"] = {
             "subject",
@@ -21,10 +17,9 @@ end
 -- saAddComment - add comment
 -- saAddFile    - add file
 -- saAssignToMe - set assigned to myself
--- saWatch      - add myself to watchers
+-- saWatch      - add (remove) myself to (from) watchers
 -- saDelete     - delete issue
--- saLink       - add link to another issue
--- saSubTask    - create subIssue
+-- saSubIssue   - create subIssue
 
 function getAvailableActions(issue)
     if issue["status"] ~= "closed" then
@@ -84,10 +79,11 @@ function viewIssue(issue)
     return {
         ["issue"] = issue,
         ["actions"] = getAvailableActions(issue),
+        ["showJournal"] = true,
         ["fields"] = {
-            "issueId",
             "project",
             "workflow",
+            "catalog",
             "subject",
             "created",
             "updated",
@@ -97,14 +93,33 @@ function viewIssue(issue)
             "author",
             "assigned",
             "watchers",
-            "tags",
-            "attachments",
-            "comments",
-            "journal",
         }
     }
 end
 
 function getWorkflowName()
     return "Базовый"
+end
+
+function getWorkflowCatalog()
+    return {
+        ["Общие"] = {
+            "Пустышка",
+        },
+        ["Финансовая/договорная"] = {
+            "Ошибочный платеж",
+            "Возврат денежных средств",
+            "Перерасчет",
+        },
+        ["Абонентская"] = {
+            "Нет мака",
+            "Нет запросов",
+            "Переобжим коннектора",
+        },
+    }
+end
+
+function issueChanged(issue, action, old, new)
+    -- add notifications here
+    return mqtt.broadcast("issue/changed", issue["issueId"])
 end

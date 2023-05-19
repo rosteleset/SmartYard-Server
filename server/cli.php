@@ -28,8 +28,10 @@
         common parts:
             [--parent-pid=<pid>]
             [--debug]
+
         demo server:
             [--run-demo-server [--port=<port>]]
+
         initialization:
             [--init-db]
             [--admin-password=<password>]
@@ -37,18 +39,27 @@
             [--clear-cache]
             [--cleanup]
             [--init-mobile-issues-project]
+
         tests:
             [--check-mail=<your email address>]
             [--get-db-version]
             [--check-backends]
+
         autoconfigure:
             [--autoconfigure-domophone=<domophone_id> [--first-time]]
+
         cron:
             [--cron=<minutely|5min|hourly|daily|monthly>]
             [--install-crontabs]
             [--uninstall-crontabs]
+
         dvr:
             [--run-record-download=<id>]
+
+        config:
+            [--print-config]
+            [--write-yaml-config]
+            [--write-json-config]
         \n";
 
         exit(1);
@@ -91,14 +102,18 @@
         global $db, $params, $script_process_id, $script_parent_pid;
 
         if (@$db) {
-            $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
-                "pid" => getmypid(),
-                "ppid" => $script_parent_pid,
-                "start" => time(),
-                "process" => "cli.php",
-                "params" => $params,
-                "expire" => time() + 24 * 60 * 60,
-            ]);
+            try {
+                $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
+                    "pid" => getmypid(),
+                    "ppid" => $script_parent_pid,
+                    "start" => time(),
+                    "process" => "cli.php",
+                    "params" => $params,
+                    "expire" => time() + 24 * 60 * 60,
+                ], [ "silent" ]);
+            } catch (\Exception $e) {
+                //
+            }
         }
     }
 
@@ -106,11 +121,15 @@
         global $script_process_id, $db, $script_result;
 
         if (@$db) {
-            $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                "done" => time(),
-                "result" => $script_result,
-                "running_process_id" => $script_process_id,
-            ]);
+            try {
+                $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                    "done" => time(),
+                    "result" => $script_result,
+                    "running_process_id" => $script_process_id,
+                ], [ "silent" ]);
+            } catch (\Exception $e) {
+                //
+            }
         }
     }
 
@@ -118,19 +137,25 @@
         global $db;
 
         if (@$db) {
-            $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
-                "running_process_id" => "id",
-                "pid" => "pid",
-            ]);
+            try {
+                $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
+                    "running_process_id" => "id",
+                    "pid" => "pid",
+                ], [ "silent" ]);
 
-            foreach ($pids as $process) {
-                if (!file_exists( "/proc/{$process['pid']}")) {
-                    $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                        "done" => time(),
-                        "result" => "unknown",
-                        "running_process_id" => $process['id'],
-                    ]);
+                if ($pids) {
+                    foreach ($pids as $process) {
+                        if (!file_exists( "/proc/{$process['pid']}")) {
+                            $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                                "done" => time(),
+                                "result" => "unknown",
+                                "running_process_id" => $process['id'],
+                            ], [ "silent" ]);
+                        }
+                    }
                 }
+            } catch (\Exception $e) {
+                //
             }
         }
     }
@@ -188,11 +213,17 @@
     }
 
     try {
-        $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
+        $config = @json_decode(file_get_contents("config/config.json"), true);
     } catch (Exception $e) {
-        echo "can't load config file\n";
-        echo strtolower($e->getMessage()) . "\n";
-        exit(1);
+        $config = false;
+    }
+
+    if (!$config) {
+        try {
+            $config = @json_decode(json_encode(yaml_parse_file("config/config.yml")), true);
+        } catch (Exception $e) {
+            $config = false;
+        }
     }
 
     if (!$config) {
@@ -261,11 +292,11 @@
 
     check_if_pid_exists();
     if (@$db) {
-        $db->modify("delete from core_running_processes where done is null and coalesce(expire, 0) < " . time());
+        $db->modify("delete from core_running_processes where done is null and coalesce(expire, 0) < " . time(), false, [ "silent" ]);
 
         $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
             'params' => $params,
-        ], false, [ 'fieldlify' ]);
+        ], false, [ 'fieldlify', 'silent' ]);
 
         if ($already) {
             $script_result = "already running";
@@ -442,6 +473,21 @@
 
             $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $config['api']['mobile'], $uuid));
         }
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--write-yaml-config", $args) && !isset($args["--write-yaml-config"])) {
+        file_put_contents("config/config.yml", yaml_emit($config));
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--write-json-config", $args) && !isset($args["--write-json-config"])) {
+        file_put_contents("config/config.json", json_encode($config, JSON_PRETTY_PRINT));
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--print-config", $args) && !isset($args["--print-config"])) {
+        print_r($config);
         exit(0);
     }
 

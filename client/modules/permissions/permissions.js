@@ -9,7 +9,7 @@
 
     init: function () {
         if (AVAIL("authorization", "rights")) {
-            leftSide("fas fa-fw fa-balance-scale-right", i18n("permissions.permissions"), "#permissions", "accounts");
+            leftSide("fas fa-fw fa-balance-scale-right", i18n("permissions.permissions"), "?#permissions", "accounts");
         }
         moduleLoaded("permissions", this);
     },
@@ -282,19 +282,21 @@
                 if (!x[t.gid]) {
                     x[t.gid] = {};
                 }
-                if (!x[t.gid][m[t.aid].api]) {
+                if (m[t.aid] && m[t.aid].api && !x[t.gid][m[t.aid].api]) {
                     x[t.gid][m[t.aid].api] = {
                         _aid: t.aid,
                     };
                 }
-                if (!x[t.gid][m[t.aid].api][m[t.aid].method]) {
+                if (m[t.aid] && m[t.aid].api && !x[t.gid][m[t.aid].api][m[t.aid].method]) {
                     x[t.gid][m[t.aid].api][m[t.aid].method] = {
                         _aid: t.aid,
                     };
                 }
-                x[t.gid][m[t.aid].api][m[t.aid].method][m[t.aid].action] = {
-                    _aid: t.aid,
-                    allow: t.allow,
+                if (m[t.aid] && m[t.aid].api) {
+                    x[t.gid][m[t.aid].api][m[t.aid].method][m[t.aid].action] = {
+                        _aid: t.aid,
+                        allow: t.allow,
+                    }
                 }
             }
         } else {
@@ -466,7 +468,10 @@
     },
 
     render: function () {
+        $("#altForm").hide();
+
         loadingStart();
+
         GET("authorization", "rights", false, true).done(r => {
             modules.permissions.rights = r.rights;
 

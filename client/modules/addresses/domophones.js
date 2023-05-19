@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
-            leftSide("fas fa-fw fa-door-open", i18n("addresses.domophones"), "#addresses.domophones", "households");
+            leftSide("fas fa-fw fa-door-open", i18n("addresses.domophones"), "?#addresses.domophones", "households");
         }
         moduleLoaded("addresses.domophones", this);
     },

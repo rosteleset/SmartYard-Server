@@ -87,9 +87,6 @@
                         $dvr_files_path = @$config["backends"]["dvr_exports"]["dvr_files_path"] ?: false;
                         if ( $dvr_files_path && substr($dvr_files_path, -1) != '/' ) $dvr_files_path = $dvr_files_path . '/';
         
-                        $dvr_files_location_prefix = @$config["backends"]["dvr_exports"]["dvr_files_location_prefix"] ?: false;
-                        if ( $dvr_files_location_prefix && substr($dvr_files_location_prefix, -1) != '/' ) $dvr_files_location_prefix = $dvr_files_location_prefix . '/';
-                    
                         $cameras = loadBackend("cameras");
                         $cam = $cameras->getCamera($task['cameraId']);
         

@@ -14,13 +14,13 @@
         $lines = 0;
 
         foreach ($crontab as $line) {
-            if ($line === "## RBT crons start, dont't touch!!!") {
+            if ($line === "## RBT crons start, dont touch!!!") {
                 $skip = true;
             }
             if (!$skip) {
                 $clean[] = $line;
             }
-            if ($line === "## RBT crons end, dont't touch!!!") {
+            if ($line === "## RBT crons end, dont touch!!!") {
                 $skip = false;
             }
         }
@@ -29,7 +29,7 @@
 
         $clean[] = "";
 
-        $clean[] = "## RBT crons start, dont't touch!!!";
+        $clean[] = "## RBT crons start, dont touch!!!";
         $lines++;
         $clean[] = "*/1 * * * * $cli=minutely";
         $lines++;
@@ -41,7 +41,7 @@
         $lines++;
         $clean[] = "1 1 1 */1 * $cli=monthly";
         $lines++;
-        $clean[] = "## RBT crons end, dont't touch!!!";
+        $clean[] = "## RBT crons end, dont touch!!!";
         $lines++;
 
         file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)));
@@ -61,7 +61,7 @@
         $lines = 0;
 
         foreach ($crontab as $line) {
-            if ($line === "## RBT crons start, dont't touch!!!") {
+            if ($line === "## RBT crons start, dont touch!!!") {
                 $skip = true;
             }
             if (!$skip) {
@@ -69,7 +69,7 @@
             } else {
                 $lines++;
             }
-            if ($line === "## RBT crons end, dont't touch!!!") {
+            if ($line === "## RBT crons end, dont touch!!!") {
                 $skip = false;
             }
         }

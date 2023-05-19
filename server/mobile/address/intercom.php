@@ -27,6 +27,7 @@
  * @apiSuccess {string="t","f"} -.CMS КМС разрешено
  * @apiSuccess {string="t","f"} -.VoIP VoIP разрешен
  * @apiSuccess {string="Y-m-d H:i:s"} -.autoOpen дата до которой работает автооткрытие двери
+ * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {string="0","1","2","3","5","7","10"} -.whiteRabbit автооткрытие двери
  * @apiSuccess {string="t","f"} [_.paperBill] печатать бумажные платежки
  * @apiSuccess {string="t","f"} _.disablePlog="f" прекратить "следить" за квартирой
@@ -146,6 +147,26 @@ $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
 if ($flat_owner && $plog && $flat['plog'] != plog::ACCESS_RESTRICTED_BY_ADMIN) {
     $ret['disablePlog'] = $flat['plog'] == plog::ACCESS_DENIED ? 't' : 'f';
     $ret['hiddenPlog'] = $flat['plog'] == plog::ACCESS_ALL ? 'f' : 't';
+}
+
+//check for FRS presence on at least one entrance of the flat
+$frs = loadBackend("frs");
+if ($frs) {
+    $cameras = loadBackend("cameras");
+    $frsDisabled = null;
+    foreach ($flat['entrances'] as $entrance) {
+        $e = $households->getEntrance($entrance['entranceId']);
+        if ($cameras) {
+            $vstream = $cameras->getCamera($e['cameraId']);
+            if (strlen($vstream["frs"]) > 1) {
+                $frsDisabled = 'f';
+                break;
+            }
+        }
+    }
+    if ($frsDisabled != null) {
+        $ret['FRSDisabled'] = $frsDisabled;
+    }
 }
 
 if ($ret) {

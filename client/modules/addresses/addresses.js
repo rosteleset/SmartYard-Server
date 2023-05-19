@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
-            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "#addresses", "households");
+            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "?#addresses", "households");
         }
 
         loadSubModules("addresses", [
@@ -13,15 +13,636 @@
         ], this);
     },
 
+    timezones: [
+        "Africa/Abidjan",
+        "Africa/Accra",
+        "Africa/Addis_Ababa",
+        "Africa/Algiers",
+        "Africa/Asmara",
+        "Africa/Asmera",
+        "Africa/Bamako",
+        "Africa/Bangui",
+        "Africa/Banjul",
+        "Africa/Bissau",
+        "Africa/Blantyre",
+        "Africa/Brazzaville",
+        "Africa/Bujumbura",
+        "Africa/Cairo",
+        "Africa/Casablanca",
+        "Africa/Ceuta",
+        "Africa/Conakry",
+        "Africa/Dakar",
+        "Africa/Dar_es_Salaam",
+        "Africa/Djibouti",
+        "Africa/Douala",
+        "Africa/El_Aaiun",
+        "Africa/Freetown",
+        "Africa/Gaborone",
+        "Africa/Harare",
+        "Africa/Johannesburg",
+        "Africa/Juba",
+        "Africa/Kampala",
+        "Africa/Khartoum",
+        "Africa/Kigali",
+        "Africa/Kinshasa",
+        "Africa/Lagos",
+        "Africa/Libreville",
+        "Africa/Lome",
+        "Africa/Luanda",
+        "Africa/Lubumbashi",
+        "Africa/Lusaka",
+        "Africa/Malabo",
+        "Africa/Maputo",
+        "Africa/Maseru",
+        "Africa/Mbabane",
+        "Africa/Mogadishu",
+        "Africa/Monrovia",
+        "Africa/Nairobi",
+        "Africa/Ndjamena",
+        "Africa/Niamey",
+        "Africa/Nouakchott",
+        "Africa/Ouagadougou",
+        "Africa/Porto-Novo",
+        "Africa/Sao_Tome",
+        "Africa/Timbuktu",
+        "Africa/Tripoli",
+        "Africa/Tunis",
+        "Africa/Windhoek",
+        "America/Adak",
+        "America/Anchorage",
+        "America/Anguilla",
+        "America/Antigua",
+        "America/Araguaina",
+        "America/Argentina/Buenos_Aires",
+        "America/Argentina/Catamarca",
+        "America/Argentina/ComodRivadavia",
+        "America/Argentina/Cordoba",
+        "America/Argentina/Jujuy",
+        "America/Argentina/La_Rioja",
+        "America/Argentina/Mendoza",
+        "America/Argentina/Rio_Gallegos",
+        "America/Argentina/Salta",
+        "America/Argentina/San_Juan",
+        "America/Argentina/San_Luis",
+        "America/Argentina/Tucuman",
+        "America/Argentina/Ushuaia",
+        "America/Aruba",
+        "America/Asuncion",
+        "America/Atikokan",
+        "America/Atka",
+        "America/Bahia",
+        "America/Bahia_Banderas",
+        "America/Barbados",
+        "America/Belem",
+        "America/Belize",
+        "America/Blanc-Sablon",
+        "America/Boa_Vista",
+        "America/Bogota",
+        "America/Boise",
+        "America/Buenos_Aires",
+        "America/Cambridge_Bay",
+        "America/Campo_Grande",
+        "America/Cancun",
+        "America/Caracas",
+        "America/Catamarca",
+        "America/Cayenne",
+        "America/Cayman",
+        "America/Chicago",
+        "America/Chihuahua",
+        "America/Ciudad_Juarez",
+        "America/Coral_Harbour",
+        "America/Cordoba",
+        "America/Costa_Rica",
+        "America/Creston",
+        "America/Cuiaba",
+        "America/Curacao",
+        "America/Danmarkshavn",
+        "America/Dawson",
+        "America/Dawson_Creek",
+        "America/Denver",
+        "America/Detroit",
+        "America/Dominica",
+        "America/Edmonton",
+        "America/Eirunepe",
+        "America/El_Salvador",
+        "America/Ensenada",
+        "America/Fortaleza",
+        "America/Fort_Nelson",
+        "America/Fort_Wayne",
+        "America/Glace_Bay",
+        "America/Godthab",
+        "America/Goose_Bay",
+        "America/Grand_Turk",
+        "America/Grenada",
+        "America/Guadeloupe",
+        "America/Guatemala",
+        "America/Guayaquil",
+        "America/Guyana",
+        "America/Halifax",
+        "America/Havana",
+        "America/Hermosillo",
+        "America/Indiana/Indianapolis",
+        "America/Indiana/Knox",
+        "America/Indiana/Marengo",
+        "America/Indiana/Petersburg",
+        "America/Indianapolis",
+        "America/Indiana/Tell_City",
+        "America/Indiana/Vevay",
+        "America/Indiana/Vincennes",
+        "America/Indiana/Winamac",
+        "America/Inuvik",
+        "America/Iqaluit",
+        "America/Jamaica",
+        "America/Jujuy",
+        "America/Juneau",
+        "America/Kentucky/Louisville",
+        "America/Kentucky/Monticello",
+        "America/Knox_IN",
+        "America/Kralendijk",
+        "America/La_Paz",
+        "America/Lima",
+        "America/Los_Angeles",
+        "America/Louisville",
+        "America/Lower_Princes",
+        "America/Maceio",
+        "America/Managua",
+        "America/Manaus",
+        "America/Marigot",
+        "America/Martinique",
+        "America/Matamoros",
+        "America/Mazatlan",
+        "America/Mendoza",
+        "America/Menominee",
+        "America/Merida",
+        "America/Metlakatla",
+        "America/Mexico_City",
+        "America/Miquelon",
+        "America/Moncton",
+        "America/Monterrey",
+        "America/Montevideo",
+        "America/Montreal",
+        "America/Montserrat",
+        "America/Nassau",
+        "America/New_York",
+        "America/Nipigon",
+        "America/Nome",
+        "America/Noronha",
+        "America/North_Dakota/Beulah",
+        "America/North_Dakota/Center",
+        "America/North_Dakota/New_Salem",
+        "America/Nuuk",
+        "America/Ojinaga",
+        "America/Panama",
+        "America/Pangnirtung",
+        "America/Paramaribo",
+        "America/Phoenix",
+        "America/Port-au-Prince",
+        "America/Porto_Acre",
+        "America/Port_of_Spain",
+        "America/Porto_Velho",
+        "America/Puerto_Rico",
+        "America/Punta_Arenas",
+        "America/Rainy_River",
+        "America/Rankin_Inlet",
+        "America/Recife",
+        "America/Regina",
+        "America/Resolute",
+        "America/Rio_Branco",
+        "America/Rosario",
+        "America/Santa_Isabel",
+        "America/Santarem",
+        "America/Santiago",
+        "America/Santo_Domingo",
+        "America/Sao_Paulo",
+        "America/Scoresbysund",
+        "America/Shiprock",
+        "America/Sitka",
+        "America/St_Barthelemy",
+        "America/St_Johns",
+        "America/St_Kitts",
+        "America/St_Lucia",
+        "America/St_Thomas",
+        "America/St_Vincent",
+        "America/Swift_Current",
+        "America/Tegucigalpa",
+        "America/Thule",
+        "America/Thunder_Bay",
+        "America/Tijuana",
+        "America/Toronto",
+        "America/Tortola",
+        "America/Vancouver",
+        "America/Virgin",
+        "America/Whitehorse",
+        "America/Winnipeg",
+        "America/Yakutat",
+        "America/Yellowknife",
+        "Antarctica/Casey",
+        "Antarctica/Davis",
+        "Antarctica/DumontDUrville",
+        "Antarctica/Macquarie",
+        "Antarctica/Mawson",
+        "Antarctica/McMurdo",
+        "Antarctica/Palmer",
+        "Antarctica/Rothera",
+        "Antarctica/South_Pole",
+        "Antarctica/Syowa",
+        "Antarctica/Troll",
+        "Antarctica/Vostok",
+        "Arctic/Longyearbyen",
+        "Asia/Aden",
+        "Asia/Almaty",
+        "Asia/Amman",
+        "Asia/Anadyr",
+        "Asia/Aqtau",
+        "Asia/Aqtobe",
+        "Asia/Ashgabat",
+        "Asia/Ashkhabad",
+        "Asia/Atyrau",
+        "Asia/Baghdad",
+        "Asia/Bahrain",
+        "Asia/Baku",
+        "Asia/Bangkok",
+        "Asia/Barnaul",
+        "Asia/Beirut",
+        "Asia/Bishkek",
+        "Asia/Brunei",
+        "Asia/Calcutta",
+        "Asia/Chita",
+        "Asia/Choibalsan",
+        "Asia/Chongqing",
+        "Asia/Chungking",
+        "Asia/Colombo",
+        "Asia/Dacca",
+        "Asia/Damascus",
+        "Asia/Dhaka",
+        "Asia/Dili",
+        "Asia/Dubai",
+        "Asia/Dushanbe",
+        "Asia/Famagusta",
+        "Asia/Gaza",
+        "Asia/Harbin",
+        "Asia/Hebron",
+        "Asia/Ho_Chi_Minh",
+        "Asia/Hong_Kong",
+        "Asia/Hovd",
+        "Asia/Irkutsk",
+        "Asia/Istanbul",
+        "Asia/Jakarta",
+        "Asia/Jayapura",
+        "Asia/Jerusalem",
+        "Asia/Kabul",
+        "Asia/Kamchatka",
+        "Asia/Karachi",
+        "Asia/Kashgar",
+        "Asia/Kathmandu",
+        "Asia/Katmandu",
+        "Asia/Khandyga",
+        "Asia/Kolkata",
+        "Asia/Krasnoyarsk",
+        "Asia/Kuala_Lumpur",
+        "Asia/Kuching",
+        "Asia/Kuwait",
+        "Asia/Macao",
+        "Asia/Macau",
+        "Asia/Magadan",
+        "Asia/Makassar",
+        "Asia/Manila",
+        "Asia/Muscat",
+        "Asia/Nicosia",
+        "Asia/Novokuznetsk",
+        "Asia/Novosibirsk",
+        "Asia/Omsk",
+        "Asia/Oral",
+        "Asia/Phnom_Penh",
+        "Asia/Pontianak",
+        "Asia/Pyongyang",
+        "Asia/Qatar",
+        "Asia/Qostanay",
+        "Asia/Qyzylorda",
+        "Asia/Rangoon",
+        "Asia/Riyadh",
+        "Asia/Saigon",
+        "Asia/Sakhalin",
+        "Asia/Samarkand",
+        "Asia/Seoul",
+        "Asia/Shanghai",
+        "Asia/Singapore",
+        "Asia/Srednekolymsk",
+        "Asia/Taipei",
+        "Asia/Tashkent",
+        "Asia/Tbilisi",
+        "Asia/Tehran",
+        "Asia/Tel_Aviv",
+        "Asia/Thimbu",
+        "Asia/Thimphu",
+        "Asia/Tokyo",
+        "Asia/Tomsk",
+        "Asia/Ujung_Pandang",
+        "Asia/Ulaanbaatar",
+        "Asia/Ulan_Bator",
+        "Asia/Urumqi",
+        "Asia/Ust-Nera",
+        "Asia/Vientiane",
+        "Asia/Vladivostok",
+        "Asia/Yakutsk",
+        "Asia/Yangon",
+        "Asia/Yekaterinburg",
+        "Asia/Yerevan",
+        "Atlantic/Azores",
+        "Atlantic/Bermuda",
+        "Atlantic/Canary",
+        "Atlantic/Cape_Verde",
+        "Atlantic/Faeroe",
+        "Atlantic/Faroe",
+        "Atlantic/Jan_Mayen",
+        "Atlantic/Madeira",
+        "Atlantic/Reykjavik",
+        "Atlantic/South_Georgia",
+        "Atlantic/Stanley",
+        "Atlantic/St_Helena",
+        "Australia/ACT",
+        "Australia/Adelaide",
+        "Australia/Brisbane",
+        "Australia/Broken_Hill",
+        "Australia/Canberra",
+        "Australia/Currie",
+        "Australia/Darwin",
+        "Australia/Eucla",
+        "Australia/Hobart",
+        "Australia/LHI",
+        "Australia/Lindeman",
+        "Australia/Lord_Howe",
+        "Australia/Melbourne",
+        "Australia/North",
+        "Australia/NSW",
+        "Australia/Perth",
+        "Australia/Queensland",
+        "Australia/South",
+        "Australia/Sydney",
+        "Australia/Tasmania",
+        "Australia/Victoria",
+        "Australia/West",
+        "Australia/Yancowinna",
+        "Brazil/Acre",
+        "Brazil/DeNoronha",
+        "Brazil/East",
+        "Brazil/West",
+        "Canada/Atlantic",
+        "Canada/Central",
+        "Canada/Eastern",
+        "Canada/Mountain",
+        "Canada/Newfoundland",
+        "Canada/Pacific",
+        "Canada/Saskatchewan",
+        "Canada/Yukon",
+        "CET",
+        "Chile/Continental",
+        "Chile/EasterIsland",
+        "CST6CDT",
+        "Cuba",
+        "EET",
+        "Egypt",
+        "Eire",
+        "EST",
+        "EST5EDT",
+        "Etc/GMT",
+        "Etc/GMT+0",
+        "Etc/GMT-0",
+        "Etc/GMT0",
+        "Etc/GMT+1",
+        "Etc/GMT-1",
+        "Etc/GMT+10",
+        "Etc/GMT-10",
+        "Etc/GMT+11",
+        "Etc/GMT-11",
+        "Etc/GMT+12",
+        "Etc/GMT-12",
+        "Etc/GMT-13",
+        "Etc/GMT-14",
+        "Etc/GMT+2",
+        "Etc/GMT-2",
+        "Etc/GMT+3",
+        "Etc/GMT-3",
+        "Etc/GMT+4",
+        "Etc/GMT-4",
+        "Etc/GMT+5",
+        "Etc/GMT-5",
+        "Etc/GMT+6",
+        "Etc/GMT-6",
+        "Etc/GMT+7",
+        "Etc/GMT-7",
+        "Etc/GMT+8",
+        "Etc/GMT-8",
+        "Etc/GMT+9",
+        "Etc/GMT-9",
+        "Etc/Greenwich",
+        "Etc/UCT",
+        "Etc/Universal",
+        "Etc/UTC",
+        "Etc/Zulu",
+        "Europe/Amsterdam",
+        "Europe/Andorra",
+        "Europe/Astrakhan",
+        "Europe/Athens",
+        "Europe/Belfast",
+        "Europe/Belgrade",
+        "Europe/Berlin",
+        "Europe/Bratislava",
+        "Europe/Brussels",
+        "Europe/Bucharest",
+        "Europe/Budapest",
+        "Europe/Busingen",
+        "Europe/Chisinau",
+        "Europe/Copenhagen",
+        "Europe/Dublin",
+        "Europe/Gibraltar",
+        "Europe/Guernsey",
+        "Europe/Helsinki",
+        "Europe/Isle_of_Man",
+        "Europe/Istanbul",
+        "Europe/Jersey",
+        "Europe/Kaliningrad",
+        "Europe/Kiev",
+        "Europe/Kirov",
+        "Europe/Kyiv",
+        "Europe/Lisbon",
+        "Europe/Ljubljana",
+        "Europe/London",
+        "Europe/Luxembourg",
+        "Europe/Madrid",
+        "Europe/Malta",
+        "Europe/Mariehamn",
+        "Europe/Minsk",
+        "Europe/Monaco",
+        "Europe/Moscow",
+        "Europe/Nicosia",
+        "Europe/Oslo",
+        "Europe/Paris",
+        "Europe/Podgorica",
+        "Europe/Prague",
+        "Europe/Riga",
+        "Europe/Rome",
+        "Europe/Samara",
+        "Europe/San_Marino",
+        "Europe/Sarajevo",
+        "Europe/Saratov",
+        "Europe/Simferopol",
+        "Europe/Skopje",
+        "Europe/Sofia",
+        "Europe/Stockholm",
+        "Europe/Tallinn",
+        "Europe/Tirane",
+        "Europe/Tiraspol",
+        "Europe/Ulyanovsk",
+        "Europe/Uzhgorod",
+        "Europe/Vaduz",
+        "Europe/Vatican",
+        "Europe/Vienna",
+        "Europe/Vilnius",
+        "Europe/Volgograd",
+        "Europe/Warsaw",
+        "Europe/Zagreb",
+        "Europe/Zaporozhye",
+        "Europe/Zurich",
+        "Factory",
+        "GB",
+        "GB-Eire",
+        "GMT",
+        "GMT+0",
+        "GMT-0",
+        "GMT0",
+        "Greenwich",
+        "Hongkong",
+        "HST",
+        "Iceland",
+        "Indian/Antananarivo",
+        "Indian/Chagos",
+        "Indian/Christmas",
+        "Indian/Cocos",
+        "Indian/Comoro",
+        "Indian/Kerguelen",
+        "Indian/Mahe",
+        "Indian/Maldives",
+        "Indian/Mauritius",
+        "Indian/Mayotte",
+        "Indian/Reunion",
+        "Iran",
+        "Israel",
+        "Jamaica",
+        "Japan",
+        "Kwajalein",
+        "Libya",
+        "MET",
+        "Mexico/BajaNorte",
+        "Mexico/BajaSur",
+        "Mexico/General",
+        "MST",
+        "MST7MDT",
+        "Navajo",
+        "NZ",
+        "NZ-CHAT",
+        "Pacific/Apia",
+        "Pacific/Auckland",
+        "Pacific/Bougainville",
+        "Pacific/Chatham",
+        "Pacific/Chuuk",
+        "Pacific/Easter",
+        "Pacific/Efate",
+        "Pacific/Enderbury",
+        "Pacific/Fakaofo",
+        "Pacific/Fiji",
+        "Pacific/Funafuti",
+        "Pacific/Galapagos",
+        "Pacific/Gambier",
+        "Pacific/Guadalcanal",
+        "Pacific/Guam",
+        "Pacific/Honolulu",
+        "Pacific/Johnston",
+        "Pacific/Kanton",
+        "Pacific/Kiritimati",
+        "Pacific/Kosrae",
+        "Pacific/Kwajalein",
+        "Pacific/Majuro",
+        "Pacific/Marquesas",
+        "Pacific/Midway",
+        "Pacific/Nauru",
+        "Pacific/Niue",
+        "Pacific/Norfolk",
+        "Pacific/Noumea",
+        "Pacific/Pago_Pago",
+        "Pacific/Palau",
+        "Pacific/Pitcairn",
+        "Pacific/Pohnpei",
+        "Pacific/Ponape",
+        "Pacific/Port_Moresby",
+        "Pacific/Rarotonga",
+        "Pacific/Saipan",
+        "Pacific/Samoa",
+        "Pacific/Tahiti",
+        "Pacific/Tarawa",
+        "Pacific/Tongatapu",
+        "Pacific/Truk",
+        "Pacific/Wake",
+        "Pacific/Wallis",
+        "Pacific/Yap",
+        "Poland",
+        "Portugal",
+        "PRC",
+        "PST8PDT",
+        "ROC",
+        "ROK",
+        "Singapore",
+        "Turkey",
+        "UCT",
+        "Universal",
+        "US/Alaska",
+        "US/Aleutian",
+        "US/Arizona",
+        "US/Central",
+        "US/Eastern",
+        "US/East-Indiana",
+        "US/Hawaii",
+        "US/Indiana-Starke",
+        "US/Michigan",
+        "US/Mountain",
+        "US/Pacific",
+        "US/Samoa",
+        "UTC",
+        "WET",
+        "W-SU",
+        "Zulu",
+    ],
+
+    timezonesOptions: function () {
+        let tz = [{
+            id: "-",
+            text: "-",
+        }];
+
+        let already = {};
+
+        for (let i in modules.addresses.timezones) {
+            if (!already[modules.addresses.timezones[i]]) {
+                tz.push({
+                    id: modules.addresses.timezones[i],
+                    text: modules.addresses.timezones[i],
+                });
+            }
+            already[modules.addresses.timezones[i]] = true;
+        }
+
+        return tz;
+    },
+
     addresses: function (addresses) {
         modules.addresses.meta = addresses["addresses"];
     },
 
-    path: function (object, id) {
+    path: function (object, id, link) {
         let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
 
         function link(target, text, id) {
-            return `<a href="#addresses&show=${target}&${target}Id=${id}">${text}</a>`;
+            return `<a href="?#addresses&show=${target}&${target}Id=${id}">${text}</a>`;
         }
 
         function region(id) {
@@ -68,7 +689,7 @@
                         s.parent = a.parent + sp + link("area", a.areaWithType, a.areaId);
                     } else {
                         let c = city(s.cityId);
-                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
+                        s.parent = c.parent + sp + link("city", c.city, c.cityId);
                     }
                     return s;
                 }
@@ -81,10 +702,10 @@
                     let s = modules.addresses.meta.streets[i];
                     if (s.cityId) {
                         let c = city(s.cityId);
-                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
+                        s.parent = c.parent + sp + link("city", c.city, c.cityId);
                     } else {
                         let e = settlement(s.settlementId);
-                        s.parent = e.parent + sp + link("settlement", e.settlementWithType, e.settlementId);
+                        s.parent = e.parent + sp + link("settlement", e.settlement, e.settlementId);
                     }
                     return s;
                 }
@@ -101,22 +722,30 @@
 
             case "city":
                 let c = city(id);
-                return c.parent + sp + c.cityWithType;
+                return c.parent + sp + c.city;
 
             case "settlement":
                 let se = settlement(id);
-                return se.parent + sp + se.settlementWithType;
+                if (link) {
+                    return se.parent + sp + link("settlement", se.settlement, id);
+                } else {
+                    return se.parent + sp + se.settlement;
+                }
 
             case "street":
                 let st = street(id);
-                return st.parent + sp + st.streetWithType;
+                if (link) {
+                    return st.parent + sp + link("street", st.street, id);
+                } else {
+                    return st.parent + sp + st.street;
+                }
 
             default:
                 return "";
         }
     },
 
-    doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
+    doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region, timezone) {
         loadingStart();
         POST("addresses", "region", false, {
             regionUuid,
@@ -125,6 +754,7 @@
             regionType,
             regionTypeFull,
             region,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -133,7 +763,7 @@
         always(modules.addresses.renderRegions);
     },
 
-    doAddArea: function (regionId, areaUuid, areaWithType, areaType, areaTypeFull, area) {
+    doAddArea: function (regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, timezone) {
         loadingStart();
         POST("addresses", "area", false, {
             regionId,
@@ -142,6 +772,7 @@
             areaType,
             areaTypeFull,
             area,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -152,7 +783,7 @@
         });
     },
 
-    doAddCity: function (regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city) {
+    doAddCity: function (regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city, timezone) {
         loadingStart();
         POST("addresses", "city", false, {
             regionId,
@@ -161,7 +792,8 @@
             cityWithType,
             cityType,
             cityTypeFull,
-            city
+            city,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -185,7 +817,7 @@
             settlementWithType,
             settlementType,
             settlementTypeFull,
-            settlement
+            settlement,
         }).
         fail(FAIL).
         done(() => {
@@ -209,7 +841,7 @@
             streetWithType,
             streetType,
             streetTypeFull,
-            street
+            street,
         }).
         fail(FAIL).
         done(() => {
@@ -233,7 +865,7 @@
             houseType,
             houseTypeFull,
             houseFull,
-            house
+            house,
         }).
         fail(FAIL).
         done(() => {
@@ -248,7 +880,7 @@
         });
     },
 
-    doModifyRegion: function (regionId, regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region) {
+    doModifyRegion: function (regionId, regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region, timezone) {
         loadingStart();
         PUT("addresses", "region", regionId, {
             regionUuid,
@@ -257,6 +889,7 @@
             regionType,
             regionTypeFull,
             region,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -265,7 +898,7 @@
         always(modules.addresses.renderRegions);
     },
 
-    doModifyArea: function (areaId, regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, targetRegionId) {
+    doModifyArea: function (areaId, regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, targetRegionId, timezone) {
         loadingStart();
         PUT("addresses", "area", areaId, {
             regionId,
@@ -273,7 +906,8 @@
             areaWithType,
             areaType,
             areaTypeFull,
-            area
+            area,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -283,12 +917,12 @@
             if (regionId == targetRegionId) {
                 modules.addresses.renderRegion(regionId);
             } else {
-                location.href = "#addresses&show=region&regionId=" + regionId;
+                location.href = "?#addresses&show=region&regionId=" + regionId;
             }
         });
     },
 
-    doModifyCity: function (cityId, regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city, targetRegionId, targetAreaId) {
+    doModifyCity: function (cityId, regionId, areaId, cityUuid, cityWithType, cityType, cityTypeFull, city, targetRegionId, targetAreaId, timezone) {
         loadingStart();
         PUT("addresses", "city", cityId, {
             areaId,
@@ -297,7 +931,8 @@
             cityWithType,
             cityType,
             cityTypeFull,
-            city
+            city,
+            timezone,
         }).
         fail(FAIL).
         done(() => {
@@ -308,13 +943,13 @@
                 if (regionId == targetRegionId) {
                     modules.addresses.renderRegion(regionId);
                 } else {
-                    location.href = "#addresses&show=region&regionId=" + regionId;
+                    location.href = "?#addresses&show=region&regionId=" + targetRegionId + "&_refresh=" + Math.random();
                 }
             } else {
                 if (areaId == targetAreaId) {
-                    modules.addresses.renderRegion(areaId);
+                    modules.addresses.renderArea(areaId);
                 } else {
-                    location.href = "#addresses&show=area&areaId=" + areaId;
+                    location.href = "?#addresses&show=area&areaId=" + targetAreaId + "&_refresh=" + Math.random();
                 }
             }
         });
@@ -341,13 +976,13 @@
                 if (areaId == targetAreaId) {
                     modules.addresses.renderArea(areaId);
                 } else {
-                    location.href = "#addresses&show=area&areaId=" + areaId;
+                    location.href = "?#addresses&show=area&areaId=" + areaId;
                 }
             } else {
                 if (cityId == targetCityId) {
                     modules.addresses.renderCity(cityId);
                 } else {
-                    location.href = "#addresses&show=city&cityId=" + cityId;
+                    location.href = "?#addresses&show=city&cityId=" + cityId;
                 }
             }
         });
@@ -374,13 +1009,13 @@
                 if (cityId == targetCityId) {
                     modules.addresses.renderCity(cityId);
                 } else {
-                    location.href = "#addresses&show=city&cityId=" + cityId;
+                    location.href = "?#addresses&show=city&cityId=" + cityId;
                 }
             } else {
                 if (settlementId == targetSettlementId) {
                     modules.addresses.renderSettlement(settlementId);
                 } else {
-                    location.href = "#addresses&show=settlement&settlementId=" + settlementId;
+                    location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
                 }
             }
         });
@@ -407,13 +1042,13 @@
                 if (settlementId == targetSettlementId) {
                     modules.addresses.renderSettlement(settlementId);
                 } else {
-                    location.href = "#addresses&show=settlement&settlementId=" + settlementId;
+                    location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
                 }
             } else {
                 if (streetId == targetStreetId) {
                     modules.addresses.renderStreet(streetId);
                 } else {
-                    location.href = "#addresses&show=street&streetId=" + streetId;
+                    location.href = "?#addresses&show=street&streetId=" + streetId;
                 }
             }
         });
@@ -618,12 +1253,23 @@
                         },
                         value: region.region,
                     },
+                    {
+                        id: "timezone",
+                        type: "select2",
+                        title: i18n("addresses.timezone"),
+                        placeholder: i18n("addresses.timezone"),
+                        options: modules.addresses.timezonesOptions(),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: region.timezone,
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules.addresses.deleteRegion(result.regionId);
                     } else {
-                        modules.addresses.doModifyRegion(regionId, result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+                        modules.addresses.doModifyRegion(regionId, result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region, result.timezone);
                     }
                 },
             }).show();
@@ -720,12 +1366,23 @@
                         },
                         value: area.area,
                     },
+                    {
+                        id: "timezone",
+                        type: "select2",
+                        title: i18n("addresses.timezone"),
+                        placeholder: i18n("addresses.timezone"),
+                        options: modules.addresses.timezonesOptions(),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: area.timezone,
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules.addresses.deleteArea(result.areaId, parseInt(area.regionId));
                     } else {
-                        modules.addresses.doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId));
+                        modules.addresses.doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId), result.timezone);
                     }
                 },
             }).show();
@@ -856,12 +1513,23 @@
                         },
                         value: city.city,
                     },
+                    {
+                        id: "timezone",
+                        type: "select2",
+                        title: i18n("addresses.timezone"),
+                        placeholder: i18n("addresses.timezone"),
+                        options: modules.addresses.timezonesOptions(),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: city.timezone,
+                    },
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
                         modules.addresses.deleteCity(result.cityId, parseInt(city.regionId), parseInt(city.areaId));
                     } else {
-                        modules.addresses.doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId));
+                        modules.addresses.doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId), result.timezone);
                     }
                 },
             }).show();
@@ -1338,9 +2006,19 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "timezone",
+                    type: "select2",
+                    title: i18n("addresses.timezone"),
+                    placeholder: i18n("addresses.timezone"),
+                    options: modules.addresses.timezonesOptions(),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
             ],
             callback: function (result) {
-                modules.addresses.doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region);
+                modules.addresses.doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region, result.timezone);
             },
         }).show();
     },
@@ -1399,9 +2077,19 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "timezone",
+                    type: "select2",
+                    title: i18n("addresses.timezone"),
+                    placeholder: i18n("addresses.timezone"),
+                    options: modules.addresses.timezonesOptions(),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
             ],
             callback: function (result) {
-                modules.addresses.doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area);
+                modules.addresses.doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, result.timezone);
             },
         }).show();
     },
@@ -1460,9 +2148,19 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "timezone",
+                    type: "select2",
+                    title: i18n("addresses.timezone"),
+                    placeholder: i18n("addresses.timezone"),
+                    options: modules.addresses.timezonesOptions(),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
             ],
             callback: function (result) {
-                modules.addresses.doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city);
+                modules.addresses.doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, result.timezone);
             },
         }).show();
     },

@@ -1,0 +1,19 @@
+[Unit]
+Description=MQTT agent
+After=network.target
+
+[Service]
+Type=simple
+Environment=HOME=/tmp
+WorkingDirectory=/tmp
+User=www-data
+Group=www-data
+ExecStart=/opt/rbt/server/mqtt/agent.js
+LimitCORE=infinity
+Restart=always
+RestartSec=4
+StandardOutput=null
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

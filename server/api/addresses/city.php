@@ -17,7 +17,7 @@
             public static function PUT($params) {
                 $addresses = loadBackend("addresses");
 
-                $success = $addresses->modifyCity($params["_id"], $params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"]);
+                $success = $addresses->modifyCity($params["_id"], $params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
@@ -25,7 +25,7 @@
             public static function POST($params) {
                 $addresses = loadBackend("addresses");
 
-                $cityId = $addresses->addCity($params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"]);
+                $cityId = $addresses->addCity($params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
                 return api::ANSWER($cityId, ($cityId !== false)?"cityId":"notAcceptable");
             }

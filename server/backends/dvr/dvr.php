@@ -45,7 +45,7 @@
              * @param integer $time unixtime of screenshot
              * @return string URL with mp4-screenshot on a DVR-server
              */
-            abstract public function getUrlOfMP4Screenshot($cam, $time = false);
+            abstract public function getUrlOfScreenshot($cam, $time = false);
 
 
         }

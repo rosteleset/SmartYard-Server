@@ -17,7 +17,7 @@
             public static function PUT($params) {
                 $addresses = loadBackend("addresses");
 
-                $success = $addresses->modifyArea($params["_id"], $params["regionId"], $params["areaUuid"], $params["areaWithType"], $params["areaType"], $params["areaTypeFull"], $params["area"]);
+                $success = $addresses->modifyArea($params["_id"], $params["regionId"], $params["areaUuid"], $params["areaWithType"], $params["areaType"], $params["areaTypeFull"], $params["area"], $params["timezone"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
@@ -25,7 +25,7 @@
             public static function POST($params) {
                 $addresses = loadBackend("addresses");
 
-                $areaId = $addresses->addArea($params["regionId"], $params["areaUuid"], $params["areaWithType"], $params["areaType"], $params["areaTypeFull"], $params["area"]);
+                $areaId = $addresses->addArea($params["regionId"], $params["areaUuid"], $params["areaWithType"], $params["areaType"], $params["areaTypeFull"], $params["area"], $params["timezone"]);
 
                 return api::ANSWER($areaId, ($areaId !== false)?"areaId":"notAcceptable");
             }

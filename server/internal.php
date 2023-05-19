@@ -12,10 +12,15 @@
     try {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
     } catch (Exception $e) {
-        error_log(print_r($e, true));
-        response(555, [
-            "error" => "config",
-        ]);
+        $config = false;
+    }
+
+    if (!$config) {
+        try {
+            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
+        } catch (Exception $e) {
+            $config = false;
+        }
     }
 
     if (!$config) {
@@ -48,41 +53,6 @@
         response(555, [
             "error" => "PDO",
         ]);
-    }
-
-    class Access
-    {
-        private static array $allowedHosts = ["127.0.0.1", "192.168.15.81", "172.28.0.1", "192.168.13.39"];
-
-        public static function getIp()
-        {
-            if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                $ip_address = $_SERVER['HTTP_CLIENT_IP'];
-            }
-            //ip is from proxy
-            elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            }
-            //ip is from remote address
-            else {
-                $ip_address = $_SERVER['REMOTE_ADDR'];
-            }
-
-            return $ip_address;
-        }
-
-        public static function check(): void
-        {
-            $ip = self::getIp();
-            $hosts = self::$allowedHosts;
-            $access = !in_array($ip, $hosts);
-
-            if ($access) {
-                response(403, null,"Access denied","Access denied for this host: $ip");
-//                Response::res(403, "Forbidden", "Access denied for this host: ". $ip);
-                exit();
-            }
-        }
     }
 
     function response($code = 204, $data = false, $name = false, $message = false) {
@@ -168,27 +138,62 @@
     exit;
 }
 
-    /**Test wrapper for FRS API request
-     * @param {string} url
-     * @param {object} payload
+    /**
+     * Test wrapper for API request
+     * @param string $method API method name
+     * @param string $url base API URL
+     * @param object|false $payload API payload
+     * @param string $contentType API content type
+     * @param string|false $token Bearer Token
+     * @return false|object
      */
-    function apiExec ($url, $payload){
+    function apiExec(string $method, $url, $payload = false, $contentType = false, $token = false) {
         $curl = curl_init();
-        $data = json_encode($payload);
-        $options = [
-            CURLOPT_URL => $url,
-            CURLOPT_POST => 1,
-            CURLOPT_POSTFIELDS=> $data,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_HTTPHEADER => ['Accept: application/json', 'Content-Type: application/json']
-        ];
-        curl_setopt_array($curl,$options);
+
+        switch ($method) {
+            case "POST":
+                curl_setopt($curl, CURLOPT_POST, 1);
+                if ($payload) {
+                    if ($contentType) {
+                        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                            'Content-Type: ' . $contentType
+                        ));
+                    } else {
+                        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                            'Content-Type: appplication/json'
+                        ));
+                    }
+
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+                }
+                break;
+            case "PUT":
+                curl_setopt($curl, CURLOPT_PUT, 1);
+                break;
+            case "DELETE":
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+                break;
+            default:
+                if ($payload)
+                    $url = sprintf("%s?%s", $url, http_build_query($payload));
+        }
+
+        //Add Bearer Token header in the request
+        if ($token) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Authorization: ' . $token
+            ));
+        }
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
         $response = curl_exec($curl);
+
         curl_close($curl);
+
         return $response;
     }
-
-    Access::check();
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $raw_postdata = file_get_contents("php://input");

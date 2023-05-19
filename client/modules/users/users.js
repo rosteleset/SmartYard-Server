@@ -4,7 +4,7 @@
 
     init: function () {
         if (AVAIL("accounts", "user", "POST")) {
-            leftSide("fas fa-fw fa-user", i18n("users.users"), "#users", "accounts");
+            leftSide("fas fa-fw fa-user", i18n("users.users"), "?#users", "accounts");
         }
         moduleLoaded("users", this);
     },
@@ -15,8 +15,23 @@
             modules.users.meta = users.users;
         }).
         always(() => {
-            if (typeof callback) callback();
+            if (typeof callback == "function") callback();
         });
+    },
+
+    login2name: function (login) {
+        let u = login;
+        
+        for (let k in modules.users.meta) {
+            if (modules.users.meta[k].login == login) {
+                if (modules.users.meta[k].realName) {
+                    u = modules.users.meta[k].realName;
+                }
+                break;
+            }
+        }
+
+        return u;
     },
 
     /*
@@ -116,9 +131,6 @@
                     type: "tel",
                     title: i18n("phone"),
                     placeholder: i18n("phone"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
                 },
             ],
             callback: function (result) {
@@ -128,6 +140,9 @@
     },
 
     modifyUser: function (uid) {
+        if (!myself.uid) {
+            myself.uid = 0;
+        }
         loadingStart();
         GET("accounts", "user", uid, true).done(response => {
             cardForm({
@@ -181,6 +196,44 @@
                         value: response.user.phone,
                         title: i18n("phone"),
                         placeholder: i18n("phone"),
+                    },
+                    {
+                        id: "tg",
+                        type: "number",
+                        readonly: false,
+                        value: response.user.tg,
+                        title: i18n("users.tg"),
+                        placeholder: i18n("users.tg"),
+                    },
+                    {
+                        id: "notification",
+                        type: "select",
+                        readonly: false,
+                        value: response.user.notification,
+                        title: i18n("users.notification"),
+                        placeholder: i18n("users.notification"),
+                        options: [
+                            {
+                                value: "none",
+                                text: i18n("users.notificationNone"),
+                            },
+                            {
+                                value: "tgEmail",
+                                text: i18n("users.notificationTgEmail"),
+                            },
+                            {
+                                value: "emailTg",
+                                text: i18n("users.notificationEmailTg"),
+                            },
+                            {
+                                value: "tg",
+                                text: i18n("users.notificationTg"),
+                            },
+                            {
+                                value: "email",
+                                text: i18n("users.notificationEmail"),
+                            },
+                        ],
                         validate: (v) => {
                             return $.trim(v) !== "";
                         }
@@ -285,13 +338,122 @@
         main form (users) render function
      */
 
-    render: function () {
+    dropSession: function (token, uid) {
+        mConfirm(i18n("users.confirmDropSession"), i18n("users.dropSession"), i18n("users.dropSession"), () => {
+            DELETE("accounts", "user", false, {
+                session: token,
+            }).
+            fail(FAIL).
+            fail(loadingDone).
+            done(() => {
+                modules.users.showSessions(uid);
+            });
+        });
+    },
+
+    showSessions: function (uid) {
+        loadingStart();
+
+        GET("accounts", "users", false, true).done(response => {
+            modules.users.users = response.users;
+
+            cardTable({
+                target: "#altForm",
+                title: {
+                    caption: i18n("users.sessions") + " " + i18n("users.uid") + uid,
+                    altButton: {
+                        caption: i18n("close"),
+                        click: () => {
+                            $("#altForm").hide();
+                        },
+                    },
+                },
+                columns: [
+                    {
+                        title: i18n("users.sessionType"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("users.ip"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("users.started"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("users.updated"),
+                        nowrap: true,
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+    
+                    let user = {};
+    
+                    for (let i in modules.users.users) {
+                        if (modules.users.users[i].uid == uid) {
+                            user = modules.users.users[i];
+                            break;
+                        }
+                    }
+    
+                    for (let i in user.sessions) {
+                        rows.push({
+                            uid: user.sessions[i].token,
+                            cols: [
+                                {
+                                    data: user.sessions[i].byPersistentToken?i18n("users.sessionPersistent"):i18n("users.sessionOrdinal"),
+                                    nowrap: true,
+                                },
+                                {
+                                    data: user.sessions[i].ip,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: ttDate(user.sessions[i].started),
+                                    nowrap: true,
+                                },
+                                {
+                                    data: ttDate(user.sessions[i].updated),
+                                    nowrap: true,
+                                    fullWidth: true,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("users.dropSession"),
+                                        class: "text-danger",
+                                        disabled: user.sessions[i].byPersistentToken || user.sessions[i].token == lStore("_token"),
+                                        click: token => {
+                                            modules.users.dropSession(token, uid);
+                                        },
+                                    },
+                                ],
+                            },
+                        });
+                    }
+    
+                    return rows;
+                },
+            }).show();
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    render: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
 
         loadingStart();
 
         GET("accounts", "users", false, true).done(response => {
+            modules.users.users = response.users;
+
             cardTable({
                 target: "#mainForm",
                 title: {
@@ -315,6 +477,14 @@
                         title: i18n("users.login"),
                     },
                     {
+                        title: i18n("users.lastLogin"),
+                        hidden: !(response.users.length || typeof response.users[0].lastLogin == "undefined"),
+                    },
+                    {
+                        title: i18n("users.lastAction"),
+                        hidden: !(response.users.length || typeof response.users[0].lastAction == "undefined"),
+                    },
+                    {
                         title: i18n("users.blocked"),
                     },
                     {
@@ -323,6 +493,10 @@
                     },
                     {
                         title: i18n("eMail"),
+                    },
+                    {
+                        title: i18n("users.telegram"),
+                        nowrap: true,
                     },
                     {
                         title: i18n("phone"),
@@ -344,6 +518,16 @@
                                     nowrap: true,
                                 },
                                 {
+                                    data: ttDate(response.users[i].lastLogin),
+                                    nowrap: true,
+                                    hidden: typeof response.users[i].lastLogin == "undefined",
+                                },
+                                {
+                                    data: ttDate(response.users[i].lastAction),
+                                    nowrap: true,
+                                    hidden: typeof response.users[i].lastAction == "undefined",
+                                },
+                                {
                                     data: response.users[i].enabled?i18n("no"):i18n("yes"),
                                     nowrap: true,
                                 },
@@ -354,6 +538,11 @@
                                 },
                                 {
                                     data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
+                                    click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: response.users[i].tg?i18n("yes"):i18n("no"),
                                     nowrap: true,
                                 },
                                 {
@@ -361,12 +550,28 @@
                                     nowrap: true,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-list-ol",
+                                        title: i18n("users.sessions"),
+                                        disabled: !response.users[0].sessions,
+                                        click: uid => {
+                                            modules.users.showSessions(uid);
+                                        },
+                                    },
+                                ],
+                            },
                         });
                     }
 
                     return rows;
                 },
             });
+
+            if (params && params.sessions && params.sessions !== true) {
+                modules.users.showSessions(params.sessions);
+            }
         }).
         fail(FAIL).
         always(loadingDone);
@@ -375,6 +580,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("users.users");
 
-        modules.users.render();
+        modules.users.render(params);
     }
 }).init();

@@ -67,8 +67,9 @@
                 []);
 
             if (isSet($frsUrl)){
-                $apiResponse = apiExec($frsUrl . "/api/doorIsOpen", ["streamId" => strval($streamId)]);
-                response(201,$apiResponse);
+                $payload = ["streamId" => strval($streamId)];
+                $apiResponse = apiExec("POST", $frsUrl . "/api/doorIsOpen", $payload);
+                response(201, $apiResponse);
             }
 
             response(200);

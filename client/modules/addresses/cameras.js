@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
-            leftSide("fas fa-fw fa-video", i18n("addresses.cameras"), "#addresses.cameras", "households");
+            leftSide("fas fa-fw fa-video", i18n("addresses.cameras"), "?#addresses.cameras", "households");
         }
         moduleLoaded("addresses.cameras", this);
     },
@@ -135,6 +135,9 @@
                     type: "text",
                     title: i18n("addresses.cameraName"),
                     placeholder: i18n("addresses.cameraName"),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    },
                 },
                 {
                     id: "dvrStream",
@@ -153,6 +156,17 @@
                             return true;
                         }
                     },
+                },
+                {
+                    id: "timezone",
+                    type: "select2",
+                    title: i18n("addresses.timezone"),
+                    placeholder: i18n("addresses.timezone"),
+                    options: modules.addresses.timezonesOptions(),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    },
+                    value: "-",
                 },
                 {
                     id: "frs",
@@ -352,6 +366,9 @@
                         title: i18n("addresses.cameraName"),
                         placeholder: i18n("addresses.cameraName"),
                         value: camera.name,
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
                     },
                     {
                         id: "dvrStream",
@@ -371,6 +388,17 @@
                                 return true;
                             }
                         },
+                    },
+                    {
+                        id: "timezone",
+                        type: "select2",
+                        title: i18n("addresses.timezone"),
+                        placeholder: i18n("addresses.timezone"),
+                        options: modules.addresses.timezonesOptions(),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        },
+                        value: camera.timezone,
                     },
                     {
                         id: "frs",

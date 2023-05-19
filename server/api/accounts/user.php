@@ -166,7 +166,7 @@
         class user extends api {
 
             public static function GET($params) {
-                $user = $params["_backends"]["users"]->getUser($params["_id"]);
+                $user = $params["_backends"]["users"]->getUser(@$params["_id"]);
 
                 return api::ANSWER($user, ($user !== false)?"user":"notFound");
             }
@@ -178,7 +178,7 @@
             }
 
             public static function PUT($params) {
-                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"]);
+                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"]);
 
                 if (@$params["password"] && (int)$params["_id"]) {
                     $success = $success && $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
@@ -189,7 +189,11 @@
             }
 
             public static function DELETE($params) {
-                $success = $params["_backends"]["users"]->deleteUser($params["_id"]);
+                if (@$params["session"]) {
+                    $success = $params["_backends"]["authentication"]->logout($params["session"], false);
+                } else {
+                    $success = $params["_backends"]["users"]->deleteUser($params["_id"]);
+                }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

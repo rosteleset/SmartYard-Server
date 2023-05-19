@@ -26,6 +26,30 @@
  * 417 ожидание не удалось
  */
 
+    function create_issue($subject, $description) {
+        $tt = @loadBackend("tt");
+        $workflow = $config["mobile"]["tt_workflow"];
+        $user = $config["mobile"]["tt_user"];
+        $project = $config["mobile"]["tt_project"];
+        $catalog = "Пустышка";
+        
+        if (!$tt || !$workflow || !$user || !$project) return false;
+
+        $issue = [
+            "issue" => [
+                "workflow" => $workflow,
+                "catalog" => $catalog,
+                "subject" => $subject,
+                "description" => $description,
+                "assigned" => [$user],
+                "watchers" => [],
+                "tags" => [],
+                "project" => $project
+            ]
+            ];
+        return $tt->loadWorkflow($workflow)->createIssue($issue);
+    }
+
     auth();
     response();
 

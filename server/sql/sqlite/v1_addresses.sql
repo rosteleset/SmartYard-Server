@@ -7,7 +7,8 @@ CREATE TABLE addresses_regions
     region_with_type text not null,
     region_type text,
     region_type_full text,
-    region text not null
+    region text not null,
+    timezone text
 );
 CREATE UNIQUE INDEX addresses_regions_region_uuid on addresses_regions(region_uuid);
 CREATE UNIQUE INDEX addresses_regions_region on addresses_regions(region);
@@ -21,7 +22,8 @@ CREATE TABLE addresses_areas
     area_with_type text not null,
     area_type text,
     area_type_full text,
-    area text not null
+    area text not null,
+    timezone text
 );
 CREATE UNIQUE INDEX addresses_areas_area_uuid on addresses_areas(area_uuid);
 CREATE UNIQUE INDEX addresses_areas_area on addresses_areas(address_region_id, area);
@@ -37,7 +39,8 @@ CREATE TABLE addresses_cities
     city_with_type text not null,
     city_type text,
     city_type_full text,
-    city text not null
+    city text not null,
+    timezone text
 );
 CREATE UNIQUE INDEX addresses_cities_city_uuid on addresses_cities(city_uuid);
 CREATE UNIQUE INDEX addresses_cities_city on addresses_cities(address_region_id, address_area_id, city);

@@ -116,7 +116,12 @@
                             if ($prefix) {
                                 $ts_event = $date - $this->back_time_shift_video_shot;
                                 $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                                system("ffmpeg -y -i " . loadBackend("dvr")->getUrlOfMP4Screenshot($cameras[0], $ts_event) . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
+                                if (substr($urlOfScreenshot,-4) === ".mp4") {
+                                    system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                } else {
+                                    file_put_contents($filename, file_get_contents($urlOfScreenshot));
+                                }
                                 if (file_exists($filename)) {
                                     $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
                                         "camshot",
@@ -409,11 +414,28 @@
                 return false;
             }
 
+            // Get flat ID by domophone ID
+            private function getFlatIdByDomophoneId($domophone_id)
+            {
+                $households = loadBackend('households');
+                $result = $households->getFlats('domophoneId', $domophone_id);
+
+                // Only if one apartment is linked
+                if ($result && count($result) === 1 && $result[0]) {
+                    return $result[0]['flatId'];
+                }
+
+                return false;
+            }
+
             private function getEntranceCount($flat_id)
             {
                 $households = loadBackend('households');
                 $result = $households->getEntrances('flatId', $flat_id);
-                return count($result);
+                if ($result)
+                    return count($result);
+
+                return 0;
             }
 
             private function getPlogHidden($flat_id) {
@@ -918,6 +940,66 @@
                             }
                         }
 
+                        if ($unit == "akuvox") {
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                ["SIP_LOG:MSG_S2P_TRYING", true, false, false, 1],
+                                ["SIP_LOG:MSG_S2P_RINGBACK", true, false, false, 1],
+                                ["SIP_LOG:MSG_S2P_ESTABLISHED_CALL", false, true, false, 1],
+                                ["DTMF_LOG:Receive", false, false, true, 1],
+                                ["DTMF_LOG:From", false, false, true, 1],
+                                ["DTMF_LOG:Successful", false, false, true, 1],
+                                ["SIP_LOG:Call Finished", false, false, false, 1],
+                                ["SIP_LOG:Call Failed", false, false, false, 1],
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
+
+                                if (strpos($msg, $pattern) !== false) {
+                                    // Get call ID
+                                    if (strpos($msg, 'SIP_LOG') !== false) {
+                                        $now_call_id = explode('=', $msg)[1];
+                                    }
+
+                                    // Get flat ID
+                                    if (strpos($msg, 'DTMF_LOG:From') !== false) {
+                                        $number = explode(' ', $msg)[1];
+                                        $now_flat_id = substr($number, 1);
+                                    }
+
+                                    $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
+                                        || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+
+                                    if ($call_start_lost) {
+                                        break;
+                                    }
+
+                                    $event_data[self::COLUMN_DATE] = $item["date"];
+
+                                    if (isset($now_call_id) && !isset($call_id)) {
+                                        $call_id = $now_call_id;
+                                    }
+                                    if (isset($now_flat_id) && !isset($flat_id)) {
+                                        $flat_id = $now_flat_id;
+                                    }
+                                    if ($flag_talk_started) {
+                                        $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                    }
+                                    if ($flag_door_opened) {
+                                        $event_data[self::COLUMN_OPENED] = 1;
+                                    }
+                                    if ($flag_start) {
+                                        $call_start_found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
                         if ($call_start_found) {
                             break;
                         }
@@ -938,6 +1020,8 @@
                         $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id);
                     } elseif (isset($flat_number)) {
                         $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByNumber($flat_number, $domophone_id);
+                    } else {
+                        $event_data[self::COLUMN_FLAT_ID] = $this->getFlatIdByDomophoneId($domophone_id);
                     }
 
                     if (!isset($event_data[self::COLUMN_FLAT_ID])) {

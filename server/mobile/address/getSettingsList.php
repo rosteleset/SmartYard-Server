@@ -25,6 +25,7 @@
  * @apiSuccess {string} [-.lcab] личный кабинет
  * @apiSuccess {object[]} [-.roommates] сокамерники
  * @apiSuccess {string} -.roommates.phone телефон
+ * @apiSuccess {integer} [-.roommates.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {string="Y-m-d H:i:s"} -.roommates.expire дата до которой действует доступ
  * @apiSuccess {string="inner","outer","owner"} -.roommates.type тип inner - доступ к домофону, outer - только калитки и ворота, owner - владелец
  *
@@ -81,7 +82,7 @@
             }
             $rm = [];
             $rm['phone'] = $s['mobile'];
-            $rm['phone'][0] = '7';
+            // $rm['phone'][0] = '7';
             $rm['expire'] = '3001-01-01 00:00:00';
             
             foreach ($s['flats'] as $sf) {

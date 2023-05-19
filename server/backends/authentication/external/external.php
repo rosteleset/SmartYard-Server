@@ -41,7 +41,14 @@
                         $url = str_replace("%%password", urlencode($password), $url);
                         try {
                             $ok = trim(@file_get_contents($url));
-                            if (strtolower($ok) === "ok") {
+                            if (@$this->config["backends"]["authentication"]["extended"]) {
+                                try {
+                                    $ext = json_decode($ok, true);
+                                } catch (\Exception $e) {
+                                    $ext = false;
+                                }
+                            }
+                            if (strtolower($ok) === "ok" || (@$this->config["backends"]["authentication"]["extended"] && is_array($ext))) {
                                 $uid = $users->addUser($login, $login, $login);
                                 if ($uid) {
                                     $users->setPassword($uid, $password);
@@ -53,6 +60,9 @@
                                                 $groups->addUserToGroup($uid, $gid);
                                             }
                                         }
+                                    }
+                                    if ($ext) {
+                                        $users->modifyUser($uid, $ext["real_name"], $ext["email"], $ext["phone"], $ext["tg_id"]);
                                     }
                                     return $this->check_auth($login, $password);
                                 } else {

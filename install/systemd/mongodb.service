@@ -1,0 +1,20 @@
+[Unit]
+Description=MongoDB NoSQL database
+After=network.target
+
+[Service]
+Type=simple
+Environment=HOME=/var/lib/mongodb
+WorkingDirectory=/var/lib/mongodb
+User=mongodb
+Group=mongodb
+ExecStart=/opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongodb.pid
+LimitCORE=infinity
+Restart=always
+RestartSec=4
+StandardOutput=null
+PrivateTmp=true
+ExecStartPre=+/bin/bash -c '[ ! -d "/var/run/mongodb" ] && /bin/mkdir /var/run/mongodb ; /bin/chown -R mongodb:mongodb /var/{lib,run}/mongodb'
+
+[Install]
+WantedBy=multi-user.target

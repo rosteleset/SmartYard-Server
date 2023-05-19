@@ -11,6 +11,7 @@
     "edit": "Редактировать",
     "users": "Пользователи",
     "groups": "Группы",
+    "addRights": "Добавить правило",
     "methods": {
         "authorization": {
             "_title": "Авторизация",

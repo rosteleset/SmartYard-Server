@@ -32,12 +32,6 @@
     if (strlen($pin) == 4) {
         $pinreq = $redis->get("userpin_".$user_phone);
 
-        if ($confirmMethod == 'flashCall' && !$pinreq) {
-            $pinreq = $isdn->getCode($user_phone);
-            if ($pinreq) {
-                $redis->setex("userpin_".$user_phone, 60, $pinreq);
-            }
-        }
         $redis->setex("userpin.attempts_".$user_phone, 3600, (int)$redis->get("userpin.attempts_".$user_phone) + 1);
 
         if (!$pinreq) {

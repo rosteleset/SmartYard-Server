@@ -26,11 +26,11 @@
     $door_id = (int)@$postdata['doorId'];
     $households = loadBackend("households");
     
-    // проверка на блокировку домофона
+    // Check intercom is blocking
     $blocked = true;
     foreach($subscriber['flats'] as $flat) {
         $flatDetail = $households->getFlat($flat['flatId']);
-        if ($flatDetail['autoBlock']) {
+        if ($flatDetail['autoBlock'] || $flatDetail['adminBlock']) {
             continue;
         }
 
@@ -38,8 +38,7 @@
             $domophoneId = intval($entrance['domophoneId']);
             $e = $households->getEntrance($entrance['entranceId']);
             $doorId = intval($e['domophoneOutput']);
-            
-            if($domophone_id == $domophoneId && $door_id == $doorId) {
+            if($domophone_id == $domophoneId && $door_id == $doorId && !$flatDetail['manualBlock'] ) {
                 $blocked = false;
                 break;
             }

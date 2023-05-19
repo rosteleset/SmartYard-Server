@@ -35,10 +35,15 @@ $emptyStreetIdOffset = 1000000;
 try {
     $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
 } catch (Exception $e) {
-    error_log(print_r($e, true));
-    response(555, [
-        "error" => "config",
-    ]);
+    $config = false;
+}
+
+if (!$config) {
+    try {
+        $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
+    } catch (Exception $e) {
+        $config = false;
+    }
 }
 
 if (!$config) {
@@ -221,10 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $path = substr($path, strlen($server['path']));
     }
 
-    if ($path && $path[0] == '/') {
-        $path = substr($path, 1);
-    }
-
+    $path = trim($path, '/');
     $m = explode('/', $path);
 
     array_unshift($m, "mobile");

@@ -1,6 +1,6 @@
 ({
     init: function () {
-        leftSide("far fa-fw fa-comments", i18n("chat.chat"), "#chat", "tt");
+        leftSide("far fa-fw fa-comments", i18n("chat.chat"), "?#chat", "tt");
         moduleLoaded("chat", this);
     },
 

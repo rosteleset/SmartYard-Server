@@ -1,7 +1,7 @@
 ({
     init: function () {
         if (AVAIL("providers", "provider", "GET")) {
-            leftSide("fas fa-fw fa-network-wired", i18n("providers.providers"), "#providers", "providers");
+            leftSide("fas fa-fw fa-network-wired", i18n("providers.providers"), "?#providers", "providers");
         }
         moduleLoaded("providers", this);
     },
@@ -102,18 +102,6 @@
                     }
                 },
                 {
-                    id: "tokenFlashCall",
-                    type: "text",
-                    title: i18n("providers.tokenFlashCall"),
-                    placeholder: i18n("providers.tokenFlashCall"),
-                    button: {
-                        class: "fas fa-magic",
-                        click: prefix => {
-                            $(`#${prefix}tokenFlashCall`).val(md5(guid()));
-                        },
-                    }
-                },
-                {
                     id: "hidden",
                     type: "yesno",
                     title: i18n("providers.hidden"),
@@ -205,19 +193,6 @@
                                 },
                             },
                             value: provider.tokenSms,
-                        },
-                        {
-                            id: "tokenFlashCall",
-                            type: "text",
-                            title: i18n("providers.tokenFlashCall"),
-                            placeholder: i18n("providers.tokenFlashCall"),
-                            button: {
-                                class: "fas fa-magic",
-                                click: prefix => {
-                                    $(`#${prefix}tokenFlashCall`).val(md5(guid()));
-                                },
-                            },
-                            value: provider.tokenFlashCall,
                         },
                         {
                             id: "hidden",

@@ -17,15 +17,17 @@
             public static function GET($params) {
                 $tt = loadBackend("tt");
 
-                if (!$tt) {
-                    return false;
+                if ($tt) {
+                    if (@$params["_id"]) {
+                        if (@$params["_id"]) {
+                            return api::ANSWER($tt->getFilter($params["_id"]), "body");
+                        }
+                    } else {
+                        return api::ANSWER($tt->getFilters(), "filters");
+                    }
                 }
 
-                if (@$params["_id"]) {
-                    return api::ANSWER($tt->getFilter($params["_id"]), "body");
-                } else {
-                    return api::ANSWER($tt->getFilters(), "filters");
-                }
+                return api::ERROR();
             }
 
             public static function PUT($params) {

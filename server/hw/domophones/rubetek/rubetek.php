@@ -11,19 +11,7 @@
             protected string $def_pass = 'api_password';
             protected string $api_prefix = '/api/v1';
 
-            protected array $rfids = [];
-            protected array $rfidsToDelete = [];
-
-            public function __construct(string $url, string $pass, bool $first_time = false) {
-                parent::__construct($url, $pass, $first_time);
-                $this->rfids = $this->get_rfids();
-                // print_r($this->config); // TODO: delete later
-            }
-
-            public function __destruct() {
-                parent::__destruct();
-                $this->write_rfids(array_unique(array_diff($this->rfids, $this->rfidsToDelete)));
-            }
+            protected string $defaultWebPassword = 'Rubetek34';
 
             /** Make an API call */
             protected function api_call($resource, $method = 'GET', $payload = null) {
@@ -45,66 +33,96 @@
 
                 if ($payload) {
                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ]);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'Content-Type: application/json',
+                        'Expect:', // Workaround for the 100-continue expectation
+                    ]);
                 }
 
                 $res = curl_exec($ch);
                 curl_close($ch);
 
+                echo $res . PHP_EOL;
                 return json_decode($res, true);
             }
 
+            /** Configure external reader mode */
+            protected function configureExternalReader() {
+                $this->api_call('/settings/wiegand', 'PATCH', [
+                    'type' => 26,
+                    'mute_notifications' => true,
+                    'reverse_data_order' => false,
+                ]);
+            }
+
             /** Configure internal reader mode */
-            protected function configure_internal_reader() {
+            protected function configureInternalReader() {
                 $this->api_call('/settings/nfc_reader', 'PATCH', [
-                    'period_reading_ms' => 500,
+                    'period_reading_ms' => 2000,
                     'disable_sl3' => true,
                     'code_length' => 4,
                     'reverse_data_order' => true,
                 ]);
             }
 
+            /** Get all apartment IDs from intercom */
+            protected function getApartments(): array {
+                return array_column($this->api_call('/apartments'), 'id');
+            }
+
             /** Get current intercom config */
-            protected function get_config() {
+            protected function getConfig() {
                 return $this->api_call('/configuration');
             }
 
             /** Get door IDs and lock status */
-            protected function get_doors() {
+            protected function getDoors() {
                 return array_slice($this->api_call('/doors'), 0, -1);
             }
 
             /** Set random administrator pin code */
-            protected function set_admin_pin() {
-                $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $displaySettings = $this->get_config()['display'];
+            protected function setAdminPin($enabled = true) {
+                if ($enabled) {
+                    $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                } else {
+                    $pin = '';
+                }
+
+                $displaySettings = $this->getConfig()['display'];
                 $displaySettings['admin_password'] = $pin;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
-            /** Write array of RFID keys to intercom memory */
-            protected function write_rfids(array $rfids) {
-                $this->api_call('/apartments', 'POST', [
-                    'id' => '0',
-                    'call_type' => 'blocked',
-                    'door_access' => [ 1, 5 ], // 1 - Relay A, internal reader; 5 - Relay B, external reader
-                    'rfids' => array_values($rfids),
+            public function add_rfid(string $code, int $apartment = 0) {
+                $this->api_call('/rfids', 'POST', [
+                    'rfid' => $code,
+                    'door_access' => [ 1, 5 ] // 1 - Relay A, internal reader; 5 - Relay B, external reader
                 ]);
             }
 
-            public function add_rfid(string $code, int $apartment = 0) {
-                $this->rfids[] = $code;
-            }
-
             public function clear_apartment(int $apartment = -1) {
-                // TODO: Implement clear_apartment() method.
+                if ($apartment !== -1) {
+                    $this->api_call("/apartments/$apartment", 'DELETE');
+                } else {
+                    foreach ($this->getApartments() as $apartment) { // TODO: too slow
+                        $this->api_call("/apartments/$apartment", 'DELETE');
+                    }
+                }
             }
 
             public function clear_rfid(string $code = '') {
                 if ($code) {
-                    $this->rfidsToDelete[] = $code;
+                    $this->api_call("/rfids/$code", 'DELETE');
                 } else {
-                    $this->rfids = [];
+                    // Until better times...
+                    // $rfids_chunks = array_chunk($this->get_rfids(), 900);
+                    // foreach ($rfids_chunks as $rfids_chunk) {
+                        // $this->api_call('/rfids_apartment', 'DELETE', [ 'rfids' => $rfids_chunk ]);
+                    // }
+
+                    foreach ($this->get_rfids() as $rfid) { // TODO: too slow
+                        $this->clear_rfid($rfid);
+                    }
                 }
             }
 
@@ -116,33 +134,81 @@
                 int $private_code = 0,
                 array $levels = []
             ) {
-                // TODO: Implement configure_apartment() method.
+                $this->api_call('/apartments', 'POST', [
+                    'id' => "$apartment",
+                    'sip_number' => "$sip_numbers[0]" ?? '',
+                    'call_type' => $cms_handset_enabled ? 'sip_0_analog' : 'sip',
+                    'door_access' => [1],
+                    'access_codes' => $private_code_enabled && $private_code ? [ "$private_code" ] : [],
+                ]);
             }
 
             public function configure_cms(int $apartment, int $offset) {
-                // TODO: Implement configure_cms() method.
+                // not used
             }
 
             public function configure_cms_raw(int $index, int $dozens, int $units, int $apartment, string $cms_model) {
-                // TODO: Implement configure_cms_raw() method.
+                $this->api_call('/apartments', 'POST', [
+                    'id' => "$apartment",
+                    'analog_number' => (string) ($index * 100 + $dozens * 10 + $units),
+                ]);
             }
 
             public function configure_gate(array $links) {
-                // TODO: Implement configure_gate() method.
+                if ($links) {
+                    foreach ($links as $link) {
+                        $this->api_call('/apart_ranges', 'POST', [
+                            'house' => (string) $link['prefix'],
+                            'address' => $link['addr'],
+                            'start_number' => (int) $link['begin'],
+                            'end_number' => (int) $link['end'],
+                            'call_number' => 'XXXXYYYY',
+                            'call_type' => 'sip',
+                            'door_access' => [ 1, 2, 3 ],
+                        ]);
+                    }
+                } else {
+                    $this->api_call('/apart_ranges', 'DELETE');
+                }
             }
 
             public function configure_md(
-                int $sensitivity = 4,
+                int $sensitivity = 50,
                 int $left = 0,
                 int $top = 0,
                 int $width = 705,
                 int $height = 576
             ) {
-                // TODO: Implement configure_md() method.
+                $detectionSettings = $this->getConfig()['face_detection'];
+
+                // Server
+                $detectionSettings['address'] = '1'; // Not used
+                $detectionSettings['reserved_address'] = '1'; // Not used
+                $detectionSettings['token'] = '1'; // Not used
+
+                // Detection settings
+                $detectionSettings['detection_mode'] = 1; // Detection on
+                $detectionSettings['threshold'] = $sensitivity; // Threshold of confidence
+                $detectionSettings['liveness_frame_num'] = 0; // Not used
+                $detectionSettings['frame_interval'] = 500; // Doesn't work
+                $detectionSettings['face_presence_time'] = 0; // Not used
+                $detectionSettings['min_dimension'] = 50; // Minimum face size px
+                $detectionSettings['max_dimension'] = 500; // Maximum face size px
+                $detectionSettings['rect_image_format'] = 1; // Not used
+
+                // Detection area
+                // TODO: get from params!
+                $detectionSettings['rec_area_top'] = 10;
+                $detectionSettings['rec_area_bottom'] = 10;
+                $detectionSettings['rec_area_left'] = 10;
+                $detectionSettings['rec_area_right'] = 10;
+                $detectionSettings['outMargin'] = 50; // Detection indent
+
+                $this->api_call('/configuration', 'PATCH', [ 'face_detection' => $detectionSettings ]);
             }
 
             public function configure_ntp(string $server, int $port, string $timezone) {
-                $timeSettings = $this->get_config()['time'];
+                $timeSettings = $this->getConfig()['time'];
                 $timeSettings['ntp_pool'] = "$server:$port";
                 $timeSettings['timezone'] = 'GMT+3';
                 $this->api_call('/configuration', 'PATCH', [ 'time' => $timeSettings ]);
@@ -176,6 +242,11 @@
 
                 $endpoint = '/sip?' . http_build_query($params);
                 $this->api_call($endpoint, 'PATCH');
+
+                $this->api_call('/settings/incoming_call', 'PATCH', [
+                    'enable_proxy_to_analog' => true,
+                    'own_number' => '',
+                ]);
             }
 
             public function configure_syslog(string $server, int $port) {
@@ -186,30 +257,61 @@
             }
 
             public function configure_user_account(string $password) {
-                // TODO: Implement configure_user_account() method.
+                $this->api_call('/settings/account', 'POST', [
+                    'account' => 'user',
+                    'password' => $password,
+                    'role' => 'operator',
+                ]);
             }
 
             public function configure_video_encoding() {
-                // TODO: Implement configure_video_encoding() method.
+                // Multiple calls to work correctly
+                $videoSettings = $this->api_call('/settings/video');
+
+                $videoSettings['channel1']['bitrate'] = '1Mbps';
+                $videoSettings['channel1']['resolution'] = '1280x720';
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
+
+                $videoSettings['channel2']['bitrate'] = '0.5Mbps';
+                $videoSettings['channel2']['resolution'] = '720x480';
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
+
+                $videoSettings['channel3']['bitrate'] = '0.5Mbps';
+                $videoSettings['channel3']['resolution'] = '640x480';
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
+
+                $videoSettings['use_for_sip'] = 'channel1';
+                $videoSettings['use_for_webrtc'] = 'channel1';
+                $this->api_call('/settings/video', 'PATCH', $videoSettings);
             }
 
             public function get_audio_levels(): array {
-                // TODO: Implement get_audio_levels() method.
-                return [];
+                $audioSettings = $this->getConfig()['audio'];
+                return [
+                    $audioSettings['sip']['volume'],
+                    $audioSettings['sip']['mic_sensitivity'],
+                    $audioSettings['analog']['volume'],
+                    $audioSettings['analog']['mic_sensitivity'],
+                    $audioSettings['notify_speaker_volume'],
+                ];
             }
 
             public function get_cms_allocation(): array {
-                // TODO: Implement get_cms_allocation() method.
                 return [];
             }
 
             public function get_cms_levels(): array {
-                // TODO: Implement get_cms_levels() method.
-                return [];
+                $analogSettings = $this->api_call('/settings/analog');
+                return [
+                    $analogSettings['analog_line_voltage_idle'],
+                    $analogSettings['analog_line_voltage_lifted'],
+                    $analogSettings['analog_line_voltage_button_pressed'],
+                    $analogSettings['digi_line_voltage_lifted'],
+                ];
             }
 
             public function get_rfids(): array {
-                return $this->api_call('/apartments/0')['rfids'] ?? [];
+                return array_column($this->api_call('/rfids'), 'rfid');
             }
 
             public function get_sysinfo(): array {
@@ -225,7 +327,7 @@
 
             public function keep_doors_unlocked(bool $unlocked = true) {
                 // TODO: if unlocked, the locks will close after reboot
-                $doors = $this->get_doors();
+                $doors = $this->getDoors();
 
                 foreach ($doors as $door) {
                     $id = $door['id'];
@@ -237,11 +339,11 @@
             }
 
             public function line_diag(int $apartment) {
-                // TODO: Implement line_diag() method.
+                // TODO: MQTT?
             }
 
             public function open_door(int $door_number = 0) {
-                $doors = $this->get_doors();
+                $doors = $this->getDoors();
                 $open = $doors[$door_number]['open'] ?? false;
 
                 if (!$open) {
@@ -251,25 +353,68 @@
             }
 
             public function set_admin_password(string $password) {
-                // TODO: Implement set_admin_password() method.
+                // TODO: without sleep() the following calls can response "access is forbidden" or "account not found"
+                $this->api_call('/settings/account/password', 'PATCH', [
+                    'account' => 'admin',
+                    'current_password' => $this->defaultWebPassword,
+                    'new_password' => $password,
+                ]);
+                sleep(10);
+
+                $this->api_call('/settings/account/password', 'PATCH', [
+                    'account' => 'api_user',
+                    'current_password' => $this->def_pass,
+                    'new_password' => $password,
+                ]);
+                sleep(10);
             }
 
             public function set_audio_levels(array $levels) {
-                // TODO: Implement set_audio_levels() method.
+                if (count($levels) === 5) {
+                    $audioSettings = $this->getConfig()['audio'];
+
+                    $audioSettings['sip']['volume'] = $levels[0];
+                    $audioSettings['sip']['mic_sensitivity'] = $levels[1];
+                    $audioSettings['analog']['volume'] = $levels[2];
+                    $audioSettings['analog']['mic_sensitivity'] = $levels[3];
+                    $audioSettings['notify_speaker_volume'] = $levels[4];
+
+                    $this->api_call('/configuration', 'PATCH', [ 'audio' => $audioSettings ]);
+                }
             }
 
             public function set_call_timeout(int $timeout) {
-                $callSettings = $this->get_config()['call'];
+                $callSettings = $this->getConfig()['call'];
                 $callSettings['dial_out_time'] = $timeout;
                 $this->api_call('/settings/call', 'PATCH', $callSettings);
             }
 
             public function set_cms_levels(array $levels) {
-                // TODO: Implement set_cms_levels() method.
+                if (count($levels) === 4) {
+                    $analogSettings = $this->api_call('/settings/analog');
+
+                    $analogSettings['analog_line_voltage_idle'] = $levels[0];
+                    $analogSettings['analog_line_voltage_lifted'] = $levels[1];
+                    $analogSettings['analog_line_voltage_button_pressed'] = $levels[2];
+                    $analogSettings['digi_line_voltage_lifted'] = $levels[3];
+
+                    $this->api_call('/configuration', 'PATCH', [ 'analog' => $analogSettings ]);
+                }
             }
 
             public function set_cms_model(string $model = '') {
-                // TODO: Implement set_cms_model() method.
+                switch ($model) {
+                    case 'FE-12D':
+                        $mode = 'digital';
+                        break;
+                    default:
+                        $mode = 'analog';
+                        break;
+                }
+
+                $analogSettings = $this->api_call('/settings/analog');
+                $analogSettings['mode'] = $mode;
+                $this->api_call('/configuration', 'PATCH', [ 'analog' => $analogSettings ]);
             }
 
             public function set_concierge_number(int $number) {
@@ -282,22 +427,24 @@
             }
 
             public function set_display_text(string $text = '') {
-                $displaySettings = $this->get_config()['display'];
+                $displaySettings = $this->getConfig()['display'];
                 $displaySettings['welcome_display'] = 1;
                 $displaySettings['text'] = $text;
                 $this->api_call('/configuration', 'PATCH', [ 'display' => $displaySettings ]);
             }
 
             public function set_public_code(int $code = 0) {
-                // TODO: Implement set_public_code() method.
+                // not used
             }
 
-            public function set_relay_dtmf(int $relay_1, int $relay_2, int $relay_3) {
+            public function setDtmf(string $code1, string $code2, string $code3, string $codeOut) {
                 $this->api_call('/settings/dtmf', 'PATCH', [
                     'code_length' => 1,
-                    'code1' => (string) $relay_1,
-                    'code2' => (string) $relay_2,
-                    'code3' => (string) $relay_3,
+                    'code1' => $code1,
+                    'code2' => $code2,
+                    'code3' => $code3,
+                    'out_code' => $codeOut,
+                    'out_mode' => 'SIP-INFO',
                 ]);
             }
 
@@ -312,14 +459,14 @@
             }
 
             public function set_talk_timeout(int $timeout) {
-                $callSettings = $this->get_config()['call'];
+                $callSettings = $this->getConfig()['call'];
                 $callSettings['max_call_time'] = $timeout;
                 $this->api_call('/settings/call', 'PATCH', $callSettings);
             }
 
             public function set_unlock_time(int $time) {
                 // TODO: causes a side effect: always closes the relay
-                $doors = $this->get_doors();
+                $doors = $this->getDoors();
 
                 foreach ($doors as $door) {
                     $id = $door['id'];
@@ -333,8 +480,19 @@
                 }
             }
 
+            public function _set_unlock_time(int $time) {
+                $this->api_call('/settings/door_left_open_timeout', 'PATCH', [ 'timeout' => $time ]);
+            }
+
             public function set_video_overlay(string $title = '') {
-                // TODO: Implement set_video_overlay() method.
+                $this->api_call('/settings/osd', 'PATCH', [
+                    'show_name' => true,
+                    'name' => $title,
+                    'show_datetime' => true,
+                    'date_format' => 'DD.MM.YYYY',
+                    'use_24h_clock' => true,
+                    'weekdays' => true,
+                ]);
             }
 
             public function set_language(string $lang) {
@@ -355,8 +513,9 @@
 
             public function prepare() {
                 parent::prepare();
-                $this->set_admin_pin();
-                $this->configure_internal_reader();
+                $this->setAdminPin(false);
+                $this->configureInternalReader();
+                $this->configureExternalReader();
             }
         }
     }

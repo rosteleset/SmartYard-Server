@@ -1,0 +1,19 @@
+[Unit]
+Description=Wetty Web Terminal
+After=network.target
+
+[Service]
+Type=simple
+Environment=HOME=/tmp
+WorkingDirectory=/tmp
+User=root
+Group=root
+ExecStart=/usr/local/bin/wetty --command /bin/bash --host 127.0.0.1
+LimitCORE=infinity
+Restart=always
+RestartSec=4
+StandardOutput=null
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -9,7 +9,6 @@
     "login": "Логин",
     "password": "Пароль",
     "server": "Сервер",
-    "rememberMe": "Запомнить меня",
     "passowrdForgot": "Я забыл(а) свой пароль",
     "loginAction": "Войти",
     "ok": "OK",
@@ -53,7 +52,8 @@
     "fileAlreadyExists": "Этот файл уже загружен",
     "errors": {
         "404caption": "Ой! Страница не найдена.",
-        "404message": "Похоже, мы не можем найти нужную Вам страницу.<br />Попробуйте перейти на <a href=\"#\">начальную страницу</a>.",
+        "404message": "Похоже, мы не можем найти нужную Вам страницу.<br />Попробуйте перейти на <a href=\"?#\">начальную страницу</a>.",
+        "404": "Объект не найден",
         "redis": "Ошибка подключения к redis серверу",
         "notFound": "Ничего не найдено",
         "noGravatar": "Gravatar не найден<br/><a href='https://ru.gravatar.com/' target='_blank' class='text-bold hover'>[Установить]</a>",
@@ -62,7 +62,7 @@
         "serverUnavailable": "Сервер недоступен",
         "cantStoreCookie": "Невозможно сохранить cookie",
         "noCredentials": "Нет учетных данных",
-        "tokenNotFound": "Token не найден",
+        "tokenNotFound": "Cрок действия токена истек",
         "noToken": "Token не указан",
         "userNotFound": "Пользователь не найден",
         "permissionDenied": "В доступе отказано"

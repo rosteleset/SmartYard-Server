@@ -452,7 +452,7 @@
                                     icon: "far fa-envelope",
                                     title: i18n("addresses.subscriberInbox"),
                                     click: subscriberId => {
-                                        location.href = "#addresses.subscriberInbox&subscriberId=" + subscriberId;
+                                        location.href = "?#addresses.subscriberInbox&subscriberId=" + subscriberId;
                                     },
                                 },
                             ]
@@ -533,7 +533,14 @@
             })
 
             for (let i in response.cameras.cameras) {
-                let url = new URL(response.cameras.cameras[i].url);
+                let url;
+                try {
+                    url = new URL(response.cameras.cameras[i].url);
+                } catch (e) {
+                    url = {
+                        host: response.cameras.cameras[i].url,
+                    }
+                }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
                     text:  url.host,
@@ -648,22 +655,35 @@
         modules.addresses.topMenu();
 
         if (params.flat) {
-            subTop(params.house + ", " + params.flat);
-
             loadingStart();
-            QUERY("subscribers", "subscribers", {
-                by: "flatId",
-                query: params.flatId,
-            }).done(response => {
-                modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId);
-                modules.addresses.subscribers.renderKeys(response.flat.keys);
-                modules.addresses.subscribers.renderCameras(response.flat.cameras);
+
+            QUERY("addresses", "addresses", {
+                houseId: params.houseId,
             }).
+            done(modules.addresses.addresses).
             fail(FAIL).
-            fail(() => {
-                pageError();
-            }).
-            always(loadingDone);
+            done(a => {
+                for (let i in a.addresses.houses) {
+                    if (a.addresses.houses[i].houseId == params.houseId) {
+                        document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
+                        subTop(modules.addresses.path((parseInt(params.settlementId)?"settlement":"street"), parseInt(params.settlementId)?params.settlementId:params.streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
+                    }
+                }
+
+                QUERY("subscribers", "subscribers", {
+                    by: "flatId",
+                    query: params.flatId,
+                }).done(response => {
+                    modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId);
+                    modules.addresses.subscribers.renderKeys(response.flat.keys);
+                    modules.addresses.subscribers.renderCameras(response.flat.cameras);
+                }).
+                fail(FAIL).
+                fail(() => {
+                    pageError();
+                }).
+                always(loadingDone);
+            });
         }
     }
 }).init();

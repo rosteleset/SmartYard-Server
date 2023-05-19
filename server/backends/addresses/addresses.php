@@ -34,9 +34,10 @@
              * @param $regionType
              * @param $regionTypeFull
              * @param $region
+             * @param $timezone
              * @return boolean
              */
-            abstract function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
+            abstract function modifyRegion($regionId, $regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone = "-");
 
             /**
              * @param $regionUuid
@@ -45,9 +46,10 @@
              * @param $regionType
              * @param $regionTypeFull
              * @param $region
+             * @param $timezone
              * @return false|integer
              */
-            abstract function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region);
+            abstract function addRegion($regionUuid, $regionIsoCode, $regionWithType, $regionType, $regionTypeFull, $region, $timezone = "-");
 
             /**
              * @param $regionId
@@ -77,7 +79,7 @@
              * @param $area
              * @return boolean
              */
-            abstract function modifyArea($areaId, $regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area);
+            abstract function modifyArea($areaId, $regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area, $timezone = "-");
 
             /**
              * @param $regionId
@@ -88,7 +90,7 @@
              * @param $area
              * @return false|integer
              */
-            abstract function addArea($regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area);
+            abstract function addArea($regionId, $areaUuid, $areaWithType, $areaType, $areaTypeFull, $area, $timezone = "-");
 
             /**
              * @param $areaId
@@ -120,7 +122,7 @@
              * @param $city
              * @return boolean
              */
-            abstract function modifyCity($cityId, $regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city);
+            abstract function modifyCity($cityId, $regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city, $timezone = "-");
 
             /**
              * @param $regionId
@@ -132,7 +134,7 @@
              * @param $city
              * @return false|integer
              */
-            abstract function addCity($regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city);
+            abstract function addCity($regionId, $areaId, $cityUuid, $cityWithType, $cityType, $cityTypeFull, $city, $timezone = "-");
 
             /**
              * @param $cityId

@@ -41,7 +41,7 @@
                         if (!array_key_exists($key, $new)) {
                             unset($old[$key]);
                         }
-                        if ($old[$key] == $new[$key]) {
+                        if (@$old[$key] == @$new[$key]) {
                             unset($old[$key]);
                             unset($new[$key]);
                         }

@@ -7,6 +7,9 @@
     "outputs": 3,
     "camera": "rubetek",
     "cmses": [
-
+        "fe-12d",
+        "km100-7.1",
+        "km100-7.3",
+        "km100-7.5"
     ]
 }

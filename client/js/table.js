@@ -88,6 +88,9 @@ function cardTable(params) {
         h += `<th><i class="fa fa-fw"></i></th>`;
     }
     for (let i in params.columns) {
+        if (params.columns[i].hidden) {
+            continue;
+        }
         if (params.columns[i].fullWidth) {
             h += `<th nowrap style="width: 100%">${params.columns[i].title}</th>`;
         } else {
@@ -119,9 +122,12 @@ function cardTable(params) {
             }
             h += `>`;
             if (typeof params.edit === "function") {
-                h += `<td class="hoverable ${editClass}" uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
+                h += `<td class="hoverable pointer ${editClass}" uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
             }
             for (let j in rows[i].cols) {
+                if (rows[i].cols[j].hidden) {
+                    continue;
+                }
                 h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
                 let clss = '';
                 if (typeof rows[i].cols[j].click === "function") {

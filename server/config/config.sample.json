@@ -22,7 +22,8 @@
         "phonePattern": "7 (###) ###-##-##",
         "tt_project": "TDM",
         "tt_workflow": "mobile",
-        "tt_user": "mobile"
+        "tt_user": "mobile",
+        "time_zone": "Europe/Moscow"
     },
 
     "db": {
@@ -83,7 +84,7 @@
 
         "isdn": {
             "backend": "lanta",
-            "common_secret": "<-- your secret here -->",
+            "common_secret": "<!-- your secret here --!>",
             "confirm_method": "outgoingCall"
         },
 
@@ -98,11 +99,11 @@
             "username": "default",
             "password": "qqq",
             "database": "default",
-            "time_shift": "<-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) -->",
-            "max_call_length": "<-- your max call length in seconds for backward processing call events (hint 120) -->",
-            "ttl_temp_record": "<-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) -->",
-            "ttl_camshot_days": "<-- your time to live in days for camshots (hint 180 - approx. half year) -->",
-            "back_time_shift_video_shot": "<-- your back time shift in seconds for receiving video shot from media server (hint 3) -->",
+            "time_shift": "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
+            "max_call_length": "<!-- your max call length in seconds for backward processing call events (hint 120) --!>",
+            "ttl_temp_record": "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
+            "ttl_camshot_days": "<!-- your time to live in days for camshots (hint 180 - approx. half year) --!>",
+            "back_time_shift_video_shot": "<!-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>",
             "cron_process_events_scheduler": "minutely"
         },
 
@@ -115,12 +116,12 @@
             "servers": [
                 {
                     "title": "Local server",
-                    "type": "nimble",
+                    "type": "nimble or flussonic or  or trassir",
                     "url": "https://video.server.hostname:8443",
                     "token": "<!-- mediaserver security token here (only if you use it) --!>",
                     "management_ip": "127.0.0.1",
                     "management_port": "8086",
-                    "management_token": "<!-- management token -->"
+                    "management_token": "<!-- management token --!>"
                 }
             ]
         },
@@ -128,7 +129,6 @@
         "dvr_exports": {
             "backend": "filesystem",
             "dvr_files_path": "/path/to/dvr/files/on/your/local/filesystem",
-            "dvr_files_location_prefix": "https://example.com/path/to/temp/dvr/files/",
             "dvr_files_ttl": 259200
         },
 
@@ -139,7 +139,7 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "<!-- your asterisk external ip here -->"
+                    "ip": "<!-- your asterisk external ip here --!>"
                 }
             ],
             "stuns": [
@@ -157,6 +157,19 @@
                     "url": "http://127.0.0.1:9051"
                 }
             ]
+        },
+
+        "cs": {
+            "backend": "internal"
+        },
+
+        "mqtt": {
+            "backend": "internal",
+            "agent": "http://127.0.0.1:8082/broadcast",
+            "ws": "wss://<!-- your server here --!>",
+            "mqtt": "mqtt://<!-- your server here -->",
+            "username": "rbt",
+            "password": "<!-- your mosquitto password here --!>"
         }
     },
 
@@ -166,6 +179,10 @@
         "username": "mmikel@localhost",
         "password": "qwerty",
         "from": "RBT"
+    },
+
+    "telegram": {
+        "bot": "<!-- your telegram bot token here --!>"
     },
 
     "syslog_servers": {
@@ -183,6 +200,12 @@
         ],
         "hikvision": [
             "syslog.udp:127.0.0.1:45454"
+        ],
+        "akuvox": [
+            "syslog.udp:127.0.0.1:45455"
+        ],
+        "rubetek": [
+            "syslog.udp:192.168.13.60:45456"
         ]
     },
 

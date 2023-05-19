@@ -4,19 +4,23 @@
 
     init: function () {
         if (AVAIL("accounts", "group", "POST")) {
-            leftSide("fas fa-fw fa-users", i18n("groups.groups"), "#groups", "accounts");
+            leftSide("fas fa-fw fa-users", i18n("groups.groups"), "?#groups", "accounts");
         }
         moduleLoaded("groups", this);
     },
 
     loadGroups: function (callback) {
-        return GET("accounts", "groups").
-        done(groups => {
-            modules.groups.meta = groups.groups;
-        }).
-        always(() => {
-            if (typeof callback) callback();
-        });
+        if (AVAIL("accounts", "groups")) {
+            return GET("accounts", "groups").
+            done(groups => {
+                modules.groups.meta = groups.groups;
+            }).
+            always(response => {
+                if (typeof callback == "function") callback(response);
+            });
+        } else {
+            if (typeof callback == "function") callback(false);
+        }
     },
 
     /*
@@ -163,7 +167,7 @@
                     if (users.users[i].uid) {
                         users_list.push({
                             id: users.users[i].uid,
-                            text: $.trim(users.users[i].realName + " [" + users.users[i].login + "]"),
+                            text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
                         });
                     }
                 }

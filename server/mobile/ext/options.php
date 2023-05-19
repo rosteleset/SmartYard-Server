@@ -20,8 +20,8 @@
  * @apiSuccess {String} chatOptions.domain domain чата meTalk
  * @apiSuccess {String} chatOptions.token token чата meTalk
  * @apiSuccess {String} [supportPhone] номер телефона техподдержки
- * @apiSuccess {String="t","f"} [chat="f"] чат talkMe
- *
+ * @apiSuccess {String} [timeZone = "Europe/Moscow"] Time Zone identifier
+  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
  * 422 неверный формат данных
@@ -61,6 +61,10 @@
             } else {
                 $response["chat"] = "f";
             }
+        }
+
+        if (@$config["mobile"]["time_zone"]) {
+            $response["timeZone"] = $config["mobile"]["time_zone"];
         }
 
     response(200, $response);

@@ -14,6 +14,7 @@
  *
  * @apiSuccess {object[]} - массив объектов
  * @apiSuccess {string="Y-m-d H:i:s"} -.date дата
+ * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {UUID} -.uuid UUID события (уникален)
  * @apiSuccess {UUID} [-.image] UUID картинки (может повторяться для "дублирующихся" событий)
  * @apiSuccess {integer} -.objectId идентификатор объекта (домофона)
@@ -106,9 +107,9 @@ try {
 
             $domophone = json_decode($row[plog::COLUMN_DOMOPHONE]);
             if (isset($domophone->domophone_id) && isset($domophone->domophone_output)) {
-                $e_details['objectId'] = $domophone->domophone_id;
-                $e_details['objectType'] = 0;
-                $e_details['objectMechanizma'] = $domophone->domophone_output;
+                $e_details['objectId'] = strval($domophone->domophone_id);
+                $e_details['objectType'] = "0";
+                $e_details['objectMechanizma'] = strval($domophone->domophone_output);
                 if (isset($domophone->domophone_description)) {
                     $e_details['mechanizmaDescription'] = $domophone->domophone_description;
                 } else {
@@ -117,7 +118,7 @@ try {
             }
 
             $event_type = (int)$row[plog::COLUMN_EVENT];
-            $e_details['event'] = $event_type;
+            $e_details['event'] = strval($event_type);
             $face = json_decode($row[plog::COLUMN_FACE], false);
             if (isset($face->width) && $face->width > 0 && isset($face->height) && $face->height > 0) {
                 $e_details['detailX']['face'] = [
@@ -141,7 +142,7 @@ try {
                 }
             }
             if (isset($face->faceId) && $face->faceId > 0) {
-                $e_details['detailX']['faceId'] = $face->faceId;
+                $e_details['detailX']['faceId'] = strval($face->faceId);
             }
 
             $phones = json_decode($row[plog::COLUMN_PHONES]);
@@ -153,12 +154,12 @@ try {
                     break;
 
                 case plog::EVENT_OPENED_BY_KEY:
-                    $e_details['detailX']['key'] = $row[plog::COLUMN_RFID];
+                    $e_details['detailX']['key'] = strval($row[plog::COLUMN_RFID]);
                     break;
 
                 case plog::EVENT_OPENED_BY_APP:
                     if ($phones->user_phone) {
-                        $e_details['detailX']['phone'] = $phones->user_phone;
+                        $e_details['detailX']['phone'] = strval($phones->user_phone);
                     }
                     break;
 
@@ -166,15 +167,15 @@ try {
                     break;
 
                 case plog::EVENT_OPENED_BY_CODE:
-                    $e_details['detailX']['code'] = $row[plog::COLUMN_CODE];
+                    $e_details['detailX']['code'] = strval($row[plog::COLUMN_CODE]);
                     break;
 
                 case plog::EVENT_OPENED_GATES_BY_CALL:
                     if ($phones->user_phone) {
-                        $e_details['detailX']['phoneFrom'] = $phones->user_phone;
+                        $e_details['detailX']['phoneFrom'] = strval($phones->user_phone);
                     }
                     if ($phones->gate_phone) {
-                        $e_details['detailX']['phoneTo'] = $phones->gate_phone;
+                        $e_details['detailX']['phoneTo'] = strval($phones->gate_phone);
                     }
                     break;
             }

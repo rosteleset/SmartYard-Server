@@ -8,7 +8,6 @@
     "name": "Наименование",
     "tokenCommon": "Общий токен",
     "tokenSms": "Токен для отправки SMS",
-    "tokenFlashCall": "Токен для входящих звонков",
     "deleteProvider": "Удалить провайдера?",
     "confirmDeleteProvider": "Удалить провайдера \"#%s\"?",
     "providerWasAdded": "Провайдер добавлен",

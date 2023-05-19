@@ -6,8 +6,8 @@
 
         class is extends cameras {
 
-            public $user = 'root';
-            protected $def_pass = '123456';
+            public string $user = 'root';
+            protected string $def_pass = '123456';
 
             protected function api_call($resource, $method = 'GET', $payload = null) {
                 $req = $this->url . $resource;

@@ -14,7 +14,7 @@
  * @apiSuccess {String} -.url url камеры
  * @apiSuccess {String} -.token токен
  * @apiSuccess {String="t","f"} -.frs подключен FRS
- * @apiSuccess {String="nimble","flussonic"} [-.serverType] тип видео-сервера ('flussonic' by default)
+ * @apiSuccess {String="nimble","flussonic", "macroscop", "trassir"} [-.serverType] тип видео-сервера ('flussonic' by default)
  */
 auth();
 

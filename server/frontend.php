@@ -64,10 +64,15 @@
     try {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
     } catch (Exception $e) {
-        error_log(print_r($e, true));
-        response(555, [
-            "error" => "config",
-        ]);
+        $config = false;
+    }
+
+    if (!$config) {
+        try {
+            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
+        } catch (Exception $e) {
+            $config = false;
+        }
     }
 
     if (!$config) {
@@ -152,7 +157,8 @@
         "method" => $method,
     ];
 
-    $params["_request_method"] = $_SERVER['REQUEST_METHOD'];
+    $params["_request_method"] = @$_SERVER['REQUEST_METHOD'];
+    $params["ua"] = @$_SERVER["HTTP_USER_AGENT"];
 
     $clearCache = false;
 
@@ -237,7 +243,7 @@
         }
     } else {
         if ($http_authorization) {
-            $auth = $backends["authentication"]->auth($http_authorization, @$params["ua"], $ip);
+            $auth = $backends["authentication"]->auth($http_authorization, @$_SERVER["HTTP_USER_AGENT"], $ip);
             if (!$auth) {
                 $params["_ip"] = $ip;
                 $params["_login"] = '-';
@@ -258,6 +264,10 @@
         $params["_uid"] = $auth["uid"];
         $params["_login"] = $auth["login"];
         $params["_token"] = $auth["token"];
+
+        foreach ($backends as $backend) {
+            $backend->setCreds($auth["uid"], $auth["login"]);
+        }
     }
 
     $params["_md5"] = md5(print_r($params, true));
@@ -269,6 +279,10 @@
     $params["_backends"] = $backends;
 
     $params["_ip"] = $ip;
+
+    if (@$params["_login"]) {
+        $redis->set("last_" . md5($params["_login"]), time());
+    }
 
     if ($api == "accounts" && $method == "forgot") {
         forgot($params);

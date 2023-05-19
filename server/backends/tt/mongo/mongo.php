@@ -11,7 +11,7 @@
          * internal.db + mongoDB tt class
          */
 
-        require_once __DIR__ . "/../db/db.php";
+        require_once __DIR__ . "/../../../traits/backends/tt/db.php";
 
         class mongo extends tt
         {
@@ -123,6 +123,34 @@
                     unset($issue["commentPrivate"]);
                 }
 
+                if (array_key_exists("comments", $issue)) {
+                    unset($issue["comments"]);
+                }
+
+                if (array_key_exists("created", $issue)) {
+                    unset($issue["created"]);
+                }
+
+                if (array_key_exists("author", $issue)) {
+                    unset($issue["author"]);
+                }
+
+                if (array_key_exists("project", $issue)) {
+                    unset($issue["project"]);
+                }
+
+                if (array_key_exists("parent", $issue)) {
+                    unset($issue["parent"]);
+                }
+
+                if (array_key_exists("attachments", $issue)) {
+                    unset($issue["attachments"]);
+                }
+
+                if (array_key_exists("journal", $issue)) {
+                    unset($issue["journal"]);
+                }
+
                 if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate)) {
                     return false;
                 }
@@ -164,6 +192,8 @@
 
                 $files = loadBackend("files");
 
+                $delete = true;
+
                 if ($files) {
                     $issueFiles = $files->searchFiles([
                         "metadata.issue" => true,
@@ -171,24 +201,45 @@
                     ]);
 
                     foreach ($issueFiles as $file) {
-                        $files->deleteFile($file["id"]);
+                        $delete = $delete && $files->deleteFile($file["id"]) &&
+                        $this->mongo->$db->$project->updateOne(
+                            [
+                                "issueId" => $issueId,
+                            ],
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        ) &&
+                        $this->addJournalRecord($issueId, "deleteAttachment", [
+                            "attachmentFilename" => $filename,
+                        ], null);
                     }
                 }
 
-                $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
+                if ($delete) {
+                    $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [ "issueId" ], [ "created" => 1 ], 0, 32768);
 
-                return $this->mongo->$db->$acr->deleteMany([
-                    "issueId" => $issueId,
-                ]);
+                    if ($childrens && count($childrens["issues"])) {
+                        foreach ($childrens["issues"] as $children) {
+                            $delete = $delete && $this->deleteIssue($children["issueId"]);
+                        }
+                    }
+
+                    return $delete && $this->mongo->$db->$acr->deleteMany([
+                        "issueId" => $issueId,
+                    ]) && $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
+                } else {
+                    return false;
+                }
             }
 
             /**
              * @inheritDoc
              */
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100)
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [])
             {
-                global $params;
-
                 $db = $this->dbName;
 
                 $me = $this->myRoles();
@@ -200,19 +251,30 @@
                 $my = $this->myGroups();
                 $my[] = $this->login;
 
-                $preprocess = [
-                    "%%me" => $this->login,
-                    "%%my" => $my,
-                ];
+                $preprocess["%%me"] = $this->login;
+                $preprocess["%%my"] = $my;
 
-                if ($params && array_key_exists("search", $params) && trim($params["search"])) {
-                    $preprocess["%%search"] = trim($params["search"]);
-                }
+                $preprocess["%%strToday"] = date("Y-M-d");
+                $preprocess["%%strYesterday"] = date("Y-M-d", strtotime("-1 day"));
+                $preprocess["%%strTomorrow"] = date("Y-M-d", strtotime("+1 day"));
 
-                if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
-                    $preprocess["%%parent"] = trim($params["parent"]);
-                }
-
+                $preprocess["%%timestamp"] = time();
+                $preprocess["%%timestampToday"] = strtotime(date("Y-M-d"));
+                $preprocess["%%timestampYesterday"] = strtotime(date("Y-M-d", strtotime("-1 day")));
+                $preprocess["%%timestampTomorrow"] = strtotime(date("Y-M-d", strtotime("+1 day")));
+                $preprocess["%%timestamp+2days"] = strtotime(date("Y-M-d", strtotime("+2 day")));
+                $preprocess["%%timestamp+3days"] = strtotime(date("Y-M-d", strtotime("+3 day")));
+                $preprocess["%%timestamp+7days"] = strtotime(date("Y-M-d", strtotime("+7 day")));
+                $preprocess["%%timestamp+1month"] = strtotime(date("Y-M-d", strtotime("+1 month")));
+                $preprocess["%%timestamp+1year"] = strtotime(date("Y-M-d", strtotime("+1 year")));
+                $preprocess["%%timestamp-2days"] = strtotime(date("Y-M-d", strtotime("-2 day")));
+                $preprocess["%%timestamp-3days"] = strtotime(date("Y-M-d", strtotime("-3 day")));
+                $preprocess["%%timestamp-7days"] = strtotime(date("Y-M-d", strtotime("-7 day")));
+                $preprocess["%%timestamp-1month"] = strtotime(date("Y-M-d", strtotime("-1 month")));
+                $preprocess["%%timestamp-1year"] = strtotime(date("Y-M-d", strtotime("-1 year")));
+                $preprocess["%%timestamp-2year"] = strtotime(date("Y-M-d", strtotime("-2 year")));
+                $preprocess["%%timestamp-3year"] = strtotime(date("Y-M-d", strtotime("-3 year")));
+                
                 $query = $this->preprocessFilter($query, $preprocess);
 
                 $projection = [];
@@ -276,7 +338,108 @@
              */
             public function reCreateIndexes()
             {
-                // TODO: Implement reCreateIndexes() method.
+                $db = $this->dbName;
+
+                // fullText
+                $p_ = $this->getProjects();
+                $c_ = $this->getCustomFields();
+
+                $projects = [];
+                $customFields = [];
+
+                foreach ($c_ as $c) {
+                    $customFields[$c["customFieldId"]] = [
+                        "name" => "_cf_" . $c["field"],
+                        "index" => $c["indx"],
+                        "search" => $c["search"],
+                    ];
+                }
+
+                foreach ($p_ as $p) {
+                    $projects[$p["acronym"]] = [
+                        "searchSubject" => $p["searchSubject"],
+                        "searchDescription" => $p["searchDescription"],
+                        "searchComments" => $p["searchComments"],
+                        "customFields" => [],
+                    ];
+
+                    foreach ($p["customFields"] as $c) {
+                        $projects[$p["acronym"]]["customFields"][$customFields[$c]["name"]] = $customFields[$c];
+                        unset($projects[$p["acronym"]]["customFields"][$customFields[$c]["name"]]["name"]);
+                    }
+                }
+
+                foreach ($projects as $acr => $project) {
+                    $fullText = [];
+                    $fullText["issueId"] = "text";
+
+                    if ($project["searchSubject"]) {
+                        $fullText["subject"] = "text"; 
+                    }
+                    if ($project["searchDescription"]) {
+                        $fullText["description"] = "text"; 
+                    }
+                    if ($project["searchComments"]) {
+                        $fullText["comments.body"] = "text"; 
+                    }
+
+                    foreach ($project["customFields"] as $c => $p) {
+                        if ($p["search"]) {
+                            $fullText[$c] = "text";
+                        }
+                    }
+
+                    $md5 = md5(print_r($fullText, true));
+
+                    if ($this->redis->get("full_text_search_" . $acr) != $md5) {
+                        try {
+                            $this->mongo->$db->$acr->dropIndex("fullText");
+                        } catch (\Exception $e) {
+                            //
+                        }
+                        $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
+                        $this->redis->set("full_text_search_" . $acr, $md5);
+                    }
+                }
+
+                foreach ($projects as $acr => $project) {
+                    $indexes = [
+                        "issueId",
+                        "created",
+                        "subject",
+                        "description",
+                        "status",
+                    ];
+    
+                    foreach ($project["customFields"] as $c => $p) {
+                        if ($p["index"]) {
+                            $indexes[] = $c;
+                        }
+                    }
+
+                    $al = array_map(function ($indexInfo) {
+                        return ['v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace()];
+                    }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
+
+                    $already = [];
+                    foreach ($al as $i) {
+                        if (strpos($i["name"], "index_") === 0) {
+                            $already[] = substr($i["name"], 6);
+                        }
+                    }
+
+                    foreach ($indexes as $i) {
+                        if (!in_array($i, $already)) {
+                            $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "collation" => [ "locale" => @$this->config["language"] ? : "en" ], "name" => "index_" . $i ]);
+                        }
+                    }
+
+                    foreach ($already as $i) {
+                        if (!in_array($i, $indexes)) {
+                            $this->mongo->$db->$acr->dropIndex("index_" . $i);
+                        }
+                    }
+                }
             }
 
             /**
@@ -429,8 +592,7 @@
                 ], null);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
-                    return
-                        $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ "comments.$commentIndex" => true ] ]) &&
+                    return $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ "comments.$commentIndex" => true ] ]) &&
                         $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$pull' => [ "comments" => null ] ]) &&
                         $this->mongo->$db->$acr->updateOne(
                             [
@@ -452,6 +614,8 @@
              */
             public function addAttachments($issueId, $attachments)
             {
+                $db = $this->dbName;
+
                 $acr = explode("-", $issueId)[0];
 
                 $projects = $this->getProjects($acr);
@@ -487,11 +651,7 @@
                 }
 
                 foreach ($attachments as $attachment) {
-                    $this->addJournalRecord($issueId, "addAttachment", null, [
-                        "attachmentFilename" => $attachment["name"],
-                    ]);
-
-                    $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                    if (!($files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
                         "date" => round($attachment["date"] / 1000),
                         "added" => time(),
                         "type" => $attachment["type"],
@@ -509,9 +669,10 @@
                                 "updated" => time(),
                             ],
                         ]
-                    );
-
-                    if (!$add) {
+                    ) &&
+                    $this->addJournalRecord($issueId, "addAttachment", null, [
+                        "attachmentFilename" => $attachment["name"],
+                    ]))) {
                         return false;
                     }
                 }
@@ -524,6 +685,8 @@
              */
             public function deleteAttachment($issueId, $filename)
             {
+                $db = $this->dbName;
+
                 $project = explode("-", $issueId)[0];
 
                 $roles = $this->myRoles();
@@ -540,25 +703,28 @@
                     $list = $files->searchFiles([ "metadata.issue" => true, "metadata.attachman" => $this->login, "metadata.issueId" => $issueId, "filename" => $filename ]);
                 }
 
-                if ($list && $list[0] && $list[0]["id"]) {
-                    $this->addJournalRecord($issueId, "deleteAttachment", [
-                        "attachmentFilename" => $filename,
-                    ], null);
+                $delete = true;
 
-                    return $files->deleteFile($list[0]["id"]) &&
-                        $this->mongo->$db->$acr->updateOne(
-                            [
-                                "issueId" => $issueId,
-                            ],
-                            [
-                                "\$set" => [
-                                    "updated" => time(),
+                if ($list) {
+                    foreach ($list as $entry) {
+                        $delete = $delete && $files->deleteFile($entry["id"]) &&
+                            $this->mongo->$db->$project->updateOne(
+                                [
+                                    "issueId" => $issueId,
                                 ],
-                            ]
-                        );
+                                [
+                                    "\$set" => [
+                                        "updated" => time(),
+                                    ],
+                                ]
+                            ) &&
+                            $this->addJournalRecord($issueId, "deleteAttachment", [
+                                "attachmentFilename" => $filename,
+                            ], null);
+                    }
                 }
 
-                return false;
+                return $delete;
             }
 
             /**
@@ -568,10 +734,7 @@
             public function cron($part)
             {
                 if ($part == "5min") {
-                    if ($this->redis->get("ttReCreateIndexes")) {
-                        $this->redis->delete("ttReCreateIndexes");
-                        $this->reCreateIndexes();
-                    }
+                    $this->reCreateIndexes();
                 }
                 return parent::cron($part);
             }
@@ -582,16 +745,14 @@
             public function deleteCustomField($customFieldId)
             {
                 $this->dbDeleteCustomField($customFieldId);
-                $this->redis->set("ttReCreateIndexes", true);
             }
 
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
+            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
             {
-                $this->dbModifyCustomField($customFieldId, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
-                $this->redis->set("ttReCreateIndexes", true);
+                $this->dbModifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
             }
         }
     }
