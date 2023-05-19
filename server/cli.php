@@ -28,8 +28,10 @@
         common parts:
             [--parent-pid=<pid>]
             [--debug]
+
         demo server:
             [--run-demo-server [--port=<port>]]
+
         initialization:
             [--init-db]
             [--admin-password=<password>]
@@ -37,18 +39,23 @@
             [--clear-cache]
             [--cleanup]
             [--init-mobile-issues-project]
+
         tests:
             [--check-mail=<your email address>]
             [--get-db-version]
             [--check-backends]
+
         autoconfigure:
             [--autoconfigure-domophone=<domophone_id> [--first-time]]
+
         cron:
             [--cron=<minutely|5min|hourly|daily|monthly>]
             [--install-crontabs]
             [--uninstall-crontabs]
+
         dvr:
             [--run-record-download=<id>]
+
         config:
             [--print-config]
             [--write-yaml-config]
