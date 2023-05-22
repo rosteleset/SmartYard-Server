@@ -1,13 +1,13 @@
 const KAMAILIO_JSONRPC_HOST = process.env.KAMAILIO_JSONRPC_HOST || "127.0.0.1";
 const KAMAILIO_JSONRPC_PORT = process.env.KAMAILIO_JSONRPC_PORT || "50681";
 
-const axios = require("axios").default;
+import axios from 'axios';
 
 /** Run jsonrpc call to Kamailio server
  * @param {*} param0
  * @returns
  */
- const kamApi = async ({ method, params }) => {
+ export const kamApi = async ({ method, params }) => {
     const payload = {
       jsonrpc: "2.0",
       method,
@@ -19,5 +19,3 @@ const axios = require("axios").default;
       payload
     );
   };
-
-  module.exports = kamApi

@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import { getHash } from "../services/getHash.js";
-import kamApi from "../api/index.js";
+import {kamApi} from "../api/index.js";
 import {
   getSubscribers,
   getSubscriber,
