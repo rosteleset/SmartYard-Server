@@ -688,7 +688,7 @@
             /**
              * @inheritDoc
              */
-            public function getDomophones($by = "all", $query = -1)
+            public function getDomophones($by = "all", $query = -1, $withStatus = false)
             {
                 $q = "select * from houses_domophones order by house_domophone_id";
                 $r = [
@@ -756,7 +756,7 @@
 
                 $monitoring = loadBackend("monitoring");
 
-                if ($monitoring) {
+                if ($monitoring && $withStatus) {
                     $domophones = $this->db->get($q, false, $r);
 
                     foreach ($domophones as &$domophone) {
