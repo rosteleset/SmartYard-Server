@@ -97,6 +97,7 @@ package-lock.json
 /server/mqtt/package-lock.json
 /install/asterisk/config.lua
 /install/asterisk/extconfig.conf
+/install/asterisk/http.conf
 #Kamailio
 kamailio/kamailio-api/.env
 !kamailio/kamailio-api/package.json
