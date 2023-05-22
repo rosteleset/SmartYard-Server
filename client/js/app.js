@@ -407,6 +407,10 @@ function initAll() {
         lStore("_cookie", "1");
     }
 
+    if (window.location.hostname !== "127.0.0.1" || window.location.hostname !== "localhost") {
+        lStore("_https", "1");
+    }
+
     if (!lStore("_cookie")) {
         warning(i18n("cookieWarning"), false, 3600);
         lStore("_cookie", "1");

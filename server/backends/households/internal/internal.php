@@ -754,7 +754,19 @@
                         break;
                 }
 
-                return $this->db->get($q, false, $r);
+                $monitoring = loadBackend("monitoring");
+
+                if ($monitoring) {
+                    $domophones = $this->db->get($q, false, $r);
+
+                    foreach ($domophones as &$domophone) {
+                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
+                    }
+
+                    return $domophones;
+                } else {
+                    return $this->db->get($q, false, $r);
+                }
             }
 
             /**
@@ -939,6 +951,12 @@
                 ]);
 
                 if ($domophone) {
+                    $monitoring = loadBackend("monitoring");
+
+                    if ($monitoring) {
+                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
+                    }
+
                     $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $domophone["model"]), true);
                 }
 
