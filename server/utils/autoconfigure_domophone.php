@@ -9,16 +9,19 @@
         $sip = loadBackend("sip");
 
         $domophone = $households->getDomophone($domophoneId);
-
         if (!$domophone) {
             echo 'Domophone not found' . PHP_EOL;
             exit(1);
         }
 
         $entrances = $households->getEntrances('domophoneId', [ 'domophoneId' => $domophoneId, 'output' => '0' ]);
+        if (!$entrances) {
+            echo 'This domophone is not linked with any entrance' . PHP_EOL;
+            exit(1);
+        }
+
         $asterisk_server = $sip->server("ip", $domophone['server']);
         $cmses = $configs->getCMSes();
-
         $panel_text = $entrances[0]['callerId'];
 
         try {
