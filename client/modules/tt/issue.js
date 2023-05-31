@@ -701,7 +701,11 @@
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += "<a class='hoverable' href='" + lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token")) + "' target='_blank'>";
-                h += $.trim(issue.issue.attachments[i].filename);
+                if (issue.issue.attachments[i].metadata.type.indexOf("image/") == 0) {
+                    h += `<img src="${lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"))}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
+                } else {
+                    h += $.trim(issue.issue.attachments[i].filename);
+                }
                 h += "</a>";
                 h += "</div>";
                 h += "</td>";
