@@ -18,8 +18,6 @@
                     $req .= '?' . http_build_query($params);
                 }
 
-                echo $req . PHP_EOL; // TODO: delete later
-
                 $ch = curl_init($req);
 
                 curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
