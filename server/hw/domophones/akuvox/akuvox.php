@@ -90,6 +90,15 @@
                 ]);
             }
 
+            /** Configure LED fill light */
+            protected function configureLed(bool $enabled = true, int $minThreshold = 1500, int $maxThreshold = 1600) {
+                $this->setConfigParams([
+                    'Config.DoorSetting.GENERAL.LedType' => $enabled ? '0' : '2',
+                    'Config.DoorSetting.GENERAL.MinPhotoresistors' => "$minThreshold",
+                    'Config.DoorSetting.GENERAL.MaxPhotoresistors' => "$maxThreshold",
+                ]);
+            }
+
             /** Configure RFID readers mode */
             protected function configureRfidReaders() {
                 $this->setConfigParams([
@@ -246,7 +255,7 @@
                 $this->setConfigParams([
                     'Config.Settings.SNTP.Enable' => '1',
                     'Config.Settings.SNTP.TimeZone' => $timezone,
-                    'Config.Settings.SNTP.NTPServer1' => "$server:$port",
+                    'Config.Settings.SNTP.NTPServer1' => $server,
                 ]);
             }
 
@@ -272,7 +281,7 @@
                         'Config.Account1.GENERAL.UserName' => $login,
                         'Config.Account1.SIP.Port' => "$port",
                         'Config.Account1.SIP.Server' => "$server",
-                        'Config.Account1.SIP.TransType' => '1', // TCP
+                        'Config.Account1.SIP.TransType' => '0', // UDP
                         'Config.Account1.STUN.Enable' => $nat ? '1' : '0',
                         'Config.Account1.STUN.Server' => $stun_server,
                         'Config.Account1.STUN.Port' => "$stun_port",
@@ -320,12 +329,14 @@
             }
 
             public function get_audio_levels(): array {
-                return $this->getConfigParams([
+                $params = [
                     'Config.Settings.HANDFREE.MicVol',
                     'Config.Settings.HANDFREE.SpkVol',
                     'Config.Settings.HANDFREE.AlmVol',
                     'Config.Settings.HANDFREE.PromptVol',
-                ]);
+                ];
+
+                return array_map('intval', $this->getConfigParams($params));
             }
 
             public function get_cms_allocation(): array {
@@ -477,6 +488,7 @@
                 $this->configureBle(false);
                 $this->configureHangUpAfterOpen(false);
                 $this->configureInputsBinding();
+                $this->configureLed(false);
                 $this->configureRfidReaders();
                 $this->configureRps(false);
                 $this->enablePnp(false);
