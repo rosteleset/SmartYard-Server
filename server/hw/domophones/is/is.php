@@ -273,7 +273,6 @@
             ) {
                 $this->api_call('/sip/settings', 'PUT', [
                     'remote' => [
-                        'enabled' => true,
                         'username' => $login,
                         'password' => $password,
                         'domain' => $server,
@@ -284,7 +283,7 @@
 
             public function configure_syslog(string $server, int $port) {
                 // TODO: API!
-                $template = file_get_contents(__DIR__ . '/templates/rsyslogd.conf');
+                $template = file_get_contents(__DIR__ . '/templates/custom.conf');
                 $template .= "*.*;cron.none     @$server:$port;ProxyForwardFormat";
                 $host = parse_url($this->url)['host'];
                 exec(__DIR__ . "/scripts/syslog $host $this->user $this->pass '$template'");
@@ -325,12 +324,12 @@
 
             public function get_sysinfo(): array {
                 $info = $this->api_call('/system/info');
-                $versions = $this->api_call('/system/versions');
+                $versions = $this->api_call('/v2/system/versions')['opt'];
 
                 $sysinfo['DeviceID'] = $info['deviceID'];
                 $sysinfo['DeviceModel'] = $info['model'];
-                $sysinfo['HardwareVersion'] = $versions['hw'];
-                $sysinfo['SoftwareVersion'] = $versions['sw'];
+                $sysinfo['HardwareVersion'] = $versions['versions']['hw']['name'];
+                $sysinfo['SoftwareVersion'] = $versions['name'];
 
                 return $sysinfo;
             }
@@ -405,7 +404,7 @@
                     'FACTORIAL 8x8' => 'FACTORIAL',
                 ];
                 $id = $model_id_map[$model];
-                $this->api_call('/switch/settings', 'PUT', ['modelId' => $id]);
+                $this->api_call('/switch/settings', 'PUT', [ 'modelId' => $id ]);
                 $this->clear_cms($model);
             }
 

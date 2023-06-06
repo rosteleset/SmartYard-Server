@@ -14,7 +14,7 @@ expect "ogin:" {send "$login\r"}
 expect "assword:" {send "$password\r"}
 
 expect "<~>"
-send "echo '$config' > /etc/rsyslogd/rsyslogd.conf && /etc/init.d/S01rsyslogd restart\r"
+send "echo '$config' > /etc/rsyslogd/custom.conf && /etc/init.d/S01rsyslogd restart\r"
 
 expect "<~>"
 send "exit\r"
