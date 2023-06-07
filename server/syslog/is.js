@@ -7,26 +7,27 @@ const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(is);
 
 const gateRabbits = [];
-const lastCallsDone = {};
 
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
     const isMsg = message.split("- -")[1].trim();
 
     // Spam messages filter
-    if (
-        !isMsg ||
-        isMsg.indexOf("STM32.DEBUG") >= 0 ||
-        isMsg.indexOf("Вызов метода") >= 0 ||
-        isMsg.indexOf("Тело запроса") >= 0 ||
-        isMsg.indexOf("libre") >= 0 ||
-        isMsg.indexOf("ddns") >= 0 ||
-        isMsg.indexOf("DDNS") >= 0 ||
-        isMsg.indexOf("Загружена конфигурация") >= 0 ||
-        isMsg.indexOf("Interval") >= 0 ||
-        isMsg.indexOf("[Server]") >= 0 ||
-        isMsg.indexOf("Proguard start") >= 0
-    ) {
+    const substrings = [
+        "STM32.DEBUG",
+        "Вызов метода",
+        "Тело запроса",
+        "libre",
+        "ddns",
+        "DDNS",
+        "Загружена конфигурация",
+        "Interval",
+        "[Server]",
+        "Proguard start",
+        "UART",
+    ];
+
+    if (!isMsg || substrings.some(substring => isMsg.includes(substring))) {
         return;
     }
 
@@ -36,27 +37,28 @@ syslog.on("message", async ({ date, host, message }) => {
     await API.sendLog({ date: now, ip: host, unit: "is", msg: isMsg });
 
     // Motion detection: start
-    if (isMsg.indexOf("EVENT: Detected motion") >= 0) {
+    if (isMsg.includes("EVENT: Detected motion")) {
         await API.motionDetection({ date: now, ip: host, motionActive: true });
         await mdTimer(host, 5000);
     }
 
-    // TODO: Opening door by DTMF or CMS handset
+    // Call to apartment
+    if (isMsg.includes("Calling to")) {
+        const match = isMsg.match(/^Calling to (\d+)(?: house (\d+))? flat/);
+        if (match) {
+            const house = match[2] === undefined ? 0 : match[1]; // house prefix or 0
+            const flat = house > 0 ? match[2] : match[1]; // flat number from first or second position
 
-    // Call in gate mode with prefix: potential white rabbit
-    if (/^Calling to \d+ house \d+ flat/.test(isMsg)) {
-        const house = isMsg.split("to")[1].split("house")[0].trim();
-        const flat = isMsg.split("house")[1].split("flat")[0].trim();
-
-        gateRabbits[host] = {
-            ip: host,
-            prefix: house,
-            apartmentNumber: flat,
-        };
+            gateRabbits[host] = {
+                ip: host,
+                prefix: parseInt(house),
+                apartmentNumber: parseInt(flat),
+            };
+        }
     }
 
     // Incoming DTMF for white rabbit: sending rabbit gate update
-    if (isMsg.indexOf("Open main door by DTMF") >= 0) {
+    if (isMsg.includes("Open main door by DTMF")) {
         if (gateRabbits[host]) {
             const { ip, prefix, apartmentNumber } = gateRabbits[host];
             await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
@@ -70,22 +72,19 @@ syslog.on("message", async ({ date, host, message }) => {
     }
 
     // Opening door by personal code
-    if (isMsg.indexOf("Opening door by code") >= 0) {
+    if (isMsg.includes("Opening door by code")) {
         const code = parseInt(isMsg.split("code")[1].split(",")[0]);
         await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
     }
 
     // Opening door by button pressed
-    if (isMsg.indexOf("Main door button press") >= 0) {
+    if (isMsg.includes("Main door button press")) {
         await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
     }
 
     // All calls are done
-    if (isMsg.indexOf("All calls are done for apartment") >= 0 || isMsg.indexOf("UART_EVENT_BYE") >= 0) {
-        if (!lastCallsDone[host] || now - lastCallsDone[host] > 1) {
-            lastCallsDone[host] = now
-            await API.callFinished({ date: now, ip: host });
-        }
+    if (isMsg.includes("All calls are done")) {
+        await API.callFinished({ date: now, ip: host });
     }
 });
 
