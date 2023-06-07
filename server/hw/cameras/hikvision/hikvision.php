@@ -9,7 +9,7 @@
             public string $user = 'admin';
 
             protected string $def_pass = 'password123';
-            protected string $api_prefix = '';
+            protected string $api_prefix = '/ISAPI';
 
             protected function api_call($resource, $method = 'GET', $params = [], $payload = null) {
                 $req = $this->url . $this->api_prefix . $resource;
@@ -43,28 +43,23 @@
                     return json_decode(json_encode(simplexml_load_string($res)), true);
                 }
 
-                return json_decode($res, true);
+                if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/json') {
+                    return json_decode($res, true);
+                }
+
+                return $res;
             }
 
             public function camshot(): string {
-                $filename = uniqid('hikvision_');
-                $host = parse_url($this->url, PHP_URL_HOST);
-                $snapshotFile = "/tmp/$filename.jpg";
-                $rtspUrl = "rtsp://$this->user:$this->pass@$host:554/Streaming/Channels/101";
-
-                exec("ffmpeg -y -i $rtspUrl -vframes 1 $snapshotFile 2>&1", $output, $returnCode);
-
-                if ($returnCode === 0 && file_exists($snapshotFile)) {
-                    $shot = file_get_contents($snapshotFile);
-                    unlink($snapshotFile);
-                    return $shot;
-                } else {
-                    return '';
-                }
+                return $this->api_call(
+                    '/Streaming/channels/101/picture',
+                    'GET',
+                    [ 'snapShotImageType' => 'JPEG' ]
+                );
             }
 
             public function get_sysinfo(): array {
-                $res = $this->api_call('/ISAPI/System/deviceInfo');
+                $res = $this->api_call('/System/deviceInfo');
 
                 $sysinfo['DeviceID'] = $res['deviceID'];
                 $sysinfo['DeviceModel'] = $res['model'];
