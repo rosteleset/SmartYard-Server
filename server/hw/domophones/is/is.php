@@ -272,6 +272,7 @@
                 int $stun_port = 3478
             ) {
                 $this->api_call('/sip/settings', 'PUT', [
+                    'videoEnable' => true,
                     'remote' => [
                         'username' => $login,
                         'password' => $password,
