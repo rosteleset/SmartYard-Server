@@ -159,7 +159,7 @@
                     $login = base64_decode($authorization[1]);
                     $password = base64_decode($authorization[2]);
 
-                    $auth = $this->login($login, $password, false, "", "Base64");
+                    $auth = $this->login($login, $password, false, $ua, "Base64");
 
                     if ($ua) {
                         $auth["ua"] = $ua;
@@ -172,6 +172,7 @@
                     $auth["updated"] = time();
 
                     if ($auth["result"]) {
+                        $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
                         return $auth;
                     }
                 }
