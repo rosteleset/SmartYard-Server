@@ -66,7 +66,7 @@
                         "persistent" => $rememberMe,
                         "ua" => $ua,
                         "did" => $did,
-                        "did" => $ip,
+                        "ip" => $ip,
                         "started" => time(),
                         "updated" => time(),
                     ]));
