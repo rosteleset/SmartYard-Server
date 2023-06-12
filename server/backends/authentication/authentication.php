@@ -161,6 +161,16 @@
 
                     $auth = $this->login($login, $password, false, "", "Base64");
 
+                    if ($ua) {
+                        $auth["ua"] = $ua;
+                    }
+
+                    if ($ip) {
+                        $auth["ip"] = $ip;
+                    }
+
+                    $auth["updated"] = time();
+
                     if ($auth["result"]) {
                         return $auth;
                     }
