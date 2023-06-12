@@ -32,7 +32,7 @@
              * @return array
              */
 
-            public function login($login, $password, $rememberMe, $ua = "", $did = "") {
+            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "") {
                 $uid = $this->check_auth($login, $password);
                 if ($uid !== false) {
                     $keys = $this->redis->keys("auth_*_" . $uid);
@@ -66,6 +66,7 @@
                         "persistent" => $rememberMe,
                         "ua" => $ua,
                         "did" => $did,
+                        "did" => $ip,
                         "started" => time(),
                         "updated" => time(),
                     ]));
@@ -159,20 +160,11 @@
                     $login = base64_decode($authorization[1]);
                     $password = base64_decode($authorization[2]);
 
-                    $auth = $this->login($login, $password, false, $ua, "Base64");
-
-                    if ($ua) {
-                        $auth["ua"] = $ua;
-                    }
-
-                    if ($ip) {
-                        $auth["ip"] = $ip;
-                    }
+                    $auth = $this->login($login, $password, false, $ua, "Base64", $ip);
 
                     $auth["updated"] = time();
 
                     if ($auth["result"]) {
-                        $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
                         return $auth;
                     }
                 }
