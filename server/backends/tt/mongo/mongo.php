@@ -733,6 +733,7 @@
              */
             public function cron($part)
             {
+                $success = true;
                 if ($part == "5min") {
                     $success = $this->reCreateIndexes();
                 }
