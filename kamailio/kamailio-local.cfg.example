@@ -25,3 +25,7 @@
 ## TLS certs path
 #!substdef "!PRIVATE_KEY_PATH!/etc/letsencrypt/live/domain.example/privkey.pem!g"
 #!substdef "!CERTIFICATE_PATH!/etc/letsencrypt/live/domain.example/fullchain.pem!g"
+
+## API AUTH
+#!define KAMAILIO_API_AUTH_URL "http://localhost/kamailio"
+#!define KAMAILIO_API_AUTH_TOKEN "EXAMPLE_KAMAILIO_API_AUTH_TOKEN"
