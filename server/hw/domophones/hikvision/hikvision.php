@@ -108,7 +108,8 @@
                         ]
                     );
 
-                    foreach ($res['UserInfoSearch']['UserInfo'] as $value) {
+                    $userInfo = $res['UserInfoSearch']['UserInfo'] ?? [];
+                    foreach ($userInfo as $value) {
                         $apartments[] = $value['roomNumber'];
                     }
                 }
@@ -393,7 +394,7 @@
                                 <Audio>
                                     <enabled>true</enabled>
                                     <audioInputChannelID>1</audioInputChannelID>
-                                    <audioCompressionType>G.711ulaw</audioCompressionType>
+                                    <audioCompressionType>G.711alaw</audioCompressionType>
                                 </Audio>
                             </StreamingChannel>'
                 );
@@ -439,7 +440,7 @@
                                 <Audio>
                                     <enabled>true</enabled>
                                     <audioInputChannelID>1</audioInputChannelID>
-                                    <audioCompressionType>G.711ulaw</audioCompressionType>
+                                    <audioCompressionType>G.711alaw</audioCompressionType>
                                 </Audio>
                             </StreamingChannel>'
                 );
@@ -687,8 +688,8 @@
             }
 
             public function prepare() {
-                // TODO: Implement prepare() method.
                 parent::prepare();
+                $this->enable_dhcp();
             }
 
             public function reboot() {
@@ -697,7 +698,6 @@
 
             public function reset() {
                 $this->api_call('System/factoryReset', 'PUT', [ 'mode' => 'basic' ]);
-                $this->enable_dhcp();
             }
 
         }

@@ -1192,7 +1192,7 @@
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_viewers where project_id not in (select project_id from tt_projects)");
 
-                parent::cleanup();
+                return parent::cleanup();
             }
         }
     }

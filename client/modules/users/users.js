@@ -404,7 +404,7 @@
                             uid: user.sessions[i].token,
                             cols: [
                                 {
-                                    data: user.sessions[i].byPersistentToken?i18n("users.sessionPersistent"):i18n("users.sessionOrdinal"),
+                                    data: (user.sessions[i].did == "Base64")?i18n("users.sessionBase64"):(user.sessions[i].byPersistentToken?i18n("users.sessionPersistent"):i18n("users.sessionOrdinal")),
                                     nowrap: true,
                                 },
                                 {

@@ -1,8 +1,8 @@
 {
-    "title": "AKUVOX E12S",
+    "title": "AKUVOX E12",
     "vendor": "AKUVOX",
-    "model": "E12S",
-    "class": "e12s",
+    "model": "E12",
+    "class": "e12",
     "syslog": "akuvox",
     "outputs": 1,
     "camera": "akuvox",

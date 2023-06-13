@@ -379,8 +379,12 @@
             foreach ($config["backends"] as $backend_name => $cfg) {
                 $backend = loadBackend($backend_name);
                 if ($backend) {
-                    if (!$backend->cron($part)) {
-                        echo "$backend_name [$part] fail\n";
+                    try {
+                        if (!$backend->cron($part)) {
+                            echo "$backend_name [$part] fail\n";
+                        }
+                    } catch (\Exception $e) {
+                        echo "$backend_name [$part] exception\n";
                     }
                 }
             }

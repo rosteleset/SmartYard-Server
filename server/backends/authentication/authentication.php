@@ -32,7 +32,7 @@
              * @return array
              */
 
-            public function login($login, $password, $rememberMe, $ua = "", $did = "") {
+            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "") {
                 $uid = $this->check_auth($login, $password);
                 if ($uid !== false) {
                     $keys = $this->redis->keys("auth_*_" . $uid);
@@ -66,6 +66,7 @@
                         "persistent" => $rememberMe,
                         "ua" => $ua,
                         "did" => $did,
+                        "ip" => $ip,
                         "started" => time(),
                         "updated" => time(),
                     ]));
@@ -159,7 +160,9 @@
                     $login = base64_decode($authorization[1]);
                     $password = base64_decode($authorization[2]);
 
-                    $auth = $this->login($login, $password, false, "", "Base64");
+                    $auth = $this->login($login, $password, false, $ua, "Base64", $ip);
+
+                    $auth["updated"] = time();
 
                     if ($auth["result"]) {
                         return $auth;

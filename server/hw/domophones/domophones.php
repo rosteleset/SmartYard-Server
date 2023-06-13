@@ -229,6 +229,7 @@
                 int $stun_port = 3478
             ) {
                 $this->keep_doors_unlocked();
+                $this->configure_syslog($syslog_server, $syslog_port);
                 $this->set_unlock_time(5);
                 $this->set_public_code();
                 $this->set_call_timeout(45);
@@ -239,7 +240,6 @@
                 $this->configure_ntp($ntp_server, $ntp_port, 'GMT+03:00');
                 $this->configure_sip($sip_username, $this->pass, $sip_server, $sip_port, $nat, $stun_server, $stun_port);
                 $this->setDtmf($main_door_dtmf, '2', '3', '1');
-                $this->configure_syslog($syslog_server, $syslog_port);
                 $this->clear_rfid();
                 $this->clear_apartment();
                 $this->set_concierge_number(9999);

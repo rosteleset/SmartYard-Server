@@ -36,6 +36,7 @@
     "sessionType": "Тип сессии",
     "sessionPersistent": "Постоянная",
     "sessionOrdinal": "Обычная",
+    "sessionBase64": "API",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",

@@ -330,7 +330,7 @@
              */
             public function cleanup()
             {
-                $this->dbCleanup();
+                return $this->dbCleanup();
             }
 
             /**
@@ -440,6 +440,8 @@
                         }
                     }
                 }
+
+                return true;
             }
 
             /**
@@ -733,10 +735,11 @@
              */
             public function cron($part)
             {
+                $success = true;
                 if ($part == "5min") {
-                    $this->reCreateIndexes();
+                    $success = $this->reCreateIndexes();
                 }
-                return parent::cron($part);
+                return $success && parent::cron($part);
             }
 
             /**
