@@ -40,6 +40,19 @@ server {
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
         }
 
+        # RBT Kamailio AUT API
+        location /kamailio {
+                rewrite ^.*$ /kamailio.php last;
+        }
+
+        location = /kamailio.php {
+                allow 127.0.0.1;
+                deny all;
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
         location /internal {
                 rewrite ^.*$ /internal.php last;
         }
