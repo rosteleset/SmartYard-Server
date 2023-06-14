@@ -69,8 +69,9 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && $path == 'subscribers') {
         $postdata = json_decode(file_get_contents("php://input"), associative:  true);
 
-        //TODO: verification endpoint and payload
-        $subscriber = $postdata['subscriber'];
+        //TODO: verification endpoint and payload, check domain
+        $from_uri = $postdata['from_uri'];
+        [$subscriber, $sip_domain] = explode('@', substr($from_uri, 4));
 
         if ( strlen((int)$subscriber) !== 10 ) {
             http_response_code(400);
