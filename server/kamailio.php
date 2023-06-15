@@ -18,7 +18,7 @@
         if (isset($_SERVER['Authorization'])) {
             $headers = trim($_SERVER["Authorization"]);
         }
-        else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+        else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
         }
         return $headers;
@@ -30,7 +30,6 @@
     function getBearerToken(): ?string
     {
         $headers = getAuthorizationHeader();
-        // HEADER: Get the access token from the header
         if (!empty($headers)) {
             if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
                 return $matches[1];
