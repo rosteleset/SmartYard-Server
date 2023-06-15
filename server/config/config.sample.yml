@@ -49,8 +49,6 @@ backends:
     backend: internal
   households:
     backend: internal
-  subscribers:
-    backend: internal
   cameras:
     backend: internal
   isdn:

@@ -74,10 +74,6 @@
             "backend": "internal"
         },
 
-        "subscribers": {
-            "backend": "internal"
-        },
-
         "cameras": {
             "backend": "internal"
         },
