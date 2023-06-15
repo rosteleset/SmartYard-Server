@@ -94,8 +94,8 @@
         $token = getBearerToken();
 
         if(!$token || $token !== $kamailio_config['auth_token']){
-            http_response_code(400);
-            echo json_encode(['status' => 'Bad Request', 'message' => 'No token']);
+            http_response_code(498);
+            echo json_encode(['status' => 'Invalid Token', 'message' => 'Invalid token or empty']);
             exit(1);
         }
     }
@@ -123,7 +123,7 @@
             exit(1);
         }
 
-        if ( strlen((int)$subscriber) !== 10 ) {
+        if (strlen((int)$subscriber) !== 10 ) {
             http_response_code(400);
             echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid username']);
             exit(1);
