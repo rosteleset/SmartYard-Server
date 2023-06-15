@@ -146,7 +146,8 @@
                     "ip": "<!-- set your kamailio domain or ip address --!>",
                     "sip_tcp_port": "<!-- set your kamailio tcp port here --!>",
                     "sip_udp_port": "<!-- set your kamailio udp port here --!>",
-                    "sip_tls_port": "<!-- set your kamailio tls port here --!>"
+                    "sip_tls_port": "<!-- set your kamailio tls port here --!>",
+                    "auth_token": "<!-- id use bearer token for auth set token or remove this key --!>"
                 }
             ],
             "stuns": [
