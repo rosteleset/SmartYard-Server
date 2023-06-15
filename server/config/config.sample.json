@@ -143,8 +143,7 @@
                 {
                     "title": "SBC server | Kamailio",
                     "type": "kamailio",
-                    "ip": "<!-- set your kamailio ip address --!>",
-                    "domain": "<!-- set your kamailio domain name --!>",
+                    "ip": "<!-- set your kamailio domain or ip address --!>",
                     "sip_tcp_port": "<!-- set your kamailio tcp port here --!>",
                     "sip_udp_port": "<!-- set your kamailio udp port here --!>",
                     "sip_tls_port": "<!-- set your kamailio tls port here --!>"

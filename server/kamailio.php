@@ -34,6 +34,11 @@
         exit(1);
     }
 
+    if (!$config["api"]["kamailio"]) {
+        echo "no kamailio api defined\n";
+        exit(1);
+    }
+
     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
@@ -70,8 +75,13 @@
         $postdata = json_decode(file_get_contents("php://input"), associative:  true);
 
         //TODO: verification endpoint and payload, check domain
-        $from_uri = $postdata['from_uri'];
-        [$subscriber, $sip_domain] = explode('@', substr($from_uri, 4));
+        [$subscriber, $sip_domain] = explode('@', substr($postdata['from_uri'], 4));
+
+        if ($sip_domain !== $kamailio_config['ip']){
+            http_response_code(400);
+            echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid sip domain']);
+            exit(1);
+        }
 
         if ( strlen((int)$subscriber) !== 10 ) {
             http_response_code(400);
@@ -87,19 +97,17 @@
 
         if ($flat && $flat['sipEnabled']) {
             $sip_passwd = $flat['sipPassword'];
-
             //md5(username:realm:password)
-            $ha1 = md5($subscriber .':'. $kamailio_config['domain'] .':'. $sip_passwd );
-            $str = $subscriber .':'. $kamailio_config['domain'] .':'. $sip_passwd;
+            $ha1 = md5($subscriber .':'. $kamailio_config['ip'] .':'. $sip_passwd );
 
-            echo json_encode( [ 'ha1' => $ha1]);
+            echo json_encode(['ha1' => $ha1]);
+            exit(1);
+        } else {
+            //sip disabled
+            http_response_code(403);
+            echo json_encode(['status' => 'Forbidden', 'message' => 'SIP not enabled']);
             exit(1);
         }
-
-        //sip disabled
-        http_response_code(403);
-        echo json_encode(['status' => 'Forbidden', 'message' => 'SIP not enabled']);
-        exit(1);
     }
 
     //TODO: make response
