@@ -9,6 +9,36 @@
 
     header('Content-Type: application/json');
 
+    /**
+     * Get header Authorization
+     * */
+    function getAuthorizationHeader(): ?string
+    {
+        $headers = null;
+        if (isset($_SERVER['Authorization'])) {
+            $headers = trim($_SERVER["Authorization"]);
+        }
+        else if (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+            $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
+        }
+        return $headers;
+    }
+
+    /**
+     * get access token from header
+     * */
+    function getBearerToken(): ?string
+    {
+        $headers = getAuthorizationHeader();
+        // HEADER: Get the access token from the header
+        if (!empty($headers)) {
+            if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+                return $matches[1];
+            }
+        }
+        return null;
+    }
+
     // Check config
     try {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
@@ -60,6 +90,17 @@
         exit(1);
     }
 
+    // check BEARER TOKEN if enable
+    if (isset($kamailio_config['auth_token'])){
+        $token = getBearerToken();
+
+        if(!$token || $token !== $kamailio_config['auth_token']){
+            http_response_code(400);
+            echo json_encode(['status' => 'Bad Request', 'message' => 'No token']);
+            exit(1);
+        }
+    }
+
     $path = $_SERVER["REQUEST_URI"];
     $server = parse_url($config["api"]["kamailio"]);
 
@@ -99,15 +140,13 @@
             $sip_passwd = $flat['sipPassword'];
             //md5(username:realm:password)
             $ha1 = md5($subscriber .':'. $kamailio_config['ip'] .':'. $sip_passwd );
-
             echo json_encode(['ha1' => $ha1]);
-            exit(1);
         } else {
             //sip disabled
             http_response_code(403);
             echo json_encode(['status' => 'Forbidden', 'message' => 'SIP not enabled']);
-            exit(1);
         }
+        exit(1);
     }
 
     //TODO: make response
