@@ -25,7 +25,7 @@
     }
 
     /**
-     * get access token from header
+     * Get access token from header
      * */
     function getBearerToken(): ?string
     {
@@ -54,16 +54,19 @@
     }
 
     if (!$config) {
+        http_response_code(500);
         echo "config is empty\n";
         exit(1);
     }
 
     if (@!$config["backends"]) {
+        http_response_code(500);
         echo "no backends defined\n";
         exit(1);
     }
 
     if (!$config["api"]["kamailio"]) {
+        http_response_code(500);
         echo "no kamailio api defined\n";
         exit(1);
     }
@@ -77,23 +80,24 @@
     }
 
     // Check Kamailio config
-    $kamailio_config = false;
+    $kamailioConfig = false;
     foreach ($config['backends']['sip']['servers'] as $server){
           if ($server['type'] === 'kamailio') {
-              $kamailio_config = $server;
+              $kamailioConfig = $server;
               break;
           }
     }
-    if (@!$kamailio_config){
+    if (@!$kamailioConfig){
+        http_response_code(500);
         echo "No Kamailio config";
         exit(1);
     }
 
     // check BEARER TOKEN if enable
-    if (isset($kamailio_config['auth_token'])){
+    if (isset($kamailioConfig['auth_token'])){
         $token = getBearerToken();
 
-        if(!$token || $token !== $kamailio_config['auth_token']){
+        if(!$token || $token !== $kamailioConfig['auth_token']){
             http_response_code(498);
             echo json_encode(['status' => 'Invalid Token', 'message' => 'Invalid token or empty']);
             exit(1);
@@ -112,20 +116,20 @@
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && $path == 'subscribers') {
-        $postdata = json_decode(file_get_contents("php://input"), associative:  true);
+        $postData = json_decode(file_get_contents("php://input"), associative:  true);
 
         //TODO: verification endpoint and payload, check domain
-        [$subscriber, $sip_domain] = explode('@', substr($postdata['from_uri'], 4));
+        [$subscriber, $sipDomain] = explode('@', substr($postData['from_uri'], 4));
 
-        if ($sip_domain !== $kamailio_config['ip']){
+        if ($sipDomain !== $kamailioConfig['ip']){
             http_response_code(400);
-            echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid sip domain']);
+            echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid Sip Domain']);
             exit(1);
         }
 
         if (strlen((int)$subscriber) !== 10 ) {
             http_response_code(400);
-            echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid username']);
+            echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid Username']);
             exit(1);
         }
 
@@ -136,14 +140,14 @@
         $flat = $households->getFlat($flat_id);
 
         if ($flat && $flat['sipEnabled']) {
-            $sip_passwd = $flat['sipPassword'];
+            $sipPassword = $flat['sipPassword'];
             //md5(username:realm:password)
-            $ha1 = md5($subscriber .':'. $kamailio_config['ip'] .':'. $sip_passwd );
+            $ha1 = md5($subscriber .':'. $kamailioConfig['ip'] .':'. $sipPassword );
             echo json_encode(['ha1' => $ha1]);
         } else {
             //sip disabled
             http_response_code(403);
-            echo json_encode(['status' => 'Forbidden', 'message' => 'SIP not enabled']);
+            echo json_encode(['status' => 'Forbidden', 'message' => 'SIP Not Enabled']);
         }
         exit(1);
     }
