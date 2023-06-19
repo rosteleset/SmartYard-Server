@@ -477,12 +477,13 @@
             return;
         }
 
-        let rightFields = [ "project", "workflow", "catalog", "parent", "status", "resolution", "assigned", "watchers", "created", "updated", "author", ];
+        let rightFields = [];
 
         let t = [];
         for (let i in issue.fields) {
             if (issue.fields[i].charAt(0) == '*') {
                 t.push(issue.fields[i].substring(1));
+                rightFields.push(issue.fields[i].substring(1));
             } else {
                 t.push(issue.fields[i]);
             }
