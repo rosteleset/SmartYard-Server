@@ -139,9 +139,7 @@
                             return [ $this->myGroups() ];
                         },
                         "myself" => function () {
-                            $users = loadBackend("users");
-
-                            return [ $users->getUser($this->uid) ];
+                            return [ loadBackend("users")->getUser($this->uid) ];
                         }
                     ]);
 
