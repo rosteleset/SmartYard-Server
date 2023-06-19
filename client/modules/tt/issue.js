@@ -489,12 +489,6 @@
         }
         issue.fields = t;
 
-        if (issue.rightFields) {
-            for (let i in issue.rightFields) {
-                rightFields.push(issue.rightFields[i]);
-            }
-        }
-
         let tags = {};
         let project = false;
 
