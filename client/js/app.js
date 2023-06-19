@@ -13,6 +13,7 @@ var available = false;
 var badge = false;
 var currentModule = false;
 var lStoreEngine = false;
+var hasUnsavedChanges = false;
 
 function hashChange() {
     let [ route, params, hash ] = hashParse();
@@ -259,8 +260,6 @@ function login() {
 }
 
 function logout() {
-    window.onbeforeunload = null;
-
     POST("authentication", "logout", false, {
         mode: "all",
     }).always(() => {
@@ -434,7 +433,6 @@ function initAll() {
                             uid: -1,
                         };
                         whoAmI().done(() => {
-                            window.onbeforeunload = () => false;
                             available = a.available;
                             if (config && config.modules) {
                                 for (let i in config.modules) {
@@ -1225,3 +1223,15 @@ $(window).off("resize").on("resize", () => {
         $("#editorContainer").css("height", height + "px");
     }
 });
+
+setInterval(() => {
+    if (hasUnsavedChanges || $("#editorContainer").length) {
+        if (typeof window.onbeforeunload != "function") {
+            window.onbeforeunload = () => false;
+        }
+    } else {
+        if (typeof window.onbeforeunload == "function") {
+            window.onbeforeunload = null;
+        }
+    } 
+}, 1000);
