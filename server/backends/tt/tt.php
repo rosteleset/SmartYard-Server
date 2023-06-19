@@ -151,12 +151,58 @@
                     ]);
 
                     $sandbox->registerLibrary("https", [
+                        "GET" => function ($url) {
+                            return [
+                                json_decode(
+                                    file_get_contents($url, false, stream_context_create([
+                                        'http' => [
+                                            'header'  => [
+                                                'Content-Type: application/json; charset=utf-8',
+                                                'Accept: application/json; charset=utf-8',
+                                            ],
+                                        ],
+                                    ]))
+                                ),
+                            ];
+                        },
                         "POST" => function ($url, $data) {
                             return [
                                 json_decode(
                                     file_get_contents($url, false, stream_context_create([
                                         'http' => [
                                             'method'  => 'POST',
+                                            'header'  => [
+                                                'Content-Type: application/json; charset=utf-8',
+                                                'Accept: application/json; charset=utf-8',
+                                            ],
+                                            'content' => json_encode($data)
+                                        ],
+                                    ]))
+                                ),
+                            ];
+                        },
+                        "PUT" => function ($url, $data) {
+                            return [
+                                json_decode(
+                                    file_get_contents($url, false, stream_context_create([
+                                        'http' => [
+                                            'method'  => 'PUT',
+                                            'header'  => [
+                                                'Content-Type: application/json; charset=utf-8',
+                                                'Accept: application/json; charset=utf-8',
+                                            ],
+                                            'content' => json_encode($data)
+                                        ],
+                                    ]))
+                                ),
+                            ];
+                        },
+                        "DELETE" => function ($url, $data) {
+                            return [
+                                json_decode(
+                                    file_get_contents($url, false, stream_context_create([
+                                        'http' => [
+                                            'method'  => 'DELETE',
                                             'header'  => [
                                                 'Content-Type: application/json; charset=utf-8',
                                                 'Accept: application/json; charset=utf-8',
