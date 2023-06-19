@@ -119,7 +119,7 @@
         $postData = json_decode(file_get_contents("php://input"), associative:  true);
 
         //TODO: verification endpoint and payload, check domain
-        [$subscriber, $sipDomain] = explode('@', substr($postData['from_uri'], 4));
+        [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
 
         if ($sipDomain !== $kamailioConfig['ip']){
             http_response_code(400);
