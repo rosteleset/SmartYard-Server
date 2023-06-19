@@ -3118,12 +3118,15 @@
                                 cols: [
                                     {
                                         data: r.viewers[i].filename,
+                                        nowrap: true,
                                     },
                                     {
                                         data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
+                                        nowrap: true,
                                     },
                                     {
                                         data: r.viewers[i].name,
+                                        nowrap: true,
                                     },
                                 ],
                                 dropDown: {
