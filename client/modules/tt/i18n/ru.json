@@ -200,6 +200,7 @@
     "deleteComment": "Удалить комментарий",
     "projectFilterId": "#",
     "projectFilter": "Фильтр",
+    "filterOwner": "Владелец",
     "filterPersonal": "Доступен",
     "commonFilter": "Общий",
     "addProjectFilter": "Добавить фильтр",

@@ -23,6 +23,7 @@
                         "workflows" => $tt->getWorkflows(),
                         "workflowLibs" => $tt->getWorkflowLibs(),
                         "filters" => $tt->getFilters(),
+                        "filtersExt" => $tt->getFiltersExt(),
                         "statuses" => $tt->getStatuses(),
                         "resolutions" => $tt->getResolutions(),
                         "customFields" => $tt->getCustomFields(),

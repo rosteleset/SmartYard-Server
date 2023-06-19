@@ -1184,11 +1184,11 @@
 
         let f = [];
 
-        for (let i in modules.tt.meta.filters) {
-            if (i.charAt(0) !== "#") {
+        for (let i in modules.tt.meta.filtersExt) {
+            if (i.charAt(0) !== "#" && !modules.tt.meta.filtersExt[i].owner) {
                 f.push({
                     id: i,
-                    text: modules.tt.meta.filters[i]?(trimStr(modules.tt.meta.filters[i]) + " [" + trimStr(i) + "]"):i,
+                    text: modules.tt.meta.filtersExt[i].name?(trimStr(modules.tt.meta.filtersExt[i].name) + " [" + trimStr(i) + "]"):i,
                 });
             }
         }
@@ -1235,6 +1235,7 @@
             GET("accounts", "users").
             done(response => {
                 let project = false;
+                let filters = {};
 
                 for (let i in modules.tt.meta.projects) {
                     if (modules.tt.meta.projects[i].projectId == projectId) {
@@ -1246,6 +1247,12 @@
                 for (let i in response.users) {
                     if (response.users[i].uid) {
                         personals[parseInt(response.users[i].uid)] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
+                    }
+                }
+
+                for (let i in modules.tt.meta.filtersExt) {
+                    if (!modules.tt.meta.filtersExt[i].owner) {
+                        filters[i] = true;
                     }
                 }
 
@@ -1288,38 +1295,40 @@
                         let rows = [];
 
                         for (let i in project.filters) {
-                            rows.push({
-                                uid: project.filters[i].projectFilterId,
-                                cols: [
-                                    {
-                                        data: project.filters[i].projectFilterId,
-                                    },
-                                    {
-                                        data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        data: trimStr(project.filters[i].filter),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        data: project.filters[i].personal?personals[project.filters[i].personal]:i18n("tt.commonFilter"),
-                                        nowrap: true,
-                                    },
-                                ],
-                                dropDown: {
-                                    items: [
+                            if (filters[project.filters[i].filter]) {
+                                rows.push({
+                                    uid: project.filters[i].projectFilterId,
+                                    cols: [
                                         {
-                                            icon: "fas fa-trash-alt",
-                                            title: i18n("tt.deleteFilter"),
-                                            class: "text-danger",
-                                            click: projectFilterId => {
-                                                modules.tt.settings.deleteProjectFilter(projectFilterId, projectId);
-                                            },
+                                            data: project.filters[i].projectFilterId,
+                                        },
+                                        {
+                                            data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter),
+                                            nowrap: true,
+                                        },
+                                        {
+                                            data: trimStr(project.filters[i].filter),
+                                            nowrap: true,
+                                        },
+                                        {
+                                            data: project.filters[i].personal?personals[project.filters[i].personal]:i18n("tt.commonFilter"),
+                                            nowrap: true,
                                         },
                                     ],
-                                },
-                            });
+                                    dropDown: {
+                                        items: [
+                                            {
+                                                icon: "fas fa-trash-alt",
+                                                title: i18n("tt.deleteFilter"),
+                                                class: "text-danger",
+                                                click: projectFilterId => {
+                                                    modules.tt.settings.deleteProjectFilter(projectFilterId, projectId);
+                                                },
+                                            },
+                                        ],
+                                    },
+                                });
+                            }
                         }
 
                         return rows;
@@ -2563,66 +2572,88 @@
     },
 
     renderFilters: function () {
-        loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            cardTable({
-                target: "#mainForm",
-                title: {
-                    button: {
-                        caption: i18n("tt.addFilter"),
-                        click: modules.tt.settings.addFilter,
-                    },
-                    caption: i18n("tt.filters"),
-                    filter: true,
-                },
-                columns: [
-                    {
-                        title: i18n("tt.filterFileName"),
-                    },
-                    {
-                        title: i18n("tt.filterName"),
-                        fullWidth: true,
-                    },
-                ],
-                edit: filter => {
-                    location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
-                },
-                rows: () => {
-                    let rows = [];
+            GET("accounts", "users").
+            done(response => {
+                let users = {};
 
-                    for (let i in modules.tt.meta.filters) {
-                        rows.push({
-                            uid: i,
-                            cols: [
-                                {
-                                    data: trimStr(i),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: trimStr(modules.tt.meta.filters[i]?modules.tt.meta.filters[i]:i),
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+                for (let i in response.users) {
+                    if (response.users[i].uid) {
+                        users[response.users[i].login] = $.trim((response.users[i].realName?response.users[i].realName:response.users[i].login) + " [" + response.users[i].login + "]");
+                    }
+                }
+
+                cardTable({
+                    target: "#mainForm",
+                    title: {
+                        button: {
+                            caption: i18n("tt.addFilter"),
+                            click: modules.tt.settings.addFilter,
+                        },
+                        caption: i18n("tt.filters"),
+                        filter: true,
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.filterFileName"),
+                        },
+                        {
+                            title: i18n("tt.filterOwner"),
+                        },
+                        {
+                            title: i18n("tt.filterName"),
+                            fullWidth: true,
+                        },
+                    ],
+                    edit: filter => {
+                        location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
+                    },
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in modules.tt.meta.filtersExt) {
+                            rows.push({
+                                uid: i,
+                                cols: [
                                     {
-                                        icon: "fas fa-trash-alt",
-                                        title: i18n("tt.deleteFilter"),
-                                        class: "text-danger",
-                                        click: modules.tt.settings.deleteFilter,
+                                        data: trimStr(i),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: trimStr(modules.tt.meta.filtersExt[i].owner?(users[modules.tt.meta.filtersExt[i].owner]?users[modules.tt.meta.filtersExt[i].owner]:modules.tt.meta.filtersExt[i].owner):i18n("tt.commonFilter")),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i),
+                                        nowrap: true,
                                     },
                                 ],
-                            },
-                        });
-                    }
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("tt.deleteFilter"),
+                                            class: "text-danger",
+                                            click: modules.tt.settings.deleteFilter,
+                                        },
+                                    ],
+                                },
+                            });
+                        }
 
-                    return rows;
-                },
-            });
+                        return rows;
+                    },
+                }).show();
+                loadingDone();
+            }).
+            fail(FAIL).
+            fail(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     addCrontab: function () {

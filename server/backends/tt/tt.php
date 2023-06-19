@@ -686,6 +686,35 @@
             }
 
             /**
+             * @return false|array
+             */
+            public function getFiltersExt() {
+                $files = loadBackend("files");
+
+                if (!$files) {
+                    return false;
+                }
+                
+                $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
+
+                $list = [];
+                foreach ($filters as $filter) {
+                    try {
+                        $list[$filter["metadata"]["filter"]] = [
+                            "name" => @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"],
+                            "owner" => @$filter["metadata"]["owner"],
+                        ];
+                    } catch (\Exception $e) {
+                        $list[$filter["metadata"]["filter"]] = [
+                            "name" => $filter["metadata"]["filter"],
+                        ];
+                    }
+                }
+
+                return $list;
+            }
+
+            /**
              * @param $filter
              * @param $owner
              * @return false|string
@@ -937,8 +966,6 @@
 
                 $customFields = $this->getCustomFields();
                 $validFields = [];
-
-//                $users = loadBackend("users");
 
                 $project = false;
                 $projects = $this->getProjects();
@@ -1263,6 +1290,49 @@
                     }, $params);
                 }
                 return $query;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function cron($part)
+            {
+                $success = true;
+
+                $tasks = $this->db->get("select acronym, filter, action, uid, login from tt_crontabs left join tt_projects using (project_id) left join core_users using (uid) where crontab = :crontab and enabled = 1", [
+                    "crontab" => $part,                    
+                ], [
+                    "acronym" => "acronym",
+                    "filter" => "filter",
+                    "action" => "action",
+                    "uid" => "uid",
+                    "login" => "login",
+                ]);
+
+                foreach ($tasks as $task) {
+                    try {
+                        $this->setCreds($task["uid"], $task["login"]);
+                        $filter = @json_decode($this->getFilter($task["filter"]), true);
+                        if ($filter) {
+                            $skip = 0;
+                            do {
+                                $issues = $this->getIssues($task["acronym"], @$filter["filter"], @$filter["fields"], [ "created" => 1 ], $skip, 5, []);
+                                $skip += 5;
+                                for ($i = 0; $i < count($issues["issues"]); $i++) {
+                                    $issue = $this->getIssue($issues["issues"][$i]["issueId"]);
+
+                                    if ($issue) {
+                                        $this->loadWorkflow($issue["workflow"])->action($issue, $task["action"], $issue);
+                                    }
+                                }
+                            } while (count($issues["issues"]));
+                        }
+                    } catch (\Exception $e) {
+                        $success = false;
+                    }
+                }
+
+                return $success && parent::cron($part);
             }
         }
     }
