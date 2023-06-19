@@ -20,12 +20,12 @@
 
             public function getGroups($uid = false) {
                 if ($uid === false) {
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login 'adminLogin' from core_groups left join core_users on core_groups.admin = core_users.uid order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login as \"adminLogin\" from core_groups left join core_users on core_groups.admin = core_users.uid order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login 'adminLogin' from core_groups left join core_users on core_groups.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login as \"adminLogin\" from core_groups left join core_users on core_groups.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 return $groups;
@@ -44,7 +44,7 @@
                     return false;
                 }
 
-                $groups = $this->db->query("select gid, name, acronym, admin, login 'adminLogin' from core_groups left join core_users on core_groups.admin = core_users.uid where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
+                $groups = $this->db->query("select gid, name, acronym, admin, login as \"adminLogin\" from core_groups left join core_users on core_groups.admin = core_users.uid where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 if (count($groups)) {
                     return $groups[0];
