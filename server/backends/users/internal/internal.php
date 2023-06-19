@@ -20,7 +20,7 @@
 
             public function getUsers() {
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, last_login from core_users order by uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, last_login, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid order by uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -34,6 +34,8 @@
                             "enabled" => $user["enabled"],
                             "lastLogin" => $user["last_login"],
                             "lastAction" => $this->redis->get("last_" . md5($user["login"])),
+                            "primaryGroup" => $user["primary_group"],
+                            "primaryGroupAcronym" => $user["primary_group_acronym"],
                         ];
                     }
 
@@ -89,7 +91,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route from core_users where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                     if (count($user)) {
                         $_user = [
@@ -102,6 +104,8 @@
                             "notification" => $user[0]["notification"],
                             "enabled" => $user[0]["enabled"],
                             "defaultRoute" => $user[0]["default_route"],
+                            "primaryGroup" => $user[0]["primary_group"],
+                            "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
                         ];
 
                         $groups = loadBackend("groups");
@@ -239,7 +243,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false) {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1) {
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -249,7 +253,7 @@
                 }
                 
                 try {
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group where uid = $uid");
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
@@ -279,6 +283,7 @@
                         ":notification" => trim($notification),
                         ":enabled" => $enabled?"1":"0",
                         ":default_route" => trim($defaultRoute),
+                        ":primary_group" => (int)$primaryGroup,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

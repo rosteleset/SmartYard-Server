@@ -94,11 +94,12 @@
              * @param boolean $enabled
              * @param string $defaultRoute
              * @param mixed $persistentToken
+             * @param integer $primaryGroup
              *
              * @return boolean
              */
 
-            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false);
+            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1);
 
             /**
              * @param string $login

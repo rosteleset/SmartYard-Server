@@ -15,7 +15,7 @@
             modules.users.meta = users.users;
         }).
         always(() => {
-            if (typeof callback == "function") callback();
+            if (typeof callback == "function") callback(modules.users.meta);
         });
     },
 
@@ -140,192 +140,229 @@
     },
 
     modifyUser: function (uid) {
+
+        function realModifyUser(uid, groups) {
+            GET("accounts", "user", uid, true).done(response => {
+                let gs = [];
+
+                gs.push({
+                    value: -1,
+                    text: "-",
+                });
+
+                for (let i in groups) {
+                    gs.push({
+                        value: groups[i].gid,
+                        text: $.trim(groups[i].name + " [" + groups[i].acronym + "]"),
+                    });
+                }
+
+                console.log(gs);
+
+                cardForm({
+                    title: i18n("users.edit"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    size: "lg",
+                    delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString())?i18n("users.delete"):false,
+                    fields: [
+                        {
+                            id: "uid",
+                            type: "text",
+                            readonly: true,
+                            value: response.user.uid.toString(),
+                            title: i18n("users.uid"),
+                        },
+                        {
+                            id: "login",
+                            type: "text",
+                            readonly: true,
+                            value: response.user.login,
+                            title: i18n("users.login"),
+                        },
+                        {
+                            id: "realName",
+                            type: "text",
+                            readonly: false,
+                            value: response.user.realName,
+                            title: i18n("users.realName"),
+                            placeholder: i18n("users.realName"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "eMail",
+                            type: "email",
+                            readonly: false,
+                            value: response.user.eMail,
+                            title: i18n("eMail"),
+                            placeholder: i18n("eMail"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "primaryGroup",
+                            type: "select2",
+                            value: response.user.primaryGroup,
+                            options: gs,
+                            title: i18n("users.primaryGroup"),
+                        },
+                        {
+                            id: "phone",
+                            type: "tel",
+                            readonly: false,
+                            value: response.user.phone,
+                            title: i18n("phone"),
+                            placeholder: i18n("phone"),
+                        },
+                        {
+                            id: "tg",
+                            type: "number",
+                            readonly: false,
+                            value: response.user.tg,
+                            title: i18n("users.tg"),
+                            placeholder: i18n("users.tg"),
+                        },
+                        {
+                            id: "notification",
+                            type: "select",
+                            readonly: false,
+                            value: response.user.notification,
+                            title: i18n("users.notification"),
+                            placeholder: i18n("users.notification"),
+                            options: [
+                                {
+                                    value: "none",
+                                    text: i18n("users.notificationNone"),
+                                },
+                                {
+                                    value: "tgEmail",
+                                    text: i18n("users.notificationTgEmail"),
+                                },
+                                {
+                                    value: "emailTg",
+                                    text: i18n("users.notificationEmailTg"),
+                                },
+                                {
+                                    value: "tg",
+                                    text: i18n("users.notificationTg"),
+                                },
+                                {
+                                    value: "email",
+                                    text: i18n("users.notificationEmail"),
+                                },
+                            ],
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "password",
+                            type: "password",
+                            title: i18n("password"),
+                            placeholder: i18n("password"),
+                            readonly: uid.toString() === "0",
+                            hidden: uid.toString() === "0",
+                            validate: (v, prefix) => {
+                                return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
+                            }
+                        },
+                        {
+                            id: "confirm",
+                            type: "password",
+                            title: i18n("confirm"),
+                            placeholder: i18n("confirm"),
+                            readonly: uid.toString() === "0",
+                            hidden: uid.toString() === "0",
+                            validate: (v, prefix) => {
+                                return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
+                            }
+                        },
+                        {
+                            id: "defaultRoute",
+                            type: "text",
+                            readonly: false,
+                            value: response.user.defaultRoute,
+                            title: i18n("users.defaultRoute"),
+                            placeholder: "#route",
+                            button: {
+                                class: "fas fa-bookmark",
+                                click: prefix => {
+                                    $(`#${prefix}defaultRoute`).val("#" + location.href.split("#")[1]);
+                                },
+                            },
+                            validate: (v) => {
+                                return $.trim(v) === "" || $.trim(v)[0] === "#";
+                            }
+                        },
+                        {
+                            id: "persistentToken",
+                            type: "text",
+                            readonly: false,
+                            value: parseInt(uid)?response.user.persistentToken:'',
+                            title: i18n("users.persistentToken"),
+                            placeholder: i18n("users.persistentToken"),
+                            hidden: !parseInt(uid),
+                            button: {
+                                class: "fas fa-magic",
+                                click: prefix => {
+                                    $(`#${prefix}persistentToken`).val(md5(Math.random() + (new Date())));
+                                },
+                            },
+                            validate: (v) => {
+                                return $.trim(v) === "" || $.trim(v).length === 32;
+                            }
+                        },
+                        {
+                            id: "disabled",
+                            type: "select",
+                            value: response.user.enabled?"no":"yes",
+                            title: i18n("users.disabled"),
+                            readonly: uid.toString() === myself.uid.toString(),
+                            hidden: uid.toString() === myself.uid.toString(),
+                            options: [
+                                {
+                                    value: "yes",
+                                    text: i18n("yes"),
+                                },
+                                {
+                                    value: "no",
+                                    text: i18n("no"),
+                                },
+                            ]
+                        },
+                    ],
+                    callback: function (result) {
+                        if (result.delete === "yes") {
+                            modules.users.deleteUser(result.uid);
+                        } else {
+                            result.enabled = result.disabled === "no";
+                            modules.users.doModifyUser(result);
+                        }
+                    },
+                }).show();
+            }).
+            fail(FAIL).
+            always(loadingDone);
+        }
+
         if (!myself.uid) {
             myself.uid = 0;
         }
+
         loadingStart();
-        GET("accounts", "user", uid, true).done(response => {
-            cardForm({
-                title: i18n("users.edit"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                size: "lg",
-                delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString())?i18n("users.delete"):false,
-                fields: [
-                    {
-                        id: "uid",
-                        type: "text",
-                        readonly: true,
-                        value: response.user.uid.toString(),
-                        title: i18n("users.uid"),
-                    },
-                    {
-                        id: "login",
-                        type: "text",
-                        readonly: true,
-                        value: response.user.login,
-                        title: i18n("users.login"),
-                    },
-                    {
-                        id: "realName",
-                        type: "text",
-                        readonly: false,
-                        value: response.user.realName,
-                        title: i18n("users.realName"),
-                        placeholder: i18n("users.realName"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                    {
-                        id: "eMail",
-                        type: "email",
-                        readonly: false,
-                        value: response.user.eMail,
-                        title: i18n("eMail"),
-                        placeholder: i18n("eMail"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                    {
-                        id: "phone",
-                        type: "tel",
-                        readonly: false,
-                        value: response.user.phone,
-                        title: i18n("phone"),
-                        placeholder: i18n("phone"),
-                    },
-                    {
-                        id: "tg",
-                        type: "number",
-                        readonly: false,
-                        value: response.user.tg,
-                        title: i18n("users.tg"),
-                        placeholder: i18n("users.tg"),
-                    },
-                    {
-                        id: "notification",
-                        type: "select",
-                        readonly: false,
-                        value: response.user.notification,
-                        title: i18n("users.notification"),
-                        placeholder: i18n("users.notification"),
-                        options: [
-                            {
-                                value: "none",
-                                text: i18n("users.notificationNone"),
-                            },
-                            {
-                                value: "tgEmail",
-                                text: i18n("users.notificationTgEmail"),
-                            },
-                            {
-                                value: "emailTg",
-                                text: i18n("users.notificationEmailTg"),
-                            },
-                            {
-                                value: "tg",
-                                text: i18n("users.notificationTg"),
-                            },
-                            {
-                                value: "email",
-                                text: i18n("users.notificationEmail"),
-                            },
-                        ],
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                    {
-                        id: "password",
-                        type: "password",
-                        title: i18n("password"),
-                        placeholder: i18n("password"),
-                        readonly: uid.toString() === "0",
-                        hidden: uid.toString() === "0",
-                        validate: (v, prefix) => {
-                            return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
-                        }
-                    },
-                    {
-                        id: "confirm",
-                        type: "password",
-                        title: i18n("confirm"),
-                        placeholder: i18n("confirm"),
-                        readonly: uid.toString() === "0",
-                        hidden: uid.toString() === "0",
-                        validate: (v, prefix) => {
-                            return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
-                        }
-                    },
-                    {
-                        id: "defaultRoute",
-                        type: "text",
-                        readonly: false,
-                        value: response.user.defaultRoute,
-                        title: i18n("users.defaultRoute"),
-                        placeholder: "#route",
-                        button: {
-                            class: "fas fa-bookmark",
-                            click: prefix => {
-                                $(`#${prefix}defaultRoute`).val("#" + location.href.split("#")[1]);
-                            },
-                        },
-                        validate: (v) => {
-                            return $.trim(v) === "" || $.trim(v)[0] === "#";
-                        }
-                    },
-                    {
-                        id: "persistentToken",
-                        type: "text",
-                        readonly: false,
-                        value: parseInt(uid)?response.user.persistentToken:'',
-                        title: i18n("users.persistentToken"),
-                        placeholder: i18n("users.persistentToken"),
-                        hidden: !parseInt(uid),
-                        button: {
-                            class: "fas fa-magic",
-                            click: prefix => {
-                                $(`#${prefix}persistentToken`).val(md5(Math.random() + (new Date())));
-                            },
-                        },
-                        validate: (v) => {
-                            return $.trim(v) === "" || $.trim(v).length === 32;
-                        }
-                    },
-                    {
-                        id: "disabled",
-                        type: "select",
-                        value: response.user.enabled?"no":"yes",
-                        title: i18n("users.disabled"),
-                        readonly: uid.toString() === myself.uid.toString(),
-                        hidden: uid.toString() === myself.uid.toString(),
-                        options: [
-                            {
-                                value: "yes",
-                                text: i18n("yes"),
-                            },
-                            {
-                                value: "no",
-                                text: i18n("no"),
-                            },
-                        ]
-                    },
-                ],
-                callback: function (result) {
-                    if (result.delete === "yes") {
-                        modules.users.deleteUser(result.uid);
-                    } else {
-                        result.enabled = result.disabled === "no";
-                        modules.users.doModifyUser(result);
-                    }
-                },
-            }).show();
-        }).
-        fail(FAIL).
-        always(loadingDone);
+        if (modules.groups) {
+            modules.groups.loadGroups(response => {
+                realModifyUser(uid, response.groups);
+            }).
+            fail(FAIL).
+            fail(loadingDone);
+        } else {
+            realModifyUser(uid, []);
+        }
     },
 
     deleteUser: function (uid) {

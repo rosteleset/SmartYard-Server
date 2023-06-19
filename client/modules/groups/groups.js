@@ -40,11 +40,12 @@
         always(modules.groups.render);
     },
 
-    doModifyGroup: function (gid, acronym, name) {
+    doModifyGroup: function (gid, acronym, name, admin) {
         loadingStart();
         PUT("accounts", "group", gid, {
             acronym: acronym,
             name: name,
+            admin: admin,
         }).
         fail(FAIL).
         done(() => {
@@ -101,54 +102,81 @@
 
     modifyGroup: function (gid) {
         loadingStart();
-        GET("accounts", "group", gid, true).done(response => {
-            cardForm({
-                title: i18n("groups.edit"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                fields: [
-                    {
-                        id: "gid",
-                        type: "text",
-                        readonly: true,
-                        value: response.group.gid.toString(),
-                        title: i18n("groups.gid"),
-                    },
-                    {
-                        id: "acronym",
-                        type: "text",
-                        value: response.group.acronym,
-                        placeholder: i18n("groups.acronym"),
-                        title: i18n("groups.acronym"),
-                        readonly: true,
-                        validate: (v) => {
-                            return $.trim(v) !== "";
+        modules.users.loadUsers(users => {
+            let us = [];
+
+            us.push({
+                value: -1,
+                text: "-",
+            })
+
+            for (let i in users) {
+                if (users[i].uid) {
+                    us.push({
+                        value: users[i].uid,
+                        text: (users[i].realName?users[i].realName:users[i].login) + ' [' + users[i].login + ']',
+                    });
+                }
+            }
+
+            GET("accounts", "group", gid, true).done(response => {
+                cardForm({
+                    title: i18n("groups.edit"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    fields: [
+                        {
+                            id: "gid",
+                            type: "text",
+                            readonly: true,
+                            value: response.group.gid.toString(),
+                            title: i18n("groups.gid"),
+                        },
+                        {
+                            id: "acronym",
+                            type: "text",
+                            value: response.group.acronym,
+                            placeholder: i18n("groups.acronym"),
+                            title: i18n("groups.acronym"),
+                            readonly: true,
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "name",
+                            type: "text",
+                            value: response.group.name,
+                            title: i18n("groups.name"),
+                            placeholder: i18n("groups.name"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            }
+                        },
+                        {
+                            id: "admin",
+                            type: "select2",
+                            value: response.group.admin,
+                            title: i18n("groups.admin"),
+                            options: us,
+                        },
+                    ],
+                    delete: i18n("groups.delete"),
+                    callback: function (result) {
+                        if (result.delete === "yes") {
+                            modules.groups.deleteGroup(result.gid);
+                        } else {
+                            modules.groups.doModifyGroup(result.gid, result.acronym, result.name, result.admin);
                         }
                     },
-                    {
-                        id: "name",
-                        type: "text",
-                        value: response.group.name,
-                        title: i18n("groups.name"),
-                        placeholder: i18n("groups.name"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        }
-                    },
-                ],
-                delete: i18n("groups.delete"),
-                callback: function (result) {
-                    if (result.delete === "yes") {
-                        modules.groups.deleteGroup(result.gid);
-                    } else {
-                        modules.groups.doModifyGroup(result.gid, result.acronym, result.name);
-                    }
-                },
-            }).show();
+                }).show();
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     deleteGroup: function (gid) {

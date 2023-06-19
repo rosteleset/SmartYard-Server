@@ -137,6 +137,11 @@
                         },
                         "myGroups" => function () {
                             return [ $this->myGroups() ];
+                        },
+                        "myself" => function () {
+                            $users = loadBackend("users");
+
+                            return [ $users->getUser($this->uid) ];
                         }
                     ]);
 

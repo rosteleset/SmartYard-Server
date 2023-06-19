@@ -20,12 +20,12 @@
 
             public function getGroups($uid = false) {
                 if ($uid === false) {
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users from core_groups order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login 'adminLogin' from core_groups left join core_users on core_groups.admin = core_users.uid order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users from core_groups where gid in (select gid from core_users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login 'adminLogin' from core_groups left join core_users on core_groups.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 return $groups;
@@ -44,7 +44,7 @@
                     return false;
                 }
 
-                $groups = $this->db->query("select gid, name, acronym from core_groups where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
+                $groups = $this->db->query("select gid, name, acronym, admin, login 'adminLogin' from core_groups left join core_users on core_groups.admin = core_users.uid where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 if (count($groups)) {
                     return $groups[0];
@@ -57,20 +57,22 @@
              * @param integer $gid gid
              * @param string $acronym
              * @param string $name group name
+             * @param integer $admin uid
              *
              * @return boolean
              */
 
-            public function modifyGroup($gid, $acronym, $name) {
+            public function modifyGroup($gid, $acronym, $name, $admin) {
                 if (!checkInt($gid)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update core_groups set acronym = :acronym, name = :name where gid = $gid");
+                    $sth = $this->db->prepare("update core_groups set acronym = :acronym, name = :name, admin = :admin where gid = $gid");
                     return $sth->execute([
                         ":acronym" => trim($acronym),
                         ":name" => trim($name),
+                        ":admin" => (int)$admin,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
