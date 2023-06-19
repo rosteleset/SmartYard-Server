@@ -157,8 +157,6 @@
                     });
                 }
 
-                console.log(gs);
-
                 cardForm({
                     title: i18n("users.edit"),
                     footer: true,
