@@ -33,14 +33,6 @@
              */
 
             public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "") {
-                error_log(print_r([
-                    $login,
-                    $password,
-                    $rememberMe,
-                    $ua,
-                    $did, 
-                    $ip,
-                ], true));
                 $uid = $this->check_auth($login, $password);
                 if ($uid !== false) {
                     $keys = $this->redis->keys("auth_*_" . $uid);
