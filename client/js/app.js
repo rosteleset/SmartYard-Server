@@ -107,7 +107,7 @@ function page404() {
     $("#page404").html(`
         <section class="content">
             <div class="error-page">
-                <h2 class="headline text-danger"> 404</h2>
+                <img src="img/404.png" style="border: none; width: 300px; height: 300px" />
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger"></i>${i18n("errors.404caption")}</h3>
                     <p>${i18n("errors.404message")}</p>
