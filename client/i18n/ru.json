@@ -62,6 +62,7 @@
         "serverUnavailable": "Сервер недоступен",
         "cantStoreCookie": "Невозможно сохранить cookie",
         "noCredentials": "Нет учетных данных",
+        "accessDenied": "В доступе отказано",
         "tokenNotFound": "Cрок действия токена истек",
         "noToken": "Token не указан",
         "userNotFound": "Пользователь не найден",
