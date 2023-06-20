@@ -207,6 +207,7 @@
                     topApply: true,
                     target: "#altForm",
                     singleColumn: true,
+                    noHover: true,
                     fields: [
                         {
                             id: "users",
