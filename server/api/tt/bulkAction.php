@@ -18,12 +18,9 @@
                 $tt = loadBackend("tt");
 
                 if ($tt) {
-                    error_log(print_r($params["query"], true));
                     $issues = $tt->getIssues($params["project"], $params["query"], [ "issueId", "workflow", "status" ]);
 
                     $success = true;
-
-                    error_log(print_r($issues, true));
 
                     if ($issues && count($issues)) {
                         foreach ($issues["issues"] as $issue) {
