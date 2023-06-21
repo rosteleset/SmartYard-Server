@@ -954,7 +954,7 @@
         });
 
         $(".ttFilterCustom").off("click").on("click", () => {
-            location.href = '?#tt&filter=empty&customSearch=yes&_refresh=' + Math.random();
+            location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
         });
 
         $("#ttSearchButton").off("click").on("click", () => {
@@ -1055,7 +1055,7 @@
         let skip = parseInt(params.skip?params.skip:0);
         let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
 
-        let _refresh = Math.random();
+        let _ = Math.random();
 
         QUERY("tt", "issues", {
             "project": current_project,
@@ -1184,7 +1184,7 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
-                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_refresh=' + Math.random();                        
+                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();                        
                         }).
                         fail(FAIL).
                         fail(loadingDone);
@@ -1200,7 +1200,7 @@
             }
 
             $(".customFilterEdit").off("click").on("click", function () {
-                location.href = '?#tt&filter=' + $(this).attr("data-filter") + '&customSearch=yes&_refresh=' + Math.random();
+                location.href = '?#tt&filter=' + $(this).attr("data-filter") + '&customSearch=yes&_=' + Math.random();
             });
 
             $(".customFilterDelete").off("click").on("click", function () {
@@ -1211,7 +1211,7 @@
                     done(() => {
                         message(i18n("tt.filterWasDeleted"));
                         lStore("_tt_issue_filter_" + current_project, null);
-                        location.href = '?#tt&_refresh=' + Math.random();
+                        location.href = '?#tt&_=' + Math.random();
                     }).
                     fail(FAIL).
                     fail(loadingDone);
@@ -1269,8 +1269,8 @@
             lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
             lStore("_tt_issue_filter_" + lStore("_project"), null);
             lStore("_project", null);
-            if (params["_refresh"] != _refresh) {
-                window.location.href = `?#tt&_refresh=${_refresh}`;
+            if (params["_"] != _) {
+                window.location.href = `?#tt&_=${_}`;
             }
         });
     },

@@ -311,7 +311,7 @@
                         fields: fields,
                         callback: modules.tt.issue.doCreateIssue,
                         cancel: () => {
-                            location.href = "?#tt&_refresh=" + Math.random();
+                            location.href = "?#tt&_=" + Math.random();
                         },
                     });
     
@@ -319,7 +319,7 @@
                 }).
                 fail(FAIL).
                 fail(() => {
-                    location.href = "?#tt&_refresh=" + Math.random();
+                    location.href = "?#tt&_=" + Math.random();
                 });
             }
     
@@ -1134,7 +1134,7 @@
                 DELETE("tt", "issue", issue.issue.issueId).
                 fail(FAIL).
                 done(() => {
-                    window.location.href = "?#tt&_refresh=" + Math.random();
+                    window.location.href = "?#tt&_=" + Math.random();
                 }).
                 fail(loadingDone);
             });
