@@ -624,9 +624,7 @@
                     if (col_name && logins) {
                         let bulk = {
                             project: modules.cs.currentSheet.sheet.project,
-                            query: {
-                                "status": "opened",
-                            },
+                            query: { },
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
                             set: {
                                 "_cf_installers": logins,
@@ -660,9 +658,7 @@
                     if (col_name) {
                         let bulk = {
                             project: modules.cs.currentSheet.sheet.project,
-                            query: {
-                                "status": "opened",
-                            },
+                            query: { },
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
                             set: {
                                 "_cf_installers": [],
