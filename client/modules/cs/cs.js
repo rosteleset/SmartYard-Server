@@ -626,13 +626,12 @@
                             project: modules.cs.currentSheet.sheet.project,
                             query: { },
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
-                            set: {
-                                "_cf_installers": logins,
-                            }
+                            set: { }
                         };
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
+                        bulk.set[modules.cs.currentSheet.sheet.fields.assigned] = logins;
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
@@ -660,13 +659,12 @@
                             project: modules.cs.currentSheet.sheet.project,
                             query: { },
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
-                            set: {
-                                "_cf_installers": [],
-                            }
+                            set: { },
                         };
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
+                        bulk.set[modules.cs.currentSheet.sheet.fields.assigned] = [];
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
