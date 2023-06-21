@@ -5,7 +5,6 @@
     "emptyClass": "bg-lightgray",
     "blockedClass": "bg-primary",
     "reservedClass": "bg-purple",
-    "issueCoordinatedClass": "font-weight-bold",
     "issueAssignedClass": "bg-success",
     "issueDoneClass": "text-decoration-line-through",
     "loginClass": "font-weight-normal",
