@@ -2457,6 +2457,9 @@
                         title: i18n("tt.customFieldType"),
                     },
                     {
+                        title: i18n("tt.customFieldEditor"),
+                    },
+                    {
                         title: i18n("tt.customFieldDisplay"),
                         fullWidth: true,
                     },
@@ -2480,6 +2483,10 @@
                                 },
                                 {
                                     data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type.charAt(0).toUpperCase() + modules.tt.meta.customFields[i].type.slice(1)),
+                                    nowrap: true,
+                                },
+                                {
+                                    data: i18n("tt.customFieldEditor" + modules.tt.meta.customFields[i].editor.charAt(0).toUpperCase() + modules.tt.meta.customFields[i].editor.slice(1)),
                                     nowrap: true,
                                 },
                                 {
