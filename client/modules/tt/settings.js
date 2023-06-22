@@ -2470,35 +2470,39 @@
 
                     for (let i = 0; i < modules.tt.meta.customFields.length; i++) {
                         let editor = '';
-                        switch (modules.tt.meta.customFields[i].editor) {
-                            case "text":
-                                editor = i18n("tt.customFieldEditorString");
+
+                        if (modules.tt.meta.customFields[i].type == "text") {
+                            switch (modules.tt.meta.customFields[i].editor) {
+                                case "text":
+                                    editor = i18n("tt.customFieldEditorString");
+                                    break;
+                                case "number":
+                                    editor = i18n("tt.customFieldEditorNumber");
+                                    break;
+                                case "area":
+                                    editor = i18n("tt.customFieldEditorText");
+                                    break;
+                                case "email":
+                                    editor = i18n("tt.customFieldEditorEmail");
+                                    break;
+                                case "tel":
+                                    editor = i18n("tt.customFieldEditorTel");
+                                    break;
+                                case "date":
+                                    editor = i18n("tt.customFieldEditorDate");
+                                    break;
+                                case "time":
+                                    editor = i18n("tt.customFieldEditorTime");
+                                    break;
+                                case "datetime-local":
+                                    editor = i18n("tt.customFieldEditorDateTime");
+                                    break;
+                                case "yesno":
+                                    editor = i18n("tt.customFieldEditorYesNo");
                                 break;
-                            case "number":
-                                editor = i18n("tt.customFieldEditorNumber");
-                                break;
-                            case "area":
-                                editor = i18n("tt.customFieldEditorText");
-                                break;
-                            case "email":
-                                editor = i18n("tt.customFieldEditorEmail");
-                                break;
-                            case "tel":
-                                editor = i18n("tt.customFieldEditorTel");
-                                break;
-                            case "date":
-                                editor = i18n("tt.customFieldEditorDate");
-                                break;
-                            case "time":
-                                editor = i18n("tt.customFieldEditorTime");
-                                break;
-                            case "datetime-local":
-                                editor = i18n("tt.customFieldEditorDateTime");
-                                break;
-                            case "yesno":
-                                editor = i18n("tt.customFieldEditorYesNo");
-                            break;
+                            }
                         }
+
                         rows.push({
                             uid: modules.tt.meta.customFields[i].customFieldId,
                             cols: [
