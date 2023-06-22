@@ -261,5 +261,16 @@
 
                 return $this->db->insert("insert into core_users_groups (uid, gid) values ($uid, $gid)");
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function cron($part) {
+                if ($part == "5min") {
+                    $this->cleanup();
+                }
+
+                return true;
+            }
         }
     }
