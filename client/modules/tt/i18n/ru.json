@@ -61,7 +61,6 @@
     "customFieldWorkflow": "Авто",
     "customFieldDisplay": "Отображение (для людей)",
     "customFieldDescription": "Описание",
-    "customFieldTypeString": "Строка",
     "customFieldTypeText": "Текст",
     "customFieldTypeSelect": "Выбор",
     "customFieldTypeUsers": "Пользователи и группы",
