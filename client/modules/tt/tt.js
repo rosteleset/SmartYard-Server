@@ -1192,7 +1192,7 @@
                         "workflow"
                     ]
                 };
-                editor.setValue(JSON.stringify(template, null, 4));
+                editor.setValue(JSON.stringify(template, null, "\t"));
                 $("#filterRun").off("click").on("click", () => {
                     let f = false;
                     try {
