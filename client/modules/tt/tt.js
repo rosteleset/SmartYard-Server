@@ -1170,6 +1170,30 @@
                 editor.session.setMode("ace/mode/json");
                 editor.clearSelection();
                 editor.setFontSize(14);
+                editor.setValue(`
+                    {
+                        "name": "My",
+                        "filter": {
+                            "$or": [
+                                {
+                                    "assigned": {
+                                        "$elemMatch": {
+                                            "$in": "%%my"
+                                        }
+                                    }
+                                },
+                                {
+                                    "author": "%%me"
+                                }
+                            ]
+                        },
+                        "fields": [
+                            "subject",
+                            "status",
+                            "workflow"
+                        ]
+                    }
+                `);
                 $("#filterRun").off("click").on("click", () => {
                     let f = false;
                     try {
