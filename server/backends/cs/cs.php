@@ -98,6 +98,7 @@
                     "type" => "csheet",
                     "sheet" => $sheet,
                     "date" => $date,
+                    "by" => $this->login,
                 ]);
 
                 if ($mqtt) {
