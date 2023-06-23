@@ -46,6 +46,8 @@ server {
         ssl_certificate /etc/ssl/cert.pem;
         ssl_certificate_key /etc/ssl/key.pem;
 
+        client_max_body_size 100M;
+
         location / {
                 root /opt/rbt/client;
                 try_files $uri $uri/ =404;
