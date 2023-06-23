@@ -1170,30 +1170,29 @@
                 editor.session.setMode("ace/mode/json");
                 editor.clearSelection();
                 editor.setFontSize(14);
-                editor.setValue(`
-                    {
-                        "name": "My",
-                        "filter": {
-                            "$or": [
-                                {
-                                    "assigned": {
-                                        "$elemMatch": {
-                                            "$in": "%%my"
-                                        }
+                let template = {
+                    "name": "My",
+                    "filter": {
+                        "$or": [
+                            {
+                                "assigned": {
+                                    "$elemMatch": {
+                                        "$in": "%%my"
                                     }
-                                },
-                                {
-                                    "author": "%%me"
                                 }
-                            ]
-                        },
-                        "fields": [
-                            "subject",
-                            "status",
-                            "workflow"
+                            },
+                            {
+                                "author": "%%me"
+                            }
                         ]
-                    }
-                `);
+                    },
+                    "fields": [
+                        "subject",
+                        "status",
+                        "workflow"
+                    ]
+                };
+                editor.setValue(JSON.stringify(template, null, 4));
                 $("#filterRun").off("click").on("click", () => {
                     let f = false;
                     try {
