@@ -847,7 +847,7 @@
         }
 
         if (val === false) {
-            val = '';
+            val = "";
         }
 
         return val;
