@@ -831,11 +831,11 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]] ? response.journal[i].old[k[j]] : false);
+                                h += modules.tt.issueField2Html(issue.issue, k[j], (response.journal[i].old[k[j]] != null) ? response.journal[i].old[k[j]] : false);
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]] ? response.journal[i].new[k[j]] : false);
+                                h += modules.tt.issueField2Html(issue.issue, k[j], (response.journal[i].new[k[j]] != null) ? response.journal[i].new[k[j]] : false);
                                 h += "</td>";
                                 h += "</tr>";
                             }
