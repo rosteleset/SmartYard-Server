@@ -783,7 +783,6 @@
 
                         switch (cf.editor) {
                             case "yesno":
-                                console.log(val);
                                 val = parseInt(val)?i18n("yes"):i18n("no");
                                 break;
 
