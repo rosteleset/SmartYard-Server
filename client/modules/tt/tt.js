@@ -791,7 +791,11 @@
                                 break;
                         }
                         
+                        console.log(field, val);
+
                         val = nl2br(escapeHTML(val));
+
+                        console.log(field, val);
 
                         if (cf.link) {
                             val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
