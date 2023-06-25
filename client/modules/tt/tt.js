@@ -614,6 +614,8 @@
     },
 
     issueField2Html: function (issue, field, val) {
+        console.log(issue, val);
+        
         let members = {};
 
         if (modules.groups) {
