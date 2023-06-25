@@ -777,6 +777,8 @@
                         break;
 
                     case "text":
+                        console.log(field, val);
+                        
                         if (cf.format) {
                             val = sprintf(cf.format, val);
                         }
