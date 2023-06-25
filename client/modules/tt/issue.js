@@ -841,8 +841,8 @@
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
                             for (let j in k) {
-                                console.log(response.journal[i].old[k[j]], jShow(response.journal[i].old[k[j]]));
-                                console.log(response.journal[i].new[k[j]], jShow(response.journal[i].new[k[j]]));
+                                console.log(response.journal[i].action, k[j], response.journal[i].old[k[j]], jShow(response.journal[i].old[k[j]]));
+                                console.log(response.journal[i].action, k[j], response.journal[i].new[k[j]], jShow(response.journal[i].new[k[j]]));
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
