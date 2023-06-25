@@ -877,7 +877,6 @@
                         }
                     }
                     $("#issueJournal").html(h).show();
-                    window.scrollTo(0, document.body.scrollHeight * 2);
                     $(".ttIssue").off("click").on("click", function () {
                         location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
                     });
