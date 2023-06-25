@@ -930,37 +930,35 @@ function hashParse() {
 }
 
 function escapeHTML(str) {
-    if (str && typeof str == "string") {
-        let escapeChars = {
-            '¢': 'cent',
-            '£': 'pound',
-            '¥': 'yen',
-            '€': 'euro',
-            '©':'copy',
-            '®': 'reg',
-            '<': 'lt',
-            '>': 'gt',
-            '"': 'quot',
-            '&': 'amp',
-            '\'': '#39'
-        };
+    str = str.toString();
 
-        let regexString = '[';
+    let escapeChars = {
+        '¢': 'cent',
+        '£': 'pound',
+        '¥': 'yen',
+        '€': 'euro',
+        '©':'copy',
+        '®': 'reg',
+        '<': 'lt',
+        '>': 'gt',
+        '"': 'quot',
+        '&': 'amp',
+        '\'': '#39'
+    };
 
-        for(let key in escapeChars) {
-            regexString += key;
-        }
+    let regexString = '[';
 
-        regexString += ']';
-
-        let regex = new RegExp(regexString, 'g');
-
-        return str.replace(regex, function(m) {
-            return '&' + escapeChars[m] + ';';
-        });
-    } else {
-        return str;
+    for(let key in escapeChars) {
+        regexString += key;
     }
+
+    regexString += ']';
+
+    let regex = new RegExp(regexString, 'g');
+
+    return str.replace(regex, function(m) {
+        return '&' + escapeChars[m] + ';';
+    });
 }
 
 Object.defineProperty(Array.prototype, "assoc", {
