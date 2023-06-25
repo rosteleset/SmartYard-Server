@@ -846,6 +846,10 @@
             }
         }
 
+        if (val === false) {
+            val = '';
+        }
+
         return val;
     },
 
