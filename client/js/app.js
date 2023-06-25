@@ -961,6 +961,8 @@ function escapeHTML(str) {
     });
 
     console.log(str, result);
+
+    return result;
 }
 
 Object.defineProperty(Array.prototype, "assoc", {
