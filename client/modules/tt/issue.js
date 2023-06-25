@@ -866,7 +866,7 @@
                                 h += "<td class='pl-2 td-journal'>&nbsp;</td>";
                                 h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]) : "&nbsp;";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
                                 h += "</td>";
                                 h += "</tr>";
                             }
@@ -880,7 +880,7 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]) : "&nbsp;";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
