@@ -791,7 +791,11 @@
 
         $(".ttJournal").off("click").on("click", () => {
             function jShow(v) {
-                return v && v != null && v != '&nbsp;';
+                if (typeof v == "undefined") {
+                    return false;
+                } else {
+                    return v && v != null && v != "&nbsp;";
+                }
             }
 
             if ($(".ttJournal").text() == i18n("tt.journal")) {
