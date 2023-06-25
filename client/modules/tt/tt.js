@@ -797,6 +797,8 @@
                             val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
                         }
 
+                        console.log(cf, val);
+
                         break;
 
                     case "select":
