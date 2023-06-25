@@ -646,6 +646,8 @@
             val = issue[field];
         }
 
+        console.log(field, val);
+        
         if (val == null || val == "&nbsp;") {
             return "";
         }
