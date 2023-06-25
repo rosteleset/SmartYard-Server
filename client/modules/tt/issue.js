@@ -826,7 +826,7 @@
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
-                        if (response.journal[i].old && response.journal[i].new && typeof response.journal[i].old.length == 'undefined' && response.journal[i].new.length == 'undefined') {
+                        if (o && n) {
                             let k = Object.keys(response.journal[i].old);
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
@@ -845,7 +845,7 @@
                                 h += "</tr>";
                             }
                         }
-                        if ((!response.journal[i].old || response.journal[i].old.length == 0) && response.journal[i].new && typeof response.journal[i].new.length == 'undefined') {
+                        if (!o && n) {
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
@@ -859,7 +859,7 @@
                                 h += "</tr>";
                             }
                         }
-                        if (response.journal[i].old && typeof response.journal[i].old.length == 'undefined' && (!response.journal[i].new || response.journal[i].new.length == 0)) {
+                        if (o && !n) {
                             let k = Object.keys(response.journal[i].old);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
