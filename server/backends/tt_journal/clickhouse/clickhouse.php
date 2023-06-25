@@ -61,7 +61,12 @@
                         }
                     }
                 }
-                return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issueId, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
+
+                if ($new || $old) {
+                    return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issueId, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
+                } else {
+                    return true;
+                }
             }
 
             /**

@@ -800,7 +800,9 @@
                     h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
                     let jf = true;
                     for (let i in response.journal) {
-                        if (!response.journal[i].new && !response.journal[i].old) {
+                        let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
+                        let n = response.journal[i].new && typeof response.journal[i].new.length == 'undefined';
+                        if (!o && !n) {
                             continue;
                         }
                         let action = response.journal[i].action.split("#")[0];
@@ -824,8 +826,7 @@
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
-                        if (response.journal[i].old && response.journal[i].new) {
-                            console.log(response.journal[i].old, response.journal[i].new);
+                        if (response.journal[i].old && response.journal[i].new && typeof response.journal[i].old.length == 'undefined' && response.journal[i].new.length == 'undefined') {
                             let k = Object.keys(response.journal[i].old);
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
@@ -844,7 +845,7 @@
                                 h += "</tr>";
                             }
                         }
-                        if (!response.journal[i].old && response.journal[i].new) {
+                        if ((!response.journal[i].old || response.journal[i].old.length == 0) && response.journal[i].new && typeof response.journal[i].new.length == 'undefined') {
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
@@ -858,7 +859,7 @@
                                 h += "</tr>";
                             }
                         }
-                        if (response.journal[i].old && !response.journal[i].new) {
+                        if (response.journal[i].old && typeof response.journal[i].old.length == 'undefined' && (!response.journal[i].new || response.journal[i].new.length == 0)) {
                             let k = Object.keys(response.journal[i].old);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
