@@ -367,6 +367,8 @@
                     _id: issue.issue.issueId,
                     action: action,
                 }, true).done(r => {
+                    console.log(r);
+
                     let fields = [];
         
                     let project;

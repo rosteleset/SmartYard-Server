@@ -614,8 +614,6 @@
     },
 
     issueField2Html: function (issue, field, val) {
-        console.log(field, val);
-
         let members = {};
 
         if (modules.groups) {
@@ -798,8 +796,6 @@
                         if (cf.link) {
                             val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
                         }
-
-                        console.log(cf, val);
 
                         break;
 
