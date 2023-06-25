@@ -464,8 +464,6 @@
     },
 
     renderIssue: function (issue, filter, index, count, search) {
-        console.log(issue);
-
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
 
