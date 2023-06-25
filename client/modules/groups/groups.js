@@ -249,77 +249,96 @@
 
         loadingStart();
 
-        GET("accounts", "groups", false, true).done(response => {
-            cardTable({
-                title: {
-                    caption: i18n("groups.groups"),
-                    button: {
-                        caption: i18n("groups.addGroup"),
-                        click: modules.groups.addGroup,
-                    },
-                    filter: true,
-                },
-                edit: modules.groups.modifyGroup,
-                startPage: modules.groups.startPage,
-                columns: [
-                    {
-                        title: i18n("groups.gid"),
-                    },
-                    {
-                        title: i18n("groups.acronym"),
-                    },
-                    {
-                        title: i18n("groups.name"),
-                        fullWidth: true,
-                    },
-                    {
-                        title: i18n("groups.usersCount"),
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
+        GET("accounts", "users", false, true).done(users => {
+            let usersList = [];
 
-                    for (let i = 0; i < response.groups.length; i++) {
-                        rows.push({
-                            uid: response.groups[i].gid.toString(),
-                            cols: [
-                                {
-                                    data: response.groups[i].gid,
-                                },
-                                {
-                                    data: response.groups[i].acronym,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: response.groups[i].name,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: response.groups[i].users,
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+            for (let i in users.users) {
+                if (users.users[i].uid) {
+                    usersList[users.users[i].uid] = $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login);
+                }
+            }
+
+            GET("accounts", "groups", false, true).done(response => {
+                cardTable({
+                    title: {
+                        caption: i18n("groups.groups"),
+                        button: {
+                            caption: i18n("groups.addGroup"),
+                            click: modules.groups.addGroup,
+                        },
+                        filter: true,
+                    },
+                    edit: modules.groups.modifyGroup,
+                    startPage: modules.groups.startPage,
+                    columns: [
+                        {
+                            title: i18n("groups.gid"),
+                        },
+                        {
+                            title: i18n("groups.acronym"),
+                        },
+                        {
+                            title: i18n("groups.admin"),
+                        },
+                        {
+                            title: i18n("groups.name"),
+                            fullWidth: true,
+                        },
+                        {
+                            title: i18n("groups.usersCount"),
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i = 0; i < response.groups.length; i++) {
+                            rows.push({
+                                uid: response.groups[i].gid.toString(),
+                                cols: [
                                     {
-                                        icon: "fas fa-users",
-                                        title: i18n("groups.users"),
-                                        click: modules.groups.modifyGroupUsers
+                                        data: response.groups[i].gid,
+                                    },
+                                    {
+                                        data: response.groups[i].acronym,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: usersList[response.groups[i].admin] ? usersList[response.groups[i].admin] : "-",
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: response.groups[i].name,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: response.groups[i].users,
                                     },
                                 ],
-                            },
-                        });
-                    }
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-users",
+                                            title: i18n("groups.users"),
+                                            click: modules.groups.modifyGroupUsers
+                                        },
+                                    ],
+                                },
+                            });
+                        }
 
-                    return rows;
-                },
-                target: "#mainForm",
-                pageChange: page => {
-                    modules.groups.startPage = page;
-                },
-            });
+                        return rows;
+                    },
+                    target: "#mainForm",
+                    pageChange: page => {
+                        modules.groups.startPage = page;
+                    },
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     route: function (params) {
