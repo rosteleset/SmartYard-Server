@@ -821,7 +821,7 @@
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
-                        if (response.journal[i].old != null && response.journal[i].new != null) {
+                        if (response.journal[i].old && response.journal[i].old.length && response.journal[i].new && response.journal[i].length) {
                             let k = Object.keys(response.journal[i].old);
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
@@ -840,7 +840,7 @@
                                 h += "</tr>";
                             }
                         }
-                        if (response.journal[i].old == null && response.journal[i].new != null) {
+                        if ((!response.journal[i].old || !response.journal[i].old.length) && response.journal[i].new && response.journal[i].new.length) {
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
@@ -854,7 +854,7 @@
                                 h += "</tr>";
                             }
                         }
-                        if (response.journal[i].old !=null && response.journal[i].new == null) {
+                        if (response.journal[i].old && response.journal[i].old.length && (!response.journal[i].new || response.journal[i].new.length)) {
                             let k = Object.keys(response.journal[i].old);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
