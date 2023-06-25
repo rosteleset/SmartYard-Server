@@ -799,6 +799,7 @@
                     let h = '';
                     h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
                     let jf = true;
+                    let c = 1;
                     for (let i in response.journal) {
                         let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
                         let n = response.journal[i].new && typeof response.journal[i].new.length == 'undefined';
@@ -815,7 +816,8 @@
                             h += "<td class='pl-1 pt-3' style='font-size: 14px;' colspan='4'>";
                         }
                         h += "<div>";
-                        h += "#" + (parseInt(i) + 1) + " ";
+                        h += "#" + c + " ";
+                        c++;
                         h += ttDate(response.journal[i].date);
                         h += "<span class='ml-2 text-info text-bold'>";
                         h += members[response.journal[i].login]?members[response.journal[i].login]:response.journal[i].login;
