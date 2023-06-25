@@ -836,23 +836,55 @@
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
-                        let k = Object.keys(response.journal[i].old);
-                        k = k.concat(Object.keys(response.journal[i].new));
-                        k = [...new Set(k)].sort();
-                        for (let j in k) {
-                            h += "<tr class='tr-hoverable'>";
-                            h += "<td class='pl-2 td-journal'>";
-                            h += modules.tt.issueFieldTitle(k[j]) + ": ";
-                            h += "</td>";
-                            h += "<td class='pl-2 td-journal'>";
-                            h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]) : "&nbsp;";
-                            h += "</td>";
-                            h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
-                            h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                            h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]) : "&nbsp;";
-                            h += "</td>";
-                            h += "</tr>";
+//                        if (o && n) {
+                            let k = Object.keys(response.journal[i].old);
+                            k = k.concat(Object.keys(response.journal[i].new));
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr class='tr-hoverable'>";
+                                h += "<td class='pl-2 td-journal'>";
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                h += "</td>";
+                                h += "<td class='pl-2 td-journal'>";
+                                h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]) : "&nbsp;";
+                                h += "</td>";
+                                h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
+                                h += "<td class='pl-2 td-journal' style='width: 100%;'>";
+                                h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]) : "&nbsp;";
+                                h += "</td>";
+                                h += "</tr>";
+                            }
+//                        }
+/*
+                        if (!o && n) {
+                            let k = Object.keys(response.journal[i].new);
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr class='tr-hoverable'>";
+                                h += "<td class='pl-2 td-journal'>";
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                h += "</td>";
+                                h += "<td class='pl-2 td-journal' style='width: 100%;' colspan='3'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
+                                h += "</td>";
+                                h += "</tr>";
+                            }
                         }
+                        if (o && !n) {
+                            let k = Object.keys(response.journal[i].old);
+                            k = [...new Set(k)].sort();
+                            for (let j in k) {
+                                h += "<tr class='tr-hoverable'>";
+                                h += "<td class='pl-2 td-journal'>";
+                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                h += "</td>";
+                                h += "<td class='pl-2 td-journal' style='width: 100%;' colspan='3'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
+                                h += "</td>";
+                                h += "</tr>";
+                            }
+                        }
+*/
                     }
                     $("#issueJournal").html(h).show();
                     $(".ttIssue").off("click").on("click", function () {
