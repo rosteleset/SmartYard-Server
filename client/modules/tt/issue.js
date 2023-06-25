@@ -836,7 +836,7 @@
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
-//                        if (o && n) {
+                        if (o && n) {
                             let k = Object.keys(response.journal[i].old);
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
@@ -854,8 +854,7 @@
                                 h += "</td>";
                                 h += "</tr>";
                             }
-//                        }
-/*
+                        }
                         if (!o && n) {
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
@@ -884,7 +883,6 @@
                                 h += "</tr>";
                             }
                         }
-*/
                     }
                     $("#issueJournal").html(h).show();
                     $(".ttIssue").off("click").on("click", function () {
