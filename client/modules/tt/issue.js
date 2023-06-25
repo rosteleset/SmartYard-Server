@@ -367,8 +367,6 @@
                     _id: issue.issue.issueId,
                     action: action,
                 }, true).done(r => {
-                    console.log(r);
-
                     let fields = [];
         
                     let project;
@@ -466,6 +464,8 @@
     },
 
     renderIssue: function (issue, filter, index, count, search) {
+        console.log(issue);
+
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
 
