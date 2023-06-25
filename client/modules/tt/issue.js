@@ -791,6 +791,7 @@
 
         $(".ttJournal").off("click").on("click", () => {
             function jShow(v) {
+                console.log(v);
                 return v && v != null && v != '&nbsp;';
             }
 
