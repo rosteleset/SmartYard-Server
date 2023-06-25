@@ -646,7 +646,7 @@
             val = issue[field];
         }
 
-        if (!val || val == "&nbsp;") {
+        if (val == null || val == "&nbsp;") {
             return "";
         }
 
