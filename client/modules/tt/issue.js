@@ -816,6 +816,7 @@
                         }
                         let action = response.journal[i].action.split("#")[0];
                         let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
+                        let sep = [ "modifyIssue", "modifyComment" ].includes(action.split("#")[0]) ? "<i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i>" : "&nbsp;";
                         h += "<tr>";
                         if (jf) {
                             jf = false;
@@ -848,7 +849,7 @@
                                 h += "<td class='pl-2 td-journal'>";
                                 h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]) : "&nbsp;";
                                 h += "</td>";
-                                h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
+                                h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>";
                                 h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]) : "&nbsp;";
                                 h += "</td>";
@@ -864,7 +865,7 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>&nbsp;</td>";
-                                h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
+                                h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
                                 h += "</td>";
@@ -882,7 +883,7 @@
                                 h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
                                 h += "</td>";
-                                h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
+                                h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
                                 h += "</tr>";
                             }
