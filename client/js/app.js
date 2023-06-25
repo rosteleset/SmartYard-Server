@@ -956,9 +956,11 @@ function escapeHTML(str) {
 
     let regex = new RegExp(regexString, 'g');
 
-    return str.replace(regex, function(m) {
+    let result = str.replace(regex, function(m) {
         return '&' + escapeChars[m] + ';';
     });
+
+    console.log(str, result);
 }
 
 Object.defineProperty(Array.prototype, "assoc", {
