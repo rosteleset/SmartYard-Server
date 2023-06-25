@@ -777,8 +777,6 @@
                         break;
 
                     case "text":
-                        console.log(field, val);
-                        
                         if (cf.format) {
                             val = sprintf(cf.format, val);
                         }
@@ -798,6 +796,8 @@
                         if (cf.link) {
                             val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
                         }
+
+                        console.log(field, val);
 
                         break;
 
@@ -847,6 +847,8 @@
                 }
             }
         }
+
+        console.log(val);
 
         return val;
     },
