@@ -960,8 +960,6 @@ function escapeHTML(str) {
         return '&' + escapeChars[m] + ';';
     });
 
-    console.log(str, result);
-
     return result;
 }
 
