@@ -10,11 +10,12 @@
     idle: true,
     preCoordinate: false,
     csChangedTimeout: -1,
+    menuItem: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("cs", "sheets")) {
-                leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
+                this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
             }
         }
 
@@ -995,6 +996,10 @@
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
+
+        if (modules.cs.menuItem) {
+            $("#" + modules.cs.menuItem).children().first().attr("href", "?#cs&_=" + Math.random());
+        }
 
         modules.cs.renderCS();
     },
