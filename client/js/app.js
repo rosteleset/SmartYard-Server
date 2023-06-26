@@ -28,28 +28,28 @@ function hashChange() {
 
             let r = route.split(".");
 
-            if ($(".sidebar .withibleOnlyWhenActive[target!='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[target!='?#" + route + "']").hide();
+            if ($(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").length) {
+                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").hide();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[target!='?#" + r[0] + "']").hide();
+                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + r[0] + "']").hide();
             }
 
-            if ($(".sidebar .withibleOnlyWhenActive[target='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[target='?#" + route + "']").show();
+            if ($(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").length) {
+                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").show();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[target='?#" + r[0] + "']").show();
+                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + r[0] + "']").show();
             }
 
-            if ($(".sidebar .nav-item a[href!='?#" + route + "']").length) {
-                $(".sidebar .nav-item a[href!='?#" + route + "']").removeClass('active');
+            if ($(".sidebar .nav-item a[data-href!='?#" + route + "']").length) {
+                $(".sidebar .nav-item a[data-href!='?#" + route + "']").removeClass('active');
             } else {
-                $(".sidebar .nav-item a[href!='?#" + r[0] + "']").removeClass('active');
+                $(".sidebar .nav-item a[data-href!='?#" + r[0] + "']").removeClass('active');
             }
 
-            if ($(".sidebar .nav-item a[href='?#" + route + "']").length) {
-                $(".sidebar .nav-item a[href='?#" + route + "']").addClass('active');
+            if ($(".sidebar .nav-item a[data-href='?#" + route + "']").length) {
+                $(".sidebar .nav-item a[data-href='?#" + route + "']").addClass('active');
             } else {
-                $(".sidebar .nav-item a[href='?#" + r[0] + "']").addClass('active');
+                $(".sidebar .nav-item a[data-href='?#" + r[0] + "']").addClass('active');
             }
 
             $("#loginForm").hide();
@@ -807,8 +807,8 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
     let id = md5(guid());
 
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
-            <a href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
+        <li id="${id}" class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+            <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
             </a>
