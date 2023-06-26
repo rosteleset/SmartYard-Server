@@ -2504,7 +2504,7 @@
                         }
 
                         if (modules.tt.meta.customFields[i].type == "select" || modules.tt.meta.customFields[i].type == "users") {
-                            editor = (modules.tt.meta.customFields[i].format.indexOf("multiple") !== false)?i18n("tt.multiple"):i18n("tt.single");
+                            editor = (modules.tt.meta.customFields[i].format.indexOf("multiple") >= 0)?i18n("tt.multiple"):i18n("tt.single");
                         }
 
                         rows.push({
