@@ -3,13 +3,15 @@
 
     defaultIssuesPerPage: 50,
     defaultPagerItemsCount: 10,
+    menuItem: false,
 
     init: function () {
+        
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
-                leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
+                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
             } else {
-                leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
+                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
             }
         }
         loadSubModules("tt", [
