@@ -1020,7 +1020,7 @@ function b64_to_utf8(str) {
 
 function trimStr(str, len) {
     if (!len) {
-        len = 19;
+        len = 33;
     }
     let sub = Math.floor((len - 3) / 2);
     if (str.length > len) {
