@@ -83,6 +83,7 @@
     "assigned": "Назначенные",
     "watchers": "Наблюдатели",
     "multiple": "Мультивыбор",
+    "single": "Выбор",
     "usersAndGroups": "Тип выбора",
     "usersAndGroupsChoice": "Пользователи и группы",
     "required": "Обязательное поле",
