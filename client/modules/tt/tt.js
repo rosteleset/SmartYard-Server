@@ -9,7 +9,8 @@
         
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
-                this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
+                leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
+                this.menuItem = false;
             } else {
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
             }
@@ -1310,7 +1311,9 @@
         $("#subTop").html("");
         $("#altForm").hide();
 
-//        $("#" + modules.tt.menuItem).childrens().first().
+        if (modules.tt.menuItem) {
+            $("#" + modules.tt.menuItem).children().first().attr("href", "?#tt&_=" + Math.random());
+        }
 
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
