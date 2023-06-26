@@ -804,8 +804,10 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
 
     let [ route ] = hashParse();
 
-    let item = $("#leftside-menu").append(`
-        <li class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+    let id = md5(guid());
+
+    $("#leftside-menu").append(`
+        <li id="${id}" class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
             <a href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
@@ -816,7 +818,7 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
     mainSidebarGroup = group;
     mainSidebarFirst = false;
 
-    return item;
+    return id;
 }
 
 function loadModule() {

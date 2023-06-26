@@ -9,9 +9,9 @@
         
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
-                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
+                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings&_=" + Math.random(), "tt");
             } else {
-                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
+                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt&_=" + Math.random(), "tt");
             }
         }
         loadSubModules("tt", [
@@ -1309,6 +1309,8 @@
 
         $("#subTop").html("");
         $("#altForm").hide();
+
+//        $("#" + modules.tt.menuItem).childrens().first().
 
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
