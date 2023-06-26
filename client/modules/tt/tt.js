@@ -9,9 +9,9 @@
         
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
-                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings&_=" + Math.random(), "tt");
+                modules.tt.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
             } else {
-                menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt&_=" + Math.random(), "tt");
+                modules.tt.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
             }
         }
         loadSubModules("tt", [
