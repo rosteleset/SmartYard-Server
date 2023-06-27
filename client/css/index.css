@@ -308,7 +308,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .datatable td {
-  border: 1px solid #d3d3d3; padding: 3px; text-align: left;
+  border: 1px solid #dbdbdb; padding: 3px; text-align: left;
 }
 
 .datatable th {
