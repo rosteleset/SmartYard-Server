@@ -435,10 +435,8 @@
                             }
 
                             if (cf.editor == "datetime-local") {
-                                console.log(issue["_cf_" + fieldId]);
                                 let d = new Date(issue["_cf_" + fieldId] * 1000);
-                                console.log(d);
-                                issue["_cf_" + fieldId] = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "T" + pad2(d.getHours) + ":" + pad2(d.getMinutes());
+                                issue["_cf_" + fieldId] = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "T" + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
                             }
 
                             return {
