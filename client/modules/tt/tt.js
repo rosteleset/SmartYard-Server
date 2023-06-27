@@ -429,6 +429,10 @@
                                 cf.editor = "text";
                             }
 
+                            if ([ "date", "datetime-local" ].indexOf(cf.editor) >= 0 && issue && issue["_cf_" + fieldId]) {
+                                issue["_cf_" + fieldId] = ttDate(issue["_cf_" + fieldId]);
+                            }
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: cf.editor,
