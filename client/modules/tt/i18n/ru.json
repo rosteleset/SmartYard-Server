@@ -182,7 +182,7 @@
     "foreground": "Цвет текста",
     "background": "Цвет фона",
     "comments": "Комментарии",
-    "commentPrivate": "Частный",
+    "commentPrivate": "Только для сотрудников",
     "saAddComment": "Комментарий",
     "saAddFile": "Файл",
     "saDelete": "Удалить задачу",
