@@ -795,7 +795,7 @@
                                 break;
 
                             case "date":
-                                val = ttDate(val).split(" ")[0];
+                                val = ttDate(val, true);
                                 break;
                         }
                         
