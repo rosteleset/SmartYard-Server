@@ -934,7 +934,7 @@ function hashParse() {
 }
 
 function escapeHTML(str) {
-    if (typeof str == "undefined") {
+    if (typeof str == "undefined" || !str) {
         return "";
     }
     
