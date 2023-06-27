@@ -425,6 +425,7 @@
                 }
             } catch (_) {
                 FAIL();
+                loadingDone();
                 modules.cs.idle = true;
             }
         }
