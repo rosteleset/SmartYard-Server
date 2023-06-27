@@ -934,6 +934,10 @@ function hashParse() {
 }
 
 function escapeHTML(str) {
+    if (typeof str == "undefined") {
+        return "";
+    }
+    
     str = str.toString();
 
     let escapeChars = {
