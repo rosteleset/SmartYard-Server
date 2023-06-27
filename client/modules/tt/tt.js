@@ -429,18 +429,6 @@
                                 cf.editor = "text";
                             }
 
-                            if (cf.editor == "date") {
-                                let d = new Date(issue["_cf_" + fieldId] * 1000);
-                                issue["_cf_" + fieldId] = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
-                            }
-
-                            if (cf.editor == "datetime-local") {
-                                let d = new Date(issue["_cf_" + fieldId] * 1000);
-                                console.log(d);
-                                console.log(d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "T" + pad2(d.getHours()) + ":" + pad2(d.getMinutes()));
-                                issue["_cf_" + fieldId] = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + "T" + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
-                            }
-
                             return {
                                 id: "_cf_" + fieldId,
                                 type: cf.editor,

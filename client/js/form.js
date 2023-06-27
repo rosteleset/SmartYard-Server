@@ -313,13 +313,19 @@ function cardForm(params) {
             case "email":
             case "number":
             case "tel":
-            case "date":
             case "time":
             case "password":
             case "text":
             case "color":
             case "area":
                 return $(`#${_prefix}${params.fields[i].id}`).val();
+
+            case "date":
+                if (params.fields[i].sec) {
+                    return strtotime($(`#${_prefix}${params.fields[i].id}`).val());
+                } else {
+                    return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
+                }
 
             case "datetime-local":
                 if (params.fields[i].sec) {
@@ -473,13 +479,20 @@ function cardForm(params) {
                 case "email":
                 case "number":
                 case "tel":
-                case "date":
                 case "time":
                 case "password":
                 case "text":
                 case "color":
                 case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
+                    break;
+
+                case "date":
+                    if (params.fields[i].sec) {
+                        $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value));
+                    } else {
+                        $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value / 1000));
+                    }
                     break;
 
                 case "datetime-local":
