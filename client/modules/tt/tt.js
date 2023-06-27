@@ -791,6 +791,7 @@
                                 break;
 
                             case "datetime-local":
+                            case "date":
                                 val = ttDate(val);
                                 break;
                         }
