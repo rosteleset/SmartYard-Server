@@ -79,7 +79,7 @@
                     });
                 } else {
                     modules.users.loadUsers(() => {
-                        modules.tt.renderIssues(params);
+                        modules.tt.workspaces.renderWorkspaces(params);
                     });
                 }
             } else {
@@ -88,7 +88,5 @@
         }).
         fail(FAIL).
         fail(loadingDone);
-
-        loadingDone();
     },
 }).init();
