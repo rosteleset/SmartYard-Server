@@ -45,6 +45,8 @@
         (function loadWorkspace() {
             let block = workspace.pop();
 
+            console.log(block.filter);
+
             if (block) {
                 modules.tt.renderIssues({
                     project: block.project,
