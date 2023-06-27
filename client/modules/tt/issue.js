@@ -684,6 +684,7 @@
         h += "</table>";
         h += "</td>";
         h += "</tr>";
+        
         let members = {};
 
         for (let i in modules.users.meta) {
