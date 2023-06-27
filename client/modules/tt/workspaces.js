@@ -20,7 +20,7 @@
             {
                 target: "#altForm",
                 project: "RTL",
-                filter: "all",
+                filter: "my",
             },
             {
                 target: "#mainForm",
