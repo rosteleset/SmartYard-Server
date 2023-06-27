@@ -13,24 +13,22 @@
 
         let workspace = [
             {
-                target: "#mainForm",
                 project: "RTL",
                 filter: "all",
             },
             {
-                target: "#altForm",
+                target: "right",
                 project: "RTL",
                 filter: "my",
             },
             {
-                target: "#mainForm",
                 project: "RTL",
                 filter: "delayed",
             },
         ];
 
         for (let i in workspace) {
-            if (workspace[i].target == "#altForm") {
+            if (workspace[i].target == "right") {
                 showAlt = true;
             }
         }
@@ -49,7 +47,7 @@
                 modules.tt.renderIssues({
                     project: block.project,
                     filter: block.filter,
-                }, $(block.target), md5(guid()), loadWorkspace);
+                }, $((block.target == "right")?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
             } else {
                 loadingDone();
             }
