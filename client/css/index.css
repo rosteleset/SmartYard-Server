@@ -302,3 +302,15 @@ body::-webkit-scrollbar-thumb {
   padding-right: 3px;
   font-size: small;
 }
+
+.datatable {
+  margin: 2px 0; border-collapse: collapse;
+}
+
+.datatable td {
+  border: 1px solid #C0C0C0; padding: 3px; text-align: left;
+}
+
+.datatable th {
+  border: 1px solid #C0C0C0; padding: 3px; text-align: left; cursor: default;
+}
