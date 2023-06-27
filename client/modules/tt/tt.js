@@ -791,8 +791,11 @@
                                 break;
 
                             case "datetime-local":
-                            case "date":
                                 val = ttDate(val);
+                                break;
+
+                            case "date":
+                                val = ttDate(val).split(" ")[0];
                                 break;
                         }
                         
