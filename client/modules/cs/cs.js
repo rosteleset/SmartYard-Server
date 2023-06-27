@@ -357,70 +357,75 @@
         modules.cs.issuesInSheet = {};
 
         function loadIssues(callback) {
-            if (modules.cs.currentSheet.sheet.issuesQuery) {
-                modules.cs.currentSheet.sheet.issuesQuery.preprocess = {};
-                modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
-                modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
-                modules.cs.currentSheet.sheet.issuesQuery.project = modules.cs.currentSheet.sheet.project;
-
-                POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
-                fail(FAIL).
-                fail(() => {
-                    modules.cs.idle = true;
-                }).
-                done(r => {
-                    for (let i in r.issues.issues) {
-                        let col = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.col];
-                        let row = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.row];
-                        let cells = parseInt(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells]);
-                        let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
-                        let done = modules.cs.issueDone(r.issues.issues[i]);
-
-                        let start = -1;
-
-                        for (let j in modules.cs.currentSheet.sheet.data) {
-                            if (modules.cs.currentSheet.sheet.data[j].col == col) {
-                                for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
-                                    if (modules.cs.currentSheet.sheet.data[j].rows[k] == row || start >= 0) {
-                                        if (start < 0) {
-                                            start = k;
-                                        }
-                                        if (k - start < cells) {
-                                            modules.cs.issues[r.issues.issues[i].issueId] = true;
-                                            if (!modules.cs.issuesInSheet) {
-                                                modules.cs.issuesInSheet = {};
+            try {
+                if (modules.cs.currentSheet.sheet.issuesQuery) {
+                    modules.cs.currentSheet.sheet.issuesQuery.preprocess = {};
+                    modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
+                    modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
+                    modules.cs.currentSheet.sheet.issuesQuery.project = modules.cs.currentSheet.sheet.project;
+    
+                    POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
+                    fail(FAIL).
+                    fail(() => {
+                        modules.cs.idle = true;
+                    }).
+                    done(r => {
+                        for (let i in r.issues.issues) {
+                            let col = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.col];
+                            let row = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.row];
+                            let cells = parseInt(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells]);
+                            let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
+                            let done = modules.cs.issueDone(r.issues.issues[i]);
+    
+                            let start = -1;
+    
+                            for (let j in modules.cs.currentSheet.sheet.data) {
+                                if (modules.cs.currentSheet.sheet.data[j].col == col) {
+                                    for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
+                                        if (modules.cs.currentSheet.sheet.data[j].rows[k] == row || start >= 0) {
+                                            if (start < 0) {
+                                                start = k;
                                             }
-                                            let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + col + ":" + modules.cs.currentSheet.sheet.data[j].rows[k]);
-                                            if (!modules.cs.issuesInSheet[uid]) {
-                                                modules.cs.issuesInSheet[uid] = "";
-                                            }
-                                            if (installers && installers.length && !done) {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
-                                            } else
-                                            if ((!installers || !installers.length) && done) {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
-                                            } else
-                                            if (installers && installers.length && done) {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
-                                            } else {
-                                                modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
+                                            if (k - start < cells) {
+                                                modules.cs.issues[r.issues.issues[i].issueId] = true;
+                                                if (!modules.cs.issuesInSheet) {
+                                                    modules.cs.issuesInSheet = {};
+                                                }
+                                                let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + col + ":" + modules.cs.currentSheet.sheet.data[j].rows[k]);
+                                                if (!modules.cs.issuesInSheet[uid]) {
+                                                    modules.cs.issuesInSheet[uid] = "";
+                                                }
+                                                if (installers && installers.length && !done) {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                } else
+                                                if ((!installers || !installers.length) && done) {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                } else
+                                                if (installers && installers.length && done) {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                } else {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                }).
-                always(() => {
+                    }).
+                    always(() => {
+                        if (typeof callback === "function") {
+                            callback();
+                        }
+                    })
+                } else {
                     if (typeof callback === "function") {
                         callback();
                     }
-                })
-            } else {
-                if (typeof callback === "function") {
-                    callback();
                 }
+            } catch (_) {
+                FAIL();
+                modules.cs.idle = true;
             }
         }
 

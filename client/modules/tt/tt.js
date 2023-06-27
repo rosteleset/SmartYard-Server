@@ -18,6 +18,7 @@
         loadSubModules("tt", [
             "issue",
             "settings",
+            "workspaces",
         ], this);
     },
     
@@ -891,10 +892,24 @@
         window.location.href = `?#tt&project=${encodeURIComponent(project)}`;
     },
 
-    renderIssues: function (params) {
+    renderIssues: function (params, target, issuesListId, callback) {
+        if (target === "undefined") {
+            target = false;
+        }
+        
+        if (issuesListId === "undefined") {
+            issuesListId = md5(guid());
+        }
+
         let rtd = '';
 
-        let current_project = params["project"]?params["project"]:lStore("_project");
+        let current_project;
+        
+        if (target) {
+            current_project = params.project;
+        } else {
+            current_project = params.project?params.project:lStore("_project");
+        }
 
         let pn = {};
 
@@ -930,9 +945,11 @@
             }
         }
 
-        $("#rightTopDynamic").html(rtd);
+        if (!target) {
+            $("#rightTopDynamic").html(rtd);
 
-        current_project = $("#ttProjectSelect").val();
+            current_project = $("#ttProjectSelect").val();
+        }
 
         if (AVAIL("tt", "customFilter") && current_project && current_project !== true) {
             $(".ttSearchInputGroup").prepend(`<div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterCustom" title="${i18n("tt.customSearch")}"><i class="fas fa-fw fa-running"></i></span></div>`);
@@ -977,79 +994,93 @@
 
         let x = false;
 
-        try {
-            x = params["filter"]?params["filter"]:lStore("_tt_issue_filter_" + current_project);
-        } catch (e) {
-            //
-        }
-
-        let fcount = 0;
-        let filters = `<span class="dropdown">`;
-
-        let filtersTree = {};
-        for (let i in project.filters) {
-            let tree = (project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter).split("/");
-            let f = filtersTree;
-            for (let j = 0; j < tree.length - 1; j++) {
-                if (!f[tree[j]]) {
-                    f[tree[j]] = {};
-                }
-                f = f[tree[j]];
+        if (target) {
+            try {
+                x = params["filter"];
+            } catch (e) {
+                //
             }
-            f[tree[tree.length - 1]] = project.filters[i];
+        } else {
+            try {
+                x = params["filter"]?params["filter"]:lStore("_tt_issue_filter_" + current_project);
+            } catch (e) {
+                //
+            }
         }
 
-        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
-        filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+        let filters;
 
-        (function hh(t) {
-            for (let i in t) {
-                if (t[i].filter) {
-                    if (x == t[i].filter) {
-                        filters += `<li class="pointer dropdown-item tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">`;
-                    } else {
-                        filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${t[i].filter}">`;
+        if (target) {
+            filters = `<span class="text-bold">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+        } else {
+            let fcount = 0;
+            filters = `<span class="dropdown">`;
+    
+            let filtersTree = {};
+            for (let i in project.filters) {
+                let tree = (project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter).split("/");
+                let f = filtersTree;
+                for (let j = 0; j < tree.length - 1; j++) {
+                    if (!f[tree[j]]) {
+                        f[tree[j]] = {};
                     }
-                    if (parseInt(t[i].personal) > 1000000) {
-                        filters += '<i class="fas fa-fw fa-users mr-2"></i>';
-                    } else
-                    if (parseInt(t[i].personal)) {
-                        filters += '<i class="fas fa-fw fa-user mr-2"></i>';
+                    f = f[tree[j]];
+                }
+                f[tree[tree.length - 1]] = project.filters[i];
+            }
+    
+            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+    
+            (function hh(t) {
+                for (let i in t) {
+                    if (t[i].filter) {
+                        if (x == t[i].filter) {
+                            filters += `<li class="pointer dropdown-item tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">`;
+                        } else {
+                            filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${t[i].filter}">`;
+                        }
+                        if (parseInt(t[i].personal) > 1000000) {
+                            filters += '<i class="fas fa-fw fa-users mr-2"></i>';
+                        } else
+                        if (parseInt(t[i].personal)) {
+                            filters += '<i class="fas fa-fw fa-user mr-2"></i>';
+                        } else {
+                            filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
+                        }
+                        filters += i + "</li>";
+                        fcount++;
                     } else {
-                        filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
+                        filters += `<li class="dropdown-item submenu pointer"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += '<div class="dropdown-menu">';
+                        hh(t[i]);
+                        filters += '</div>';
+                        filters += `</li>`;
                     }
-                    filters += i + "</li>";
-                    fcount++;
-                } else {
-                    filters += `<li class="dropdown-item submenu pointer"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
-                    filters += '<div class="dropdown-menu">';
-                    hh(t[i]);
-                    filters += '</div>';
-                    filters += `</li>`;
+                }
+            })(filtersTree);
+    
+            filters += `</ul></span>`;
+    
+            let fp = -1;
+            for (let i in project.filters) {
+                if (project.filters[i].filter == x) {
+                    fp = project.filters[i].personal;
+                    break;
                 }
             }
-        })(filtersTree);
-
-        filters += `</ul></span>`;
-
-        let fp = -1;
-        for (let i in project.filters) {
-            if (project.filters[i].filter == x) {
-                fp = project.filters[i].personal;
-                break;
+    
+            if ($.trim(modules.tt.meta.filters[x]) + "-" + md5(lStore("_login") + ":" + $.trim(modules.tt.meta.filters[x])) == x && fp == myself.uid) {
+                filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
+                filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
+            }
+    
+            if (!fcount) {
+                filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
             }
         }
 
-        if ($.trim(modules.tt.meta.filters[x]) + "-" + md5(lStore("_login") + ":" + $.trim(modules.tt.meta.filters[x])) == x && fp == myself.uid) {
-            filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
-            filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
-        }
-
-        if (!fcount) {
-            filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
-        }
-
-        if (myself.uid) {
+        if (myself.uid && !target) {
             $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</span></li>`);
         }
 
@@ -1057,7 +1088,7 @@
             modules.tt.issue.createIssue($("#ttProjectSelect").val());
         });
 
-        document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
+        document.title = i18n("windowTitle") + " :: " + i18n("tt.workspaces");
 
         let skip = parseInt(params.skip?params.skip:0);
         let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
@@ -1069,7 +1100,7 @@
             "filter": x?x:'',
             "skip": skip,
             "limit": limit,
-            "search": ($.trim(params.search) && params.search !== true)?$.trim(params.search):'',
+            "search": ($.trim(params.search) && params.search !== true && !target)?$.trim(params.search):'',
         }, true).
         done(response => {
             if (response.issues.exception) {
@@ -1083,7 +1114,7 @@
 
             let page = Math.floor(skip / limit) + 1;
 
-            function pager() {
+            function pager(issuesListId) {
                 let h = '';
 
                 let pages = Math.ceil(issues.count / limit);
@@ -1101,23 +1132,23 @@
                     }
                 }
 
-                h += '<nav>';
+                h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
 
                 if (page > 1) {
-                    h += `<li class="page-item pointer tt_pager" data-page="1"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+                    h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                 } else {
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                 }
                 for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
                     if (page == i) {
-                        h += `<li class="page-item font-weight-bold disabled" data-page="${i}"><span class="page-link">${i}</span></li>`;
+                        h += `<li class="page-item font-weight-bold disabled" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
                     } else {
-                        h += `<li class="page-item pointer tt_pager" data-page="${i}"><span class="page-link">${i}</span></li>`;
+                        h += `<li class="page-item pointer tt_pager" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
                     }
                 }
                 if (page < pages) {
-                    h += `<li class="page-item pointer tt_pager" data-page="${pages}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+                    h += `<li class="page-item pointer tt_pager" data-page="${pages}" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
                 } else {
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
                 }
@@ -1130,7 +1161,7 @@
 
             let cs = '';
 
-            if (params.customSearch && params.customSearch !== true) {
+            if (!target && params.customSearch && params.customSearch !== true) {
                 let height = 400;
                 cs += '<div>';
                 cs += `<div id='filterEditorContainer' style='width: 100%; height: ${height}px;'>`;
@@ -1142,14 +1173,29 @@
                 cs += '</div>';
             }
 
-            $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}</td><td style="padding-right: 15px;">${pager()}</td></tr></table><div class="ml-2 mr-2" id="issuesList"></div>`);
+            if (target) {
+                if (target !== true) {
+                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                } else {
+                    $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
+                }
+            } else {
+                $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+            }
 
             $(".tt_issues_filter").off("click").on("click", function () {
                 modules.tt.selectFilter($(this).attr("data-filter-name"));
             });
 
             $(".tt_pager").off("click").on("click", function () {
-                modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
+                if (target) {
+                    loadingStart();
+                    params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
+                    params.limit = limit?limit:modules.tt.defaultIssuesPerPage;
+                    modules.tt.renderIssues(params, true, $(this).attr("data-target"), loadingDone);
+                } else {
+                    modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
+                }
             });
 
             let columns = [ {
@@ -1250,7 +1296,7 @@
 
             if (issues.issues) {
                 cardTable({
-                    target: "#issuesList",
+                    target: "#" + issuesListId,
                     columns: columns,
                     rows: () => {
                         let rows = [];
@@ -1291,7 +1337,11 @@
                 $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
             }
             if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
-                loadingDone();
+                if (typeof callback === "undefined") {
+                    loadingDone();
+                } else {
+                    callback();
+                }
             }
         }).
         fail(FAIL).
