@@ -43,9 +43,7 @@
         $("#altForm").html("");
 
         (function loadWorkspace() {
-            let block = workspace.pop();
-
-            console.log(block.filter);
+            let block = workspace.shift();
 
             if (block) {
                 modules.tt.renderIssues({
