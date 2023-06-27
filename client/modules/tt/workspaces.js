@@ -25,7 +25,7 @@
             {
                 target: "#mainForm",
                 project: "RTL",
-                filter: "all",
+                filter: "delayed",
             },
         ];
 
