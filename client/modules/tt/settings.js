@@ -1022,14 +1022,10 @@
                     },
                     {
                         id: "editable",
-                        type: "area",
-                        title: i18n("tt.customFieldEditable"),
-                        placeholder: i18n("tt.customFieldEditable"),
+                        type: "yesno",
+                        title: i18n("tt.editable"),
                         value: (cf.format && cf.format.split(" ").includes("editable"))?"1":"0",
                         hidden: cf.type !== "select",
-                        validate: (v, prefix) => {
-                            return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
-                        }
                     },
                     {
                         id: "multiple",
