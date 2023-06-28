@@ -863,7 +863,6 @@
         fail(FAIL).
         done(modules.tt.tt).
         done(() => {
-            console.log(1);
             try {
                 let cfc = [];
                 let a = {};
@@ -890,6 +889,8 @@
                     options += cf.options[i].optionDisplay + "\n";
                 }
     
+                console.log(2);
+                
                 cardForm({
                     title: i18n("tt.customField") + " " + i18n("tt.customFieldId") + customFieldId,
                     footer: true,
