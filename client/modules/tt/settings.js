@@ -888,6 +888,8 @@
                 options += cf.options[i].optionDisplay + "\n";
             }
 
+            console.log("-1");
+
             cardForm({
                 title: i18n("tt.customField") + " " + i18n("tt.customFieldId") + customFieldId,
                 footer: true,
