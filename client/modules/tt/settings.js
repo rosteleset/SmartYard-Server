@@ -2503,8 +2503,12 @@
                             }
                         }
 
-                        if (modules.tt.meta.customFields[i].type == "select" || modules.tt.meta.customFields[i].type == "users") {
-                            editor = (modules.tt.meta.customFields[i].format.indexOf("multiple") >= 0)?i18n("tt.multiple"):i18n("tt.single");
+                        try {
+                            if (modules.tt.meta.customFields[i].type == "select" || modules.tt.meta.customFields[i].type == "users") {
+                                editor = (modules.tt.meta.customFields[i].format.indexOf("multiple") >= 0)?i18n("tt.multiple"):i18n("tt.single");
+                            }
+                        } catch (_) {
+                            // do nothing
                         }
 
                         rows.push({
