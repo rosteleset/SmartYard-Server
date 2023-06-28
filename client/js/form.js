@@ -1,4 +1,6 @@
 function cardForm(params) {
+    console.log(1);
+    
     let _prefix = "modalForm-" + md5(guid()) + "-";
     let h = '<form autocomplete="off">';
     
@@ -684,8 +686,6 @@ function cardForm(params) {
     if (typeof params.done == "function") {
         params.done(_prefix);
     }
-
-    console.log(h);
 
     return target;
 }
