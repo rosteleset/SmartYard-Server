@@ -1021,6 +1021,17 @@
                         }
                     },
                     {
+                        id: "editable",
+                        type: "area",
+                        title: i18n("tt.customFieldEditable"),
+                        placeholder: i18n("tt.customFieldEditable"),
+                        value: (cf.format && cf.format.split(" ").includes("editable"))?"1":"0",
+                        hidden: cf.type !== "select",
+                        validate: (v, prefix) => {
+                            return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                        }
+                    },
+                    {
                         id: "multiple",
                         type: "yesno",
                         title: i18n("tt.multiple"),
@@ -1079,6 +1090,9 @@
                         result.format = "";
                         if (result.multiple === "1") {
                             result.format += " multiple";
+                        }
+                        if (result.editable === "1") {
+                            result.format += " editable";
                         }
                         if (cf.type === "users") {
                             result.format += " " + result.usersAndGroups;
