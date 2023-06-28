@@ -455,6 +455,8 @@
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
                                 multiple: cf.format.indexOf("multiple") >= 0,
+                                tags: cf.format.indexOf("editable") >= 0,
+                                createTags: cf.format.indexOf("editable") >= 0,
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
                                 validate: validate,
                             }
