@@ -863,242 +863,234 @@
         fail(FAIL).
         done(modules.tt.tt).
         done(() => {
-            try {
-                let cfc = [];
-                let a = {};
-                for (let i in modules.tt.meta.customFields) {
-                    if (modules.tt.meta.customFields[i].catalog && !a[modules.tt.meta.customFields[i].catalog]) {
-                        a[modules.tt.meta.customFields[i].catalog] = true;
-                        cfc.push({
-                            id: modules.tt.meta.customFields[i].catalog,
-                            text: modules.tt.meta.customFields[i].catalog,
-                        });
-                    }
+            let cfc = [];
+            let a = {};
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].catalog && !a[modules.tt.meta.customFields[i].catalog]) {
+                    a[modules.tt.meta.customFields[i].catalog] = true;
+                    cfc.push({
+                        id: modules.tt.meta.customFields[i].catalog,
+                        text: modules.tt.meta.customFields[i].catalog,
+                    });
                 }
-    
-                let cf = {};
-                for (let i in modules.tt.meta.customFields) {
-                    if (modules.tt.meta.customFields[i].customFieldId == customFieldId) {
-                        cf = modules.tt.meta.customFields[i];
-                    }
-                }
-    
-                let options = "";
-    
-                for (let i in cf.options) {
-                    options += cf.options[i].optionDisplay + "\n";
-                }
-    
-                console.log(2);
+            }
 
-                cardForm({
-                    title: i18n("tt.customField") + " " + i18n("tt.customFieldId") + customFieldId,
-                    footer: true,
-                    borderless: true,
-                    topApply: true,
-                    target: "#altForm",
-                    fields: [
-                        {
-                            id: "catalog",
-                            type: "select2",
-                            title: i18n("tt.customFieldCatalog"),
-                            placeholder: i18n("tt.customFieldCatalog"),
-                            tags: true,
-                            createTags: true,
-                            options: cfc,
-                            value: cf.catalog,
-                        },
-                        {
-                            id: "field",
-                            type: "text",
-                            title: i18n("tt.customFieldField"),
-                            readonly: true,
-                            value: cf.field,
-                        },
-                        {
-                            id: "type",
-                            type: "text",
-                            title: i18n("tt.customFieldType"),
-                            readonly: true,
-                            value: i18n("tt.customFieldType" + cf.type.charAt(0).toUpperCase() + cf.type.slice(1)),
-                        },
-                        {
-                            id: "fieldDisplay",
-                            type: "text",
-                            title: i18n("tt.customFieldDisplay"),
-                            placeholder: i18n("tt.customFieldDisplay"),
-                            value: cf.fieldDisplay,
-                            validate: (v, prefix) => {
-                                return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
-                            }
-                        },
-                        {
-                            id: "fieldDescription",
-                            type: "text",
-                            title: i18n("tt.customFieldDescription"),
-                            placeholder: i18n("tt.customFieldDescription"),
-                            value: cf.fieldDescription,
-                        },
-                        {
-                            id: "regex",
-                            type: "text",
-                            title: i18n("tt.customFieldRegex"),
-                            placeholder: i18n("tt.customFieldRegex"),
-                            value: cf.regex,
-                            hint: i18n("forExample") + " ^[A-Z0-9]+$",
-                            hidden: cf.type !== "text",
-                        },
-                        {
-                            id: "format",
-                            type: "text",
-                            title: i18n("tt.customFieldDisplayFormat"),
-                            placeholder: i18n("tt.customFieldDisplayFormat"),
-                            value: cf.format,
-                            hint: i18n("forExample") + " %.02d",
-                            hidden: cf.type !== "text",
-                        },
-                        {
-                            id: "editor",
-                            type: "select2",
-                            title: i18n("tt.customFieldEditor"),
-                            placeholder: i18n("tt.customFieldEditor"),
-                            value: cf.editor,
-                            options: [
-                                {
-                                    id: "text",
-                                    text: i18n("tt.customFieldEditorString"),
-                                },
-                                {
-                                    id: "number",
-                                    text: i18n("tt.customFieldEditorNumber"),
-                                },
-                                {
-                                    id: "area",
-                                    text: i18n("tt.customFieldEditorText"),
-                                },
-                                {
-                                    id: "email",
-                                    text: i18n("tt.customFieldEditorEmail"),
-                                },
-                                {
-                                    id: "tel",
-                                    text: i18n("tt.customFieldEditorTel"),
-                                },
-                                {
-                                    id: "date",
-                                    text: i18n("tt.customFieldEditorDate"),
-                                },
-                                {
-                                    id: "time",
-                                    text: i18n("tt.customFieldEditorTime"),
-                                },
-                                {
-                                    id: "datetime-local",
-                                    text: i18n("tt.customFieldEditorDateTime"),
-                                },
-                                {
-                                    id: "yesno",
-                                    text: i18n("tt.customFieldEditorYesNo"),
-                                },
-                            ],
-                            hidden: cf.type !== "text",
-                        },
-                        {
-                            id: "link",
-                            type: "text",
-                            title: i18n("tt.customFieldLink"),
-                            placeholder: i18n("tt.customFieldLink"),
-                            value: cf.link,
-                            hint: i18n("forExample") + " https://example.com/?search=%value%",
-                            hidden: cf.type === "issues" || cf.type === "geo",
-                        },
-                        {
-                            id: "options",
-                            type: "area",
-                            title: i18n("tt.customFieldOptions"),
-                            placeholder: i18n("tt.customFieldOptions"),
-                            value: $.trim(options),
-                            hidden: cf.type !== "select",
-                            validate: (v, prefix) => {
-                                return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
-                            }
-                        },
-                        {
-                            id: "multiple",
-                            type: "yesno",
-                            title: i18n("tt.multiple"),
-                            value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
-                            hidden: cf.type === "text" || cf.type === "geo",
-                        },
-                        {
-                            id: "usersAndGroups",
-                            type: "select",
-                            title: i18n("tt.usersAndGroups"),
-                            options: [
-                                {
-                                    id: "users",
-                                    text: i18n("tt.users"),
-                                    selected: cf.format && cf.format.split(" ").includes("users"),
-                                },
-                                {
-                                    id: "groups",
-                                    text: i18n("tt.groups"),
-                                    selected: cf.format && cf.format.split(" ").includes("groups"),
-                                },
-                                {
-                                    id: "usersAndGroups",
-                                    text: i18n("tt.usersAndGroupsChoice"),
-                                    selected: cf.format && cf.format.split(" ").includes("usersAndGroups"),
-                                },
-                            ],
-                            hidden: cf.type !== "users",
-                        },
-                        {
-                            id: "indx",
-                            type: "yesno",
-                            title: i18n("tt.customFieldIndex"),
-                            value: cf.indx,
-                        },
-                        {
-                            id: "search",
-                            type: "yesno",
-                            title: i18n("tt.customFieldSearch"),
-                            value: cf.search,
-                            hidden: cf.type !== "text",
-                        },
-                        {
-                            id: "required",
-                            type: "yesno",
-                            title: i18n("tt.required"),
-                            value: cf.required,
-                        },
-                    ],
-                    delete: i18n("tt.customFieldDelete"),
-                    callback: function (result) {
-                        result.options = $.trim(result.options);
-                        if (result.delete === "yes") {
-                            modules.tt.settings.deleteCustomField(customFieldId);
-                        } else {
-                            result.format = "";
-                            if (result.multiple === "1") {
-                                result.format += " multiple";
-                            }
-                            if (cf.type === "users") {
-                                result.format += " " + result.usersAndGroups;
-                            }
-                            result.format = $.trim(result.format);
-                            modules.tt.settings.doModifyCustomField(customFieldId, result);
+            let cf = {};
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].customFieldId == customFieldId) {
+                    cf = modules.tt.meta.customFields[i];
+                }
+            }
+
+            let options = "";
+
+            for (let i in cf.options) {
+                options += cf.options[i].optionDisplay + "\n";
+            }
+
+            cardForm({
+                title: i18n("tt.customField") + " " + i18n("tt.customFieldId") + customFieldId,
+                footer: true,
+                borderless: true,
+                topApply: true,
+                target: "#altForm",
+                fields: [
+                    {
+                        id: "catalog",
+                        type: "select2",
+                        title: i18n("tt.customFieldCatalog"),
+                        placeholder: i18n("tt.customFieldCatalog"),
+                        tags: true,
+                        createTags: true,
+                        options: cfc,
+                        value: cf.catalog,
+                    },
+                    {
+                        id: "field",
+                        type: "text",
+                        title: i18n("tt.customFieldField"),
+                        readonly: true,
+                        value: cf.field,
+                    },
+                    {
+                        id: "type",
+                        type: "text",
+                        title: i18n("tt.customFieldType"),
+                        readonly: true,
+                        value: i18n("tt.customFieldType" + cf.type.charAt(0).toUpperCase() + cf.type.slice(1)),
+                    },
+                    {
+                        id: "fieldDisplay",
+                        type: "text",
+                        title: i18n("tt.customFieldDisplay"),
+                        placeholder: i18n("tt.customFieldDisplay"),
+                        value: cf.fieldDisplay,
+                        validate: (v, prefix) => {
+                            return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                         }
                     },
-                    cancel: function () {
-                        $("#altForm").hide();
+                    {
+                        id: "fieldDescription",
+                        type: "text",
+                        title: i18n("tt.customFieldDescription"),
+                        placeholder: i18n("tt.customFieldDescription"),
+                        value: cf.fieldDescription,
+                    },
+                    {
+                        id: "regex",
+                        type: "text",
+                        title: i18n("tt.customFieldRegex"),
+                        placeholder: i18n("tt.customFieldRegex"),
+                        value: cf.regex,
+                        hint: i18n("forExample") + " ^[A-Z0-9]+$",
+                        hidden: cf.type !== "text",
+                    },
+                    {
+                        id: "format",
+                        type: "text",
+                        title: i18n("tt.customFieldDisplayFormat"),
+                        placeholder: i18n("tt.customFieldDisplayFormat"),
+                        value: cf.format,
+                        hint: i18n("forExample") + " %.02d",
+                        hidden: cf.type !== "text",
+                    },
+                    {
+                        id: "editor",
+                        type: "select2",
+                        title: i18n("tt.customFieldEditor"),
+                        placeholder: i18n("tt.customFieldEditor"),
+                        value: cf.editor,
+                        options: [
+                            {
+                                id: "text",
+                                text: i18n("tt.customFieldEditorString"),
+                            },
+                            {
+                                id: "number",
+                                text: i18n("tt.customFieldEditorNumber"),
+                            },
+                            {
+                                id: "area",
+                                text: i18n("tt.customFieldEditorText"),
+                            },
+                            {
+                                id: "email",
+                                text: i18n("tt.customFieldEditorEmail"),
+                            },
+                            {
+                                id: "tel",
+                                text: i18n("tt.customFieldEditorTel"),
+                            },
+                            {
+                                id: "date",
+                                text: i18n("tt.customFieldEditorDate"),
+                            },
+                            {
+                                id: "time",
+                                text: i18n("tt.customFieldEditorTime"),
+                            },
+                            {
+                                id: "datetime-local",
+                                text: i18n("tt.customFieldEditorDateTime"),
+                            },
+                            {
+                                id: "yesno",
+                                text: i18n("tt.customFieldEditorYesNo"),
+                            },
+                        ],
+                        hidden: cf.type !== "text",
+                    },
+                    {
+                        id: "link",
+                        type: "text",
+                        title: i18n("tt.customFieldLink"),
+                        placeholder: i18n("tt.customFieldLink"),
+                        value: cf.link,
+                        hint: i18n("forExample") + " https://example.com/?search=%value%",
+                        hidden: cf.type === "issues" || cf.type === "geo",
+                    },
+                    {
+                        id: "options",
+                        type: "area",
+                        title: i18n("tt.customFieldOptions"),
+                        placeholder: i18n("tt.customFieldOptions"),
+                        value: $.trim(options),
+                        hidden: cf.type !== "select",
+                        validate: (v, prefix) => {
+                            return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "multiple",
+                        type: "yesno",
+                        title: i18n("tt.multiple"),
+                        value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
+                        hidden: cf.type === "text" || cf.type === "geo",
+                    },
+                    {
+                        id: "usersAndGroups",
+                        type: "select",
+                        title: i18n("tt.usersAndGroups"),
+                        options: [
+                            {
+                                id: "users",
+                                text: i18n("tt.users"),
+                                selected: cf.format && cf.format.split(" ").includes("users"),
+                            },
+                            {
+                                id: "groups",
+                                text: i18n("tt.groups"),
+                                selected: cf.format && cf.format.split(" ").includes("groups"),
+                            },
+                            {
+                                id: "usersAndGroups",
+                                text: i18n("tt.usersAndGroupsChoice"),
+                                selected: cf.format && cf.format.split(" ").includes("usersAndGroups"),
+                            },
+                        ],
+                        hidden: cf.type !== "users",
+                    },
+                    {
+                        id: "indx",
+                        type: "yesno",
+                        title: i18n("tt.customFieldIndex"),
+                        value: cf.indx,
+                    },
+                    {
+                        id: "search",
+                        type: "yesno",
+                        title: i18n("tt.customFieldSearch"),
+                        value: cf.search,
+                        hidden: cf.type !== "text",
+                    },
+                    {
+                        id: "required",
+                        type: "yesno",
+                        title: i18n("tt.required"),
+                        value: cf.required,
+                    },
+                ],
+                delete: i18n("tt.customFieldDelete"),
+                callback: function (result) {
+                    result.options = $.trim(result.options);
+                    if (result.delete === "yes") {
+                        modules.tt.settings.deleteCustomField(customFieldId);
+                    } else {
+                        result.format = "";
+                        if (result.multiple === "1") {
+                            result.format += " multiple";
+                        }
+                        if (cf.type === "users") {
+                            result.format += " " + result.usersAndGroups;
+                        }
+                        result.format = $.trim(result.format);
+                        modules.tt.settings.doModifyCustomField(customFieldId, result);
                     }
-                }).show();
-
-                console.log("3");
-            } catch (e) {
-                console.log(e);
-            }
+                },
+                cancel: function () {
+                    $("#altForm").hide();
+                }
+            }).show();
         }).
         fail(FAIL).
         always(loadingDone);
