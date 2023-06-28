@@ -901,6 +901,7 @@
                         callback: result => {
                             lStore("_sheet_name", result.sheet);
                             lStore("_sheet_date", result.date);
+                            console.log(result);
                             location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                         },
                     }).show();
