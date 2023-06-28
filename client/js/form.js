@@ -321,10 +321,14 @@ function cardForm(params) {
                 return $(`#${_prefix}${params.fields[i].id}`).val();
 
             case "date":
-                if (params.fields[i].sec) {
-                    return strtotime($(`#${_prefix}${params.fields[i].id}`).val());
+                if (params.fields[i].return === "asis") {
+                    return $(`#${_prefix}${params.fields[i].id}`).val();
                 } else {
-                    return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
+                    if (params.fields[i].sec) {
+                        return strtotime($(`#${_prefix}${params.fields[i].id}`).val());
+                    } else {
+                        return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
+                    }
                 }
 
             case "datetime-local":

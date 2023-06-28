@@ -892,6 +892,7 @@
                                 id: "date",
                                 type: "date",
                                 title: i18n("cs.date"),
+                                return: "asis",
                                 placeholder: i18n("cs.date"),
                                 validate: (v) => {
                                     return $.trim(v) !== "";
@@ -901,7 +902,6 @@
                         callback: result => {
                             lStore("_sheet_name", result.sheet);
                             lStore("_sheet_date", result.date);
-                            console.log(result);
                             location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                         },
                     }).show();
