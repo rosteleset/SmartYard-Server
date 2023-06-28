@@ -890,7 +890,7 @@
                 }
     
                 console.log(2);
-                
+
                 cardForm({
                     title: i18n("tt.customField") + " " + i18n("tt.customFieldId") + customFieldId,
                     footer: true,
@@ -1094,6 +1094,8 @@
                         $("#altForm").hide();
                     }
                 }).show();
+
+                console.log("3");
             } catch (e) {
                 console.log(e);
             }

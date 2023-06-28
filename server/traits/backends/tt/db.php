@@ -640,7 +640,9 @@
                     $sth = $this->db->prepare("
                         insert into 
                             tt_issue_custom_fields (catalog, type, field, field_display)
-                        values (:catalog, :type, :field, :field_display)");
+                        values (:catalog, :type, :field, :field_display)
+                    ");
+                    
                     if (!$sth->execute([
                         ":catalog" => $catalog,
                         ":type" => $type,
