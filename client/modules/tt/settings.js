@@ -863,6 +863,7 @@
         fail(FAIL).
         done(modules.tt.tt).
         done(() => {
+            console.log(1);
             try {
                 let cfc = [];
                 let a = {};
@@ -1096,6 +1097,7 @@
                 console.log(e);
             }
         }).
+        fail(FAIL).
         always(loadingDone);
     },
 
