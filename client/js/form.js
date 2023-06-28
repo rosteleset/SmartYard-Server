@@ -685,5 +685,7 @@ function cardForm(params) {
         params.done(_prefix);
     }
 
+    console.log(h);
+
     return target;
 }
