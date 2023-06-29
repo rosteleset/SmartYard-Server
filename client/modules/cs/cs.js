@@ -851,6 +851,7 @@
                 rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control">${datesOptions}</select></div>`;
         
                 if (AVAIL("cs", "sheet", "PUT")) {
+                    rtd += `<div class="nav-item mr-0 pr-0"><span id="cloneCSsheet" class="nav-link text-info mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0 align-middle"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="editCSsheet" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
@@ -859,6 +860,45 @@
                 rtd += "</span>";
         
                 $("#rightTopDynamic").html(rtd);
+
+                $("#cloneCSsheet").off("click").on("click", () => {
+                    cardForm({
+                        title: i18n("cs.cloneSheet"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        fields: [
+                            {
+                                id: "date",
+                                type: "date",
+                                title: i18n("cs.date"),
+                                return: "asis",
+                                placeholder: i18n("cs.date"),
+                                validate: (v) => {
+                                    return $.trim(v) !== "";
+                                }
+                            },
+                        ],
+                        callback: result => {
+                            lStore("_sheet_date", result.date);
+                            loadingStart();
+                            modules.cs.currentSheet.sheet.date = result.date;
+                            PUT("cs", "sheet", false, {
+                                "sheet": modules.cs.currentSheet.sheet.sheet,
+                                "date": modules.cs.currentSheet.sheet.date,
+                                "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet)),
+                            }).
+                            fail(FAIL).
+                            done(() => {
+                                message(i18n("cs.sheetWasSaved"));
+                                location.href = "?#cs&_=" + Math.random();
+                            }).
+                            always(() => {
+                                loadingDone();
+                            });
+                        },
+                    }).show();
+                });
         
                 $("#addCSsheet").off("click").on("click", () => {
                     let sheetsOptions = [];
