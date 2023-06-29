@@ -47,7 +47,7 @@
                 modules.tt.renderIssues({
                     project: block.project,
                     filter: block.filter,
-                }, $((block.target == "right")?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
+                }, $((block.target === "right")?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
             } else {
                 loadingDone();
             }
