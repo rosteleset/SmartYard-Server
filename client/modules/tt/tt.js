@@ -1359,7 +1359,7 @@
                 }
                 e = `<span class="text-danger text-bold">${e} [${params.filter}]<span/>`;
                 if (target !== true) {
-                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">&nbsp;</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}">${e}</div>`);
+                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
                 } else {
                     $("#" + issuesListId).html(e);
                 }

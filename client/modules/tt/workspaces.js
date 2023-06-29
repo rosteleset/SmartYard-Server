@@ -37,6 +37,18 @@
             $("#altForm").show();
         }
 
+        let rtd = "";
+        rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control" style="width: 259px;">`;
+        rtd += `</select></div>`;
+
+        rtd += `<div class="nav-item mr-0 pr-0 align-middle"><span id="addWorkspace" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.addWorkspace")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
+        rtd += `<div class="nav-item mr-0 pr-0"><span id="editWorkspace" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.editWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
+        rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteWorkspace" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.deleteWorkspace")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
+
+        $("#rightTopDynamic").html(rtd);
+
+        console.log(1);
+
         $("#mainForm").html("");
         $("#altForm").html("");
 
