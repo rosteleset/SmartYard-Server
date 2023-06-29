@@ -8,30 +8,55 @@
  */
 
 /**
+ * load env file
+ */
+function loadEnvFile(): array
+{
+    $path = __DIR__ . '/../.env';
+
+    if (file_exists($path)) {
+        $content = file_get_contents($path);
+        $lines = explode(PHP_EOL, $content);
+
+        $result = [];
+
+        for ($i = 0; $i < count($lines); $i++) {
+            list($key, $value) = explode('=', $lines[$i], 2);
+
+            $result[$key] = $value;
+        }
+
+        return $result;
+    }
+
+    return [];
+}
+
+/**
  * load env config
  *
+ * @param array $env
  * @param array $value
  * @return array
- * @throws RuntimeException
  */
-function loadEnv(array $value): array
+function loadEnv(array $env, array $value): array
 {
     $keys = array_keys($value);
     $matches = [];
 
     for ($i = 0; $i < count($keys); $i++) {
         if (is_array($value[$keys[$i]]))
-            $value[$keys[$i]] = loadEnv($value[$keys[$i]]);
+            $value[$keys[$i]] = loadEnv($env, $value[$keys[$i]]);
         else if (str_starts_with($value[$keys[$i]], '${') && str_ends_with($value[$keys[$i]], '}')) {
             $key = substr($value[$keys[$i]], 2, -1);
-            $envValue = getenv($key);
+            $envValue = array_key_exists($key, $env) ? $env[$key] : getenv($key);
 
             if (is_string($envValue))
                 $value[$keys[$i]] = $envValue;
             else throw new RuntimeException($key . ' config key not found in env');
         } else if (preg_match_all('/\${([a-zA-Z_0-9]*)}/', $value[$keys[$i]], $matches))
             for ($j = 0; $j < count($matches[0]); $j++) {
-                $envValue = getenv($matches[1][$j]);
+                $envValue = array_key_exists($matches[1][$j], $env) ? $env[$matches[1][$j]] : getenv($matches[1][$j]);
 
                 if (is_string($envValue))
                     $value[$keys[$i]] = str_replace($matches[0][$j], $envValue, $value[$keys[$i]]);
@@ -45,9 +70,9 @@ function loadEnv(array $value): array
 /**
  * load server config
  *
- * @throws JsonException
- * @throws RuntimeException
  * @return array
+ * @throws RuntimeException
+ * @throws JsonException
  */
 function loadConfig(): array
 {
@@ -56,10 +81,12 @@ function loadConfig(): array
 
     $path = __DIR__ . '/../config/config';
 
+    $env = loadEnvFile();
+
     if (file_exists($path . '.json'))
-        $config = loadEnv(json_decode(file_get_contents($path . '.json'), true, flags: JSON_THROW_ON_ERROR));
+        $config = loadEnv($env, json_decode(file_get_contents($path . '.json'), true, flags: JSON_THROW_ON_ERROR));
     else if (file_exists($path . '.yml'))
-        $config = loadEnv(json_decode(json_encode(yaml_parse_file($path . '.yml'), JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR));
+        $config = loadEnv($env, json_decode(json_encode(yaml_parse_file($path . '.yml'), JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR));
 
     if (isset($config)) {
         file_put_contents(__DIR__ . '/../cache/config.php', '<?php return ' . var_export($config, true) . ';');
