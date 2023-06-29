@@ -47,8 +47,6 @@
 
         $("#rightTopDynamic").html(rtd);
 
-        console.log(1);
-
         $("#mainForm").html("");
         $("#altForm").html("");
 
