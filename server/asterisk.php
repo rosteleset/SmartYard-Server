@@ -15,17 +15,9 @@
     header('Content-Type: application/json');
 
     try {
-        $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
+        $config = loadConfig();
     } catch (Exception $e) {
         $config = false;
-    }
-
-    if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
     }
 
     if (!$config) {

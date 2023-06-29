@@ -57,6 +57,7 @@
             [--run-record-download=<id>]
 
         config:
+            [--clear-config]
             [--print-config]
             [--write-yaml-config]
             [--write-json-config]
@@ -213,17 +214,9 @@
     }
 
     try {
-        $config = @json_decode(file_get_contents("config/config.json"), true);
+        $config = loadConfig();
     } catch (Exception $e) {
         $config = false;
-    }
-
-    if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file("config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
     }
 
     if (!$config) {
@@ -492,6 +485,13 @@
 
     if (count($args) == 1 && array_key_exists("--print-config", $args) && !isset($args["--print-config"])) {
         print_r($config);
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists('--clear-config', $args) && !isset($args['----clear-config'])) {
+        if (file_exists('cache/config.php'))
+            unlink('cache/config.php');
+
         exit(0);
     }
 

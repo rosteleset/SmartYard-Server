@@ -1,73 +1,138 @@
 <?php
 
-    /**
-     * loads backend module by config, returns false if backend not found or can't be loaded
-     *
-     * @param string $backend module name
-     * @return false|object
-     */
+/**
+ * loads backend module by config, returns false if backend not found or can't be loaded
+ *
+ * @param string $backend module name
+ * @return false|object
+ */
 
-    function loadBackend($backend, $login = false) {
-        global $config, $db, $redis, $backends;
+/**
+ * load env config
+ *
+ * @param array $value
+ * @return array
+ * @throws RuntimeException
+ */
+function loadEnv(array $value): array
+{
+    $keys = array_keys($value);
+    $matches = [];
 
-        if (@$backends[$backend]) {
-            return $backends[$backend];
-        } else {
-            if (@$config["backends"][$backend]) {
-                try {
-                    if (file_exists(__DIR__ . "/../backends/$backend/$backend.php") && !class_exists("backends\\$backend\\$backend")) {
-                        require_once __DIR__ . "/../backends/$backend/$backend.php";
-                    }
-                    if (file_exists(__DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php")) {
-                        require_once __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
-                        $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
-                        $backends[$backend] = new $className($config, $db, $redis, $login);
-                        return $backends[$backend];
-                    } else {
-                        return false;
-                    }
-                } catch (Exception $e) {
-                    setLastError("cantLoadBackend");
+    for ($i = 0; $i < count($keys); $i++) {
+        if (is_array($value[$keys[$i]]))
+            $value[$keys[$i]] = loadEnv($value[$keys[$i]]);
+        else if (str_starts_with($value[$keys[$i]], '${') && str_ends_with($value[$keys[$i]], '}')) {
+            $key = substr($value[$keys[$i]], 2, -1);
+            $envValue = getenv($key);
+
+            if (is_string($envValue))
+                $value[$keys[$i]] = $envValue;
+            else throw new RuntimeException($key . ' config key not found in env');
+        } else if (preg_match_all('/\${([a-zA-Z_0-9]*)}/', $value[$keys[$i]], $matches))
+            for ($j = 0; $j < count($matches[0]); $j++) {
+                $envValue = getenv($matches[1][$j]);
+
+                if (is_string($envValue))
+                    $value[$keys[$i]] = str_replace($matches[0][$j], $envValue, $value[$keys[$i]]);
+                else throw new RuntimeException($matches[1][$j] . ' config key not found in env');
+            }
+    }
+
+    return $value;
+}
+
+/**
+ * load server config
+ *
+ * @throws JsonException
+ * @throws RuntimeException
+ * @return array
+ */
+function loadConfig(): array
+{
+    if (file_exists(__DIR__ . '/../cache/config.php'))
+        return require_once __DIR__ . '/../cache/config.php';
+
+    $path = __DIR__ . '/../config/config';
+
+    if (file_exists($path . '.json'))
+        $config = loadEnv(json_decode(file_get_contents($path . '.json'), true, flags: JSON_THROW_ON_ERROR));
+    else if (file_exists($path . '.yml'))
+        $config = loadEnv(json_decode(json_encode(yaml_parse_file($path . '.yml'), JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR));
+
+    if (isset($config)) {
+        file_put_contents(__DIR__ . '/../cache/config.php', '<?php return ' . var_export($config, true) . ';');
+
+        return $config;
+    }
+
+    throw new RuntimeException('Config not found or can\'t be loaded');
+}
+
+function loadBackend($backend, $login = false)
+{
+    global $config, $db, $redis, $backends;
+
+    if (@$backends[$backend]) {
+        return $backends[$backend];
+    } else {
+        if (@$config["backends"][$backend]) {
+            try {
+                if (file_exists(__DIR__ . "/../backends/$backend/$backend.php") && !class_exists("backends\\$backend\\$backend")) {
+                    require_once __DIR__ . "/../backends/$backend/$backend.php";
+                }
+                if (file_exists(__DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php")) {
+                    require_once __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
+                    $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
+                    $backends[$backend] = new $className($config, $db, $redis, $login);
+                    return $backends[$backend];
+                } else {
                     return false;
                 }
-            } else {
-                setLastError("backendNotFound");
+            } catch (Exception $e) {
+                setLastError("cantLoadBackend");
                 return false;
             }
+        } else {
+            setLastError("backendNotFound");
+            return false;
         }
     }
+}
 
-    /**
-     * loads domophone class, returns false if .json or class not found
-     *
-     * @param string $model .json
-     * @param string $url
-     * @param string $password
-     * @param boolean $first_time
-     * @return false|object
-     */
+/**
+ * loads domophone class, returns false if .json or class not found
+ *
+ * @param string $model .json
+ * @param string $url
+ * @param string $password
+ * @param boolean $first_time
+ * @return false|object
+ */
 
-    function loadDomophone($model, $url, $password, $first_time = false) {
-        $path_to_model = __DIR__ . "/../hw/domophones/models/$model";
+function loadDomophone($model, $url, $password, $first_time = false)
+{
+    $path_to_model = __DIR__ . "/../hw/domophones/models/$model";
 
-        if (file_exists($path_to_model)) {
-            $class = @json_decode(file_get_contents($path_to_model), true)['class'];
+    if (file_exists($path_to_model)) {
+        $class = @json_decode(file_get_contents($path_to_model), true)['class'];
 
-            $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/domophones/");
-            $iterator = new RecursiveIteratorIterator($directory);
+        $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/domophones/");
+        $iterator = new RecursiveIteratorIterator($directory);
 
-            foreach($iterator as $file) {
-                if ($file->getFilename() == "$class.php") {
-                    $path_to_class = $file->getPath() . "/" . $class . ".php";
-                    require_once $path_to_class;
-                    $className = "hw\\domophones\\$class";
-                    return new $className($url, $password, $first_time);
-                }
+        foreach ($iterator as $file) {
+            if ($file->getFilename() == "$class.php") {
+                $path_to_class = $file->getPath() . "/" . $class . ".php";
+                require_once $path_to_class;
+                $className = "hw\\domophones\\$class";
+                return new $className($url, $password, $first_time);
             }
         }
-
-        return false;
     }
+
+    return false;
+}
 
 /**
  * loads camera class, returns false if .json or class not found
@@ -79,7 +144,8 @@
  * @return false|object
  */
 
-function loadCamera($model, $url, $password, $first_time = false) {
+function loadCamera($model, $url, $password, $first_time = false)
+{
     $path_to_model = __DIR__ . "/../hw/cameras/models/$model";
 
     if (file_exists($path_to_model)) {
@@ -88,7 +154,7 @@ function loadCamera($model, $url, $password, $first_time = false) {
         $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/cameras/");
         $iterator = new RecursiveIteratorIterator($directory);
 
-        foreach($iterator as $file) {
+        foreach ($iterator as $file) {
             if ($file->getFilename() == "$class.php") {
                 $path_to_class = $file->getPath() . "/" . $class . ".php";
                 require_once $path_to_class;

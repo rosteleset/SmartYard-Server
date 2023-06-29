@@ -116,6 +116,9 @@ backends:
     mqtt: mqtt://<!-- your server here -->
     username: rbt
     password: <!-- your mosquitto password here --!>
+  oauth:
+    public_key: <!-- path to public key --!>
+    audience: <!-- a string or array of strings that identifies the recipients that the JWT is intended for (example - lk,guest) --!>
 email:
   server: 127.0.0.1
   port: 587

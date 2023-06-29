@@ -999,11 +999,18 @@
                             "auth_token" => $query,
                         ];
                         break;
+                    case "aud_jti":
+                        $q = "select * from houses_subscribers_mobile where aud_jti = :aud_jti";
+                        $p = [
+                            "aud_jti" => $query
+                        ];
+                        break;
                 }
 
                 $subscribers = $this->db->get($q, $p, [
                     "house_subscriber_id" => "subscriberId",
                     "id" => "mobile",
+                    "aud_jti" => "audJti",
                     "auth_token" => "authToken",
                     "platform" => "platform",
                     "push_token" => "pushToken",
@@ -1076,7 +1083,6 @@
                 }
 
                 if ($subscriberId && $flatId) {
-
                     if (!checkInt($flatId)) {
                         setLastError("invalidFlat");
                         return false;

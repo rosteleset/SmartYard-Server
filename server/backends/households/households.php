@@ -211,7 +211,7 @@
             abstract public function getDomophone($domophoneId);
 
             /**
-             * @param $by - "id", "mobile", "flat", "...?"
+             * @param $by - "id", "mobile", "aud_jti", "flat", "...?"
              * @param $query
              * @return false|array
              */

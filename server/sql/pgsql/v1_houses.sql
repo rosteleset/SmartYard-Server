@@ -119,6 +119,7 @@ CREATE TABLE houses_subscribers_mobile
 (
     house_subscriber_id serial primary key,
     id character varying,                                                                                               -- phone
+    aud_jti character varying,
     auth_token character varying,
     platform integer,                                                                                                   -- 0 - android, 1 - ios
     push_token character varying,
