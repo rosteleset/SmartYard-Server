@@ -218,7 +218,7 @@ function auth($_response_cache_ttl = -1)
             if (time() <= $jwt['nbf'] || time() >= $jwt['exp'])
                 response(401, false, 'Не авторизован', 'Не авторизован');
 
-            $audience = explode('.', $oauth['audience']);
+            $audience = explode(',', $oauth['audience']);
 
             if (!in_array($jwt['aud'], $audience))
                 response(401, false, 'Не авторизован', 'Не авторизован');
