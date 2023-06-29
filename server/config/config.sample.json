@@ -65,10 +65,11 @@
       "backend": "internal"
     },
     "isdn": {
-      "backend": "lanta",
-      "confirm_method": "outgoingCall",
+      "backend": "${ISDN_BACKEND}",
       "endpoint": "${ISDN_ENDPOINT}",
-      "secret": "${ISDN_SECRET}"
+      "secret": "${ISDN_SECRET}",
+
+      "confirm_method": "outgoingCall"
     },
     "inbox": {
       "backend": "clickhouse"
