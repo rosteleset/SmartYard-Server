@@ -246,6 +246,8 @@
     "addWorkspace": "Добавить рабочий стол",
     "editWorkspace": "Редактировать рабочий стол",
     "deleteWorkspace": "Удалить рабочий стол",
+    "noWorkspacesAvailable": "Нет доступных рабочих столов",
+    "noWorkspaceAvailable": "Рабочий стол не выбран или не может быть загружен",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

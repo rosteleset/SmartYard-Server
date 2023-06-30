@@ -35,8 +35,13 @@
         fail(FAIL).
         fail(loadingDone).
         done(result => {
+            console.log(result.files);
+
             let showAlt = false;
             let workspace = [];
+            let currentWorkspace = params.workspace?params.workspace:lStore("_tt_workspace");
+            lStore("_tt_workspace", currentWorkspace);
+
 /*
             let workspace = [
                 {
@@ -54,6 +59,30 @@
                 },
             ];
 */
+
+            let h = "";
+            for (let i in result.files) {
+                if (result.files[i].filename == currentWorkspace) {
+                    h += "<option selected='selected'>" + escapeHTML(result.files[i].filename) + "</option>";
+                    try {
+                        workspace = JSON.parse(result.files[i].file);
+                    } catch (e) {
+                        FAIL();
+                        workspace = [];
+                    }
+                } else {
+                    h += "<option>" + escapeHTML(result.files[i].filename) + "</option>";
+                }
+            }
+
+            if (!result.files.length) {
+                $("#mainForm").html(`<div class="mt-2 ml-2">${i18n("tt.noWorkspacesAvailable")}</>`);
+            } else {
+                if (!workspace.length) {
+                    $("#mainForm").html(`<div class="mt-2 ml-2">${i18n("tt.noWorkspaceAvailable")}</>`);
+                }
+            }
+
             for (let i in workspace) {
                 if (workspace[i].target == "right") {
                     showAlt = true;
