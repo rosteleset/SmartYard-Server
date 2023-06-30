@@ -17,10 +17,13 @@
             public static function GET($params) {
                 $files = loadBackend("files");
 
-                $_files = [];
+                $_files = false;
 
                 if ($files) {
-                    //
+                    $_files = $files->searchFiles([
+                        "metadata.type" => @$params["type"],
+                        "metadata.owner" => $params["_login"],
+                    ]);
                 }
 
                 return api::ANSWER($_files, ($_files !== false)?"files":false);
