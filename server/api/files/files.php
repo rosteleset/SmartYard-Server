@@ -26,6 +26,12 @@
                     ]);
                 }
 
+                if (@$params["withContent"]) {
+                    foreach ($_files as &$file) {
+                        $file["file"] = $files->streamToContents($files->getFileStream($file["id"]));
+                    }
+                }
+
                 return api::ANSWER($_files, ($_files !== false)?"files":false);
             }
 

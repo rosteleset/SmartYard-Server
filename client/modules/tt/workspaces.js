@@ -8,34 +8,12 @@
         moduleLoaded("tt.workspaces", this);
     },
 
+    modifyWorkspace: function(workspace) {
+
+    },
+
     renderWorkspaces: function(params) {
-        let showAlt = false;
-
-        let workspace = [
-            {
-                project: "RTL",
-                filter: "all",
-            },
-            {
-                target: "right",
-                project: "RTL",
-                filter: "my",
-            },
-            {
-                project: "RTL",
-                filter: "delayed",
-            },
-        ];
-
-        for (let i in workspace) {
-            if (workspace[i].target == "right") {
-                showAlt = true;
-            }
-        }
-
-        if (showAlt) {
-            $("#altForm").show();
-        }
+        loadingStart();
 
         let rtd = "";
         rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control" style="width: 259px;">`;
@@ -50,18 +28,57 @@
         $("#mainForm").html("");
         $("#altForm").html("");
 
-        (function loadWorkspace() {
-            let block = workspace.shift();
-
-            if (block) {
-                modules.tt.renderIssues({
-                    project: block.project,
-                    filter: block.filter,
-                }, $((block.target === "right")?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
-            } else {
-                loadingDone();
+        QUERY("files", "files", {
+            type: "workspace",
+            withContent: true,
+        }).
+        fail(FAIL).
+        fail(loadingDone).
+        done(result => {
+            let showAlt = false;
+            let workspace = [];
+/*
+            let workspace = [
+                {
+                    project: "RTL",
+                    filter: "all",
+                },
+                {
+                    target: "right",
+                    project: "RTL",
+                    filter: "my",
+                },
+                {
+                    project: "RTL",
+                    filter: "delayed",
+                },
+            ];
+*/
+            for (let i in workspace) {
+                if (workspace[i].target == "right") {
+                    showAlt = true;
+                }
             }
-        })();
+    
+            if (showAlt) {
+                $("#altForm").show();
+            } else {
+                $("#altForm").hide();
+            }
+    
+            (function loadWorkspace() {
+                let block = workspace.shift();
+    
+                if (block) {
+                    modules.tt.renderIssues({
+                        project: block.project,
+                        filter: block.filter,
+                    }, $((block.target === "right")?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
+                } else {
+                    loadingDone();
+                }
+            })();
+        });
     },
 
     route: function (params) {
