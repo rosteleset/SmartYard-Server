@@ -251,6 +251,8 @@
                 if (!in_array($notification, [ "none", "tgEmail", "emailTg", "tg", "email" ])) {
                     return false;
                 }
+
+                $user = $this->getUser($uid);
                 
                 try {
                     $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group where uid = $uid");
@@ -277,7 +279,7 @@
 
                     return $sth->execute([
                         ":real_name" => trim($realName),
-                        ":e_mail" => trim($eMail),
+                        ":e_mail" => trim($eMail)?trim($eMail):$user["eMail"],
                         ":phone" => trim($phone),
                         ":tg" => trim($tg),
                         ":notification" => trim($notification),
