@@ -202,16 +202,6 @@
 
                     foreach ($issueFiles as $file) {
                         $delete = $delete && $files->deleteFile($file["id"]) &&
-                        $this->mongo->$db->$project->updateOne(
-                            [
-                                "issueId" => $issueId,
-                            ],
-                            [
-                                "\$set" => [
-                                    "updated" => time(),
-                                ],
-                            ]
-                        ) &&
                         $this->addJournalRecord($issueId, "deleteAttachment", [
                             "attachmentFilename" => $filename,
                         ], null);
