@@ -406,7 +406,7 @@ end
 -- выполнить действие
 function action(issue, action, original)
     if action == "Назначить" then
-        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0)then
+        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0) then
             issue["assigned"] = {
                 tt.login()
             }

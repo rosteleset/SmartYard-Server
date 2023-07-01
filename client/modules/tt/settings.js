@@ -2577,6 +2577,16 @@
             editor.setValue(f.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#filterSave").click();
+                }),
+            });
             $("#filterSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
