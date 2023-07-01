@@ -1227,8 +1227,10 @@
 
                 try {
                     $issue = $this->getIssue($issueId);
-                    $workflow = $this->loadWorkflow($issue["workflow"]);
-                    $workflow->issueChanged($issue, $action, $old, $new);
+                    if ($issue) {
+                        $workflow = $this->loadWorkflow($issue["workflow"]);
+                        $workflow->issueChanged($issue, $action, $old, $new);
+                    }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                 }
