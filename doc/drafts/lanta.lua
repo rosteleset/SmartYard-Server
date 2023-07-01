@@ -250,7 +250,7 @@ function createIssue(issue)
         end
     end
     
-    if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0)then
+    if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0) then
         issue["assigned"] = {
             tt.login()
         }
@@ -283,6 +283,10 @@ end
 function getAvailableActions(issue)
     if isOpened(issue) then
         local actions = {
+            "Звонок совершен",
+            "Недозвон",
+            "Позвонить",
+            "-",
             "Назначить",
             "saAddComment",
             "saAddFile",
@@ -310,6 +314,14 @@ function getAvailableActions(issue)
             actions[#actions + 1] = "-"
             actions[#actions + 1] = "Делопроизводство"
         end
+        
+        if issue["_cf_need_call"] == nil or tonumber(issue["_cf_need_call"]) == 0 or tonumber(issue["_cf_call_date"]) >= utils.time() then
+            actions = removeValues(actions, {
+                "Звонок совершен",
+                "Недозвон",
+            })
+        end
+        
     
         return actions
     else
@@ -399,6 +411,14 @@ function getActionTemplate(issue, action)
             "comment"
         }
     end
+    
+    if action == "Позвонить" then
+        return {
+            "_cf_call_date",
+            "_cf_anytime_call",
+            "comment"
+        }
+    end
 
     return false
 end
@@ -406,7 +426,7 @@ end
 -- выполнить действие
 function action(issue, action, original)
     if action == "Назначить" then
-        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0) then
+        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0)then
             issue["assigned"] = {
                 tt.login()
             }
@@ -506,6 +526,9 @@ function action(issue, action, original)
     end
     
     if action == "Делопроизводство" then
+        issue["assigned"] = {
+            "office"
+        }
         return tt.modifyIssue(issue)
     end
 
@@ -586,7 +609,7 @@ end
 
 -- имя рабочего процесса
 function getWorkflowName()
-    return "Обращение [точка входа]"
+    return "ЛанТа"
 end
 
 -- каталог рабочего процесса
