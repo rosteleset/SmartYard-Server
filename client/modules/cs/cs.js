@@ -376,6 +376,7 @@
                             let cells = parseInt(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells]);
                             let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
                             let done = modules.cs.issueDone(r.issues.issues[i]);
+                            let closed = modules.cs.issueClosed(r.issues.issues[i]);
     
                             let start = -1;
     
@@ -395,6 +396,9 @@
                                                 if (!modules.cs.issuesInSheet[uid]) {
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
+                                                if (closed) {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueClosedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                } else
                                                 if (installers && installers.length && !done) {
                                                     modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else
@@ -1014,6 +1018,12 @@
                             modules.cs.issueDone = new Function ("issue", `return ${modules.cs.currentSheet.sheet.doneCondition};`);
                         } else {
                             modules.cs.issueDone = new Function ("issue", `return false;`);
+                        }
+            
+                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.closedCondition) {
+                            modules.cs.issueClosed = new Function ("issue", `return ${modules.cs.currentSheet.sheet.closedCondition};`);
+                        } else {
+                            modules.cs.issueClosed = new Function ("issue", `return false;`);
                         }
             
                         loadIssues(() => {
