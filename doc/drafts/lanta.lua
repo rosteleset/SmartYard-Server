@@ -200,6 +200,8 @@ function coordinate(issue, workflow)
     issue["_cf_install_done"] = ""
     issue["_cf_coordination_date"] = utils.time()
     issue["_cf_coordinator"] = tt.login()
+    issue["assigned"] = { }
+
     return tt.modifyIssue(issue)
 end
 
@@ -430,20 +432,30 @@ function action(issue, action, original)
     
     if action == "Работы завершены" then
         issue["_cf_done_date"] = utils.time()
-        if original["_cf_object_id"] ~= nil and tonumber(original["_cf_object_id"]) > 0 then
-            if original["_cf_client_type"] == "ФЛ" then
+        -- по умолчанию - автору
+        issue["assigned"] = {
+            original["author"]
+        }
+        if original["_cf_object_id"] ~= nil then
+            if tonumber(original["_cf_object_id"]) >= 200000000 and tonumber(original["_cf_object_id"]) < 300000000 then
+                -- l2 - в техотдел
                 issue["assigned"] = {
-                    "callcenter"
-                }
-            else
-                issue["assigned"] = {
-                    "office"
+                    "tech"
                 }
             end
-        else
-            issue["assigned"] = {
-                original["author"]
-            }
+            if tonumber(original["_cf_object_id"]) >= 500000000 and tonumber(original["_cf_object_id"]) < 600000000 then
+                if original["_cf_client_type"] == "ФЛ" then
+                    -- ФЛ - в коллцентр
+                    issue["assigned"] = {
+                        "callcenter"
+                    }
+                else
+                    -- ЮЛ (и прочие) - в офис
+                    issue["assigned"] = {
+                        "office"
+                    }
+                end
+            end
         end
         return tt.modifyIssue(issue)
     end
