@@ -430,8 +430,8 @@ function action(issue, action, original)
     
     if action == "Работы завершены" then
         issue["_cf_done_date"] = utils.time()
-        if issue["_cf_object_id"] ~= nil and tonumber(issue["_cf_object_id"]) > 0 then
-            if issue["_cf_client_type"] == "ФЛ" then
+        if original["_cf_object_id"] ~= nil and tonumber(original["_cf_object_id"]) > 0 then
+            if original["_cf_client_type"] == "ФЛ" then
                 issue["assigned"] = {
                     "callcenter"
                 }
@@ -442,7 +442,7 @@ function action(issue, action, original)
             end
         else
             issue["assigned"] = {
-                issue["author"]
+                original["author"]
             }
         end
         return tt.modifyIssue(issue)
