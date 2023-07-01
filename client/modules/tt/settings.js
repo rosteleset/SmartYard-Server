@@ -2580,49 +2580,59 @@
 
     renderFilter: function (filter) {
         loadingStart();
-        GET("tt", "filter", filter, true).
-        done(f => {
-            // TODO f..ck!
-            let top = 75;
-            let height = $(window).height() - top;
-            let h = '';
-            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
-            h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
-            h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
-            $("#mainForm").html(h);
-            let editor = ace.edit("filterEditor");
-            editor.setTheme("ace/theme/chrome");
-            editor.session.setMode("ace/mode/json");
-            editor.setValue(f.body, -1);
-            editor.clearSelection();
-            editor.setFontSize(14);
-            editor.commands.addCommand({
-                name: 'save',
-                bindKey: {
-                    win: "Ctrl-S", 
-                    mac: "Cmd-S"
-                },
-                exec: (() => {
-                    $("#filterSave").click();
-                }),
-            });
-            $("#filterSave").off("click").on("click", () => {
-                loadingStart();
-                PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
-                fail(FAIL).
-                done(() => {
-                    message(i18n("tt.filterWasSaved"));
-                }).
-                always(() => {
-                    loadingDone();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            GET("tt", "filter", filter, true).
+            done(f => {
+                let readOnly = modules.tt.meta.filtersExt[filter].owner?true:false;
+                // TODO f..ck!
+                let top = 75;
+                let height = $(window).height() - top;
+                let h = '';
+                h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+                h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+                h += "</div>";
+                if (!readOnly) {
+                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
+                }
+                $("#mainForm").html(h);
+                let editor = ace.edit("filterEditor");
+                editor.setTheme("ace/theme/chrome");
+                editor.session.setMode("ace/mode/json");
+                editor.setValue(f.body, -1);
+                editor.clearSelection();
+                editor.setFontSize(14);
+                editor.setReadOnly(readOnly);
+                editor.commands.addCommand({
+                    name: 'save',
+                    bindKey: {
+                        win: "Ctrl-S", 
+                        mac: "Cmd-S"
+                    },
+                    exec: (() => {
+                        $("#filterSave").click();
+                    }),
                 });
+                $("#filterSave").off("click").on("click", () => {
+                    loadingStart();
+                    PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("tt.filterWasSaved"));
+                    }).
+                    always(() => {
+                        loadingDone();
+                    });
+                });
+            }).
+            fail(FAIL).
+            always(() => {
+                loadingDone();
             });
         }).
         fail(FAIL).
-        always(() => {
-            loadingDone();
-        });
+        fail(loadingDone);
     },
 
     deleteFilter: function (filter) {
@@ -2663,7 +2673,6 @@
     },
 
     renderFilters: function () {
-
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
