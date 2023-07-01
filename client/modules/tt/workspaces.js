@@ -30,15 +30,6 @@
     renderWorkspaces: function(params) {
         loadingStart();
 
-        let rtd = "";
-        rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control" style="width: 259px;">`;
-        rtd += `</select></div>`;
-
-        rtd += `<div class="nav-item mr-0 pr-0"><span id="editWorkspace" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
-        rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteWorkspace" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.deleteWorkspace")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
-
-        $("#rightTopDynamic").html(rtd);
-
         $("#mainForm").html("");
         $("#altForm").html("");
 
@@ -93,6 +84,17 @@
             } else {
                 $("#altForm").hide();
             }
+    
+            let rtd = "";
+            rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control" style="width: 259px;">`;
+            rtd += `</select></div>`;
+    
+            rtd += `<div class="nav-item mr-0 pr-0"><span id="editWorkspace" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
+            if (currentWorkspace) {
+                rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteWorkspace" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.deleteWorkspace")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
+            }
+    
+            $("#rightTopDynamic").html(rtd);
     
             (function loadWorkspace() {
                 let block = workspace.shift();
