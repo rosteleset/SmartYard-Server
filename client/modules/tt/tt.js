@@ -1281,8 +1281,12 @@
                     }
                     if (f && $.trim(f.name) && f.fields) {
                         let n = $.trim(f.name) + "-" + md5(lStore("_login") + ":" + $.trim(f.name));
+                        f.fileName = n;
                         loadingStart();
-                        PUT("tt", "customFilter", n, { "project": current_project, "body": $.trim(editor.getValue()) }).
+                        PUT("tt", "customFilter", n, {
+                            "project": current_project,
+                            "body": JSON.stringify(f, true, 4),
+                        }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
