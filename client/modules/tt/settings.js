@@ -1664,6 +1664,7 @@
                         return rows;
                     },
                 }).show();
+                loadingDone();
             });
         }).
         fail(FAIL).
