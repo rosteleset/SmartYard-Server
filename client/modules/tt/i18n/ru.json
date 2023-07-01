@@ -248,6 +248,8 @@
     "deleteWorkspace": "Удалить рабочий стол",
     "noWorkspacesAvailable": "Нет доступных рабочих столов",
     "noWorkspaceAvailable": "Рабочий стол не выбран или не может быть загружен",
+    "modifyWorkspace": "Редактировать рабочий стол",
+    "confirmWorkspaceDelete": "Удалить рабочий стол \"%s\"?",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

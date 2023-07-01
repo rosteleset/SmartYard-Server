@@ -1,15 +1,30 @@
 ({
     menuItem: false,
 
+    demoWorkspace: {
+        name: "workspace",
+        workspace: [
+            {
+                project: "RTL",
+                filter: "all",
+            },
+            {
+                target: "right",
+                project: "RTL",
+                filter: "my",
+            },
+            {
+                project: "RTL",
+                filter: "opened",
+            },
+        ],
+    },
+
     init: function () {
         if (parseInt(myself.uid)) {
             this.menuItem = leftSide("fas fa-fw fa-tablets", i18n("tt.workspaces"), "?#tt.workspaces", "tt");
         }
         moduleLoaded("tt.workspaces", this);
-    },
-
-    modifyWorkspace: function(workspace) {
-
     },
 
     renderWorkspaces: function(params) {
@@ -35,37 +50,20 @@
         fail(FAIL).
         fail(loadingDone).
         done(result => {
-            console.log(result.files);
-
             let showAlt = false;
             let workspace = [];
             let currentWorkspace = params.workspace?params.workspace:lStore("_tt_workspace");
+            if (!currentWorkspace && result.files.length) {
+                currentWorkspace = result.files[0].filename;
+            }
             lStore("_tt_workspace", currentWorkspace);
-
-/*
-            let workspace = [
-                {
-                    project: "RTL",
-                    filter: "all",
-                },
-                {
-                    target: "right",
-                    project: "RTL",
-                    filter: "my",
-                },
-                {
-                    project: "RTL",
-                    filter: "delayed",
-                },
-            ];
-*/
 
             let h = "";
             for (let i in result.files) {
                 if (result.files[i].filename == currentWorkspace) {
                     h += "<option selected='selected'>" + escapeHTML(result.files[i].filename) + "</option>";
                     try {
-                        workspace = JSON.parse(result.files[i].file);
+                        workspace = JSON.parse(result.files[i].file).workspace;
                     } catch (e) {
                         FAIL();
                         workspace = [];
@@ -74,6 +72,8 @@
                     h += "<option>" + escapeHTML(result.files[i].filename) + "</option>";
                 }
             }
+
+            $("#ttWorkspaceSelect").html(h);
 
             if (!result.files.length) {
                 $("#mainForm").html(`<div class="mt-2 ml-2">${i18n("tt.noWorkspacesAvailable")}</>`);
@@ -107,6 +107,132 @@
                     loadingDone();
                 }
             })();
+
+            $("#ttWorkspaceSelect").off("change").on("change", () => {
+                modules.tt.workspaces.renderWorkspaces({
+                    workspace: $("#ttWorkspaceSelect").val(),
+                });
+            });
+
+            $("#addWorkspace").off("click").on("click", () => {
+                cardForm({
+                    title: i18n("tt.addWorkspace"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("add"),
+                    size: "xl",
+                    noHover: true,
+                    singleColumn: true,
+                    fields: [
+                        {
+                            id: "code",
+                            type: "code",
+                            language: "json",
+                            value: JSON.stringify(modules.tt.workspaces.demoWorkspace, null, 4),
+                            validate: w => {
+                                try {
+                                    w = JSON.parse(w);
+                                } catch (_) {
+                                    return false;
+                                }
+                                if (w.name && typeof w.name == "string" && w.workspace && w.workspace.length) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            },
+                        },
+                    ],
+                    callback: f => {
+                        loadingStart();
+                        let w = JSON.parse(f.code);
+                        PUT("files", "file", false, {
+                            type: "workspace",
+                            filename: w.name,
+                            file: f.code,
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone).
+                        done(() => {
+                            lStore("_tt_workspace", w.name);
+                            modules.tt.workspaces.renderWorkspaces({
+                                workspace: w.name,
+                            });
+                        });
+                    },
+                });
+            });
+
+            $("#editWorkspace").off("click").on("click", () => {
+                cardForm({
+                    title: i18n("tt.modifyWorkspace"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("add"),
+                    size: "xl",
+                    noHover: true,
+                    singleColumn: true,
+                    fields: [
+                        {
+                            id: "code",
+                            type: "code",
+                            language: "json",
+                            value: JSON.stringify(workspace.length?workspace:modules.tt.workspaces.demoWorkspace, null, 4),
+                            validate: w => {
+                                try {
+                                    w = JSON.parse(w);
+                                } catch (_) {
+                                    return false;
+                                }
+                                if (w.name && typeof w.name == "string" && w.workspace && w.workspace.length) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            },
+                        },
+                    ],
+                    callback: f => {
+                        loadingStart();
+                        let w = JSON.parse(f.code);
+                        PUT("files", "file", false, {
+                            type: "workspace",
+                            filename: w.name,
+                            file: f.code,
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone).
+                        done(() => {
+                            lStore("_tt_workspace", w.name);
+                            modules.tt.workspaces.renderWorkspaces({
+                                workspace: w.name,
+                            });
+                        });
+                    },
+                });
+            });
+
+            $("#deleteWorkspace").off("click").on("click", () => {
+                if (currentWorkspace) {
+                    mConfirm(i18n("tt.confirmWorkspaceDelete", currentWorkspace), i18n("confirm"), i18n("delete"), () => {
+                        loadingStart();
+                        DELETE("files", "file", false, {
+                            type: "workspace",
+                            filename: currentWorkspace,
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone).
+                        done(() => {
+                            lStore("_tt_workspace", null);
+                            modules.tt.workspaces.renderWorkspaces({
+                                workspace: null,
+                            });
+                        });
+                    });
+                }
+            });
         });
     },
 
