@@ -85,7 +85,7 @@
             }
 
             for (let i in workspace) {
-                if (workspace[i].target == "right") {
+                if (workspace[i].right) {
                     showAlt = true;
                 }
             }
@@ -103,7 +103,7 @@
                     modules.tt.renderIssues({
                         project: block.project,
                         filter: block.filter,
-                    }, $((block.target === "right")?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
+                    }, $(block.right?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
                 } else {
                     loadingDone();
                 }
