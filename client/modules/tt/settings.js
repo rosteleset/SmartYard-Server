@@ -2021,6 +2021,16 @@
             editor.setValue(w.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#workflowSave").click();
+                }),
+            });
             $("#workflowSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("tt", "workflow", workflow, { "body": $.trim(editor.getValue()) }).
@@ -2164,6 +2174,16 @@
             editor.setValue(l.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#libSave").click();
+                }),
+            });
             $("#libSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("tt", "lib", lib, { "body": $.trim(editor.getValue()) }).
@@ -3117,6 +3137,16 @@
             editor.setValue(code, -1);
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#viewerSave").click();
+                }),
+            });
             $("#viewerSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("tt", "viewer", false, { field: field, name: name, code: $.trim(editor.getValue()) }).

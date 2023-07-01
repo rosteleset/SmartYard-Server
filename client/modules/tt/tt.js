@@ -1252,6 +1252,26 @@
                     ]
                 };
                 editor.setValue(JSON.stringify(template, null, "\t"));
+                editor.commands.addCommand({
+                    name: 'save',
+                    bindKey: {
+                        win: "Ctrl-S", 
+                        mac: "Cmd-S"
+                    },
+                    exec: (() => {
+                        $("#filterRun").click();
+                    }),
+                });
+                editor.commands.addCommand({
+                    name: 'run',
+                    bindKey: {
+                        win: "Ctrl-R", 
+                        mac: "Cmd-R"
+                    },
+                    exec: (() => {
+                        $("#filterRun").click();
+                    }),
+                });
                 $("#filterRun").off("click").on("click", () => {
                     let f = false;
                     try {
