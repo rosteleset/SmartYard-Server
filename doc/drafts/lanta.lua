@@ -30,6 +30,20 @@ function removeValue(tab, val)
     return new
 end
 
+function replaceValue(tab, valFrom, valTo)
+    local new = {}
+
+    for index, value in ipairs(tab) do
+        if value == valFrom then
+            new[#new + 1] = valTo
+        else
+            new[#new + 1] = value
+        end
+    end
+
+    return new
+end
+
 function removeValues(tab, vals)
     for index, value in ipairs(vals) do
         tab = removeValue(tab, value)
@@ -315,14 +329,16 @@ function getAvailableActions(issue)
             actions[#actions + 1] = "Делопроизводство"
         end
         
-        if issue["_cf_need_call"] == nil or tonumber(issue["_cf_need_call"]) == 0 or tonumber(issue["_cf_call_date"]) >= utils.time() then
+        if not hasValue(tt.myGroups(), "callcenter") or issue["_cf_need_call"] == nil or tonumber(issue["_cf_need_call"]) == 0 or tonumber(issue["_cf_call_date"]) >= utils.time() then
             actions = removeValues(actions, {
                 "Звонок совершен",
                 "Недозвон",
             })
+        else
+            actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
+            actions = replaceValue(actions, "Недозвон", "!Недозвон")
         end
-        
-    
+
         return actions
     else
         return {
@@ -386,9 +402,16 @@ function getActionTemplate(issue, action)
     end
 
     if action == "Закрыть" then
-        return {
-            "optionalComment"
-        }
+        if hasValue(tt.myGroups(), "callcenter") then
+            return {
+                "_cf_quality_control",
+                "optionalComment"
+            }
+        else
+            return {
+                "optionalComment"
+            }
+        end
     end
 
     if action == "Отложить" then
@@ -416,6 +439,16 @@ function getActionTemplate(issue, action)
         return {
             "_cf_call_date",
             "_cf_anytime_call",
+            "comment"
+        }
+    end
+    
+    if action == "Недозвон" then
+        return true
+    end
+    
+    if action == "Звонок совершен" then
+        return {
             "comment"
         }
     end
