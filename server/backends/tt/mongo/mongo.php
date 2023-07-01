@@ -227,6 +227,11 @@
                         }
                     }
 
+                    error_log(print_r([
+                        $db,
+                        $acr,
+                    ], true));
+
                     return $delete && $this->mongo->$db->$acr->deleteMany([
                         "issueId" => $issueId,
                     ]) && $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
