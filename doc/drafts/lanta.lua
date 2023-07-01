@@ -247,11 +247,22 @@ function createIssue(issue)
             issue["_cf_polygon"] = client_info["polygon"]
         end
     end
-
-    if issue["catalog"] == "Пустышка" then
-        issue["status"] = "Открыта"
-        return tt.createIssue(issue)
+    
+    if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0)then
+        issue["assigned"] = {
+            tt.login()
+        }
+    else
+        if type(issue["assigned"]) == "string" then
+            issue["assigned"] = {
+                issue["assigned"]
+            }
+        end
     end
+    
+    issue["status"] = "Открыта"
+    
+    return tt.createIssue(issue)
 end
 
 -- получить список доступных действий
@@ -270,6 +281,7 @@ end
 function getAvailableActions(issue)
     if isOpened(issue) then
         local actions = {
+            "Назначить",
             "saAddComment",
             "saAddFile",
             "-",
@@ -279,7 +291,7 @@ function getAvailableActions(issue)
         if isOpened(issue) then
             actions[#actions + 1] = "-"
             actions[#actions + 1] = "saCoordinate"
-            actions[#actions + 1] = "Назначить исполнителей"
+            actions[#actions + 1] = "Исполнители"
         end
         
         if isCoordinated(issue) then
@@ -309,11 +321,17 @@ end
 
 -- получить шаблон диалога для действия
 function getActionTemplate(issue, action)
+    if action == "Назначить" then
+        return {
+            "assigned",
+        }
+    end
+    
     if action == "Координация" then
         return coordinationTemplate(issue)
     end
 
-    if action == "Назначить исполнителей" then
+    if action == "Исполнители" then
         return {
             "_cf_installers",
         }
@@ -327,22 +345,24 @@ function getActionTemplate(issue, action)
     
     local doneFilter = {}
     
-    if tonumber(issue["_cf_object_id"]) > 0 then
-        doneFilter = {
-            "Выполнено",
-            "Камера установлена",
-            "Установлен микрофон",
-            "Установлена камера и микрофон",
-            "Проблема с доступом",
-            "Отмена",
-        }        
-    else
-        doneFilter = {
-            "Выполнено",
-            "Не доставлено",
-        }        
+    if issue["_cf_object_id"] ~= nil then
+        if tonumber(issue["_cf_object_id"]) > 0 then
+            doneFilter = {
+                "Выполнено",
+                "Камера установлена",
+                "Установлен микрофон",
+                "Установлена камера и микрофон",
+                "Проблема с доступом",
+                "Отмена",
+            }        
+        else
+            doneFilter = {
+                "Выполнено",
+                "Не доставлено",
+            }        
+        end
     end
-
+    
     if action == "Работы завершены" then
         return {
             ["%0%_cf_install_done"] = doneFilter,
@@ -383,11 +403,26 @@ end
 
 -- выполнить действие
 function action(issue, action, original)
+    if action == "Назначить" then
+        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0)then
+            issue["assigned"] = {
+                tt.login()
+            }
+        else
+            if type(issue["assigned"]) == "string" then
+                issue["assigned"] = {
+                    issue["assigned"]
+                }
+            end
+        end
+        return tt.modifyIssue(issue)
+    end
+
     if action == "Координация" then
         return coordinate(issue)
     end
     
-    if action == "Назначить исполнителей" then
+    if action == "Исполнители" then
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
         return tt.modifyIssue(issue)
@@ -395,6 +430,21 @@ function action(issue, action, original)
     
     if action == "Работы завершены" then
         issue["_cf_done_date"] = utils.time()
+        if issue["_cf_object_id"] ~= nil and tonumber(issue["_cf_object_id"]) > 0 then
+            if issue["_cf_client_type"] == "ФЛ" then
+                issue["assigned"] = {
+                    "callcenter"
+                }
+            else
+                issue["assigned"] = {
+                    "office"
+                }
+            end
+        else
+            issue["assigned"] = {
+                issue["author"]
+            }
+        end
         return tt.modifyIssue(issue)
     end
 
