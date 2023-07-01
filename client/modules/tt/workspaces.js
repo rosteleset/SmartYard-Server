@@ -9,7 +9,7 @@
                 filter: "all",
             },
             {
-                target: "right",
+                right: true,
                 project: "RTL",
                 filter: "my",
             },
@@ -96,8 +96,10 @@
                 $("#altForm").hide();
             }
     
+            let _workspace = JSON.parse(JSON.stringify(workspace));
+
             (function loadWorkspace() {
-                let block = workspace.shift();
+                let block = _workspace.shift();
     
                 if (block) {
                     modules.tt.renderIssues({
@@ -116,6 +118,7 @@
             });
 
             $("#editWorkspace").off("click").on("click", () => {
+                console.log(workspace);
                 cardForm({
                     title: i18n("tt.addModifyWorkspace"),
                     footer: true,
@@ -130,7 +133,7 @@
                             id: "code",
                             type: "code",
                             language: "json",
-                            value: JSON.stringify(workspace.length?workspace:modules.tt.workspaces.demoWorkspace, null, 4),
+                            value: JSON.stringify(workspace.length?{ name: currentWorkspace, workspace: workspace }:modules.tt.workspaces.demoWorkspace, null, 4),
                             validate: w => {
                                 try {
                                     w = JSON.parse(w);
