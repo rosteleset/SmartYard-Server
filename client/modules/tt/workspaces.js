@@ -34,8 +34,7 @@
         rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control" style="width: 259px;">`;
         rtd += `</select></div>`;
 
-        rtd += `<div class="nav-item mr-0 pr-0"><span id="addWorkspace" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.addWorkspace")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
-        rtd += `<div class="nav-item mr-0 pr-0"><span id="editWorkspace" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.editWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
+        rtd += `<div class="nav-item mr-0 pr-0"><span id="editWorkspace" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
         rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteWorkspace" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.deleteWorkspace")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
 
         $("#rightTopDynamic").html(rtd);
@@ -114,63 +113,13 @@
                 });
             });
 
-            $("#addWorkspace").off("click").on("click", () => {
-                cardForm({
-                    title: i18n("tt.addWorkspace"),
-                    footer: true,
-                    borderless: true,
-                    topApply: true,
-                    apply: i18n("add"),
-                    size: "xl",
-                    noHover: true,
-                    singleColumn: true,
-                    fields: [
-                        {
-                            id: "code",
-                            type: "code",
-                            language: "json",
-                            value: JSON.stringify(modules.tt.workspaces.demoWorkspace, null, 4),
-                            validate: w => {
-                                try {
-                                    w = JSON.parse(w);
-                                } catch (_) {
-                                    return false;
-                                }
-                                if (w.name && typeof w.name == "string" && w.workspace && w.workspace.length) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            },
-                        },
-                    ],
-                    callback: f => {
-                        loadingStart();
-                        let w = JSON.parse(f.code);
-                        PUT("files", "file", false, {
-                            type: "workspace",
-                            filename: w.name,
-                            file: f.code,
-                        }).
-                        fail(FAIL).
-                        fail(loadingDone).
-                        done(() => {
-                            lStore("_tt_workspace", w.name);
-                            modules.tt.workspaces.renderWorkspaces({
-                                workspace: w.name,
-                            });
-                        });
-                    },
-                });
-            });
-
             $("#editWorkspace").off("click").on("click", () => {
                 cardForm({
-                    title: i18n("tt.modifyWorkspace"),
+                    title: i18n("tt.addModifyWorkspace"),
                     footer: true,
                     borderless: true,
                     topApply: true,
-                    apply: i18n("add"),
+                    apply: i18n("addModify"),
                     size: "xl",
                     noHover: true,
                     singleColumn: true,
