@@ -377,14 +377,22 @@ function getActionTemplate(issue, action)
     
     if issue["_cf_object_id"] ~= nil then
         if tonumber(issue["_cf_object_id"]) > 0 then
-            doneFilter = {
-                "Выполнено",
-                "Камера установлена",
-                "Установлен микрофон",
-                "Установлена камера и микрофон",
-                "Проблема с доступом",
-                "Отмена",
-            }        
+            if tonumber(original["_cf_object_id"]) >= 200000000 and tonumber(original["_cf_object_id"]) < 300000000 then
+                doneFilter = {
+                    "Выполнено",
+                    "Проблема с доступом",
+                    "Отмена",
+                }        
+            else
+                doneFilter = {
+                    "Выполнено",
+                    "Камера установлена",
+                    "Установлен микрофон",
+                    "Установлена камера и микрофон",
+                    "Проблема с доступом",
+                    "Отмена",
+                }        
+            end
         else
             doneFilter = {
                 "Выполнено",
@@ -522,6 +530,9 @@ function action(issue, action, original)
         issue["_cf_installers"] = {}
         issue["_cf_can_change"] = 0
         issue["_cf_call_before_visit"] = 0
+        issue["assigned"] = {
+            tt.login()
+        }
         return tt.modifyIssue(issue)
     end
 
