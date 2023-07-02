@@ -532,7 +532,7 @@
                             hidden: !(response.users.length || typeof response.users[0].lastAction == "undefined"),
                         },
                         {
-                            title: i18n("users.blocked"),
+                            title: i18n("users.blockedShort"),
                         },
                         {
                             title: i18n("users.primaryGroup"),
