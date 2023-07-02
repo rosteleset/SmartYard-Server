@@ -581,7 +581,7 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: groups[0],
+                                        data: groups[response.users[i].primaryGroup]?groups[response.users[i].primaryGroup].name:"-",
                                         nowrap: true,
                                         hidden: !hasGroups,
                                     },
