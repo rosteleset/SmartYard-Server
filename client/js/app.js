@@ -1026,13 +1026,17 @@ function b64_to_utf8(str) {
     return decodeURIComponent(escape(window.atob(str)));
 }
 
-function trimStr(str, len) {
+function trimStr(str, len, abbr) {
     if (!len) {
         len = 33;
     }
     let sub = Math.floor((len - 3) / 2);
     if (str.length > len) {
-        return str.substring(0, sub) + "..." + str.substring(str.length - sub);
+        if (abbr) {
+            return "<abbr title='" + escapeHTML(str) + "'>" + str.substring(0, sub) + "..." + str.substring(str.length - sub) + "</abbr>";
+        } else {
+            return str.substring(0, sub) + "..." + str.substring(str.length - sub);
+        }
     } else {
         return str;
     }

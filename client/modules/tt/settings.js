@@ -1314,11 +1314,11 @@
                                             data: project.filters[i].projectFilterId,
                                         },
                                         {
-                                            data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter),
+                                            data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter, 33, true),
                                             nowrap: true,
                                         },
                                         {
-                                            data: trimStr(project.filters[i].filter),
+                                            data: trimStr(project.filters[i].filter, 33, true),
                                             nowrap: true,
                                         },
                                         {
@@ -2724,15 +2724,15 @@
                                 uid: i,
                                 cols: [
                                     {
-                                        data: trimStr(i),
+                                        data: trimStr(i, 33, true),
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filtersExt[i].owner?(users[modules.tt.meta.filtersExt[i].owner]?users[modules.tt.meta.filtersExt[i].owner]:modules.tt.meta.filtersExt[i].owner):i18n("tt.commonFilter")),
+                                        data: trimStr(modules.tt.meta.filtersExt[i].owner?(users[modules.tt.meta.filtersExt[i].owner]?users[modules.tt.meta.filtersExt[i].owner]:modules.tt.meta.filtersExt[i].owner):i18n("tt.commonFilter"), 33, true),
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i),
+                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i, 33, true),
                                         nowrap: true,
                                     },
                                 ],
@@ -2833,7 +2833,7 @@
                                     if (k == modules.tt.meta.projects[i].filters[j].filter && !modules.tt.meta.projects[i].filters[j].personal) {
                                         f.push({
                                             id: k,
-                                            text: trimStr(modules.tt.meta.filters[k]),
+                                            text: trimStr(modules.tt.meta.filters[k], 33, true),
                                         });
                                     }
                                 }
