@@ -1094,7 +1094,7 @@
             modules.tt.issue.createIssue($("#ttProjectSelect").val());
         });
 
-        document.title = i18n("windowTitle") + " :: " + i18n("tt.workspaces");
+        document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
 
         let skip = parseInt(params.skip?params.skip:0);
         let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);

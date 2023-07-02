@@ -40,6 +40,8 @@
         fail(FAIL).
         fail(loadingDone).
         done(result => {
+            document.title = i18n("tt.workspaces");
+
             let showAlt = false;
             let workspace = [];
             let currentWorkspace = params.workspace?params.workspace:lStore("_tt_workspace");
