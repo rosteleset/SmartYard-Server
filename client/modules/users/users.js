@@ -197,6 +197,7 @@
                             value: response.user.eMail,
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
+                            hidden: !parseInt(response.user.uid),
                             validate: (v) => {
                                 return $.trim(v) !== "";
                             }
@@ -216,6 +217,7 @@
                             value: response.user.phone,
                             title: i18n("phone"),
                             placeholder: i18n("phone"),
+                            hidden: !parseInt(response.user.uid),
                         },
                         {
                             id: "tg",
@@ -224,6 +226,7 @@
                             value: response.user.tg,
                             title: i18n("users.tg"),
                             placeholder: i18n("users.tg"),
+                            hidden: !parseInt(response.user.uid),
                         },
                         {
                             id: "notification",
@@ -254,6 +257,7 @@
                                     text: i18n("users.notificationEmail"),
                                 },
                             ],
+                            hidden: !parseInt(response.user.uid),
                             validate: (v) => {
                                 return $.trim(v) !== "";
                             }
@@ -321,7 +325,7 @@
                             value: response.user.enabled?"no":"yes",
                             title: i18n("users.disabled"),
                             readonly: uid.toString() === myself.uid.toString(),
-                            hidden: uid.toString() === myself.uid.toString(),
+                            hidden: uid.toString() === myself.uid.toString() && !parseInt(response.user.uid),
                             options: [
                                 {
                                     value: "yes",
