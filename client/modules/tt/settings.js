@@ -2585,7 +2585,12 @@
         done(() => {
             GET("tt", "filter", filter, true).
             done(f => {
-                let readOnly = modules.tt.meta.filtersExt[filter].owner?true:false;
+                let readOnly = false;
+                try {
+                    readOnly = modules.tt.meta.filtersExt[filter].owner?true:false;
+                } catch (_) {
+                    //
+                }
                 // TODO f..ck!
                 let top = 75;
                 let height = $(window).height() - top;
