@@ -557,6 +557,8 @@
                         let rows = [];
     
                         for (let i = 0; i < response.users.length; i++) {
+                            if (!parseInt(response.users[i].uid)) continue;
+
                             rows.push({
                                 uid: response.users[i].uid.toString(),
                                 class: (response.users[i].enabled == 1)?"bg-white":"bg-light",
