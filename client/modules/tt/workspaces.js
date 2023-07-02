@@ -40,7 +40,7 @@
         fail(FAIL).
         fail(loadingDone).
         done(result => {
-            document.title = i18n("tt.workspaces");
+            document.title = i18n("windowTitle") + " :: " + i18n("tt.workspaces");
 
             let showAlt = false;
             let workspace = [];
