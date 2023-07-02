@@ -203,15 +203,7 @@
                 }
 
                 users_list.sort((a, b) => {
-                    if (a.text > b.text) {
-                        return -1;
-                    } else
-                    if (a.text > b.text) {
-                        return 1;
-                    }
-                    else {
-                        return 0;
-                    }
+                    return a.localeCompare(b);
                 });
 
                 console.log(users_list);
