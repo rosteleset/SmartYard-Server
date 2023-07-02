@@ -66,10 +66,6 @@
         {
             "col": "МКД1",
             "class": "font-weight-bold",
-            "logins": [
-                "mmikel",
-                "nick"
-            ],
             "workflow": "base",
             "rows": [
                 "08:00",
@@ -89,9 +85,6 @@
         {
             "col": "МКД2",
             "class": "font-weight-bold",
-            "logins": [
-                "mmikel"
-            ],
             "rows": [
                 "08:00",
                 "09:00",
@@ -110,10 +103,6 @@
         {
             "col": "МКД3",
             "class": "font-weight-bold",
-            "logins": [
-                "oslivina",
-                "bezgin"
-            ],
             "rows": [
                 "08:00",
                 "09:00",
@@ -132,10 +121,6 @@
         {
             "col": "МКД4",
             "class": "font-weight-bold",
-            "logins": [
-                "bezgin",
-                "vlipatov"
-            ],
             "rows": [
                 "08:00",
                 "09:00",
@@ -154,10 +139,6 @@
         {
             "col": "МКД5",
             "class": "font-weight-bold",
-            "logins": [
-                "bezgin",
-                "vlipatov"
-            ],
             "rows": [
                 "08:00",
                 "09:00",
