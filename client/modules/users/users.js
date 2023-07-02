@@ -486,11 +486,18 @@
 
         loadingStart();
 
-        modules.groups.loadGroups(() => {
+        modules.groups.loadGroups(hasGroups => {
+            let groups = {};
+
+            for (let i in modules.groups.meta) {
+                groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+            }
+
             GET("accounts", "users", false, true).done(response => {
                 modules.users.users = response.users;
     
                 console.log(modules.groups.meta);
+                console.log(response.users);
 
                 cardTable({
                     target: "#mainForm",
@@ -524,6 +531,10 @@
                         },
                         {
                             title: i18n("users.blocked"),
+                        },
+                        {
+                            title: i18n("users.primaryGroup"),
+                            hidden: !hasGroups,
                         },
                         {
                             title: i18n("users.realName"),
@@ -568,6 +579,11 @@
                                     {
                                         data: response.users[i].enabled?i18n("no"):i18n("yes"),
                                         nowrap: true,
+                                    },
+                                    {
+                                        data: groups[0],
+                                        nowrap: true,
+                                        hidden: !hasGroups,
                                     },
                                     {
                                         data: response.users[i].realName?response.users[i].realName:i18n("no"),
