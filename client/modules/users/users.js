@@ -496,7 +496,7 @@
             GET("accounts", "users", false, true).done(response => {
                 modules.users.users = response.users;
     
-                console.log(modules.groups.meta);
+                console.log(groups);
                 console.log(response.users);
 
                 cardTable({
