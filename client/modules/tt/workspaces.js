@@ -118,7 +118,6 @@
             });
 
             $("#editWorkspace").off("click").on("click", () => {
-                console.log(workspace);
                 cardForm({
                     title: i18n("tt.addModifyWorkspace"),
                     footer: true,
