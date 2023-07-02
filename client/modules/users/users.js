@@ -207,6 +207,7 @@
                             value: response.user.primaryGroup,
                             options: gs,
                             title: i18n("users.primaryGroup"),
+                            hidden: !parseInt(response.user.uid),
                         },
                         {
                             id: "phone",
