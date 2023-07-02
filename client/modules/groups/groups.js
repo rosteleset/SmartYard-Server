@@ -14,9 +14,11 @@
             return GET("accounts", "groups").
             done(groups => {
                 modules.groups.meta = groups.groups;
+                if (typeof callback == "function") callback(groups);
             }).
-            always(response => {
-                if (typeof callback == "function") callback(response);
+            fail(FAIL).
+            fail(() => {
+                if (typeof callback == "function") callback(false);
             });
         } else {
             if (typeof callback == "function") callback(false);
