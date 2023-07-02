@@ -543,7 +543,7 @@
                             fullWidth: true,
                         },
                         {
-                            title: i18n("eMail"),
+                            title: i18n("Почта"),
                         },
                         {
                             title: i18n("users.telegram"),
@@ -595,7 +595,7 @@
                                         fullWidth: true,
                                     },
                                     {
-                                        data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
+                                        data: response.users[i].eMail?i18n("yes"):i18n("no"),
                                         click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
                                         nowrap: true,
                                     },
