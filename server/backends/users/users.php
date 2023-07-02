@@ -151,9 +151,9 @@
                     }
                 }
 
-                function sendEmail($email, $subject, $message, $config) {
+                function sendEmail($login, $email, $subject, $message, $config) {
                     try {
-                        if ($email && $config) {
+                        if ($email && $config && $login != $email) {
                             return eMail($config, $email, $subject ? : "-", $message) === true;
                         } else {
                             return false;
@@ -168,15 +168,15 @@
                 }
 
                 if ($user["notification"] == "tgEmail") {
-                    return sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]) || sendEmail(@$user["eMail"], $subject, $message, $this->config);
+                    return sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]) || sendEmail($login, @$user["eMail"], $subject, $message, $this->config);
                 }
 
                 if ($user["notification"] == "email") {
-                    return sendEmail($user["eMail"], $subject, $message, $this->config);
+                    return sendEmail($login, $user["eMail"], $subject, $message, $this->config);
                 }
 
                 if ($user["notification"] == "emailTg") {
-                    return sendEmail(@$user["eMail"], $subject, $message, $this->config) || sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
+                    return sendEmail($login, @$user["eMail"], $subject, $message, $this->config) || sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
                 }
             } 
         }
