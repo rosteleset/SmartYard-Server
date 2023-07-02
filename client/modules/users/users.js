@@ -604,7 +604,7 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].phone?response.users[i].phone:i18n("no"),
+                                        data: response.users[i].phone?response.users[i].phone:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
                                         nowrap: true,
                                     },
                                 ],
