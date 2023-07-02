@@ -597,6 +597,7 @@ function viewIssue(issue)
         "*author",
         "*assigned",
         "*watchers",
+        "*_cf_sheet_date",
         "*_cf_sheet",
         "*_cf_sheet_cell",
         "*_cf_install_done",
@@ -634,6 +635,8 @@ function viewIssue(issue)
     
     if not isCoordinated(issue) then
         fields = removeValues(fields, {
+            "*_cf_sheet_date",
+            "_cf_sheet_date",
             "*_cf_call_before_visit",
             "_cf_call_before_visit",
             "*_cf_can_change",
