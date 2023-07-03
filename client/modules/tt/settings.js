@@ -2535,6 +2535,7 @@
                                     break;
                                 case "yesno":
                                     editor = i18n("tt.customFieldEditorYesNo");
+                                    break;
                                 case "noyes":
                                     editor = i18n("tt.customFieldEditorNoYes");
                                     break;
