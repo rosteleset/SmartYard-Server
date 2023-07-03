@@ -217,7 +217,7 @@
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
-                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login) + (payload.comment?(" [" + payload.comment + "]"):""));
+                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login) + (payload.comment?("<br />" + payload.comment):""));
                     break;
 
                 case "released":
@@ -809,7 +809,7 @@
                             break;
                         
                         case "reserved":
-                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment?(" [" + modules.cs.currentSheet.cells[i].comment + "]"):""));
+                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment?("<br/>" + modules.cs.currentSheet.cells[i].comment):""));
                             break;
                     }
                 }
