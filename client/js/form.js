@@ -67,12 +67,12 @@ function cardForm(params) {
             params.fields[i].type = "select";
             params.fields[i].options = [
                 {
-                    id: "0",
-                    text: i18n("no"),
-                },
-                {
                     id: "1",
                     text: i18n("yes"),
+                },
+                {
+                    id: "0",
+                    text: i18n("no"),
                 },
             ];
         }
@@ -81,12 +81,12 @@ function cardForm(params) {
             params.fields[i].type = "select";
             params.fields[i].options = [
                 {
-                    id: "1",
-                    text: i18n("yes"),
-                },
-                {
                     id: "0",
                     text: i18n("no"),
+                },
+                {
+                    id: "1",
+                    text: i18n("yes"),
                 },
             ];
         }

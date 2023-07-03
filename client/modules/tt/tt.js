@@ -425,6 +425,15 @@
 
                     switch (cf.type) {
                         case "text":
+
+                            if (cf.editor == "yesno") {
+                                prefferredValue = 1;
+                            }
+
+                            if (cf.editor == "noyes") {
+                                prefferredValue = 0;
+                            }
+                            
                             if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
