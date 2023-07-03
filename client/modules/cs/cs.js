@@ -99,21 +99,41 @@
                                         cell.removeClass("spinner-small");
                                     });
                                 }, () => {
-                                    cell.addClass("spinner-small");
-                                    PUT("cs", "reserveCell", false, {
-                                        action: "reserve",
-                                        sheet: md5($("#csSheet").val()),
-                                        date: md5($("#csDate").val()),
-                                        col: cell.attr("data-col"),
-                                        row: cell.attr("data-row"),
-                                        uid: cell.attr("data-uid"),
-                                        sid: modules.cs.sid,
-                                        expire: 60 * 60 * 24 * 7,
-                                    }).
-                                    fail(FAIL).
-                                    fail(() => {
-                                        cell.removeClass("spinner-small");
-                                    });
+                                    cardForm({
+                                        title: i18n("tt.addProject"),
+                                        footer: true,
+                                        borderless: true,
+                                        topApply: true,
+                                        fields: [
+                                            {
+                                                id: "comment",
+                                                type: "text",
+                                                title: i18n("cs.comment"),
+                                                placeholder: i18n("cs.comment"),
+                                                validate: (v) => {
+                                                    return $.trim(v) !== "";
+                                                }
+                                            }
+                                        ],
+                                        callback: result => {
+                                            cell.addClass("spinner-small");
+                                            PUT("cs", "reserveCell", false, {
+                                                action: "reserve",
+                                                sheet: md5($("#csSheet").val()),
+                                                date: md5($("#csDate").val()),
+                                                col: cell.attr("data-col"),
+                                                row: cell.attr("data-row"),
+                                                uid: cell.attr("data-uid"),
+                                                sid: modules.cs.sid,
+                                                expire: 60 * 60 * 24 * 7,
+                                                comment: result.comment,
+                                            }).
+                                            fail(FAIL).
+                                            fail(() => {
+                                                cell.removeClass("spinner-small");
+                                            });
+                                        },
+                                    }).show();
                                 }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
                                 break;
 
