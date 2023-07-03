@@ -701,6 +701,8 @@
                         if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != lStore("_login")) {
                             cell.addClass("spinner-small");
                                 
+                            console.log(1);
+                            
                             PUT("cs", "reserveCell", false, {
                                 action: "release-force",
                                 sheet: md5($("#csSheet").val()),
