@@ -85,6 +85,20 @@ function insertFirst(tab, val, withSep)
     return new
 end
 
+function normalizeArray(tab)
+    local new = {}
+    
+    if tab[0] ~= nil then
+        new[#new + 1] = tab[0]
+    end
+    
+    for index, value in ipairs(tab) do
+        new[#new + 1] = value
+    end
+    
+    return new
+end
+
 --
 -- Условия
 --
@@ -119,6 +133,7 @@ end
 -- (Колл-центр == "да" и Дата созвона пусто) или (Дата созвона >= Текущая дата) или (Дата координации == Завтра и Дата координации <= Вчера)
 	
 function callNow(issue)
+    return hasValue(tt.myGroups(), "callcenter") and issue["_cf_need_call"] ~= nil and tonumber(issue["_cf_need_call"]) ~= 0 and tonumber(issue["_cf_call_date"]) <= utils.time()
 end
 
 -- Координация.Просроченные
@@ -191,32 +206,6 @@ end
 -- то есть передает ее на заведение учетки в адинке и дальнейшему оформлению и координациии
 
 function waitingForContractUL(issue)
-end
-
---
--- Шаблоны и действия
---
-
-function coordinationTemplate(issue)
-    return {
-        "_cf_sheet",
-        "_cf_sheet_date",
-        "_cf_sheet_cell",
-        "_cf_sheet_col",
-        "_cf_sheet_cells",
-        "_cf_installers",
-        "_cf_can_change",
-        "_cf_call_before_visit",
-    }
-end
-
-function coordinate(issue, workflow)
-    issue["_cf_install_done"] = ""
-    issue["_cf_coordination_date"] = utils.time()
-    issue["_cf_coordinator"] = tt.login()
-    issue["assigned"] = { }
-
-    return tt.modifyIssue(issue)
 end
 
 --
@@ -308,20 +297,22 @@ function getAvailableActions(issue)
             "saDelete",
         }
         
-        if isOpened(issue) then
-            actions[#actions + 1] = "-"
-            actions[#actions + 1] = "saCoordinate"
-            actions[#actions + 1] = "Исполнители"
-        end
-        
+        actions[#actions + 1] = "-"
+        actions[#actions + 1] = "saCoordinate"
+        actions[#actions + 1] = "Исполнители"
+
         if isCoordinated(issue) then
             actions[#actions + 1] = "-"
             actions[#actions + 1] = "Работы завершены"
-            actions[#actions + 1] = "Отменить"
+            actions[#actions + 1] = "Снять с координации"
         end
         
         actions[#actions + 1] = "-"
-        actions[#actions + 1] = "Отложить"
+        
+        if not hasValue(tt.myGroups(), "callcenter") then
+            actions[#actions + 1] = "Отложить"
+        end
+        
         actions[#actions + 1] = "Закрыть"
         
         if issue["subject"] == "Делопроизводство" then
@@ -329,14 +320,14 @@ function getAvailableActions(issue)
             actions[#actions + 1] = "Делопроизводство"
         end
         
-        if not hasValue(tt.myGroups(), "callcenter") or issue["_cf_need_call"] == nil or tonumber(issue["_cf_need_call"]) == 0 or tonumber(issue["_cf_call_date"]) >= utils.time() then
+        if callNow(issue) then
+            actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
+            actions = replaceValue(actions, "Недозвон", "!Недозвон")
+        else
             actions = removeValues(actions, {
                 "Звонок совершен",
                 "Недозвон",
             })
-        else
-            actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
-            actions = replaceValue(actions, "Недозвон", "!Недозвон")
         end
 
         return actions
@@ -354,11 +345,21 @@ function getActionTemplate(issue, action)
     if action == "Назначить" then
         return {
             "assigned",
+            "optionalComment",
         }
     end
     
     if action == "Координация" then
-        return coordinationTemplate(issue)
+        return {
+            "_cf_sheet",
+            "_cf_sheet_date",
+            "_cf_sheet_cell",
+            "_cf_sheet_col",
+            "_cf_sheet_cells",
+            "_cf_installers",
+            "_cf_can_change",
+            "_cf_call_before_visit",
+        }
     end
 
     if action == "Исполнители" then
@@ -367,7 +368,7 @@ function getActionTemplate(issue, action)
         }
     end
 
-    if action == "Отменить" then
+    if action == "Снять с координации" then
         return {
             "comment"
         }
@@ -377,7 +378,7 @@ function getActionTemplate(issue, action)
     
     if issue["_cf_object_id"] ~= nil then
         if tonumber(issue["_cf_object_id"]) > 0 then
-            if tonumber(original["_cf_object_id"]) >= 200000000 and tonumber(original["_cf_object_id"]) < 300000000 then
+            if tonumber(issue["_cf_object_id"]) >= 200000000 and tonumber(issue["_cf_object_id"]) < 300000000 then
                 doneFilter = {
                     "Выполнено",
                     "Проблема с доступом",
@@ -467,10 +468,16 @@ end
 -- выполнить действие
 function action(issue, action, original)
     if action == "Назначить" then
-        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0)then
-            issue["assigned"] = {
-                tt.login()
-            }
+        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0) then
+            if type(issue["assigned"]) == "table" and issue[0] ~= "" then
+                issue["assigned"] = {
+                    issue["assigned"][0]
+                }
+            else
+                issue["assigned"] = {
+                    tt.login()
+                }
+            end
         else
             if type(issue["assigned"]) == "string" then
                 issue["assigned"] = {
@@ -482,7 +489,12 @@ function action(issue, action, original)
     end
 
     if action == "Координация" then
-        return coordinate(issue)
+        issue["_cf_install_done"] = ""
+        issue["_cf_coordination_date"] = utils.time()
+        issue["_cf_coordinator"] = tt.login()
+        issue["assigned"] = { }
+    
+        return tt.modifyIssue(issue)
     end
     
     if action == "Исполнители" then
@@ -493,6 +505,7 @@ function action(issue, action, original)
     
     if action == "Работы завершены" then
         issue["_cf_done_date"] = utils.time()
+        
         -- по умолчанию - автору
         issue["assigned"] = {
             original["author"]
@@ -521,7 +534,7 @@ function action(issue, action, original)
         return tt.modifyIssue(issue)
     end
 
-    if action == "Отменить" then
+    if action == "Снять с координации" then
         issue["_cf_sheet"] = ""
         issue["_cf_sheet_date"] = ""
         issue["_cf_sheet_col"] = ""
@@ -530,9 +543,32 @@ function action(issue, action, original)
         issue["_cf_installers"] = {}
         issue["_cf_can_change"] = 0
         issue["_cf_call_before_visit"] = 0
+        
+        -- по умолчанию - на того кто совершает действие
         issue["assigned"] = {
             tt.login()
         }
+        if original["_cf_object_id"] ~= nil then
+            if tonumber(original["_cf_object_id"]) >= 200000000 and tonumber(original["_cf_object_id"]) < 300000000 then
+                -- l2 - в техотдел
+                issue["assigned"] = {
+                    "tech"
+                }
+            end
+            if tonumber(original["_cf_object_id"]) >= 500000000 and tonumber(original["_cf_object_id"]) < 600000000 then
+                if original["_cf_client_type"] == "ФЛ" then
+                    -- ФЛ - в коллцентр
+                    issue["assigned"] = {
+                        "callcenter"
+                    }
+                else
+                    -- ЮЛ (и прочие) - в офис
+                    issue["assigned"] = {
+                        "office"
+                    }
+                end
+            end
+        end
         return tt.modifyIssue(issue)
     end
 
@@ -553,7 +589,7 @@ function action(issue, action, original)
     end
     
     if action == "Недозвон" then
-        issue["_cf_call_date"] = utils.time() + 30 * 60
+        issue["_cf_call_date"] = utils.time() + 3 * 60
         if original["_cf_calls_count"] == nil then
             issue["_cf_calls_count"] = 1
         else
