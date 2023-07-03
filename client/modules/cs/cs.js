@@ -699,7 +699,7 @@
 
                     if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
                         if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != lStore("_login")) {
-                            mYesNo(i18n("cs.unReserve"), i18n("cs.action"), () => {
+                            mYesNo(i18n("cs.confirmUnReserve"), i18n("cs.action"), () => {
                                 cell.addClass("spinner-small");
                                 
                                 DELETE("cs", "reserveCell", false, {
