@@ -493,7 +493,8 @@ function action(issue, action, original)
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
         issue["assigned"] = { }
-    
+        issue["status"] = "Открыта"
+
         return tt.modifyIssue(issue)
     end
     
@@ -530,6 +531,10 @@ function action(issue, action, original)
                     }
                 end
             end
+            if tonumber(original["_cf_object_id"]) < 0 and issue["_cf_install_done"] == "Выполнено" then
+                issue["status"] = "Закрыта"
+            end
+            utils.error_log(utils.print_r(issue))
         end
         return tt.modifyIssue(issue)
     end
