@@ -997,6 +997,10 @@
                                 id: "yesno",
                                 text: i18n("tt.customFieldEditorYesNo"),
                             },
+                            {
+                                id: "noyes",
+                                text: i18n("tt.customFieldEditorNoYes"),
+                            },
                         ],
                         hidden: cf.type !== "text",
                     },
@@ -2531,7 +2535,9 @@
                                     break;
                                 case "yesno":
                                     editor = i18n("tt.customFieldEditorYesNo");
-                                break;
+                                case "noyes":
+                                    editor = i18n("tt.customFieldEditorNoYes");
+                                    break;
                             }
                         }
 

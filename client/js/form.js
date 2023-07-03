@@ -77,6 +77,20 @@ function cardForm(params) {
             ];
         }
 
+        if (params.fields[i].type === "noyes") {
+            params.fields[i].type = "select";
+            params.fields[i].options = [
+                {
+                    id: "1",
+                    text: i18n("yes"),
+                },
+                {
+                    id: "0",
+                    text: i18n("no"),
+                },
+            ];
+        }
+
         if (params.fields[i].id === "-") {
             h += "<tr class='mt-0 mb-0 pt-0 pb-0'>";
             if (params.singleColumn) {
