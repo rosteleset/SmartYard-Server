@@ -609,11 +609,15 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
 
     $('#yesnoModalLabel').html(title);
     $('#yesnoModalBody').html(body);
-    $('#yesnoModalButtonYes').html(yes?yes:i18n("yes")).off('click').on('click', () => {
+    let t = yes?yes:i18n("yes");
+    t = t.charAt(0).toUpperCase() + t.substring(1);
+    $('#yesnoModalButtonYes').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');
         if (typeof callbackYes == 'function') callbackYes();
     });
-    $('#yesnoModalButtonNo').html(no?no:i18n("no")).off('click').on('click', () => {
+    t = no?no:i18n("no");
+    t = t.charAt(0).toUpperCase() + t.substring(1);
+    $('#yesnoModalButtonNo').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');
         if (typeof callbackNo == 'function') callbackNo();
     });
