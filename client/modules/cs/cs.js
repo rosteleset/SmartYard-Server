@@ -202,6 +202,9 @@
                                         uid: cell.attr("data-uid"),
                                         sid: modules.cs.sid,
                                     }).
+                                    done(() => {
+                                        lStore("_coordinate_issue", null);
+                                    }).
                                     fail(FAIL).
                                     fail(() => {
                                         modules.cs.idle = true;
