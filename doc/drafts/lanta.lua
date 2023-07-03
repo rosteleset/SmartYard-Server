@@ -549,7 +549,6 @@ function action(issue, action, original)
             if tonumber(original["_cf_object_id"]) < 0 and issue["_cf_install_done"] == "Выполнено" then
                 issue["status"] = "Закрыта"
             end
-            utils.error_log(utils.print_r(issue))
         end
         return tt.modifyIssue(issue)
     end
