@@ -2508,7 +2508,6 @@
                         let editor = '';
 
                         if (modules.tt.meta.customFields[i].type == "text") {
-                            console.log(modules.tt.meta.customFields[i].editor);
                             switch (modules.tt.meta.customFields[i].editor) {
                                 case "text":
                                     editor = i18n("tt.customFieldEditorString");
@@ -2540,6 +2539,7 @@
                                     editor = i18n("tt.customFieldEditorNoYes");
                                     break;
                             }
+                            console.log(modules.tt.meta.customFields[i].editor, editor);
                         }
 
                         try {
