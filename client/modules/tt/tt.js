@@ -425,7 +425,7 @@
 
                     switch (cf.type) {
                         case "text":
-                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno" ].indexOf(cf.editor) < 0) {
+                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
 
@@ -789,6 +789,7 @@
 
                         switch (cf.editor) {
                             case "yesno":
+                            case "noyes":
                                 val = parseInt(val)?i18n("yes"):i18n("no");
                                 break;
 
