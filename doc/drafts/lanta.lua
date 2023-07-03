@@ -242,10 +242,16 @@ function createIssue(issue)
 
         if mb.substr(client_info["common"]["contract_name"], 0, 2) == "ФЛ" then
             issue["_cf_client_type"] = "ФЛ"
+            issue["assigned"] = {
+                "callcenter"
+            }
         end
 
         if mb.substr(client_info["common"]["contract_name"], 0, 2) == "ЮЛ" then
             issue["_cf_client_type"] = "ЮЛ"
+            issue["assigned"] = {
+                "office"
+            }
         end
 
         if client_info["polygon"] ~= nil and client_info["polygon"] ~= "" then
@@ -375,9 +381,11 @@ function getActionTemplate(issue, action)
     end
     
     local doneFilter = {}
+    local needAccessInfo = false
     
     if issue["_cf_object_id"] ~= nil then
         if tonumber(issue["_cf_object_id"]) > 0 then
+            needAccessInfo = true
             if tonumber(issue["_cf_object_id"]) >= 200000000 and tonumber(issue["_cf_object_id"]) < 300000000 then
                 doneFilter = {
                     "Выполнено",
@@ -403,11 +411,18 @@ function getActionTemplate(issue, action)
     end
     
     if action == "Работы завершены" then
-        return {
-            ["%0%_cf_install_done"] = doneFilter,
-            "%1%_cf_access_info",
-            "%2%comment",
-        }
+        if needAccessInfo then
+            return {
+                ["%0%_cf_install_done"] = doneFilter,
+                "%1%_cf_access_info",
+                "%2%comment",
+            }
+        else
+            return {
+                ["%0%_cf_install_done"] = doneFilter,
+                "%1%comment",
+            }
+        end
     end
 
     if action == "Закрыть" then
@@ -652,8 +667,6 @@ function viewIssue(issue)
         "*_cf_delay",
         "subject",
         "_cf_phone",
-        "_cf_client_type",
-        "_cf_polygon",
         "_cf_object_id",
         "_cf_debt_date",
         "_cf_debt_services",
