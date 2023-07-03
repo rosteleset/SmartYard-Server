@@ -699,23 +699,23 @@
 
                     if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
                         if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != lStore("_login")) {
-                            cell.addClass("spinner-small");
+                            mYesNo(i18n("cs.unReserve"), i18n("cs.action"), () => {
+                                cell.addClass("spinner-small");
                                 
-                            console.log(1);
-                            
-                            PUT("cs", "reserveCell", false, {
-                                action: "release-force",
-                                sheet: md5($("#csSheet").val()),
-                                date: md5($("#csDate").val()),
-                                col: cell.attr("data-col"),
-                                row: cell.attr("data-row"),
-                                uid: cell.attr("data-uid"),
-                                sid: modules.cs.sid,
-                            }).
-                            fail(FAIL). 
-                            fail(() => {
-                                modules.cs.idle = true;
-                                cell.removeClass("spinner-small");
+                                DELETE("cs", "reserveCell", false, {
+                                    action: "release-force",
+                                    sheet: md5($("#csSheet").val()),
+                                    date: md5($("#csDate").val()),
+                                    col: cell.attr("data-col"),
+                                    row: cell.attr("data-row"),
+                                    uid: cell.attr("data-uid"),
+                                    sid: modules.cs.sid,
+                                }).
+                                fail(FAIL). 
+                                fail(() => {
+                                    modules.cs.idle = true;
+                                    cell.removeClass("spinner-small");
+                                });
                             });
                         } else
                         if (cell.attr("data-login") == lStore("_login")) {

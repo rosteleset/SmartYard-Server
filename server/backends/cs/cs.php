@@ -186,8 +186,8 @@
                             if (
                                 ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && $cell["uid"] == $uid) ||
-                                ($action == "release-force" && $cell["mode"] == "reserved" && $cell["uid"] == $uid)
+                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid) ||
+                                ($action == "release-force" && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid)
                             ) {
                                 $this->redis->delete($key);
                                 $payload = explode("_", $key);
