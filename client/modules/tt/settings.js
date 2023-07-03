@@ -2540,7 +2540,6 @@
                                     editor = i18n("tt.customFieldEditorNoYes");
                                     break;
                             }
-                            console.log(modules.tt.meta.customFields[i].editor, editor);
                         }
 
                         try {
