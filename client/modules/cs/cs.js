@@ -217,7 +217,7 @@
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
-                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
+                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login) + (payload.comment?(" [" + payload.comment + "]"):""));
                     break;
 
                 case "released":
