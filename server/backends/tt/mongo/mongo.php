@@ -201,10 +201,7 @@
                     ]);
 
                     foreach ($issueFiles as $file) {
-                        $delete = $delete && $files->deleteFile($file["id"]) &&
-                        $this->addJournalRecord($issueId, "deleteAttachment", [
-                            "attachmentFilename" => $filename,
-                        ], null);
+                        $delete = $delete && $files->deleteFile($file["id"]);
                     }
                 }
 
