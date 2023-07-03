@@ -100,7 +100,7 @@
                                     });
                                 }, () => {
                                     cardForm({
-                                        title: i18n("tt.addProject"),
+                                        title: i18n("cs.reserve"),
                                         footer: true,
                                         borderless: true,
                                         topApply: true,
@@ -809,7 +809,8 @@
                             break;
                         
                         case "reserved":
-                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
+                            console.log(modules.cs.currentSheet.cells[i]);
+                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + modules.cs.currentSheet.cells[i].comment);
                             break;
                     }
                 }

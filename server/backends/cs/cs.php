@@ -168,8 +168,11 @@
              * @param $row
              * @param $uid
              * @param $expire
+             * @param $sid
+             * @param $step
+             * @param $comment
              */
-            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0)
+            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0, $comment = "")
             {
                 $mqtt = loadBackend("mqtt");
 
@@ -254,6 +257,7 @@
                                 "uid" => $uid,
                                 "expire" => $expire,
                                 "reserved" => time(),
+                                "comment" => $comment,
                             ]));
 
                             if ($mqtt) {
@@ -266,6 +270,7 @@
                                     "uid" => $uid,
                                     "login" => $this->login,
                                     "sid" => $sid,
+                                    "comment" => $comment,
                                 ]);
                             }
                         }
