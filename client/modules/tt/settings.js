@@ -2612,7 +2612,31 @@
                 let editor = ace.edit("filterEditor");
                 editor.setTheme("ace/theme/chrome");
                 editor.session.setMode("ace/mode/json");
-                editor.setValue(f.body, -1);
+
+                let template = {
+                    "name": "My",
+                    "filter": {
+                        "$or": [
+                            {
+                                "assigned": {
+                                    "$elemMatch": {
+                                        "$in": "%%my"
+                                    }
+                                }
+                            },
+                            {
+                                "author": "%%me"
+                            }
+                        ]
+                    },
+                    "fields": [
+                        "subject",
+                        "status",
+                        "workflow"
+                    ]
+                };
+                
+                editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
                 editor.clearSelection();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
