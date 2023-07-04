@@ -45,11 +45,7 @@
                 }
 
                 if ($projectId) {
-                    try {
-                        $tt->addProjectFilter($projectId, $params["_id"], $params["_uid"]);
-                    } catch (\Exception $e) {
-                        // duplicate violation?
-                    }
+                    $tt->addProjectFilter($projectId, $params["_id"], $params["_uid"]);
                     $success = $tt->putFilter($params["_id"], $params["body"], $params["_login"]);
                 }
 
