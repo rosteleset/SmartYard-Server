@@ -1169,8 +1169,7 @@
             });
         });
 
-        $(".ttSaSubIssues").off("click").on("click", () => {
-            console.log('xxx');
+        $(".ttSaSubIssue").off("click").on("click", () => {
             modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
         });
 
