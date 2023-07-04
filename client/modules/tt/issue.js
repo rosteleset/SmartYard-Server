@@ -5,6 +5,8 @@
     },
 
     createIssue: function (current_project, parent) {
+        console.log(current_project, parent);
+        
         loadingStart();
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
