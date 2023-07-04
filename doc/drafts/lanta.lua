@@ -297,6 +297,9 @@ function getAvailableActions(issue)
             "Позвонить",
             "-",
             "Назначить",
+            "saAssignToMe",
+            "saWatch",
+            "Наблюдатели",
             "saAddComment",
             "saAddFile",
             "-",
@@ -352,6 +355,12 @@ function getActionTemplate(issue, action)
         return {
             "assigned",
             "optionalComment",
+        }
+    end
+    
+    if action == "Наблюдатели" then
+        return {
+            "watchers",
         }
     end
     
@@ -503,6 +512,10 @@ function action(issue, action, original)
         return tt.modifyIssue(issue)
     end
 
+    if action == "Наблюдатели" then
+        return tt.modifyIssue(issue)
+    end
+    
     if action == "Координация" then
         issue["_cf_install_done"] = ""
         issue["_cf_coordination_date"] = utils.time()
