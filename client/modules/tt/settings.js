@@ -2635,6 +2635,7 @@
                         "workflow"
                     ]
                 };
+                template.name = filter;
                 
                 editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
                 editor.clearSelection();
