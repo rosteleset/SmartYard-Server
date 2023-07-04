@@ -335,6 +335,8 @@
                     "project_id" => $projectId,
                     "filter" => $filter,
                     "personal" => $personal?$personal:null,
+                ], [
+                    "silent",
                 ]);
             }
 
