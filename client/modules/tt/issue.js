@@ -1217,7 +1217,6 @@
                                         limit: 32768,
                                         search: params.data.term,
                                     }).
-                                    then(console.log).
                                     then(success).
                                     fail(failure).
                                     fail(FAIL); //.
