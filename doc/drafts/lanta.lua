@@ -99,6 +99,10 @@ function normalizeArray(tab)
     return new
 end
 
+function exists(v)
+    return v ~= nil and v ~= "" and tonumber(v) ~= 0
+end
+
 --
 -- Условия
 --
@@ -122,18 +126,19 @@ end
 
 function isCoordinated(issue)
     return
-        issue["_cf_sheet"] ~= nil and issue["_cf_sheet"] ~= "" and
-        issue["_cf_sheet_date"] ~= nil and issue["_cf_sheet_date"] ~= "" and
-        issue["_cf_sheet_col"] ~= nil and issue["_cf_sheet_col"] ~= "" and
-        issue["_cf_sheet_cell"] ~= nil and issue["_cf_sheet_cell"] ~= "" and
-        (issue["_cf_install_done"] == nil or issue["_cf_install_done"] == "" or tonumber(issue["_cf_install_done"]) == 0)
+        exists(issue["_cf_sheet"]) and
+        exists(issue["_cf_sheet_date"]) and
+        exists(issue["_cf_sheet_col"]) and
+        exists(issue["_cf_sheet_cell"]) and
+        exists(issue["_cf_sheet_cells"]) and
+        not exists(issue["_cf_install_done"])
 end
 
 -- СС. Позвонить сейчас
 -- (Колл-центр == "да" и Дата созвона пусто) или (Дата созвона >= Текущая дата) или (Дата координации == Завтра и Дата координации <= Вчера)
 	
 function callNow(issue)
-    return hasValue(tt.myGroups(), "callcenter") and issue["_cf_need_call"] ~= nil and tonumber(issue["_cf_need_call"]) ~= 0 and tonumber(issue["_cf_call_date"]) <= utils.time()
+    return hasValue(tt.myGroups(), "callcenter") and exists(issue["_cf_need_call"]) and tonumber(issue["_cf_call_date"]) <= utils.time()
 end
 
 -- Координация.Просроченные
@@ -287,7 +292,7 @@ end
 -- saDelete     - удалить задачу
 -- saSubIssue   - создать подзадачу
 -- saCoordinate - скоординировать
-
+-- saLink       - связать с другой задачей
 
 function getAvailableActions(issue)
     if isOpened(issue) then
@@ -296,37 +301,41 @@ function getAvailableActions(issue)
             "Недозвон",
             "Позвонить",
             "-",
+            "Отложить",
+            "-",
             "Назначить",
             "saAssignToMe",
+            "-",
             "saWatch",
             "Наблюдатели",
+            "-",
             "saAddComment",
             "saAddFile",
             "-",
-            "saDelete",
+            "saSubIssue",
+            "saLink",
+            "-",
+            "saCoordinate",
+            "Работы завершены",
+            "Снять с координации",
+            "Исполнители",
+            "-",
+            "Закрыть",
         }
         
-        actions[#actions + 1] = "-"
-        actions[#actions + 1] = "saCoordinate"
-        actions[#actions + 1] = "Исполнители"
-
-        if isCoordinated(issue) then
-            actions[#actions + 1] = "-"
-            actions[#actions + 1] = "Работы завершены"
-            actions[#actions + 1] = "Снять с координации"
+        if not isCoordinated(issue) then
+            actions = removeValues(actions, {
+                "Работы завершены",
+                "Снять с координации",
+            })
         end
         
-        actions[#actions + 1] = "-"
-        
-        if not hasValue(tt.myGroups(), "callcenter") then
-            actions[#actions + 1] = "Отложить"
+        if tt.myself()["primaryGroupAcronym"] == "callcenter" then
+            actions = removeValue(actions, "Отложить")
         end
         
-        actions[#actions + 1] = "Закрыть"
-        
-        if issue["subject"] == "Делопроизводство" then
-            actions[#actions + 1] = "-"
-            actions[#actions + 1] = "Делопроизводство"
+        if issue["subject"] ~= "Делопроизводство" then
+            actions = removeValue(actions, "Делопроизводство")
         end
         
         if callNow(issue) then
@@ -518,6 +527,7 @@ function action(issue, action, original)
     
     if action == "Координация" then
         issue["_cf_install_done"] = ""
+        issue["_cf_done_date"] = ""
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
         issue["assigned"] = { }
@@ -575,6 +585,8 @@ function action(issue, action, original)
         issue["_cf_installers"] = {}
         issue["_cf_can_change"] = 0
         issue["_cf_call_before_visit"] = 0
+        issue["_cf_install_done"] = ""
+        issue["_cf_done_date"] = ""
         
         -- по умолчанию - на того кто совершает действие
         issue["assigned"] = {
@@ -659,17 +671,37 @@ end
 
 -- просмотр заявки
 function viewIssue(issue)
+    local coordinationFields = {
+        "*_cf_call_before_visit", "_cf_call_before_visit",
+        "*_cf_can_change", "_cf_can_change",
+        "*_cf_sheet_cells", "_cf_sheet_cells",
+        "*_cf_sheet_date", "_cf_sheet_date",
+        "*_cf_sheet", "_cf_sheet",
+        "*_cf_sheet_cell", "_cf_sheet_cell",
+        "*_cf_sheet_cells", "_cf_sheet_cells",
+        "*_cf_install_done", "_cf_install_done",
+        "*_cf_installers", "_cf_installers",
+    }
+    
+    local ccFields = {
+        "*_cf_call_date", "_cf_call_date",
+        "*_cf_anytime_call", "_cf_anytime_call",
+        "*_cf_calls_count", "_cf_calls_count",
+        "*_cf_call_before_visit", "_cf_call_before_visit",
+    }
+    
     local fields = {
-        "*catalog",
+        "*parent",
+        "catalog",
         "*status",
-        "*author",
+        "author",
         "*assigned",
         "*watchers",
         "*_cf_sheet_date",
         "*_cf_sheet",
-        "*_cf_sheet_cell",
+        "#*_cf_sheet_cell",
+        "#*_cf_sheet_cells",
         "*_cf_install_done",
-        "*_cf_sheet_cells",
         "*_cf_installers",
         "*_cf_can_change",
         "*_cf_call_before_visit",
@@ -687,29 +719,11 @@ function viewIssue(issue)
     }
 
     if not hasValue(tt.myGroups(), "callcenter") then
-        fields = removeValues(fields, {
-            "*_cf_call_date",
-            "_cf_call_date",
-            "*_cf_anytime_call",
-            "_cf_anytime_call",
-            "*_cf_calls_count",
-            "_cf_calls_count",
-            "*_cf_call_before_visit",
-            "_cf_call_before_visit",
-        })
+        fields = removeValues(fields, ccFields)
     end
     
     if not isCoordinated(issue) then
-        fields = removeValues(fields, {
-            "*_cf_sheet_date",
-            "_cf_sheet_date",
-            "*_cf_call_before_visit",
-            "_cf_call_before_visit",
-            "*_cf_can_change",
-            "_cf_can_change",
-            "*_cf_sheet_cells",
-            "_cf_sheet_cells",
-        })
+        fields = removeValues(fields, coordinationFields)
     end
     
     return {
