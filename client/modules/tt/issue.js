@@ -1190,7 +1190,6 @@
         });
 
         $(".ttSaLink").off("click").on("click", () => {
-            console.log(issue);
             cardForm({
                 title: i18n("tt.saLink"),
                 footer: true,
@@ -1217,14 +1216,14 @@
                                         limit: 32768,
                                         search: params.data.term,
                                     }).
-                                    then(response => {
+                                    then(...args => {
                                         loadingDone();
-                                        success(response);
+                                        success(...args);
                                     }).
-                                    fail(response => {
-                                        FAIL(response);
+                                    fail(...args => {
+                                        FAIL(...args);
                                         loadingDone();
-                                        failure(response);
+                                        failure(...args);
                                     }).
                                     fail(FAIL).
                                     always(loadingDone);
