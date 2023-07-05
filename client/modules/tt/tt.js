@@ -382,20 +382,30 @@
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
                         ajax: {
                             delay: 1000,
-                            transport: function (params, success, failure) {
+                            transport: function (params, success) {
                                 if (params.data.term) {
-                                    loadingStart();
                                     QUERY("tt", "issues", {
-                                        project: project.acronym,
+                                        project: issue.issue.project,
                                         filter: "#issueSearch",
                                         skip: 0,
                                         limit: 32768,
                                         search: params.data.term,
                                     }).
                                     then(success).
-                                    fail(failure).
-                                    fail(FAIL).
-                                    always(loadingDone);
+                                    fail(response => {
+                                        FAIL(response);
+                                        success({
+                                            issues: {
+                                                issues: [],
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    success({
+                                        issues: {
+                                            issues: [],
+                                        }
+                                    });
                                 }
                             },
                             processResults: function (data) {
@@ -584,16 +594,22 @@
                                 validate: validate,
                                 ajax: {
                                     delay: 1000,
-                                    transport: function (params, success, failure) {
+                                    transport: function (params, success) {
                                         if (params.data.term) {
-                                            loadingStart();
                                             QUERY("geo", "suggestions", {
                                                 search: params.data.term,
                                             }).
                                             then(success).
-                                            fail(failure).
-                                            fail(FAIL).
-                                            always(loadingDone);
+                                            fail(response => {
+                                                FAIL(response);
+                                                success({
+                                                    suggestions: [],
+                                                });
+                                            });
+                                        } else {
+                                            success({
+                                                suggestions: [],
+                                            });
                                         }
                                     },
                                     processResults: function (data) {
@@ -647,20 +663,30 @@
                                 validate: validate,
                                 ajax: {
                                     delay: 1000,
-                                    transport: function (params, success, failure) {
+                                    transport: function (params, success) {
                                         if (params.data.term) {
-                                            loadingStart();
                                             QUERY("tt", "issues", {
-                                                project: project.acronym,
+                                                project: issue.issue.project,
                                                 filter: "#issueSearch",
                                                 skip: 0,
                                                 limit: 32768,
                                                 search: params.data.term,
                                             }).
                                             then(success).
-                                            fail(failure).
-                                            fail(FAIL).
-                                            always(loadingDone);
+                                            fail(response => {
+                                                FAIL(response);
+                                                success({
+                                                    issues: {
+                                                        issues: [],
+                                                    }
+                                                });
+                                            });
+                                        } else {
+                                            success({
+                                                issues: {
+                                                    issues: [],
+                                                }
+                                            });
                                         }
                                     },
                                     processResults: function (data) {

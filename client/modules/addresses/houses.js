@@ -23,16 +23,22 @@
                     placeholder: i18n("addresses.address"),
                     ajax: {
                         delay: 1000,
-                        transport: function (params, success, failure) {
+                        transport: function (params, success) {
                             if (params.data.term) {
-                                loadingStart();
                                 QUERY("geo", "suggestions", {
                                     search: params.data.term,
                                 }).
                                 then(success).
-                                fail(failure).
-                                fail(FAIL).
-                                always(loadingDone);
+                                fail(response => {
+                                    FAIL(response);
+                                    success({
+                                        suggestions: [],
+                                    });
+                                });
+                            } else {
+                                success({
+                                    suggestions: [],
+                                });
                             }
                         },
                         processResults: function (data) {

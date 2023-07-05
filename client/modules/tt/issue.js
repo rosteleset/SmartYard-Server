@@ -1208,7 +1208,7 @@
                         },
                         ajax: {
                             delay: 1000,
-                            transport: function (params, success, failure) {
+                            transport: function (params, success) {
                                 if (params.data.term) {
                                     QUERY("tt", "issues", {
                                         project: issue.issue.project,
