@@ -377,7 +377,6 @@
                         type: "select2",
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        hint: cf.fieldDescription?cf.fieldDescription:false,
                         options: select2Filter(options, filter),
                         multiple: cf.format.indexOf("multiple") >= 0,
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
