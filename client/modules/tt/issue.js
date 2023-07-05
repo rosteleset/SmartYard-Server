@@ -1209,7 +1209,7 @@
                         ajax: {
                             delay: 1000,
                             transport: function (params, success, failure) {
-                                if (params.data.term) {
+//                                if (params.data.term) {
                                     loadingStart();
                                     QUERY("tt", "issues", {
                                         project: issue.issue.project,
@@ -1229,7 +1229,7 @@
                                     }).
                                     fail(FAIL).
                                     always(loadingDone);
-                                }
+//                                }
                             },
                             processResults: function (data) {
                                 let suggestions = options;
