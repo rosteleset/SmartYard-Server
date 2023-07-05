@@ -1190,7 +1190,57 @@
         });
 
         $(".ttSaLink").off("click").on("click", () => {
-            alert("link");
+            cardForm({
+                id: "issue",
+                type: "select2",
+                title: i18n("tt.issue"),
+                multiple: false,
+                validate: a => {
+                    return !!a;
+                },
+                ajax: {
+                    delay: 1000,
+                    transport: function (params, success, failure) {
+                        loadingStart();
+                        QUERY("tt", "issues", {
+                            project: project.acronym,
+                            filter: "#search",
+                            skip: 0,
+                            limit: 32768,
+                            search: params.data.term,
+                        }).
+                        then(response => {
+                            loadingDone();
+                            success(response);
+                        }).
+                        fail(response => {
+                            FAIL(response);
+                            loadingDone();
+                            failure(response);
+                        }).
+                        fail(FAIL).
+                        always(loadingDone);
+                    },
+                    processResults: function (data) {
+                        let suggestions = options;
+                        for (let i in data.issues.issues) {
+                            let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
+                            if (vi.indexOf(vl) < 0) {
+                                suggestions.push({
+                                    id: data.issues.issues[i].issueId,
+                                    text: vl,
+                                });
+                            }
+                        }
+                        return {
+                            results: suggestions,
+                        };
+                    },
+                },
+                callback: f => {
+                    console.log(f);
+                },
+            }).show();
         });
 
         $(".ttSaCoordinate").off("click").on("click", () => {
