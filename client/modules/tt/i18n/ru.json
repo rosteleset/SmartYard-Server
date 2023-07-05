@@ -254,6 +254,7 @@
     "noWorkspaceAvailable": "Рабочий стол не выбран или не может быть загружен",
     "modifyWorkspace": "Редактировать рабочий стол",
     "confirmWorkspaceDelete": "Удалить рабочий стол \"%s\"?",
+    "unlinkIssues": "Удалить связь между \"%s\" и \"%s\"?",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

@@ -754,6 +754,7 @@
                 h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author")}</td>`;
                 h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
                 h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status")}</td>`;
+                h += `<td class='pl-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}'></i></td>`;
                 h += "</tr>";
             }
             h += "</table>";
@@ -1255,6 +1256,7 @@
                         issueId: f.issueId,
                     }).
                     fail(FAIL).
+                    fail(loadingDone).
                     done(() => {
                         modules.tt.route({
                             issue: issue.issue.issueId,
@@ -1263,10 +1265,30 @@
                             count: count,
                             search: search,
                         });
-                    }).
-                    always(loadingDone);
+                    });
                 },
             }).show();
+        });
+
+        $(".unlinkIssue").off("click").on("click", function () {
+            let issueId = $(this).attr("data-issueId");
+            mConfirm(i18n("tt.unlinkIssues", issue.issue.issueId, issueId), () => {
+                loadingStart();
+                DELETE("tt", "link", issue.issue.issueId, {
+                    issueId: f.issueId,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    modules.tt.route({
+                        issue: issue.issue.issueId,
+                        filter: filter,
+                        index: index,
+                        count: count,
+                        search: search,
+                    });
+                });
+            });
         });
 
         $(".ttSaCoordinate").off("click").on("click", () => {
