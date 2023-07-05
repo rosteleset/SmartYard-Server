@@ -1202,7 +1202,6 @@
                         title: i18n("tt.issue"),
                         multiple: false,
                         options: [],
-                        value: "",
                         validate: a => {
                             return !!a;
                         },
@@ -1218,14 +1217,14 @@
                                         limit: 32768,
                                         search: params.data.term,
                                     }).
-                                    then((...args) => {
+                                    then(response => {
                                         loadingDone();
-                                        success(...args);
+                                        success(response);
                                     }).
-                                    fail((...args) => {
-                                        FAIL(...args);
+                                    fail(response => {
+                                        FAIL(response);
                                         loadingDone();
-                                        failure(...args);
+                                        failure(response);
                                     }).
                                     fail(FAIL).
                                     always(loadingDone);
