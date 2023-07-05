@@ -9,6 +9,7 @@
     "projectProject": "Проект",
     "issueType": "Тип задачи",
     "issueId": "Задача",
+    "issue": "Задача",
     "comment": "Комментарий",
     "issueTypeProjects": "Проекты",
     "issueTypeDelete": "Удалить тип задач",

@@ -1191,7 +1191,7 @@
 
         $(".ttSaLink").off("click").on("click", () => {
             cardForm({
-                title: i18n("tt.link"),
+                title: i18n("tt.saLink"),
                 footer: true,
                 borderless: true,
                 topApply: true,
@@ -1199,7 +1199,7 @@
                     {
                         id: "issue",
                         type: "select2",
-                        title: i18n("tt.link"),
+                        title: i18n("tt.issue"),
                         multiple: false,
                         validate: a => {
                             return !!a;
