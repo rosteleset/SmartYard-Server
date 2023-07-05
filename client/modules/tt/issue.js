@@ -1218,16 +1218,8 @@
                                         limit: 32768,
                                         search: params.data.term,
                                     }).
-                                    then((...response) => {
-                                        console.log(...reponse);
-                                        loadingDone();
-                                        success(...response);
-                                    }).
-                                    fail((...response) => {
-                                        FAIL(...response);
-                                        loadingDone();
-                                        failure(...response);
-                                    }).
+                                    then(success).
+                                    fail(failure).
                                     fail(FAIL).
                                     always(loadingDone);
 //                                }
