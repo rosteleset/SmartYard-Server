@@ -1197,7 +1197,7 @@
                 topApply: true,
                 fields: [
                     {
-                        id: "issue",
+                        id: "issueId",
                         type: "select2",
                         title: i18n("tt.issue"),
                         multiple: false,
@@ -1252,7 +1252,7 @@
                 callback: f => {
                     loadingStart();
                     POST("tt", "link", issue.issue.issueId, {
-                        issue: f.issue,
+                        issueId: f.issueId,
                     }).
                     fail(FAIL).
                     done(() => {
