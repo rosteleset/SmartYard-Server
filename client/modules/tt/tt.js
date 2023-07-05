@@ -219,8 +219,6 @@
             }
         }
 
-        console.log(fieldId);
-
         if (fieldId && fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
@@ -354,16 +352,77 @@
                     };
 
                 case "links":
+                    let vi = [];
+                    options = [];
+
+                    if (issue && issue[fieldId]) {
+                        let va;
+
+                        if (typeof issue[fieldId] == "string") {
+                            va = [ issue[fieldId] ];
+                        } else {
+                            va = issue[fieldId];
+                        }
+                        for (let i in va) {
+                            vi.push(va[i]);
+                            options.push({
+                                id: va[i],
+                                text: va[i],
+                            });
+                        }
+                    }
+
                     return {
-                        id: "links",
+                        id: fieldId,
                         type: "select2",
-                        multiple: true,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        options: select2Filter(peoples(project, false, true), filter),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.links)?Object.values(issue.links):[]),
-                    };
-        
+                        hint: cf.fieldDescription?cf.fieldDescription:false,
+                        options: select2Filter(options, filter),
+                        multiple: cf.format.indexOf("multiple") >= 0,
+                        value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
+                        validate: validate,
+                        ajax: {
+                            delay: 1000,
+                            transport: function (params, success, failure) {
+                                loadingStart();
+                                QUERY("tt", "issues", {
+                                    project: project.acronym,
+                                    filter: "#search",
+                                    skip: 0,
+                                    limit: 32768,
+                                    search: params.data.term,
+                                }).
+                                then(response => {
+                                    loadingDone();
+                                    success(response);
+                                }).
+                                fail(response => {
+                                    FAIL(response);
+                                    loadingDone();
+                                    failure(response);
+                                }).
+                                fail(FAIL).
+                                always(loadingDone);
+                            },
+                            processResults: function (data) {
+                                let suggestions = options;
+                                for (let i in data.issues.issues) {
+                                    let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
+                                    if (vi.indexOf(vl) < 0) {
+                                        suggestions.push({
+                                            id: vl,
+                                            text: vl,
+                                        });
+                                    }
+                                }
+                                return {
+                                    results: suggestions,
+                                };
+                            },
+                        },
+                    }
+
                 case "attachments":
                     return {
                         id: "attachments",
