@@ -1199,7 +1199,7 @@
                     {
                         id: "issue",
                         type: "select2",
-                        title: i18n("tt.issue"),
+                        title: i18n("tt.link"),
                         multiple: false,
                         validate: a => {
                             return !!a;
@@ -1209,7 +1209,7 @@
                             transport: function (params, success, failure) {
                                 loadingStart();
                                 QUERY("tt", "issues", {
-                                    project: project.acronym,
+                                    project: issue.issue.project,
                                     filter: "#search",
                                     skip: 0,
                                     limit: 32768,
