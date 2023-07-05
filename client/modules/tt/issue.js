@@ -558,6 +558,7 @@
             "saDelete",
             "saSubIssue",
             "saCoordinate",
+            "saLink",
         ];
 
         if (!isEmpty(issue.actions)) {
@@ -1186,6 +1187,10 @@
 
         $(".ttSaSubIssue").off("click").on("click", () => {
             modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
+        });
+
+        $(".ttSaLink").off("click").on("click", () => {
+            alert("link");
         });
 
         $(".ttSaCoordinate").off("click").on("click", () => {
