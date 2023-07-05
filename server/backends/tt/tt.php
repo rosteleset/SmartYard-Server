@@ -1391,6 +1391,11 @@
                     return false;
                 }
 
+                if ($issue1["issueId"] == $issue2["issueId"]) {
+                    setLastError("cantLinkToItself");
+                    return false;
+                }
+
                 if ($issue1["project"] !== $issue2["project"]) {
                     setLastError("issue1AndIssue2FromDifferentProjects");
                     return false;
@@ -1466,6 +1471,11 @@
                 $issue2 = $this->getIssue($issue2);
                 if (!$issue2) {
                     setLastError("issue2NotFound");
+                    return false;
+                }
+
+                if ($issue1["issueId"] == $issue2["issueId"]) {
+                    setLastError("cantLinkToItself");
                     return false;
                 }
 

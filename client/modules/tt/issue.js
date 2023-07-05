@@ -1213,7 +1213,7 @@
                                     loadingStart();
                                     QUERY("tt", "issues", {
                                         project: issue.issue.project,
-                                        filter: "#search",
+                                        filter: "#issueSearch",
                                         skip: 0,
                                         limit: 32768,
                                         search: params.data.term,
