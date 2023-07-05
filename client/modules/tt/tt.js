@@ -385,7 +385,7 @@
                             transport: function (params, success) {
                                 if (params.data.term) {
                                     QUERY("tt", "issues", {
-                                        project: project.project,
+                                        project: project.acronym,
                                         filter: "#issueSearch",
                                         skip: 0,
                                         limit: 32768,
@@ -666,7 +666,7 @@
                                     transport: function (params, success) {
                                         if (params.data.term) {
                                             QUERY("tt", "issues", {
-                                                project: project.project,
+                                                project: project.acronym,
                                                 filter: "#issueSearch",
                                                 skip: 0,
                                                 limit: 32768,
