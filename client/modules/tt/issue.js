@@ -1222,7 +1222,11 @@
                                     fail(failure).
                                     fail(FAIL); //.
                                 } else {
-                                    success();
+                                    success({
+                                        issues: {
+                                            issues: [],
+                                        }
+                                    });
                                 }
                             },
                             processResults: function (data) {
