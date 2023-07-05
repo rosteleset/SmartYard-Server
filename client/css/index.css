@@ -265,6 +265,7 @@ body::-webkit-scrollbar-thumb {
     background-repeat: no-repeat;
     padding-left: 35px;
     background-position: 10px 50%;
+    background-size: 16px;
 }
 
 .text-decoration-line-through {
