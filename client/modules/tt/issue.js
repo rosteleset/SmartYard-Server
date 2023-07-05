@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 ({
     init: function () {
         // submodule - module<dot>submodule
