@@ -259,7 +259,8 @@ body::-webkit-scrollbar-thumb {
   background-position: center center;
 }
 
-.select2-results__option.loading-results {
+.select21-results__option.loading-results,
+.select2-results__option.select2-results__option--load-more {
   background-image: url('../img/spinnerSmall.svg');
   background-repeat: no-repeat;
   padding-left: 35px;
