@@ -351,54 +351,65 @@
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.watchers)?Object.values(issue.watchers):[]),
                     };
 
-                    case "attachments":
-                        return {
-                            id: "attachments",
-                            type: "files",
-                            title: modules.tt.issueFieldTitle(field),
-                            maxSize: project.maxFileSize,
-                        };
+                case "links":
+                    return {
+                        id: "links",
+                        type: "select2",
+                        multiple: true,
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
+                        options: select2Filter(peoples(project, false, true), filter),
+                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.links)?Object.values(issue.links):[]),
+                    };
+        
+                case "attachments":
+                    return {
+                        id: "attachments",
+                        type: "files",
+                        title: modules.tt.issueFieldTitle(field),
+                        maxSize: project.maxFileSize,
+                    };
 
-                    case "workflow":
-                        let workflows = [];
+                case "workflow":
+                    let workflows = [];
 
-                        for (let i in modules.tt.meta.workflows) {
-                            workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
-                        }
-            
-                        function workflowsByProject(project) {
-                            let w;
-            
-                            if (project) {
-                                for (let i in modules.tt.meta.projects) {
-                                    if (modules.tt.meta.projects[i].acronym == project) {
-                                        for (let j in modules.tt.meta.projects[i].workflows) {
-                                            let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
-                                            if (wn.charAt(0) == "#") {
-                                                wn = wn.substring(1);
-                                            }
-                                            w.push({
-                                                id: modules.tt.meta.projects[i].workflows[j],
-                                                text: wn,
-                                            });
+                    for (let i in modules.tt.meta.workflows) {
+                        workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
+                    }
+        
+                    function workflowsByProject(project) {
+                        let w;
+        
+                        if (project) {
+                            for (let i in modules.tt.meta.projects) {
+                                if (modules.tt.meta.projects[i].acronym == project) {
+                                    for (let j in modules.tt.meta.projects[i].workflows) {
+                                        let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
+                                        if (wn.charAt(0) == "#") {
+                                            wn = wn.substring(1);
                                         }
-                                        break;
+                                        w.push({
+                                            id: modules.tt.meta.projects[i].workflows[j],
+                                            text: wn,
+                                        });
                                     }
+                                    break;
                                 }
                             }
-            
-                            return w;
                         }
+        
+                        return w;
+                    }
 
-                        return {
-                            id: "workflow",
-                            type: "select2",
-                            title: modules.tt.issueFieldTitle(field),
-                            placeholder: modules.tt.issueFieldTitle(field),
-                            options: select2Filter(workflowsByProject(project), filter),
-                            value: issue.workflow,
-                        };
-                }
+                    return {
+                        id: "workflow",
+                        type: "select2",
+                        title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
+                        options: select2Filter(workflowsByProject(project), filter),
+                        value: issue.workflow,
+                    };
+            }
         } else {
             if (fieldId) {
                 // custom field

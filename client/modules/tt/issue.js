@@ -507,7 +507,7 @@
         function fieldRow(i) {
             let h = '';
 
-            if (![ "id", "issueId", "comments", "attachments", "childrens ", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+            if (![ "id", "issueId", "comments", "attachments", "childrens ", "links", "linkedIssues", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
                 let f = false;
 
                 if (issue.fields[i].substring(0, 4) == "_cf_") {
@@ -724,25 +724,40 @@
 
         if (issue.issue.childrens && issue.issue.childrens.issues && Object.keys(issue.issue.childrens.issues).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subIssues")}' style="font-size: 11pt;"/></td></tr>`;
+            h += "<tr>";
+            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+            h += "<table>";
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
-                h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
-                h += "<div>";
-                h += `<span class='mr-2 text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</span>`;
-                h += ttDate(issue.issue.childrens.issues[i].created, true);
-                h += "<span class='ml-2'>";
-                h += modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author");
-                h += "</span>";
-                h += "<span class='ml-2'>";
-                h += issue.issue.childrens.issues[i].subject;
-                h += "</span>";
-                h += "<span class='ml-2'>";
-                h += modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status");
-                h += "</span>";
-                h += "</div>";
-                h += "</td>";
+                h += `<td class='text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</td>`;
+                h += `<td class='pl-2'>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author")}</td>`;
+                h += `<td class='pl-2'>${issue.issue.childrens.issues[i].subject}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status")}</td>`;
                 h += "</tr>";
             }
+            h += "</table>";
+            h += "</td>";
+            h += "</tr>";
+        }
+
+        if (issue.issue.linkedIssues && issue.issue.linkedIssues.issues && Object.keys(issue.issue.linkedIssues.issues).length) {
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.links")}' style="font-size: 11pt;"/></td></tr>`;
+            h += "<tr>";
+            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+            h += "<table>";
+            for (let i in issue.issue.linkedIssues.issues) {
+                h += "<tr>";
+                h += `<td class='text-bold hoverable ttIssue'>${issue.issue.linkedIssues.issues[i].issueId}</td>`;
+                h += `<td class='pl-2'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author")}</td>`;
+                h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status")}</td>`;
+                h += "</tr>";
+            }
+            h += "</table>";
+            h += "</td>";
+            h += "</tr>";
         }
 
         h += "</table>";
