@@ -219,6 +219,8 @@
             }
         }
 
+        console.log(fieldId);
+
         if (fieldId && fieldId.substring(0, 4) !== "_cf_") {
             // regular issue fields
             switch (fieldId) {
@@ -287,16 +289,16 @@
                         }
                     }
 
-                    return {
-                        id: "resolution",
-                        type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
-                        options: select2Filter(resolutions, filter),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.resolution)?issue.resolution:-1),
-                        validate: v => {
-                            return $.trim(v) !== "";
-                        },
-                    };
+                return {
+                    id: "resolution",
+                    type: "select2",
+                    title: modules.tt.issueFieldTitle(field),
+                    options: select2Filter(resolutions, filter),
+                    value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.resolution)?issue.resolution:-1),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    },
+                };
 
                 case "status":
                     let statuses = [];
