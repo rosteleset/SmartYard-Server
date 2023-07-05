@@ -976,6 +976,7 @@
                     loadingStart();
                     POST("tt", "comment", false, result).
                     fail(FAIL).
+                    fail(loadingDone).
                     done(() => {
                         modules.tt.route({
                             issue: issue.issue.issueId,
@@ -984,8 +985,7 @@
                             count: count,
                             search: search,
                         });
-                    }).
-                    always(loadingDone);
+                    });
                 },
             }).show();
         });
@@ -1038,6 +1038,7 @@
                         loadingStart();
                         DELETE("tt", "comment", false, result).
                         fail(FAIL).
+                        fail(loadingDone).
                         done(() => {
                             modules.tt.route({
                                 issue: issue.issue.issueId,
@@ -1046,12 +1047,12 @@
                                 count: count,
                                 search: search,
                             });
-                        }).
-                        always(loadingDone);
+                        });
                     } else {
                         loadingStart();
                         PUT("tt", "comment", false, result).
                         fail(FAIL).
+                        fail(loadingDone).
                         done(() => {
                             modules.tt.route({
                                 issue: issue.issue.issueId,
@@ -1060,8 +1061,7 @@
                                 count: count,
                                 search: search,
                             });
-                        }).
-                        always(loadingDone);
+                        });
                     }
                 },
             }).show();
@@ -1097,6 +1097,7 @@
                         loadingStart();
                         POST("tt", "file", false, result).
                         fail(FAIL).
+                        fail(lodingDone).
                         done(() => {
                             modules.tt.route({
                                 issue: issue.issue.issueId,
@@ -1105,8 +1106,7 @@
                                 count: count,
                                 search: search,
                             });
-                        }).
-                        always(loadingDone);
+                        });
                     }
                 },
             }).show();
@@ -1121,6 +1121,7 @@
                     filename: file,
                 }).
                 fail(FAIL).
+                fail(loadingDone).
                 done(() => {
                     modules.tt.route({
                         issue: issue.issue.issueId,
@@ -1129,8 +1130,7 @@
                         count: count,
                         search: search,
                     });
-                }).
-                always(loadingDone);
+                });
             });
         });
 
@@ -1141,6 +1141,7 @@
                     "action": "assignToMe"
                 }).
                 fail(FAIL).
+                fail(loadingDone).
                 done(() => {
                     modules.tt.route({
                         issue: issue.issue.issueId,
@@ -1149,8 +1150,7 @@
                         count: count,
                         search: search,
                     });
-                }).
-                always(loadingDone);
+                });
             });
         });
 
@@ -1161,6 +1161,7 @@
                     "action": "watch"
                 }).
                 fail(FAIL).
+                fail(loadingDone).
                 done(() => {
                     modules.tt.route({
                         issue: issue.issue.issueId,
@@ -1169,8 +1170,7 @@
                         count: count,
                         search: search,
                     });
-                }).
-                always(loadingDone);
+                });
             });
         });
 
