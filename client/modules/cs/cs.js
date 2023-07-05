@@ -420,18 +420,18 @@
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
                                                 if (closed) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueClosedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueClosedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
                                                 }
                                             }
                                         }
