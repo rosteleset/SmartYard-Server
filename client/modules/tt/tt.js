@@ -380,7 +380,6 @@
                         options: select2Filter(options, filter),
                         multiple: true,
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
-                        validate: validate,
                         ajax: {
                             delay: 1000,
                             transport: function (params, success, failure) {
