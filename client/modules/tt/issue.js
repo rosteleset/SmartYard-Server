@@ -1250,7 +1250,21 @@
                     }
                 ],
                 callback: f => {
-                    console.log(f);
+                    loadingStart();
+                    POST("tt", "link", issue.issue.issueId, {
+                        issue: f.issue,
+                    }).
+                    fail(FAIL).
+                    done(() => {
+                        modules.tt.route({
+                            issue: issue.issue.issueId,
+                            filter: filter,
+                            index: index,
+                            count: count,
+                            search: search,
+                        });
+                    }).
+                    always(loadingDone);
                 },
             }).show();
         });
