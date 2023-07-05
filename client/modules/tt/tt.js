@@ -684,7 +684,7 @@
                                             let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
                                             if (vi.indexOf(vl) < 0) {
                                                 suggestions.push({
-                                                    id: vl,
+                                                    id: data.issues.issues[i].issueId,
                                                     text: vl,
                                                 });
                                             }
