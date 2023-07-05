@@ -1208,25 +1208,27 @@
                         ajax: {
                             delay: 1000,
                             transport: function (params, success, failure) {
-                                loadingStart();
-                                QUERY("tt", "issues", {
-                                    project: issue.issue.project,
-                                    filter: "#search",
-                                    skip: 0,
-                                    limit: 32768,
-                                    search: params.data.term,
-                                }).
-                                then(response => {
-                                    loadingDone();
-                                    success(response);
-                                }).
-                                fail(response => {
-                                    FAIL(response);
-                                    loadingDone();
-                                    failure(response);
-                                }).
-                                fail(FAIL).
-                                always(loadingDone);
+                                if (params.data.term) {
+                                    loadingStart();
+                                    QUERY("tt", "issues", {
+                                        project: issue.issue.project,
+                                        filter: "#search",
+                                        skip: 0,
+                                        limit: 32768,
+                                        search: params.data.term,
+                                    }).
+                                    then(response => {
+                                        loadingDone();
+                                        success(response);
+                                    }).
+                                    fail(response => {
+                                        FAIL(response);
+                                        loadingDone();
+                                        failure(response);
+                                    }).
+                                    fail(FAIL).
+                                    always(loadingDone);
+                                }
                             },
                             processResults: function (data) {
                                 let suggestions = options;
