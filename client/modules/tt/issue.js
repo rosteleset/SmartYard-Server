@@ -1190,6 +1190,7 @@
         });
 
         $(".ttSaLink").off("click").on("click", () => {
+            console.log(issue);
             cardForm({
                 title: i18n("tt.saLink"),
                 footer: true,
