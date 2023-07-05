@@ -1218,7 +1218,7 @@
                                         search: params.data.term,
                                     }).
                                     then(success).
-                                    fail(failure).
+//                                    fail(failure).
                                     fail(FAIL); //.
                                 } else {
                                     success({
