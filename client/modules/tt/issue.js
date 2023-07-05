@@ -1202,6 +1202,7 @@
                         title: i18n("tt.issue"),
                         multiple: false,
                         options: [],
+                        value: [],
                         validate: a => {
                             return !!a;
                         },
