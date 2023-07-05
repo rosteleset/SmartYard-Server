@@ -378,7 +378,7 @@
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(options, filter),
-                        multiple: cf.format.indexOf("multiple") >= 0,
+                        multiple: true,
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
                         validate: validate,
                         ajax: {
