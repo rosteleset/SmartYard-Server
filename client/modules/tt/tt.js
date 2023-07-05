@@ -63,7 +63,10 @@
 
                 case "watchers":
                     return i18n("tt.watchers");
-
+    
+                case "links":
+                    return i18n("tt.links");
+        
                 case "attachments":
                     return i18n("tt.attachments");
 

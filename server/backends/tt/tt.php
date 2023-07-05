@@ -1049,6 +1049,7 @@
                 $validFields[] = "tags";
                 $validFields[] = "assigned";
                 $validFields[] = "watchers";
+                $validFields[] = "links";
                 $validFields[] = "attachments";
                 $validFields[] = "comments";
 
@@ -1072,22 +1073,28 @@
                     }
                 }
 
-                foreach ($issue["tags"] as $indx => $tag) {
-                    if (!in_array($tag, $validTags)) {
-                        unset($issue["tags"][$indx]);
+                if (@$issue["tags"]) {
+                    foreach ($issue["tags"] as $indx => $tag) {
+                        if (!in_array($tag, $validTags)) {
+                            unset($issue["tags"][$indx]);
+                        }
                     }
                 }
 
-                if ($issue["assigned"]) {
+                if (@$issue["assigned"]) {
                     $issue["assigned"] = array_values($issue["assigned"]);
                 }
 
-                if ($issue["watchers"]) {
+                if (@$issue["watchers"]) {
                     $issue["watchers"] = array_values($issue["watchers"]);
                 }
 
-                if ($issue["tags"]) {
+                if (@$issue["tags"]) {
                     $issue["tags"] = array_values($issue["tags"]);
+                }
+
+                if (@$issue["links"]) {
+                    $issue["links"] = array_values($issue["links"]);
                 }
 
                 return $issue;
@@ -1113,6 +1120,28 @@
                     return false;
                 }
 
+                $issue = $issues["issues"][0];
+
+                if (@$issue["links"]) {
+                    $linkedIssues = $this->getIssues($acr, [
+                        "issueId" => [
+                            "\$in" => $issue["links"]
+                        ],
+                    ], [
+                        "issueId",
+                        "subject",
+                        "status",
+                        "resolution",
+                        "created",
+                        "updated",
+                        "author",
+                    ], [ "created" => 1 ], 0, 32768);
+
+                    if ($linkedIssues) {
+                        $issue["linkedIssues"] = $linkedIssues;
+                    }
+                }
+
                 $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [
                     "issueId",
                     "subject",
@@ -1124,10 +1153,10 @@
                 ], [ "created" => 1 ], 0, 32768);
 
                 if ($childrens) {
-                    $issues["issues"][0]["childrens"] = $childrens;
+                    $issue["childrens"] = $childrens;
                 }
 
-                return $issues["issues"][0];
+                return $issue;
             }
 
             /**
@@ -1341,6 +1370,160 @@
                     }, $params);
                 }
                 return $query;
+            }
+
+            /**
+             * @param $issue1
+             * @param $issue2
+             * @return mixed
+             */
+            public function linkIssues($issue1, $issue2)
+            {
+                $issue1 = $this->getIssue($issue1);
+                if (!$issue1) {
+                    setLastError("issue1NotFound");
+                    return false;
+                }
+
+                $issue2 = $this->getIssue($issue2);
+                if (!$issue2) {
+                    setLastError("issue2NotFound");
+                    return false;
+                }
+
+                if ($issue1["project"] !== $issue2["project"]) {
+                    setLastError("issue1AndIssue2FromDifferentProjects");
+                    return false;
+                }
+
+                $project = $issue1["project"];
+
+                $me = $this->myRoles();
+
+                if ((int)$me[$project] < 40) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
+                $links1 = @$issue1["links"];
+                $links2 = @$issue2["links"];
+
+                if (!$links1) {
+                    $links1 = [];
+                }
+
+                if (!$links2) {
+                    $links2 = [];
+                }
+
+                $needModify1 = false;
+                $needModify2 = false;
+
+                if (!in_array($issue2["issueId"], $links1)) {
+                    $needModify1 = true;
+                    $links1[] = $issue2["issueId"];
+                    $issue1 = [
+                        "issueId" => $issue1["issueId"],
+                        "links" => $links1,
+                    ];
+                }
+
+                if (!in_array($issue1["issueId"], $links2)) {
+                    $needModify2 = true;
+                    $links2[] = $issue1["issueId"];
+                    $issue2 = [
+                        "issueId" => $issue2["issueId"],
+                        "links" => $links2,
+                    ];
+                }
+
+                $success = true;
+
+                if ($needModify1) {
+                    $success = $success && $this->modifyIssue($issue1);
+                }
+                
+                if ($needModify2) {
+                    $success = $success && $this->modifyIssue($issue2);
+                }
+                
+                return $success;
+            }
+
+            /**
+             * @param $issue1
+             * @param $issue2
+             * @return mixed
+             */
+            public function unLinkIssues($issue1, $issue2)
+            {
+                $issue1 = $this->getIssue($issue1);
+                if (!$issue1) {
+                    setLastError("issue1NotFound");
+                    return false;
+                }
+
+                $issue2 = $this->getIssue($issue2);
+                if (!$issue2) {
+                    setLastError("issue2NotFound");
+                    return false;
+                }
+
+                if ($issue1["project"] !== $issue2["project"]) {
+                    setLastError("issue1AndIssue2FromDifferentProjects");
+                    return false;
+                }
+
+                $project = $issue1["project"];
+
+                $me = $this->myRoles();
+
+                if ((int)$me[$project] < 40) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
+                $links1 = @$issue1["links"];
+                $links2 = @$issue2["links"];
+
+                if (!$links1) {
+                    $links1 = [];
+                }
+
+                if (!$links2) {
+                    $links2 = [];
+                }
+
+                $needModify1 = false;
+                $needModify2 = false;
+
+                if (in_array($issue2["issueId"], $links1)) {
+                    $needModify1 = true;
+                    $issue1 = [
+                        "issueId" => $issue1["issueId"],
+                        "links" => array_diff($links1, [ $issue2["issueId"] ]),
+                    ];
+                }
+
+                if (in_array($issue1["issueId"], $links2)) {
+                    $needModify2 = true;
+                    $issue2 = [
+                        "issueId" => $issue2["issueId"],
+                        "links" => array_diff($links2, [ $issue1["issueId"] ]),
+                    ];
+                }
+
+                $success = true;
+
+                if ($needModify1) {
+                    $success = $success && $this->modifyIssue($issue1);
+                }
+                
+                if ($needModify2) {
+                    $success = $success && $this->modifyIssue($issue2);
+                }
+                
+                return $success;
             }
 
             /**
