@@ -1190,6 +1190,8 @@
         });
 
         $(".ttSaLink").off("click").on("click", () => {
+            let options = [];
+
             cardForm({
                 title: i18n("tt.saLink"),
                 footer: true,
@@ -1201,15 +1203,14 @@
                         type: "select2",
                         title: i18n("tt.issue"),
                         multiple: false,
-                        options: [],
-                        value: [],
+                        options: options,
                         validate: a => {
                             return !!a;
                         },
                         ajax: {
                             delay: 1000,
                             transport: function (params, success, failure) {
-//                                if (params.data.term) {
+                                if (params.data.term) {
                                     loadingStart();
                                     QUERY("tt", "issues", {
                                         project: issue.issue.project,
@@ -1222,7 +1223,7 @@
                                     fail(failure).
                                     fail(FAIL).
                                     always(loadingDone);
-//                                }
+                                }
                             },
                             processResults: function (data) {
                                 let suggestions = options;

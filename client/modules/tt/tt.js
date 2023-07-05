@@ -372,8 +372,6 @@
                         }
                     }
 
-                    console.log(vi, options);
-
                     return {
                         id: fieldId,
                         type: "select2",
