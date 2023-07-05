@@ -1218,6 +1218,7 @@
                                         limit: 32768,
                                         search: params.data.term,
                                     }).
+                                    then(console.log).
                                     then(response => {
                                         loadingDone();
                                         success(response);
