@@ -1272,7 +1272,7 @@
 
         $(".unlinkIssue").off("click").on("click", function () {
             let issueId = $(this).attr("data-issueId");
-            mConfirm(i18n("tt.unlinkIssues", issue.issue.issueId, issueId), i18n("confirm"), () => {
+            mConfirm(i18n("tt.unlinkIssues", issue.issue.issueId, issueId), i18n("confirm"), i18n("yes"), () => {
                 loadingStart();
                 DELETE("tt", "link", issue.issue.issueId, {
                     issueId: issueId,
