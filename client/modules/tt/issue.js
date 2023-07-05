@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 ({
     init: function () {
         // submodule - module<dot>submodule
@@ -1219,7 +1221,10 @@
                                     }).
                                     then(success).
 //                                    fail(failure).
-                                    fail(FAIL); //.
+                                    fail(response => {
+                                        FAIL(response);
+                                        failure(response);
+                                    }); //.
                                 } else {
                                     success({
                                         issues: {
