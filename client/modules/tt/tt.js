@@ -385,7 +385,7 @@
                             transport: function (params, success) {
                                 if (params.data.term) {
                                     QUERY("tt", "issues", {
-                                        project: issue.issue.project,
+                                        project: project.project,
                                         filter: "#issueSearch",
                                         skip: 0,
                                         limit: 32768,
@@ -666,7 +666,7 @@
                                     transport: function (params, success) {
                                         if (params.data.term) {
                                             QUERY("tt", "issues", {
-                                                project: issue.issue.project,
+                                                project: project.project,
                                                 filter: "#issueSearch",
                                                 skip: 0,
                                                 limit: 32768,
