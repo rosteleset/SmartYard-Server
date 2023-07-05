@@ -1190,9 +1190,6 @@
         });
 
         $(".ttSaLink").off("click").on("click", () => {
-            let options = [];
-            let vi = [];
-
             cardForm({
                 title: i18n("tt.saLink"),
                 footer: true,
@@ -1204,8 +1201,8 @@
                         type: "select2",
                         title: i18n("tt.issue"),
                         multiple: false,
-                        options: options,
-                        value: vi,
+                        options: [],
+                        value: [],
                         validate: a => {
                             return !!a;
                         },
@@ -1228,15 +1225,12 @@
                                 }
                             },
                             processResults: function (data) {
-                                let suggestions = options;
+                                let suggestions = [];
                                 for (let i in data.issues.issues) {
-                                    let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
-                                    if (vi.indexOf(vl) < 0) {
-                                        suggestions.push({
-                                            id: data.issues.issues[i].issueId,
-                                            text: vl,
-                                        });
-                                    }
+                                    suggestions.push({
+                                        id: data.issues.issues[i].issueId,
+                                        text: "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject,
+                                    });
                                 }
                                 return {
                                     results: suggestions,
