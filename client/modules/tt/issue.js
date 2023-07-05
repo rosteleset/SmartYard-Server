@@ -1210,7 +1210,6 @@
                             delay: 1000,
                             transport: function (params, success, failure) {
                                 if (params.data.term) {
-//                                    loadingStart();
                                     QUERY("tt", "issues", {
                                         project: issue.issue.project,
                                         filter: "#issueSearch",
@@ -1221,7 +1220,8 @@
                                     then(success).
                                     fail(failure).
                                     fail(FAIL); //.
-//                                    always(loadingDone);
+                                } else {
+                                    success();
                                 }
                             },
                             processResults: function (data) {
