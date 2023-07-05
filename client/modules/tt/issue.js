@@ -1218,11 +1218,14 @@
                                         search: params.data.term,
                                     }).
                                     then(success).
-//                                    fail(failure).
                                     fail(response => {
                                         FAIL(response);
-                                        failure();
-                                    }); //.
+                                        success({
+                                            issues: {
+                                                issues: [],
+                                            }
+                                        });
+                                    });
                                 } else {
                                     success({
                                         issues: {
