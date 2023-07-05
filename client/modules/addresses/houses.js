@@ -24,21 +24,16 @@
                     ajax: {
                         delay: 1000,
                         transport: function (params, success, failure) {
-                            loadingStart();
-                            QUERY("geo", "suggestions", {
-                                search: params.data.term,
-                            }).
-                            then(response => {
-                                loadingDone();
-                                success(response);
-                            }).
-                            fail(response => {
-                                FAIL(response);
-                                loadingDone();
-                                failure(response);
-                            }).
-                            fail(FAIL).
-                            always(loadingDone);
+                            if (params.data.term) {
+                                loadingStart();
+                                QUERY("geo", "suggestions", {
+                                    search: params.data.term,
+                                }).
+                                then(success).
+                                fail(failure).
+                                fail(FAIL).
+                                always(loadingDone);
+                            }
                         },
                         processResults: function (data) {
                             let suggestions = [];
