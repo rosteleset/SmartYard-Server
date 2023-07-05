@@ -1216,11 +1216,11 @@
                                         limit: 32768,
                                         search: params.data.term,
                                     }).
-                                    then(...args => {
+                                    then((...args) => {
                                         loadingDone();
                                         success(...args);
                                     }).
-                                    fail(...args => {
+                                    fail((...args) => {
                                         FAIL(...args);
                                         loadingDone();
                                         failure(...args);
