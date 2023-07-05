@@ -1191,6 +1191,7 @@
 
         $(".ttSaLink").off("click").on("click", () => {
             let options = [];
+            let vi = [];
 
             cardForm({
                 title: i18n("tt.saLink"),
@@ -1204,6 +1205,7 @@
                         title: i18n("tt.issue"),
                         multiple: false,
                         options: options,
+                        value: vi,
                         validate: a => {
                             return !!a;
                         },
