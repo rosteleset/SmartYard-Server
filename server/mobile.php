@@ -213,17 +213,17 @@ function auth($_response_cache_ttl = -1)
             if (openssl_verify(utf8_decode($header . '.' . $payload), $decoded_signature, $publicKey, OPENSSL_ALGO_SHA256) !== 1)
                 response(401, false, 'Не авторизован', 'Не авторизован');
 
-            $jwt = base64_decode($payload);
+            $jwt = json_decode(base64_decode($payload), true);
 
             if (time() <= $jwt['nbf'] || time() >= $jwt['exp'])
                 response(401, false, 'Не авторизован', 'Не авторизован');
 
             $audience = explode(',', $oauth['audience']);
 
-            if (!in_array($jwt['aud'], $audience))
+            if (!in_array($jwt['aud'], $audience) || !array_key_exists('scopes', $jwt) || !array_key_exists('aud_jti', $jwt['scopes']))
                 response(401, false, 'Не авторизован', 'Не авторизован');
 
-            $subscribers = $households->getSubscribers('aud_jti', $jwt['aud'] . '-' . $jwt['jti']);
+            $subscribers = $households->getSubscribers('aud_jti', $jwt['scopes']['aud_jti']);
 
             if ($subscribers)
                 $subscriber = $subscribers[0];
