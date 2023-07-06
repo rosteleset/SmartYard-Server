@@ -4,6 +4,18 @@
 -- Утилиты
 --
 
+function tonumberExt(v)
+    if not pcall(function () v = tonumber(v) end) then
+        v = 0
+    end
+
+    if v ~= nil then
+        return v
+    else
+        return 0
+    end
+end
+
 function hasValue(tab, val)
     if tab[0] == val then
         return true
@@ -100,7 +112,18 @@ function normalizeArray(tab)
 end
 
 function exists(v)
-    return v ~= nil and v ~= "" and tonumber(v) ~= 0
+    if v == nil then
+        return false
+    end
+    
+    if type(v) == "table" then
+        for i, v in pairs(v) do
+            return true
+        end
+        return false
+    end
+    
+    return v ~= "" and tonumberExt(v) ~= 0
 end
 
 --
@@ -138,7 +161,7 @@ end
 -- (Колл-центр == "да" и Дата созвона пусто) или (Дата созвона >= Текущая дата) или (Дата координации == Завтра и Дата координации <= Вчера)
 	
 function callNow(issue)
-    return hasValue(tt.myGroups(), "callcenter") and exists(issue["_cf_need_call"]) and tonumber(issue["_cf_call_date"]) <= utils.time()
+    return hasValue(tt.myGroups(), "callcenter") and exists(issue["_cf_need_call"]) and tonumberExt(issue["_cf_call_date"]) <= utils.time()
 end
 
 -- Координация.Просроченные
@@ -234,8 +257,8 @@ end
 
 -- создание заявки
 function createIssue(issue)
-    if issue["_cf_object_id"] ~= nil and tonumber(issue["_cf_object_id"]) >= 500000000 and tonumber(issue["_cf_object_id"]) < 600000000 then
-        local client_id = tonumber(issue["_cf_object_id"]) - 500000000
+    if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
+        local client_id = tonumberExt(issue["_cf_object_id"]) - 500000000
 
         local client_info = custom.GET({
             ["action"] = "client_info",
@@ -402,9 +425,9 @@ function getActionTemplate(issue, action)
     local needAccessInfo = false
     
     if issue["_cf_object_id"] ~= nil then
-        if tonumber(issue["_cf_object_id"]) > 0 then
+        if tonumberExt(issue["_cf_object_id"]) > 0 then
             needAccessInfo = true
-            if tonumber(issue["_cf_object_id"]) >= 200000000 and tonumber(issue["_cf_object_id"]) < 300000000 then
+            if tonumberExt(issue["_cf_object_id"]) >= 200000000 and tonumberExt(issue["_cf_object_id"]) < 300000000 then
                 doneFilter = {
                     "Выполнено",
                     "Проблема с доступом",
@@ -527,12 +550,20 @@ function action(issue, action, original)
     end
     
     if action == "Координация" then
-        issue["_cf_install_done"] = ""
-        issue["_cf_done_date"] = ""
-        issue["_cf_hw_ok"] = ""
+        if exists(issue["_cf_install_done"]) then
+            issue["_cf_install_done"] = ""
+        end
+        if exists(issue["_cf_done_date"]) then
+            issue["_cf_done_date"] = ""
+        end
+        if exists(issue["_cf_hw_ok"]) then
+            issue["_cf_hw_ok"] = ""
+        end
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
-        issue["assigned"] = { }
+        if exists(issue["assigned"]) then
+            issue["assigned"] = { }
+        end
         
         return tt.modifyIssue(issue)
     end
@@ -551,13 +582,13 @@ function action(issue, action, original)
             original["author"]
         }
         if original["_cf_object_id"] ~= nil then
-            if tonumber(original["_cf_object_id"]) >= 200000000 and tonumber(original["_cf_object_id"]) < 300000000 then
+            if tonumberExt(original["_cf_object_id"]) >= 200000000 and tonumberExt(original["_cf_object_id"]) < 300000000 then
                 -- l2 - в техотдел
                 issue["assigned"] = {
                     "tech"
                 }
             end
-            if tonumber(original["_cf_object_id"]) >= 500000000 and tonumber(original["_cf_object_id"]) < 600000000 then
+            if tonumberExt(original["_cf_object_id"]) >= 500000000 and tonumberExt(original["_cf_object_id"]) < 600000000 then
                 if original["_cf_client_type"] == "ФЛ" then
                     -- ФЛ - в коллцентр
                     issue["assigned"] = {
@@ -570,7 +601,7 @@ function action(issue, action, original)
                     }
                 end
             end
-            if tonumber(original["_cf_object_id"]) < 0 and issue["_cf_install_done"] == "Выполнено" then
+            if tonumberExt(original["_cf_object_id"]) < 0 and issue["_cf_install_done"] == "Выполнено" then
                 issue["status"] = "Закрыта"
             end
         end
@@ -578,29 +609,49 @@ function action(issue, action, original)
     end
 
     if action == "Снять с координации" then
-        issue["_cf_sheet"] = ""
-        issue["_cf_sheet_date"] = ""
-        issue["_cf_sheet_col"] = ""
-        issue["_cf_sheet_cell"] = ""
-        issue["_cf_sheet_cells"] = 0
-        issue["_cf_installers"] = {}
-        issue["_cf_can_change"] = 0
-        issue["_cf_call_before_visit"] = 0
-        issue["_cf_install_done"] = ""
-        issue["_cf_done_date"] = ""
+        if exists(issue["_cf_sheet"]) then
+            issue["_cf_sheet"] = ""
+        end
+        if exists(issue["_cf_sheet_date"]) then
+            issue["_cf_sheet_date"] = ""
+        end
+        if exists(issue["_cf_sheet_col"]) then
+            issue["_cf_sheet_col"] = ""
+        end
+        if exists(issue["_cf_sheet_cell"]) then
+            issue["_cf_sheet_cell"] = ""
+        end
+        if exists(issue["_cf_sheet_cells"]) then
+            issue["_cf_sheet_cells"] = 0
+        end
+        if exists(issue["_cf_installers"]) then
+            issue["_cf_installers"] = {}
+        end
+        if exists(issue["_cf_can_change"]) then
+            issue["_cf_can_change"] = 0
+        end
+        if exists(issue["_cf_call_before_visit"]) then
+            issue["_cf_call_before_visit"] = 0
+        end
+        if exists(issue["_cf_install_done"]) then
+            issue["_cf_install_done"] = ""
+        end
+        if exists(issue["_cf_done_date"]) then
+            issue["_cf_done_date"] = ""
+        end
         
         -- по умолчанию - на того кто совершает действие
         issue["assigned"] = {
             tt.login()
         }
         if original["_cf_object_id"] ~= nil then
-            if tonumber(original["_cf_object_id"]) >= 200000000 and tonumber(original["_cf_object_id"]) < 300000000 then
+            if tonumberExt(original["_cf_object_id"]) >= 200000000 and tonumberExt(original["_cf_object_id"]) < 300000000 then
                 -- l2 - в техотдел
                 issue["assigned"] = {
                     "tech"
                 }
             end
-            if tonumber(original["_cf_object_id"]) >= 500000000 and tonumber(original["_cf_object_id"]) < 600000000 then
+            if tonumberExt(original["_cf_object_id"]) >= 500000000 and tonumberExt(original["_cf_object_id"]) < 600000000 then
                 if original["_cf_client_type"] == "ФЛ" then
                     -- ФЛ - в коллцентр
                     issue["assigned"] = {
@@ -625,10 +676,10 @@ function action(issue, action, original)
     
     if action == "Звонок совершен" then
         issue["_cf_need_call"] = 0
-        if original["_cf_calls_count"] == nil then
+        if not exists(original["_cf_calls_count"]) then
             issue["_cf_calls_count"] = 1
         else
-            issue["_cf_calls_count"] = original["_cf_calls_count"] + 1
+            issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) + 1
         end
         return tt.modifyIssue(issue)
     end
@@ -665,24 +716,59 @@ function action(issue, action, original)
     if action == "Переоткрыть" then
         issue["status"] = "Открыта"
 
-        issue["_cf_sheet"] = ""
-        issue["_cf_sheet_date"] = ""
-        issue["_cf_sheet_col"] = ""
-        issue["_cf_sheet_cell"] = ""
-        issue["_cf_sheet_cells"] = 0
-        issue["_cf_installers"] = {}
-        issue["_cf_can_change"] = 0
-        issue["_cf_call_before_visit"] = 0
-        issue["_cf_install_done"] = ""
-        issue["_cf_done_date"] = ""
+-- блок координации и монтажа
+        if exists(issue["_cf_sheet"]) then
+            issue["_cf_sheet"] = ""
+        end
+        if exists(issue["_cf_sheet_date"]) then
+            issue["_cf_sheet_date"] = ""
+        end
+        if exists(issue["_cf_sheet_col"]) then
+            issue["_cf_sheet_col"] = ""
+        end
+        if exists(issue["_cf_sheet_cell"]) then
+            issue["_cf_sheet_cell"] = ""
+        end
+        if exists(issue["_cf_sheet_cells"]) then
+            issue["_cf_sheet_cells"] = 0
+        end
+        if exists(issue["_cf_installers"]) then
+            issue["_cf_installers"] = {}
+        end
+        if exists(issue["_cf_can_change"]) then
+            issue["_cf_can_change"] = 0
+        end
+        if exists(issue["_cf_call_before_visit"]) then
+            issue["_cf_call_before_visit"] = 0
+        end
+        if exists(issue["_cf_install_done"]) then
+            issue["_cf_install_done"] = ""
+        end
+        if exists(issue["_cf_done_date"]) then
+            issue["_cf_done_date"] = ""
+        end
 
-        issue["_cf_calls_count"] = 0
-        issue["_cf_need_call"] = 0
-        issue["_cf_call_date"] = 0
-        issue["_cf_anytime_call"] = 0
+-- блок звонков
+        if exists(issue["_cf_calls_count"]) then
+            issue["_cf_calls_count"] = 0
+        end
+        if exists(issue["_cf_need_call"]) then
+            issue["_cf_need_call"] = 0
+        end
+        if exists(issue["_cf_call_date"]) then
+            issue["_cf_call_date"] = 0
+        end
+        if exists(issue["_cf_anytime_call"]) then
+            issue["_cf_anytime_call"] = 0
+        end
 
-        issue["_cf_delay"] = 0
-        issue["_cf_quality_control"] = ""
+-- общее
+        if exists(issue["_cf_delay"]) then
+            issue["_cf_delay"] = 0
+        end
+        if exists(issue["_cf_quality_control"]) then
+            issue["_cf_quality_control"] = ""
+        end
 
         return tt.modifyIssue(issue)
     end
