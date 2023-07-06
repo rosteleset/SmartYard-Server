@@ -123,6 +123,10 @@ function exists(v)
         return false
     end
     
+    if type(v) == "boolean" then
+        return v
+    end
+    
     return v ~= "" and tonumberExt(v) ~= 0
 end
 
