@@ -1155,6 +1155,7 @@
         });
 
         $(".ttSaWatch").off("click").on("click", () => {
+            console.log(issue.issue);
             mConfirm((issue && issue.issue && issue.issue.watchers && issue.issue.watchers.indexOf(lStore("_login")) >= 0)?i18n("tt.confirmUnWatch"):i18n("tt.confirmWatch"), i18n("confirm"), i18n("tt.saWatch"), () => {
                 loadingStart();
                 PUT("tt", "issue", issue.issue.issueId, {
