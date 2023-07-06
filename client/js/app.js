@@ -1231,6 +1231,10 @@ function AVAIL(api, method, request_method) {
     }
 }
 
+$(document).on('select2:open', () => {
+    document.querySelector('.select2-search__field').focus();
+});
+  
 $(window).off("resize").on("resize", () => {
     if ($("#editorContainer").length) {
         // TODO f..ck!
