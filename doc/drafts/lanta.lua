@@ -433,7 +433,8 @@ function getActionTemplate(issue, action)
             return {
                 ["%0%_cf_install_done"] = doneFilter,
                 "%1%_cf_access_info",
-                "%2%comment",
+                "%2%_cf_hw_ok",
+                "%3%comment",
             }
         else
             return {
@@ -528,11 +529,11 @@ function action(issue, action, original)
     if action == "Координация" then
         issue["_cf_install_done"] = ""
         issue["_cf_done_date"] = ""
+        issue["_cf_hw_ok"] = ""
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
         issue["assigned"] = { }
-        issue["status"] = "Открыта"
-
+        
         return tt.modifyIssue(issue)
     end
     
@@ -663,6 +664,26 @@ function action(issue, action, original)
 
     if action == "Переоткрыть" then
         issue["status"] = "Открыта"
+
+        issue["_cf_sheet"] = ""
+        issue["_cf_sheet_date"] = ""
+        issue["_cf_sheet_col"] = ""
+        issue["_cf_sheet_cell"] = ""
+        issue["_cf_sheet_cells"] = 0
+        issue["_cf_installers"] = {}
+        issue["_cf_can_change"] = 0
+        issue["_cf_call_before_visit"] = 0
+        issue["_cf_install_done"] = ""
+        issue["_cf_done_date"] = ""
+
+        issue["_cf_calls_count"] = 0
+        issue["_cf_need_call"] = 0
+        issue["_cf_call_date"] = 0
+        issue["_cf_anytime_call"] = 0
+
+        issue["_cf_delay"] = 0
+        issue["_cf_quality_control"] = ""
+
         return tt.modifyIssue(issue)
     end
 
@@ -690,6 +711,19 @@ function viewIssue(issue)
         "*_cf_call_before_visit", "_cf_call_before_visit",
     }
     
+    local notForClosedFields = {
+        "*_cf_sheet_date", "_cf_sheet_date",
+        "*_cf_sheet_date", "_cf_sheet_date",
+        "*_cf_sheet_cell", "_cf_sheet_cell",
+        "*_cf_sheet_cells", "_cf_sheet_cells",
+        "*_cf_can_change", "_cf_can_change",
+        "*_cf_call_before_visit", "_cf_call_before_visit",
+        "*_cf_call_date", "_cf_call_date",
+        "*_cf_anytime_call", "_cf_anytime_call",
+        "*_cf_calls_count", "_cf_calls_count",
+        "*_cf_delay", "_cf_delay",
+    }
+    
     local fields = {
         "*parent",
         "catalog",
@@ -699,8 +733,8 @@ function viewIssue(issue)
         "*watchers",
         "*_cf_sheet_date",
         "*_cf_sheet",
-        "#*_cf_sheet_cell",
-        "#*_cf_sheet_cells",
+--        "*_cf_sheet_cell",
+--        "*_cf_sheet_cells",
         "*_cf_install_done",
         "*_cf_installers",
         "*_cf_can_change",
@@ -726,6 +760,10 @@ function viewIssue(issue)
         fields = removeValues(fields, coordinationFields)
     end
     
+    if not isOpened(issue) then
+        fields = removeValues(fields, notForClosedFields)
+    end
+    
     return {
         ["issue"] = issue,
         ["actions"] = getAvailableActions(issue),
@@ -749,5 +787,25 @@ function getWorkflowCatalog()
 end
 
 function issueChanged(issue, action, old, new)
+    if exists(issue["watchers"]) then
+        for i, w in pairs(issue["watchers"]) do
+            if w ~= tt.login() then
+                users.notify(w, issue["issueId"], 
+                    "Заявка\nhttps://tt.lanta.me//?#tt&issue="
+                    .. 
+                    issue["issueId"]
+                    ..
+                    "\nизменена (" .. action .. ")\nпользователем " .. tt.login()
+--                    .. "\n\n"
+--                    ..
+--                    utils.print_r(old)
+--                    ..
+--                    "\n =>\n"
+--                    ..
+--                    utils.print_r(new)
+                )
+            end
+        end
+    end
     return mqtt.broadcast("issue/changed", issue["issueId"])
 end
