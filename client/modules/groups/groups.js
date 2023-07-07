@@ -225,6 +225,7 @@
                     ],
                     callback: result => {
                         loadingStart();
+                        console.log(result.users);
                         $("#altForm").hide();
                         PUT("accounts", "groupUsers", gid, {
                             uids: result.users,
@@ -239,11 +240,12 @@
                         $("#altForm").hide();
                     }
                 }).show();
+                loadingDone();
             }).
             fail(FAIL);
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
     /*
