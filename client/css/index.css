@@ -2,6 +2,8 @@ body {
   overflow-y: scroll;
 }
 
+html { height:initial!important; }
+
 #toast-container > div {
   opacity: 1;
   filter: progid:dximagetransform.microsoft.alpha(opacity=100);
