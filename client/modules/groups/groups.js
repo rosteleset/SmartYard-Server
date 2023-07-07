@@ -191,7 +191,6 @@
         loadingStart();
         GET("accounts", "group", gid).
         done(group => {
-            console.log(group);
             GET("accounts", "users", false, true).
             done(users => {
                 GET("accounts", "groupUsers", gid, true).done(uids => {
@@ -200,14 +199,14 @@
     
                     for (let i in users.users) {
                         if (users.users[i].uid) {
-                            if (parseInt(users.users[i].primaryGroup) == parseInt(gid)) {
+                            if (parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid)) {
                                 defaults.push(parseInt(users.users[i].uid));
                             }
                             users_list.push({
                                 id: users.users[i].uid,
                                 text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
-                                checked: parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0,
-                                disabled: parseInt(users.users[i].primaryGroup) == parseInt(gid),
+                                checked: parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0,
+                                disabled: parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid),
                             });
                         }
                     }
