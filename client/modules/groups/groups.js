@@ -192,9 +192,13 @@
         GET("accounts", "users", false, true).done(users => {
             GET("accounts", "groupUsers", gid, true).done(uids => {
                 let users_list = [];
+                let defaults = [];
 
                 for (let i in users.users) {
                     if (users.users[i].uid) {
+                        if (parseInt(users.users[i].primaryGroup) == parseInt(gid)) {
+                            defaults.push(parseInt(users.users[i].uid));
+                        }
                         users_list.push({
                             id: users.users[i].uid,
                             text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
@@ -225,7 +229,13 @@
                     ],
                     callback: result => {
                         loadingStart();
-                        console.log(result.users);
+                        let uids = [];
+                        for (let i in result.users) {
+                            if (defaults.indexOf(parseInt(result.users[i])) < 0) {
+                                uids.push(result.users[i]);
+                            }
+                        }
+                        console.log(result.users, uids);
                         $("#altForm").hide();
                         PUT("accounts", "groupUsers", gid, {
                             uids: result.users,
