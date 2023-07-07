@@ -255,7 +255,13 @@
                 $user = $this->getUser($uid);
                 
                 try {
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group where uid = $uid");
+                    $a = loadBackend("authorization");
+
+                    if ($a->mAllow("accounts", "groupUsers", "PUT")) {
+                        $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group where uid = $uid");
+                    } else {
+                        $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route where uid = $uid");
+                    }
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([

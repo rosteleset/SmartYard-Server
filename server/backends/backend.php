@@ -117,5 +117,15 @@
                 $this->uid = $uid;
                 $this->login = $login;
             }
+
+            /**
+             * @param $login
+             */
+            public function setLogin($login)
+            {
+                if ($login != $this->login) {
+                    $this->setCreds(loadBackend("users")->getUidByLogin($login), $login);
+                }
+            }
         }
     }
