@@ -356,9 +356,11 @@
                         modules.groups.startPage = page;
                     },
                 });
+                
+                loadingDone();
             }).
             fail(FAIL).
-            always(loadingDone);
+            fail(loadingDone);
         }).
         fail(FAIL).
         fail(loadingDone);

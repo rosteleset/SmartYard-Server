@@ -630,9 +630,11 @@
                 if (params && params.sessions && params.sessions !== true) {
                     modules.users.showSessions(params.sessions);
                 }
+                
+                loadingDone();
             }).
             fail(FAIL).
-            always(loadingDone);
+            fail(loadingDone);
         });
     },
 
