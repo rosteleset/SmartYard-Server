@@ -4,7 +4,8 @@ body {
 
 html {
   height: initial!important;
-  width: 100vw;
+  margin-left: calc(100vw - 100%);
+  margin-right: 0;
 }
 
 #toast-container > div {
