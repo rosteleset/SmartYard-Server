@@ -208,13 +208,9 @@
                     }
                 }
 
-                console.log(defaults);
-
                 users_list.sort((a, b) => {
                     return a.text.localeCompare(b.text);
                 });
-
-                console.log(users_list);
 
                 cardForm({
                     title: i18n("groups.users") + " " + i18n("groups.gid") + gid,
