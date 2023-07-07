@@ -236,7 +236,7 @@
                             }
                         }
                         $("#altForm").hide();
-                        PUT("accounts", "groupUsers", gid, { uids }).
+                        PUT("accounts", "groupUsers", gid, { uids: uids }).
                         fail(FAIL).
                         done(() => {
                             message(i18n("groups.groupWasChanged"));
