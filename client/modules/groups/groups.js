@@ -235,11 +235,8 @@
                                 uids.push(result.users[i]);
                             }
                         }
-                        console.log(result.users, uids);
                         $("#altForm").hide();
-                        PUT("accounts", "groupUsers", gid, {
-                            uids: result.users,
-                        }).
+                        PUT("accounts", "groupUsers", gid, { uids }).
                         fail(FAIL).
                         done(() => {
                             message(i18n("groups.groupWasChanged"));
