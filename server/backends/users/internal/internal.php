@@ -283,16 +283,28 @@
                         }
                     }
 
-                    return $sth->execute([
-                        ":real_name" => trim($realName),
-                        ":e_mail" => trim($eMail)?trim($eMail):$user["eMail"],
-                        ":phone" => trim($phone),
-                        ":tg" => trim($tg),
-                        ":notification" => trim($notification),
-                        ":enabled" => $enabled?"1":"0",
-                        ":default_route" => trim($defaultRoute),
-                        ":primary_group" => (int)$primaryGroup,
-                    ]);
+                    if ($a->mAllow("accounts", "groupUsers", "PUT")) {
+                        return $sth->execute([
+                            ":real_name" => trim($realName),
+                            ":e_mail" => trim($eMail)?trim($eMail):$user["eMail"],
+                            ":phone" => trim($phone),
+                            ":tg" => trim($tg),
+                            ":notification" => trim($notification),
+                            ":enabled" => $enabled?"1":"0",
+                            ":default_route" => trim($defaultRoute),
+                            ":primary_group" => (int)$primaryGroup,
+                        ]);
+                    } else {
+                        return $sth->execute([
+                            ":real_name" => trim($realName),
+                            ":e_mail" => trim($eMail)?trim($eMail):$user["eMail"],
+                            ":phone" => trim($phone),
+                            ":tg" => trim($tg),
+                            ":notification" => trim($notification),
+                            ":enabled" => $enabled?"1":"0",
+                            ":default_route" => trim($defaultRoute),
+                        ]);
+                    }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
