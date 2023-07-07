@@ -2,7 +2,10 @@ body {
   overflow-y: scroll;
 }
 
-html { height:initial!important; }
+html {
+  height: initial!important;
+  width: 100vw;
+}
 
 #toast-container > div {
   opacity: 1;
