@@ -702,20 +702,18 @@ function autoZ(target) {
 }
 
 function loadingStart() {
-/*
     autoZ($('#loading').modal({
         backdrop: 'static',
         keyboard: false,
     }));
-*/
-    autoZ($('#loading')).show();
+//    autoZ($('#loading')).show();
 }
 
 function loadingDone(stayHidden) {
     xblur();
     
-//    $('#loading').modal('hide');
-    $('#loading').hide();
+    $('#loading').modal('hide');
+//    $('#loading').hide();
 
     if (stayHidden === true) {
         $('#app').addClass("invisible");
