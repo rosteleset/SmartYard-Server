@@ -204,6 +204,8 @@
                     }
                 }
 
+                console.log(users_list);
+
                 users_list.sort((a, b) => {
                     return a.text.localeCompare(b.text);
                 });
