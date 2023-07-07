@@ -198,13 +198,11 @@
                         users_list.push({
                             id: users.users[i].uid,
                             text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
-                            selected: parseInt(users.users[i].primaryGroup) == parseInt(gid),
+                            selected: parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0,
                             disabled: parseInt(users.users[i].primaryGroup) == parseInt(gid),
                         });
                     }
                 }
-
-                console.log(uids.uids);
 
                 users_list.sort((a, b) => {
                     return a.text.localeCompare(b.text);
@@ -223,7 +221,6 @@
                             id: "users",
                             type: "multiselect",
                             options: users_list,
-                            value: uids.uids,
                         }
                     ],
                     callback: result => {
