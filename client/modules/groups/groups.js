@@ -189,67 +189,75 @@
 
     modifyGroupUsers: function (gid) {
         loadingStart();
-        GET("accounts", "users", false, true).done(users => {
-            GET("accounts", "groupUsers", gid, true).done(uids => {
-                let users_list = [];
-                let defaults = [];
-
-                for (let i in users.users) {
-                    if (users.users[i].uid) {
-                        if (parseInt(users.users[i].primaryGroup) == parseInt(gid)) {
-                            defaults.push(parseInt(users.users[i].uid));
-                        }
-                        users_list.push({
-                            id: users.users[i].uid,
-                            text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
-                            checked: parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0,
-                            disabled: parseInt(users.users[i].primaryGroup) == parseInt(gid),
-                        });
-                    }
-                }
-
-                users_list.sort((a, b) => {
-                    return a.text.localeCompare(b.text);
-                });
-
-                cardForm({
-                    title: i18n("groups.users") + " " + i18n("groups.gid") + gid,
-                    footer: true,
-                    borderless: true,
-                    topApply: true,
-                    target: "#altForm",
-                    singleColumn: true,
-                    noHover: true,
-                    fields: [
-                        {
-                            id: "users",
-                            type: "multiselect",
-                            options: users_list,
-                        }
-                    ],
-                    callback: result => {
-                        loadingStart();
-                        let uids = [];
-                        for (let i in result.users) {
-                            if (defaults.indexOf(parseInt(result.users[i])) < 0) {
-                                uids.push(result.users[i]);
+        GET("accounts", "group", gid).
+        done(group => {
+            console.log(group);
+            GET("accounts", "users", false, true).
+            done(users => {
+                GET("accounts", "groupUsers", gid, true).done(uids => {
+                    let users_list = [];
+                    let defaults = [];
+    
+                    for (let i in users.users) {
+                        if (users.users[i].uid) {
+                            if (parseInt(users.users[i].primaryGroup) == parseInt(gid)) {
+                                defaults.push(parseInt(users.users[i].uid));
                             }
+                            users_list.push({
+                                id: users.users[i].uid,
+                                text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
+                                checked: parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0,
+                                disabled: parseInt(users.users[i].primaryGroup) == parseInt(gid),
+                            });
                         }
-                        $("#altForm").hide();
-                        PUT("accounts", "groupUsers", gid, { uids: uids }).
-                        fail(FAIL).
-                        done(() => {
-                            message(i18n("groups.groupWasChanged"));
-                        }).
-                        always(modules.groups.render);
-                    },
-                    cancel: () => {
-                        $("#altForm").hide();
                     }
-                }).show();
-                loadingDone();
+    
+                    users_list.sort((a, b) => {
+                        return a.text.localeCompare(b.text);
+                    });
+    
+                    cardForm({
+                        title: i18n("groups.users") + " " + i18n("groups.gid") + gid,
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        target: "#altForm",
+                        singleColumn: true,
+                        noHover: true,
+                        fields: [
+                            {
+                                id: "users",
+                                type: "multiselect",
+                                options: users_list,
+                            }
+                        ],
+                        callback: result => {
+                            loadingStart();
+                            let uids = [];
+                            for (let i in result.users) {
+                                if (defaults.indexOf(parseInt(result.users[i])) < 0) {
+                                    uids.push(result.users[i]);
+                                }
+                            }
+                            $("#altForm").hide();
+                            PUT("accounts", "groupUsers", gid, { uids: uids }).
+                            fail(FAIL).
+                            done(() => {
+                                message(i18n("groups.groupWasChanged"));
+                            }).
+                            always(modules.groups.render);
+                        },
+                        cancel: () => {
+                            $("#altForm").hide();
+                        }
+                    }).show();
+                    loadingDone();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
             }).
-            fail(FAIL);
+            fail(FAIL).
+            fail(loadingDone);
         }).
         fail(FAIL).
         fail(loadingDone);
