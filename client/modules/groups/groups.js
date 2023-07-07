@@ -198,6 +198,8 @@
                         users_list.push({
                             id: users.users[i].uid,
                             text: $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login),
+                            selected: parseInt(users.users[i].primaryGroup) == parseInt(gid),
+                            disabled: parseInt(users.users[i].primaryGroup) == parseInt(gid),
                         });
                     }
                 }
