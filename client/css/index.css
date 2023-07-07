@@ -1,11 +1,5 @@
 body {
-  overflow-y: scroll;
-}
-
-html {
-  height: initial!important;
-  margin-left: calc(100vw - 100%);
-  margin-right: 0;
+  overflow-y: scroll!important;
 }
 
 #toast-container > div {
