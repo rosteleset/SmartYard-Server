@@ -17,10 +17,6 @@ function tonumberExt(v)
 end
 
 function hasValue(tab, val)
-    if type(tab) ~= "table" then
-        return false
-    end
-
     if tab[0] == val then
         return true
     end
@@ -35,10 +31,6 @@ function hasValue(tab, val)
 end
 
 function removeValue(tab, val)
-    if type(tab) ~= "table" then
-        return {}
-    end
-
     local new = {}
 
     for index, value in ipairs(tab) do
@@ -51,10 +43,6 @@ function removeValue(tab, val)
 end
 
 function replaceValue(tab, valFrom, valTo)
-    if type(tab) ~= "table" then
-        return {}
-    end
-
     local new = {}
 
     for index, value in ipairs(tab) do
@@ -69,10 +57,6 @@ function replaceValue(tab, valFrom, valTo)
 end
 
 function removeValues(tab, vals)
-    if type(tab) ~= "table" then
-        return {}
-    end
-
     for index, value in ipairs(vals) do
         tab = removeValue(tab, value)
     end
@@ -81,10 +65,6 @@ function removeValues(tab, vals)
 end
 
 function insertAfter(tab, after, val, withSep)
-    if type(tab) ~= "table" then
-        return {}
-    end
-
     local new = {}
 
     for index, value in ipairs(tab) do
@@ -103,10 +83,6 @@ function insertAfter(tab, after, val, withSep)
 end
 
 function insertFirst(tab, val, withSep)
-    if type(tab) ~= "table" then
-        tab = {}
-    end
-
     local new = {}
 
     new[#new + 1] = val
@@ -122,10 +98,6 @@ function insertFirst(tab, val, withSep)
 end
 
 function normalizeArray(tab)
-    if type(tab) ~= "table" then
-        return {}
-    end
-
     local new = {}
     
     if tab[0] ~= nil then
@@ -167,7 +139,7 @@ end
 
 function isOpened(issue)
     return
-        not exists(issue["status"])
+        issue["status"] == "" or issue["status"] == nil
         or
         (
             (issue["status"] == "opened" or issue["status"] == "open" or issue["status"] == "Открыта" or issue["status"] == "Открыто")
@@ -214,7 +186,7 @@ end
 -- Заявка не закрыта, добавлен в наблюдатели
 
 function watching(issue)
-    return isCoordinated(issue) and hasValue(issue["watchers"], tt.login())
+    return isCoordinated(issue) and issue["watchers"] ~= nil and utils.in_array(tt.login(), issue["watchers"])
 end
 	
 -- Связаться позже
@@ -909,16 +881,21 @@ function issueChanged(issue, action, old, new)
         for i, w in pairs(issue["watchers"]) do
             if w ~= tt.login() then
                 users.notify(w, issue["issueId"], 
-                    "Заявка\nhttps://tt.lanta.me//?#tt&issue="
-                    .. 
-                    issue["issueId"]
+                    "Заявка\nhttps://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
                     ..
-                    "\nизменена (" .. action .. ")\nпользователем " .. tt.login()
---                    .. "\n\n"
+                    "\n"
+                    ..
+                    "изменена (" .. action .. ")\nпользователем " .. tt.login()
+--                    ..
+--                    "\n\n"
 --                    ..
 --                    utils.print_r(old)
 --                    ..
---                    "\n =>\n"
+--                    "\n"
+--                    ..
+--                    "=>"
+--                    ..
+--                    "\n"
 --                    ..
 --                    utils.print_r(new)
                 )
