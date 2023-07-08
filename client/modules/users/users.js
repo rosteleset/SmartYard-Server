@@ -585,7 +585,7 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: groups[response.users[i].primaryGroup]?groups[response.users[i].primaryGroup].name:"-",
+                                        data: groups[response.users[i].primaryGroup]?groups[response.users[i].primaryGroup].name:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
                                         nowrap: true,
                                         hidden: !hasGroups,
                                     },
