@@ -595,12 +595,12 @@
                                         fullWidth: true,
                                     },
                                     {
-                                        data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login)?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login)?"&nbsp;":("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
                                         click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].tg?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: response.users[i].tg?"&nbsp;":("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
                                         nowrap: true,
                                     },
                                     {
