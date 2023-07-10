@@ -1433,7 +1433,7 @@
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], "list"),
+                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list"),
                                     nowrap: true,
                                     click: modules.tt.issue.viewIssue,
                                     fullWidth: j == pKeys.length - 1,

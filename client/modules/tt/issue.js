@@ -522,7 +522,7 @@
                 }
 
                 if (f) {
-                    let x = modules.tt.issueField2Html(issue.issue, issue.fields[i], target);
+                    let x = modules.tt.issueField2Html(issue.issue, issue.fields[i], undefined, target);
                     if (x !== null) {
                         h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
                         h += "<tr>";
@@ -732,9 +732,9 @@
                 h += "<tr>";
                 h += `<td class='text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</td>`;
                 h += `<td class='pl-2'>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", "left")}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "left")}</td>`;
                 h += `<td class='pl-2'>${issue.issue.childrens.issues[i].subject}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", "left")}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "left")}</td>`;
                 h += "</tr>";
             }
             h += "</table>";
@@ -751,9 +751,9 @@
                 h += "<tr>";
                 h += `<td class='text-bold hoverable ttIssue'>${issue.issue.linkedIssues.issues[i].issueId}</td>`;
                 h += `<td class='pl-2'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", "left")}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "left")}</td>`;
                 h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", "left")}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "left")}</td>`;
                 h += `<td class='pl-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}'></i></td>`;
                 h += "</tr>";
             }
@@ -865,11 +865,11 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
+                                h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], undefined, "journal") : "&nbsp;";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;";
+                                h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], undefined, "journal") : "&nbsp;";
                                 h += "</td>";
                                 h += "</tr>";
                             }
@@ -884,13 +884,13 @@
                                 h += "</td>";
                                 if (sep == "&nbsp;") {
                                     h += "<td class='pl-2 td-journal' style='width: 100%;' colspan='3'>";
-                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
+                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], undefined, "journal");
                                     h += "</td>";
                                 } else {
                                     h += "<td class='pl-2 td-journal'>&nbsp;</td>";
                                     h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                     h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
+                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], undefined, "journal");
                                     h += "</td>";
                                 }
                                 h += "</tr>";
@@ -905,7 +905,7 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal");
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], undefined, "journal");
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
