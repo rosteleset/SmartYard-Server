@@ -1206,7 +1206,7 @@ function FAIL(response) {
             lStore("_token", null);
             setTimeout(() => {
                 location.reload();
-            }, 1000);
+            }, 5000);
         }
     } else {
         error(i18n("errors.unknown"), i18n("error"), 30);
