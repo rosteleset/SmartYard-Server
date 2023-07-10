@@ -712,7 +712,7 @@
         }
     },
 
-    issueField2Html: function (issue, field, val) {
+    issueField2Html: function (issue, field, val, target) {
         let members = {};
 
         if (modules.groups) {
@@ -750,7 +750,7 @@
         }
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
-            val = modules.tt.viewers[field][v](val, issue, field);
+            val = modules.tt.viewers[field][v](val, issue, field, target);
         } else {
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
@@ -1433,7 +1433,7 @@
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j]),
+                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], "list"),
                                     nowrap: true,
                                     click: modules.tt.issue.viewIssue,
                                     fullWidth: j == pKeys.length - 1,

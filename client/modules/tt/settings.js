@@ -3161,10 +3161,10 @@
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
-            let code = `//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
+            let code = `//function ${name} (value, issue, field, target) {\n\treturn value;\n//}\n`;
             for (let i in v.viewers) {
                 if (v.viewers[i].field == field && v.viewers[i].name == name) {
-                    code = v.viewers[i].code?v.viewers[i].code:`//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
+                    code = v.viewers[i].code?v.viewers[i].code:`//function ${name} (value, issue, field, target) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
