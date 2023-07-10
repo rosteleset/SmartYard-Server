@@ -15,7 +15,7 @@
  * @apiParam {string="t","f"} [settings.CMS] разрешить КМС
  * @apiParam {string="t","f"} [settings.VoIP] разрешить VoIP
  * @apiParam {string="Y-m-d H:i:s"} [settings.autoOpen] автооткрытие двери
- * @apiParam {integer=0,1,2,3,5,7,10} [settings.whiteRabbit] автооткрытие двери
+ * @apiParam {string="0","1","2","3","5","7","10"} [settings.whiteRabbit] автооткрытие двери
  * @apiParam {string="t","f"} [settings.paperBill] печатать бумажные платежки (если нет значит недоступен)
  * @apiParam {string="t","f"} [settings.disablePlog] прекратить "следить" за квартирой
  * @apiParam {string="t","f"} [settings.hiddenPlog] показывать журнал только владельцу
