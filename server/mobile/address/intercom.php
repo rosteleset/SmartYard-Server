@@ -142,7 +142,7 @@ $ret['allowDoorCode'] = 't';
 $ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
 $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
 $ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
-$ret['autoOpen'] = date('Y-m-d H:i:s', strtotime($flat['autoOpen']));
+$ret['autoOpen'] = date('Y-m-d H:i:s', $flat['autoOpen']);
 $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
 if ($flat_owner && $plog && $flat['plog'] != plog::ACCESS_RESTRICTED_BY_ADMIN) {
     $ret['disablePlog'] = $flat['plog'] == plog::ACCESS_DENIED ? 't' : 'f';
