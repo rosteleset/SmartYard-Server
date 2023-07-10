@@ -4,6 +4,10 @@
 -- Утилиты
 --
 
+function trim(s)
+    return s:match "^%s*(.-)%s*$"
+end
+
 function tonumberExt(v)
     if not pcall(function () v = tonumber(v) end) then
         v = 0
@@ -111,6 +115,8 @@ function normalizeArray(tab)
     return new
 end
 
+-- переменная сущемтвует и если таблица то есть элементы
+
 function exists(v)
     if v == nil then
         return false
@@ -123,11 +129,11 @@ function exists(v)
         return false
     end
     
-    if type(v) == "boolean" then
-        return v
-    end
-    
-    return v ~= "" and tonumberExt(v) ~= 0
+    return true
+end
+
+function strExists(v)
+    return exists(v) and trim(v) ~= ""
 end
 
 --
@@ -158,14 +164,17 @@ function isCoordinated(issue)
         exists(issue["_cf_sheet_col"]) and
         exists(issue["_cf_sheet_cell"]) and
         exists(issue["_cf_sheet_cells"]) and
-        not exists(issue["_cf_install_done"])
+        not strExists(issue["_cf_install_done"])
 end
 
 -- СС. Позвонить сейчас
 -- (Колл-центр == "да" и Дата созвона пусто) или (Дата созвона >= Текущая дата) или (Дата координации == Завтра и Дата координации <= Вчера)
 	
 function callNow(issue)
-    return hasValue(tt.myGroups(), "callcenter") and exists(issue["_cf_need_call"]) and tonumberExt(issue["_cf_call_date"]) <= utils.time()
+    return
+        hasValue(tt.myGroups(), "callcenter") and
+        tonumberExt(issue["_cf_need_call"]) == 1 and
+        tonumberExt(issue["_cf_call_date"]) <= utils.time()
 end
 
 -- Координация.Просроченные
@@ -554,13 +563,13 @@ function action(issue, action, original)
     end
     
     if action == "Координация" then
-        if exists(issue["_cf_install_done"]) then
+        if exists(original["_cf_install_done"]) then
             issue["_cf_install_done"] = ""
         end
-        if exists(issue["_cf_done_date"]) then
+        if exists(original["_cf_done_date"]) then
             issue["_cf_done_date"] = ""
         end
-        if exists(issue["_cf_hw_ok"]) then
+        if exists(original["_cf_hw_ok"]) then
             issue["_cf_hw_ok"] = ""
         end
         issue["_cf_coordination_date"] = utils.time()
@@ -613,34 +622,34 @@ function action(issue, action, original)
     end
 
     if action == "Снять с координации" then
-        if exists(issue["_cf_sheet"]) then
+        if exists(original["_cf_sheet"]) then
             issue["_cf_sheet"] = ""
         end
-        if exists(issue["_cf_sheet_date"]) then
+        if exists(original["_cf_sheet_date"]) then
             issue["_cf_sheet_date"] = ""
         end
-        if exists(issue["_cf_sheet_col"]) then
+        if exists(original["_cf_sheet_col"]) then
             issue["_cf_sheet_col"] = ""
         end
-        if exists(issue["_cf_sheet_cell"]) then
+        if exists(original["_cf_sheet_cell"]) then
             issue["_cf_sheet_cell"] = ""
         end
-        if exists(issue["_cf_sheet_cells"]) then
+        if exists(original["_cf_sheet_cells"]) then
             issue["_cf_sheet_cells"] = 0
         end
-        if exists(issue["_cf_installers"]) then
+        if exists(original["_cf_installers"]) then
             issue["_cf_installers"] = {}
         end
-        if exists(issue["_cf_can_change"]) then
+        if exists(original["_cf_can_change"]) then
             issue["_cf_can_change"] = 0
         end
-        if exists(issue["_cf_call_before_visit"]) then
+        if exists(original["_cf_call_before_visit"]) then
             issue["_cf_call_before_visit"] = 0
         end
-        if exists(issue["_cf_install_done"]) then
+        if exists(original["_cf_install_done"]) then
             issue["_cf_install_done"] = ""
         end
-        if exists(issue["_cf_done_date"]) then
+        if exists(original["_cf_done_date"]) then
             issue["_cf_done_date"] = ""
         end
         
@@ -680,21 +689,13 @@ function action(issue, action, original)
     
     if action == "Звонок совершен" then
         issue["_cf_need_call"] = 0
-        if not exists(original["_cf_calls_count"]) then
-            issue["_cf_calls_count"] = 1
-        else
-            issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) + 1
-        end
+        issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) + 1
         return tt.modifyIssue(issue)
     end
     
     if action == "Недозвон" then
         issue["_cf_call_date"] = utils.time() + 3 * 60
-        if original["_cf_calls_count"] == nil then
-            issue["_cf_calls_count"] = 1
-        else
-            issue["_cf_calls_count"] = original["_cf_calls_count"] + 1
-        end
+        issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) + 1
         if issue["_cf_calls_count"] >= 3 then
             issue["_cf_need_call"] = 0
         end
@@ -721,56 +722,56 @@ function action(issue, action, original)
         issue["status"] = "Открыта"
 
 -- блок координации и монтажа
-        if exists(issue["_cf_sheet"]) then
+        if exists(original["_cf_sheet"]) then
             issue["_cf_sheet"] = ""
         end
-        if exists(issue["_cf_sheet_date"]) then
+        if exists(original["_cf_sheet_date"]) then
             issue["_cf_sheet_date"] = ""
         end
-        if exists(issue["_cf_sheet_col"]) then
+        if exists(original["_cf_sheet_col"]) then
             issue["_cf_sheet_col"] = ""
         end
-        if exists(issue["_cf_sheet_cell"]) then
+        if exists(original["_cf_sheet_cell"]) then
             issue["_cf_sheet_cell"] = ""
         end
-        if exists(issue["_cf_sheet_cells"]) then
+        if exists(original["_cf_sheet_cells"]) then
             issue["_cf_sheet_cells"] = 0
         end
-        if exists(issue["_cf_installers"]) then
+        if exists(original["_cf_installers"]) then
             issue["_cf_installers"] = {}
         end
-        if exists(issue["_cf_can_change"]) then
+        if exists(original["_cf_can_change"]) then
             issue["_cf_can_change"] = 0
         end
-        if exists(issue["_cf_call_before_visit"]) then
+        if exists(original["_cf_call_before_visit"]) then
             issue["_cf_call_before_visit"] = 0
         end
-        if exists(issue["_cf_install_done"]) then
+        if exists(original["_cf_install_done"]) then
             issue["_cf_install_done"] = ""
         end
-        if exists(issue["_cf_done_date"]) then
+        if exists(original["_cf_done_date"]) then
             issue["_cf_done_date"] = ""
         end
 
 -- блок звонков
-        if exists(issue["_cf_calls_count"]) then
+        if original(issue["_cf_calls_count"]) then
             issue["_cf_calls_count"] = 0
         end
-        if exists(issue["_cf_need_call"]) then
+        if original(issue["_cf_need_call"]) then
             issue["_cf_need_call"] = 0
         end
-        if exists(issue["_cf_call_date"]) then
+        if original(issue["_cf_call_date"]) then
             issue["_cf_call_date"] = 0
         end
-        if exists(issue["_cf_anytime_call"]) then
+        if original(issue["_cf_anytime_call"]) then
             issue["_cf_anytime_call"] = 0
         end
 
 -- общее
-        if exists(issue["_cf_delay"]) then
+        if original(issue["_cf_delay"]) then
             issue["_cf_delay"] = 0
         end
-        if exists(issue["_cf_quality_control"]) then
+        if original(issue["_cf_quality_control"]) then
             issue["_cf_quality_control"] = ""
         end
 
@@ -881,21 +882,16 @@ function issueChanged(issue, action, old, new)
         for i, w in pairs(issue["watchers"]) do
             if w ~= tt.login() then
                 users.notify(w, issue["issueId"], 
-                    "Заявка\nhttps://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
+                    "Заявка\nhttps://tt.lanta.me//?#tt&issue="
+                    .. 
+                    issue["issueId"]
                     ..
-                    "\n"
-                    ..
-                    "изменена (" .. action .. ")\nпользователем " .. tt.login()
---                    ..
---                    "\n\n"
+                    "\nизменена (" .. action .. ")\nпользователем " .. tt.login()
+--                    .. "\n\n"
 --                    ..
 --                    utils.print_r(old)
 --                    ..
---                    "\n"
---                    ..
---                    "=>"
---                    ..
---                    "\n"
+--                    "\n =>\n"
 --                    ..
 --                    utils.print_r(new)
                 )
