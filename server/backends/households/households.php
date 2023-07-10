@@ -200,6 +200,11 @@
 
             /**
              * @param $domophoneId
+             */
+            abstract public function autoconfigDone($domophoneId);
+
+            /**
+             * @param $domophoneId
              * @return boolean
              */
             abstract public function deleteDomophone($domophoneId);

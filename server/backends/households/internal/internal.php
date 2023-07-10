@@ -904,6 +904,19 @@
             /**
              * @inheritDoc
              */
+            public function autoconfigDone($domophoneId)
+            {
+                if (!checkInt($domophoneId)) {
+                    setLastError("noId");
+                    return false;
+                }
+
+                $result = $this->db->modify("update houses_domophones set first_time = 0 where house_domophone_id = $domophoneId");
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function deleteDomophone($domophoneId)
             {
                 if (!checkInt($domophoneId)) {
