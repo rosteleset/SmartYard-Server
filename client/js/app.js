@@ -1204,6 +1204,9 @@ function FAIL(response) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         if (response.responseJSON.error == "tokenNotFound") {
             lStore("_token", null);
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
         }
     } else {
         error(i18n("errors.unknown"), i18n("error"), 30);
