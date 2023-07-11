@@ -528,7 +528,7 @@
                         h += "<tr>";
                         h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
                         h += x;
-                        h += "<td>";
+                        h += "</td>";
                         h += "</tr>";
                     }
                 }
