@@ -333,9 +333,9 @@ end
 function getAvailableActions(issue)
     if isOpened(issue) then
         local actions = {
+            "Позвонить",
             "Звонок совершен",
             "Недозвон",
-            "Позвонить",
             "-",
             "Отложить",
             "-",
@@ -366,10 +366,15 @@ function getAvailableActions(issue)
             })
         end
         
-        if tt.myself()["primaryGroupAcronym"] == "callcenter" then
-            actions = removeValue(actions, "Отложить")
-        end
+--        utils.error_log(utils.print_r(tt.myGroups())) 
         
+        if hasValue(tt.myGroups(), "callcenter") then
+            actions = removeValue(actions, "Отложить")
+            actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
+            actions = replaceValue(actions, "Недозвон", "!Недозвон")
+            actions = replaceValue(actions, "Позвонить", "!Позвонить")
+        end
+
         if issue["subject"] ~= "Делопроизводство" then
             actions = removeValue(actions, "Делопроизводство")
         end
