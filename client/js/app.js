@@ -1147,6 +1147,16 @@ function lStore(key, val) {
     }
 }
 
+function textRTrim(text) {
+    text = text.split("\n");
+
+    for (let i in text) {
+        text[i] = text[i].trimRight()
+    }
+
+    return text.join("\n");
+}
+
 function QUERY(api, method, query, fresh) {
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),

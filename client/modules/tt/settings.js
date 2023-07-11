@@ -2037,7 +2037,7 @@
             });
             $("#workflowSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "workflow", workflow, { "body": $.trim(editor.getValue()) }).
+                PUT("tt", "workflow", workflow, { "body": textRTrim($.trim(editor.getValue())) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowWasSaved"));
@@ -2190,7 +2190,7 @@
             });
             $("#libSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "lib", lib, { "body": $.trim(editor.getValue()) }).
+                PUT("tt", "lib", lib, { "body": textRTrim($.trim(editor.getValue())) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowLibWasSaved"));
@@ -3195,7 +3195,7 @@
             });
             $("#viewerSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "viewer", false, { field: field, name: name, code: $.trim(editor.getValue()) }).
+                PUT("tt", "viewer", false, { field: field, name: name, code: textRTrim($.trim(editor.getValue())) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));
