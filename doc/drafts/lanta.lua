@@ -366,8 +366,6 @@ function getAvailableActions(issue)
             })
         end
         
---        utils.error_log(utils.print_r(tt.myGroups())) 
-        
         if hasValue(tt.myGroups(), "callcenter") then
             actions = removeValue(actions, "Отложить")
             actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
@@ -379,13 +377,10 @@ function getAvailableActions(issue)
             actions = removeValue(actions, "Делопроизводство")
         end
         
-        if callNow(issue) then
-            actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
-            actions = replaceValue(actions, "Недозвон", "!Недозвон")
-        else
+        if not callNow(issue) then
             actions = removeValues(actions, {
-                "Звонок совершен",
-                "Недозвон",
+                "!Звонок совершен", "Звонок совершен",
+                "!Недозвон", "Недозвон",
             })
         end
 
@@ -800,11 +795,10 @@ function viewIssue(issue)
         "*_cf_installers", "_cf_installers",
     }
     
-    local ccFields = {
+    local callFields = {
         "*_cf_call_date", "_cf_call_date",
         "*_cf_anytime_call", "_cf_anytime_call",
         "*_cf_calls_count", "_cf_calls_count",
-        "*_cf_call_before_visit", "_cf_call_before_visit",
     }
     
     local notForClosedFields = {
@@ -848,8 +842,8 @@ function viewIssue(issue)
         "_cf_linked_issue",
     }
 
-    if not hasValue(tt.myGroups(), "callcenter") then
-        fields = removeValues(fields, ccFields)
+    if tonumberExt(issue["_cf_need_call"]) == 0 then
+        fields = removeValues(fields, callFields)
     end
     
     if not isCoordinated(issue) then
