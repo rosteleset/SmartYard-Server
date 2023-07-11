@@ -21,6 +21,9 @@ mobile:
   tt_workflow: mobile
   tt_user: mobile
   time_zone: Europe/Moscow
+
+  #guest access variants: turnOnOnly - allows to turn on only (default), turnOnAndOff - allows to turn on and off
+  guest_access: turnOnOnly
 db:
   dsn: pgsql:host=127.0.0.1;port=5432;dbname=rbt
   username: rbt

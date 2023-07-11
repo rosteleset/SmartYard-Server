@@ -21,7 +21,8 @@
  * @apiSuccess {String} chatOptions.token token чата meTalk
  * @apiSuccess {String} [supportPhone] номер телефона техподдержки
  * @apiSuccess {String} [timeZone = "Europe/Moscow"] Time Zone identifier
-  *
+ * @apiSuccess {String="turnOnOnly","turnOnAndOff"} [guestAccess = "turnOnOnly"] Тип гостевого доступа.
+ *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
  * 422 неверный формат данных
@@ -65,6 +66,10 @@
 
         if (@$config["mobile"]["time_zone"]) {
             $response["timeZone"] = $config["mobile"]["time_zone"];
+        }
+
+        if (@$config["mobile"]["guest_access"]) {
+            $response["guestAccess"] = $config["mobile"]["guest_access"];
         }
 
     response(200, $response);

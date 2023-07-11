@@ -23,7 +23,8 @@
         "tt_project": "TDM",
         "tt_workflow": "mobile",
         "tt_user": "mobile",
-        "time_zone": "Europe/Moscow"
+        "time_zone": "Europe/Moscow",
+        "guest_access": "turnOnOnly"
     },
 
     "db": {
