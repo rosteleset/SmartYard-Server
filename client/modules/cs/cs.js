@@ -461,12 +461,12 @@
             if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                 let s = response.sheet.sheet.data;
                 for (let i in s) {
-                    if (modules.cs.cols.indexOf(s[i].col) < 0) {
+                    if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                     }
                     for (let j in s[i].rows) {
-                        if (modules.cs.rows.indexOf(s[i].rows[j]) < 0) {
+                        if (modules.cs.rows.indexOf(s[i].rows[j]) < 0 && s[i].rows[j].charAt(0) != "#") {
                             modules.cs.rows.push(s[i].rows[j]);
                             modules.cs.rowsMd5[md5(s[i].rows[j])] = s[i].rows[j];
                         }
