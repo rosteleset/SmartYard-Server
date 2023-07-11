@@ -159,10 +159,8 @@
     outputsSelect: function (el, id, prefix) {
         if (parseInt($("#" + prefix + "domophoneOutput").val()) > 0) {
             $("#" + prefix + "cms").parent().parent().parent().hide();
-            $("#" + prefix + "locksDisabled").parent().parent().parent().hide();
         } else {
             $("#" + prefix + "cms").parent().parent().parent().show();
-            $("#" + prefix + "locksDisabled").parent().parent().parent().show();
         }
 
         modules.addresses.houses.cmsSelect(el, id, prefix);
@@ -467,12 +465,6 @@
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[first]),
                                 select: modules.addresses.houses.outputsSelect,
-                            },
-                            {
-                                id: "locksDisabled",
-                                type: "yesno",
-                                title: i18n("addresses.locksDisabled"),
-                                value: 0,
                             },
                             {
                                 id: "cms",
@@ -1042,13 +1034,6 @@
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
                                 select: modules.addresses.houses.outputsSelect,
-                            },
-                            {
-                                id: "locksDisabled",
-                                type: "yesno",
-                                title: i18n("addresses.locksDisabled"),
-                                value: entrance.locksDisabled,
-                                hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                             },
                             {
                                 id: "cms",
