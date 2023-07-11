@@ -103,15 +103,15 @@ end
 
 function normalizeArray(tab)
     local new = {}
-    
+
     if tab[0] ~= nil then
         new[#new + 1] = tab[0]
     end
-    
+
     for index, value in ipairs(tab) do
         new[#new + 1] = value
     end
-    
+
     return new
 end
 
@@ -121,14 +121,14 @@ function exists(v)
     if v == nil then
         return false
     end
-    
+
     if type(v) == "table" then
         for i, v in pairs(v) do
             return true
         end
         return false
     end
-    
+
     return true
 end
 
@@ -169,7 +169,7 @@ end
 
 -- СС. Позвонить сейчас
 -- (Колл-центр == "да" и Дата созвона пусто) или (Дата созвона >= Текущая дата) или (Дата координации == Завтра и Дата координации <= Вчера)
-	
+
 function callNow(issue)
     return
         hasValue(tt.myGroups(), "callcenter") and
@@ -183,7 +183,7 @@ end
 function coordinationExpired(issue)
     return isCoordinated(issue) and utils.strtotime(issue["_cf_sheet_date"] .. " " .. issue["_cf_sheet_cell"] .. ":00") - utils.time() > 3 * 24 * 60 * 60
 end
-	
+
 -- Открытые заявки пользователя
 -- Заявка создана мной, она не закрыта
 
@@ -197,13 +197,13 @@ end
 function watching(issue)
     return isCoordinated(issue) and issue["watchers"] ~= nil and utils.in_array(tt.login(), issue["watchers"])
 end
-	
+
 -- Связаться позже
 -- Связаться по заявке позже сегодняшнего дня
 
 function callLater(issue)
 end
-	
+
 -- Отстойник заявок
 -- Открытые заявки, Выполнено СИ=да
 
@@ -227,7 +227,7 @@ end
 
 function waitingForCoordination(issue)
 end
-	
+
 -- ЮЛ в офисе
 -- Заявки с типом ЮЛ, в статусе "открыта", с любым вопросом: перерасчет, ремонт, пустышки, кроме авто подключений.
 
@@ -299,7 +299,7 @@ function createIssue(issue)
             issue["_cf_polygon"] = client_info["polygon"]
         end
     end
-    
+
     if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0) then
         issue["assigned"] = {
             tt.login()
@@ -311,9 +311,9 @@ function createIssue(issue)
             }
         end
     end
-    
+
     issue["status"] = "Открыта"
-    
+
     return tt.createIssue(issue)
 end
 
@@ -358,14 +358,14 @@ function getAvailableActions(issue)
             "-",
             "Закрыть",
         }
-        
+
         if not isCoordinated(issue) then
             actions = removeValues(actions, {
                 "Работы завершены",
                 "Снять с координации",
             })
         end
-        
+
         if hasValue(tt.myGroups(), "callcenter") then
             actions = removeValue(actions, "Отложить")
             actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
@@ -376,7 +376,7 @@ function getAvailableActions(issue)
         if issue["subject"] ~= "Делопроизводство" then
             actions = removeValue(actions, "Делопроизводство")
         end
-        
+
         if not callNow(issue) then
             actions = removeValues(actions, {
                 "!Звонок совершен", "Звонок совершен",
@@ -402,13 +402,13 @@ function getActionTemplate(issue, action)
             "optionalComment",
         }
     end
-    
+
     if action == "Наблюдатели" then
         return {
             "watchers",
         }
     end
-    
+
     if action == "Координация" then
         return {
             "_cf_sheet",
@@ -433,10 +433,10 @@ function getActionTemplate(issue, action)
             "comment"
         }
     end
-    
+
     local doneFilter = {}
     local needAccessInfo = false
-    
+
     if issue["_cf_object_id"] ~= nil then
         if tonumberExt(issue["_cf_object_id"]) > 0 then
             needAccessInfo = true
@@ -445,7 +445,7 @@ function getActionTemplate(issue, action)
                     "Выполнено",
                     "Проблема с доступом",
                     "Отмена",
-                }        
+                }
             else
                 doneFilter = {
                     "Выполнено",
@@ -454,16 +454,16 @@ function getActionTemplate(issue, action)
                     "Установлена камера и микрофон",
                     "Проблема с доступом",
                     "Отмена",
-                }        
+                }
             end
         else
             doneFilter = {
                 "Выполнено",
                 "Не доставлено",
-            }        
+            }
         end
     end
-    
+
     if action == "Работы завершены" then
         if needAccessInfo then
             return {
@@ -513,7 +513,7 @@ function getActionTemplate(issue, action)
             "comment"
         }
     end
-    
+
     if action == "Позвонить" then
         return {
             "_cf_call_date",
@@ -521,11 +521,11 @@ function getActionTemplate(issue, action)
             "comment"
         }
     end
-    
+
     if action == "Недозвон" then
         return true
     end
-    
+
     if action == "Звонок совершен" then
         return {
             "comment"
@@ -561,7 +561,7 @@ function action(issue, action, original)
     if action == "Наблюдатели" then
         return tt.modifyIssue(issue)
     end
-    
+
     if action == "Координация" then
         if exists(original["_cf_install_done"]) then
             issue["_cf_install_done"] = ""
@@ -577,19 +577,19 @@ function action(issue, action, original)
         if exists(issue["assigned"]) then
             issue["assigned"] = { }
         end
-        
+
         return tt.modifyIssue(issue)
     end
-    
+
     if action == "Исполнители" then
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
         return tt.modifyIssue(issue)
     end
-    
+
     if action == "Работы завершены" then
         issue["_cf_done_date"] = utils.time()
-        
+
         -- по умолчанию - автору
         issue["assigned"] = {
             original["author"]
@@ -652,7 +652,7 @@ function action(issue, action, original)
         if exists(original["_cf_done_date"]) then
             issue["_cf_done_date"] = ""
         end
-        
+
         -- по умолчанию - на того кто совершает действие
         issue["assigned"] = {
             tt.login()
@@ -686,13 +686,13 @@ function action(issue, action, original)
         issue["_cf_calls_count"] = 0
         return tt.modifyIssue(issue)
     end
-    
+
     if action == "Звонок совершен" then
         issue["_cf_need_call"] = 0
         issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) + 1
         return tt.modifyIssue(issue)
     end
-    
+
     if action == "Недозвон" then
         issue["_cf_call_date"] = utils.time() + 3 * 60
         issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) + 1
@@ -701,11 +701,11 @@ function action(issue, action, original)
         end
         return tt.modifyIssue(issue)
     end
-    
+
     if action == "Отложить" then
         return tt.modifyIssue(issue)
     end
-    
+
     if action == "Делопроизводство" then
         issue["assigned"] = {
             "office"
@@ -794,13 +794,13 @@ function viewIssue(issue)
         "*_cf_install_done", "_cf_install_done",
         "*_cf_installers", "_cf_installers",
     }
-    
+
     local callFields = {
         "*_cf_call_date", "_cf_call_date",
         "*_cf_anytime_call", "_cf_anytime_call",
         "*_cf_calls_count", "_cf_calls_count",
     }
-    
+
     local notForClosedFields = {
         "*_cf_sheet_date", "_cf_sheet_date",
         "*_cf_sheet_date", "_cf_sheet_date",
@@ -813,7 +813,7 @@ function viewIssue(issue)
         "*_cf_calls_count", "_cf_calls_count",
         "*_cf_delay", "_cf_delay",
     }
-    
+
     local fields = {
         "*parent",
         "catalog",
@@ -845,15 +845,15 @@ function viewIssue(issue)
     if tonumberExt(issue["_cf_need_call"]) == 0 then
         fields = removeValues(fields, callFields)
     end
-    
+
     if not isCoordinated(issue) then
         fields = removeValues(fields, coordinationFields)
     end
-    
+
     if not isOpened(issue) then
         fields = removeValues(fields, notForClosedFields)
     end
-    
+
     return {
         ["issue"] = issue,
         ["actions"] = getAvailableActions(issue),
@@ -880,9 +880,9 @@ function issueChanged(issue, action, old, new)
     if exists(issue["watchers"]) then
         for i, w in pairs(issue["watchers"]) do
             if w ~= tt.login() then
-                users.notify(w, issue["issueId"], 
+                users.notify(w, issue["issueId"],
                     "Заявка\nhttps://tt.lanta.me//?#tt&issue="
-                    .. 
+                    ..
                     issue["issueId"]
                     ..
                     "\nизменена (" .. action .. ")\nпользователем " .. tt.login()
