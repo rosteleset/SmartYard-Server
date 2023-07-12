@@ -220,10 +220,10 @@ function auth($_response_cache_ttl = -1)
 
             $audience = explode(',', $oauth['audience']);
 
-            if (!in_array($jwt['aud'], $audience) || !array_key_exists('scopes', $jwt) || !array_key_exists('aud_jti', $jwt['scopes']))
+            if (!in_array($jwt['aud'], $audience) || !array_key_exists('scopes', $jwt) || !array_key_exists(2, $jwt['scopes']))
                 response(401, false, 'Не авторизован', 'Не авторизован');
 
-            $subscribers = $households->getSubscribers('aud_jti', $jwt['scopes']['aud_jti']);
+            $subscribers = $households->getSubscribers('aud_jti', $jwt['scopes'][2]);
 
             if ($subscribers)
                 $subscriber = $subscribers[0];
