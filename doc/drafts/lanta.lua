@@ -366,6 +366,13 @@ function getAvailableActions(issue)
             })
         end
 
+        if not callNow(issue) then
+            actions = removeValues(actions, {
+                "Звонок совершен",
+                "Недозвон",
+            })
+        end
+
         if hasValue(tt.myGroups(), "callcenter") then
             actions = removeValue(actions, "Отложить")
             actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
@@ -375,13 +382,6 @@ function getAvailableActions(issue)
 
         if issue["subject"] ~= "Делопроизводство" then
             actions = removeValue(actions, "Делопроизводство")
-        end
-
-        if not callNow(issue) then
-            actions = removeValues(actions, {
-                "!Звонок совершен", "Звонок совершен",
-                "!Недозвон", "Недозвон",
-            })
         end
 
         return actions
@@ -829,6 +829,7 @@ function viewIssue(issue)
         "*_cf_installers",
         "*_cf_can_change",
         "*_cf_call_before_visit",
+        "*_cf_need_call",
         "*_cf_call_date",
         "*_cf_anytime_call",
         "*_cf_calls_count",
