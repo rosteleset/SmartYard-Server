@@ -461,6 +461,7 @@
             if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                 let s = response.sheet.sheet.data;
                 let parts = [];
+                let cp;
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
                         if (!s[i].part) {
@@ -468,6 +469,9 @@
                         }
                         if (!parts[s[i].part]) {
                             parts[s[i].part] = [];
+                        }
+                        if (typeof cp == "undefined") {
+                            cp = s[i].part;
                         }
                         parts[s[i].part].push(s[i].col);
                         modules.cs.cols.push(s[i].col);
@@ -502,11 +506,13 @@
                 modules.cs.cols.sort(sf);
                 modules.cs.rows.sort(sf);
 
-                console.log(parts);
-
                 let h = '';
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 for (let p in parts) {
+                    if (p != cp) {
+                        h += "<tr><td>&nbsp;</td></tr>";
+                        cp = p;
+                    }
                     h += '<tr>';
                     h += '<td>&nbsp;</td>';
                     for (let i in modules.cs.cols) {
