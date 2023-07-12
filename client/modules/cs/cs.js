@@ -460,7 +460,7 @@
         function renderSheet(response) {
             if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                 let s = response.sheet.sheet.data;
-                let parts = [];
+                let parts = {};
                 let cp;
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
