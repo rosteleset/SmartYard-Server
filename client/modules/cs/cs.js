@@ -552,6 +552,7 @@
                         h += "</td>";
                         c++;
                     }
+                    console.log(maxCols, c);
                     if (c < maxCols) {
                         for (let i = 0; i < maxCols - c; i++) {
                             h += "<td>&nbsp;</td>";
