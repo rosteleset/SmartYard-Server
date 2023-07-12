@@ -553,7 +553,7 @@
                         cCols++;
                     }
                     if (cCols < maxCols) {
-                        for (let i = 0; i < maxCols - c; i++) {
+                        for (let i = 0; i < maxCols - cCols; i++) {
                             h += "<td>&nbsp;</td>";
                         }
                     }
@@ -609,8 +609,8 @@
                             }
                             cCols++;
                         }
-                        if (c < maxCols) {
-                            for (let i = 0; i < maxCols - c; i++) {
+                        if (cCols < maxCols) {
+                            for (let i = 0; i < maxCols - cCols; i++) {
                                 h += "<td>&nbsp;</td>";
                             }
                         }
