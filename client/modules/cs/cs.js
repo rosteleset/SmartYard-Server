@@ -515,7 +515,7 @@
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 for (let p in parts) {
                     if (p != cp) {
-                        if (parseInt(p)) {
+                        if (typeof p != "undefined" && parseInt(p) != 0) {
                             h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'>" + p + "</td></tr>";
                         }
                         cp = p;
