@@ -882,11 +882,15 @@ function issueChanged(issue, action, old, new)
         for i, w in pairs(issue["watchers"]) do
             if w ~= tt.login() then
                 users.notify(w, issue["issueId"],
-                    "Заявка\nhttps://tt.lanta.me//?#tt&issue="
+                    "Заявка\nhttps://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
                     ..
-                    issue["issueId"]
+                    "\n"
                     ..
-                    "\nизменена (" .. action .. ")\nпользователем " .. tt.login()
+                    "изменена (" .. action .. ")"
+                    ..
+                    "\n"
+                    ..
+                    "пользователем " .. tt.login()
 --                    .. "\n\n"
 --                    ..
 --                    utils.print_r(old)
