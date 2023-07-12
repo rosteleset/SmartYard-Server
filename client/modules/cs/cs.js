@@ -474,13 +474,16 @@
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                     }
+                    let rs;
                     if (s[i].rows === "default") {
-                        s[i].rows = JSON.parse(JSON.stringify(response.sheet.sheet.defaultRows));
+                        rs = JSON.parse(JSON.stringify(response.sheet.sheet.defaultRows));
+                    } else {
+                        rs = s[i].rows;
                     }
-                    for (let j in s[i].rows) {
-                        if (modules.cs.rows.indexOf(s[i].rows[j]) < 0 && s[i].rows[j].charAt(0) != "#") {
-                            modules.cs.rows.push(s[i].rows[j]);
-                            modules.cs.rowsMd5[md5(s[i].rows[j])] = s[i].rows[j];
+                    for (let j in rs) {
+                        if (modules.cs.rows.indexOf(rs[j]) < 0 && rs[j].charAt(0) != "#") {
+                            modules.cs.rows.push(rs[j]);
+                            modules.cs.rowsMd5[md5(rs[j])] = rs[j];
                         }
                     }
                 }
@@ -577,13 +580,19 @@
                             }
                             let f = false;
                             for (let k in s) {
+                                let rs;
+                                if (s[i].rows === "default") {
+                                    rs = JSON.parse(JSON.stringify(response.sheet.sheet.defaultRows));
+                                } else {
+                                    rs = s[k].rows;
+                                }
                                 if (modules.cs.cols[j] == s[k].col) {
-                                    for (let l in s[k].rows) {
-                                        if (s[k].rows[l] == modules.cs.rows[i]) {
+                                    for (let l in rs) {
+                                        if (rs[l] == modules.cs.rows[i]) {
                                             f = true;
                                             let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
-                                            if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
-                                                if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
+                                            if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, rs[l])) {
+                                                if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(rs[l]) >= 0) {
                                                     h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 } else {
                                                     h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
