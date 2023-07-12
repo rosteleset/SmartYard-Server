@@ -548,7 +548,7 @@
                             h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
                         for (let j in modules.cs.cols) {
-                            if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
+                            if (parts[p].indexOf(modules.cs.cols[j]) < 0) {
                                 continue;
                             }
                             let f = false;
