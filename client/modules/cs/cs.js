@@ -470,9 +470,9 @@
                         if (!parts[s[i].part]) {
                             parts[s[i].part] = [];
                         }
-                        if (typeof cp == "undefined") {
-                            cp = s[i].part;
-                        }
+//                        if (typeof cp == "undefined") {
+//                            cp = s[i].part;
+//                        }
                         parts[s[i].part].push(s[i].col);
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
@@ -510,7 +510,7 @@
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 for (let p in parts) {
                     if (p != cp) {
-                        h += "<tr><td style='border: none!important;'>&nbsp;</td></tr>";
+                        h += "<tr><td style='border: none!important;'>#" + p + "</td></tr>";
                         cp = p;
                     }
                     h += '<tr>';
