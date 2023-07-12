@@ -499,6 +499,8 @@
                 modules.cs.cols.sort(sf);
                 modules.cs.rows.sort(sf);
 
+                console.log(parts);
+
                 let h = '';
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 for (let p in parts) {
