@@ -77,7 +77,7 @@ function loadEnv(array $env, array $value): array
 function loadConfig(): array
 {
     if (file_exists(__DIR__ . '/../cache/config.php'))
-        return require_once __DIR__ . '/../cache/config.php';
+        return require __DIR__ . '/../cache/config.php';
 
     $path = __DIR__ . '/../config/config';
 
