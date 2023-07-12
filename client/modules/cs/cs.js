@@ -463,7 +463,7 @@
                 let parts = {};
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
-                        if (!s[i].col.part) {
+                        if (typeof s[i].col.part != 'undefined') {
                             s[i].col.part = 0;
                         }
                         parts[s[i].col.part] = 1;
