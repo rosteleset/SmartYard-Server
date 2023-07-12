@@ -465,7 +465,7 @@
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
                         if (!s[i].part) {
-                            s[i].part = 0;
+                            s[i].part = -1;
                         }
                         if (!parts[s[i].part]) {
                             parts[s[i].part] = [];
@@ -515,7 +515,7 @@
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 for (let p in parts) {
                     if (p != cp) {
-                        if (typeof p != "undefined" && parseInt(p) != 0) {
+                        if (parseInt(p) >= 0 || p) {
                             h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'>" + p + "</td></tr>";
                         }
                         cp = p;
