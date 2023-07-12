@@ -460,14 +460,13 @@
         function renderSheet(response) {
             if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                 let s = response.sheet.sheet.data;
-                let parts = {};
+                let parts = [];
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
-                        if (typeof s[i].col.part == 'undefined') {
-                            s[i].col.part = 0;
+                        if (!s[i].part) {
+                            s[i].part = 0;
                         }
-                        console.log(s[1].col);
-                        parts[s[i].col.part] = 1;
+                        parts[s[i].part].push(s[i].col);
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                     }
@@ -508,7 +507,7 @@
                     h += '<tr>';
                     h += '<td>&nbsp;</td>';
                     for (let i in modules.cs.cols) {
-                        if (modules.cs.cols[i].part != p) {
+                        if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
                             continue;
                         }
                         let c = false;
@@ -546,10 +545,10 @@
                             h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
                         for (let j in modules.cs.cols) {
-                            if (modules.cs.cols[i].part != p) {
+                            if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
                                 continue;
                             }
-                                let f = false;
+                            let f = false;
                             for (let k in s) {
                                 if (modules.cs.cols[j] == s[k].col) {
                                     for (let l in s[k].rows) {
