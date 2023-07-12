@@ -520,7 +520,7 @@
                     }
                     h += '<tr>';
                     h += '<td>&nbsp;</td>';
-                    let c = 0;
+                    let cCols = 0;
                     for (let i in modules.cs.cols) {
                         if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
                             continue;
@@ -550,10 +550,9 @@
                             }
                         }
                         h += "</td>";
-                        c++;
+                        cCols++;
                     }
-                    console.log(maxCols, c);
-                    if (c < maxCols) {
+                    if (cCols < maxCols) {
                         for (let i = 0; i < maxCols - c; i++) {
                             h += "<td>&nbsp;</td>";
                         }
@@ -566,7 +565,7 @@
                         } else {
                             h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
-                        c = 0;
+                        cCols = 0;
                         for (let j in modules.cs.cols) {
                             if (parts[p].indexOf(modules.cs.cols[j]) < 0) {
                                 continue;
@@ -608,6 +607,7 @@
                                     h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
                                 }
                             }
+                            cCols++;
                         }
                         if (c < maxCols) {
                             for (let i = 0; i < maxCols - c; i++) {
