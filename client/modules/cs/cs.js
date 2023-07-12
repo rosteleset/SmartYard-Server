@@ -475,8 +475,8 @@
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                     }
                     let rs;
-                    if (s[i].rows === "default") {
-                        rs = JSON.parse(JSON.stringify(response.sheet.sheet.defaultRows));
+                    if (typeof s[i].rows === "string") {
+                        rs = JSON.parse(JSON.stringify(response.sheet.sheet.rowsTemplates[s[i].rows]));
                     } else {
                         rs = s[i].rows;
                     }
@@ -581,8 +581,8 @@
                             let f = false;
                             for (let k in s) {
                                 let rs;
-                                if (s[i].rows === "default") {
-                                    rs = JSON.parse(JSON.stringify(response.sheet.sheet.defaultRows));
+                                if (typeof s[k].rows === "string") {
+                                    rs = JSON.parse(JSON.stringify(response.sheet.sheet.rowsTemplates[s[k].rows]));
                                 } else {
                                     rs = s[k].rows;
                                 }
