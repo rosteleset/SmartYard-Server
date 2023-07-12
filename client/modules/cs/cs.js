@@ -475,6 +475,9 @@
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                     }
                     for (let j in s[i].rows) {
+                        if (s[i].rows === "default") {
+                            s[i].rows = JSON.parse(JSON.stringify(response.sheet.sheet.defaultRows));
+                        }
                         if (modules.cs.rows.indexOf(s[i].rows[j]) < 0 && s[i].rows[j].charAt(0) != "#") {
                             modules.cs.rows.push(s[i].rows[j]);
                             modules.cs.rowsMd5[md5(s[i].rows[j])] = s[i].rows[j];
