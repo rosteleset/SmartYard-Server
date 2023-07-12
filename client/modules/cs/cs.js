@@ -460,8 +460,13 @@
         function renderSheet(response) {
             if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                 let s = response.sheet.sheet.data;
+                let parts = {};
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
+                        if (!s[i].col.part) {
+                            s[i].col.part = 0;
+                        }
+                        parts[s[i].col.part] = 1;
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                     }
@@ -496,88 +501,92 @@
 
                 let h = '';
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
-                h += '<thead>';
-                h += '<tr>';
-                h += '<th>&nbsp;</th>';
-                for (let i in modules.cs.cols) {
-                    let c = false;
-                    for (let j in s) {
-                        if (modules.cs.cols[i] == s[j].col) {
-                            c = s[j];
-                        }
-                    }
-                    if (c && c.class) {
-                        h += '<th class="' + c.class + '" nowrap style="vertical-align: top!important;">';
-                    } else {
-                        h += '<th nowrap style="vertical-align: top!important;">';
-                    }
-                    h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
-                    if (c.logins && c.logins.length) {
-                        for (let j in c.logins) {
-                            h += "<br/>";
-                            if (response.sheet.sheet.loginClass) {
-                                h += "<span class='" + response.sheet.sheet.loginClass + "'>"
-                            } else {
-                                h += "<span>";
-                            }
-                            h += modules.users.login2name(c.logins[j]);
-                            h += "</span>";
-                        }
-                    }
-                    h += "</th>";
-                }
-                h += '</tr>';
-                h += '</thead>';
-                h += '<tbody>';
-                for (let i in modules.cs.rows) {
+                for (let p in parts) {
                     h += '<tr>';
-                    if (response.sheet.sheet.timeClass) {
-                        h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
-                    } else {
-                        h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
-                    }
-                    for (let j in modules.cs.cols) {
-                        let f = false;
-                        for (let k in s) {
-                            if (modules.cs.cols[j] == s[k].col) {
-                                for (let l in s[k].rows) {
-                                    if (s[k].rows[l] == modules.cs.rows[i]) {
-                                        f = true;
-                                        let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
-                                        if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
-                                            if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
-                                                h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            } else {
-                                                h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            }
-                                        } else {
-                                            if (response.sheet.sheet.emptyClass) {
-                                                h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            } else {
-                                                h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            }
-                                        }
-                                        if (modules.cs.issuesInSheet[uid]) {
-                                            h += modules.cs.issuesInSheet[uid];
-                                        }
-                                        h += '</td>';
-                                        break;
-                                    }
+                    h += '<td>&nbsp;</td>';
+                    for (let i in modules.cs.cols) {
+                        if (modules.cs.cols[i].part != p) {
+                            continue;
+                        }
+                        let c = false;
+                        for (let j in s) {
+                            if (modules.cs.cols[i] == s[j].col) {
+                                c = s[j];
+                            }
+                        }
+                        if (c && c.class) {
+                            h += '<td class="' + c.class + '" nowrap style="vertical-align: top!important;">';
+                        } else {
+                            h += '<td nowrap style="vertical-align: top!important;">';
+                        }
+                        h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
+                        if (c.logins && c.logins.length) {
+                            for (let j in c.logins) {
+                                h += "<br/>";
+                                if (response.sheet.sheet.loginClass) {
+                                    h += "<span class='" + response.sheet.sheet.loginClass + "'>"
+                                } else {
+                                    h += "<span>";
                                 }
-                                break;
+                                h += modules.users.login2name(c.logins[j]);
+                                h += "</span>";
                             }
                         }
-                        if (!f) {
-                            if (response.sheet.sheet.emptyClass) {
-                                h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
-                            } else {
-                                h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
-                            }
-                        }
+                        h += "</td>";
                     }
                     h += '</tr>';
+                    for (let i in modules.cs.rows) {
+                        h += '<tr>';
+                        if (response.sheet.sheet.timeClass) {
+                            h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                        } else {
+                            h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                        }
+                        for (let j in modules.cs.cols) {
+                            if (modules.cs.cols[i].part != p) {
+                                continue;
+                            }
+                                let f = false;
+                            for (let k in s) {
+                                if (modules.cs.cols[j] == s[k].col) {
+                                    for (let l in s[k].rows) {
+                                        if (s[k].rows[l] == modules.cs.rows[i]) {
+                                            f = true;
+                                            let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
+                                            if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
+                                                if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
+                                                    h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                } else {
+                                                    h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                }
+                                            } else {
+                                                if (response.sheet.sheet.emptyClass) {
+                                                    h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                } else {
+                                                    h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                }
+                                            }
+                                            if (modules.cs.issuesInSheet[uid]) {
+                                                h += modules.cs.issuesInSheet[uid];
+                                            }
+                                            h += '</td>';
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            if (!f) {
+                                if (response.sheet.sheet.emptyClass) {
+                                    h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                                } else {
+                                    h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                                }
+                            }
+                        }
+                        h += '</tr>';
+                    }
                 }
-                h += '</tbody>';
                 h += '</table>';
                 
                 $("#mainForm").html(h);
