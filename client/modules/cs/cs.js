@@ -466,6 +466,9 @@
                         if (!s[i].part) {
                             s[i].part = 0;
                         }
+                        if (!parts[s[i].part]) {
+                            parts[s[i].part] = [];
+                        }
                         parts[s[i].part].push(s[i].col);
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
