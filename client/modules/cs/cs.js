@@ -515,7 +515,11 @@
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
                 for (let p in parts) {
                     if (p != cp) {
-                        h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'>" + p + "</td></tr>";
+                        if (p) {
+                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'>" + p + "</td></tr>";
+                        } else {
+                            h += "<tr><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + (maxCols + 1).toString() + "'>&nbsp;</td></tr>";
+                        }
                         cp = p;
                     }
                     h += '<tr>';
