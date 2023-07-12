@@ -466,6 +466,7 @@
                         if (typeof s[i].col.part == 'undefined') {
                             s[i].col.part = 0;
                         }
+                        console.log(s[1].col);
                         parts[s[i].col.part] = 1;
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
