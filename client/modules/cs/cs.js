@@ -477,6 +477,7 @@
                     for (let j in s[i].rows) {
                         if (s[i].rows === "default") {
                             s[i].rows = JSON.parse(JSON.stringify(response.sheet.sheet.defaultRows));
+                            console.log(s[i].rows);
                         }
                         if (modules.cs.rows.indexOf(s[i].rows[j]) < 0 && s[i].rows[j].charAt(0) != "#") {
                             modules.cs.rows.push(s[i].rows[j]);
