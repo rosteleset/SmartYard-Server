@@ -464,7 +464,7 @@
                 let cp;
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
-                        if (!s[i].part) {
+                        if (typeof s[i].part == "undefined") {
                             s[i].part = -1;
                         }
                         if (!parts[s[i].part]) {
