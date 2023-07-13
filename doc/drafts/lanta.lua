@@ -117,11 +117,11 @@ end
 
 function count(tab)
     local c = 0
-    
+
     for i, v in pairs(tab) do
         c = c + 1
     end
-    
+
     return c
 end
 
@@ -278,7 +278,7 @@ function getNewIssueTemplate(catalog)
     end
 end
 
-function updateObjectId(issue)
+function updateObjectId(issue, original)
     if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
         local client_id = tonumberExt(issue["_cf_object_id"]) - 500000000
 
@@ -307,14 +307,19 @@ function updateObjectId(issue)
         if client_info["polygon"] ~= nil and client_info["polygon"] ~= "" then
             issue["_cf_polygon"] = client_info["polygon"]
         end
+
+        if client_info["geo"] ~= nil then
+            issue["_cf_lat"] = client_info["geo"]["lat"]
+            issue["_cf_lon"] = client_info["geo"]["lon"]
+        end
     end
-    
+
     return issue
 end
 
 -- создание заявки
 function createIssue(issue)
-    issue = updateObjectId(issue)
+    issue = updateObjectId(issue, nil)
 
     if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and count(issue["assigned"]) == 0) then
         issue["assigned"] = {
@@ -801,7 +806,7 @@ function action(issue, action, original)
     end
 
     if action == "Изменить id" then
-        issue = updateObjectId(issue)
+        issue = updateObjectId(issue, original)
 
         return tt.modifyIssue(issue)
     end
