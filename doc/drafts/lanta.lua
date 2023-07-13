@@ -898,7 +898,9 @@ function issueChanged(issue, action, old, new)
                 users.notify(w, issue["issueId"],
                     "Заявка"
                     ..
-                    "\nhttps://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
+                    "\n"
+                    ..
+                    "https://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
                     ..
                     "\n"
                     ..
