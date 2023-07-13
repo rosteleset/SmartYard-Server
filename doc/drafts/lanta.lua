@@ -115,6 +115,16 @@ function normalizeArray(tab)
     return new
 end
 
+function count(tab)
+    local c = 0
+    
+    for i, v in pairs(tab) do
+        c = c + 1
+    end
+    
+    return c
+end
+
 -- переменная сущемтвует и если таблица то есть элементы
 
 function exists(v)
@@ -268,8 +278,7 @@ function getNewIssueTemplate(catalog)
     end
 end
 
--- создание заявки
-function createIssue(issue)
+function updateObjectId(issue)
     if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
         local client_id = tonumberExt(issue["_cf_object_id"]) - 500000000
 
@@ -299,17 +308,26 @@ function createIssue(issue)
             issue["_cf_polygon"] = client_info["polygon"]
         end
     end
+    
+    return issue
+end
 
-    if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0) then
+-- создание заявки
+function createIssue(issue)
+    issue = updateObjectId(issue)
+
+    if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and count(issue["assigned"]) == 0) then
         issue["assigned"] = {
             tt.login()
         }
-    else
-        if type(issue["assigned"]) == "string" then
-            issue["assigned"] = {
-                issue["assigned"]
-            }
-        end
+    end
+    if type(issue["assigned"]) == "string" then
+        issue["assigned"] = {
+            issue["assigned"]
+        }
+    end
+    if type(issue["assigned"]) == "table" and count(issue["assigned"]) > 0 then
+        issue["assigned"] = normalizeArray(issue["assigned"])
     end
 
     issue["status"] = "Открыта"
@@ -538,22 +556,18 @@ end
 -- выполнить действие
 function action(issue, action, original)
     if action == "Назначить" then
-        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and #issue["assigned"] == 0) then
-            if type(issue["assigned"]) == "table" and issue[0] ~= "" then
-                issue["assigned"] = {
-                    issue["assigned"][0]
-                }
-            else
-                issue["assigned"] = {
-                    tt.login()
-                }
-            end
-        else
-            if type(issue["assigned"]) == "string" then
-                issue["assigned"] = {
-                    issue["assigned"]
-                }
-            end
+        if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and count(issue["assigned"]) == 0) then
+            issue["assigned"] = {
+                tt.login()
+            }
+        end
+        if type(issue["assigned"]) == "string" then
+            issue["assigned"] = {
+                issue["assigned"]
+            }
+        end
+        if type(issue["assigned"]) == "table" and count(issue["assigned"]) > 0 then
+            issue["assigned"] = normalizeArray(issue["assigned"])
         end
         return tt.modifyIssue(issue)
     end
@@ -882,7 +896,9 @@ function issueChanged(issue, action, old, new)
         for i, w in pairs(issue["watchers"]) do
             if w ~= tt.login() then
                 users.notify(w, issue["issueId"],
-                    "Заявка\nhttps://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
+                    "Заявка"
+                    ..
+                    "\nhttps://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
                     ..
                     "\n"
                     ..
