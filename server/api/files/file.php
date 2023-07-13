@@ -33,6 +33,10 @@
                 return api::ANSWER($file, ($file !== false)?"file":false);
             }
 
+            public static function POST($params) {
+                return self::PUT($params);
+            }
+
             public static function PUT($params) {
                 $files = loadBackend("files");
 
@@ -78,6 +82,7 @@
                 if (loadBackend("files")) {
                     return [
                         "GET" => "#common",
+                        "POST" => "#common",
                         "PUT" => "#common",
                         "DELETE" => "#common",
                     ];
