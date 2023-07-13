@@ -360,6 +360,8 @@ function getAvailableActions(issue)
             "Назначить",
             "saAssignToMe",
             "-",
+            "Изменить id",
+            "-",
             "saWatch",
             "Наблюдатели",
             "-",
@@ -547,6 +549,12 @@ function getActionTemplate(issue, action)
     if action == "Звонок совершен" then
         return {
             "comment"
+        }
+    end
+
+    if action == "Изменить id" then
+        return {
+            "_cf_object_id"
         }
     end
 
@@ -788,6 +796,12 @@ function action(issue, action, original)
         if original(issue["_cf_quality_control"]) then
             issue["_cf_quality_control"] = ""
         end
+
+        return tt.modifyIssue(issue)
+    end
+
+    if action == "Изменить id" then
+        issue = updateObjectId(issue)
 
         return tt.modifyIssue(issue)
     end
