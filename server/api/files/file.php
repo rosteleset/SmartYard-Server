@@ -52,10 +52,16 @@
                     $success = $success && $files->deleteFile($f["id"]);
                 }
 
-                $success = $success && $files->addFile(@$params["filename"], $files->contentsToStream(@$params["file"]), [
-                    "type" => @$params["type"],
-                    "owner" => $params["_login"],
-                ]);
+                $meta = [];
+
+                if (@$params["metadata"]) {
+                    $meta = $params["metadata"];
+                }
+
+                $meta["type"] = @$params["type"];
+                $meta["owner"] = $params["_login"];
+
+                $success = $success && $files->addFile(@$params["filename"], $files->contentsToStream(@$params["file"]), $meta);
 
                 return api::ANSWER($success);
             }

@@ -641,28 +641,36 @@
                 }
 
                 foreach ($attachments as $attachment) {
-                    if (!($files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                        "date" => round($attachment["date"] / 1000),
-                        "added" => time(),
-                        "type" => $attachment["type"],
-                        "issue" => true,
-                        "project" => $acr,
-                        "issueId" => $issueId,
-                        "attachman" => $this->login,
-                    ]) &&
-                    $this->mongo->$db->$acr->updateOne(
-                        [
-                            "issueId" => $issueId,
-                        ],
-                        [
-                            "\$set" => [
-                                "updated" => time(),
+                    $meta = [];
+
+                    if (@$attachment["metadata"]) {
+                        $meta = $attachment["metadata"];
+                    }
+
+                    $meta["date"] = round($attachment["date"] / 1000);
+                    $meta["added"] = time();
+                    $meta["type"] = $attachment["type"];
+                    $meta["issue"] = true;
+                    $meta["project"] = $acr;
+                    $meta["issueId"] = $issueId;
+                    $meta["attachman"] = $this->login;
+
+                    if (!(
+                        $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), $meta) &&
+                        $this->mongo->$db->$acr->updateOne(
+                            [
+                                "issueId" => $issueId,
                             ],
-                        ]
-                    ) &&
-                    $this->addJournalRecord($issueId, "addAttachment", null, [
-                        "attachmentFilename" => $attachment["name"],
-                    ]))) {
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        ) &&
+                        $this->addJournalRecord($issueId, "addAttachment", null, [
+                            "attachmentFilename" => $attachment["name"],
+                        ])
+                    )) {
                         return false;
                     }
                 }
