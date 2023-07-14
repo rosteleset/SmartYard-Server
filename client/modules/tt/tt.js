@@ -887,7 +887,7 @@
                                 break;
 
                             case "json":
-                                return "<pre>" + escapeHTML(JSON.stringify(val, null, 4)) + "</pre>";
+                                return "<pre style='padding: 0px!important;'>" + escapeHTML(JSON.stringify(val, null, 2)) + "</pre>";
                                 
                             case "datetime-local":
                                 val = ttDate(val);
