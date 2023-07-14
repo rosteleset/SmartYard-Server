@@ -887,7 +887,7 @@
                                 break;
 
                             case "json":
-                                val = nl2br(JSON.stringify(val, null, 4));
+                                val = JSON.stringify(val, null, 4);
                                 break;
                                 
                             case "datetime-local":
