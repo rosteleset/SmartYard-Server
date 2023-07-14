@@ -1006,6 +1006,27 @@
             abstract public function deleteCrontab($crontabId);
 
             /**
+             * @param $a
+             * @return mixed
+             */
+            private static function av($a) {
+                if (!is_array($a)) {
+                    return $a;
+                } else {
+                    $t = [];
+                    foreach ($a as $k => $v) {
+                        // Lua array?
+                        if ($k === "1") {
+                            $t[] = self::av($v);
+                        } else {
+                            $t[$k] = $v;
+                        }
+                    }
+                    return $t;
+                }
+            } 
+
+            /**
              * @param $issue
              * @return mixed
              */
@@ -1063,12 +1084,14 @@
                     $validTags[] = $t["tag"];
                 }
 
-                foreach ($issue as $field => $dumb) {
+                foreach ($issue as $field => $value) {
                     if (!in_array($field, $validFields)) {
                         unset($issue[$field]);
                     } else {
                         if (array_key_exists($field, $customFieldsByName) && strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
                             $issue[$field] = array_values($dumb);
+                        } else {
+                            $issue[$field] = self::av($value);
                         }
                     }
                 }
