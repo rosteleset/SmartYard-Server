@@ -1010,7 +1010,7 @@
              * @return mixed
              */
             private static function av($a) {
-                if (!is_array($a)) {
+                if (!is_array($a) && !is_object($a)) {
                     return $a;
                 } else {
                     $t = [];
