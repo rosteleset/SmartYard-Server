@@ -829,7 +829,6 @@
                     for (let i in response.journal) {
                         let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
                         let n = response.journal[i].new && typeof response.journal[i].new.length == 'undefined';
-                        console.log(c, response.journal[i].old, response.journal[i].new);
                         if (!o && !n) {
                             continue;
                         }
@@ -861,16 +860,21 @@
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
                             for (let j in k) {
+                                let oo = jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
+                                let nn = jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;"
+                                if (oo == nn) {
+                                    continue;
+                                }
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
+                                h += oo;
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;";
+                                h += nn;
                                 h += "</td>";
                                 h += "</tr>";
                             }
