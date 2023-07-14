@@ -829,7 +829,7 @@
                     for (let i in response.journal) {
                         let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
                         let n = response.journal[i].new && typeof response.journal[i].new.length == 'undefined';
-                        console.log(c, o, n);
+                        console.log(c, response.journal[i].old, response.journal[i].new);
                         if (!o && !n) {
                             continue;
                         }
