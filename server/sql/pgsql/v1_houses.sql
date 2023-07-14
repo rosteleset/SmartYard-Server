@@ -33,8 +33,7 @@ CREATE TABLE houses_entrances
     domophone_output integer,
     cms character varying,                                                                                              -- for visualization only
     cms_type integer,
-    cms_levels character varying,
-    locks_disabled integer
+    cms_levels character varying
 );
 CREATE UNIQUE INDEX houses_entrances_uniq on houses_entrances(house_domophone_id, domophone_output);
 CREATE INDEX houses_entrances_multihouse on houses_entrances(shared);

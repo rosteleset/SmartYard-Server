@@ -41,6 +41,16 @@
             }
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#sheetSave").click();
+                }),
+            });
             $("#sheetSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("cs", "sheet", false, {

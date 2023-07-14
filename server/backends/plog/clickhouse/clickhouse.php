@@ -58,7 +58,7 @@
                     return true;
                 }
 
-                return false;
+                return true;
             }
 
             //получение кадра события на указанную дату+время и ip устройства или от FRS

@@ -22,7 +22,8 @@ CREATE TABLE core_users
     tg character varying,
     notification character varying default 'tgEmail',
     default_route character varying,
-    last_login integer
+    last_login integer,
+    primary_group integer
 );
 CREATE UNIQUE INDEX core_users_login on core_users(login);
 CREATE INDEX core_users_real_name on core_users(real_name);
@@ -38,7 +39,8 @@ CREATE TABLE core_groups
 (
     gid serial primary key,
     acronym character varying not null,
-    name character varying not null
+    name character varying not null,
+    admin integer
 );
 CREATE UNIQUE INDEX core_groups_acronym on core_groups(acronym);
 CREATE UNIQUE INDEX core_groups_name on core_groups(name);

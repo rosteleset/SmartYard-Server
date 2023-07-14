@@ -47,21 +47,26 @@
                         }
                     }
                 }
-                if (!$old) {
+                if (!$old && $new) {
                     foreach ($new as $key => $field) {
                         if (!$field) {
                             unset($new[$key]);
                         }
                     }
                 }
-                if (!$new) {
+                if (!$new && $old) {
                     foreach ($old as $key => $field) {
                         if (!$field) {
                             unset($old[$key]);
                         }
                     }
                 }
-                return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issueId, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
+
+                if ($new || $old) {
+                    return $this->clickhouse->insert("ttlog", [ [ "date" => time(), "issue" => $issueId, "login" => $this->login, "action" => $action, "old" => json_encode($old), "new" => json_encode($new) ] ]);
+                } else {
+                    return true;
+                }
             }
 
             /**

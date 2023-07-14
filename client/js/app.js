@@ -13,6 +13,7 @@ var available = false;
 var badge = false;
 var currentModule = false;
 var lStoreEngine = false;
+var hasUnsavedChanges = false;
 
 function hashChange() {
     let [ route, params, hash ] = hashParse();
@@ -27,28 +28,28 @@ function hashChange() {
 
             let r = route.split(".");
 
-            if ($(".sidebar .withibleOnlyWhenActive[target!='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[target!='?#" + route + "']").hide();
+            if ($(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").length) {
+                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").hide();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[target!='?#" + r[0] + "']").hide();
+                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + r[0] + "']").hide();
             }
 
-            if ($(".sidebar .withibleOnlyWhenActive[target='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[target='?#" + route + "']").show();
+            if ($(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").length) {
+                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").show();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[target='?#" + r[0] + "']").show();
+                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + r[0] + "']").show();
             }
 
-            if ($(".sidebar .nav-item a[href!='?#" + route + "']").length) {
-                $(".sidebar .nav-item a[href!='?#" + route + "']").removeClass('active');
+            if ($(".sidebar .nav-item a[data-href!='?#" + route + "']").length) {
+                $(".sidebar .nav-item a[data-href!='?#" + route + "']").removeClass('active');
             } else {
-                $(".sidebar .nav-item a[href!='?#" + r[0] + "']").removeClass('active');
+                $(".sidebar .nav-item a[data-href!='?#" + r[0] + "']").removeClass('active');
             }
 
-            if ($(".sidebar .nav-item a[href='?#" + route + "']").length) {
-                $(".sidebar .nav-item a[href='?#" + route + "']").addClass('active');
+            if ($(".sidebar .nav-item a[data-href='?#" + route + "']").length) {
+                $(".sidebar .nav-item a[data-href='?#" + route + "']").addClass('active');
             } else {
-                $(".sidebar .nav-item a[href='?#" + r[0] + "']").addClass('active');
+                $(".sidebar .nav-item a[data-href='?#" + r[0] + "']").addClass('active');
             }
 
             $("#loginForm").hide();
@@ -106,7 +107,7 @@ function page404() {
     $("#page404").html(`
         <section class="content">
             <div class="error-page">
-                <h2 class="headline text-danger"> 404</h2>
+                <img src="img/404.png" style="border: none; width: 200px; height: 200px;">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger"></i>${i18n("errors.404caption")}</h3>
                     <p>${i18n("errors.404message")}</p>
@@ -259,8 +260,6 @@ function login() {
 }
 
 function logout() {
-    window.onbeforeunload = null;
-
     POST("authentication", "logout", false, {
         mode: "all",
     }).always(() => {
@@ -434,7 +433,6 @@ function initAll() {
                             uid: -1,
                         };
                         whoAmI().done(() => {
-                            window.onbeforeunload = () => false;
                             available = a.available;
                             if (config && config.modules) {
                                 for (let i in config.modules) {
@@ -524,7 +522,7 @@ function message(message, caption, timeout) {
         "newestOnTop": true,
         "progressBar": false,
         "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "showDuration": "300",
         "hideDuration": "1000",
         "timeOut": timeout?(timeout * 1000):"0",
@@ -544,7 +542,7 @@ function warning(message, caption, timeout) {
         "newestOnTop": true,
         "progressBar": false,
         "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "showDuration": "300",
         "hideDuration": "1000",
         "timeOut": timeout?(timeout * 1000):"0",
@@ -564,7 +562,7 @@ function error(message, caption, timeout) {
         "newestOnTop": true,
         "progressBar": false,
         "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "showDuration": "300",
         "hideDuration": "1000",
         "timeOut": timeout?(timeout * 1000):"0",
@@ -611,11 +609,15 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
 
     $('#yesnoModalLabel').html(title);
     $('#yesnoModalBody').html(body);
-    $('#yesnoModalButtonYes').html(yes?yes:i18n("yes")).off('click').on('click', () => {
+    let t = yes?yes:i18n("yes");
+    t = t.charAt(0).toUpperCase() + t.substring(1);
+    $('#yesnoModalButtonYes').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');
         if (typeof callbackYes == 'function') callbackYes();
     });
-    $('#yesnoModalButtonNo').html(no?no:i18n("no")).off('click').on('click', () => {
+    t = no?no:i18n("no");
+    t = t.charAt(0).toUpperCase() + t.substring(1);
+    $('#yesnoModalButtonNo').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');
         if (typeof callbackNo == 'function') callbackNo();
     });
@@ -704,12 +706,14 @@ function loadingStart() {
         backdrop: 'static',
         keyboard: false,
     }));
+//    autoZ($('#loading')).show();
 }
 
 function loadingDone(stayHidden) {
     xblur();
-
+    
     $('#loading').modal('hide');
+//    $('#loading').hide();
 
     if (stayHidden === true) {
         $('#app').addClass("invisible");
@@ -806,9 +810,11 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
 
     let [ route ] = hashParse();
 
+    let id = md5(guid());
+
     $("#leftside-menu").append(`
-        <li class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
-            <a href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
+        <li id="${id}" class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+            <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
             </a>
@@ -817,6 +823,8 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
 
     mainSidebarGroup = group;
     mainSidebarFirst = false;
+
+    return id;
 }
 
 function loadModule() {
@@ -932,37 +940,41 @@ function hashParse() {
 }
 
 function escapeHTML(str) {
-    if (str && typeof str == "string") {
-        let escapeChars = {
-            '¢': 'cent',
-            '£': 'pound',
-            '¥': 'yen',
-            '€': 'euro',
-            '©':'copy',
-            '®': 'reg',
-            '<': 'lt',
-            '>': 'gt',
-            '"': 'quot',
-            '&': 'amp',
-            '\'': '#39'
-        };
-
-        let regexString = '[';
-
-        for(let key in escapeChars) {
-            regexString += key;
-        }
-
-        regexString += ']';
-
-        let regex = new RegExp(regexString, 'g');
-
-        return str.replace(regex, function(m) {
-            return '&' + escapeChars[m] + ';';
-        });
-    } else {
-        return str;
+    if (typeof str == "undefined" || !str) {
+        return "";
     }
+    
+    str = str.toString();
+
+    let escapeChars = {
+        '¢': 'cent',
+        '£': 'pound',
+        '¥': 'yen',
+        '€': 'euro',
+        '©':'copy',
+        '®': 'reg',
+        '<': 'lt',
+        '>': 'gt',
+        '"': 'quot',
+        '&': 'amp',
+        '\'': '#39'
+    };
+
+    let regexString = '[';
+
+    for(let key in escapeChars) {
+        regexString += key;
+    }
+
+    regexString += ']';
+
+    let regex = new RegExp(regexString, 'g');
+
+    let result = str.replace(regex, function(m) {
+        return '&' + escapeChars[m] + ';';
+    });
+
+    return result;
 }
 
 Object.defineProperty(Array.prototype, "assoc", {
@@ -1020,13 +1032,17 @@ function b64_to_utf8(str) {
     return decodeURIComponent(escape(window.atob(str)));
 }
 
-function trimStr(str, len) {
+function trimStr(str, len, abbr) {
     if (!len) {
-        len = 19;
+        len = 33;
     }
     let sub = Math.floor((len - 3) / 2);
     if (str.length > len) {
-        return str.substring(0, sub) + "..." + str.substring(str.length - sub);
+        if (abbr) {
+            return "<abbr title='" + escapeHTML(str) + "'>" + str.substring(0, sub) + "..." + str.substring(str.length - sub) + "</abbr>";
+        } else {
+            return str.substring(0, sub) + "..." + str.substring(str.length - sub);
+        }
     } else {
         return str;
     }
@@ -1131,6 +1147,16 @@ function lStore(key, val) {
     }
 }
 
+function textRTrim(text) {
+    text = text.split("\n");
+
+    for (let i in text) {
+        text[i] = text[i].trimRight()
+    }
+
+    return text.join("\n");
+}
+
 function QUERY(api, method, query, fresh) {
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
@@ -1188,6 +1214,9 @@ function FAIL(response) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         if (response.responseJSON.error == "tokenNotFound") {
             lStore("_token", null);
+            setTimeout(() => {
+                location.reload();
+            }, 5000);
         }
     } else {
         error(i18n("errors.unknown"), i18n("error"), 30);
@@ -1217,6 +1246,10 @@ function AVAIL(api, method, request_method) {
     }
 }
 
+$(document).on('select2:open', () => {
+    document.querySelector('.select2-search__field').focus();
+});
+  
 $(window).off("resize").on("resize", () => {
     if ($("#editorContainer").length) {
         // TODO f..ck!
@@ -1225,3 +1258,15 @@ $(window).off("resize").on("resize", () => {
         $("#editorContainer").css("height", height + "px");
     }
 });
+
+setInterval(() => {
+    if (hasUnsavedChanges || $("#editorContainer").length) {
+        if (typeof window.onbeforeunload != "function") {
+            window.onbeforeunload = () => false;
+        }
+    } else {
+        if (typeof window.onbeforeunload == "function") {
+            window.onbeforeunload = null;
+        }
+    } 
+}, 1000);

@@ -44,11 +44,12 @@
              * @param integer $gid gid
              * @param string $acronym group name
              * @param string $name group name
+             * @param integer $admin uid
              *
              * @return boolean
              */
 
-            abstract public function modifyGroup($gid, $acronym, $name);
+            abstract public function modifyGroup($gid, $acronym, $name, $admin);
 
             /**
              * add user to group

@@ -161,7 +161,7 @@
             }
 
             public static function PUT($params) {
-                $success = loadBackend("groups")->modifyGroup($params["_id"], $params["acronym"], $params["name"]);
+                $success = loadBackend("groups")->modifyGroup($params["_id"], $params["acronym"], $params["name"], $params["admin"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

@@ -66,6 +66,7 @@
             public function putCS($sheet, $date, $data)
             {
                 $files = loadBackend("files");
+                $mqtt = loadBackend("mqtt");
 
                 if (!$files) {
                     return false;
@@ -93,13 +94,21 @@
                     $data = json_encode($data_parsed);
                 }
 
-                $mqtt = loadBackend("mqtt");
-
-                return $files->addFile($date . "_" . $sheet . ".json", $files->contentsToStream($data), [
+                $success = $files->addFile($date . "_" . $sheet . ".json", $files->contentsToStream($data), [
                     "type" => "csheet",
                     "sheet" => $sheet,
                     "date" => $date,
-                ]) && $mqtt->broadcast("sheet/changed", [ "sheet" => $sheet, "date" => $date ]);
+                    "by" => $this->login,
+                ]);
+
+                if ($mqtt) {
+                    $success = $success && $mqtt->broadcast("sheet/changed", [
+                        "sheet" => $sheet,
+                        "date" => $date
+                    ]);
+                }
+
+                return $success; 
             }
 
             /**
@@ -109,6 +118,7 @@
             public function deleteCS($sheet, $date)
             {
                 $files = loadBackend("files");
+                $mqtt = loadBackend("mqtt");
 
                 if (!$files) {
                     return false;
@@ -124,7 +134,14 @@
                     $cs = $files->deleteFile($s["id"]);
                 }
 
-                return $mqtt->broadcast("sheet/changed", [ "sheet" => $sheet, "date" => $date ]);
+                if ($mqtt) {
+                    return $mqtt->broadcast("sheet/changed", [
+                        "sheet" => $sheet,
+                        "date" => $date
+                    ]);
+                } else {
+                    return true;
+                }
             }
 
             /**
@@ -151,10 +168,16 @@
              * @param $row
              * @param $uid
              * @param $expire
+             * @param $sid
+             * @param $step
+             * @param $comment
              */
-            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0)
+            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0, $comment = "")
             {
+                $mqtt = loadBackend("mqtt");
+
                 $expire = (int)($expire ? : 60);
+
                 switch ($action) {
                     case "claim":
                     case "release":
@@ -166,31 +189,22 @@
                             if (
                                 ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && $cell["uid"] == $uid) ||
-                                ($action == "release-force" && $cell["mode"] == "reserved" && $cell["uid"] == $uid)
+                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid) ||
+                                ($action == "release-force" && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid)
                             ) {
                                 $this->redis->delete($key);
                                 $payload = explode("_", $key);
-                                file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
-                                    'http' => [
-                                        'method'  => 'POST',
-                                        'header'  => [
-                                            'Content-Type: application/json; charset=utf-8',
-                                            'Accept: application/json; charset=utf-8',
-                                        ],
-                                        'content' => json_encode([
-                                            "topic" => "cs/cell",
-                                            "payload" => [
-                                                "action" => "released",
-                                                "sheet" => $payload[1],
-                                                "date" => $payload[2],
-                                                "col" => $payload[3],
-                                                "row" => $payload[4],
-                                                "uid" => $payload[5],
-                                            ],
-                                        ]),
-                                    ],
-                                ]));
+
+                                if ($mqtt) {
+                                    $mqtt->broadcast("cs/cell", [
+                                        "action" => "released",
+                                        "sheet" => $payload[1],
+                                        "date" => $payload[2],
+                                        "col" => $payload[3],
+                                        "row" => $payload[4],
+                                        "uid" => $payload[5],
+                                    ]);
+                                }
                             }
                         }
 
@@ -208,29 +222,19 @@
                                 "claimed" => time(),
                             ]));
 
-                            file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
-                                'http' => [
-                                    'method'  => 'POST',
-                                    'header'  => [
-                                        'Content-Type: application/json; charset=utf-8',
-                                        'Accept: application/json; charset=utf-8',
-                                    ],
-                                    'content' => json_encode([
-                                        "topic" => "cs/cell",
-                                        "payload" => [
-                                            "action" => "claimed",
-                                            "step" => $step,
-                                            "sheet" => $sheet,
-                                            "date" => $date,
-                                            "col" => $col,
-                                            "row" => $row,
-                                            "uid" => $uid,
-                                            "login" => $this->login,
-                                            "sid" => $sid,
-                                        ],
-                                    ]),
-                                ],
-                            ]));
+                            if ($mqtt) {
+                                $mqtt->broadcast("cs/cell", [
+                                    "action" => "claimed",
+                                    "step" => $step,
+                                    "sheet" => $sheet,
+                                    "date" => $date,
+                                    "col" => $col,
+                                    "row" => $row,
+                                    "uid" => $uid,
+                                    "login" => $this->login,
+                                    "sid" => $sid,
+                                ]);
+                            }
                         }
 
                         break;
@@ -253,30 +257,22 @@
                                 "uid" => $uid,
                                 "expire" => $expire,
                                 "reserved" => time(),
+                                "comment" => $comment,
                             ]));
-    
-                            file_get_contents("http://127.0.0.1:8082/broadcast", false, stream_context_create([
-                                'http' => [
-                                    'method'  => 'POST',
-                                    'header'  => [
-                                        'Content-Type: application/json; charset=utf-8',
-                                        'Accept: application/json; charset=utf-8',
-                                    ],
-                                    'content' => json_encode([
-                                        "topic" => "cs/cell",
-                                        "payload" => [
-                                            "action" => "reserved",
-                                            "sheet" => $sheet,
-                                            "date" => $date,
-                                            "col" => $col,
-                                            "row" => $row,
-                                            "uid" => $uid,
-                                            "login" => $this->login,
-                                            "sid" => $sid,
-                                        ],
-                                    ]),
-                                ],
-                            ]));
+
+                            if ($mqtt) {
+                                $mqtt->broadcast("cs/cell", [
+                                    "action" => "reserved",
+                                    "sheet" => $sheet,
+                                    "date" => $date,
+                                    "col" => $col,
+                                    "row" => $row,
+                                    "uid" => $uid,
+                                    "login" => $this->login,
+                                    "sid" => $sid,
+                                    "comment" => $comment,
+                                ]);
+                            }
                         }
 
                         break;

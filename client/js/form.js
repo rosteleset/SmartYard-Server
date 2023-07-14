@@ -67,6 +67,20 @@ function cardForm(params) {
             params.fields[i].type = "select";
             params.fields[i].options = [
                 {
+                    id: "1",
+                    text: i18n("yes"),
+                },
+                {
+                    id: "0",
+                    text: i18n("no"),
+                },
+            ];
+        }
+
+        if (params.fields[i].type === "noyes") {
+            params.fields[i].type = "select";
+            params.fields[i].options = [
+                {
                     id: "0",
                     text: i18n("no"),
                 },
@@ -122,6 +136,7 @@ function cardForm(params) {
         }
 
         first = "";
+        let height = 0;
 
         switch (params.fields[i].type) {
             case "select":
@@ -194,9 +209,9 @@ function cardForm(params) {
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
                     h += `
                         <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1)?" mb-3":""}">
-                            <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}/>
+                            <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}${params.fields[i].options[j].disabled?" disabled":""}/>
                             <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
-                        `;
+                    `;
                     if (params.fields[i].options[j].append) {
                         h += params.fields[i].options[j].append;
                     }
@@ -226,13 +241,14 @@ function cardForm(params) {
                 break;
 
             case "code":
-                let height = params.fields[i].height?params.fields[i].height:400;
+            case "json":
+                height = params.fields[i].height?params.fields[i].height:400;
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
                 h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}" rows="5" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
                 h += `</pre>`;
                 h += `</div>`;
                 break;
-
+        
             case "text":
             case "email":
             case "number":
@@ -313,13 +329,23 @@ function cardForm(params) {
             case "email":
             case "number":
             case "tel":
-            case "date":
             case "time":
             case "password":
             case "text":
             case "color":
             case "area":
                 return $(`#${_prefix}${params.fields[i].id}`).val();
+
+            case "date":
+                if (params.fields[i].return === "asis") {
+                    return $(`#${_prefix}${params.fields[i].id}`).val();
+                } else {
+                    if (params.fields[i].sec) {
+                        return strtotime($(`#${_prefix}${params.fields[i].id}`).val());
+                    } else {
+                        return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
+                    }
+                }
 
             case "datetime-local":
                 if (params.fields[i].sec) {
@@ -346,9 +372,15 @@ function cardForm(params) {
                 }
 
             case "code":
-                let code = $.trim(params.fields[i].editor.getValue());
-                return code;
-
+                return $.trim(params.fields[i].editor.getValue());
+    
+            case "json":
+                try {
+                    return JSON.parse($.trim(params.fields[i].editor.getValue()));
+                } catch (e) {
+                    return false;
+                }
+        
             case "files":
                 return files[_prefix + params.fields[i].id];
         }
@@ -392,6 +424,7 @@ function cardForm(params) {
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).next().addClass("border-color-invalid");
                         break;
                     case "code":
+                    case "json":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
                         break;
                     default:
@@ -473,13 +506,20 @@ function cardForm(params) {
                 case "email":
                 case "number":
                 case "tel":
-                case "date":
                 case "time":
                 case "password":
                 case "text":
                 case "color":
                 case "area":
                     $(`#${_prefix}${params.fields[i].id}`).val(params.fields[i].value);
+                    break;
+
+                case "date":
+                    if (params.fields[i].sec) {
+                        $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value));
+                    } else {
+                        $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value / 1000));
+                    }
                     break;
 
                 case "datetime-local":
@@ -598,6 +638,18 @@ function cardForm(params) {
             params.fields[i].editor = editor;
             if (params.fields[i].value) {
                 editor.setValue(params.fields[i].value, -1);
+                editor.clearSelection();
+            }
+            editor.setFontSize(14);
+        }
+
+        if (params.fields[i].type === "json") {
+            let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/json");
+            params.fields[i].editor = editor;
+            if (params.fields[i].value) {
+                editor.setValue(JSON.stringify(params.fields[i].value, null, 4), -1);
                 editor.clearSelection();
             }
             editor.setFontSize(14);

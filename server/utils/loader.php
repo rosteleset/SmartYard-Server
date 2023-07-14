@@ -11,6 +11,9 @@
         global $config, $db, $redis, $backends;
 
         if (@$backends[$backend]) {
+            if ($login) {
+                $backends[$backend]->setLogin($login);
+            }
             return $backends[$backend];
         } else {
             if (@$config["backends"][$backend]) {

@@ -77,5 +77,28 @@
              */
 
             abstract public function allowedMethods($uid);
+
+            /**
+             * @param $api
+             * @param $method
+             * @param $request_method
+             */
+
+            public function mAllow($api, $method = false, $request_method = false)
+            {
+                $available = $this->allowedMethods($this->uid);
+
+                if ($request_method) {
+                    return $available && @$available[$api] && @$available[$api][$method] && @$available[$api][$method][$request_method];
+                }
+                if ($method) {
+                    return $available && @$available[$api] && @$available[$api][$method];
+                }
+                if ($api) {
+                    return $available && @$available[$api];
+                }
+                
+                return false;
+            }
         }
     }

@@ -335,6 +335,8 @@
                     "project_id" => $projectId,
                     "filter" => $filter,
                     "personal" => $personal?$personal:null,
+                ], [
+                    "silent",
                 ]);
             }
 
@@ -561,7 +563,28 @@
             public function getCustomFields()
             {
                 try {
-                    $customFields = $this->db->query("select issue_custom_field_id, catalog, type, field, field_display, field_description, regex, link, format, editor, indx, search, required from tt_issue_custom_fields order by catalog, field", \PDO::FETCH_ASSOC)->fetchAll();
+                    $customFields = $this->db->query("
+                        select
+                            issue_custom_field_id,
+                            catalog,
+                            type,
+                            field,
+                            field_display,
+                            field_description,
+                            regex,
+                            link,
+                            format,
+                            editor,
+                            indx,
+                            search,
+                            required
+                        from
+                            tt_issue_custom_fields
+                        order by
+                            catalog,
+                            field
+                    ", \PDO::FETCH_ASSOC)->fetchAll();
+
                     $_customFields = [];
 
                     foreach ($customFields as $customField) {
@@ -586,7 +609,7 @@
                             "regex" => $customField["regex"],
                             "link" => $customField["link"],
                             "format" => $customField["format"],
-                            "editor" => $customField["editor"],
+                            "editor" => trim($customField["editor"]?$customField["editor"]:""),
                             "indx" => $customField["indx"],
                             "search" => $customField["search"],
                             "required" => $customField["required"],
@@ -619,7 +642,9 @@
                     $sth = $this->db->prepare("
                         insert into 
                             tt_issue_custom_fields (catalog, type, field, field_display)
-                        values (:catalog, :type, :field, :field_display)");
+                        values (:catalog, :type, :field, :field_display)
+                    ");
+                    
                     if (!$sth->execute([
                         ":catalog" => $catalog,
                         ":type" => $type,

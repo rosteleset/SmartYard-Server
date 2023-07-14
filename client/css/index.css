@@ -259,6 +259,15 @@ body::-webkit-scrollbar-thumb {
   background-position: center center;
 }
 
+.select2-results__option.loading-results,
+.select2-results__option.select2-results__option--load-more {
+  background-image: url('../img/spinnerSmall.svg');
+  background-repeat: no-repeat;
+  padding-left: 35px;
+  background-position: 10px 50%;
+  background-size: 18px;
+}
+
 .text-decoration-line-through {
   text-decoration: line-through;
 }
@@ -301,4 +310,16 @@ body::-webkit-scrollbar-thumb {
   right: 0px;
   padding-right: 3px;
   font-size: small;
+}
+
+.datatable {
+  margin: 2px 0; border-collapse: collapse;
+}
+
+.datatable td {
+  border: 1px solid #dbdbdb; padding: 3px; text-align: left;
+}
+
+.datatable th {
+  padding: 3px; text-align: left; cursor: default;
 }

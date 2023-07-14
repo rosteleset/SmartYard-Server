@@ -311,7 +311,7 @@
                         fields: fields,
                         callback: modules.tt.issue.doCreateIssue,
                         cancel: () => {
-                            location.href = "?#tt&_refresh=" + Math.random();
+                            location.href = "?#tt&_=" + Math.random();
                         },
                     });
     
@@ -319,7 +319,7 @@
                 }).
                 fail(FAIL).
                 fail(() => {
-                    location.href = "?#tt&_refresh=" + Math.random();
+                    location.href = "?#tt&_=" + Math.random();
                 });
             }
     
@@ -460,7 +460,7 @@
 
     viewIssue: function (issue) {
         issue = JSON.parse(b64_to_utf8(issue));
-        window.location.href = `?#tt&issue=${encodeURIComponent(issue.id)}&filter=${encodeURIComponent(issue.filter?issue.filter:"")}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${encodeURIComponent(($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):"")}`;
+        window.location.href = `?#tt&issue=${encodeURIComponent(issue.id)}&filter=${encodeURIComponent(issue.filter?issue.filter:"")}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${encodeURIComponent(($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):"")}&_=${Math.random()}`;
     },
 
     renderIssue: function (issue, filter, index, count, search) {
@@ -477,13 +477,18 @@
             return;
         }
 
-        let rightFields = [ "project", "workflow", "catalog", "parent", "status", "resolution", "assigned", "watchers", "created", "updated", "author", ];
+        let rightFields = [];
 
-        if (issue.rightFields) {
-            for (let i in issue.rightFields) {
-                rightFields.push(issue.rightFields[i]);
+        let t = [];
+        for (let i in issue.fields) {
+            if (issue.fields[i].charAt(0) == '*') {
+                t.push(issue.fields[i].substring(1));
+                rightFields.push(issue.fields[i].substring(1));
+            } else {
+                t.push(issue.fields[i]);
             }
         }
+        issue.fields = t;
 
         let tags = {};
         let project = false;
@@ -499,10 +504,10 @@
             tags[project.tags[i].tag] = project.tags[i];
         }
 
-        function fieldRow(i) {
+        function fieldRow(i, target) {
             let h = '';
 
-            if (![ "id", "issueId", "comments", "attachments", "childrens ", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+            if (![ "id", "issueId", "comments", "attachments", "childrens ", "links", "linkedIssues", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
                 let f = false;
 
                 if (issue.fields[i].substring(0, 4) == "_cf_") {
@@ -517,12 +522,15 @@
                 }
 
                 if (f) {
-                    h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
-                    h += "<tr>";
-                    h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
-                    h += modules.tt.issueField2Html(issue.issue, issue.fields[i]);
-                    h += "<td>";
-                    h += "</tr>";
+                    let x = modules.tt.issueField2Html(issue.issue, issue.fields[i], undefined, target);
+                    if (x !== null) {
+                        h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
+                        h += "<tr>";
+                        h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
+                        h += x;
+                        h += "</td>";
+                        h += "</tr>";
+                    }
                 }
             }
 
@@ -550,6 +558,7 @@
             "saDelete",
             "saSubIssue",
             "saCoordinate",
+            "saLink",
         ];
 
         if (!isEmpty(issue.actions)) {
@@ -577,14 +586,8 @@
                 } else {
                     h += `<span class="hoverable text-primary mr-3 ttIssueAction">${la}</span>`;
                 }
-                if (issue.showJournal) {
-                    h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
-                }
             } else
             if (t < Object.keys(issue.actions).length) {
-                if (issue.showJournal) {
-                    h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
-                }
                 h += `<span class="dropdown">`;
                 h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
@@ -619,6 +622,11 @@
                 h += `</ul></span>`;
             }
         }
+
+        if (issue.showJournal) {
+            h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
+        }
+
         h += "</div>";
         h += "</td>";
         h += "<td style='text-align: right;' class='pr-2'>";
@@ -661,7 +669,7 @@
         h += "<table style='width: 100%;'>";
         for (let i in issue.fields) {
             if (!rightFields.includes(issue.fields[i])) {
-                h += fieldRow(i);
+                h += fieldRow(i, "left");
             }
         }
         h += "</table>";
@@ -670,12 +678,13 @@
         h += "<table style='width: 300px;'>";
         for (let i in issue.fields) {
             if (rightFields.includes(issue.fields[i])) {
-                h += fieldRow(i);
+                h += fieldRow(i, "right");
             }
         }
         h += "</table>";
         h += "</td>";
         h += "</tr>";
+        
         let members = {};
 
         for (let i in modules.users.meta) {
@@ -702,6 +711,7 @@
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += "<a class='hoverable' href='" + lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token")) + "' target='_blank'>";
                 if (issue.issue.attachments[i].metadata.type.indexOf("image/") == 0) {
+                    h += $.trim(issue.issue.attachments[i].filename) + "<br />";
                     h += `<img src="${lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"))}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
                 } else {
                     h += $.trim(issue.issue.attachments[i].filename);
@@ -715,25 +725,41 @@
 
         if (issue.issue.childrens && issue.issue.childrens.issues && Object.keys(issue.issue.childrens.issues).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subIssues")}' style="font-size: 11pt;"/></td></tr>`;
+            h += "<tr>";
+            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+            h += "<table>";
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
-                h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
-                h += "<div>";
-                h += `<span class='mr-2 text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</span>`;
-                h += ttDate(issue.issue.childrens.issues[i].created, true);
-                h += "<span class='ml-2'>";
-                h += modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author");
-                h += "</span>";
-                h += "<span class='ml-2'>";
-                h += issue.issue.childrens.issues[i].subject;
-                h += "</span>";
-                h += "<span class='ml-2'>";
-                h += modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status");
-                h += "</span>";
-                h += "</div>";
-                h += "</td>";
+                h += `<td class='text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</td>`;
+                h += `<td class='pl-2'>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "left")}</td>`;
+                h += `<td class='pl-2'>${issue.issue.childrens.issues[i].subject}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "left")}</td>`;
                 h += "</tr>";
             }
+            h += "</table>";
+            h += "</td>";
+            h += "</tr>";
+        }
+
+        if (issue.issue.linkedIssues && issue.issue.linkedIssues.issues && Object.keys(issue.issue.linkedIssues.issues).length) {
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.links")}' style="font-size: 11pt;"/></td></tr>`;
+            h += "<tr>";
+            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+            h += "<table>";
+            for (let i in issue.issue.linkedIssues.issues) {
+                h += "<tr>";
+                h += `<td class='text-bold hoverable ttIssue'>${issue.issue.linkedIssues.issues[i].issueId}</td>`;
+                h += `<td class='pl-2'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "left")}</td>`;
+                h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
+                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "left")}</td>`;
+                h += `<td class='pl-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}'></i></td>`;
+                h += "</tr>";
+            }
+            h += "</table>";
+            h += "</td>";
+            h += "</tr>";
         }
 
         h += "</table>";
@@ -782,6 +808,14 @@
         });
 
         $(".ttJournal").off("click").on("click", () => {
+            function jShow(v) {
+                if (typeof v == "undefined") {
+                    return false;
+                } else {
+                    return v && v != null && v != "&nbsp;";
+                }
+            }
+
             if ($(".ttJournal").text() == i18n("tt.journal")) {
                 loadingStart();
                 GET("tt", "journal", issue.issue.issueId).
@@ -791,9 +825,16 @@
                     let h = '';
                     h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
                     let jf = true;
+                    let c = 1;
                     for (let i in response.journal) {
+                        let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
+                        let n = response.journal[i].new && typeof response.journal[i].new.length == 'undefined';
+                        if (!o && !n) {
+                            continue;
+                        }
                         let action = response.journal[i].action.split("#")[0];
                         let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
+                        let sep = [ "modifyIssue", "modifyComment" ].includes(action.split("#")[0]) ? "<i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i>" : "&nbsp;";
                         h += "<tr>";
                         if (jf) {
                             jf = false;
@@ -802,7 +843,8 @@
                             h += "<td class='pl-1 pt-3' style='font-size: 14px;' colspan='4'>";
                         }
                         h += "<div>";
-                        h += "#" + (parseInt(i) + 1) + " ";
+                        h += "#" + c + " ";
+                        c++;
                         h += ttDate(response.journal[i].date);
                         h += "<span class='ml-2 text-info text-bold'>";
                         h += members[response.journal[i].login]?members[response.journal[i].login]:response.journal[i].login;
@@ -813,7 +855,7 @@
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
-                        if (response.journal[i].old && response.journal[i].new) {
+                        if (o && n) {
                             let k = Object.keys(response.journal[i].old);
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
@@ -823,16 +865,16 @@
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]] ? response.journal[i].old[k[j]] : false);
+                                h += jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
                                 h += "</td>";
-                                h += "<td class='pl-2 td-journal'><i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i></td>";
+                                h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]] ? response.journal[i].new[k[j]] : false);
+                                h += jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;";
                                 h += "</td>";
                                 h += "</tr>";
                             }
                         }
-                        if (!response.journal[i].old && response.journal[i].new) {
+                        if (!o && n) {
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
@@ -840,13 +882,21 @@
                                 h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
-                                h += "<td class='pl-2 td-journal' style='width: 100%;' colspan='3'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]]);
-                                h += "</td>";
+                                if (sep == "&nbsp;") {
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;' colspan='3'>";
+                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
+                                    h += "</td>";
+                                } else {
+                                    h += "<td class='pl-2 td-journal'>&nbsp;</td>";
+                                    h += "<td class='pl-2 td-journal'>" + sep + "</td>";
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
+                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
+                                    h += "</td>";
+                                }
                                 h += "</tr>";
                             }
                         }
-                        if (response.journal[i].old && !response.journal[i].new) {
+                        if (o && !n) {
                             let k = Object.keys(response.journal[i].old);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
@@ -854,15 +904,16 @@
                                 h += "<td class='pl-2 td-journal'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
-                                h += "<td class='pl-2 td-journal' style='width: 100%;' colspan='3'>";
-                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]]);
+                                h += "<td class='pl-2 td-journal'>";
+                                h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal");
                                 h += "</td>";
+                                h += "<td class='pl-2 td-journal'>" + sep + "</td>";
+                                h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
                                 h += "</tr>";
                             }
                         }
                     }
                     $("#issueJournal").html(h).show();
-                    window.scrollTo(0, document.body.scrollHeight);
                     $(".ttIssue").off("click").on("click", function () {
                         location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
                     });
@@ -925,6 +976,7 @@
                     loadingStart();
                     POST("tt", "comment", false, result).
                     fail(FAIL).
+                    fail(loadingDone).
                     done(() => {
                         modules.tt.route({
                             issue: issue.issue.issueId,
@@ -933,8 +985,7 @@
                             count: count,
                             search: search,
                         });
-                    }).
-                    always(loadingDone);
+                    });
                 },
             }).show();
         });
@@ -987,6 +1038,7 @@
                         loadingStart();
                         DELETE("tt", "comment", false, result).
                         fail(FAIL).
+                        fail(loadingDone).
                         done(() => {
                             modules.tt.route({
                                 issue: issue.issue.issueId,
@@ -995,12 +1047,12 @@
                                 count: count,
                                 search: search,
                             });
-                        }).
-                        always(loadingDone);
+                        });
                     } else {
                         loadingStart();
                         PUT("tt", "comment", false, result).
                         fail(FAIL).
+                        fail(loadingDone).
                         done(() => {
                             modules.tt.route({
                                 issue: issue.issue.issueId,
@@ -1009,8 +1061,7 @@
                                 count: count,
                                 search: search,
                             });
-                        }).
-                        always(loadingDone);
+                        });
                     }
                 },
             }).show();
@@ -1046,6 +1097,7 @@
                         loadingStart();
                         POST("tt", "file", false, result).
                         fail(FAIL).
+                        fail(lodingDone).
                         done(() => {
                             modules.tt.route({
                                 issue: issue.issue.issueId,
@@ -1054,8 +1106,7 @@
                                 count: count,
                                 search: search,
                             });
-                        }).
-                        always(loadingDone);
+                        });
                     }
                 },
             }).show();
@@ -1070,6 +1121,7 @@
                     filename: file,
                 }).
                 fail(FAIL).
+                fail(loadingDone).
                 done(() => {
                     modules.tt.route({
                         issue: issue.issue.issueId,
@@ -1078,8 +1130,7 @@
                         count: count,
                         search: search,
                     });
-                }).
-                always(loadingDone);
+                });
             });
         });
 
@@ -1090,6 +1141,7 @@
                     "action": "assignToMe"
                 }).
                 fail(FAIL).
+                fail(loadingDone).
                 done(() => {
                     modules.tt.route({
                         issue: issue.issue.issueId,
@@ -1098,18 +1150,18 @@
                         count: count,
                         search: search,
                     });
-                }).
-                always(loadingDone);
+                });
             });
         });
 
         $(".ttSaWatch").off("click").on("click", () => {
-            mConfirm(issue.issue.watchers.indexOf(lStore("_login"))?i18n("tt.confirmWatch"):i18n("tt.confirmUnWatch"), i18n("confirm"), i18n("tt.saWatch"), () => {
+            mConfirm((issue && issue.issue && issue.issue.watchers && Object.values(issue.issue.watchers).indexOf(lStore("_login")) >= 0)?i18n("tt.confirmUnWatch"):i18n("tt.confirmWatch"), i18n("confirm"), i18n("tt.saWatch"), () => {
                 loadingStart();
                 PUT("tt", "issue", issue.issue.issueId, {
                     "action": "watch"
                 }).
                 fail(FAIL).
+                fail(loadingDone).
                 done(() => {
                     modules.tt.route({
                         issue: issue.issue.issueId,
@@ -1118,8 +1170,7 @@
                         count: count,
                         search: search,
                     });
-                }).
-                always(loadingDone);
+                });
             });
         });
 
@@ -1129,14 +1180,115 @@
                 DELETE("tt", "issue", issue.issue.issueId).
                 fail(FAIL).
                 done(() => {
-                    window.location.href = "?#tt&_refresh=" + Math.random();
+                    window.location.href = "?#tt&_=" + Math.random();
                 }).
                 fail(loadingDone);
             });
         });
 
-        $(".ttSaSubIssues").off("click").on("click", () => {
+        $(".ttSaSubIssue").off("click").on("click", () => {
             modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
+        });
+
+        $(".ttSaLink").off("click").on("click", () => {
+            cardForm({
+                title: i18n("tt.saLink"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                fields: [
+                    {
+                        id: "issueId",
+                        type: "select2",
+                        title: i18n("tt.issue"),
+                        multiple: false,
+                        options: [],
+                        value: [],
+                        validate: a => {
+                            return !!a;
+                        },
+                        ajax: {
+                            delay: 1000,
+                            transport: function (params, success) {
+                                if (params.data.term) {
+                                    QUERY("tt", "issues", {
+                                        project: issue.issue.project,
+                                        filter: "#issueSearch",
+                                        skip: 0,
+                                        limit: 32768,
+                                        search: params.data.term,
+                                    }).
+                                    then(success).
+                                    fail(response => {
+                                        FAIL(response);
+                                        success({
+                                            issues: {
+                                                issues: [],
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    success({
+                                        issues: {
+                                            issues: [],
+                                        }
+                                    });
+                                }
+                            },
+                            processResults: function (data) {
+                                let suggestions = [];
+                                for (let i in data.issues.issues) {
+                                    suggestions.push({
+                                        id: data.issues.issues[i].issueId,
+                                        text: "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject,
+                                    });
+                                }
+                                return {
+                                    results: suggestions,
+                                };
+                            },
+                        },
+                    }
+                ],
+                callback: f => {
+                    loadingStart();
+                    POST("tt", "link", issue.issue.issueId, {
+                        issueId: f.issueId,
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone).
+                    done(() => {
+                        modules.tt.route({
+                            issue: issue.issue.issueId,
+                            filter: filter,
+                            index: index,
+                            count: count,
+                            search: search,
+                        });
+                    });
+                },
+            }).show();
+        });
+
+        $(".unlinkIssue").off("click").on("click", function () {
+            let issueId = $(this).attr("data-issueId");
+            mConfirm(i18n("tt.unlinkIssues", issue.issue.issueId, issueId), i18n("confirm"), i18n("yes"), () => {
+                loadingStart();
+                DELETE("tt", "link", issue.issue.issueId, {
+                    issueId: issueId,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    modules.tt.route({
+                        issue: issue.issue.issueId,
+                        filter: filter,
+                        index: index,
+                        count: count,
+                        search: search,
+                    });
+                });
+            });
         });
 
         $(".ttSaCoordinate").off("click").on("click", () => {

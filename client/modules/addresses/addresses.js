@@ -943,13 +943,13 @@
                 if (regionId == targetRegionId) {
                     modules.addresses.renderRegion(regionId);
                 } else {
-                    location.href = "?#addresses&show=region&regionId=" + targetRegionId + "&_refresh=" + Math.random();
+                    location.href = "?#addresses&show=region&regionId=" + targetRegionId + "&_=" + Math.random();
                 }
             } else {
                 if (areaId == targetAreaId) {
                     modules.addresses.renderArea(areaId);
                 } else {
-                    location.href = "?#addresses&show=area&areaId=" + targetAreaId + "&_refresh=" + Math.random();
+                    location.href = "?#addresses&show=area&areaId=" + targetAreaId + "&_=" + Math.random();
                 }
             }
         });
@@ -2738,7 +2738,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             settlementId: settlementId,
-            include: "regions,areas,settlements,streets",
+            include: "regions,areas,settlements,streets,houses",
         }, true).
         done(modules.addresses.addresses).
         done(() => {

@@ -23,6 +23,9 @@
     "setColLogins": "Указать исполнителей",
     "colLogins": "Исполнители",
     "done": "Заявки обработаны",
+    "cloneSheet": "Клонировать",
+    "confirmUnReserve": "Снять с резерва?",
+    "comment": "Комментарий",
     "methods": {
         "cs": {
             "_title": "Лист координации",
