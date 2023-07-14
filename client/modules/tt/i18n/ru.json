@@ -125,6 +125,7 @@
     "customFieldEditorDateTime": "Дата и время",
     "customFieldEditorYesNo": "Да - Нет",
     "customFieldEditorNoYes": "Нет - Да",
+    "customFieldEditorJSON": "JSON",
     "addWorkflow": "Добавить рабочий процесс",
     "statusWasChanged": "Статус изменен",
     "resolutionWasChanged": "Резолюция изменена",
