@@ -1113,7 +1113,6 @@
                             if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
                                 $issue[$field] = array_values($dumb);
                             } else {
-                                error_log(print_r($value, true));
                                 $issue[$field] = self::av($value);
                             }
                         }
