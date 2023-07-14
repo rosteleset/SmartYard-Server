@@ -1007,6 +1007,17 @@
 
             /**
              * @param $a
+             * @return boolean
+             */
+            private static function al($a) {
+                if ($a === []) {
+                    return true;
+                }
+                return array_keys($a) === range(0, count($a) - 1) || array_keys($a) === range(1, count($a));
+            }
+
+            /**
+             * @param $a
              * @return mixed
              */
             private static function av($a) {
@@ -1017,7 +1028,7 @@
                     $t = [];
                     foreach ($a as $k => $v) {
                         // Lua array?
-                        if (is_array($v) && array_key_exists("1", $v) && !array_key_exists("0", $v)) {
+                        if (is_array($v) && self::al($v)) {
                             $t[$k] = array_values($v);
                             $repeat = true;
                         } else {
