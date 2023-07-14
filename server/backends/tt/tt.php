@@ -1088,10 +1088,12 @@
                     if (!in_array($field, $validFields)) {
                         unset($issue[$field]);
                     } else {
-                        if (array_key_exists($field, $customFieldsByName) && strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
-                            $issue[$field] = array_values($dumb);
-                        } else {
-                            $issue[$field] = self::av($value);
+                        if (array_key_exists($field, $customFieldsByName)) {
+                            if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                                $issue[$field] = array_values($dumb);
+                            } else {
+                                $issue[$field] = self::av($value);
+                            }
                         }
                     }
                 }
