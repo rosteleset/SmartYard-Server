@@ -1010,21 +1010,27 @@
              * @return mixed
              */
             private static function av($a) {
+                $repeat = false;
                 if (!is_array($a) && !is_object($a)) {
                     return $a;
                 } else {
                     $t = [];
                     foreach ($a as $k => $v) {
                         // Lua array?
-                        if (@$v["1"]) {
-                            $t[] = self::av($v);
+                        if (is_array($v) && array_key_exists("1", $v) && !array_key_exists("0", $v)) {
+                            $t[$k] = array_values($v);
+                            $repeat = true;
                         } else {
                             $t[$k] = $v;
                         }
                     }
-                    return $t;
+                    if ($repeat) {
+                        return self::av($t);
+                    } else {
+                        return $t;
+                    }
                 }
-            } 
+            }
 
             /**
              * @param $issue
