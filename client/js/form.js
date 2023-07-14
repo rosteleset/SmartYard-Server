@@ -136,6 +136,7 @@ function cardForm(params) {
         }
 
         first = "";
+        let height = 0;
 
         switch (params.fields[i].type) {
             case "select":
@@ -240,13 +241,14 @@ function cardForm(params) {
                 break;
 
             case "code":
-                let height = params.fields[i].height?params.fields[i].height:400;
+            case "json":
+                height = params.fields[i].height?params.fields[i].height:400;
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
                 h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}" rows="5" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
                 h += `</pre>`;
                 h += `</div>`;
                 break;
-
+        
             case "text":
             case "email":
             case "number":
@@ -370,9 +372,15 @@ function cardForm(params) {
                 }
 
             case "code":
-                let code = $.trim(params.fields[i].editor.getValue());
-                return code;
-
+                return $.trim(params.fields[i].editor.getValue());
+    
+            case "json":
+                try {
+                    return JSON.parse($.trim(params.fields[i].editor.getValue()));
+                } catch (e) {
+                    return false;
+                }
+        
             case "files":
                 return files[_prefix + params.fields[i].id];
         }
@@ -416,6 +424,7 @@ function cardForm(params) {
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).next().addClass("border-color-invalid");
                         break;
                     case "code":
+                    case "json":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
                         break;
                     default:
@@ -629,6 +638,18 @@ function cardForm(params) {
             params.fields[i].editor = editor;
             if (params.fields[i].value) {
                 editor.setValue(params.fields[i].value, -1);
+                editor.clearSelection();
+            }
+            editor.setFontSize(14);
+        }
+
+        if (params.fields[i].type === "json") {
+            let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/json");
+            params.fields[i].editor = editor;
+            if (params.fields[i].value) {
+                editor.setValue(JSON.stringify(params.fields[i].value, null, 4), -1);
                 editor.clearSelection();
             }
             editor.setFontSize(14);

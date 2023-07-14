@@ -1001,6 +1001,10 @@
                                 id: "noyes",
                                 text: i18n("tt.customFieldEditorNoYes"),
                             },
+                            {
+                                id: "json",
+                                text: i18n("tt.customFieldEditorJSON"),
+                            },
                         ],
                         hidden: cf.type !== "text",
                     },
@@ -2538,6 +2542,9 @@
                                     break;
                                 case "noyes":
                                     editor = i18n("tt.customFieldEditorNoYes");
+                                    break;
+                                case "json":
+                                    editor = i18n("tt.customFieldEditorJSON");
                                     break;
                             }
                         }

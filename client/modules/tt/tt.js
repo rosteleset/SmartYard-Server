@@ -512,7 +512,7 @@
                                 prefferredValue = 0;
                             }
                             
-                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes" ].indexOf(cf.editor) < 0) {
+                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
 
@@ -886,6 +886,10 @@
                                 val = parseInt(val)?i18n("yes"):i18n("no");
                                 break;
 
+                            case "json":
+                                val = nl2br(JSON.stringify(val, null, 4));
+                                break;
+                                
                             case "datetime-local":
                                 val = ttDate(val);
                                 break;
