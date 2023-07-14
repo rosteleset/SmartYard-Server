@@ -861,7 +861,7 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 let oo = jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
-                                let nn = jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;"
+                                let nn = jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;";
                                 if (oo == nn) {
                                     continue;
                                 }
