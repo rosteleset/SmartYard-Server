@@ -1016,7 +1016,7 @@
                     $t = [];
                     foreach ($a as $k => $v) {
                         // Lua array?
-                        if ($k === "1") {
+                        if (@$v["1"]) {
                             $t[] = self::av($v);
                         } else {
                             $t[$k] = $v;
