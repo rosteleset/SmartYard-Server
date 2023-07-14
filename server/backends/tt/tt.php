@@ -1013,9 +1013,17 @@
                 if ($a === []) {
                     return true;
                 }
-                return array_keys($a) === range(0, count($a) - 1) || array_keys($a) === range(1, count($a));
+                return array_keys($a) === range(0, count($a) - 1);
             }
-
+            
+            /**
+             * @param $a
+             * @return boolean
+             */
+            private static function an($a){
+                return ctype_digit(implode('', array_keys($a)));
+            }
+            
             /**
              * @param $a
              * @return mixed
@@ -1026,20 +1034,16 @@
                     return $a;
                 } else {
                     $t = [];
-                    foreach ($a as $k => $v) {
-                        // Lua array?
-                        if (is_array($v) && self::al($v)) {
-                            $t[$k] = array_values($v);
-                            $repeat = true;
-                        } else {
-                            $t[$k] = $v;
+                    if (self::an($a)) {
+                        foreach ($a as $k => $v) {
+                            $t[] = self::av($v);
+                        }
+                    } else {
+                        foreach ($a as $k => $v) {
+                            $t[$k] = self::av($v);
                         }
                     }
-                    if ($repeat) {
-                        return self::av($t);
-                    } else {
-                        return $t;
-                    }
+                    return $t;
                 }
             }
 
