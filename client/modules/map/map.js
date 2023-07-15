@@ -9,7 +9,7 @@
     route: function (params) {
         let height = $(window).height() - mainFormTop;
 
-        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px;' class='mt-2'></div>`);
+        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6;' class='mt-2'></div>`);
         
         modules.map.map = L.map('mapContainer').setView([51.505, -0.09], 13);
 
