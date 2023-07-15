@@ -2014,9 +2014,7 @@
         loadingStart();
         GET("tt", "workflow", workflow, true).
         done(w => {
-            // TODO f..ck!
-            let top = 75;
-            let height = $(window).height() - top;
+            let height = $(window).height() - mainFormTop;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
@@ -2167,9 +2165,7 @@
         loadingStart();
         GET("tt", "lib", lib, true).
         done(l => {
-            // TODO f..ck!
-            let top = 75;
-            let height = $(window).height() - top;
+            let height = $(window).height() - mainFormTop;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="libEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
@@ -2605,9 +2601,7 @@
                 } catch (_) {
                     //
                 }
-                // TODO f..ck!
-                let top = 75;
-                let height = $(window).height() - top;
+                let height = $(window).height() - mainFormTop;
                 let h = '';
                 h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
                 h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
@@ -3175,9 +3169,7 @@
                     break;
                 }
             }
-            // TODO f..ck!
-            let top = 75;
-            let height = $(window).height() - top;
+            let height = $(window).height() - mainFormTop;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="viewerEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
