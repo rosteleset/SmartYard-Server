@@ -4,7 +4,7 @@
         moduleLoaded("map", this);
     },
 
-    render: function (params) {
+    route: function (params) {
         loadingDone();
     },
 }).init();
