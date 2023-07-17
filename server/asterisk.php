@@ -318,19 +318,11 @@ if ($path && $path[0] == '/') {
 
 $path = explode("/", $path);
 
-$logger->debug('Request', ['path' => $path]);
-
 switch ($path[0]) {
     case "aors":
     case "auths":
     case "endpoints":
-        if (@$_POST["id"]) {
-            $response = paramsToResponse(getExtension($_POST["id"], $path[0]));
-
-            echo $response;
-
-            $logger->debug('Get aors, auths, endpoints', ['response' => $response]);
-        }
+        if (@$_POST["id"]) echo paramsToResponse(getExtension($_POST["id"], $path[0]));
         break;
 
     case "extensions":
@@ -350,14 +342,12 @@ switch ($path[0]) {
             case "autoopen":
                 $households = loadBackend("households");
 
-                //TODO
-                // add checking for false, if object doesn't exists
-
                 $flat = $households->getFlat((int)$params);
 
                 $rabbit = (int)$flat["whiteRabbit"];
+                $result = $flat["autoOpen"] > time() || ($rabbit && $flat["lastOpened"] + $rabbit * 60 > time());
 
-                echo json_encode($flat["autoOpen"] > time() || ($rabbit && $flat["lastOpened"] + $rabbit * 60 > time()));
+                echo json_encode($result);
 
                 break;
 
@@ -392,11 +382,7 @@ switch ($path[0]) {
             case "domophone":
                 $households = loadBackend("households");
 
-                $intercom = $households->getDomophone((int)$params);
-
-                echo json_encode($intercom);
-
-                $logger->debug('Send intercom', ['domophone' => $intercom, 'params' => $params]);
+                echo json_encode($households->getDomophone((int)$params));
 
                 break;
 
@@ -410,8 +396,6 @@ switch ($path[0]) {
                 } else {
                     echo json_encode(false);
                 }
-
-                $logger->debug('Send entrance', ['entrance' => $entrances, 'params' => $params]);
 
                 break;
 
@@ -462,6 +446,7 @@ switch ($path[0]) {
             case "push":
                 $isdn = loadBackend("isdn");
                 $sip = loadBackend("sip");
+
                 $server = $sip->server("extension", $params["extension"]);
 
                 $params = [
@@ -483,6 +468,7 @@ switch ($path[0]) {
                 ];
 
                 $stun = $sip->stun($params["extension"]);
+
                 if ($stun) {
                     $params["stun"] = $stun;
                     $params["stunTransport"] = "udp";
@@ -494,5 +480,6 @@ switch ($path[0]) {
 
                 break;
         }
+
         break;
 }
