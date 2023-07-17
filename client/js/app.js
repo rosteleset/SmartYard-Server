@@ -1,6 +1,8 @@
 const modules = {};
 const moduleLoadQueue = [];
 const loadingProgress = new ldBar("#loadingProgress");
+// TODO f..ck!
+const mainFormTop = 75;
 
 var lastHash = false;
 var currentPage = false;
@@ -1252,10 +1254,12 @@ $(document).on('select2:open', () => {
   
 $(window).off("resize").on("resize", () => {
     if ($("#editorContainer").length) {
-        // TODO f..ck!
-        let top = 75;
-        let height = $(window).height() - top;
+        let height = $(window).height() - mainFormTop;
         $("#editorContainer").css("height", height + "px");
+    }
+    if ($("#mapContainer").length) {
+        let height = $(window).height() - mainFormTop;
+        $("#mapContainer").css("height", height + "px");
     }
 });
 

@@ -11,5 +11,8 @@
         "v1_tasks.sql",
         "v1_plog.sql",
         "v1_frs.sql"
+    ],
+    "2": [
+        "v2_addresses.sql"
     ]
 }
