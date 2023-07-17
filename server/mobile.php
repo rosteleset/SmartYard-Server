@@ -2,7 +2,7 @@
 
 mb_internal_encoding("UTF-8");
 
-require_once "logger/logger.php";
+require_once "logger/Logger.php";
 
 require_once "backends/backend.php";
 require_once "utils/loader.php";
