@@ -1,5 +1,7 @@
 <?php
 
+use logger\Logger;
+
 mb_internal_encoding("UTF-8");
 
 require_once "logger/Logger.php";
@@ -286,7 +288,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $response_data_source = 'db';
                 $response_cache_ttl = 60;
                 header("X-Dm-Api-Data-Source: $response_data_source");
-                require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+
+                try {
+                    require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+                } catch (Throwable $throwable) {
+                    Logger::channel('mobile')->error('Error handle post request' . PHP_EOL . $throwable);
+                }
             } else {
                 if (array_key_exists('X-Dm-Api-Refresh', apache_request_headers())) {
                     // $redis->incr('cache-force-miss');
@@ -296,10 +303,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $response_data_source = 'db';
                 $response_cache_ttl = 60;
                 header("X-Dm-Api-Data-Source: $response_data_source");
-                require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+
+                try {
+                    require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+                } catch (Exception $e) {
+                    Logger::channel('mobile')->error('Error handle post request' . PHP_EOL . $e);
+                }
             }
         }
     }
+
     response(405);
 }
 
@@ -309,7 +322,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $module = $m[2];
         $method = $m[3];
         $param = $m[4];
-        require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+
+        try {
+            require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+        } catch (Throwable $throwable) {
+            Logger::channel('mobile')->error('Error handle get request' . PHP_EOL . $throwable);
+        }
     }
 
 }

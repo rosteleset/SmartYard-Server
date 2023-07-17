@@ -322,7 +322,13 @@ switch ($path[0]) {
     case "aors":
     case "auths":
     case "endpoints":
-        if (@$_POST["id"]) echo paramsToResponse(getExtension($_POST["id"], $path[0]));
+        if (@$_POST["id"]) {
+            $result = paramsToResponse(getExtension($_POST["id"], $path[0]));
+
+            echo $result;
+
+            $logger->debug('Get aors, auths, endpoints', ['result' => $result, 'params' => $path[0]]);
+        }
         break;
 
     case "extensions":
@@ -349,40 +355,62 @@ switch ($path[0]) {
 
                 echo json_encode($result);
 
+                $logger->debug('Get auto open', ['result' => $result, 'params' => $params]);
+
                 break;
 
             case "flat":
                 $households = loadBackend("households");
 
-                echo json_encode($households->getFlat((int)$params));
+                $flat = $households->getFlat((int)$params);
+
+                echo json_encode($flat);
+
+                $logger->debug('Get flat', ['flat' => $flat, 'params' => $params]);
 
                 break;
 
             case "flatIdByPrefix":
                 $households = loadBackend("households");
 
-                echo json_encode($households->getFlats("flatIdByPrefix", $params));
+                $apartment = $households->getFlats("flatIdByPrefix", $params);
+
+                echo json_encode($apartment);
+
+                $logger->debug('Get apartment', ['apartment' => $apartment, 'params' => $params]);
 
                 break;
 
             case "apartment":
                 $households = loadBackend("households");
 
-                echo json_encode($households->getFlats("apartment", $params));
+                $apartment = $households->getFlats("apartment", $params);
+
+                echo json_encode($apartment);
+
+                $logger->debug('Get apartment', ['apartment' => $apartment, 'params' => $params]);
 
                 break;
 
             case "subscribers":
                 $households = loadBackend("households");
 
-                echo json_encode($households->getSubscribers("flatId", (int)$params));
+                $flat = $households->getSubscribers("flatId", (int)$params);
+
+                echo json_encode($flat);
+
+                $logger->debug('Get flat', ['flat' => $flat, 'params' => $params]);
 
                 break;
 
             case "domophone":
                 $households = loadBackend("households");
 
-                echo json_encode($households->getDomophone((int)$params));
+                $domophone = $households->getDomophone((int)$params);
+
+                echo json_encode($domophone);
+
+                $logger->debug('Get domophone', ['domophone' => $domophone, 'params' => $params]);
 
                 break;
 
@@ -396,6 +424,8 @@ switch ($path[0]) {
                 } else {
                     echo json_encode(false);
                 }
+
+                $logger->debug('Get entrance', ['entrances' => $entrances, 'params' => $params]);
 
                 break;
 
