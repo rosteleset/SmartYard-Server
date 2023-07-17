@@ -20,7 +20,7 @@ namespace backends\isdn {
         {
             $idsn = $this->config['backends']['isdn'];
 
-            Logger::channel('notification')->debug('Send notification to ' . $idsn['endpoint'], ['push' => $push]);
+            Logger::channel('notification')->debug('Send notification via Intercomtel', ['push' => $push]);
 
             $request = curl_init($idsn['endpoint'] . '/api/v1/external/notification');
 
