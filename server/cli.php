@@ -2,6 +2,8 @@
 
 // command line client
 
+use logger\Logger;
+
 chdir(__DIR__);
 
     require_once "logger/Logger.php";
@@ -493,6 +495,8 @@ chdir(__DIR__);
     if (count($args) == 1 && array_key_exists('--clear-config', $args) && !isset($args['----clear-config'])) {
         if (file_exists('cache/config.php'))
             unlink('cache/config.php');
+
+        Logger::channel()->debug('Clear config cache');
 
         exit(0);
     }
