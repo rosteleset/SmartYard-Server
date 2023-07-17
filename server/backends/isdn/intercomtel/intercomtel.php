@@ -5,6 +5,9 @@
  */
 
 namespace backends\isdn {
+
+    use logger\Logger;
+
     /**
      * Intercomtel variant of flash calls and sms sending
      */
@@ -16,6 +19,8 @@ namespace backends\isdn {
         function push($push)
         {
             $idsn = $this->config['backends']['isdn'];
+
+            Logger::channel('notification')->debug('Send notification to ' . $idsn['endpoint'], ['push' => $push]);
 
             $request = curl_init($idsn['endpoint'] . '/api/v1/external/notification');
 

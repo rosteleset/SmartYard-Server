@@ -1,6 +1,8 @@
 <?php
     mb_internal_encoding("UTF-8");
 
+    require_once "logger/logger.php";
+
     require_once "backends/backend.php";
     require_once "utils/loader.php";
     require_once "utils/db_ext.php";
