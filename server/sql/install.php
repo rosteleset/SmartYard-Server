@@ -25,7 +25,7 @@
                 continue;
             }
 
-            echo "upgradins to version $v\n";
+            echo "upgrading to version $v\n";
 
             try {
                 foreach ($steps as $step) {
