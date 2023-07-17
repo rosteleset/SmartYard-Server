@@ -318,6 +318,8 @@ if ($path && $path[0] == '/') {
 
 $path = explode("/", $path);
 
+$logger->debug('Request', ['path' => $path]);
+
 switch ($path[0]) {
     case "aors":
     case "auths":
