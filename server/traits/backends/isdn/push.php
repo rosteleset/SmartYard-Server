@@ -5,9 +5,6 @@
  */
 
 namespace backends\isdn {
-
-    use logger\Logger;
-
     /**
      * teledome trait (common part)
      */
@@ -30,8 +27,6 @@ namespace backends\isdn {
             if ($query) {
                 $query = substr($query, 0, -1);
             }
-
-            Logger::channel('notification')->debug('Send push via Lanta', ['push' => $push]);
 
             $result = trim(file_get_contents($this->config["backends"]["isdn"]['endpoint'] . "/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["secret"] . "&" . $query));
 

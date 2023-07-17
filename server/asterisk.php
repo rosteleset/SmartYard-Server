@@ -384,7 +384,11 @@ switch ($path[0]) {
             case "domophone":
                 $households = loadBackend("households");
 
-                echo json_encode($households->getDomophone((int)$params));
+                $intercom = $households->getDomophone((int)$params);
+
+                echo json_encode($intercom);
+
+                $logger->debug('Send intercom', ['domophone' => $intercom, 'params' => $params]);
 
                 break;
 
@@ -398,6 +402,8 @@ switch ($path[0]) {
                 } else {
                     echo json_encode(false);
                 }
+
+                $logger->debug('Send entrance', ['entrance' => $entrances, 'params' => $params]);
 
                 break;
 
@@ -474,10 +480,11 @@ switch ($path[0]) {
                     $params["stunTransport"] = "udp";
                 }
 
+                $logger->debug('Send push', ['push' => $params]);
+
                 $isdn->push($params);
 
                 break;
         }
         break;
 }
-
