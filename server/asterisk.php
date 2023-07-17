@@ -322,7 +322,13 @@ switch ($path[0]) {
     case "aors":
     case "auths":
     case "endpoints":
-        if (@$_POST["id"]) echo paramsToResponse(getExtension($_POST["id"], $path[0]));
+        if (@$_POST["id"]) {
+            $response = paramsToResponse(getExtension($_POST["id"], $path[0]));
+
+            echo $response;
+
+            $logger->debug('Get aors, auths, endpoints', ['response' => $response]);
+        }
         break;
 
     case "extensions":
