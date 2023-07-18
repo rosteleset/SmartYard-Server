@@ -32,7 +32,7 @@ namespace backends\isdn {
 
             curl_close($request);
 
-            Logger::channel('notification')->debug('Send notification via Intercomtel ' . $idsn['endpoint'] . '/api/v1/external/notification', ['response' => $response]);
+            Logger::channel('notification')->debug('Send notification via Intercomtel ' . $idsn['endpoint'] . '/api/v1/external/notification', json_decode($response, true));
 
             return false;
         }
