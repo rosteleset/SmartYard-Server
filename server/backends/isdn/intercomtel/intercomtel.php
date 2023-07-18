@@ -26,14 +26,15 @@ namespace backends\isdn {
             curl_setopt($request, CURLOPT_USERPWD, $idsn['secret']);
             curl_setopt($request, CURLOPT_POSTFIELDS, json_encode($push, JSON_UNESCAPED_UNICODE));
             curl_setopt($request, CURLOPT_POST, 1);
+            curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
 
             $response = curl_exec($request);
 
             curl_close($request);
 
-            Logger::channel('notification')->debug('Send notification via Intercomtel', ['push' => $push, 'response' => $response]);
+            Logger::channel('notification')->debug('Send notification via Intercomtel', ['response' => $response]);
 
-            return $response;
+            return false;
         }
 
         /**
