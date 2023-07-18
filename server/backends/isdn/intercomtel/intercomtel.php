@@ -24,7 +24,7 @@ namespace backends\isdn {
 
             curl_setopt($request, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
             curl_setopt($request, CURLOPT_USERPWD, $idsn['secret']);
-            curl_setopt($request, CURLOPT_POSTFIELDS, json_decode($push));
+            curl_setopt($request, CURLOPT_POSTFIELDS, json_encode($push));
             curl_setopt($request, CURLOPT_POST, 1);
 
             $response = curl_exec($request);
