@@ -20,8 +20,6 @@ namespace backends\isdn {
         {
             $idsn = $this->config['backends']['isdn'];
 
-            Logger::channel('notification')->debug('Send notification via Intercomtel', ['push' => $push]);
-
             $request = curl_init($idsn['endpoint'] . '/api/v1/external/notification');
 
             curl_setopt($request, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
@@ -32,6 +30,8 @@ namespace backends\isdn {
             $response = curl_exec($request);
 
             curl_close($request);
+
+            Logger::channel('notification')->debug('Send notification via Intercomtel', ['push' => $push, 'response' => $response]);
 
             return $response;
         }
