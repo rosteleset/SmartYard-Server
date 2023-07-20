@@ -497,6 +497,9 @@ switch ($path[0]) {
                     "title" => i18n("sip.incomingTitle"),
                 ];
 
+                if ($params["callerId"] == "")
+                    $params["callerId"] = "WebRTC";
+
                 $stun = $sip->stun($params["extension"]);
 
                 if ($stun) {
