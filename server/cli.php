@@ -563,7 +563,7 @@ if (count($args) == 3 && array_key_exists("--plog", $args) && !isset($args["--pl
     }
 
     $plog = loadBackend("plog");
-    $result = $plog->getDetailEventsByDay($flat, $day);
+    $result = $plog->getDetailEventsByDay($flat, date('Ymd', strtotime($day)));
 
     var_dump($result);
 
