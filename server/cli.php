@@ -545,7 +545,7 @@ if ((count($args) == 1 || count($args) == 2) && array_key_exists("--plog-days", 
     }
 
     $plog = loadBackend("plog");
-    $result = $plog->getEventsDays($flat_id, false);
+    $result = $plog->getEventsDays($flat, false);
 
     var_dump($result);
 
