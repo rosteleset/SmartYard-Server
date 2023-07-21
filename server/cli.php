@@ -68,7 +68,8 @@ function usage()
             [--write-json-config]
 
         plog:
-            [--plog-days [--flat=<flat>]]
+            [--plog-days --flat=<flat>]
+            [--plog --flat=<flat> --day=<day>]
         \n";
 
     exit(1);
@@ -533,19 +534,36 @@ if (count($args) == 1 && array_key_exists('--clear-config', $args) && !isset($ar
     exit(0);
 }
 
-if ((count($args) == 1 || count($args) == 2) && array_key_exists("--plog-days", $args) && !isset($args["--plog-days"])) {
-    $flat = 0;
-
-    if (count($args) == 2) {
-        if (array_key_exists("--flat", $args) && !empty($args["--flat"])) {
-            $flat = $args["--flat"];
-        } else {
-            usage();
-        }
+if (count($args) == 2 && array_key_exists("--plog-days", $args) && !isset($args["--plog-days"])) {
+    if (array_key_exists("--flat", $args) && !empty($args["--flat"])) {
+        $flat = $args["--flat"];
+    } else {
+        usage();
     }
 
     $plog = loadBackend("plog");
     $result = $plog->getEventsDays($flat, false);
+
+    var_dump($result);
+
+    exit(0);
+}
+
+if (count($args) == 3 && array_key_exists("--plog", $args) && !isset($args["--plog"])) {
+    if (array_key_exists("--flat", $args) && !empty($args["--flat"])) {
+        $flat = $args["--flat"];
+    } else {
+        usage();
+    }
+
+    if (array_key_exists("--day", $args) && !empty($args["--day"])) {
+        $day = $args["--day"];
+    } else {
+        usage();
+    }
+
+    $plog = loadBackend("plog");
+    $result = $plog->getDetailEventsByDay($flat, $day);
 
     var_dump($result);
 
