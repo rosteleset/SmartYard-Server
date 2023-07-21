@@ -52,7 +52,7 @@
             /**
              * Получить список дней с событиями
              * @param int $flat_id идентификатор квартиры
-             * @param array $filter_events фильтр типов событий
+             * @param array|false $filter_events фильтр типов событий
              * @return false|array
              */
             abstract public function getEventsDays(int $flat_id, $filter_events);

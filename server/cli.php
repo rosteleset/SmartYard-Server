@@ -66,6 +66,9 @@ function usage()
             [--print-config]
             [--write-yaml-config]
             [--write-json-config]
+
+        plog:
+            [--plog-days [--flat=<flat>]]
         \n";
 
     exit(1);
@@ -526,6 +529,25 @@ if (count($args) == 1 && array_key_exists('--clear-config', $args) && !isset($ar
         unlink('cache/config.php');
 
     $logger->debug('Clear config cache');
+
+    exit(0);
+}
+
+if ((count($args) == 1 || count($args) == 2) && array_key_exists("--plog-days", $args) && !isset($args["--plog-days"])) {
+    $flat = 0;
+
+    if (count($args) == 2) {
+        if (array_key_exists("--flat", $args) && !empty($args["--flat"])) {
+            $flat = $args["--flat"];
+        } else {
+            usage();
+        }
+    }
+
+    $plog = loadBackend("plog");
+    $result = $plog->getEventsDays($flat_id, false);
+
+    var_dump($result);
 
     exit(0);
 }
