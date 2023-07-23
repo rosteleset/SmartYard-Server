@@ -289,6 +289,7 @@ function forgot() {
 
 function whoAmI(force) {
     return GET("authentication", "whoAmI", false, force).done(_me => {
+        console.log(_me);
         if (_me && _me.user) {
             $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
             myself.uid = _me.user.uid;
