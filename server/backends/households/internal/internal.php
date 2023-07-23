@@ -563,6 +563,10 @@
                                 }
                             }
                         }
+                        $queue = loadBackend("queue");
+                        if ($queue) {
+                            $queue->changed("flat", $flatId);
+                        }
                         return true;
                     }
                 } else {
