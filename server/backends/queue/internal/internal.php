@@ -39,6 +39,10 @@
                             $domophones = $households->getDomophones($objectType, $objectId);
                         }
                         break;
+
+                    case "key":
+                        // TODO
+                        break;
                 }
 
                 foreach ($domophones as $domophone) {
