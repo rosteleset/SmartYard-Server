@@ -279,7 +279,7 @@
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
 
-        init_db();
+        initDB();
         startup();
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";

@@ -6,7 +6,7 @@
      * @return void
      */
 
-    function init_db() {
+    function initDB() {
         global $config, $db, $version;
 
         $install = json_decode(file_get_contents("sql/install.json"), true);
