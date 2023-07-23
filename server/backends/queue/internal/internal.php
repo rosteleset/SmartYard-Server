@@ -81,14 +81,23 @@
 
                 $pid = getmypid();
 
-                $domophones = $this->db->get("select task_change_id, house_domophone_id, first_time from tasks_changes left join houses_domophones on tasks_changes.object_id = houses_domophones.house_domophone_id where object_type = 'domophone' limit 25", [], [
+                $households = loadBackend("households");
+
+                $tasks = $this->db->get(
+                    "select
+                        task_change_id,
+                        object_id
+                    from
+                        tasks_changes
+                    where object_type = 'domophone' limit 25",
+                [], [
                     'task_change_id' => 'taskChangeId',
-                    'house_domophone_id' => 'domophoneId',
-                    'first_time' => 'firstTime',
+                    'object_id' => 'domophoneId'
                 ]);
 
-                foreach ($domophones as $domophone) {
-                    $this->db->modify("delete from tasks_changes where task_change_id = ${domophone['taskChangeId']}");
+                foreach ($tasks as $task) {
+                    $domophone = $households->getDomophone($task["domophoneId"]);
+                    $this->db->modify("delete from tasks_changes where task_change_id = ${task['taskChangeId']}");
                     if ((int)$domophone['firstTime']) {
                         shell_exec("{PHP_BINARY} {$script_filename} --autoconfigure-domophone={$domophone["domophoneId"]} --first-time --parent-pid=$pid 1>/dev/null 2>&1 &");
                     } else {
