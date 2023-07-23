@@ -327,11 +327,19 @@
                     return false;
                 }
 
-                return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
+                $r = $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
                     ":address_house_id" => $houseId,
                     ":house_entrance_id" => $entranceId,
                     ":prefix" => $prefix,
                 ]);
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("entrance", $entranceId);
+                    $queue->changed("house", $houseId);
+                }
+
+
             }
 
             /**
@@ -365,24 +373,28 @@
                     ":prefix" => $prefix,
                 ]) !== false;
 
-                return
-                    $r1
-                    and
-                    $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, cms_levels = :cms_levels where house_entrance_id = $entranceId", [
-                        ":entrance_type" => $entranceType,
-                        ":entrance" => $entrance,
-                        ":lat" => (float)$lat,
-                        ":lon" => (float)$lon,
-                        ":shared" => $shared,
-                        ":plog" => $plog,
-                        ":caller_id" => $callerId,
-                        ":house_domophone_id" => (int)$domophoneId,
-                        ":domophone_output" => (int)$domophoneOutput,
-                        ":cms" => $cms,
-                        ":cms_type" => $cmsType,
-                        ":camera_id" => (int)$cameraId ? : null,
-                        ":cms_levels" => $cmsLevels,
-                    ]) !== false;
+                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, cms_levels = :cms_levels where house_entrance_id = $entranceId", [
+                    ":entrance_type" => $entranceType,
+                    ":entrance" => $entrance,
+                    ":lat" => (float)$lat,
+                    ":lon" => (float)$lon,
+                    ":shared" => $shared,
+                    ":plog" => $plog,
+                    ":caller_id" => $callerId,
+                    ":house_domophone_id" => (int)$domophoneId,
+                    ":domophone_output" => (int)$domophoneOutput,
+                    ":cms" => $cms,
+                    ":cms_type" => $cmsType,
+                    ":camera_id" => (int)$cameraId ? : null,
+                    ":cms_levels" => $cmsLevels,
+                ]) !== false;
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("entrance", $entranceId);
+                }
+
+                return $r1 and $r2;
             }
 
             /**
@@ -392,6 +404,12 @@
             {
                 if (!checkInt($houseId) || !checkInt($entranceId)) {
                     return false;
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("entrance", $entranceId);
+                    $queue->changed("house", $houseId);
                 }
 
                 return
@@ -454,6 +472,10 @@
                                     return false;
                                 }
                             }
+                        }
+                        $queue = loadBackend("queue");
+                        if ($queue) {
+                            $queue->changed("flat", $flatId);
                         }
                         return $flatId;
                     } else {
@@ -583,6 +605,11 @@
                     return false;
                 }
 
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("flat", $flatId);
+                }
+
                 return
                     $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false
                     and
@@ -629,6 +656,11 @@
             {
                 if (!checkInt($entranceId)) {
                     return false;
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("entrance", $entranceId);
                 }
 
                 return
@@ -682,6 +714,11 @@
                         "unit" => $e["unit"],
                         "apartment" => $e["apartment"],
                     ]);
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("entrance", $entranceId);
                 }
 
                 return $result;
@@ -820,7 +857,6 @@
                 ]);
 
                 $queue = loadBackend("queue");
-
                 if ($queue) {
                     $queue->changed("domophone", $domophoneId);
                 }
@@ -895,7 +931,6 @@
                 ]);
 
                 $queue = loadBackend("queue");
-
                 if ($queue) {
                     $queue->changed("domophone", $domophoneId);
                 }
@@ -924,6 +959,11 @@
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("domophone", $domophoneId);
                 }
 
                 return
@@ -1113,6 +1153,11 @@
                     }
                 }
 
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("subscriber", $subscriberId);
+                }
+
                 return $subscriberId;
             }
 
@@ -1123,6 +1168,11 @@
             {
                 if (!checkInt($subscriberId)) {
                     return false;
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("subscriber", $subscriberId);
                 }
 
                 $result = $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id = $subscriberId");
@@ -1144,6 +1194,12 @@
 
                 if (!checkInt($subscriberId)) {
                     return false;
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("flat", $flatId);
+                    $queue->changed("subscriber", $subscriberId);
                 }
 
                 return $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = :house_subscriber_id and house_flat_id = :house_flat_id", [
