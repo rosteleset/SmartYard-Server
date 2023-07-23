@@ -93,12 +93,16 @@
                 ]);
 
                 foreach ($tasks as $task) {
-                    $domophone = $households->getDomophone($task["domophoneId"]);
                     $this->db->modify("delete from tasks_changes where task_change_id = ${task['taskChangeId']}");
-                    if ((int)$domophone['firstTime']) {
-                        shell_exec("{PHP_BINARY} {$script_filename} --autoconfigure-domophone={$domophone["domophoneId"]} --first-time --parent-pid=$pid 1>/dev/null 2>&1 &");
-                    } else {
-                        shell_exec("{PHP_BINARY} {$script_filename} --autoconfigure-domophone={$domophone["domophoneId"]} --parent-pid=$pid 1>/dev/null 2>&1 &");
+
+                    $domophone = $households->getDomophone($task["domophoneId"]);
+
+                    if ($domophone) {
+                        if ((int)$domophone['firstTime']) {
+                            shell_exec("{PHP_BINARY} {$script_filename} --autoconfigure-domophone={$domophone["domophoneId"]} --first-time --parent-pid=$pid 1>/dev/null 2>&1 &");
+                        } else {
+                            shell_exec("{PHP_BINARY} {$script_filename} --autoconfigure-domophone={$domophone["domophoneId"]} --parent-pid=$pid 1>/dev/null 2>&1 &");
+                        }
                     }
                 }
 
