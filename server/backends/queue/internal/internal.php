@@ -83,14 +83,7 @@
 
                 $households = loadBackend("households");
 
-                $tasks = $this->db->get(
-                    "select
-                        task_change_id,
-                        object_id
-                    from
-                        tasks_changes
-                    where object_type = 'domophone' limit 25",
-                [], [
+                $tasks = $this->db->get("select task_change_id, object_id from tasks_changes where object_type = 'domophone' limit 25", [], [
                     'task_change_id' => 'taskChangeId',
                     'object_id' => 'domophoneId'
                 ]);
