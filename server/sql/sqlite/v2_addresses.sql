@@ -1,17 +1,17 @@
-alter table addresses_regions add column lat real;
-alter table addresses_regions add column lon real;
+ALTER TABLE addresses_regions ADD COLUMN lat real;
+ALTER TABLE addresses_regions ADD COLUMN lon real;
 
-alter table addresses_areas add column lat real;
-alter table addresses_areas add column lon real;
+ALTER TABLE addresses_areas ADD COLUMN lat real;
+ALTER TABLE addresses_areas ADD COLUMN lon real;
 
-alter table addresses_cities add column lat real;
-alter table addresses_cities add column lon real;
+ALTER TABLE addresses_cities ADD COLUMN lat real;
+ALTER TABLE addresses_cities ADD COLUMN lon real;
 
-alter table addresses_settlements add column lat real;
-alter table addresses_settlements add column lon real;
+ALTER TABLE addresses_settlements ADD COLUMN lat real;
+ALTER TABLE addresses_settlements ADD COLUMN lon real;
 
-alter table addresses_streets add column lat real;
-alter table addresses_streets add column lon real;
+ALTER TABLE addresses_streets ADD COLUMN lat real;
+ALTER TABLE addresses_streets ADD COLUMN lon real;
 
-alter table addresses_houses add column lat real;
-alter table addresses_houses add column lon real;
+ALTER TABLE addresses_houses ADD COLUMN lat real;
+ALTER TABLE addresses_houses ADD COLUMN lon real;

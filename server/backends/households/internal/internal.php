@@ -1305,22 +1305,25 @@
                     }
                 }
 
+                $r = true;
+
                 if (array_key_exists("voipEnabled", $params)) {
                     if (!checkInt($params["voipEnabled"])) {
                         setLastError("invalidParams");
-                        return false;
+                        $r = false;
                     }
 
-                    if ($this->db->modify("update houses_subscribers_mobile set voip_enabled = :voip_enabled where house_subscriber_id = $subscriberId", [ "voip_enabled" => $params["voipEnabled"] ]) === false) {
-                        return false;
-                    }
+                    $r = $this->db->modify("update houses_subscribers_mobile set voip_enabled = :voip_enabled where house_subscriber_id = $subscriberId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false;
                 }
 
-                if ($this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => time() ]) === false) {
-                    return false;
+                $r = $r && $this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => time() ]) !== false;
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("subscriber", $subscriberId);
                 }
 
-                return true;
+                return $r;
             }
 
             /**
@@ -1337,17 +1340,22 @@
                     return false;
                 }
 
+                $r = true;
+
                 foreach ($flats as $flatId => $owner) {
-                    if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
+                    $r = $r && !$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
                         "role" => $owner?0:1,
-                    ])) {
-                        return false;
-                    }
+                    ]);
                 }
 
-                return true;
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("subscriber", $subscriberId);
+                }
+
+                return $r;
             }
 
             /**
@@ -1387,12 +1395,19 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments)", [
+                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments)", [
                     "rfid" => $rfId,
                     "access_type" => $accessType,
                     "access_to" => $accessTo,
                     "comments" => $comments,
                 ]);
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed($accessType, $accessTo);
+                }
+
+                return $r;
             }
 
             /**
@@ -1403,6 +1418,11 @@
                 if (!checkInt($keyId)) {
                     setLastError("invalidParams");
                     return false;
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("key", $keyId);
                 }
 
                 return $this->db->modify("delete from houses_rfids where house_rfid_id = $keyId");
