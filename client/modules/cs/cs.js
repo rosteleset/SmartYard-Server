@@ -407,7 +407,7 @@
                                 if (modules.cs.currentSheet.sheet.data[j].col == col) {
                                     let rs;
                                     if (typeof modules.cs.currentSheet.sheet.data[j].rows === "string") {
-                                        rs = JSON.parse(JSON.stringify(response.sheet.sheet.rowsTemplates[modules.cs.currentSheet.sheet.data[j].rows]));
+                                        rs = JSON.parse(JSON.stringify(modules.cs.currentSheet.sheet.rowsTemplates[modules.cs.currentSheet.sheet.data[j].rows]));
                                     } else {
                                         rs = modules.cs.currentSheet.sheet.data[j].rows;
                                     }
