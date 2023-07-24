@@ -387,16 +387,12 @@
                     modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
                     modules.cs.currentSheet.sheet.issuesQuery.project = modules.cs.currentSheet.sheet.project;
 
-                    console.log(modules.cs.currentSheet.sheet.issuesQuery);
-    
                     POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
                     fail(FAIL).
                     fail(() => {
                         modules.cs.idle = true;
                     }).
                     done(r => {
-                        console.log(r);
-
                         for (let i in r.issues.issues) {
                             let col = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.col];
                             let row = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.row];
@@ -409,9 +405,14 @@
     
                             for (let j in modules.cs.currentSheet.sheet.data) {
                                 if (modules.cs.currentSheet.sheet.data[j].col == col) {
-                                    console.log(col, row, modules.cs.currentSheet.sheet.data[j].rows);
-                                    for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
-                                        if (modules.cs.currentSheet.sheet.data[j].rows[k] == row || start >= 0) {
+                                    let rs;
+                                    if (typeof modules.cs.currentSheet.sheet.data[j].rows === "string") {
+                                        rs = JSON.parse(JSON.stringify(response.sheet.sheet.rowsTemplates[modules.cs.currentSheet.sheet.data[j].rows]));
+                                    } else {
+                                        rs = modules.cs.currentSheet.sheet.data[j].rows;
+                                    }
+                                    for (let k in rs) {
+                                        if (rs[k] == row || start >= 0) {
                                             if (start < 0) {
                                                 start = k;
                                             }
@@ -421,7 +422,7 @@
                                                 if (!modules.cs.issuesInSheet) {
                                                     modules.cs.issuesInSheet = {};
                                                 }
-                                                let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + col + ":" + modules.cs.currentSheet.sheet.data[j].rows[k]);
+                                                let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + col + ":" + rs[k]);
                                                 if (!modules.cs.issuesInSheet[uid]) {
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
@@ -439,11 +440,7 @@
                                                 } else {
                                                     modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
                                                 }
-                                            } else {
-                                                console.log(-2);
                                             }
-                                        } else {
-                                            console.log(-1);
                                         }
                                     }
                                 }
