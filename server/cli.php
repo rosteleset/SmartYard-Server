@@ -394,6 +394,7 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
     }
 
     if ($part) {
+        $start = microtime(true) * 1000;
         $cronBackends = $config['backends'];
 
         $logger->debug('Processing cron', ['part' => $part, 'backends' => array_keys($cronBackends)]);
@@ -412,6 +413,8 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
                 }
             } else $logger->error('Backend not found', ['backend' => $backend_name, 'part' => $part]);
         }
+
+        $logger->debug('Cron done', ['ellapsed_ms' => microtime(true) * 1000 - $start]);
     } else {
         usage();
     }
