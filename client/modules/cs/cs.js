@@ -396,7 +396,7 @@
                     }).
                     done(r => {
                         console.log(r);
-                        
+
                         for (let i in r.issues.issues) {
                             let col = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.col];
                             let row = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.row];
@@ -414,6 +414,7 @@
                                             if (start < 0) {
                                                 start = k;
                                             }
+                                            console.log(k, start, cells);
                                             if (k - start < cells) {
                                                 modules.cs.issues[r.issues.issues[i].issueId] = true;
                                                 if (!modules.cs.issuesInSheet) {
