@@ -1097,13 +1097,14 @@
                         autoload: true,
                     },
                 ],
-                callback: function (result) {
+                callback: result => {
                     if (result.attachments.length) {
                         loadingStart();
                         POST("tt", "file", false, result).
                         fail(FAIL).
                         fail(lodingDone).
-                        done(() => {
+                        done(x => {
+                            console.log(x);
                             modules.tt.route({
                                 issue: issue.issue.issueId,
                                 filter: filter,
