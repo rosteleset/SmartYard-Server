@@ -42,6 +42,8 @@ namespace backends\isdn {
          */
         function sendCode($id)
         {
+            Logger::channel('intercomtel')->debug('Bad method call sendCode', ['id' => $id]);
+
             throw new \BadMethodCallException();
         }
 
@@ -58,6 +60,8 @@ namespace backends\isdn {
          */
         function checkIncoming($id)
         {
+            Logger::channel('intercomtel')->debug('Bad method call checkIncoming', ['id' => $id]);
+
             throw new \BadMethodCallException();
         }
     }
