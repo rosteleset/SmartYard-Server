@@ -409,6 +409,7 @@
     
                             for (let j in modules.cs.currentSheet.sheet.data) {
                                 if (modules.cs.currentSheet.sheet.data[j].col == col) {
+                                    console.log(row);
                                     for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
                                         if (modules.cs.currentSheet.sheet.data[j].rows[k] == row || start >= 0) {
                                             if (start < 0) {
