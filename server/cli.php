@@ -393,11 +393,12 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
         }
     }
 
-    $logger->debug('Processing cron', ['part' => $part]);
-
     if ($part) {
+        $logger->debug('Processing cron', ['part' => $part]);
+
         foreach ($config["backends"] as $backend_name => $cfg) {
             $backend = loadBackend($backend_name);
+
             if ($backend) {
                 try {
                     if (!$backend->cron($part)) {
