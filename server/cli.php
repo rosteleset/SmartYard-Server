@@ -394,9 +394,11 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
     }
 
     if ($part) {
-        $logger->debug('Processing cron', ['part' => $part, 'backends' => array_keys($config['backends'])]);
+        $cronBackends = $config['backends'];
 
-        foreach ($config["backends"] as $backend_name => $cfg) {
+        $logger->debug('Processing cron', ['part' => $part, 'backends' => array_keys($cronBackends)]);
+
+        foreach ($cronBackends as $backend_name => $cfg) {
             $backend = loadBackend($backend_name);
 
             if ($backend) {
@@ -407,8 +409,6 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
                         $logger->error('Fail', ['backend' => $backend_name, 'part' => $part]);
                 } catch (Exception $e) {
                     $logger->error('Error cron' . PHP_EOL . $e, ['backend' => $backend_name, 'part' => $part]);
-
-                    echo "$backend_name [$part] exception\n";
                 }
             } else $logger->error('Backend not found', ['backend' => $backend_name, 'part' => $part]);
         }
