@@ -1102,7 +1102,7 @@
                         loadingStart();
                         POST("tt", "file", false, result).
                         fail(FAIL).
-                        fail(lodingDone).
+                        fail(loadingDone).
                         done(x => {
                             console.log(x);
                             modules.tt.route({

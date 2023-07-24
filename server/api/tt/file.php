@@ -97,7 +97,7 @@
 
                     echo substr($body, 0, $portion);
 
-                    exit();s
+                    exit();
                 }
 
                 api::ERROR("notFound");
