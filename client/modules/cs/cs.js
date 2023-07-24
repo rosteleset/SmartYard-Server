@@ -386,6 +386,8 @@
                     modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
                     modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
                     modules.cs.currentSheet.sheet.issuesQuery.project = modules.cs.currentSheet.sheet.project;
+
+                    console.log(modules.cs.currentSheet.sheet.issuesQuery);
     
                     POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
                     fail(FAIL).
