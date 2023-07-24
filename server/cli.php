@@ -401,9 +401,10 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
 
             if ($backend) {
                 try {
-                    if (!$backend->cron($part)) {
-                        echo "$backend_name [$part] fail\n";
-                    }
+                    if ($backend->cron($part))
+                        $logger->debug('Success', ['backend' => $backend_name, 'part' => $part]);
+                    else
+                        $logger->error('Fail', ['backend' => $backend_name, 'part' => $part]);
                 } catch (Exception $e) {
                     $logger->error('Error cron' . PHP_EOL . $e, ['backend' => $backend_name, 'part' => $part]);
 
