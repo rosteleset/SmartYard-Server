@@ -146,7 +146,7 @@ function cardForm(params) {
         switch (params.fields[i].type) {
             case "select":
                 h += `<div class="input-group">`;
-                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="form-control modalFormField"`;
+                h += `<select id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="form-control modalFormField"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -176,7 +176,7 @@ function cardForm(params) {
                 } else {
                     h += `<div class="select2-secondary modalFormField">`;
                 }
-                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="form-control select2`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control select2`;
                 h += `"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
@@ -214,8 +214,8 @@ function cardForm(params) {
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
                     h += `
                         <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1)?" mb-3":""}">
-                            <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" name="${_prefix}${params.fields[i].id}" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}${params.fields[i].options[j].disabled?" disabled":""}/>
-                            <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
+                        <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}${params.fields[i].options[j].disabled?" disabled":""}/>
+                        <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
                     `;
                     if (params.fields[i].options[j].append) {
                         h += params.fields[i].options[j].append;
@@ -228,7 +228,7 @@ function cardForm(params) {
                 break;
 
             case "area":
-                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<textarea id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -237,7 +237,7 @@ function cardForm(params) {
                 break;
 
             case "rich":
-                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<textarea id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -249,7 +249,7 @@ function cardForm(params) {
             case "json":
                 height = params.fields[i].height?params.fields[i].height:400;
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
-                h += `<pre class="ace-editor form-control modalFormField" name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
+                h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}" rows="5" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
                 h += `</pre>`;
                 h += `</div>`;
                 break;
@@ -266,7 +266,7 @@ function cardForm(params) {
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
-                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<input id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -284,7 +284,7 @@ function cardForm(params) {
                 break;
 
             case "files":
-                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="form-control" multiple="multiple"></select>`;
+                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control" multiple="multiple"></select>`;
                 h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs pl-1" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}"><i class="far fa-folder-open" style="margin-right: 5px;"></i>${i18n("add")}</span><span class="text-secondary text-xs ml-2">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
                 if (params.fields[i].autoload) {
                     setTimeout(() => {
