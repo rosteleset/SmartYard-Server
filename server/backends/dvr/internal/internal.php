@@ -465,10 +465,8 @@
                 } elseif ($dvr['type'] == 'forpost') {
                     $ranges = [];
                     $duration_interval = DateInterval::createFromDateString('10 days');
-                    $ranges[] =  [
-                        [ "from" => date_sub(date_create(), $duration_interval)->getTimestamp(), "duration" => 10*24*3600 ]
-                    ];
-                    return $ranges;
+                    $ranges[] = [ "from" => date_sub(date_create(), $duration_interval)->getTimestamp(), "duration" => 10*24*3600 ];
+                    return [ [ "stream" => $channel_id, "ranges" => $ranges] ];
                 } else {
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
