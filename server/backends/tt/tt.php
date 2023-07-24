@@ -1111,7 +1111,7 @@
                     } else {
                         if (array_key_exists($field, $customFieldsByName)) {
                             if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
-                                $issue[$field] = array_values($dumb);
+                                $issue[$field] = array_values($value);
                             } else {
                                 $issue[$field] = self::av($value);
                             }
