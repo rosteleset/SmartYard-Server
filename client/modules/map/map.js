@@ -36,7 +36,6 @@
         } else {
             if (!navigator.geolocation) {
                 modules.map.map.setView([51.505, -0.09], 13);
-                L.marker([51.5, -0.09]).addTo(modules.map.map);
             } else {
                 navigator.geolocation.getCurrentPosition(success => {
                     console.log(success.coords.latitude, success.coords.longitude);
@@ -44,7 +43,6 @@
                     L.marker([success.coords.latitude, success.coords.longitude]).addTo(modules.map.map);
                 }, () => {
                     modules.map.map.setView([51.505, -0.09], 13);
-                    L.marker([51.5, -0.09]).addTo(modules.map.map);
                 });
             }
         }
