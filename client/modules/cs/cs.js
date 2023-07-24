@@ -416,7 +416,6 @@
                                             if (start < 0) {
                                                 start = k;
                                             }
-                                            console.log(k, start, cells);
                                             if (k - start < cells) {
                                                 modules.cs.issues[r.issues.issues[i].issueId] = true;
                                                 if (!modules.cs.issuesInSheet) {
