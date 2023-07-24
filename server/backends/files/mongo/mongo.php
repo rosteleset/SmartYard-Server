@@ -174,10 +174,9 @@
              */
             public function cron($part)
             {
-                $collection = "fs.files";
-                $db = $this->dbName;
-
                 if ($part == '5min') {
+                    $collection = "fs.files";
+                    $db = $this->dbName;
 
                     $cursor = $this->mongo->$db->$collection->find([ "metadata.expire" => [ '$lt' => time() ] ]);
                     foreach ($cursor as $document) {
