@@ -122,7 +122,7 @@ function startup()
                 "params" => $params,
                 "expire" => time() + 24 * 60 * 60,
             ], ["silent"]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             //
         }
     }
@@ -139,7 +139,7 @@ function shutdown()
                 "result" => $script_result,
                 "running_process_id" => $script_process_id,
             ], ["silent"]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             //
         }
     }
@@ -167,7 +167,7 @@ function check_if_pid_exists()
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             //
         }
     }
@@ -258,7 +258,7 @@ try {
     } else {
         $version = 0;
     }
-} catch (\Exception $e) {
+} catch (Exception $e) {
     $version = 0;
 }
 
@@ -399,7 +399,9 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
                     if (!$backend->cron($part)) {
                         echo "$backend_name [$part] fail\n";
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
+                    $logger->error('Error cron' . PHP_EOL . $e, ['backend' => $backend_name, 'part' => $part]);
+
                     echo "$backend_name [$part] exception\n";
                 }
             }
@@ -479,7 +481,7 @@ if (count($args) == 1 && array_key_exists("--check-backends", $args) && !isset($
                     echo "error checking backend $backend\n";
                     $all_ok = false;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 print_r($e);
                 $all_ok = false;
             }
