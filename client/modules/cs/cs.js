@@ -438,7 +438,11 @@
                                                 } else {
                                                     modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
                                                 }
+                                            } else {
+                                                console.log(-2);
                                             }
+                                        } else {
+                                            console.log(-1);
                                         }
                                     }
                                 }
