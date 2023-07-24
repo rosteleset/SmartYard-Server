@@ -1103,7 +1103,7 @@
                         POST("tt", "file", false, result).
                         fail(FAIL).
                         fail(loadingDone).
-                        done(x => {
+                        done(() => {
                             console.log(x);
                             modules.tt.route({
                                 issue: issue.issue.issueId,
