@@ -2,6 +2,7 @@
 
 // command line client
 
+use cli\Cli;
 use logger\Logger;
 
 chdir(__DIR__);

@@ -1,6 +1,9 @@
 <?php
 
 namespace PHPSTORM_META {
+
+    use cli\Cli;
+
     expectedArguments(
         \loadBackend(),
         0,
@@ -64,4 +67,5 @@ namespace PHPSTORM_META {
     );
 
     exitPoint(\response());
+    exitPoint(\usage());
 }
