@@ -395,6 +395,8 @@
                         modules.cs.idle = true;
                     }).
                     done(r => {
+                        console.log(r);
+                        
                         for (let i in r.issues.issues) {
                             let col = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.col];
                             let row = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.row];
