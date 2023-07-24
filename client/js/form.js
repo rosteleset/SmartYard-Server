@@ -312,9 +312,9 @@ function cardForm(params) {
         } else {
             h += `<td colspan="2">`;
         }
-        h += `<button type="submit" class="btn btn-primary modalFormOk">${i18n(params.apply)}</button>`;
+        h += `<button type="button" class="btn btn-primary modalFormOk">${i18n(params.apply)}</button>`;
         if (typeof params.cancel === "function") {
-            h += `<button type="cancel" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
+            h += `<button type="button" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
         }
         h += `</td>`;
         h += `</tr>`;
