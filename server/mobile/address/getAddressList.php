@@ -65,8 +65,8 @@ foreach ($subscriber['flats'] as $flat) {
         $house['doors'] = [];
     }
 
-    if (array_key_exists('flat_ids', $house)) $house['flat_ids'][] = $flat['flatId'];
-    else $house['flat_ids'] = [$flat['flatId']];
+    if (array_key_exists('flat_ids', $house)) $house['flat_ids'][$flat['flat']] = $flat['flatId'];
+    else $house['flat_ids'] = [$flat['flat'] => $flat['flatId']];
 
     $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
     $house['cctv'] = count($house['cameras']);

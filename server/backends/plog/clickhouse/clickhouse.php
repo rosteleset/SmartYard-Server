@@ -157,8 +157,6 @@ namespace backends\plog {
          */
         public function writeEventData($event_data, $flat_list = [])
         {
-            Logger::channel('clickhouse')->debug('writeEventData', ['data' => $event_data, 'flats' => $flat_list]);
-
             if (count($flat_list)) {
                 foreach ($flat_list as $flat_id) {
                     $hidden = $this->getPlogHidden($flat_id);
