@@ -388,6 +388,8 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
     foreach ($parts as $p) {
         if (in_array($p, $args)) {
             $part = $p;
+
+            break;
         }
     }
 
@@ -406,7 +408,7 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
 
                     echo "$backend_name [$part] exception\n";
                 }
-            }
+            } else $logger->error('Backend not found', ['backend' => $backend_name, 'part' => $part]);
         }
     } else {
         usage();
