@@ -159,8 +159,7 @@
                         }).
                         fail(FAIL).
                         fail(loadingDone).
-                        done(x => {
-                            console.log(x);
+                        done(() => {
                             lStore("_tt_workspace", w.name);
                             modules.tt.workspaces.renderWorkspaces({
                                 workspace: w.name,
