@@ -118,7 +118,7 @@
                     foreach ($params["attachments"] as $attachment) {
                         $checksums[$attachment["name"]] = md5(base64_decode($attachment["body"]));
                     }
-                    return api::ANSWER($checksums);
+                    return api::ANSWER("checksums", $checksums);
                 } else {
                     return api::ANSWER(false, "notAcceptable");
                 }
