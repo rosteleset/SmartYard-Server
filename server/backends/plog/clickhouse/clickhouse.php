@@ -51,10 +51,15 @@ namespace backends\plog {
         public function cron($part)
         {
             if ($part === $this->cron_process_events_scheduler) {
-                echo("__process events\n");
+                $time = microtime(true) * 1000;
+
                 $this->processEvents();
+
                 $this->db->modify("delete from plog_door_open where expire < " . time());
                 $this->db->modify("delete from plog_call_done where expire < " . time());
+
+                Logger::channel('clickhouse')->debug('Processed events', ['elapsed_ms' => microtime(true) * 1000 - $time]);
+
                 return true;
             }
 
@@ -490,7 +495,11 @@ namespace backends\plog {
                     order by
                         date
                 ";
+
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
+
+            Logger::channel('clickhouse')->debug('Processing on open doors', ['count' => count($result)]);
+
             foreach ($result as $row) {
                 $event_data = [];
                 $event_id = false;
@@ -598,6 +607,9 @@ namespace backends\plog {
                         date
                 ";
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
+
+            Logger::channel('clickhouse')->debug('Processing on calls done', ['count' => count($result)]);
+
             foreach ($result as $row) {
                 $ip = $row['ip'];
                 $domophone_id = $this->getDomophoneId($row["ip"]);
