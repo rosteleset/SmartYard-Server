@@ -97,7 +97,7 @@
 
                     echo substr($body, 0, $portion);
 
-                    exit();
+                    exit();s
                 }
 
                 api::ERROR("notFound");
@@ -113,7 +113,15 @@
 
                 $success = $tt->addAttachments($params["issueId"], $params["attachments"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                if ($success) {
+                    $checksums = [];
+                    foreach ($params["attachments"] as $attachment) {
+                        $checksums[$attachment["name"]] = md5(base64_decode($attachment["body"]));
+                    }
+                    return api::ANSWER($checksums);
+                } else {
+                    return api::ANSWER(false, "notAcceptable");
+                }
             }
 
             public static function DELETE($params)
