@@ -141,6 +141,6 @@ syslog_servers:
   akuvox:
   - syslog.udp:127.0.0.1:45455
   rubetek:
-  - syslog.udp:192.168.13.60:45456
+  - syslog.udp:127.0.0.1:45456
 ntp_servers:
 - ntp:127.0.0.1:123
