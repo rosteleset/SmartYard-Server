@@ -266,7 +266,7 @@ function cardForm(params) {
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
-                h += `<input id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
