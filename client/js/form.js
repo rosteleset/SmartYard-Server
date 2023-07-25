@@ -146,7 +146,7 @@ function cardForm(params) {
         switch (params.fields[i].type) {
             case "select":
                 h += `<div class="input-group">`;
-                h += `<select id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="form-control modalFormField"`;
+                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="form-control modalFormField"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -176,7 +176,7 @@ function cardForm(params) {
                 } else {
                     h += `<div class="select2-secondary modalFormField">`;
                 }
-                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control select2`;
+                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="form-control select2`;
                 h += `"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
@@ -228,7 +228,7 @@ function cardForm(params) {
                 break;
 
             case "area":
-                h += `<textarea id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -237,7 +237,7 @@ function cardForm(params) {
                 break;
 
             case "rich":
-                h += `<textarea id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${params.fields[i].placeholder?params.fields[i].placeholder:""}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -284,7 +284,7 @@ function cardForm(params) {
                 break;
 
             case "files":
-                h += `<select id="${_prefix}${params.fields[i].id}" class="form-control" multiple="multiple"></select>`;
+                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="form-control" multiple="multiple"></select>`;
                 h += `<span id="${_prefix}${params.fields[i].id}-add" class="text-primary hoverable text-xs pl-1" data-for="${_prefix}${params.fields[i].id}" data-mime-types="${escapeHTML(JSON.stringify(params.fields[i].mimeTypes))}" data-max-size="${params.fields[i].maxSize}"><i class="far fa-folder-open" style="margin-right: 5px;"></i>${i18n("add")}</span><span class="text-secondary text-xs ml-2">(${i18n("dblClickToRemove").toLowerCase()})</span>`;
                 if (params.fields[i].autoload) {
                     setTimeout(() => {
