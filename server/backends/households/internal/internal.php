@@ -1323,6 +1323,10 @@
                     $queue->changed("subscriber", $subscriberId);
                 }
 
+                if (!$r) {
+                    setLastError("cantModifySubscriber");
+                }
+
                 return $r;
             }
 
@@ -1343,16 +1347,20 @@
                 $r = true;
 
                 foreach ($flats as $flatId => $owner) {
-                    $r = $r && !$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
+                    $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
                         "role" => $owner?0:1,
-                    ]);
+                    ]) !== false;
                 }
 
                 $queue = loadBackend("queue");
                 if ($queue) {
                     $queue->changed("subscriber", $subscriberId);
+                }
+
+                if (!$r) {
+                    setLastError("cantSetSubscribersFlats");
                 }
 
                 return $r;
