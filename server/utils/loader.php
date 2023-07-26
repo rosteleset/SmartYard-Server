@@ -30,11 +30,10 @@
                         return false;
                     }
                 } catch (Exception $e) {
-                    setLastError("Can't load backend [$backend]");
+                    setLastError(i18n("cantLoadBackend", $backend));
                     return false;
                 }
             } else {
-                setLastError("Backend not found [$backend]");
                 return false;
             }
         }

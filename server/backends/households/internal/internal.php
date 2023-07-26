@@ -394,7 +394,11 @@
                     $queue->changed("entrance", $entranceId);
                 }
 
-                return $r1 and $r2;
+                if (!$r1 || !$r2) {
+                    setLastError("cantModifyEntrance");
+                }
+
+                return $r1 && $r2;
             }
 
             /**
@@ -412,12 +416,15 @@
                     $queue->changed("house", $houseId);
                 }
 
-                return
-                    $this->db->modify("delete from houses_houses_entrances where address_house_id = $houseId and house_entrance_id = $entranceId") !== false
-                    and
-                    $this->db->modify("delete from houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances)") !== false
-                    and
-                    $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+                $r = $this->db->modify("delete from houses_houses_entrances where address_house_id = $houseId and house_entrance_id = $entranceId") !== false;
+                $r = $r && $this->db->modify("delete from houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances)") !== false;
+                $r = $r && $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+
+                if (!$r) {
+                    setLastError("cantDeleteEntrance");
+                }
+
+                return $r;
             }
 
             /**
@@ -479,9 +486,11 @@
                         }
                         return $flatId;
                     } else {
+                        setLastError("cantAddFlat");
                         return false;
                     }
                 } else {
+                    setLastError("cantAddFlat");
                     return false;
                 }
             }
@@ -592,6 +601,7 @@
                         return true;
                     }
                 } else {
+                    setLastError("cantModifyFlat");
                     return false;
                 }
             }
@@ -610,17 +620,17 @@
                     $queue->changed("flat", $flatId);
                 }
 
-                return
-                    $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false
-                    and
-                    $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false
-                    and
-                    $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)") !== false
-                    and
-                    $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false
-                    and
-                    $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2") !== false
-                    ;
+                $r = $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false;
+                $r = $r && $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
+                $r = $r && $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
+                $r = $r && $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
+                $r = $r && $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2") !== false;
+
+                if (!$r) {
+                    setLastError("cantDeleteFlat");
+                }
+
+                return $r;
             }
 
             /**
@@ -663,12 +673,15 @@
                     $queue->changed("entrance", $entranceId);
                 }
 
-                return
-                    $this->db->modify("delete from houses_entrances where house_entrance_id = $entranceId") !== false
-                    and
-                    $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
-                    and
-                    $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+                $r = $this->db->modify("delete from houses_entrances where house_entrance_id = $entranceId") !== false;
+                $r = $r && $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+                $r = $r && $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+
+                if (!$r) {
+                    setLastError("cantDestroyentrance");
+                }
+
+                return $r;
             }
 
             /**
@@ -699,7 +712,7 @@
                     return false;
                 }
 
-                $result = $this->db->modify("delete from houses_entrances_cmses where house_entrance_id = $entranceId") !== false;
+                $r = $this->db->modify("delete from houses_entrances_cmses where house_entrance_id = $entranceId") !== false;
 
                 foreach ($cms as $e) {
                     if (!checkInt($e["cms"]) || !checkInt($e["dozen"]) || !checkInt($e["unit"]) || !checkInt($e["apartment"])) {
@@ -707,7 +720,7 @@
                         return false;
                     }
 
-                    $result = $result && $this->db->modify("insert into houses_entrances_cmses (house_entrance_id, cms, dozen, unit, apartment) values (:house_entrance_id, :cms, :dozen, :unit, :apartment)", [
+                    $r = $r && $this->db->modify("insert into houses_entrances_cmses (house_entrance_id, cms, dozen, unit, apartment) values (:house_entrance_id, :cms, :dozen, :unit, :apartment)", [
                         "house_entrance_id" => $entranceId,
                         "cms" => $e["cms"],
                         "dozen" => $e["dozen"],
@@ -721,7 +734,11 @@
                     $queue->changed("entrance", $entranceId);
                 }
 
-                return $result;
+                if (!$r) {
+                    setLastError("cantSetCms");
+                }
+
+                return $r;
             }
 
             /**
@@ -917,7 +934,7 @@
                     return false;
                 }
 
-                $result = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -930,12 +947,14 @@
                     "comment" => $comment,
                 ]);
 
-                $queue = loadBackend("queue");
-                if ($queue) {
-                    $queue->changed("domophone", $domophoneId);
+                if ($r) {
+                    $queue = loadBackend("queue");
+                    if ($queue) {
+                        $queue->changed("domophone", $domophoneId);
+                    }
                 }
 
-                return $result;
+                return $r;
             }
 
             /**
@@ -966,17 +985,13 @@
                     $queue->changed("domophone", $domophoneId);
                 }
 
-                return
-                    $this->db->modify("delete from houses_domophones where house_domophone_id = $domophoneId") !== false
-                    &&
-                    $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)") !== false
-                    &&
-                    $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
-                    &&
-                    $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
-                    &&
-                    $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false
-                ;
+                $r = $this->db->modify("delete from houses_domophones where house_domophone_id = $domophoneId") !== false;
+                $r = $r && $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)") !== false;
+                $r = $r && $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+                $r = $r && $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+                $r = $r && $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
+
+                return $r;
             }
 
             /**
@@ -1153,9 +1168,11 @@
                     }
                 }
 
-                $queue = loadBackend("queue");
-                if ($queue) {
-                    $queue->changed("subscriber", $subscriberId);
+                if ($subscriberId) {
+                    $queue = loadBackend("queue");
+                    if ($queue) {
+                        $queue->changed("subscriber", $subscriberId);
+                    }
                 }
 
                 return $subscriberId;
