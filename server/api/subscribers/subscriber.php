@@ -38,7 +38,11 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            $success = $households->removeSubscriberFromFlat($params["_id"], $params["subscriberId"], $params["message"]);
+            if (@$params["complete"]) {
+                $success = $households->deleteSubscriber($params["_id"]);
+            } else {
+                $success = $households->removeSubscriberFromFlat($params["_id"], $params["subscriberId"]);
+            }
 
             return api::ANSWER($success);
         }
