@@ -17,5 +17,8 @@
     ],
     "3": [
         "v3_tasks.sql"
+    ],
+    "4": [
+        "v4_cameras.sql"
     ]
 }
