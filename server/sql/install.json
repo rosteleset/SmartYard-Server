@@ -20,5 +20,8 @@
     ],
     "4": [
         "v4_cameras.sql"
+    ],
+    "5": [
+        "v5_companies.sql"
     ]
 }
