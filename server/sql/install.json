@@ -23,5 +23,8 @@
     ],
     "5": [
         "v5_companies.sql"
+    ],
+    "6": [
+        "v6_companies.sql"
     ]
 }
