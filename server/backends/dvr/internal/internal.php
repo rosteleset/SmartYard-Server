@@ -392,6 +392,38 @@
                     $request_url = "$scheme$user$pass$host$port/screenshot/$guid?timestamp=$timestamp&sid=$sid";
                     return $request_url;
                     break;
+
+                case "forpost":
+                    $tz_string = @$this->config["mobile"]["time_zone"];
+                    if (!isset($tz_string))
+                        $tz_string = "UTC";
+                    $tz = new \DateTimeZone($tz_string);
+                    $tz_offset = $tz->getOffset(new \DateTime('now'));
+
+                    $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
+                    $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host = $parsed_url['host'] ?? '';
+                    $path = $parsed_url['path'] ?? '';
+                    $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $url = "$scheme$host$port$path";
+
+                    parse_str($parsed_url["query"], $params);
+                    $params["Format"] = "JPG";
+                    $params["TS"] = $time;
+                    $params["TZ"] = $tz_offset;
+
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                    $response = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+                    
+                    return @$response["URL"] ?: false;
+
                 default: 
                     return "$prefix/$time-preview.mp4";
                 }
