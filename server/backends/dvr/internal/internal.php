@@ -290,6 +290,55 @@
                     $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
                     return $request_url;
                     break;
+
+                case "forpost":
+                    $tz_string = @$this->config["mobile"]["time_zone"];
+                    if (!isset($tz_string))
+                        $tz_string = "UTC";
+                    $tz = new \DateTimeZone($tz_string);
+                    $tz_offset = $tz->getOffset(new \DateTime('now'));
+
+                    $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
+                    $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host = $parsed_url['host'] ?? '';
+                    $path = 'system-api/GetDownloadURL';
+                    $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $url = "$scheme$host$port$path";
+
+                    parse_str($parsed_url["query"], $params);
+                    unset($params["Format"]);
+                    $params["Container"] = "mp4";
+                    $params["TS"] = $time;
+                    $params["TZ"] = $tz_offset;
+                    $params["Duration"] = $finish - $start;
+
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                    $response = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+                    
+                    $active = false;
+                    $attempts_count = 0;
+                    var_dump($response);
+                    while(!$active && $attempts_count > 0) {
+                        $urlHeaders = @get_headers(@$response["URL"]);
+                        var_dump($urlHeaders);
+                        if(strpos($urlHeaders[0], '200')) {
+                            break;
+                        } else {
+                            sleep(2);
+                            $attempts_count = $attempts_count - 1;
+                        }
+                    }
+
+                    if (!$active) return false;
+                    return @$response["URL"] ?: false;
+                    break;
                 default:
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
