@@ -42,7 +42,7 @@
 
                 $url = parse_url($url);
                 $scheme = $url["scheme"] ?: 'http';
-                $port = (int)$url["port"];
+                $port = @((int)$url["port"]) ?: false;
 
                 if (!$port && $scheme == 'http') $port = 80;
                 if (!$port && $scheme == 'https') $port = 443;
@@ -57,7 +57,7 @@
                         (!@$u['user'] || @$u['user'] == @$url["user"]) &&
                         (!@$u['pass'] || @$u['pass'] == @$url["pass"]) &&
                         ($u['host'] == $url["host"]) &&
-                        (!$u['port'] || $u['port'] == $port)
+                        (!@$u['port'] || $u['port'] == $port)
                     ) {
                         $result = $server;
                         break;
@@ -301,14 +301,14 @@
                     $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
                     $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host = $parsed_url['host'] ?? '';
-                    $path = 'system-api/GetDownloadURL';
+                    $path = '/system-api/GetDownloadURL';
                     $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
                     $url = "$scheme$host$port$path";
 
                     parse_str($parsed_url["query"], $params);
                     unset($params["Format"]);
                     $params["Container"] = "mp4";
-                    $params["TS"] = $time;
+                    $params["TS"] = $start;
                     $params["TZ"] = $tz_offset;
                     $params["Duration"] = $finish - $start;
 
@@ -452,7 +452,7 @@
                     $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
                     $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host = $parsed_url['host'] ?? '';
-                    $path = $parsed_url['path'] ?? '';
+                    $path = '/system-api/GetTranslationURL';
                     $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
                     $url = "$scheme$host$port$path";
 
