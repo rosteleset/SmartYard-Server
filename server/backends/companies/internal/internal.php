@@ -43,13 +43,15 @@ namespace backends\companies
                 "uid" => "uid",
                 "contacts" => "contacts",
                 "comment" => "comment"
+            ], [
+                "singlify"
             ]);
         }
 
         /**
          * @inheritDoc
          */
-        public function addCamera($name, $type, $uid, $contacts, $comment)
+        public function addCompany($name, $type, $uid, $contacts, $comment)
         {
             if (!trim($name) || !checkInt($type)) {
                 return false;
@@ -67,15 +69,15 @@ namespace backends\companies
         /**
          * @inheritDoc
          */
-        public function modifyCamera($companyId, $name, $type, $uid, $contacts, $comment)
+        public function modifyCompany($companyId, $name, $type, $uid, $contacts, $comment)
         {
-            if (!checkInt() |$companyId| !trim($name) || !checkInt($type)) {
+            if (!checkInt($companyId) || !trim($name) || !checkInt($type)) {
                 return false;
             }
 
             return $this->db->modify("update companies set name = :name, company_type = :type, uid = :uid, contacts = :contacts, comment = :comment where company_id = $companyId", [
                 "name" => $name,
-                "company_type" => $type,
+                "type" => $type,
                 "uid" => $uid,
                 "contacts" => $contacts,
                 "comment" => $comment,
@@ -85,7 +87,7 @@ namespace backends\companies
         /**
          * @inheritDoc
          */
-        public function deleteCamera($companyId)
+        public function deleteCompany($companyId)
         {
             if (!checkInt($companyId)) {
                 setLastError("noId");

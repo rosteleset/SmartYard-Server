@@ -1,7 +1,7 @@
 -- companies
 CREATE TABLE companies
 (
-    company_id serial primary key,
+    company_id integer primary key autoincrement,
     name text,
     uid text,
     contacts text,
