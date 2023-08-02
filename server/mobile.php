@@ -80,7 +80,7 @@ try {
 }
 
 function response($code = 204, $data = false, $name = false, $message = false) {
-    global $response_data_source, $response_cahce_req, $response_cache_ttl;
+    global $response_data_source, $response_cache_req, $response_cache_ttl;
     $response_codes = [
         200 => [ 'name' => 'OK', 'message' => 'Хорошо' ],
         201 => [ 'name' => 'Created', 'message' => 'Создано' ],
@@ -127,8 +127,8 @@ function response($code = 204, $data = false, $name = false, $message = false) {
     ];
     header('Content-Type: application/json');
     http_response_code($code);
-    if ((int)$code < 300 && $response_cahce_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
-//        $redis->setEx($response_cahce_req, $response_cache_ttl, json_encode([
+    if ((int)$code < 300 && $response_cache_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
+//        $redis->setEx($response_cache_req, $response_cache_ttl, json_encode([
 //            'code' => $code,
 //            'data' => $data,
 //        ], JSON_UNESCAPED_UNICODE));
@@ -238,11 +238,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (file_exists(__DIR__ . "/mobile/{$module}/{$method}.php")) {
             $b = @explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
             if ($b) {
-                $response_cahce_req = strtolower($module . '-' . $method . '-' . $b . '-' . md5(serialize($postdata)));
-//                $cache = @json_decode($redis->get($response_cahce_req), true);
+                $response_cache_req = strtolower($module . '-' . $method . '-' . $b . '-' . md5(serialize($postdata)));
+//                $cache = @json_decode($redis->get($response_cache_req), true);
                 $cache = false;
             } else {
-                $response_cahce_req = false;
+                $response_cache_req = false;
                 $cache = false;
             }
             if ($cache && !array_key_exists('X-Dm-Api-Refresh', apache_request_headers())) {
