@@ -310,7 +310,7 @@
                     $params["Container"] = "mp4";
                     $params["TS"] = $start;
                     $params["TZ"] = $tz_offset;
-                    $params["Duration"] = $finish - $start;
+                    $params["Duration"] = ceil(($finish - $start) / 60) ;
 
                     $curl = curl_init();
                     curl_setopt($curl, CURLOPT_POST, 1);

@@ -36,7 +36,7 @@ data|Object|payload
 [stun* и turn* - опциональные параметры, могут отсутствовать]
 ```
 {
-    "server": "dm.lanta.me",
+    "server": "yourserver.yourdomain",
     "port": "54675",
     "transport": "tcp",
     "extension": "2000002224",
@@ -48,15 +48,15 @@ data|Object|payload
     "turnTransport": "udp",
     "turnUsername": "test",
     "turnPassword": "123123",
-    "image": "https://dm.lanta.me/shot/e4bb3f86073a270ec8d9291c10d26dfe.jpg",
-    "live": "https://dm.lanta.me/live/e4bb3f86073a270ec8d9291c10d26dfe/image.jpg",
+    "image": "https://yourserver.yourdomain/shot/e4bb3f86073a270ec8d9291c10d26dfe.jpg",
+    "live": "https://yourserver.yourdomain/live/e4bb3f86073a270ec8d9291c10d26dfe/image.jpg",
     "timestamp": "1231231",
     "ttl": "30",
     "callerId": "Домофон"
     "platform": "ios",
     "flatId": "12345",
     "flatNumber": "11",
-    "baseUrl": "https://dm.lanta.me:543",
+    "baseUrl": "https://yourserver.yourdomain:543",
 }
 ```
 
