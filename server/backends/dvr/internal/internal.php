@@ -321,11 +321,12 @@
                     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
                     $response = json_decode(curl_exec($curl), true);
                     curl_close($curl);
-                    
                     $attempts_count = 300;
+                    var_dump($params);
                     var_dump($response);
+                    $file_url = @$response["URL"] ?? false;
                     while($attempts_count > 0) {
-                        $urlHeaders = @get_headers(@$response["URL"]);
+                        $urlHeaders = @get_headers($file_url);
                         var_dump($urlHeaders);
                         if(strpos($urlHeaders[0], '200')) {
                             break;
@@ -335,7 +336,7 @@
                         }
                     }
                     if(strpos($urlHeaders[0], '200')) {
-                        return @$response["URL"] ?: false;
+                        return $file_url;
                     } else {
                         return false;
                     }
