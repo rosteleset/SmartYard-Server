@@ -322,10 +322,9 @@
                     $response = json_decode(curl_exec($curl), true);
                     curl_close($curl);
                     
-                    $active = false;
-                    $attempts_count = 0;
+                    $attempts_count = 300;
                     var_dump($response);
-                    while(!$active && $attempts_count > 0) {
+                    while($attempts_count > 0) {
                         $urlHeaders = @get_headers(@$response["URL"]);
                         var_dump($urlHeaders);
                         if(strpos($urlHeaders[0], '200')) {
@@ -335,9 +334,12 @@
                             $attempts_count = $attempts_count - 1;
                         }
                     }
-
-                    if (!$active) return false;
-                    return @$response["URL"] ?: false;
+                    if(strpos($urlHeaders[0], '200')) {
+                        return @$response["URL"] ?: false;
+                    } else {
+                        return false;
+                    }
+                    
                     break;
                 default:
                     // Flussonic Server by default
