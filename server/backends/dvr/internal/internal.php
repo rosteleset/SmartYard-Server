@@ -42,7 +42,7 @@
 
                 $url = parse_url($url);
                 $scheme = $url["scheme"] ?: 'http';
-                $port = (int)$url["port"];
+                $port = @((int)$url["port"]) ?: false;
 
                 if (!$port && $scheme == 'http') $port = 80;
                 if (!$port && $scheme == 'https') $port = 443;
@@ -57,7 +57,7 @@
                         (!@$u['user'] || @$u['user'] == @$url["user"]) &&
                         (!@$u['pass'] || @$u['pass'] == @$url["pass"]) &&
                         ($u['host'] == $url["host"]) &&
-                        (!$u['port'] || $u['port'] == $port)
+                        (!@$u['port'] || $u['port'] == $port)
                     ) {
                         $result = $server;
                         break;
@@ -290,6 +290,55 @@
                     $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
                     return $request_url;
                     break;
+
+                case "forpost":
+                    $tz_string = @$this->config["mobile"]["time_zone"];
+                    if (!isset($tz_string))
+                        $tz_string = "UTC";
+                    $tz = new \DateTimeZone($tz_string);
+                    $tz_offset = $tz->getOffset(new \DateTime('now'));
+
+                    $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
+                    $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host = $parsed_url['host'] ?? '';
+                    $path = '/system-api/GetDownloadURL';
+                    $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $url = "$scheme$host$port$path";
+
+                    parse_str($parsed_url["query"], $params);
+                    unset($params["Format"]);
+                    $params["Container"] = "mp4";
+                    $params["TS"] = $start;
+                    $params["TZ"] = $tz_offset;
+                    $params["Duration"] = $finish - $start;
+
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                    $response = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+                    
+                    $active = false;
+                    $attempts_count = 0;
+                    var_dump($response);
+                    while(!$active && $attempts_count > 0) {
+                        $urlHeaders = @get_headers(@$response["URL"]);
+                        var_dump($urlHeaders);
+                        if(strpos($urlHeaders[0], '200')) {
+                            break;
+                        } else {
+                            sleep(2);
+                            $attempts_count = $attempts_count - 1;
+                        }
+                    }
+
+                    if (!$active) return false;
+                    return @$response["URL"] ?: false;
+                    break;
                 default:
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
@@ -392,6 +441,38 @@
                     $request_url = "$scheme$user$pass$host$port/screenshot/$guid?timestamp=$timestamp&sid=$sid";
                     return $request_url;
                     break;
+
+                case "forpost":
+                    $tz_string = @$this->config["mobile"]["time_zone"];
+                    if (!isset($tz_string))
+                        $tz_string = "UTC";
+                    $tz = new \DateTimeZone($tz_string);
+                    $tz_offset = $tz->getOffset(new \DateTime('now'));
+
+                    $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
+                    $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host = $parsed_url['host'] ?? '';
+                    $path = '/system-api/GetTranslationURL';
+                    $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $url = "$scheme$host$port$path";
+
+                    parse_str($parsed_url["query"], $params);
+                    $params["Format"] = "JPG";
+                    $params["TS"] = $time;
+                    $params["TZ"] = $tz_offset;
+
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                    $response = json_decode(curl_exec($curl), true);
+                    curl_close($curl);
+                    
+                    return @$response["URL"] ?: false;
+
                 default: 
                     return "$prefix/$time-preview.mp4";
                 }
