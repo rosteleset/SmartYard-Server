@@ -26,5 +26,8 @@
     ],
     "6": [
         "v6_companies.sql"
+    ],
+    "7": [
+        "v7_address.sql"
     ]
 }
