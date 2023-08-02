@@ -1,6 +1,8 @@
 ({
     init: function () {
-        leftSide("far fa-fw fa-building", i18n("companies.companies"), "?#companies", "households");
+        if (AVAIL("companies", "companies")) {
+            leftSide("far fa-fw fa-building", i18n("companies.companies"), "?#companies", "households");
+        }
         moduleLoaded("companies", this);
     },
 
