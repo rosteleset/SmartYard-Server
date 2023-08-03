@@ -435,7 +435,7 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issueId, $comment, $private)
+            public function addComment($issueId, $comment, $private, $type = false)
             {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
@@ -454,6 +454,7 @@
                 $this->addJournalRecord($issueId, "addComment", null, [
                     "commentBody" => $comment,
                     "commentPrivate" => $private,
+                    "commentType" => $type,
                 ]);
 
                 return $this->mongo->$db->$acr->updateOne(
@@ -467,6 +468,7 @@
                                 "created" => time(),
                                 "author" => $this->login,
                                 "private" => $private,
+                                "type" => $type,
                             ],
                         ],
                     ]
