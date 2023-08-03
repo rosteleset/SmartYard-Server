@@ -33,7 +33,8 @@
                 curl_close($curl);
             }
 
-            public function updateTokens() {
+            public function updateTokens()
+            {
                 $providers = $this->getProviders();
 
                 $common = [];
