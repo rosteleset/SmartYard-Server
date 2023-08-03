@@ -127,9 +127,13 @@
             /**
              * @inheritDoc
              */
-            public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
+            public function addProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
             {
                 if (!checkInt($hidden)) {
+                    return false;
+                }
+
+                if (!trim($name) || !trim(baseUrl) || !trim($tokenCommon)) {
                     return false;
                 }
 
@@ -161,6 +165,10 @@
                 }
 
                 if (!checkInt($hidden)) {
+                    return false;
+                }
+
+                if (!trim($name) || !trim(baseUrl) || !trim($tokenCommon)) {
                     return false;
                 }
 
