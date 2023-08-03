@@ -198,7 +198,13 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from providers where provider_id = $providerId");
+                $r = $this->db->modify("delete from providers where provider_id = $providerId");
+
+                if ($this->updateTokens()) {
+                    return $r;
+                } else {
+                    return false;
+                }
             }
         }
     }
