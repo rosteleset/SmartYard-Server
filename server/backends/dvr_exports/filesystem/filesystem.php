@@ -122,7 +122,7 @@ namespace backends\dvr_exports {
                     $ch = curl_init($request_url);
 
                     if (!$fh) {
-                        $logger->error('runDownloadRecordTask file not', ['record' => $recordId, 'path' => $dvr_files_path . $task['filename']]);
+                        $logger->error('runDownloadRecordTask file not open', ['record' => $recordId, 'path' => $dvr_files_path . $task['filename']]);
 
                         return 1;
                     }
