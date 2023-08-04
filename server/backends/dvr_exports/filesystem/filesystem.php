@@ -111,7 +111,7 @@ namespace backends\dvr_exports {
 
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
 
-                    $logger->debug('runDownloadRecordTask start', ['record' => $recordId]);
+                    $logger->debug('runDownloadRecordTask start', ['record' => $recordId, 'url' => $request_url]);
 
                     echo "Record download task with id = $recordId was started\n";
                     echo "Fetching record form {$request_url} to " . $dvr_files_path . $task['filename'] . "\n";
