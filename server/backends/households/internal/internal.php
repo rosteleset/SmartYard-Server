@@ -339,7 +339,11 @@
                     $queue->changed("house", $houseId);
                 }
 
+                if (!$r) {
+                    setLastError("cantAddEntrance");
+                }
 
+                return $r;
             }
 
             /**
