@@ -6,6 +6,7 @@
 
 namespace backends\dvr_exports {
 
+    use Exception;
     use logger\Logger;
 
     class filesystem extends dvr_exports
