@@ -71,6 +71,9 @@ function usage()
         plog:
             [--plog-days --flat=<flat>]
             [--plog --flat=<flat> --day=<day>]
+            
+        inbox:
+            [--inbox --subscriber=<subscriber>]
         \n";
 
     exit(1);
