@@ -121,6 +121,13 @@ namespace backends\dvr_exports {
                     $fh = fopen($dvr_files_path . $task['filename'], 'w+');
                     $ch = curl_init($request_url);
 
+                    if (!$fh) {
+                        $logger->error('runDownloadRecordTask file not', ['record' => $recordId, 'path' => $dvr_files_path . $task['filename']]);
+
+                        return 1;
+                    }
+
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
                     curl_setopt($ch, CURLOPT_FILE, $fh);
                     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
