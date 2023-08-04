@@ -118,11 +118,16 @@ namespace backends\dvr_exports {
                     // echo "curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'] . "\n";
                     // exec("curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'], $out, $code);
 
-                    $fh = fopen($dvr_files_path . $task['filename'], 'w');
+                    $fh = fopen($dvr_files_path . $task['filename'], 'w+');
                     $ch = curl_init($request_url);
+
                     curl_setopt($ch, CURLOPT_FILE, $fh);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
                     curl_exec($ch);
+
                     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
                     curl_close($ch);
                     fclose($fh);
 
