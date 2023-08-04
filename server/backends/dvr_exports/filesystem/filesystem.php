@@ -150,6 +150,8 @@ namespace backends\dvr_exports {
 
 
             } catch (Exception $e) {
+                $logger->critical('runDownloadRecordTask' . PHP_EOL . $e);
+
                 echo "Record download task with id = $recordId was failed to start\n";
                 return 1;
             }
