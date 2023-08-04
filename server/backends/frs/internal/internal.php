@@ -111,6 +111,7 @@
                     self::P_URL => $this->camshotUrl($cam),
                     self::P_CALLBACK_URL => $this->callback($cam)
                 ];
+
                 if ($faces)
                     $method_params[self::P_FACE_IDS] = $faces;
                 if ($params)

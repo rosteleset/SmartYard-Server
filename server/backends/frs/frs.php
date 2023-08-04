@@ -84,7 +84,7 @@
              * Call API method
              * @param string $base_url base URL FRS
              * @param string $method API method name
-             * @param obect $params call parameters
+             * @param array $params call parameters
              * @return false|object
              */
             abstract public function apiCall($base_url, $method, $params);
