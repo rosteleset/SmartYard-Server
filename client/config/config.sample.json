@@ -1,5 +1,5 @@
 {
-    "defaultServer": "<!-- your api server here -->",
+    "defaultServer": "https://example.com/frontend",
     "defaultLanguage": "ru",
     "languages": {
         "ru": "Русский",
@@ -12,12 +12,12 @@
     ],
     "defaultRoute": "#about",
     "logo": "rbt",
-    "ws": "<!-- your ws (ws:// or wss://) server here -->",
+    "ws": "wss://example.com/wss",
     "ice": [
         {
             "urls": [ "stun:stun.l.google.com:19302" ]
         }
     ],
     "phonePattern": "7 (###) ###-##-##",
-    "sipDomain": "<!-- your sip server here -->"
+    "sipDomain": "<!-- your asterisk server external ip here -->"
 }

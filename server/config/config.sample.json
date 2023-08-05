@@ -135,7 +135,7 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "<!-- your asterisk external ip here --!>"
+                    "ip": "<!-- your asterisk server external ip here --!>"
                 }
             ],
             "stuns": [
@@ -162,8 +162,8 @@
         "mqtt": {
             "backend": "internal",
             "agent": "http://127.0.0.1:8082/broadcast",
-            "ws": "wss://<!-- your server here --!>",
-            "mqtt": "mqtt://<!-- your server here -->",
+            "ws": "wss://example.com/mqtt",
+            "mqtt": "mqtt://127.0.0.1:1883",
             "username": "rbt",
             "password": "<!-- your mosquitto password here --!>"
         }
@@ -172,8 +172,8 @@
     "email": {
         "server": "127.0.0.1",
         "port": 587,
-        "username": "mmikel@localhost",
-        "password": "qwerty",
+        "username": "<!-- your smtp login here -->",
+        "password": "<!-- your smtp password here -->",
         "from": "RBT"
     },
 
@@ -206,6 +206,6 @@
     },
 
     "ntp_servers": [
-        "ntp:127.0.0.1:123"
+        "ntp:<-- your ntp server ip here -->:123"
     ]
 }

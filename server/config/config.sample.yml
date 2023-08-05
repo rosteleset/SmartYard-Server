@@ -1,3 +1,4 @@
+---
 language: ru
 api:
   frontend: https://example.com/frontend
@@ -9,20 +10,18 @@ mobile:
   payments: true
   payments_url: https://example.com/static/payments/template.html
   city_cams: false
-  support_phone: +7(4752)429999
+  support_phone: "+7(4752)429999"
   chat: true
-  chat_url: <!-- your chat url or remove it and use talkMe by default with options
-    below--!>
-  talk_me_id: <!-- put your talkMe chat id here --!>
-  talk_me_domain: <!-- put your talkMe chat domain id here --!>
-  talk_me_token: <!-- put your talkMe chat rest Api Token here --!>
+  chat_url: "<!-- your chat url or remove it and use talkMe by default with options
+    below--!>"
+  talk_me_id: "<!-- put your talkMe chat id here --!>"
+  talk_me_domain: "<!-- put your talkMe chat domain id here --!>"
+  talk_me_token: "<!-- put your talkMe chat rest Api Token here --!>"
   phonePattern: '7 (###) ###-##-##'
   tt_project: TDM
   tt_workflow: mobile
   tt_user: mobile
   time_zone: Europe/Moscow
-
-  #guest access variants: turnOnOnly - allows to turn on only (default), turnOnAndOff - allows to turn on and off
   guest_access: turnOnOnly
 db:
   dsn: pgsql:host=127.0.0.1;port=5432;dbname=rbt
@@ -45,7 +44,7 @@ backends:
     backend: internal
   geocoder:
     backend: dadata
-    token: <!-- your dadata token here --!>
+    token: "<!-- your dadata token here --!>"
   files:
     backend: mongo
   addresses:
@@ -56,7 +55,7 @@ backends:
     backend: internal
   isdn:
     backend: lanta
-    common_secret: <!-- your secret here --!>
+    common_secret: "<!-- your secret here --!>"
     confirm_method: outgoingCall
   inbox:
     backend: clickhouse
@@ -67,16 +66,16 @@ backends:
     username: default
     password: qqq
     database: default
-    time_shift: <!-- your time shift in seconds from current time as the end timepoint
-      for processing plog_* tables (hint 60) --!>
-    max_call_length: <!-- your max call length in seconds for backward processing
-      call events (hint 120) --!>
-    ttl_temp_record: <!-- your time to live in seconds for temporary data in plog_*
-      tables (hint 86400 - one day) --!>
-    ttl_camshot_days: <!-- your time to live in days for camshots (hint 180 - approx.
-      half year) --!>
-    back_time_shift_video_shot: <!-- your back time shift in seconds for receiving
-      video shot from media server (hint 3) --!>
+    time_shift: "<!-- your time shift in seconds from current time as the end timepoint
+      for processing plog_* tables (hint 60) --!>"
+    max_call_length: "<!-- your max call length in seconds for backward processing
+      call events (hint 120) --!>"
+    ttl_temp_record: "<!-- your time to live in seconds for temporary data in plog_*
+      tables (hint 86400 - one day) --!>"
+    ttl_camshot_days: "<!-- your time to live in days for camshots (hint 180 - approx.
+      half year) --!>"
+    back_time_shift_video_shot: "<!-- your back time shift in seconds for receiving
+      video shot from media server (hint 3) --!>"
     cron_process_events_scheduler: minutely
   configs:
     backend: json
@@ -86,13 +85,12 @@ backends:
     - title: Local server
       type: nimble or flussonic or  or trassir
       url: https://video.server.hostname:8443
-      token: <!-- mediaserver security token here (only if you use it) --!>
+      token: "<!-- mediaserver security token here (only if you use it) --!>"
       management_ip: 127.0.0.1
       management_port: '8086'
-      management_token: <!-- management token --!>
+      management_token: "<!-- management token --!>"
   dvr_exports:
-    backend: filesystem
-    dvr_files_path: /path/to/dvr/files/on/your/local/filesystem
+    backend: mongo
     dvr_files_ttl: 259200
   sip:
     backend: internal
@@ -100,7 +98,7 @@ backends:
     - title: First server
       type: asterisk
       trunk: first
-      ip: <!-- your asterisk external ip here --!>
+      ip: "<!-- your asterisk server external ip here --!>"
     stuns:
     - stun:stun.l.google.com:19302
   frs:
@@ -115,18 +113,18 @@ backends:
   mqtt:
     backend: internal
     agent: http://127.0.0.1:8082/broadcast
-    ws: wss://<!-- your server here --!>
-    mqtt: mqtt://<!-- your server here -->
+    ws: wss://example.com/mqtt
+    mqtt: mqtt://127.0.0.1:1883
     username: rbt
-    password: <!-- your mosquitto password here --!>
+    password: "<!-- your mosquitto password here --!>"
 email:
   server: 127.0.0.1
   port: 587
-  username: mmikel@localhost
-  password: qwerty
+  username: "<!-- your smtp login here -->"
+  password: "<!-- your smtp password here -->"
   from: RBT
 telegram:
-  bot: <!-- your telegram bot token here --!>
+  bot: "<!-- your telegram bot token here --!>"
 syslog_servers:
   beward:
   - syslog.udp:127.0.0.1:45450
@@ -143,4 +141,4 @@ syslog_servers:
   rubetek:
   - syslog.udp:127.0.0.1:45456
 ntp_servers:
-- ntp:127.0.0.1:123
+- ntp:<-- your ntp server ip here -->:123
