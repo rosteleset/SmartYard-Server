@@ -349,6 +349,8 @@ extensions = {
 
             local flatId = tonumber(extension:sub(2))
 
+            channel.CALLERID("name"):set("Support")
+
             local dest = mobile_intercom(flatId, -1, -1)
 
             if dest ~= "" then
