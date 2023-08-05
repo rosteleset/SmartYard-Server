@@ -128,7 +128,7 @@ function blacklist(flatId)
 end
 
 function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber)
-    log_debug("sending push for: "..extension.." ["..mobile.."] ("..tokenType..", "..platform..")")
+    log_debug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ")")
 
     dm("push", {
         token = token,
@@ -367,14 +367,14 @@ extensions = {
 
             log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
 
-            app.Dial("PJSIP/"..string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
+            app.Dial("PJSIP/" .. string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
         end,
 
         -- SOS
         [ "112" ] = function ()
             checkin()
 
-            log_debug(channel.CALLERID("num"):get().." >>> 112")
+            log_debug(channel.CALLERID("num"):get() .. " >>> 112")
 
             app.Answer()
             app.StartMusicOnHold()
@@ -385,7 +385,7 @@ extensions = {
         [ "9999" ] = function ()
             checkin()
 
-            log_debug(channel.CALLERID("num"):get().." >>> 9999")
+            log_debug(channel.CALLERID("num"):get() .. " >>> 9999")
 
             app.Answer()
             app.StartMusicOnHold()
