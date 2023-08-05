@@ -485,17 +485,27 @@
         always(loadingDone);
     },
 
+    loadGroups: function (callback) {
+        if (modules.groups) {
+            modules.groups.loadGroups(callback);
+        } else {
+            callback(false);
+        }
+    },
+
     render: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
 
         loadingStart();
 
-        modules.groups.loadGroups(hasGroups => {
+        modules.users.loadGroups(hasGroups => {
             let groups = {};
 
-            for (let i in modules.groups.meta) {
-                groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+            if (hasGroups) {
+                for (let i in modules.groups.meta) {
+                    groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+                }
             }
 
             GET("accounts", "users", false, true).done(response => {
