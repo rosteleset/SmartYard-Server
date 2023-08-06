@@ -173,6 +173,9 @@
             if ($key == "_clearCache") {
                 $clearCache = true;
             } else
+            if ($key == "_http_authorization") {
+                $http_authorization = $value;
+            } else
             if ($key === "_") {
                 // prevents timestamps
             } else {
