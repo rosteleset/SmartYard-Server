@@ -322,13 +322,9 @@ switch ($path[0]) {
     case "aors":
     case "auths":
     case "endpoints":
-        if (@$_POST["id"]) {
-            $result = paramsToResponse(getExtension($_POST["id"], $path[0]));
+        if (@$_POST["id"])
+            echo paramsToResponse(getExtension($_POST["id"], $path[0]));
 
-            echo $result;
-
-            $logger->debug('Get aors, auths, endpoints', ['result' => $result, 'params' => $path[0]]);
-        }
         break;
 
     case "extensions":
@@ -454,6 +450,8 @@ switch ($path[0]) {
                         }
                     }
                 } else {
+                    $logger->debug('camshot default', ['shot' => "shot_" . $params["hash"]]);
+
                     $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/hw/cameras/fake/img/callcenter.jpg"));
                     $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
                         "model" => "fake.json",
