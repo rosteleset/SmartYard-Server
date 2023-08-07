@@ -511,11 +511,15 @@ if (count($args) == 1 && array_key_exists("--run-record-download", $args) && iss
     $recordId = (int)$args["--run-record-download"];
     $dvr_exports = @loadBackend("dvr_exports");
 
+    $logger->debug('--run-record-download', ['record' => $recordId]);
+
     if ($dvr_exports && ($uuid = $dvr_exports->runDownloadRecordTask($recordId))) {
         $inbox = loadBackend("inbox");
         $files = loadBackend("files");
 
         $metadata = $files->getFileMetadata($uuid);
+
+        $logger->debug('--run-record-download', ['record' => $recordId, 'metadata' => $metadata]);
 
         $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $config['api']['mobile'], $uuid));
     }
