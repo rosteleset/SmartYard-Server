@@ -441,6 +441,8 @@ switch ($path[0]) {
                         if ($cameras && $cameras[0]) {
                             $model = loadCamera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
+                            $logger->debug('camshot', ['shot' => "shot_" . $params["hash"]]);
+
                             $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                             $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
                                 "model" => $cameras[0]["model"],
@@ -468,7 +470,6 @@ switch ($path[0]) {
                 $sip = loadBackend("sip");
 
                 if ($sip) {
-
                 }
 
                 break;

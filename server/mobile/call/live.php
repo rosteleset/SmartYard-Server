@@ -1,17 +1,17 @@
 <?php
 
-    $hash = $param;
+$hash = $param;
 
-    $json_camera = @$redis->get("live_" . $hash);
-    $camera_params = @json_decode($json_camera, true);
+$json_camera = @$redis->get("live_" . $hash);
+$camera_params = @json_decode($json_camera, true);
 
-    $camera = @loadCamera($camera_params["model"], $camera_params["url"], $camera_params["credentials"]);
+$camera = @loadCamera($camera_params["model"], $camera_params["url"], $camera_params["credentials"]);
 
-    if (!$camera) {
-        response(404);
-    }
+if (!$camera) {
+    response(404);
+}
 
-    header('Content-Type: image/jpeg');
-    echo $camera->camshot();
+header('Content-Type: image/jpeg');
+echo $camera->camshot();
 
-    exit;
+exit;
