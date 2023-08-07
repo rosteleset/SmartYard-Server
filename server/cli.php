@@ -523,8 +523,9 @@ if (count($args) == 1 && array_key_exists("--run-record-download", $args) && iss
 
         $logger->debug('--run-record-download', ['record' => $recordId, 'metadata' => $metadata]);
 
-        $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $config['api']['mobile'], $uuid), $config['api']['mobile'] . '/cctv/download/'.$uuid);
+        $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays"), $config['api']['mobile'] . '/cctv/download/'.$uuid);
     }
+
     exit(0);
 }
 
