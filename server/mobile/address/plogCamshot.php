@@ -7,7 +7,7 @@ Logger::channel('plog')->debug('plogCamshot', ['uuid' => $param]);
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
 
-$file = $files->getBytes($uuid);
+$file = $files->getFileStream($uuid);
 
 if ($file) {
     header("Content-Type: image/jpeg");
