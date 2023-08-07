@@ -74,7 +74,7 @@
                 $db = $this->dbName;
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                $file = $bucket->findOne(new \MongoDB\BSON\ObjectId($uuid));
+                $file = $bucket->findOne(['_id' => new \MongoDB\BSON\ObjectId($uuid)]);
 
                 if ($file)
                     return $file->getBytes();

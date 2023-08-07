@@ -10,7 +10,7 @@ $uuid = $files->fromGUIDv4($param);
 $file = $files->getBytes($uuid);
 
 if ($file) {
-    header("Content-Type: $content_type");
+    header("Content-Type: image/jpeg");
 
     echo $file;
 }
