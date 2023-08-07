@@ -449,8 +449,8 @@ switch ($path[0]) {
                             ]));
 
                             echo $params["hash"];
-                        }
-                    }
+                        } else $logger->debug('camshot camera not found', ['params' => $params, 'entrance' => $entrances[0]]);
+                    } else $logger->debug('camshot entrance not found', ['params' => $params]);
                 } else {
                     $logger->debug('camshot default', ['shot' => "shot_" . $params["hash"]]);
 
