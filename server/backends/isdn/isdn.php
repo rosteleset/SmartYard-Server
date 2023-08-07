@@ -1,40 +1,45 @@
 <?php
 
+/**
+ * backends isdn namespace
+ */
+
+namespace backends\isdn {
+
+    use backends\backend;
+
     /**
-    * backends isdn namespace
-    */
-
-    namespace backends\isdn
+     * base isdn class
+     */
+    abstract class isdn extends backend
     {
-
-        use backends\backend;
+        /**
+         * @param $id
+         * @return string
+         */
+        abstract function sendCode($id);
 
         /**
-         * base isdn class
+         * @return array
          */
-        abstract class isdn extends backend
-        {
-            /**
-             * @param $id
-             * @return string
-             */
-            abstract function sendCode($id);
+        abstract function confirmNumbers();
 
-            /**
-             * @return array
-             */
-            abstract function confirmNumbers();
+        /**
+         * @param $id
+         * @return string
+         */
+        abstract function checkIncoming($id);
 
-            /**
-             * @param $id
-             * @return string
-             */
-            abstract function checkIncoming($id);
+        /**
+         * @param $push
+         * @return mixed
+         */
+        abstract function push($push);
 
-            /**
-             * @param $push
-             * @return mixed
-             */
-            abstract function push($push);
-        }
+        /**
+         * @param $push
+         * @return mixed
+         */
+        abstract function message($push);
     }
+}

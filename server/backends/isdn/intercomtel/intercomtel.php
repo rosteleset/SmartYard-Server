@@ -18,23 +18,12 @@ namespace backends\isdn {
          */
         function push($push)
         {
-            $idsn = $this->config['backends']['isdn'];
+            return $this->request($push, '/api/v1/external/notification');
+        }
 
-            $request = curl_init($idsn['endpoint'] . '/api/v1/external/notification');
-
-            curl_setopt($request, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-            curl_setopt($request, CURLOPT_USERPWD, $idsn['secret']);
-            curl_setopt($request, CURLOPT_POSTFIELDS, json_encode($push, JSON_UNESCAPED_UNICODE));
-            curl_setopt($request, CURLOPT_POST, 1);
-            curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
-
-            $response = curl_exec($request);
-
-            curl_close($request);
-
-            Logger::channel('notification')->debug('Send notification via Intercomtel ' . $idsn['endpoint'] . '/api/v1/external/notification', json_decode($response, true));
-
-            return false;
+        function message($push)
+        {
+            return $this->request($push, '/api/v1/external/message');
         }
 
         /**
@@ -63,6 +52,27 @@ namespace backends\isdn {
             Logger::channel('intercomtel')->debug('Bad method call checkIncoming', ['id' => $id]);
 
             throw new \BadMethodCallException();
+        }
+
+        private function request($push, $endpoint)
+        {
+            $idsn = $this->config['backends']['isdn'];
+
+            $request = curl_init($idsn['endpoint'] . $endpoint);
+
+            curl_setopt($request, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($request, CURLOPT_USERPWD, $idsn['secret']);
+            curl_setopt($request, CURLOPT_POSTFIELDS, json_encode($push, JSON_UNESCAPED_UNICODE));
+            curl_setopt($request, CURLOPT_POST, 1);
+            curl_setopt($request, CURLOPT_RETURNTRANSFER, 1);
+
+            $response = curl_exec($request);
+
+            curl_close($request);
+
+            Logger::channel('notification')->debug('Send notification via Intercomtel ' . $idsn['endpoint'] . $endpoint, json_decode($response, true));
+
+            return false;
         }
     }
 }

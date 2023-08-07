@@ -1,22 +1,26 @@
 <?php
 
+/**
+ * backends isdn namespace
+ */
+
+namespace backends\isdn {
+
     /**
-     * backends isdn namespace
+     * LanTa's variant of flash calls and sms sending
      */
 
-    namespace backends\isdn
+    require_once __DIR__ . "/../../../traits/backends/isdn/push.php";
+    require_once __DIR__ . "/../../../traits/backends/isdn/sms.php";
+    require_once __DIR__ . "/../../../traits/backends/isdn/incoming.php";
+
+    class lanta extends isdn
     {
+        use push, sms, incoming;
 
-        /**
-         * LanTa's variant of flash calls and sms sending
-         */
-
-        require_once __DIR__ . "/../../../traits/backends/isdn/push.php";
-        require_once __DIR__ . "/../../../traits/backends/isdn/sms.php";
-        require_once __DIR__ . "/../../../traits/backends/isdn/incoming.php";
-
-        class lanta extends isdn
+        function message($push)
         {
-            use push, sms, incoming;
+            return $this->push($push);
         }
     }
+}

@@ -70,7 +70,7 @@ namespace backends\inbox {
 
                 $isdn = loadBackend("isdn");
                 if ($isdn) {
-                    $result = $isdn->push([
+                    $result = $isdn->message([
                         "token" => $subscriber["token"],
                         "type" => $subscriber["tokenType"],
                         "timestamp" => time(),
