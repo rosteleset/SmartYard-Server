@@ -508,8 +508,10 @@ if (count($args) == 1 && array_key_exists("--check-backends", $args) && !isset($
 }
 
 if (count($args) == 1 && array_key_exists("--run-record-download", $args) && isset($args["--run-record-download"])) {
-    $recordId = $args["--run-record-download"];
+    $recordId = (int)$args["--run-record-download"];
     $dvr_exports = loadBackend("dvr_exports");
+
+    $logger = Logger::channel('cctv');
 
     $logger->debug('--run-record-download', ['record' => $recordId]);
 
