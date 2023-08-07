@@ -34,6 +34,8 @@
              */
             abstract public function getFile($uuid);
 
+            abstract public function getBytes($uuid);
+
             /**
              * @param $uuid
              * @return mixed

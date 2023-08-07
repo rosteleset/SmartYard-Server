@@ -69,6 +69,19 @@
                 ];
             }
 
+            public function getBytes($uuid)
+            {
+                $db = $this->dbName;
+                $bucket = $this->mongo->$db->selectGridFSBucket();
+
+                $file = $bucket->findOne(new \MongoDB\BSON\ObjectId($uuid));
+
+                if ($file)
+                    return $file->getBytes();
+
+                return null;
+            }
+
             /**
              * @inheritDoc
              */
