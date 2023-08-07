@@ -426,6 +426,8 @@ switch ($path[0]) {
                 break;
 
             case "camshot":
+                $logger->debug('camshot', ['params' => $params]);
+
                 if ($params["domophoneId"] >= 0) {
                     $households = loadBackend("households");
 
