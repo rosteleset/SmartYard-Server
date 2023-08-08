@@ -100,5 +100,21 @@
                 
                 return false;
             }
+
+            /**
+             * @return mixed
+             */
+            public function clearCache()
+            {
+                $users = loadBackend("users");
+                $users->clearCache();
+
+                $groups = loadBackend("groups");
+                if ($grops) {
+                    $groups->clearCache();
+                }
+
+                parent::clearCache();
+            }
         }
     }

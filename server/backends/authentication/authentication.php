@@ -70,7 +70,7 @@
                         "started" => time(),
                         "updated" => time(),
                     ]));
-                    $this->redis->set("last_login_" . $login, time());
+                    $this->redis->set("last_login_" . md5($login), time());
                     return [
                         "result" => true,
                         "token" => $token,
