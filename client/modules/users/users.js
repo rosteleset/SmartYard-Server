@@ -9,8 +9,8 @@
         moduleLoaded("users", this);
     },
 
-    loadUsers: function (callback) {
-        return GET("accounts", "users").
+    loadUsers: function (callback, withSessions) {
+        return QUERY("accounts", "users", withSessions?{ withSessions: true }:false).
         done(users => {
             modules.users.meta = users.users;
         }).
@@ -394,7 +394,7 @@
     showSessions: function (uid) {
         loadingStart();
 
-        GET("accounts", "users", false, true).done(response => {
+        QUERY("accounts", "users", { withSessions: true }, true).done(response => {
             modules.users.users = response.users;
 
             cardTable({
@@ -508,7 +508,7 @@
                 }
             }
 
-            GET("accounts", "users", false, true).done(response => {
+            QUERY("accounts", "users", { withSessions: true }, true).done(response => {
                 modules.users.users = response.users;
     
                 cardTable({

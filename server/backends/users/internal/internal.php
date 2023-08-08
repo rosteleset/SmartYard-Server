@@ -13,12 +13,10 @@
         class internal extends users {
 
             /**
-             * list of all users
-             *
-             * @return array|false
+             * @inheritDoc
              */
 
-            public function getUsers() {
+            public function getUsers($withSessions = false) {
                 try {
                     $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
@@ -32,34 +30,41 @@
                             "phone" => $user["phone"],
                             "tg" => $user["tg"],
                             "enabled" => $user["enabled"],
-                            "lastLogin" => $this->redis->get("last_login_" . md5($user["login"])),
-                            "lastAction" => $this->redis->get("last_action_" . md5($user["login"])),
+                            "lastLogin" => $withSessions?$this->redis->get("last_login_" . md5($user["login"])):false,
+                            "lastAction" => $withSessions?$this->redis->get("last_action_" . md5($user["login"])):false,
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                         ];
                     }
 
-                    $a = loadBackend("authorization");
+                    if ($withSessions) {
+                        $a = loadBackend("authorization");
 
-                    if ($a->allow([
-                        "_uid" => $this->uid,
-                        "_path" => [
-                            "api" => "accounts",
-                            "method" => "user",
-                        ],
-                        "_request_method" => "POST",
-                    ])) {
-                        foreach ($_users as &$u) {
-                            $u["sessions"] = [];
-                            $lk = $this->redis->keys("auth_*_{$u["uid"]}");
-                            foreach ($lk as $k) {
-                                $u["sessions"][] = json_decode($this->redis->get($k), true);
+                        if ($a->allow([
+                            "_uid" => $this->uid,
+                            "_path" => [
+                                "api" => "accounts",
+                                "method" => "user",
+                            ],
+                            "_request_method" => "POST",
+                        ])) {
+                            foreach ($_users as &$u) {
+                                $u["sessions"] = [];
+                                $lk = $this->redis->keys("auth_*_{$u["uid"]}");
+                                foreach ($lk as $k) {
+                                    $u["sessions"][] = json_decode($this->redis->get($k), true);
+                                }
+                                $pk = $this->redis->keys("persistent_*_{$u["uid"]}");
+                                foreach ($pk as $k) {
+                                    $s = json_decode($this->redis->get($k), true);
+                                    $s["byPersistentToken"] = true;
+                                    $u["sessions"][] = $s;
+                                }
                             }
-                            $pk = $this->redis->keys("persistent_*_{$u["uid"]}");
-                            foreach ($pk as $k) {
-                                $s = json_decode($this->redis->get($k), true);
-                                $s["byPersistentToken"] = true;
-                                $u["sessions"][] = $s;
+                        } else {
+                            foreach ($_users as &$u) {
+                                unset($u["lastLogin"]);
+                                unset($u["lastAction"]);
                             }
                         }
                     } else {

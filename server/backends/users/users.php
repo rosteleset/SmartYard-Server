@@ -17,10 +17,12 @@
             /**
              * get list of all users
              *
+             * @param boolean $withSessions
+             * 
              * @return array
              */
 
-            abstract public function getUsers();
+            abstract public function getUsers($withSessions = false);
 
             /**
              * get user by uid
