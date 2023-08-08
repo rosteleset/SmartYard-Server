@@ -12,6 +12,8 @@
             foreach ($config["backends"] as $backend => $config) {
                 $backend = loadBackend($backend);
 
+                error_log($backend);
+
                 if ($backend) {
                     $n += $backend->clearCache();
                 }
