@@ -135,22 +135,24 @@
              */
             public function cache($key, $value = null)
             {
-                $key = $key . ":" . $this->uid;
+                if ($this->uid) {
+                    $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
-                if ($value) {
-                    $this->redis->setex("CACHE:" . strtoupper($this->backend) . ":" . $key, 3 * 24 * 60 * 60, json_encode($value));
-                    return false;
-                }
-
-                if ($value === false) {
-                    $this->del("CACHE:" . strtoupper($this->backend) . ":" . $key);
-                    return false;
-                }
-
-                $value = $this->redis->get("CACHE:" . strtoupper($this->backend) . ":" . $key);
-
-                if ($value) {
-                    return json_decode($value, true);
+                    if ($value) {
+                        $this->redis->setex($key, 3 * 24 * 60 * 60, json_encode($value));
+                        return false;
+                    }
+    
+                    if ($value === false) {
+                        $this->del($key);
+                        return false;
+                    }
+    
+                    $value = $this->redis->get($key);
+    
+                    if ($value) {
+                        return json_decode($value, true);
+                    }
                 }
 
                 return false;
