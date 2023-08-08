@@ -378,14 +378,14 @@
 
                     $md5 = md5(print_r($fullText, true));
 
-                    if ($this->redis->get("full_text_search_" . $acr) != $md5) {
+                    if ($this->redis->get("FTS:" . $acr) != $md5) {
                         try {
                             $this->mongo->$db->$acr->dropIndex("fullText");
                         } catch (\Exception $e) {
                             //
                         }
                         $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
-                        $this->redis->set("full_text_search_" . $acr, $md5);
+                        $this->redis->set("FTS:" . $acr, $md5);
                     }
                 }
 

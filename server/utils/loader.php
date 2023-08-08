@@ -25,6 +25,7 @@
                         require_once __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php";
                         $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
                         $backends[$backend] = new $className($config, $db, $redis, $login);
+                        $backends[$backend]->backend = $backend;
                         return $backends[$backend];
                     } else {
                         return false;

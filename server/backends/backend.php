@@ -127,5 +127,43 @@
                     $this->setCreds(loadBackend("users")->getUidByLogin($login), $login);
                 }
             }
+
+            /**
+             * @param $key
+             * @param $value
+             * @return mixed
+             */
+            public function cache($key, $value = null)
+            {
+                if ($value) {
+                    $this->redis->setex(strtoupper($this->backend) . ":" . $key, 3 * 24 * 60 * 60, serialize($value));
+                    return false;
+                }
+
+                if ($value === false) {
+                    $this->del(strtoupper($this->backend) . ":" . $key);
+                    return false;
+                }
+
+                $value = $this->redis->get(strtoupper($this->backend) . ":" . $key);
+
+                if ($value) {
+                    return unserialize($value);
+                }
+
+                return false;
+            }
+
+            /**
+             * @return mixed
+             */
+            public function clearCache()
+            {
+                $_keys = $this->redis->keys(strtoupper($this->backend) . ":*");
+
+                foreach ($_keys as $_key) {
+                    $this->redis->del($_key);
+                }
+            }
         }
     }
