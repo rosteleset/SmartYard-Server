@@ -182,6 +182,8 @@
             public function allowedMethods($uid) {
                 $key = "ALLOWED:$uid";
 
+                error_log($key);
+
                 $cache = $this->cache($key);
                 if ($cache) {
                     return $cache;
