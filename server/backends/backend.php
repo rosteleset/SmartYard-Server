@@ -162,6 +162,7 @@
                 $_keys = $this->redis->keys(strtoupper($this->backend) . ":*");
 
                 foreach ($_keys as $_key) {
+                    error_log($_key);
                     $this->redis->del($_key);
                 }
             }
