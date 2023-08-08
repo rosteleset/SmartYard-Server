@@ -1004,6 +1004,11 @@
                     return false;
                 }
 
+                $cache = $this->cache("VIEWERS");
+                if ($cache) {
+                    return $cache;
+                }
+
                 $viewers = $files->searchFiles([
                     "metadata.type" => "viewer",
                 ]);
