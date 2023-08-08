@@ -19,7 +19,14 @@
              */
 
             public function methods($_all = true) {
-                $m = [];
+                $key = "METHODS:" . ($_all?"1":"0");
+
+                $cache = $this->cache($key);
+                if ($cache) {
+                    return $cache;
+                }
+
+                $_m = [];
                 try {
                     if ($_all) {
                         $all = $this->db->query("select aid, api, method, request_method from core_api_methods", \PDO::FETCH_ASSOC)->fetchAll();
@@ -39,12 +46,15 @@
                         ", \PDO::FETCH_ASSOC)->fetchAll();
                     }
                     foreach ($all as $a) {
-                        $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                        $_m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->cache($key, false);
                     return false;
                 }
+
+                $this->cache($key, $_m);
                 return $m;
             }
 
@@ -99,22 +109,6 @@
                 }
                 
                 return false;
-            }
-
-            /**
-             * @return mixed
-             */
-            public function clearCache()
-            {
-                $users = loadBackend("users");
-                $users->clearCache();
-
-                $groups = loadBackend("groups");
-                if ($grops) {
-                    $groups->clearCache();
-                }
-
-                parent::clearCache();
             }
         }
     }
