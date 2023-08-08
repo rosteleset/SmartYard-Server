@@ -35,6 +35,13 @@
              */
             public function getProjects($acronym = false)
             {
+                $key = $acronym?("TT:PROJECT-" . $acronym):"TT:PROJECTS";
+
+                $cache = $this->redis->get($key);
+                if ($cache) {
+                    return unserialize($cache);
+                }
+
                 try {
                     if ($acronym) {
                         $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects where acronym = :acronym", [
@@ -185,9 +192,11 @@
                         ];
                     }
 
+                    $this->redis->setex($key, 180, serialize($_projects));
                     return $_projects;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->redis->del($key);
                     return false;
                 }
             }
