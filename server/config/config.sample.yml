@@ -34,6 +34,7 @@ redis:
   max_allowed_tokens: 15
   token_idle_ttl: 3600
 backends:
+  cache_ttl: 604800
   authentication:
     backend: internal
   authorization:
