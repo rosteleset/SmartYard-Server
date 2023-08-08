@@ -70,7 +70,7 @@
                         "started" => time(),
                         "updated" => time(),
                     ]));
-                    $this->db->modify("update core_users set last_login = " . time() . " where uid = " . $uid, false, [ "silent" ]);
+                    $redis->set("last_" . md5($params["_login"]), time());
                     return [
                         "result" => true,
                         "token" => $token,

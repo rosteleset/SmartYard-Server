@@ -29,5 +29,8 @@
     ],
     "7": [
         "v7_address.sql"
+    ],
+    "8": [
+        "v8_core.sql"
     ]
 }

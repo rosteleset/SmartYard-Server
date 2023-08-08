@@ -20,7 +20,7 @@
 
             public function getUsers() {
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, last_login, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -32,8 +32,8 @@
                             "phone" => $user["phone"],
                             "tg" => $user["tg"],
                             "enabled" => $user["enabled"],
-                            "lastLogin" => $user["last_login"],
-                            "lastAction" => $this->redis->get("last_" . md5($user["login"])),
+                            "lastLogin" => $this->redis->get("last_login_" . md5($user["login"])),
+                            "lastAction" => $this->redis->get("last_action_" . md5($user["login"])),
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                         ];
@@ -218,6 +218,11 @@
                 }
 
                 if ($uid > 0) { // admin cannot be deleted
+                    $user = $this->getUser($uid);
+
+                    $this->redis->del("last_login_" . md5($user["login"]));
+                    $this->redis->del("last_action_" . md5($user["login"]));
+
                     try {
                         $this->db->exec("delete from core_users where uid = $uid");
 
