@@ -152,7 +152,7 @@
                 $value = $this->redis->get("CACHE:" . strtoupper($this->backend) . ":" . $key);
 
                 if ($value) {
-                    return json_decode($value);
+                    return json_decode($value, true);
                 }
 
                 return false;
