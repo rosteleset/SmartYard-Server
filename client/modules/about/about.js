@@ -1,5 +1,5 @@
 ({
-    version: "0.1 (beta)",
+    version: "0.0.1 (beta)",
 
     init: function () {
         leftSide("fas fa-fw fa-info-circle", i18n("about.about"), "?#about", "about");
