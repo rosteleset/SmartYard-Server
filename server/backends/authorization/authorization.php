@@ -55,7 +55,7 @@
                 }
 
                 $this->cache($key, $_m);
-                return $m;
+                return $_m;
             }
 
             /**
