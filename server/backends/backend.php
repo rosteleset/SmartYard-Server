@@ -140,7 +140,7 @@
                 }
 
                 if ($value) {
-                    $this->redis->setex("CACHE:" . strtoupper($this->backend) . ":" . $key, 3 * 24 * 60 * 60, serialize($value));
+                    $this->redis->setex("CACHE:" . strtoupper($this->backend) . ":" . $key, 3 * 24 * 60 * 60, json_encode($value));
                     return false;
                 }
 
@@ -152,7 +152,7 @@
                 $value = $this->redis->get("CACHE:" . strtoupper($this->backend) . ":" . $key);
 
                 if ($value) {
-                    return unserialize($value);
+                    return json_decode($value);
                 }
 
                 return false;

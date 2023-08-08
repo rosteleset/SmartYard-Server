@@ -295,7 +295,7 @@
             $cache = false;
             if ($params["_request_method"] === "GET") {
                 try {
-                    $cache = json_decode($redis->get("CACHE:" . $params["_md5"]) . "_" . $auth["uid"], true);
+                    $cache = json_decode($redis->get("CACHE:" . strtoupper($params["_md5"])) . ":" . $auth["uid"], true);
                 } catch (Exception $e) {
                     error_log(print_r($e, true));
                 }
@@ -326,7 +326,7 @@
                         if ((int)$code) {
                             if ($params["_request_method"] == "GET" && (int)$code === 200) {
                                 $ttl = (array_key_exists("cache", $result))?((int)$cache):$redis_cache_ttl;
-                                $redis->setex("CACHE:" . $params["_md5"] . "_" . $auth["uid"], $ttl, json_encode($result));
+                                $redis->setex("CACHE:" . strtoupper($params["_md5"]) . ":" . $auth["uid"], $ttl, json_encode($result));
                             }
                             response($code, $result[$code]);
                         } else {
