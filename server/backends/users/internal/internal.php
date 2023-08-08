@@ -17,6 +17,14 @@
              */
 
             public function getUsers($withSessions = false) {
+                if (!$withSessions) {
+
+                    $cache = $this->cache("USERS");
+                    if ($cache) {
+                        return $cache;
+                    }
+                }
+
                 try {
                     $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
@@ -74,9 +82,15 @@
                         }
                     }
 
+                    if (!$withSessions) {
+                        $this->cache("USERS", $_users);
+                    }
                     return $_users;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    if (!$withSessions) {
+                        $this->cache("USERS", false);
+                    }
                     return false;
                 }
             }
@@ -90,6 +104,12 @@
              */
 
             public function getUser($uid) {
+                $key = "USER:$uid";
+
+                $cache = $this->cache($key);
+                if ($cache) {
+                    return $cache;
+                }
 
                 if (!checkInt($uid)) {
                     return false;
@@ -130,12 +150,15 @@
                             $_user["persistentToken"] = $persistent;
                         }
 
+                        $this->cache($key, $_user);
                         return $_user;
                     } else {
+                        $this->cache($key, false);
                         return false;
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->cache($key, false);
                     return false;
                 }
             }
@@ -152,6 +175,8 @@
              */
 
             public function addUser($login, $realName = null, $eMail = null, $phone = null) {
+                $this->clearCache();
+
                 $login = trim($login);
                 $password = generatePassword();
 
@@ -188,6 +213,8 @@
              */
 
             public function setPassword($uid, $password) {
+                $this->clearCache();
+
                 if (!checkInt($uid) || !trim($password)) {
                     return false;
                 }
@@ -218,6 +245,8 @@
              */
 
             public function deleteUser($uid) {
+                $this->clearCache();
+
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -254,6 +283,8 @@
              * @inheritDoc
              */
             public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1) {
+                $this->clearCache();
+
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -385,6 +416,13 @@
              */
             public function getUidByLogin($login)
             {
+                $key = "UIDBYLOGIN:$login";
+
+                $cache = $this->cache($key);
+                if ($cache) {
+                    return $cache;
+                }
+
                 try {
                     $users = $this->db->get("select uid from core_users where login = :login", [
                         "login" => $login,
@@ -392,11 +430,14 @@
                         "uid" => "uid",
                     ]);
                     if (count($users)) {
+                        $this->cache($key, (int)$users[0]["uid"]);
                         return (int)$users[0]["uid"];
                     } else {
+                        $this->cache($key, false);
                         return false;
                     }
                 } catch (\Exception $e) {
+                    $this->cache($key, false);
                     return false;
                 }
             }
