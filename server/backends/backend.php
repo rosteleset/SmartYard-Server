@@ -159,9 +159,7 @@
              */
             public function clearCache()
             {
-                $_keys = $this->redis->keys(strtoupper($this->backend) . ":*");
-
-                $n = 0;
+                $_keys = $this->redis->keys(strtoupper($this->backend) . "*");
 
                 foreach ($_keys as $_key) {
                     $this->redis->del($_key);
