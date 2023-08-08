@@ -91,7 +91,7 @@
                 }
 
                 try {
-                    $user = $this->db->query("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
 
                     if (count($user)) {
                         $_user = [
