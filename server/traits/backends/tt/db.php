@@ -236,9 +236,7 @@
              */
             public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments)
             {
-                error_log("modifyProject");
                 $this->clearCache();
-                error_log("cache cleared?");
 
                 if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize) || !checkInt($searchSubject) || !checkInt($searchDescription) || !checkInt($searchComments)) {
                     return false;
