@@ -1122,7 +1122,7 @@
             });
         }
 
-        modules.users.loadUsers("users", "users").
+        modules.users.loadUsers().
         fail(FAIL).
         fail(() => {
             modules.cs.idle = true;
