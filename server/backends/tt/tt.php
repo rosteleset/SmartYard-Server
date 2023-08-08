@@ -284,18 +284,18 @@
                     "metadata.workflow" => $workflow,
                 ]);
 
-                $workflow = false;
+                $_workflow = false;
                 foreach ($workflows as $w) {
-                    $workflow = $w;
+                    $_workflow = $w;
                     break;
                 }
 
-                if (!$workflow) {
+                if (!$_workflow) {
                     $this->cache("WORKFLOW:$workflow", false);
                     return "";
                 }
 
-                $_workflow = $files->streamToContents($files->getFileStream($workflow["id"]));
+                $_workflow = $files->streamToContents($files->getFileStream($_workflow["id"]));
                 $this->cache("WORKFLOW:$workflow", $_workflow);
                 return $_workflow;
             }
