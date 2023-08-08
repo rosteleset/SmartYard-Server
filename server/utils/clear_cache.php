@@ -8,18 +8,10 @@
         $n = 0;
 
         if ($uid === true) {
-            $keys = $redis->keys("cache_*");
-            foreach ($config["backends"] as $backend => $config) {
-                $keys = $redis->keys("CACHE:" . strtoupper($backend) . ":*");
-
-                foreach ($keys as $key) {
-                    $redis->del($key);
-                    $n++;
-                }
-            }
+            $keys = $redis->keys("CACHE:*");
         } else {
             if (checkInt($uid)) {
-                $keys = $redis->keys("CACHE:*_$uid");
+                $keys = $redis->keys("CACHE:FRONT:*:$uid");
             }
         }
 
