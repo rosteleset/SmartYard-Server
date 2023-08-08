@@ -115,7 +115,13 @@
                         return false;
                     }
                 } else {
-                    $a = $this->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+//                    $a = $this->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                    $sth = $this->prepare($query);
+                    if ($sth->execute()) {
+                        $a = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                    } else {
+                        return false;
+                    }
                 }
 
                 $r = [];
