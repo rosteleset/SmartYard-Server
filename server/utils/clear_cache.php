@@ -9,7 +9,7 @@
 
         if ($uid === true) {
             $keys = $redis->keys("cache_*");
-            foreach ($config["backends"] as $backend) {
+            foreach ($config["backends"] as $backend => $config) {
                 $backend = loadBackend($backend);
                 $n += $backend->clearCache();
             }
