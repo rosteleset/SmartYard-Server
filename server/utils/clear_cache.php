@@ -10,7 +10,7 @@
         if ($uid === true) {
             $keys = $redis->keys("cache_*");
             foreach ($config["backends"] as $backend => $config) {
-                $keys = $redis->keys(strtoupper($backend) . "*");
+                $keys = $redis->keys("CACHE:" . strtoupper($backend) . ":*");
 
                 foreach ($keys as $key) {
                     $redis->del($key);
@@ -19,7 +19,7 @@
             }
         } else {
             if (checkInt($uid)) {
-                $keys = $redis->keys("cache_*_$uid");
+                $keys = $redis->keys("CACHE:*_$uid");
             }
         }
 

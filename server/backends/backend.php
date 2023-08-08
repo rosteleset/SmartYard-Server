@@ -135,17 +135,21 @@
              */
             public function cache($key, $value = null)
             {
+                if (strpos($key, ":") === false) {
+                    $key = $key . ":";
+                }
+
                 if ($value) {
-                    $this->redis->setex(strtoupper($this->backend) . ":" . $key, 3 * 24 * 60 * 60, serialize($value));
+                    $this->redis->setex("CACHE:" . strtoupper($this->backend) . ":" . $key, 3 * 24 * 60 * 60, serialize($value));
                     return false;
                 }
 
                 if ($value === false) {
-                    $this->del(strtoupper($this->backend) . ":" . $key);
+                    $this->del("CACHE:" . strtoupper($this->backend) . ":" . $key);
                     return false;
                 }
 
-                $value = $this->redis->get(strtoupper($this->backend) . ":" . $key);
+                $value = $this->redis->get("CACHE:" . strtoupper($this->backend) . ":" . $key);
 
                 if ($value) {
                     return unserialize($value);
@@ -159,7 +163,7 @@
              */
             public function clearCache()
             {
-                $_keys = $this->redis->keys(strtoupper($this->backend) . "*");
+                $_keys = $this->redis->keys("CACHE:" . strtoupper($this->backend) . ":*");
 
                 foreach ($_keys as $_key) {
                     $this->redis->del($_key);
