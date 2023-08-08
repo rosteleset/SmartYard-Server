@@ -20,8 +20,6 @@
              */
 
             public function allow($params) {
-                $this->clearCache();
-
                 if ($params["_path"]["api"] === "authentication" && $params["_path"]["method"] === "login") {
                     return true;
                 }
@@ -181,8 +179,6 @@
 
             public function allowedMethods($uid) {
                 $key = "ALLOWED:$uid";
-
-                error_log($key);
 
                 $cache = $this->cache($key);
                 if ($cache) {
