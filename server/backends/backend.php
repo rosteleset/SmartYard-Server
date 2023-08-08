@@ -135,9 +135,7 @@
              */
             public function cache($key, $value = null)
             {
-                if (strpos($key, ":") === false) {
-                    $key = $key . ":";
-                }
+                $key = $key . ":" . $this->uid;
 
                 if ($value) {
                     $this->redis->setex("CACHE:" . strtoupper($this->backend) . ":" . $key, 3 * 24 * 60 * 60, json_encode($value));
