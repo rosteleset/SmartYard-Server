@@ -35,7 +35,7 @@
              */
             public function getProjects($acronym = false)
             {
-                $key = $acronym?"PROJECT-$acronym":"PROJECTS";
+                $key = $acronym?"PROJECT:$acronym":"PROJECTS";
 
                 $cache = $this->cache($key);
                 if ($cache) {
@@ -1040,7 +1040,7 @@
              */
             public function getTags($projectId = false)
             {
-                $key = $projectId?"TAGS-$projectId":"TAGS";
+                $key = $projectId?"TAGS:$projectId":"TAGS";
 
                 $cache = $this->cache($key);
                 if ($cache) {
@@ -1156,7 +1156,7 @@
              */
             public function myRoles($uid = false)
             {
-                $key = ($uid !== false)?"MYROLES-$uid":"MYROLES";
+                $key = ($uid !== false)?"MYROLES:$uid":"MYROLES";
 
                 $cache = $this->cache($key);
                 if ($cache) {
@@ -1251,7 +1251,7 @@
              * @inheritDoc
              */
             public function getProjectViewers($projectId) {
-                $key = $projectId?"VIEWERS-$projectId":"VIEWERS";
+                $key = $projectId?"VIEWERS:$projectId":"VIEWERS";
 
                 $cache = $this->cache($key);
                 if ($cache) {
