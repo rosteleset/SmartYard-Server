@@ -35,7 +35,7 @@
              */
             public function getProjects($acronym = false)
             {
-                $key = $acronym?("PROJECT-" . $acronym):"PROJECTS";
+                $key = $acronym?"PROJECT-$acronym":"PROJECTS";
 
                 $cache = $this->cache($key);
                 if ($cache) {
@@ -1040,25 +1040,38 @@
              */
             public function getTags($projectId = false)
             {
+                $key = $projectId?"TAGS-$projectId":"TAGS";
+
+                $cache = $this->cache($key);
+                if ($cache) {
+                    return $cache;
+                }
+
                 if ($projectId !== false) {
                     if (!checkInt($projectId)) {
                         return false;
                     }
 
-                    return $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
+                    $_tags = $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
                         "tag_id" => "tagId",
                         "tag" => "tag",
                         "foreground" => "foreground",
                         "background" => "background",
                     ]);
+
+                    $this->cache($key, $_tags);
+                    return $_tags;
                 } else {
-                    return $this->db->get("select * from tt_tags order by tag", false, [
+                    $_tags = $this->db->get("select * from tt_tags order by tag", false, [
                         "tag_id" => "tagId",
                         "project_id" => "projectId",
                         "tag" => "tag",
                         "foreground" => "foreground",
                         "background" => "background",
                     ]);
+
+                    $this->cache($key, $_tags);
+                    return $_tags;
                 }
             }
 
@@ -1067,6 +1080,8 @@
              */
             public function addTag($projectId, $tag, $foreground, $background)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectId) || !checkStr($tag)) {
                     return false;
                 }
@@ -1094,6 +1109,8 @@
              */
             public function modifyTag($tagId, $tag, $foreground, $background)
             {
+                $this->clearCache();
+
                 if (!checkInt($tagId) || !checkStr($tag)) {
                     return false;
                 }
@@ -1118,6 +1135,8 @@
              */
             public function deleteTag($tagId)
             {
+                $this->clearCache();
+
                 if (!checkInt($tagId)) {
                     return false;
                 }
@@ -1137,6 +1156,13 @@
              */
             public function myRoles($uid = false)
             {
+                $key = ($uid !== false)?"MYROLES-$uid":"MYROLES";
+
+                $cache = $this->cache($key);
+                if ($cache) {
+                    return $cache;
+                } 
+
                 if ($uid === false) {
                     $uid = $this->uid;
                 }
@@ -1147,7 +1173,7 @@
                     $groups = $groups->getGroups($uid);
                 }
 
-                $projects = [];
+                $_projects = [];
 
                 if ($groups) {
                     $g = [];
@@ -1165,9 +1191,9 @@
 
                     foreach ($groups as $group) {
                         if (@(int)$projects[$group["acronym"]]) {
-                            $projects[$group["acronym"]] = max(@(int)$projects[$group["acronym"]], (int)$group["level"]);
+                            $_projects[$group["acronym"]] = max(@(int)$projects[$group["acronym"]], (int)$group["level"]);
                         } else {
-                            $projects[$group["acronym"]] = (int)$group["level"];
+                            $_projects[$group["acronym"]] = (int)$group["level"];
                         }
                     }
                 }
@@ -1180,18 +1206,19 @@
                 foreach ($levels as $level) {
                     if (@(int)$projects[$level["acronym"]]) {
                         if ((int)$level["level"] > 0) {
-                            $projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
+                            $_projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
                         } else {
                             unset($projects[$level["acronym"]]);
                         }
                     } else {
                         if ((int)$level["level"] > 0) {
-                            $projects[$level["acronym"]] = (int)$level["level"];
+                            $_projects[$level["acronym"]] = (int)$level["level"];
                         }
                     }
                 }
 
-                return $projects;
+                $this->cache($key, $_projects);
+                return $_projects;
             }
 
             /**
@@ -1224,17 +1251,29 @@
              * @inheritDoc
              */
             public function getProjectViewers($projectId) {
+                $key = $projectId?"VIEWERS-$projectId":"VIEWERS";
+
+                $cache = $this->cache($key);
+                if ($cache) {
+                    return $cache;
+                }
+
                 if (!checkInt($projectId)) {
                     return false;
                 }
 
-                return $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId order by name");
+                $_viewers = $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId order by name");
+
+                $this->cache($key, $_viewers);
+                return $_viewers;
             }
 
             /**
              * @inheritDoc
              */
             public function setProjectViewers($projectId, $viewers) {
+                $this->clearCache();
+
                 if (!checkInt($projectId)) {
                     return false;
                 }
@@ -1256,7 +1295,12 @@
              * @inheritDoc
              */
             public function getCrontabs() {
-                return $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
+                $cache = $this->cache("CRONTABS");
+                if ($cache) {
+                    return $cache;
+                }
+
+                $_crontabs = $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
                     "crontab_id" => "crontabId",
                     "crontab" => "crontab",
                     "project_id" => "projectId",
@@ -1264,12 +1308,17 @@
                     "uid" => "uid",
                     "action" => "action",
                 ]);
+
+                $this->cache("CRONTABS", $_crontabs);
+                return $crontabs;
             }
 
             /**
              * @inheritDoc
              */
             public function addCrontab($crontab, $projectId, $filter, $uid, $action) {
+                $this->clearCache();
+
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -1287,6 +1336,8 @@
              * @inheritDoc
              */
             public function deleteCrontab($crontabId) {
+                $this->clearCache();
+
                 if (!checkInt($crontabId)) {
                     return false;
                 }
