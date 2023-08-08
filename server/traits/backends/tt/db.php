@@ -1310,7 +1310,7 @@
                 ]);
 
                 $this->cache("CRONTABS", $_crontabs);
-                return $crontabs;
+                return $_crontabs;
             }
 
             /**
