@@ -28,7 +28,7 @@
     },
 
     "db": {
-        "dsn": "pgsql:host=127.0.0.1;port=5432;dbname=rbt",
+        "dsn": "pgsql:host=127.0.0.1;port=5433;dbname=rbt",
         "username": "rbt",
         "password": "rbt"
     },
