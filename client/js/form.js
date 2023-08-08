@@ -1,6 +1,6 @@
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
-    let h = '<form autocomplete="off">';
+    let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;
     
     let files = {};
 
@@ -472,6 +472,8 @@ function cardForm(params) {
         }
 */
     }
+
+    $("#" + _prefix + "form").submit(function(e) { e.preventDefault(); });
 
     $(".modalFormOk").off("click").on("click", ok);
     $(".modalFormCancel").off("click").on("click", cancel);
