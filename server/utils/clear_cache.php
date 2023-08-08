@@ -11,7 +11,10 @@
             $keys = $redis->keys("cache_*");
             foreach ($config["backends"] as $backend => $config) {
                 $backend = loadBackend($backend);
-                $n += $backend->clearCache();
+
+                if ($backend) {
+                    $n += $backend->clearCache();
+                }
             }
         } else {
             if (checkInt($uid)) {
