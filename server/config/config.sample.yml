@@ -34,6 +34,12 @@ redis:
   backends_cache_ttl: 604800
   max_allowed_tokens: 15
   token_idle_ttl: 3600
+clickhouse:
+  host: localhost
+  port: '8123'
+  username: default
+  password: qqq
+  database: default
 backends:
   cache_ttl: 604800
   authentication:
@@ -63,11 +69,6 @@ backends:
     backend: clickhouse
   plog:
     backend: clickhouse
-    host: 127.0.0.1
-    port: 8123
-    username: default
-    password: qqq
-    database: default
     time_shift: "<!-- your time shift in seconds from current time as the end timepoint
       for processing plog_* tables (hint 60) --!>"
     max_call_length: "<!-- your max call length in seconds for backward processing

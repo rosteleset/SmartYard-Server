@@ -42,6 +42,14 @@
         "token_idle_ttl": 3600
     },
 
+    "clickhouse": {
+        "host": "localhost",
+        "port": "8123",
+        "username": "default",
+        "password": "qqq",
+        "database": "default"
+    },
+
     "backends": {
         "cache_ttl": 604800,
 
@@ -94,11 +102,6 @@
 
         "plog": {
             "backend": "clickhouse",
-            "host": "127.0.0.1",
-            "port": 8123,
-            "username": "default",
-            "password": "qqq",
-            "database": "default",
             "time_shift": "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
             "max_call_length": "<!-- your max call length in seconds for backward processing call events (hint 120) --!>",
             "ttl_temp_record": "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
