@@ -75,7 +75,7 @@
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                return $bucket->findOne(['_id' => new \MongoDB\BSON\ObjectId($uuid)])?->getBytes();
+                return $bucket->findOne(['_id' => new \MongoDB\BSON\ObjectId($uuid)]);
             }
 
             /**
