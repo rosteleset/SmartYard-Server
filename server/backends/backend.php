@@ -139,7 +139,7 @@
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                     if ($value) {
-                        $this->redis->setex($key, @$this->config["cache_ttl"]?$this->config["cache_ttl"]:( 3 * 24 * 60 * 60 ), json_encode($value));
+                        $this->redis->setex($key, @$this->config["redis"]["frontend_cache_ttl"]?$this->config["redis"]["frontend_cache_ttl"]:( 3 * 24 * 60 * 60 ), json_encode($value));
                         return false;
                     }
     

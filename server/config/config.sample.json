@@ -36,7 +36,8 @@
     "redis": {
         "host": "127.0.0.1",
         "port": 6379,
-        "cache_ttl": 3600,
+        "frontend_cache_ttl": 600,
+        "backends_cache_ttl": 604800,
         "max_allowed_tokens": 15,
         "token_idle_ttl": 3600
     },
