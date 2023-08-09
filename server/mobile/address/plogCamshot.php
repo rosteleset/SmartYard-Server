@@ -4,9 +4,9 @@ use logger\Logger;
 
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
-$bytes = $files->getFileBytes($uuid);
+$bytes = $files->getFileBytes($uuid)->getArrayCopy();
 
-Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid]);
+Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid, 'bytes' => $bytes]);
 
 if ($bytes) {
     Logger::channel('plog')->debug('plogCamshot send', ['uuid' => $uuid]);
