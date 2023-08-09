@@ -30,11 +30,11 @@
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
                 $this->clickhouse = new \clickhouse(
-                    $config['backends']['plog']['host'],
-                    $config['backends']['plog']['port'],
-                    $config['backends']['plog']['username'],
-                    $config['backends']['plog']['password'],
-                    $config['backends']['plog']['database']
+                    @$config['clickhouse']['host']?:'127.0.0.1',
+                    @$config['clickhouse']['port']?:8123,
+                    @$config['clickhouse']['username']?:'default',
+                    @$config['clickhouse']['password']?:'qqq',
+                    @$config['clickhouse']['database']?:'default'
                 );
 
                 $this->time_shift = $config['backends']['plog']['time_shift'];
