@@ -135,7 +135,7 @@
              */
             public function cacheGet($key)
             {
-                if ($this->uid > 0) {
+                if ((int)$this->uid > 0) {
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                     $value = @$this->cache[$key];
@@ -160,7 +160,7 @@
              */
             public function cacheSet($key, $value)
             {
-                if ($this->uid > 0) {
+                if ((int)$this->uid > 0) {
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                     $value = json_encode($value);
@@ -181,7 +181,7 @@
              */
             public function unCache($key)
             {
-                if ($this->uid > 0) {
+                if ((int)$this->uid > 0) {
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                     if ($value === false) {
