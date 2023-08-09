@@ -72,12 +72,13 @@
             ]);
 
             curl_setopt($curl, CURLOPT_HEADERFUNCTION,
-                function($curl, $header) use (&$headers)
-                {
+                function ($curl, $header) use (&$headers) {
                     $len = strlen($header);
                     $header = explode(':', $header, 2);
-                    if (count($header) < 2)
+                    
+                    if (count($header) < 2) {
                         return $len;
+                    }
 
                     $headers[strtolower(trim($header[0]))][] = trim($header[1]);
 
