@@ -185,7 +185,7 @@
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                     if ($value === false) {
-                        unset(@$this->cache[$key]);
+                        unset($this->cache[$key]);
                         $this->del($key);
                         return false;
                     }
