@@ -17,6 +17,8 @@ if ($img) {
     if (isset($meta_data->contentType))
         $content_type = $meta_data->contentType;
 
+    Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid, 'data' => stream_get_contents($img['stream'])]);
+
     $image = imagecreatefromstring(stream_get_contents($img['stream']));
 
     if ($image) {
