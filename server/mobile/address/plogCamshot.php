@@ -4,14 +4,12 @@ use logger\Logger;
 
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
-$img = $files->getFile($uuid);
+$img = $files->getFileContent($uuid);
 
-Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid, 'img' => $img["fileInfo"]]);
+Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid]);
 
 if ($img) {
-    $contents = stream_get_contents($img['stream']);
+    echo $img;
 
-    if ($contents) {
-        echo $contents;
-    }
+    exit;
 }
