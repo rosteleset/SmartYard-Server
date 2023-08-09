@@ -19,7 +19,7 @@
             public function getUsers($withSessions = false) {
                 if (!$withSessions) {
 
-                    $cache = $this->cache("USERS");
+                    $cache = $this->cacheGet("USERS");
                     if ($cache) {
                         return $cache;
                     }
@@ -83,13 +83,13 @@
                     }
 
                     if (!$withSessions) {
-                        $this->cache("USERS", $_users);
+                        $this->cacheSet("USERS", $_users);
                     }
                     return $_users;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     if (!$withSessions) {
-                        $this->cache("USERS", false);
+                        $this->unCache("USERS");
                     }
                     return false;
                 }
@@ -106,7 +106,7 @@
             public function getUser($uid) {
                 $key = "USER:$uid";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -150,15 +150,15 @@
                             $_user["persistentToken"] = $persistent;
                         }
 
-                        $this->cache($key, $_user);
+                        $this->cacheSet($key, $_user);
                         return $_user;
                     } else {
-                        $this->cache($key, false);
+                        $this->unCache($key);
                         return false;
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->cache($key, false);
+                    $this->unCache($key);
                     return false;
                 }
             }
@@ -418,7 +418,7 @@
             {
                 $key = "UIDBYLOGIN:$login";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -430,14 +430,14 @@
                         "uid" => "uid",
                     ]);
                     if (count($users)) {
-                        $this->cache($key, (int)$users[0]["uid"]);
+                        $this->cacheSet($key, (int)$users[0]["uid"]);
                         return (int)$users[0]["uid"];
                     } else {
-                        $this->cache($key, false);
+                        $this->unCache($key);
                         return false;
                     }
                 } catch (\Exception $e) {
-                    $this->cache($key, false);
+                    $this->unCache($key);
                     return false;
                 }
             }

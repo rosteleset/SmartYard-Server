@@ -21,7 +21,7 @@
             public function getGroups($uid = false) {
                 $key = $uid?"GROUPSBY:$uid":"GROUPS";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -35,7 +35,7 @@
                     $_groups = $this->db->queryEx("select gid, name, acronym, (select count(*) from (select uid from (select uid from core_users_groups g1 where g1.gid=g2.gid union select admin from core_groups g3 where g3.gid=g2.gid union select uid from core_users u1 where u1.primary_group=g2.gid) as t2 group by uid) as t3) as users, admin, login as \"adminLogin\" from core_groups as g2 left join core_users on g2.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) or gid in (select primary_group from core_users where uid = $uid) or admin = $uid order by name, acronym, gid");
                 }
 
-                $this->cache($key, $_groups);
+                $this->cacheSet($key, $_groups);
                 return $_groups;
             }
 
@@ -50,7 +50,7 @@
             public function getGroup($gid) {
                 $key = "GROUP:$gid";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -62,10 +62,10 @@
                 $groups = $this->db->query("select gid, name, acronym, admin, login as \"adminLogin\" from core_groups left join core_users on core_groups.admin = core_users.uid where gid = $gid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 if (count($groups)) {
-                    $this->cache($key, $groups[0]);
+                    $this->cacheSet($key, $groups[0]);
                     return $groups[0];
                 } else {
-                    $this->cache($key, false);
+                    $this->unCache($key);
                     return false;
                 }
             }
@@ -162,7 +162,7 @@
             public function getUsers($gid) {
                 $key = "USERS:$gid";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -178,7 +178,7 @@
                     $_users[] = $uid["uid"];
                 }
 
-                $this->cache($key, $_users);
+                $this->cacheSet($key, $_users);
                 return $_users;
             }
 

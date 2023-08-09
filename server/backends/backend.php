@@ -133,28 +133,12 @@
              * @param $value
              * @return mixed
              */
-            public function cache($key, $value = null)
+            public function cacheGet($key)
             {
                 if ($this->uid > 0) {
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
-                    if ($value) {
-                        $value = json_encode($value);
-                        
-                        if ($value != @$this->cache[$key]) {
-                            $this->cache[$key] = $value;
-                            $this->redis->setex($key, @$this->config["redis"]["frontend_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
-                            return false;
-                        }
-                    }
-    
-                    if ($value === false) {
-                        unset($this->cache[$key]);
-                        $this->del($key);
-                        return false;
-                    }
-    
-                    $value = $this->cache[$key];
+                    $value = @$this->cache[$key];
                     if ($value) {
                         return json_decode($value, true);
                     }
@@ -163,6 +147,47 @@
                     if ($value) {
                         $this->cache[$key] = $value;
                         return json_decode($value, true);
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $key
+             * @param $value
+             * @return mixed
+             */
+            public function cacheSet($key, $value)
+            {
+                if ($this->uid > 0) {
+                    $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
+
+                    $value = json_encode($value);
+                    
+                    if ($value != @$this->cache[$key]) {
+                        $this->cache[$key] = $value;
+                        $this->redis->setex($key, @$this->config["redis"]["frontend_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $key
+             * @return mixed
+             */
+            public function unCache($key)
+            {
+                if ($this->uid > 0) {
+                    $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
+
+                    if ($value === false) {
+                        unset(@$this->cache[$key]);
+                        $this->del($key);
+                        return false;
                     }
                 }
 

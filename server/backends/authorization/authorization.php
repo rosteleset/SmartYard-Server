@@ -21,7 +21,7 @@
             public function methods($_all = true) {
                 $key = "METHODS:" . ($_all?"1":"0");
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -50,11 +50,11 @@
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->cache($key, false);
+                    $this->unCache($key);
                     return false;
                 }
 
-                $this->cache($key, $_m);
+                $this->cacheSet($key, $_m);
                 return $_m;
             }
 

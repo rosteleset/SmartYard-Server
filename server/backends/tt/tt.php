@@ -31,7 +31,7 @@
                     return false;
                 }
                 
-                $cache = $this->cache("WORKFLOWS");
+                $cache = $this->cacheGet("WORKFLOWS");
                 if ($cache) {
                     return $cache;
                 }
@@ -58,7 +58,7 @@
                     ];
                 }
 
-                $this->cache("WORKFLOWS", $_list);
+                $this->cacheSet("WORKFLOWS", $_list);
                 return $_list;
             }
 
@@ -270,11 +270,11 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
-                    $this->cache("WORKFLOW:$workflow", false);
+                    $this->unCache("WORKFLOW:$workflow");
                     return false;
                 }
                 
-                $cache = $this->cache("WORKFLOW:$workflow");
+                $cache = $this->cacheGet("WORKFLOW:$workflow");
                 if ($cache) {
                     return $cache;
                 }
@@ -291,12 +291,12 @@
                 }
 
                 if (!$_workflow) {
-                    $this->cache("WORKFLOW:$workflow", false);
+                    $this->unCache("WORKFLOW:$workflow");
                     return "";
                 }
 
                 $_workflow = $files->streamToContents($files->getFileStream($_workflow["id"]));
-                $this->cache("WORKFLOW:$workflow", $_workflow);
+                $this->cacheSet("WORKFLOW:$workflow", $_workflow);
                 return $_workflow;
             }
 
@@ -373,7 +373,7 @@
                     return false;
                 }
                 
-                $cache = $this->cache("WORKFLOW:LIBS");
+                $cache = $this->cacheGet("WORKFLOW:LIBS");
                 if ($cache) {
                     return $cache;
                 }
@@ -385,7 +385,7 @@
                     $_list[] = $lib["metadata"]["lib"];
                 }
 
-                $cache = $this->cache("WORKFLOW:LIBS", $_list);
+                $cache = $this->cacheSet("WORKFLOW:LIBS", $_list);
                 return $_list;
             }
 
@@ -744,11 +744,11 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
-                    $this->cache("FILTERS", false);
+                    $this->unCache("FILTERS");
                     return false;
                 }
 
-                $cache = $this->cache("FILTERS");
+                $cache = $this->cacheGet("FILTERS");
                 if ($cache) {
                     return $cache;
                 }
@@ -764,7 +764,7 @@
                     }
                 }
 
-                $this->cache("FILTERS", $_list);
+                $this->cacheSet("FILTERS", $_list);
                 return $_list;
             }
 
@@ -775,11 +775,11 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
-                    $this->cache("FILTERS-EXT", false);
+                    $this->unCache("FILTERS-EXT");
                     return false;
                 }
                 
-                $cache = $this->cache("FILTERS-EXT");
+                $cache = $this->cacheGet("FILTERS-EXT");
                 if ($cache) {
                     return $cache;
                 }
@@ -800,7 +800,7 @@
                     }
                 }
 
-                $this->cache("FILTERS-EXT", $_list);
+                $this->cacheSet("FILTERS-EXT", $_list);
                 return $_list;
             }
 
@@ -1000,11 +1000,11 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
-                    $this->cache("VIEWERS", false);
+                    $this->unCache("VIEWERS");
                     return false;
                 }
 
-                $cache = $this->cache("VIEWERS");
+                $cache = $this->cacheGet("VIEWERS");
                 if ($cache) {
                     return $cache;
                 }
@@ -1023,7 +1023,7 @@
                     ]; 
                 }
 
-                $this->cache("VIEWERS", $_vs);
+                $this->cacheSet("VIEWERS", $_vs);
                 return $_vs;
             }
 
