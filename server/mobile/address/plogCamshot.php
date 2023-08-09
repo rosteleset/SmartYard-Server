@@ -20,7 +20,7 @@ if ($img) {
     if ($image) {
         header("Content-Type: $content_type");
 
-        imagepng($image);
+        imagejpeg($image);
         imagedestroy($image);
     }
 
