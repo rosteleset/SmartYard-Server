@@ -6,7 +6,7 @@ $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
 $img = $files->getFile($uuid);
 
-Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid, 'img' => $img]);
+Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid, 'img' => $img["fileInfo"]]);
 
 if ($img) {
     $content_type = "image/jpeg";
