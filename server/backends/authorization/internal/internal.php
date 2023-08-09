@@ -180,7 +180,7 @@
             public function allowedMethods($uid) {
                 $key = "ALLOWED:$uid";
 
-                $cache = cacheGet($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }

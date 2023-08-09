@@ -37,7 +37,7 @@
             {
                 $key = $acronym?"PROJECT:$acronym":"PROJECTS";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -192,11 +192,11 @@
                         ];
                     }
 
-                    $this->cache($key, $_projects);
+                    $this->cacheSet($key, $_projects);
                     return $_projects;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->cache($key, false);
+                    $this->unCache($key);
                     return false;
                 }
             }
@@ -406,7 +406,7 @@
              */
             public function getStatuses()
             {
-                $cache = $this->cache("STATUSES");
+                $cache = $this->cacheGet("STATUSES");
                 if ($cache) {
                     return $cache;
                 }
@@ -422,11 +422,11 @@
                         ];
                     }
 
-                    $this->cache("STATUSES", $_statuses);
+                    $this->cacheSet("STATUSES", $_statuses);
                     return $_statuses;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->cache("STATUSES", false);
+                    $this->unCache("STATUSES");
                     return false;
                 }
             }
@@ -492,7 +492,7 @@
              */
             public function getResolutions()
             {
-                $cache = $this->cache("RESOLUTIONS");
+                $cache = $this->cacheGet("RESOLUTIONS");
                 if ($cache) {
                     return $cache;
                 }
@@ -508,11 +508,11 @@
                         ];
                     }
 
-                    $this->cache("RESOLUTIONS", $_resolutions);
+                    $this->cacheSet("RESOLUTIONS", $_resolutions);
                     return $_resolutions;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->cache("RESOLUTIONS", false);
+                    $this->unCache("RESOLUTIONS");
                     return false;
                 }
             }
@@ -615,7 +615,7 @@
              */
             public function getCustomFields()
             {
-                $cache = $this->cache("FIELDS");
+                $cache = $this->cacheGet("FIELDS");
                 if ($cache) {
                     return $cache;
                 }
@@ -675,11 +675,11 @@
                         ];
                     }
 
-                    $this->cache("FIELDS", $_customFields);
+                    $this->cacheSet("FIELDS", $_customFields);
                     return $_customFields;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->cache("FIELDS", false);
+                    $this->unCache("FIELDS");
                     return false;
                 }
             }
@@ -809,7 +809,7 @@
              */
             public function getRoles()
             {
-                $cache = $this->cache("ROLES");
+                $cache = $this->cacheGet("ROLES");
                 if ($cache) {
                     return $cache;
                 }
@@ -822,11 +822,11 @@
                         "level" => "level"
                     ]);
 
-                    $this->cache("ROLES", $_roles);
+                    $this->cacheSet("ROLES", $_roles);
                     return $_roles;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->cache("ROLES", false);
+                    $this->unCache("ROLES");
                     return false;
                 }
             }
@@ -1042,7 +1042,7 @@
             {
                 $key = $projectId?"TAGS:$projectId":"TAGS";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -1059,7 +1059,7 @@
                         "background" => "background",
                     ]);
 
-                    $this->cache($key, $_tags);
+                    $this->cacheSet($key, $_tags);
                     return $_tags;
                 } else {
                     $_tags = $this->db->get("select * from tt_tags order by tag", false, [
@@ -1070,7 +1070,7 @@
                         "background" => "background",
                     ]);
 
-                    $this->cache($key, $_tags);
+                    $this->cacheSet($key, $_tags);
                     return $_tags;
                 }
             }
@@ -1158,7 +1158,7 @@
             {
                 $key = ($uid !== false)?"MYROLES:$uid":"MYROLES";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 } 
@@ -1217,7 +1217,7 @@
                     }
                 }
 
-                $this->cache($key, $_projects);
+                $this->cacheSet($key, $_projects);
                 return $_projects;
             }
 
@@ -1253,7 +1253,7 @@
             public function getProjectViewers($projectId) {
                 $key = $projectId?"VIEWERS:$projectId":"VIEWERS";
 
-                $cache = $this->cache($key);
+                $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
                 }
@@ -1264,7 +1264,7 @@
 
                 $_viewers = $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId order by name");
 
-                $this->cache($key, $_viewers);
+                $this->cacheSet($key, $_viewers);
                 return $_viewers;
             }
 
@@ -1295,7 +1295,7 @@
              * @inheritDoc
              */
             public function getCrontabs() {
-                $cache = $this->cache("CRONTABS");
+                $cache = $this->cacheGet("CRONTABS");
                 if ($cache) {
                     return $cache;
                 }
@@ -1309,7 +1309,7 @@
                     "action" => "action",
                 ]);
 
-                $this->cache("CRONTABS", $_crontabs);
+                $this->cacheSet("CRONTABS", $_crontabs);
                 return $_crontabs;
             }
 
