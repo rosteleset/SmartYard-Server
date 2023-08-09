@@ -30,5 +30,5 @@ if ($img) {
         imagedestroy($image);
 
         exit;
-    }
+    } else Logger::channel('plog')->debug('plogCamshot not create image', ['uuid' => $uuid]);
 }
