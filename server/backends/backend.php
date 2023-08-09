@@ -135,7 +135,7 @@
              */
             public function cache($key, $value = null)
             {
-                if ($this->uid) {
+                if ($this->uid > 0) {
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                     if ($value) {
