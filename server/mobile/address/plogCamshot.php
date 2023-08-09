@@ -20,11 +20,13 @@ if ($img) {
     $image = imagecreatefromstring(stream_get_contents($img['stream']));
 
     if ($image) {
-        Logger::channel('plog')->debug('plogCamshot send', ['uuid' => $u]);
+        Logger::channel('plog')->debug('plogCamshot send', ['uuid' => $uuid]);
 
         header("Content-Type: $content_type");
 
-        imagejpeg($image);
+        if (!imagejpeg($image))
+            Logger::channel('plog')->debug('plogCamshot not send', ['uuid' => $uuid]);
+
         imagedestroy($image);
 
         exit;
