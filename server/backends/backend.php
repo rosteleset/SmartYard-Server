@@ -17,7 +17,7 @@
              * @var object $redis link to redis object
              */
 
-            protected $config, $db, $redis, $login, $uid;
+            protected $config, $db, $redis, $login, $uid, $cache = [];
 
             /**
              * default constructor
@@ -139,18 +139,29 @@
                     $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                     if ($value) {
-                        $this->redis->setex($key, @$this->config["redis"]["frontend_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), json_encode($value));
-                        return false;
+                        $value = json_encode($value);
+                        
+                        if ($value != @$this->cache[$key]) {
+                            $this->cache[$key] = $value;
+                            $this->redis->setex($key, @$this->config["redis"]["frontend_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
+                            return false;
+                        }
                     }
     
                     if ($value === false) {
+                        unset($this->cache[$key]);
                         $this->del($key);
                         return false;
                     }
     
-                    $value = $this->redis->get($key);
-    
+                    $value = $this->cache[$key];
                     if ($value) {
+                        return json_decode($value, true);
+                    }
+
+                    $value = $this->redis->get($key);
+                    if ($value) {
+                        $this->cache[$key] = $value;
                         return json_decode($value, true);
                     }
                 }
@@ -163,6 +174,8 @@
              */
             public function clearCache()
             {
+                $this->cache = [];
+
                 $_keys = $this->redis->keys("CACHE:" . strtoupper($this->backend) . ":*");
 
                 foreach ($_keys as $_key) {
