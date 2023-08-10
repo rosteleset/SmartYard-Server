@@ -76,15 +76,9 @@
             }
 
             public static function index() {
-                $addresses = loadBackend("addresses");
-
-                if ($addresses) {
-                    return [
-                        "GET" => "#common",
-                    ];
-                } else {
-                    return false;
-                }
+                return [
+                    "GET" => "#common",
+                ];
             }
         }
     }

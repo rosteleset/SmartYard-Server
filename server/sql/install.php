@@ -6,7 +6,7 @@
      * @return void
      */
 
-    function initDB() {
+    function init_db() {
         global $config, $db, $version;
 
         $install = json_decode(file_get_contents("sql/install.json"), true);
@@ -25,7 +25,7 @@
                 continue;
             }
 
-            echo "upgrading to version $v\n";
+            echo "upgradins to version $v\n";
 
             try {
                 foreach ($steps as $step) {

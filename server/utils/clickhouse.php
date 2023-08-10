@@ -72,13 +72,12 @@
             ]);
 
             curl_setopt($curl, CURLOPT_HEADERFUNCTION,
-                function ($curl, $header) use (&$headers) {
+                function($curl, $header) use (&$headers)
+                {
                     $len = strlen($header);
                     $header = explode(':', $header, 2);
-                    
-                    if (count($header) < 2) {
+                    if (count($header) < 2)
                         return $len;
-                    }
 
                     $headers[strtolower(trim($header[0]))][] = trim($header[1]);
 
@@ -95,7 +94,7 @@
             curl_setopt($curl, CURLOPT_POSTFIELDS, $_data);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($curl, CURLOPT_URL, "http://{$this->host}:{$this->port}/?async_insert=1&wait_for_async_insert=0&query=" . urlencode("INSERT INTO {$this->database}.$table FORMAT JSONEachRow"));
+            curl_setopt($curl, CURLOPT_URL, "http://{$this->host}:{$this->port}/?query=" . urlencode("INSERT INTO {$this->database}.$table FORMAT JSONEachRow"));
             curl_setopt($curl, CURLOPT_POST, true);
 
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);

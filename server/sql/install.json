@@ -11,26 +11,5 @@
         "v1_tasks.sql",
         "v1_plog.sql",
         "v1_frs.sql"
-    ],
-    "2": [
-        "v2_addresses.sql"
-    ],
-    "3": [
-        "v3_tasks.sql"
-    ],
-    "4": [
-        "v4_cameras.sql"
-    ],
-    "5": [
-        "v5_companies.sql"
-    ],
-    "6": [
-        "v6_companies.sql"
-    ],
-    "7": [
-        "v7_address.sql"
-    ],
-    "8": [
-        "v8_core.sql"
     ]
 }

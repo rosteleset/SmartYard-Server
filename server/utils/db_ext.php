@@ -104,16 +104,6 @@
             }
         }
 
-        function queryEx($query)
-        {
-            $sth = $this->prepare($query);
-            if ($sth->execute()) {
-                return $sth->fetchAll(\PDO::FETCH_ASSOC);
-            } else {
-                return [];
-            }
-        }
-
         function get($query, $params = [], $map = [], $options = [])
         {
             try {
@@ -125,7 +115,7 @@
                         return false;
                     }
                 } else {
-                    $a = $this->queryEx($query);
+                    $a = $this->query($query, \PDO::FETCH_ASSOC)->fetchAll();
                 }
 
                 $r = [];

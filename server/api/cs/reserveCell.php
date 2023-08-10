@@ -20,7 +20,7 @@
                 $success = false;
 
                 if ($cs) {
-                    $success = $cs->setCell("reserve", $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], 0, @$params["comment"]);
+                    $success = $cs->setCell("reserve", $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"]);
                 }
 
                 return api::ANSWER($success);

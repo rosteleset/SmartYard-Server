@@ -60,27 +60,6 @@ namespace backends\plog {
 
                 Logger::channel('clickhouse')->debug('Processed events', ['elapsed_ms' => microtime(true) * 1000 - $time]);
 
-                $this->time_shift = $config['backends']['plog']['time_shift'];
-                $this->max_call_length = $config['backends']['plog']['max_call_length'];
-                $this->ttl_temp_record = $config['backends']['plog']['ttl_temp_record'];
-                $this->ttl_camshot_days = $config['backends']['plog']['ttl_camshot_days'];
-                $this->back_time_shift_video_shot = $config['backends']['plog']['back_time_shift_video_shot'];
-                $this->cron_process_events_scheduler = $config['backends']['plog']['cron_process_events_scheduler'];
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function cron($part)
-            {
-                if ($part === $this->cron_process_events_scheduler) {
-                    echo("__process events\n");
-                    $this->processEvents();
-                    $this->db->modify("delete from plog_door_open where expire < " . time());
-                    $this->db->modify("delete from plog_call_done where expire < " . time());
-                    return true;
-                }
-
                 return true;
             }
 

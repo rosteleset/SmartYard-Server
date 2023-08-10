@@ -156,7 +156,5 @@
         $panel->configure_md();
         $panel->set_display_text($panel_text);
         $panel->set_video_overlay($panel_text);
-        $panel->keep_doors_unlocked($domophone['locksAreOpen']);
-
-        $households->autoconfigDone($domophoneId);
+        $panel->keep_doors_unlocked($entrances[0]['locksDisabled']);
     }

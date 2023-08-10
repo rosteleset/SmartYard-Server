@@ -30,10 +30,11 @@
              * @param $cms
              * @param $cmsType
              * @param $cameraId
+             * @param $locksDisabled
              * @param $cmsLevels
              * @return boolean|integer
              */
-            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels);
+            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
 
             /**
              * @param $entranceId
@@ -72,10 +73,11 @@
              * @param $cms
              * @param $cmsType
              * @param $cameraId
+             * @param $locksDisabled
              * @param $cmsLevels
              * @return boolean
              */
-            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels);
+            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels);
 
             /**
              * @param $entranceId
@@ -195,11 +197,6 @@
              * @return boolean
              */
             abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comment);
-
-            /**
-             * @param $domophoneId
-             */
-            abstract public function autoconfigDone($domophoneId);
 
             /**
              * @param $domophoneId

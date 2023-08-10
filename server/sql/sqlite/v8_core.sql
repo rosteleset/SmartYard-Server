@@ -1,1 +1,0 @@
-ALTER TABLE core_users DROP COLUMN last_login;

@@ -63,10 +63,7 @@
 
                 case "watchers":
                     return i18n("tt.watchers");
-    
-                case "links":
-                    return i18n("tt.links");
-        
+
                 case "attachments":
                     return i18n("tt.attachments");
 
@@ -287,16 +284,16 @@
                         }
                     }
 
-                return {
-                    id: "resolution",
-                    type: "select2",
-                    title: modules.tt.issueFieldTitle(field),
-                    options: select2Filter(resolutions, filter),
-                    value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.resolution)?issue.resolution:-1),
-                    validate: v => {
-                        return $.trim(v) !== "";
-                    },
-                };
+                    return {
+                        id: "resolution",
+                        type: "select2",
+                        title: modules.tt.issueFieldTitle(field),
+                        options: select2Filter(resolutions, filter),
+                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.resolution)?issue.resolution:-1),
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    };
 
                 case "status":
                     let statuses = [];
@@ -351,129 +348,54 @@
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.watchers)?Object.values(issue.watchers):[]),
                     };
 
-                case "links":
-                    let vi = [];
-                    options = [];
+                    case "attachments":
+                        return {
+                            id: "attachments",
+                            type: "files",
+                            title: modules.tt.issueFieldTitle(field),
+                            maxSize: project.maxFileSize,
+                        };
 
-                    if (issue && issue[fieldId]) {
-                        let va;
+                    case "workflow":
+                        let workflows = [];
 
-                        if (typeof issue[fieldId] == "string") {
-                            va = [ issue[fieldId] ];
-                        } else {
-                            va = issue[fieldId];
+                        for (let i in modules.tt.meta.workflows) {
+                            workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
                         }
-                        for (let i in va) {
-                            vi.push(va[i]);
-                            options.push({
-                                id: va[i],
-                                text: va[i],
-                            });
-                        }
-                    }
-
-                    return {
-                        id: fieldId,
-                        type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
-                        placeholder: modules.tt.issueFieldTitle(field),
-                        options: select2Filter(options, filter),
-                        multiple: true,
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
-                        ajax: {
-                            delay: 1000,
-                            transport: function (params, success) {
-                                if (params.data.term) {
-                                    QUERY("tt", "issues", {
-                                        project: project.acronym,
-                                        filter: "#issueSearch",
-                                        skip: 0,
-                                        limit: 32768,
-                                        search: params.data.term,
-                                    }).
-                                    then(success).
-                                    fail(response => {
-                                        FAIL(response);
-                                        success({
-                                            issues: {
-                                                issues: [],
+            
+                        function workflowsByProject(project) {
+                            let w;
+            
+                            if (project) {
+                                for (let i in modules.tt.meta.projects) {
+                                    if (modules.tt.meta.projects[i].acronym == project) {
+                                        for (let j in modules.tt.meta.projects[i].workflows) {
+                                            let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
+                                            if (wn.charAt(0) == "#") {
+                                                wn = wn.substring(1);
                                             }
-                                        });
-                                    });
-                                } else {
-                                    success({
-                                        issues: {
-                                            issues: [],
+                                            w.push({
+                                                id: modules.tt.meta.projects[i].workflows[j],
+                                                text: wn,
+                                            });
                                         }
-                                    });
-                                }
-                            },
-                            processResults: function (data) {
-                                let suggestions = options;
-                                for (let i in data.issues.issues) {
-                                    let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
-                                    if (vi.indexOf(vl) < 0) {
-                                        suggestions.push({
-                                            id: data.issues.issues[i].issueId,
-                                            text: vl,
-                                        });
+                                        break;
                                     }
-                                }
-                                return {
-                                    results: suggestions,
-                                };
-                            },
-                        },
-                    }
-
-                case "attachments":
-                    return {
-                        id: "attachments",
-                        type: "files",
-                        title: modules.tt.issueFieldTitle(field),
-                        maxSize: project.maxFileSize,
-                    };
-
-                case "workflow":
-                    let workflows = [];
-
-                    for (let i in modules.tt.meta.workflows) {
-                        workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
-                    }
-        
-                    function workflowsByProject(project) {
-                        let w;
-        
-                        if (project) {
-                            for (let i in modules.tt.meta.projects) {
-                                if (modules.tt.meta.projects[i].acronym == project) {
-                                    for (let j in modules.tt.meta.projects[i].workflows) {
-                                        let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
-                                        if (wn.charAt(0) == "#") {
-                                            wn = wn.substring(1);
-                                        }
-                                        w.push({
-                                            id: modules.tt.meta.projects[i].workflows[j],
-                                            text: wn,
-                                        });
-                                    }
-                                    break;
                                 }
                             }
+            
+                            return w;
                         }
-        
-                        return w;
-                    }
 
-                    return {
-                        id: "workflow",
-                        type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
-                        placeholder: modules.tt.issueFieldTitle(field),
-                        options: select2Filter(workflowsByProject(project), filter),
-                        value: issue.workflow,
-                    };
-            }
+                        return {
+                            id: "workflow",
+                            type: "select2",
+                            title: modules.tt.issueFieldTitle(field),
+                            placeholder: modules.tt.issueFieldTitle(field),
+                            options: select2Filter(workflowsByProject(project), filter),
+                            value: issue.workflow,
+                        };
+                }
         } else {
             if (fieldId) {
                 // custom field
@@ -503,16 +425,7 @@
 
                     switch (cf.type) {
                         case "text":
-
-                            if (cf.editor == "yesno") {
-                                prefferredValue = 1;
-                            }
-
-                            if (cf.editor == "noyes") {
-                                prefferredValue = 0;
-                            }
-                            
-                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
+                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
 
@@ -594,23 +507,22 @@
                                 validate: validate,
                                 ajax: {
                                     delay: 1000,
-                                    transport: function (params, success) {
-                                        if (params.data.term) {
-                                            QUERY("geo", "suggestions", {
-                                                search: params.data.term,
-                                            }).
-                                            then(success).
-                                            fail(response => {
-                                                FAIL(response);
-                                                success({
-                                                    suggestions: [],
-                                                });
-                                            });
-                                        } else {
-                                            success({
-                                                suggestions: [],
-                                            });
-                                        }
+                                    transport: function (params, success, failure) {
+                                        loadingStart();
+                                        QUERY("geo", "suggestions", {
+                                            search: params.data.term,
+                                        }).
+                                        then(response => {
+                                            loadingDone();
+                                            success(response);
+                                        }).
+                                        fail(response => {
+                                            FAIL(response);
+                                            loadingDone();
+                                            failure(response);
+                                        }).
+                                        fail(FAIL).
+                                        always(loadingDone);
                                     },
                                     processResults: function (data) {
                                         let suggestions = options;
@@ -663,31 +575,26 @@
                                 validate: validate,
                                 ajax: {
                                     delay: 1000,
-                                    transport: function (params, success) {
-                                        if (params.data.term) {
-                                            QUERY("tt", "issues", {
-                                                project: project.acronym,
-                                                filter: "#issueSearch",
-                                                skip: 0,
-                                                limit: 32768,
-                                                search: params.data.term,
-                                            }).
-                                            then(success).
-                                            fail(response => {
-                                                FAIL(response);
-                                                success({
-                                                    issues: {
-                                                        issues: [],
-                                                    }
-                                                });
-                                            });
-                                        } else {
-                                            success({
-                                                issues: {
-                                                    issues: [],
-                                                }
-                                            });
-                                        }
+                                    transport: function (params, success, failure) {
+                                        loadingStart();
+                                        QUERY("tt", "issues", {
+                                            project: project.acronym,
+                                            filter: "#search",
+                                            skip: 0,
+                                            limit: 32768,
+                                            search: params.data.term,
+                                        }).
+                                        then(response => {
+                                            loadingDone();
+                                            success(response);
+                                        }).
+                                        fail(response => {
+                                            FAIL(response);
+                                            loadingDone();
+                                            failure(response);
+                                        }).
+                                        fail(FAIL).
+                                        always(loadingDone);
                                     },
                                     processResults: function (data) {
                                         let suggestions = options;
@@ -695,7 +602,7 @@
                                             let vl = "[ " + data.issues.issues[i].issueId + " ] " + data.issues.issues[i].subject;
                                             if (vi.indexOf(vl) < 0) {
                                                 suggestions.push({
-                                                    id: data.issues.issues[i].issueId,
+                                                    id: vl,
                                                     text: vl,
                                                 });
                                             }
@@ -712,7 +619,7 @@
         }
     },
 
-    issueField2Html: function (issue, field, val, target) {
+    issueField2Html: function (issue, field, val) {
         let members = {};
 
         if (modules.groups) {
@@ -750,7 +657,7 @@
         }
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
-            val = modules.tt.viewers[field][v](val, issue, field, target);
+            val = modules.tt.viewers[field][v](val, issue, field);
         } else {
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
@@ -882,13 +789,9 @@
 
                         switch (cf.editor) {
                             case "yesno":
-                            case "noyes":
                                 val = parseInt(val)?i18n("yes"):i18n("no");
                                 break;
 
-                            case "json":
-                                return "<pre style='padding: 0px!important; margin: 0px!important;'>" + escapeHTML(JSON.stringify(val, null, 2)) + "</pre>";
-                                
                             case "datetime-local":
                                 val = ttDate(val);
                                 break;
@@ -972,9 +875,9 @@
                 modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
             }
             try {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', modules.tt.meta.viewers[i].code);
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', modules.tt.meta.viewers[i].code);
             } catch (e) {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', "//function $name (value, field, issue, terget) {\n\treturn value;\n//}\n");
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', "//function $name (val, field, issue) {\n\treturn val;\n//}\n");
             }
         }
     },
@@ -1191,6 +1094,8 @@
             modules.tt.issue.createIssue($("#ttProjectSelect").val());
         });
 
+        document.title = i18n("windowTitle") + " :: " + i18n("tt.workspaces");
+
         let skip = parseInt(params.skip?params.skip:0);
         let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
 
@@ -1347,26 +1252,6 @@
                     ]
                 };
                 editor.setValue(JSON.stringify(template, null, "\t"));
-                editor.commands.addCommand({
-                    name: 'save',
-                    bindKey: {
-                        win: "Ctrl-S", 
-                        mac: "Cmd-S"
-                    },
-                    exec: (() => {
-                        $("#filterRun").click();
-                    }),
-                });
-                editor.commands.addCommand({
-                    name: 'run',
-                    bindKey: {
-                        win: "Ctrl-R", 
-                        mac: "Cmd-R"
-                    },
-                    exec: (() => {
-                        $("#filterRun").click();
-                    }),
-                });
                 $("#filterRun").off("click").on("click", () => {
                     let f = false;
                     try {
@@ -1376,12 +1261,8 @@
                     }
                     if (f && $.trim(f.name) && f.fields) {
                         let n = $.trim(f.name) + "-" + md5(lStore("_login") + ":" + $.trim(f.name));
-                        f.fileName = n;
                         loadingStart();
-                        PUT("tt", "customFilter", n, {
-                            "project": current_project,
-                            "body": JSON.stringify(f, true, 4),
-                        }).
+                        PUT("tt", "customFilter", n, { "project": current_project, "body": $.trim(editor.getValue()) }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
@@ -1436,7 +1317,7 @@
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list"),
+                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j]),
                                     nowrap: true,
                                     click: modules.tt.issue.viewIssue,
                                     fullWidth: j == pKeys.length - 1,
@@ -1470,30 +1351,12 @@
             }
         }).
         fail(FAIL).
-        fail((response) => {
-            if (target) {
-                let e = i18n("errors.unknown");
-                if (response && response.responseJSON && response.responseJSON.error) {
-                    e = i18n("errors." + response.responseJSON.error);
-                }
-                e = `<span class="text-danger text-bold">${e} [${params.filter}]<span/>`;
-                if (target !== true) {
-                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
-                } else {
-                    $("#" + issuesListId).html(e);
-                }
-                if (typeof callback === "undefined") {
-                    loadingDone();
-                } else {
-                    callback();
-                }
-            } else {
-                lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
-                lStore("_tt_issue_filter_" + lStore("_project"), null);
-                lStore("_project", null);
-                if (params["_"] != _) {
-                    window.location.href = `?#tt&_=${_}`;
-                }
+        fail(() => {
+            lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
+            lStore("_tt_issue_filter_" + lStore("_project"), null);
+            lStore("_project", null);
+            if (params["_"] != _) {
+                window.location.href = `?#tt&_=${_}`;
             }
         });
     },
@@ -1528,8 +1391,6 @@
                 }).
                 fail(FAILPAGE);
             } else {
-                document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
-
                 if (parseInt(myself.uid)) {
                     if (modules.groups) {
                         modules.users.loadUsers(() => {

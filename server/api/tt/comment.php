@@ -22,7 +22,7 @@
                     return API::ERROR(500);
                 }
 
-                $success =  $tt->addComment($params["issueId"], $params["comment"], !!$params["commentPrivate"], @$params["type"]);
+                $success =  $tt->addComment($params["issueId"], $params["comment"], !!$params["commentPrivate"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

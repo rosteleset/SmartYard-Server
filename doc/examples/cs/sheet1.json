@@ -1,21 +1,17 @@
 {
     "sheet": "МКД",
-    "date": "2023-07-14",
+    "date": "2023-04-06",
     "timeClass": "font-weight-bold",
-    "emptyClass": "",
-    "blockedClass": "bg-primary data-login",
-    "reservedClass": "bg-purple data-login",
-    "issueCoordinatedClass": "font-weight-bold text-dark",
+    "emptyClass": "bg-lightgray",
+    "blockedClass": "bg-primary",
+    "reservedClass": "bg-purple",
     "issueAssignedClass": "bg-success",
     "issueDoneClass": "text-decoration-line-through",
-    "issueClosedClass": "bg-dark text-decoration-line-through",
     "loginClass": "font-weight-normal",
     "expireCondition": "(new Date()).getTime() + 30 * 60 * 1000 >= (new Date(sheetDate + ' ' + cellTime)).getTime()",
     "doneCondition": "issue._cf_install_done",
-    "closedCondition": "issue.status == 'Закрыта'",
     "project": "RTL",
     "action": "Координация",
-    "setAssignedAction": "Назначить исполнителей",
     "fields": {
         "sheet": "_cf_sheet",
         "date": "_cf_sheet_date",
@@ -26,188 +22,113 @@
     },
     "issuesQuery": {
         "query": {
-            "$and": [
-                {
-                    "_cf_sheet": "%%sheet"
-                },
-                {
-                    "_cf_sheet_date": "%%date"
-                },
-                {
-                    "workflow": {
-                        "$in": [
-                            "lanta"
-                        ]
-                    }
-                }
-            ]
+            "_cf_sheet": "%%sheet",
+            "_cf_sheet_date": "%%date"
         },
         "fields": [
             "_cf_sheet_col",
             "_cf_sheet_cell",
             "_cf_sheet_cells",
             "_cf_installers",
-            "_cf_install_done",
-            "status"
+            "_cf_install_done"
         ],
-        "limit": 500,
-        "preprocess": {
-            "%%sheet": "МКД",
-            "%%date": "2023-07-14"
-        },
-        "project": "RTL"
+        "limit": 500
     },
     "specialRows": [
         "08:00",
         "13:00"
     ],
-    "defaultRows": [
-        "08:00",
-        "09:00",
-        "10:00",
-        "11:00",
-        "12:00",
-        "13:00",
-        "14:00",
-        "15:00",
-        "16:00",
-        "17:00",
-        "18:00",
-        "19:00"
-    ],
-    "specialRowClass": "bg-warning",
-    "weights": {
-        "Резерв 1": "Я",
-        "Резерв 2": "Я"
-    },
+    "specialRowClass": "bg-primary",
+    "weights": [],
     "data": [
         {
-            "col": "МКД Север 1",
-            "part": "МКД",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "МКД Север 2",
-            "part": "МКД",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "МКД Центр 1",
-            "part": "МКД",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "МКД Центр 2",
-            "part": "МКД",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "МКД Юг 1",
-            "part": "МКД",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "МКД Юг 2",
-            "part": "МКД",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "ЧС Север 1",
-            "part": "ЧС",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "ЧС Север 2",
-            "part": "ЧС",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "ЧС Центр 1",
-            "part": "ЧС",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "ЧС Центр 2",
-            "part": "ЧС",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "ЧС Юг 1",
-            "part": "ЧС",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "ЧС Юг 2",
-            "part": "ЧС",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "Fast",
-            "part": "Прочее",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
+            "col": "МКД1",
+            "class": "font-weight-bold",
             "logins": [
-                "mpozdnyakov"
+                "mmikel",
+                "nick"
+            ],
+            "workflow": "base",
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
             ]
         },
         {
-            "col": "Курьер",
-            "part": "Прочее",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
+            "col": "МКД2",
+            "class": "font-weight-bold",
+            "logins": [
+                "sbca",
+                "yad"
+            ],
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
         },
         {
-            "col": "Домофония",
-            "part": "Прочее",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
+            "col": "МКД4",
+            "class": "font-weight-bold",
+            "logins": [
+                "dmiheev",
+                "vlipatov"
+            ],
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
         },
         {
-            "col": "Оптика",
-            "part": "Прочее",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "Мич 1",
-            "part": "Прочее",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
-        },
-        {
-            "col": "Мич 2",
-            "part": "Прочее",
-            "class": "font-weight-bold bg-gray",
-            "rows": "default",
-            "logins": []
+            "col": "МКД5",
+            "class": "font-weight-bold",
+            "logins": [
+                "dmiheev",
+                "vlipatov"
+            ],
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
         }
     ]
 }

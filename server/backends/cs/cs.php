@@ -168,11 +168,8 @@
              * @param $row
              * @param $uid
              * @param $expire
-             * @param $sid
-             * @param $step
-             * @param $comment
              */
-            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0, $comment = "")
+            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0)
             {
                 $mqtt = loadBackend("mqtt");
 
@@ -189,8 +186,8 @@
                             if (
                                 ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid) ||
-                                ($action == "release-force" && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid)
+                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && $cell["uid"] == $uid) ||
+                                ($action == "release-force" && $cell["mode"] == "reserved" && $cell["uid"] == $uid)
                             ) {
                                 $this->redis->delete($key);
                                 $payload = explode("_", $key);
@@ -257,7 +254,6 @@
                                 "uid" => $uid,
                                 "expire" => $expire,
                                 "reserved" => time(),
-                                "comment" => $comment,
                             ]));
 
                             if ($mqtt) {
@@ -270,7 +266,6 @@
                                     "uid" => $uid,
                                     "login" => $this->login,
                                     "sid" => $sid,
-                                    "comment" => $comment,
                                 ]);
                             }
                         }

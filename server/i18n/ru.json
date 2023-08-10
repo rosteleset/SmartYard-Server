@@ -11,7 +11,5 @@
 
     "monitoring": {
         "unknown": "Статус неизвестен"
-    },
-
-    "cantLoadBackend": "Ошибка загрузки модуля %s"
+    }
 }
