@@ -22,7 +22,7 @@
                 $response = [
                     "cameras" => $cameras->getCameras(),
                     "models" => $configs->getCamerasModels(),
-                    "frsServers" => $frs?$frs->servers():[],
+                    "frsServers" => $frs->servers(),
                 ];
 
                 return api::ANSWER($response, "cameras");

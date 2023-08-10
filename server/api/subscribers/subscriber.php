@@ -29,7 +29,8 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            $success = $households->modifySubscriber($params["_id"], $params) && $households->setSubscriberFlats($params["_id"], $params["flats"]);
+            $success = $households->modifySubscriber($params["_id"], $params)
+                && $households->setSubscriberFlats($params["_id"], $params["flats"]);
 
             return api::ANSWER($success);
         }
@@ -38,11 +39,7 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            if (@$params["complete"]) {
-                $success = $households->deleteSubscriber($params["_id"]);
-            } else {
-                $success = $households->removeSubscriberFromFlat($params["_id"], $params["subscriberId"]);
-            }
+            $success = $households->removeSubscriberFromFlat($params["_id"], $params["subscriberId"], $params["message"]);
 
             return api::ANSWER($success);
         }

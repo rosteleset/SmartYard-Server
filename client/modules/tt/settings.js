@@ -997,14 +997,6 @@
                                 id: "yesno",
                                 text: i18n("tt.customFieldEditorYesNo"),
                             },
-                            {
-                                id: "noyes",
-                                text: i18n("tt.customFieldEditorNoYes"),
-                            },
-                            {
-                                id: "json",
-                                text: i18n("tt.customFieldEditorJSON"),
-                            },
                         ],
                         hidden: cf.type !== "text",
                     },
@@ -1030,14 +1022,14 @@
                     },
                     {
                         id: "editable",
-                        type: "noyes",
+                        type: "yesno",
                         title: i18n("tt.editable"),
                         value: (cf.format && cf.format.split(" ").includes("editable"))?"1":"0",
                         hidden: cf.type !== "select",
                     },
                     {
                         id: "multiple",
-                        type: "noyes",
+                        type: "yesno",
                         title: i18n("tt.multiple"),
                         value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
                         hidden: cf.type === "text" || cf.type === "geo",
@@ -1067,20 +1059,20 @@
                     },
                     {
                         id: "indx",
-                        type: "noyes",
+                        type: "yesno",
                         title: i18n("tt.customFieldIndex"),
                         value: cf.indx,
                     },
                     {
                         id: "search",
-                        type: "noyes",
+                        type: "yesno",
                         title: i18n("tt.customFieldSearch"),
                         value: cf.search,
                         hidden: cf.type !== "text",
                     },
                     {
                         id: "required",
-                        type: "noyes",
+                        type: "yesno",
                         title: i18n("tt.required"),
                         value: cf.required,
                     },
@@ -1322,11 +1314,11 @@
                                             data: project.filters[i].projectFilterId,
                                         },
                                         {
-                                            data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter, 33, true),
+                                            data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter),
                                             nowrap: true,
                                         },
                                         {
-                                            data: trimStr(project.filters[i].filter, 33, true),
+                                            data: trimStr(project.filters[i].filter),
                                             nowrap: true,
                                         },
                                         {
@@ -1672,7 +1664,6 @@
                         return rows;
                     },
                 }).show();
-                loadingDone();
             });
         }).
         fail(FAIL).
@@ -2014,7 +2005,9 @@
         loadingStart();
         GET("tt", "workflow", workflow, true).
         done(w => {
-            let height = $(window).height() - mainFormTop;
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
@@ -2027,19 +2020,9 @@
             editor.setValue(w.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
-            editor.commands.addCommand({
-                name: 'save',
-                bindKey: {
-                    win: "Ctrl-S", 
-                    mac: "Cmd-S"
-                },
-                exec: (() => {
-                    $("#workflowSave").click();
-                }),
-            });
             $("#workflowSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "workflow", workflow, { "body": textRTrim($.trim(editor.getValue())) }).
+                PUT("tt", "workflow", workflow, { "body": $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowWasSaved"));
@@ -2165,7 +2148,9 @@
         loadingStart();
         GET("tt", "lib", lib, true).
         done(l => {
-            let height = $(window).height() - mainFormTop;
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="libEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
@@ -2178,19 +2163,9 @@
             editor.setValue(l.body, -1);
             editor.clearSelection();
             editor.setFontSize(14);
-            editor.commands.addCommand({
-                name: 'save',
-                bindKey: {
-                    win: "Ctrl-S", 
-                    mac: "Cmd-S"
-                },
-                exec: (() => {
-                    $("#libSave").click();
-                }),
-            });
             $("#libSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "lib", lib, { "body": textRTrim($.trim(editor.getValue())) }).
+                PUT("tt", "lib", lib, { "body": $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowLibWasSaved"));
@@ -2535,13 +2510,7 @@
                                     break;
                                 case "yesno":
                                     editor = i18n("tt.customFieldEditorYesNo");
-                                    break;
-                                case "noyes":
-                                    editor = i18n("tt.customFieldEditorNoYes");
-                                    break;
-                                case "json":
-                                    editor = i18n("tt.customFieldEditorJSON");
-                                    break;
+                                break;
                             }
                         }
 
@@ -2590,87 +2559,39 @@
 
     renderFilter: function (filter) {
         loadingStart();
-        GET("tt", "tt", false, true).
-        done(modules.tt.tt).
-        done(() => {
-            GET("tt", "filter", filter, true).
-            done(f => {
-                let readOnly = false;
-                try {
-                    readOnly = modules.tt.meta.filtersExt[filter].owner?true:false;
-                } catch (_) {
-                    //
-                }
-                let height = $(window).height() - mainFormTop;
-                let h = '';
-                h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
-                h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
-                h += "</div>";
-                if (!readOnly) {
-                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
-                }
-                $("#mainForm").html(h);
-                let editor = ace.edit("filterEditor");
-                editor.setTheme("ace/theme/chrome");
-                editor.session.setMode("ace/mode/json");
-
-                let template = {
-                    "name": "My",
-                    "filter": {
-                        "$or": [
-                            {
-                                "assigned": {
-                                    "$elemMatch": {
-                                        "$in": "%%my"
-                                    }
-                                }
-                            },
-                            {
-                                "author": "%%me"
-                            }
-                        ]
-                    },
-                    "fields": [
-                        "subject",
-                        "status",
-                        "workflow"
-                    ]
-                };
-                template.name = filter;
-                
-                editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
-                editor.clearSelection();
-                editor.setFontSize(14);
-                editor.setReadOnly(readOnly);
-                editor.commands.addCommand({
-                    name: 'save',
-                    bindKey: {
-                        win: "Ctrl-S", 
-                        mac: "Cmd-S"
-                    },
-                    exec: (() => {
-                        $("#filterSave").click();
-                    }),
+        GET("tt", "filter", filter, true).
+        done(f => {
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("filterEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.session.setMode("ace/mode/json");
+            editor.setValue(f.body, -1);
+            editor.clearSelection();
+            editor.setFontSize(14);
+            $("#filterSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.filterWasSaved"));
+                }).
+                always(() => {
+                    loadingDone();
                 });
-                $("#filterSave").off("click").on("click", () => {
-                    loadingStart();
-                    PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
-                    fail(FAIL).
-                    done(() => {
-                        message(i18n("tt.filterWasSaved"));
-                    }).
-                    always(() => {
-                        loadingDone();
-                    });
-                });
-            }).
-            fail(FAIL).
-            always(() => {
-                loadingDone();
             });
         }).
         fail(FAIL).
-        fail(loadingDone);
+        always(() => {
+            loadingDone();
+        });
     },
 
     deleteFilter: function (filter) {
@@ -2711,6 +2632,7 @@
     },
 
     renderFilters: function () {
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2757,15 +2679,15 @@
                                 uid: i,
                                 cols: [
                                     {
-                                        data: trimStr(i, 33, true),
+                                        data: trimStr(i),
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filtersExt[i].owner?(users[modules.tt.meta.filtersExt[i].owner]?users[modules.tt.meta.filtersExt[i].owner]:modules.tt.meta.filtersExt[i].owner):i18n("tt.commonFilter"), 33, true),
+                                        data: trimStr(modules.tt.meta.filtersExt[i].owner?(users[modules.tt.meta.filtersExt[i].owner]?users[modules.tt.meta.filtersExt[i].owner]:modules.tt.meta.filtersExt[i].owner):i18n("tt.commonFilter")),
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i, 33, true),
+                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i),
                                         nowrap: true,
                                     },
                                 ],
@@ -2866,7 +2788,7 @@
                                     if (k == modules.tt.meta.projects[i].filters[j].filter && !modules.tt.meta.projects[i].filters[j].personal) {
                                         f.push({
                                             id: k,
-                                            text: trimStr(modules.tt.meta.filters[k], 33, true),
+                                            text: trimStr(modules.tt.meta.filters[k]),
                                         });
                                     }
                                 }
@@ -3162,14 +3084,16 @@
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
-            let code = `//function ${name} (value, issue, field, target) {\n\treturn value;\n//}\n`;
+            let code = `//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
             for (let i in v.viewers) {
                 if (v.viewers[i].field == field && v.viewers[i].name == name) {
-                    code = v.viewers[i].code?v.viewers[i].code:`//function ${name} (value, issue, field, target) {\n\treturn value;\n//}\n`;
+                    code = v.viewers[i].code?v.viewers[i].code:`//function ${name} (value, issue, field) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
-            let height = $(window).height() - mainFormTop;
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="viewerEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
@@ -3182,19 +3106,9 @@
             editor.setValue(code, -1);
             editor.clearSelection();
             editor.setFontSize(14);
-            editor.commands.addCommand({
-                name: 'save',
-                bindKey: {
-                    win: "Ctrl-S", 
-                    mac: "Cmd-S"
-                },
-                exec: (() => {
-                    $("#viewerSave").click();
-                }),
-            });
             $("#viewerSave").off("click").on("click", () => {
                 loadingStart();
-                PUT("tt", "viewer", false, { field: field, name: name, code: textRTrim($.trim(editor.getValue())) }).
+                PUT("tt", "viewer", false, { field: field, name: name, code: $.trim(editor.getValue()) }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));

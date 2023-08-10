@@ -23,11 +23,11 @@
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
                 $this->clickhouse = new \clickhouse(
-                    @$config['clickhouse']['host']?:'127.0.0.1',
-                    @$config['clickhouse']['port']?:8123,
-                    @$config['clickhouse']['username']?:'default',
-                    @$config['clickhouse']['password']?:'qqq',
-                    @$config['clickhouse']['database']?:'default'
+                    @$config['backends']['accounting']['host']?:'127.0.0.1',
+                    @$config['backends']['accounting']['port']?:8123,
+                    @$config['backends']['accounting']['username']?:'default',
+                    @$config['backends']['accounting']['password']?:'qqq',
+                    @$config['backends']['accounting']['database']?:'default'
                 );
             }
 
@@ -47,14 +47,14 @@
                         }
                     }
                 }
-                if (!$old && $new) {
+                if (!$old) {
                     foreach ($new as $key => $field) {
                         if (!$field) {
                             unset($new[$key]);
                         }
                     }
                 }
-                if (!$new && $old) {
+                if (!$new) {
                     foreach ($old as $key => $field) {
                         if (!$field) {
                             unset($old[$key]);

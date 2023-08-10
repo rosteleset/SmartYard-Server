@@ -40,7 +40,7 @@
              * @param $hidden
              * @return mixed
              */
-            abstract public function addProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden);
+            abstract public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden);
 
             /**
              * @param $providerId

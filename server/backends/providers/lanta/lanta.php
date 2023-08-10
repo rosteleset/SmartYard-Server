@@ -33,8 +33,7 @@
                 curl_close($curl);
             }
 
-            public function updateTokens()
-            {
+            public function updateTokens() {
                 $providers = $this->getProviders();
 
                 $common = [];
@@ -128,13 +127,9 @@
             /**
              * @inheritDoc
              */
-            public function addProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
+            public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
             {
                 if (!checkInt($hidden)) {
-                    return false;
-                }
-
-                if (!trim($name) || !trim(baseUrl) || !trim($tokenCommon)) {
                     return false;
                 }
 
@@ -169,10 +164,6 @@
                     return false;
                 }
 
-                if (!trim($name) || !trim(baseUrl) || !trim($tokenCommon)) {
-                    return false;
-                }
-
                 $r = $this->db->modify("update providers set id = :id, name = :name, base_url = :base_url, logo = :logo, token_common = :token_common, token_sms = :token_sms, hidden = :hidden where provider_id = $providerId", [
                     "id" => $id,
                     "name" => $name,
@@ -199,13 +190,7 @@
                     return false;
                 }
 
-                $r = $this->db->modify("delete from providers where provider_id = $providerId");
-
-                if ($this->updateTokens()) {
-                    return $r;
-                } else {
-                    return false;
-                }
+                return $this->db->modify("delete from providers where provider_id = $providerId");
             }
         }
     }

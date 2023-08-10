@@ -19,14 +19,7 @@
              */
 
             public function methods($_all = true) {
-                $key = "METHODS:" . ($_all?"1":"0");
-
-                $cache = $this->cacheGet($key);
-                if ($cache) {
-                    return $cache;
-                }
-
-                $_m = [];
+                $m = [];
                 try {
                     if ($_all) {
                         $all = $this->db->query("select aid, api, method, request_method from core_api_methods", \PDO::FETCH_ASSOC)->fetchAll();
@@ -46,16 +39,13 @@
                         ", \PDO::FETCH_ASSOC)->fetchAll();
                     }
                     foreach ($all as $a) {
-                        $_m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                        $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
-                    $this->unCache($key);
                     return false;
                 }
-
-                $this->cacheSet($key, $_m);
-                return $_m;
+                return $m;
             }
 
             /**
@@ -87,28 +77,5 @@
              */
 
             abstract public function allowedMethods($uid);
-
-            /**
-             * @param $api
-             * @param $method
-             * @param $request_method
-             */
-
-            public function mAllow($api, $method = false, $request_method = false)
-            {
-                $available = $this->allowedMethods($this->uid);
-
-                if ($request_method) {
-                    return $available && @$available[$api] && @$available[$api][$method] && @$available[$api][$method][$request_method];
-                }
-                if ($method) {
-                    return $available && @$available[$api] && @$available[$api][$method];
-                }
-                if ($api) {
-                    return $available && @$available[$api];
-                }
-                
-                return false;
-            }
         }
     }

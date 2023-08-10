@@ -10,15 +10,15 @@
  * @apiHeader {string} authorization токен авторизации
  *
  * @apiSuccess {object[]} - массив объектов
- * @apiSuccess {string} [-.clientId] идентификатор клиента
+ * @apiSuccess {integer} [-.clientId] идентификатор клиента
  * @apiSuccess {string} [-.clientName] имя абонента
  * @apiSuccess {string} [-.contractName] номер договора
  * @apiSuccess {string="t","f"} [-.flatOwner] владелец квартиры
  * @apiSuccess {string="t","f"} [-.contractOwner] владелец договора
  * @apiSuccess {string="t","f"} [-.hasGates] есть ворота и (или) шлагбаумы
- * @apiSuccess {string} [-.houseId] идентификатор дома
- * @apiSuccess {string} [-.flatId] идентификатор квартиры
- * @apiSuccess {string} [-.flatNumber] номер квартиры
+ * @apiSuccess {integer} [-.houseId] идентификатор дома
+ * @apiSuccess {integer} [-.flatId] идентификатор квартиры
+ * @apiSuccess {integer} [-.flatNumber] номер квартиры
  * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
  * @apiSuccess {string} -.address адрес
  * @apiSuccess {string[]="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.services подключенные услуги

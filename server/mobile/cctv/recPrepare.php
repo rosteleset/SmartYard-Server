@@ -24,14 +24,8 @@ $logger = Logger::channel('cctv');
 
 $cameraId = (int)@$postdata['id'];
 
-// приложение везде при работе с архивом передаёт время по часовому поясу Москвы, если не в конфиге это не переопределено.
-
-if (@$config["mobile"]["time_zone"]) {
-    date_default_timezone_set($config["mobile"]["time_zone"]);
-} else {
-    date_default_timezone_set('Europe/Moscow');
-}
-
+// приложение везде при работе с архивом передаёт время по часовому поясу Москвы.
+date_default_timezone_set('Europe/Moscow');
 $from = strtotime(@$postdata['from']);
 $to = strtotime(@$postdata['to']);
 

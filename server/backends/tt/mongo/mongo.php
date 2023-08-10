@@ -201,7 +201,20 @@
                     ]);
 
                     foreach ($issueFiles as $file) {
-                        $delete = $delete && $files->deleteFile($file["id"]);
+                        $delete = $delete && $files->deleteFile($file["id"]) &&
+                        $this->mongo->$db->$project->updateOne(
+                            [
+                                "issueId" => $issueId,
+                            ],
+                            [
+                                "\$set" => [
+                                    "updated" => time(),
+                                ],
+                            ]
+                        ) &&
+                        $this->addJournalRecord($issueId, "deleteAttachment", [
+                            "attachmentFilename" => $filename,
+                        ], null);
                     }
                 }
 
@@ -241,26 +254,26 @@
                 $preprocess["%%me"] = $this->login;
                 $preprocess["%%my"] = $my;
 
-                $preprocess["%%strToday"] = date("Y-m-d");
-                $preprocess["%%strYesterday"] = date("Y-m-d", strtotime("-1 day"));
-                $preprocess["%%strTomorrow"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday"] = date("Y-M-d");
+                $preprocess["%%strYesterday"] = date("Y-M-d", strtotime("-1 day"));
+                $preprocess["%%strTomorrow"] = date("Y-M-d", strtotime("+1 day"));
 
                 $preprocess["%%timestamp"] = time();
-                $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
-                $preprocess["%%timestampYesterday"] = strtotime(date("Y-m-d", strtotime("-1 day")));
-                $preprocess["%%timestampTomorrow"] = strtotime(date("Y-m-d", strtotime("+1 day")));
-                $preprocess["%%timestamp+2days"] = strtotime(date("Y-m-d", strtotime("+2 day")));
-                $preprocess["%%timestamp+3days"] = strtotime(date("Y-m-d", strtotime("+3 day")));
-                $preprocess["%%timestamp+7days"] = strtotime(date("Y-m-d", strtotime("+7 day")));
-                $preprocess["%%timestamp+1month"] = strtotime(date("Y-m-d", strtotime("+1 month")));
-                $preprocess["%%timestamp+1year"] = strtotime(date("Y-m-d", strtotime("+1 year")));
-                $preprocess["%%timestamp-2days"] = strtotime(date("Y-m-d", strtotime("-2 day")));
-                $preprocess["%%timestamp-3days"] = strtotime(date("Y-m-d", strtotime("-3 day")));
-                $preprocess["%%timestamp-7days"] = strtotime(date("Y-m-d", strtotime("-7 day")));
-                $preprocess["%%timestamp-1month"] = strtotime(date("Y-m-d", strtotime("-1 month")));
-                $preprocess["%%timestamp-1year"] = strtotime(date("Y-m-d", strtotime("-1 year")));
-                $preprocess["%%timestamp-2year"] = strtotime(date("Y-m-d", strtotime("-2 year")));
-                $preprocess["%%timestamp-3year"] = strtotime(date("Y-m-d", strtotime("-3 year")));
+                $preprocess["%%timestampToday"] = strtotime(date("Y-M-d"));
+                $preprocess["%%timestampYesterday"] = strtotime(date("Y-M-d", strtotime("-1 day")));
+                $preprocess["%%timestampTomorrow"] = strtotime(date("Y-M-d", strtotime("+1 day")));
+                $preprocess["%%timestamp+2days"] = strtotime(date("Y-M-d", strtotime("+2 day")));
+                $preprocess["%%timestamp+3days"] = strtotime(date("Y-M-d", strtotime("+3 day")));
+                $preprocess["%%timestamp+7days"] = strtotime(date("Y-M-d", strtotime("+7 day")));
+                $preprocess["%%timestamp+1month"] = strtotime(date("Y-M-d", strtotime("+1 month")));
+                $preprocess["%%timestamp+1year"] = strtotime(date("Y-M-d", strtotime("+1 year")));
+                $preprocess["%%timestamp-2days"] = strtotime(date("Y-M-d", strtotime("-2 day")));
+                $preprocess["%%timestamp-3days"] = strtotime(date("Y-M-d", strtotime("-3 day")));
+                $preprocess["%%timestamp-7days"] = strtotime(date("Y-M-d", strtotime("-7 day")));
+                $preprocess["%%timestamp-1month"] = strtotime(date("Y-M-d", strtotime("-1 month")));
+                $preprocess["%%timestamp-1year"] = strtotime(date("Y-M-d", strtotime("-1 year")));
+                $preprocess["%%timestamp-2year"] = strtotime(date("Y-M-d", strtotime("-2 year")));
+                $preprocess["%%timestamp-3year"] = strtotime(date("Y-M-d", strtotime("-3 year")));
                 
                 $query = $this->preprocessFilter($query, $preprocess);
 
@@ -378,14 +391,14 @@
 
                     $md5 = md5(print_r($fullText, true));
 
-                    if ($this->redis->get("FTS:" . $acr) != $md5) {
+                    if ($this->redis->get("full_text_search_" . $acr) != $md5) {
                         try {
                             $this->mongo->$db->$acr->dropIndex("fullText");
                         } catch (\Exception $e) {
                             //
                         }
                         $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
-                        $this->redis->set("FTS:" . $acr, $md5);
+                        $this->redis->set("full_text_search_" . $acr, $md5);
                     }
                 }
 
@@ -435,7 +448,7 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issueId, $comment, $private, $type = false)
+            public function addComment($issueId, $comment, $private)
             {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
@@ -454,7 +467,6 @@
                 $this->addJournalRecord($issueId, "addComment", null, [
                     "commentBody" => $comment,
                     "commentPrivate" => $private,
-                    "commentType" => $type,
                 ]);
 
                 return $this->mongo->$db->$acr->updateOne(
@@ -468,7 +480,6 @@
                                 "created" => time(),
                                 "author" => $this->login,
                                 "private" => $private,
-                                "type" => $type,
                             ],
                         ],
                     ]
@@ -643,36 +654,28 @@
                 }
 
                 foreach ($attachments as $attachment) {
-                    $meta = [];
-
-                    if (@$attachment["metadata"]) {
-                        $meta = $attachment["metadata"];
-                    }
-
-                    $meta["date"] = round($attachment["date"] / 1000);
-                    $meta["added"] = time();
-                    $meta["type"] = $attachment["type"];
-                    $meta["issue"] = true;
-                    $meta["project"] = $acr;
-                    $meta["issueId"] = $issueId;
-                    $meta["attachman"] = $this->login;
-
-                    if (!(
-                        $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), $meta) &&
-                        $this->mongo->$db->$acr->updateOne(
-                            [
-                                "issueId" => $issueId,
+                    if (!($files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
+                        "date" => round($attachment["date"] / 1000),
+                        "added" => time(),
+                        "type" => $attachment["type"],
+                        "issue" => true,
+                        "project" => $acr,
+                        "issueId" => $issueId,
+                        "attachman" => $this->login,
+                    ]) &&
+                    $this->mongo->$db->$acr->updateOne(
+                        [
+                            "issueId" => $issueId,
+                        ],
+                        [
+                            "\$set" => [
+                                "updated" => time(),
                             ],
-                            [
-                                "\$set" => [
-                                    "updated" => time(),
-                                ],
-                            ]
-                        ) &&
-                        $this->addJournalRecord($issueId, "addAttachment", null, [
-                            "attachmentFilename" => $attachment["name"],
-                        ])
-                    )) {
+                        ]
+                    ) &&
+                    $this->addJournalRecord($issueId, "addAttachment", null, [
+                        "attachmentFilename" => $attachment["name"],
+                    ]))) {
                         return false;
                     }
                 }

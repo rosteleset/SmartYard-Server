@@ -80,18 +80,6 @@
         });
     },
 
-    doCompleteDeleteSubscriber: function (subscriberId) {
-        loadingStart();
-        DELETE("subscribers", "subscriber", subscriberId, { complete: true }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("addresses.subscriberWasDeleted"));
-        }).
-        always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
-        });
-    },
-
     doDeleteKey: function (keyId) {
         loadingStart();
         DELETE("subscribers", "key", keyId).
@@ -239,6 +227,7 @@
                 borderless: true,
                 topApply: true,
                 apply: i18n("edit"),
+                delete: i18n("addresses.deleteSubscriber"),
                 size: "lg",
                 fields: [
                     {
@@ -309,31 +298,9 @@
                             },
                         ],
                     },
-                    {
-                        id: "delete",
-                        type: "select",
-                        title: i18n("addresses.deleteSubscriber"),
-                        options: [
-                            {
-                                id: "0",
-                                text: "&nbsp;",
-                            },
-                            {
-                                id: "1",
-                                text: i18n("addresses.deleteSubscriberFromFlat"),
-                            },
-                            {
-                                id: "2",
-                                text: i18n("addresses.completeDeleteSubscriber"),
-                            }
-                        ]
-                    }
                 ],
                 callback: function (result) {
-                    if (parseInt(result.delete) == 2) {
-                        modules.addresses.subscribers.completeDeleteSubscriber(subscriberId);
-                    } else
-                    if (parseInt(result.delete) == 1) {
+                    if (result.delete === "yes") {
                         modules.addresses.subscribers.deleteSubscriber(flatId, subscriberId);
                     } else {
                         let params = hashParse()[1];
@@ -409,14 +376,8 @@
     },
 
     deleteSubscriber: function (flatId, subscriberId) {
-        mConfirm(i18n("addresses.confirmDeleteSubscriber", subscriberId.toString(), flatId.toString()), i18n("confirm"), `danger:${i18n("addresses.deleteSubscriber")}`, () => {
+        mConfirm(i18n("addresses.confirmDeleteSubscriber", subscriberId.toString()), i18n("confirm"), `danger:${i18n("addresses.deleteSubscriber")}`, () => {
             modules.addresses.subscribers.doDeleteSubscriber(flatId, subscriberId);
-        });
-    },
-
-    completeDeleteSubscriber: function (subscriberId) {
-        mConfirm(i18n("addresses.confirmCompleteDeleteSubscriber", subscriberId.toString()), i18n("confirm"), `danger:${i18n("addresses.deleteSubscriber")}`, () => {
-            modules.addresses.subscribers.doCompleteDeleteSubscriber(subscriberId);
         });
     },
 

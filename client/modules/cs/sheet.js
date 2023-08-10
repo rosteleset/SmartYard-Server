@@ -13,7 +13,9 @@
         }).
         fail(FAILPAGE).
         done(response => {
-            let height = $(window).height() - mainFormTop;
+            // TODO f..ck!
+            let top = 75;
+            let height = $(window).height() - top;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="sheetEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
@@ -39,16 +41,6 @@
             }
             editor.clearSelection();
             editor.setFontSize(14);
-            editor.commands.addCommand({
-                name: 'save',
-                bindKey: {
-                    win: "Ctrl-S", 
-                    mac: "Cmd-S"
-                },
-                exec: (() => {
-                    $("#sheetSave").click();
-                }),
-            });
             $("#sheetSave").off("click").on("click", () => {
                 loadingStart();
                 PUT("cs", "sheet", false, {
