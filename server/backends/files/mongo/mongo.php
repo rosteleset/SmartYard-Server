@@ -69,19 +69,6 @@
                 ];
             }
 
-            public function getFileContent($uuid)
-            {
-                $db = $this->dbName;
-
-                $bucket = $this->mongo->$db->selectGridFSBucket();
-
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
-
-                $stream = $bucket->openDownloadStream($fileId);
-
-                return stream_get_contents($stream);
-            }
-
             /**
              * @inheritDoc
              */
