@@ -13,7 +13,7 @@ if ($img) {
 
     $contents = stream_get_contents($img['stream']);
 
-    Logger::channel('plog')->debug('plogCamshot response', ['uuid' => $uuid, 'count' => count($contents)]);
+    Logger::channel('plog')->debug('plogCamshot response', ['uuid' => $uuid, 'count' => strlen($contents)]);
 
     echo $contents;
 
