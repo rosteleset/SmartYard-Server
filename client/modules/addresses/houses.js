@@ -23,22 +23,23 @@
                     placeholder: i18n("addresses.address"),
                     ajax: {
                         delay: 1000,
-                        transport: function (params, success, failure) {
-                            loadingStart();
-                            QUERY("geo", "suggestions", {
-                                search: params.data.term,
-                            }).
-                            then(response => {
-                                loadingDone();
-                                success(response);
-                            }).
-                            fail(response => {
-                                FAIL(response);
-                                loadingDone();
-                                failure(response);
-                            }).
-                            fail(FAIL).
-                            always(loadingDone);
+                        transport: function (params, success) {
+                            if (params.data.term) {
+                                QUERY("geo", "suggestions", {
+                                    search: params.data.term,
+                                }).
+                                then(success).
+                                fail(response => {
+                                    FAIL(response);
+                                    success({
+                                        suggestions: [],
+                                    });
+                                });
+                            } else {
+                                success({
+                                    suggestions: [],
+                                });
+                            }
                         },
                         processResults: function (data) {
                             let suggestions = [];
@@ -158,10 +159,8 @@
     outputsSelect: function (el, id, prefix) {
         if (parseInt($("#" + prefix + "domophoneOutput").val()) > 0) {
             $("#" + prefix + "cms").parent().parent().parent().hide();
-            $("#" + prefix + "locksDisabled").parent().parent().parent().hide();
         } else {
             $("#" + prefix + "cms").parent().parent().parent().show();
-            $("#" + prefix + "locksDisabled").parent().parent().parent().show();
         }
 
         modules.addresses.houses.cmsSelect(el, id, prefix);
@@ -466,12 +465,6 @@
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[first]),
                                 select: modules.addresses.houses.outputsSelect,
-                            },
-                            {
-                                id: "locksDisabled",
-                                type: "yesno",
-                                title: i18n("addresses.locksDisabled"),
-                                value: 0,
                             },
                             {
                                 id: "cms",
@@ -1043,13 +1036,6 @@
                                 select: modules.addresses.houses.outputsSelect,
                             },
                             {
-                                id: "locksDisabled",
-                                type: "yesno",
-                                title: i18n("addresses.locksDisabled"),
-                                value: entrance.locksDisabled,
-                                hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
-                            },
-                            {
                                 id: "cms",
                                 type: "select2",
                                 title: i18n("addresses.cms"),
@@ -1492,7 +1478,7 @@
                 modules.addresses.houses.doDeleteEntrance(entranceId, true, houseId);
             }, () => {
                 modules.addresses.houses.doDeleteEntrance(entranceId, false, houseId);
-            }, i18n("addresses.deleteEntranceComletely"), i18n("addresses.deleteEntranceLink"));
+            }, i18n("addresses.deleteEntranceCompletely"), i18n("addresses.deleteEntranceLink"));
         } else {
             mConfirm(i18n("addresses.confirmDeleteEntrance", entranceId), i18n("confirm"), `danger:${i18n("addresses.deleteEntrance")}`, () => {
                 modules.addresses.houses.doDeleteEntrance(entranceId, true, houseId);

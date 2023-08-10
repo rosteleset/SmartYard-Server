@@ -31,9 +31,14 @@
                     return false;
                 }
                 
+                $cache = $this->cacheGet("WORKFLOWS");
+                if ($cache) {
+                    return $cache;
+                }
+
                 $workflows = $files->searchFiles([ "metadata.type" => "workflow" ]);
 
-                $list = [];
+                $_list = [];
                 foreach ($workflows as $workflow) {
                     $name = $workflow["metadata"]["workflow"];
                     $catalog = false;
@@ -47,13 +52,14 @@
                     } catch (\Exception $e) {
                         //
                     }
-                    $list[$workflow["metadata"]["workflow"]] = [
+                    $_list[$workflow["metadata"]["workflow"]] = [
                         "name" => $name,
                         "catalog" => $catalog,
                     ];
                 }
 
-                return $list;
+                $this->cacheSet("WORKFLOWS", $_list);
+                return $_list;
             }
 
             /**
@@ -247,7 +253,8 @@
                         },
                     ]);
 
-                    return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
+                    $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
+                    return $this->workflows[$workflow];
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -263,25 +270,34 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("WORKFLOW:$workflow");
                     return false;
                 }
                 
+                $cache = $this->cacheGet("WORKFLOW:$workflow");
+                if ($cache) {
+                    return $cache;
+                }
+
                 $workflows = $files->searchFiles([
                     "metadata.type" => "workflow",
                     "metadata.workflow" => $workflow,
                 ]);
 
-                $workflow = false;
+                $_workflow = false;
                 foreach ($workflows as $w) {
-                    $workflow = $w;
+                    $_workflow = $w;
                     break;
                 }
 
-                if (!$workflow) {
+                if (!$_workflow) {
+                    $this->unCache("WORKFLOW:$workflow");
                     return "";
                 }
 
-                return $files->streamToContents($files->getFileStream($workflow["id"]));
+                $_workflow = $files->streamToContents($files->getFileStream($_workflow["id"]));
+                $this->cacheSet("WORKFLOW:$workflow", $_workflow);
+                return $_workflow;
             }
 
             /**
@@ -290,6 +306,8 @@
              * @return boolean
              */
             public function putWorkflow($workflow, $body) {
+                $this-clearCache();
+
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -320,6 +338,8 @@
              * @return boolean
              */
             public function deleteWorkflow($workflow) {
+                $this-clearCache();
+
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -346,20 +366,27 @@
              */
 
              public function getWorkflowLibs() {
+
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
                 
-                $libs = $files->searchFiles([ "metadata.type" => "workflow.lib" ]);
-
-                $list = [];
-                foreach ($libs as $lib) {
-                    $list[] = $lib["metadata"]["lib"];
+                $cache = $this->cacheGet("WORKFLOW:LIBS");
+                if ($cache) {
+                    return $cache;
                 }
 
-                return $list;
+                $libs = $files->searchFiles([ "metadata.type" => "workflow.lib" ]);
+
+                $_list = [];
+                foreach ($libs as $lib) {
+                    $_list[] = $lib["metadata"]["lib"];
+                }
+
+                $cache = $this->cacheSet("WORKFLOW:LIBS", $_list);
+                return $_list;
             }
 
             /**
@@ -717,21 +744,28 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("FILTERS");
                     return false;
+                }
+
+                $cache = $this->cacheGet("FILTERS");
+                if ($cache) {
+                    return $cache;
                 }
                 
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
-                $list = [];
+                $_list = [];
                 foreach ($filters as $filter) {
                     try {
-                        $list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"];
+                        $_list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"];
                     } catch (\Exception $e) {
-                        $list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
+                        $_list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
                     }
                 }
 
-                return $list;
+                $this->cacheSet("FILTERS", $_list);
+                return $_list;
             }
 
             /**
@@ -741,26 +775,33 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("FILTERS-EXT");
                     return false;
                 }
                 
+                $cache = $this->cacheGet("FILTERS-EXT");
+                if ($cache) {
+                    return $cache;
+                }
+
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
-                $list = [];
+                $_list = [];
                 foreach ($filters as $filter) {
                     try {
-                        $list[$filter["metadata"]["filter"]] = [
+                        $_list[$filter["metadata"]["filter"]] = [
                             "name" => @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"],
                             "owner" => @$filter["metadata"]["owner"],
                         ];
                     } catch (\Exception $e) {
-                        $list[$filter["metadata"]["filter"]] = [
+                        $_list[$filter["metadata"]["filter"]] = [
                             "name" => $filter["metadata"]["filter"],
                         ];
                     }
                 }
 
-                return $list;
+                $this->cacheSet("FILTERS-EXT", $_list);
+                return $_list;
             }
 
             /**
@@ -818,6 +859,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 if ($owner) {
                     $filters = $files->searchFiles([
                         "metadata.type" => "filter",
@@ -864,6 +907,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 if ($owner) {
                     $filters = $files->searchFiles([
                         "metadata.type" => "filter",
@@ -901,6 +946,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 $viewers = $files->searchFiles([
                     "metadata.type" => "viewer",
                     "metadata.field" => $field,
@@ -931,6 +978,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 $viewers = $files->searchFiles([
                     "metadata.type" => "viewer",
                     "metadata.field" => $field,
@@ -951,24 +1000,31 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("VIEWERS");
                     return false;
+                }
+
+                $cache = $this->cacheGet("VIEWERS");
+                if ($cache) {
+                    return $cache;
                 }
 
                 $viewers = $files->searchFiles([
                     "metadata.type" => "viewer",
                 ]);
 
-                $vs = [];
+                $_vs = [];
                 foreach ($viewers as $v) {
-                    $vs[] = [
+                    $_vs[] = [
                         "filename" => $v["metadata"]["viewer"],
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
-                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue) {\n\treturn val;\n//}\n",
+                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
                     ]; 
                 }
 
-                return $vs;
+                $this->cacheSet("VIEWERS", $_vs);
+                return $_vs;
             }
 
             /**
@@ -1004,6 +1060,48 @@
              * @return mixed
              */
             abstract public function deleteCrontab($crontabId);
+
+            /**
+             * @param $a
+             * @return boolean
+             */
+            private static function al($a) {
+                if ($a === []) {
+                    return true;
+                }
+                return array_keys($a) === range(0, count($a) - 1);
+            }
+            
+            /**
+             * @param $a
+             * @return boolean
+             */
+            private static function an($a){
+                return ctype_digit(implode('', array_keys($a)));
+            }
+            
+            /**
+             * @param $a
+             * @return mixed
+             */
+            private static function av($a) {
+                $repeat = false;
+                if (!is_array($a) && !is_object($a)) {
+                    return $a;
+                } else {
+                    $t = [];
+                    if (self::an($a)) {
+                        foreach ($a as $k => $v) {
+                            $t[] = self::av($v);
+                        }
+                    } else {
+                        foreach ($a as $k => $v) {
+                            $t[$k] = self::av($v);
+                        }
+                    }
+                    return $t;
+                }
+            }
 
             /**
              * @param $issue
@@ -1049,6 +1147,7 @@
                 $validFields[] = "tags";
                 $validFields[] = "assigned";
                 $validFields[] = "watchers";
+                $validFields[] = "links";
                 $validFields[] = "attachments";
                 $validFields[] = "comments";
 
@@ -1062,32 +1161,42 @@
                     $validTags[] = $t["tag"];
                 }
 
-                foreach ($issue as $field => $dumb) {
+                foreach ($issue as $field => $value) {
                     if (!in_array($field, $validFields)) {
                         unset($issue[$field]);
                     } else {
-                        if (array_key_exists($field, $customFieldsByName) && strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
-                            $issue[$field] = array_values($dumb);
+                        if (array_key_exists($field, $customFieldsByName)) {
+                            if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                                $issue[$field] = array_values($value);
+                            } else {
+                                $issue[$field] = self::av($value);
+                            }
                         }
                     }
                 }
 
-                foreach ($issue["tags"] as $indx => $tag) {
-                    if (!in_array($tag, $validTags)) {
-                        unset($issue["tags"][$indx]);
+                if (@$issue["tags"]) {
+                    foreach ($issue["tags"] as $indx => $tag) {
+                        if (!in_array($tag, $validTags)) {
+                            unset($issue["tags"][$indx]);
+                        }
                     }
                 }
 
-                if ($issue["assigned"]) {
+                if (@$issue["assigned"]) {
                     $issue["assigned"] = array_values($issue["assigned"]);
                 }
 
-                if ($issue["watchers"]) {
+                if (@$issue["watchers"]) {
                     $issue["watchers"] = array_values($issue["watchers"]);
                 }
 
-                if ($issue["tags"]) {
+                if (@$issue["tags"]) {
                     $issue["tags"] = array_values($issue["tags"]);
+                }
+
+                if (@$issue["links"]) {
+                    $issue["links"] = array_values($issue["links"]);
                 }
 
                 return $issue;
@@ -1113,6 +1222,28 @@
                     return false;
                 }
 
+                $issue = $issues["issues"][0];
+
+                if (@$issue["links"]) {
+                    $linkedIssues = $this->getIssues($acr, [
+                        "issueId" => [
+                            "\$in" => $issue["links"]
+                        ],
+                    ], [
+                        "issueId",
+                        "subject",
+                        "status",
+                        "resolution",
+                        "created",
+                        "updated",
+                        "author",
+                    ], [ "created" => 1 ], 0, 32768);
+
+                    if ($linkedIssues) {
+                        $issue["linkedIssues"] = $linkedIssues;
+                    }
+                }
+
                 $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [
                     "issueId",
                     "subject",
@@ -1124,10 +1255,10 @@
                 ], [ "created" => 1 ], 0, 32768);
 
                 if ($childrens) {
-                    $issues["issues"][0]["childrens"] = $childrens;
+                    $issue["childrens"] = $childrens;
                 }
 
-                return $issues["issues"][0];
+                return $issue;
             }
 
             /**
@@ -1227,8 +1358,10 @@
 
                 try {
                     $issue = $this->getIssue($issueId);
-                    $workflow = $this->loadWorkflow($issue["workflow"]);
-                    $workflow->issueChanged($issue, $action, $old, $new);
+                    if ($issue) {
+                        $workflow = $this->loadWorkflow($issue["workflow"]);
+                        $workflow->issueChanged($issue, $action, $old, $new);
+                    }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                 }
@@ -1339,6 +1472,170 @@
                     }, $params);
                 }
                 return $query;
+            }
+
+            /**
+             * @param $issue1
+             * @param $issue2
+             * @return mixed
+             */
+            public function linkIssues($issue1, $issue2)
+            {
+                $issue1 = $this->getIssue($issue1);
+                if (!$issue1) {
+                    setLastError("issue1NotFound");
+                    return false;
+                }
+
+                $issue2 = $this->getIssue($issue2);
+                if (!$issue2) {
+                    setLastError("issue2NotFound");
+                    return false;
+                }
+
+                if ($issue1["issueId"] == $issue2["issueId"]) {
+                    setLastError("cantLinkToItself");
+                    return false;
+                }
+
+                if ($issue1["project"] !== $issue2["project"]) {
+                    setLastError("issue1AndIssue2FromDifferentProjects");
+                    return false;
+                }
+
+                $project = $issue1["project"];
+
+                $me = $this->myRoles();
+
+                if ((int)$me[$project] < 40) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
+                $links1 = @$issue1["links"];
+                $links2 = @$issue2["links"];
+
+                if (!$links1) {
+                    $links1 = [];
+                }
+
+                if (!$links2) {
+                    $links2 = [];
+                }
+
+                $needModify1 = false;
+                $needModify2 = false;
+
+                if (!in_array($issue2["issueId"], $links1)) {
+                    $needModify1 = true;
+                    $links1[] = $issue2["issueId"];
+                    $issue1 = [
+                        "issueId" => $issue1["issueId"],
+                        "links" => $links1,
+                    ];
+                }
+
+                if (!in_array($issue1["issueId"], $links2)) {
+                    $needModify2 = true;
+                    $links2[] = $issue1["issueId"];
+                    $issue2 = [
+                        "issueId" => $issue2["issueId"],
+                        "links" => $links2,
+                    ];
+                }
+
+                $success = true;
+
+                if ($needModify1) {
+                    $success = $success && $this->modifyIssue($issue1);
+                }
+                
+                if ($needModify2) {
+                    $success = $success && $this->modifyIssue($issue2);
+                }
+                
+                return $success;
+            }
+
+            /**
+             * @param $issue1
+             * @param $issue2
+             * @return mixed
+             */
+            public function unLinkIssues($issue1, $issue2)
+            {
+                $issue1 = $this->getIssue($issue1);
+                if (!$issue1) {
+                    setLastError("issue1NotFound");
+                    return false;
+                }
+
+                $issue2 = $this->getIssue($issue2);
+                if (!$issue2) {
+                    setLastError("issue2NotFound");
+                    return false;
+                }
+
+                if ($issue1["issueId"] == $issue2["issueId"]) {
+                    setLastError("cantLinkToItself");
+                    return false;
+                }
+
+                if ($issue1["project"] !== $issue2["project"]) {
+                    setLastError("issue1AndIssue2FromDifferentProjects");
+                    return false;
+                }
+
+                $project = $issue1["project"];
+
+                $me = $this->myRoles();
+
+                if ((int)$me[$project] < 40) {
+                    setLastError("insufficentRights");
+                    return false;
+                }
+
+                $links1 = @$issue1["links"];
+                $links2 = @$issue2["links"];
+
+                if (!$links1) {
+                    $links1 = [];
+                }
+
+                if (!$links2) {
+                    $links2 = [];
+                }
+
+                $needModify1 = false;
+                $needModify2 = false;
+
+                if (in_array($issue2["issueId"], $links1)) {
+                    $needModify1 = true;
+                    $issue1 = [
+                        "issueId" => $issue1["issueId"],
+                        "links" => array_diff($links1, [ $issue2["issueId"] ]),
+                    ];
+                }
+
+                if (in_array($issue1["issueId"], $links2)) {
+                    $needModify2 = true;
+                    $issue2 = [
+                        "issueId" => $issue2["issueId"],
+                        "links" => array_diff($links2, [ $issue1["issueId"] ]),
+                    ];
+                }
+
+                $success = true;
+
+                if ($needModify1) {
+                    $success = $success && $this->modifyIssue($issue1);
+                }
+                
+                if ($needModify2) {
+                    $success = $success && $this->modifyIssue($issue2);
+                }
+                
+                return $success;
             }
 
             /**

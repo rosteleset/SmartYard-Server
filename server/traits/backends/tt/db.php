@@ -35,6 +35,13 @@
              */
             public function getProjects($acronym = false)
             {
+                $key = $acronym?"PROJECT:$acronym":"PROJECTS";
+
+                $cache = $this->cacheGet($key);
+                if ($cache) {
+                    return $cache;
+                }
+
                 try {
                     if ($acronym) {
                         $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects where acronym = :acronym", [
@@ -185,9 +192,11 @@
                         ];
                     }
 
+                    $this->cacheSet($key, $_projects);
                     return $_projects;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->unCache($key);
                     return false;
                 }
             }
@@ -197,6 +206,8 @@
              */
             public function addProject($acronym, $project)
             {
+                $this->clearCache();
+
                 $acronym = trim($acronym);
                 $project = trim($project);
 
@@ -225,6 +236,8 @@
              */
             public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize) || !checkInt($searchSubject) || !checkInt($searchDescription) || !checkInt($searchComments)) {
                     return false;
                 }
@@ -252,6 +265,8 @@
              */
             public function deleteProject($projectId)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectId)) {
                     return false;
                 }
@@ -272,6 +287,8 @@
              */
             public function setProjectWorkflows($projectId, $workflows)
             {
+                $this->clearCache();
+
                 // TODO: add transaction, commint, rollback
 
                 if (!checkInt($projectId)) {
@@ -315,6 +332,8 @@
              */
             public function addProjectFilter($projectId, $filter, $personal)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectId) || !checkInt($personal)) {
                     return false;
                 }
@@ -335,6 +354,8 @@
                     "project_id" => $projectId,
                     "filter" => $filter,
                     "personal" => $personal?$personal:null,
+                ], [
+                    "silent",
                 ]);
             }
 
@@ -343,6 +364,8 @@
              */
             public function deleteProjectFilter($projectFilterId)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectFilterId)) {
                     return false;
                 }
@@ -354,6 +377,8 @@
              * @inheritDoc
              */
             public function deleteWorkflow($workflow) {
+                $this->clearCache();
+
                 parent::deleteWorkflow($workflow);
 
                 $this->db->modify("delete from tt_projects_workflows where workflow = :workflow", [
@@ -365,6 +390,8 @@
              * @inheritDoc
              */
             public function deleteFilter($filter, $owner = false) {
+                $this->clearCache();
+
                 parent::deleteFilter($filter);
 
                 $this->db->modify("delete from tt_projects_filters where filter = :filter", [
@@ -379,6 +406,11 @@
              */
             public function getStatuses()
             {
+                $cache = $this->cacheGet("STATUSES");
+                if ($cache) {
+                    return $cache;
+                }
+
                 try {
                     $statuses = $this->db->query("select issue_status_id, status from tt_issue_statuses order by status", \PDO::FETCH_ASSOC)->fetchAll();
                     $_statuses = [];
@@ -390,9 +422,11 @@
                         ];
                     }
 
+                    $this->cacheSet("STATUSES", $_statuses);
                     return $_statuses;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->unCache("STATUSES");
                     return false;
                 }
             }
@@ -402,6 +436,8 @@
              */
             public function addStatus($status)
             {
+                $this->clearCache();
+
                 $status = trim($status);
 
                 if (!$status) {
@@ -416,6 +452,8 @@
              */
             public function modifyStatus($statusId, $status)
             {
+                $this->clearCache();
+
                 $status = trim($status);
 
                 if (!checkInt($statusId) || !$status) {
@@ -440,6 +478,8 @@
              */
             public function deleteStatus($statusId)
             {
+                $this->clearCache();
+
                 if (!checkInt($statusId)) {
                     return false;
                 }
@@ -452,6 +492,11 @@
              */
             public function getResolutions()
             {
+                $cache = $this->cacheGet("RESOLUTIONS");
+                if ($cache) {
+                    return $cache;
+                }
+                
                 try {
                     $resolutions = $this->db->query("select issue_resolution_id, resolution from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
                     $_resolutions = [];
@@ -463,9 +508,11 @@
                         ];
                     }
 
+                    $this->cacheSet("RESOLUTIONS", $_resolutions);
                     return $_resolutions;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->unCache("RESOLUTIONS");
                     return false;
                 }
             }
@@ -475,6 +522,8 @@
              */
             public function addResolution($resolution)
             {
+                $this->clearCache();
+
                 $resolution = trim($resolution);
 
                 if (!$resolution) {
@@ -489,6 +538,8 @@
              */
             public function modifyResolution($resolutionId, $resolution)
             {
+                $this->clearCache();
+
                 $resolution = trim($resolution);
 
                 if (!checkInt($resolutionId) || !$resolution) {
@@ -503,6 +554,8 @@
              */
             public function deleteResolution($resolutionId)
             {
+                $this->clearCache();
+
                 if (!checkInt($resolutionId)) {
                     return false;
                 }
@@ -515,6 +568,8 @@
              */
             public function setProjectResolutions($projectId, $resolutions)
             {
+                $this->clearCache();
+
                 // TODO: add transaction, commint, rollback
 
                 if (!checkInt($projectId)) {
@@ -560,6 +615,11 @@
              */
             public function getCustomFields()
             {
+                $cache = $this->cacheGet("FIELDS");
+                if ($cache) {
+                    return $cache;
+                }
+
                 try {
                     $customFields = $this->db->query("
                         select
@@ -615,9 +675,11 @@
                         ];
                     }
 
+                    $this->cacheSet("FIELDS", $_customFields);
                     return $_customFields;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->unCache("FIELDS");
                     return false;
                 }
             }
@@ -627,6 +689,8 @@
              */
             public function addCustomField($catalog, $type, $field, $fieldDisplay)
             {
+                $this->clearCache();
+
                 $catalog = trim($catalog);
                 $type = trim($type);
                 $field = trim($field);
@@ -664,6 +728,8 @@
              */
             public function setProjectCustomFields($projectId, $customFields)
             {
+                $this->clearCache();
+
                 // TODO: add transaction, commint, rollback
 
                 if (!checkInt($projectId)) {
@@ -709,6 +775,8 @@
              */
             public function addUserRole($projectId, $uid, $roleId)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectId) || !checkInt($uid) || !checkInt($roleId)) {
                     return false;
                 }
@@ -721,6 +789,8 @@
              */
             public function addGroupRole($projectId, $gid, $roleId)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectId) || !checkInt($gid) || !checkInt($roleId)) {
                     return false;
                 }
@@ -739,15 +809,24 @@
              */
             public function getRoles()
             {
+                $cache = $this->cacheGet("ROLES");
+                if ($cache) {
+                    return $cache;
+                }
+
                 try {
-                    return $this->db->get("select role_id, name, name_display, level from tt_roles order by level", false, [
+                    $_roles = $this->db->get("select role_id, name, name_display, level from tt_roles order by level", false, [
                         "role_id" => "roleId",
                         "name" => "name",
                         "name_display" => "nameDisplay",
                         "level" => "level"
                     ]);
+
+                    $this->cacheSet("ROLES", $_roles);
+                    return $_roles;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
+                    $this->unCache("ROLES");
                     return false;
                 }
             }
@@ -757,6 +836,8 @@
              */
             public function deleteRole($projectRoleId)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectRoleId)) {
                     return false;
                 }
@@ -776,6 +857,8 @@
              */
             public function setRoleDisplay($roleId, $nameDisplay)
             {
+                $this->clearCache();
+
                 $nameDisplay = trim($nameDisplay);
 
                 if (!checkInt($roleId) || !$nameDisplay) {
@@ -800,6 +883,8 @@
              */
             public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
             {
+                $this->clearCache();
+
                 if (!checkInt($customFieldId)) {
                     return false;
                 }
@@ -928,6 +1013,8 @@
              */
             public function deleteCustomField($customFieldId)
             {
+                $this->clearCache();
+
                 if (!checkInt($customFieldId)) {
                     return false;
                 }
@@ -953,25 +1040,38 @@
              */
             public function getTags($projectId = false)
             {
+                $key = $projectId?"TAGS:$projectId":"TAGS";
+
+                $cache = $this->cacheGet($key);
+                if ($cache) {
+                    return $cache;
+                }
+
                 if ($projectId !== false) {
                     if (!checkInt($projectId)) {
                         return false;
                     }
 
-                    return $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
+                    $_tags = $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
                         "tag_id" => "tagId",
                         "tag" => "tag",
                         "foreground" => "foreground",
                         "background" => "background",
                     ]);
+
+                    $this->cacheSet($key, $_tags);
+                    return $_tags;
                 } else {
-                    return $this->db->get("select * from tt_tags order by tag", false, [
+                    $_tags = $this->db->get("select * from tt_tags order by tag", false, [
                         "tag_id" => "tagId",
                         "project_id" => "projectId",
                         "tag" => "tag",
                         "foreground" => "foreground",
                         "background" => "background",
                     ]);
+
+                    $this->cacheSet($key, $_tags);
+                    return $_tags;
                 }
             }
 
@@ -980,6 +1080,8 @@
              */
             public function addTag($projectId, $tag, $foreground, $background)
             {
+                $this->clearCache();
+
                 if (!checkInt($projectId) || !checkStr($tag)) {
                     return false;
                 }
@@ -1007,6 +1109,8 @@
              */
             public function modifyTag($tagId, $tag, $foreground, $background)
             {
+                $this->clearCache();
+
                 if (!checkInt($tagId) || !checkStr($tag)) {
                     return false;
                 }
@@ -1031,6 +1135,8 @@
              */
             public function deleteTag($tagId)
             {
+                $this->clearCache();
+
                 if (!checkInt($tagId)) {
                     return false;
                 }
@@ -1050,6 +1156,13 @@
              */
             public function myRoles($uid = false)
             {
+                $key = ($uid !== false)?"MYROLES:$uid":"MYROLES";
+
+                $cache = $this->cacheGet($key);
+                if ($cache) {
+                    return $cache;
+                } 
+
                 if ($uid === false) {
                     $uid = $this->uid;
                 }
@@ -1060,7 +1173,7 @@
                     $groups = $groups->getGroups($uid);
                 }
 
-                $projects = [];
+                $_projects = [];
 
                 if ($groups) {
                     $g = [];
@@ -1078,9 +1191,9 @@
 
                     foreach ($groups as $group) {
                         if (@(int)$projects[$group["acronym"]]) {
-                            $projects[$group["acronym"]] = max(@(int)$projects[$group["acronym"]], (int)$group["level"]);
+                            $_projects[$group["acronym"]] = max(@(int)$projects[$group["acronym"]], (int)$group["level"]);
                         } else {
-                            $projects[$group["acronym"]] = (int)$group["level"];
+                            $_projects[$group["acronym"]] = (int)$group["level"];
                         }
                     }
                 }
@@ -1093,18 +1206,19 @@
                 foreach ($levels as $level) {
                     if (@(int)$projects[$level["acronym"]]) {
                         if ((int)$level["level"] > 0) {
-                            $projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
+                            $_projects[$level["acronym"]] = min(@(int)$projects[$level["acronym"]], (int)$level["level"]);
                         } else {
                             unset($projects[$level["acronym"]]);
                         }
                     } else {
                         if ((int)$level["level"] > 0) {
-                            $projects[$level["acronym"]] = (int)$level["level"];
+                            $_projects[$level["acronym"]] = (int)$level["level"];
                         }
                     }
                 }
 
-                return $projects;
+                $this->cacheSet($key, $_projects);
+                return $_projects;
             }
 
             /**
@@ -1137,17 +1251,29 @@
              * @inheritDoc
              */
             public function getProjectViewers($projectId) {
+                $key = $projectId?"VIEWERS:$projectId":"VIEWERS";
+
+                $cache = $this->cacheGet($key);
+                if ($cache) {
+                    return $cache;
+                }
+
                 if (!checkInt($projectId)) {
                     return false;
                 }
 
-                return $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId order by name");
+                $_viewers = $this->db->get("select field, name from tt_projects_viewers where project_id = $projectId order by name");
+
+                $this->cacheSet($key, $_viewers);
+                return $_viewers;
             }
 
             /**
              * @inheritDoc
              */
             public function setProjectViewers($projectId, $viewers) {
+                $this->clearCache();
+
                 if (!checkInt($projectId)) {
                     return false;
                 }
@@ -1169,7 +1295,12 @@
              * @inheritDoc
              */
             public function getCrontabs() {
-                return $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
+                $cache = $this->cacheGet("CRONTABS");
+                if ($cache) {
+                    return $cache;
+                }
+
+                $_crontabs = $this->db->get("select * from tt_crontabs order by crontab, filter, action", false, [
                     "crontab_id" => "crontabId",
                     "crontab" => "crontab",
                     "project_id" => "projectId",
@@ -1177,12 +1308,17 @@
                     "uid" => "uid",
                     "action" => "action",
                 ]);
+
+                $this->cacheSet("CRONTABS", $_crontabs);
+                return $_crontabs;
             }
 
             /**
              * @inheritDoc
              */
             public function addCrontab($crontab, $projectId, $filter, $uid, $action) {
+                $this->clearCache();
+
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -1200,6 +1336,8 @@
              * @inheritDoc
              */
             public function deleteCrontab($crontabId) {
+                $this->clearCache();
+
                 if (!checkInt($crontabId)) {
                     return false;
                 }

@@ -45,6 +45,10 @@
             public static function POST($params) {
                 $tt = loadBackend("tt");
 
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
                 $id = $tt->loadWorkflow($params["issue"]["workflow"])->createIssue($params["issue"]);
 
                 return api::ANSWER($id, ($id !== false)?"id":false);

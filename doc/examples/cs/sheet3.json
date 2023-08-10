@@ -1,0 +1,158 @@
+{
+    "sheet": "МКД",
+    "date": "2023-07-02",
+    "timeClass": "font-weight-bold",
+    "emptyClass": "bg-lightgray",
+    "blockedClass": "bg-primary",
+    "reservedClass": "bg-purple",
+    "issueCoordinatedClass": "font-weight-bold text-dark",
+    "issueAssignedClass": "bg-success",
+    "issueDoneClass": "text-decoration-line-through",
+    "issueClosedClass": "bg-maroon",
+    "loginClass": "font-weight-normal",
+    "expireCondition": "(new Date()).getTime() + 30 * 60 * 1000 >= (new Date(sheetDate + ' ' + cellTime)).getTime()",
+    "doneCondition": "issue._cf_install_done",
+    "closedCondition": "issue.status == 'Закрыта'",
+    "project": "RTL",
+    "action": "Координация",
+    "setAssignedAction": "Назначить исполнителей",
+    "fields": {
+        "sheet": "_cf_sheet",
+        "date": "_cf_sheet_date",
+        "col": "_cf_sheet_col",
+        "row": "_cf_sheet_cell",
+        "cells": "_cf_sheet_cells",
+        "assigned": "_cf_installers"
+    },
+    "issuesQuery": {
+        "query": {
+            "$and": [
+                {
+                    "_cf_sheet": "%%sheet"
+                },
+                {
+                    "_cf_sheet_date": "%%date"
+                },
+                {
+                    "workflow": {
+                        "$in": [
+                            "lanta"
+                        ]
+                    }
+                }
+            ]
+        },
+        "fields": [
+            "_cf_sheet_col",
+            "_cf_sheet_cell",
+            "_cf_sheet_cells",
+            "_cf_installers",
+            "_cf_install_done",
+            "status"
+        ],
+        "limit": 500,
+        "preprocess": {
+            "%%sheet": "МКД",
+            "%%date": "2023-07-02"
+        },
+        "project": "RTL"
+    },
+    "specialRows": [
+        "08:00",
+        "13:00"
+    ],
+    "specialRowClass": "bg-warning",
+    "data": [
+        {
+            "col": "МКД1",
+            "class": "font-weight-bold",
+            "workflow": "base",
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
+        },
+        {
+            "col": "МКД2",
+            "class": "font-weight-bold",
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
+        },
+        {
+            "col": "МКД3",
+            "class": "font-weight-bold",
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
+        },
+        {
+            "col": "МКД4",
+            "class": "font-weight-bold",
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
+        },
+        {
+            "col": "МКД5",
+            "class": "font-weight-bold",
+            "rows": [
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00"
+            ]
+        }
+    ]
+}

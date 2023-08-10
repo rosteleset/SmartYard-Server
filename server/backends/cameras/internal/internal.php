@@ -26,6 +26,11 @@ namespace backends\cameras
                     $p = [
                         "camera_id" => $params,
                     ];
+                    break;
+
+                case "common":
+                    $q = "select * from cameras where common = 1";
+                    break;
             }
 
             return $this->db->get($q, $p, [

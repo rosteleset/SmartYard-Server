@@ -1,19 +1,20 @@
 <?php
 
     function clearCache($uid) {
-        global $redis;
+        global $redis, $config;
 
         $keys = [];
 
+        $n = 0;
+
         if ($uid === true) {
-            $keys = $redis->keys("cache_*");
+            $keys = $redis->keys("CACHE:*");
         } else {
             if (checkInt($uid)) {
-                $keys = $redis->keys("cache_*_$uid");
+                $keys = $redis->keys("CACHE:FRONT:*:$uid");
             }
         }
 
-        $n = 0;
         foreach ($keys as $key) {
             $redis->del($key);
             $n++;

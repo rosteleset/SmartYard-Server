@@ -9,8 +9,8 @@
         moduleLoaded("users", this);
     },
 
-    loadUsers: function (callback) {
-        return GET("accounts", "users").
+    loadUsers: function (callback, withSessions) {
+        return QUERY("accounts", "users", withSessions?{ withSessions: true }:false).
         done(users => {
             modules.users.meta = users.users;
         }).
@@ -197,6 +197,7 @@
                             value: response.user.eMail,
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
+                            hidden: !parseInt(response.user.uid),
                             validate: (v) => {
                                 return $.trim(v) !== "";
                             }
@@ -207,6 +208,7 @@
                             value: response.user.primaryGroup,
                             options: gs,
                             title: i18n("users.primaryGroup"),
+                            hidden: !parseInt(response.user.uid) || groups.length == 0,
                         },
                         {
                             id: "phone",
@@ -215,6 +217,7 @@
                             value: response.user.phone,
                             title: i18n("phone"),
                             placeholder: i18n("phone"),
+                            hidden: !parseInt(response.user.uid),
                         },
                         {
                             id: "tg",
@@ -223,6 +226,7 @@
                             value: response.user.tg,
                             title: i18n("users.tg"),
                             placeholder: i18n("users.tg"),
+                            hidden: !parseInt(response.user.uid),
                         },
                         {
                             id: "notification",
@@ -253,6 +257,7 @@
                                     text: i18n("users.notificationEmail"),
                                 },
                             ],
+                            hidden: !parseInt(response.user.uid),
                             validate: (v) => {
                                 return $.trim(v) !== "";
                             }
@@ -320,7 +325,7 @@
                             value: response.user.enabled?"no":"yes",
                             title: i18n("users.disabled"),
                             readonly: uid.toString() === myself.uid.toString(),
-                            hidden: uid.toString() === myself.uid.toString(),
+                            hidden: uid.toString() === myself.uid.toString() && !parseInt(response.user.uid),
                             options: [
                                 {
                                     value: "yes",
@@ -389,7 +394,7 @@
     showSessions: function (uid) {
         loadingStart();
 
-        GET("accounts", "users", false, true).done(response => {
+        QUERY("accounts", "users", { withSessions: true }, true).done(response => {
             modules.users.users = response.users;
 
             cardTable({
@@ -480,136 +485,167 @@
         always(loadingDone);
     },
 
+    loadGroups: function (callback) {
+        if (modules.groups) {
+            modules.groups.loadGroups(callback);
+        } else {
+            callback(false);
+        }
+    },
+
     render: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
 
         loadingStart();
 
-        GET("accounts", "users", false, true).done(response => {
-            modules.users.users = response.users;
+        modules.users.loadGroups(hasGroups => {
+            let groups = {};
 
-            cardTable({
-                target: "#mainForm",
-                title: {
-                    button: {
-                        caption: i18n("users.addUser"),
-                        click: modules.users.addUser,
-                    },
-                    caption: i18n("users.users"),
-                    filter: true,
-                },
-                startPage: modules.users.startPage,
-                pageChange: page => {
-                    modules.users.startPage = page;
-                },
-                edit: modules.users.modifyUser,
-                columns: [
-                    {
-                        title: i18n("users.uid"),
-                    },
-                    {
-                        title: i18n("users.login"),
-                    },
-                    {
-                        title: i18n("users.lastLogin"),
-                        hidden: !(response.users.length || typeof response.users[0].lastLogin == "undefined"),
-                    },
-                    {
-                        title: i18n("users.lastAction"),
-                        hidden: !(response.users.length || typeof response.users[0].lastAction == "undefined"),
-                    },
-                    {
-                        title: i18n("users.blocked"),
-                    },
-                    {
-                        title: i18n("users.realName"),
-                        fullWidth: true,
-                    },
-                    {
-                        title: i18n("eMail"),
-                    },
-                    {
-                        title: i18n("users.telegram"),
-                        nowrap: true,
-                    },
-                    {
-                        title: i18n("phone"),
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
+            if (hasGroups) {
+                for (let i in modules.groups.meta) {
+                    groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+                }
+            }
 
-                    for (let i = 0; i < response.users.length; i++) {
-                        rows.push({
-                            uid: response.users[i].uid.toString(),
-                            class: (response.users[i].enabled == 1)?"bg-white":"bg-light",
-                            cols: [
-                                {
-                                    data: response.users[i].uid,
-                                },
-                                {
-                                    data: response.users[i].login,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: ttDate(response.users[i].lastLogin),
-                                    nowrap: true,
-                                    hidden: typeof response.users[i].lastLogin == "undefined",
-                                },
-                                {
-                                    data: ttDate(response.users[i].lastAction),
-                                    nowrap: true,
-                                    hidden: typeof response.users[i].lastAction == "undefined",
-                                },
-                                {
-                                    data: response.users[i].enabled?i18n("no"):i18n("yes"),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: response.users[i].realName?response.users[i].realName:i18n("no"),
-                                    nowrap: true,
-                                    fullWidth: true,
-                                },
-                                {
-                                    data: response.users[i].eMail?response.users[i].eMail:i18n("no"),
-                                    click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: response.users[i].tg?i18n("yes"):i18n("no"),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: response.users[i].phone?response.users[i].phone:i18n("no"),
-                                    nowrap: true,
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+            QUERY("accounts", "users", { withSessions: true }, true).done(response => {
+                modules.users.users = response.users;
+    
+                cardTable({
+                    target: "#mainForm",
+                    title: {
+                        button: {
+                            caption: i18n("users.addUser"),
+                            click: modules.users.addUser,
+                        },
+                        caption: i18n("users.users"),
+                        filter: true,
+                    },
+                    startPage: modules.users.startPage,
+                    pageChange: page => {
+                        modules.users.startPage = page;
+                    },
+                    edit: modules.users.modifyUser,
+                    columns: [
+                        {
+                            title: i18n("users.uid"),
+                        },
+                        {
+                            title: i18n("users.login"),
+                        },
+                        {
+                            title: i18n("users.lastLogin"),
+                            hidden: !(response.users.length || typeof response.users[0].lastLogin == "undefined"),
+                        },
+                        {
+                            title: i18n("users.lastAction"),
+                            hidden: !(response.users.length || typeof response.users[0].lastAction == "undefined"),
+                        },
+                        {
+                            title: i18n("users.blockedShort"),
+                        },
+                        {
+                            title: i18n("users.primaryGroup"),
+                            hidden: !hasGroups,
+                        },
+                        {
+                            title: i18n("users.realName"),
+                            fullWidth: true,
+                        },
+                        {
+                            title: i18n("Почта"),
+                        },
+                        {
+                            title: i18n("users.telegram"),
+                            nowrap: true,
+                        },
+                        {
+                            title: i18n("phone"),
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
+    
+                        for (let i = 0; i < response.users.length; i++) {
+                            if (!parseInt(response.users[i].uid)) continue;
+
+                            rows.push({
+                                uid: response.users[i].uid.toString(),
+                                class: (response.users[i].enabled == 1)?"bg-white":"bg-light",
+                                cols: [
                                     {
-                                        icon: "fas fa-list-ol",
-                                        title: i18n("users.sessions"),
-                                        disabled: !response.users[0].sessions,
-                                        click: uid => {
-                                            modules.users.showSessions(uid);
-                                        },
+                                        data: response.users[i].uid,
+                                    },
+                                    {
+                                        data: response.users[i].login,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: ttDate(response.users[i].lastLogin),
+                                        nowrap: true,
+                                        hidden: typeof response.users[i].lastLogin == "undefined",
+                                    },
+                                    {
+                                        data: ttDate(response.users[i].lastAction),
+                                        nowrap: true,
+                                        hidden: typeof response.users[i].lastAction == "undefined",
+                                    },
+                                    {
+                                        data: response.users[i].enabled?i18n("no"):i18n("yes"),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: groups[response.users[i].primaryGroup]?groups[response.users[i].primaryGroup].name:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        nowrap: true,
+                                        hidden: !hasGroups,
+                                    },
+                                    {
+                                        data: response.users[i].realName?response.users[i].realName:i18n("no"),
+                                        nowrap: true,
+                                        fullWidth: true,
+                                    },
+                                    {
+                                        data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login)?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: response.users[i].tg?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: response.users[i].phone?response.users[i].phone:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        nowrap: true,
                                     },
                                 ],
-                            },
-                        });
-                    }
-
-                    return rows;
-                },
-            });
-
-            if (params && params.sessions && params.sessions !== true) {
-                modules.users.showSessions(params.sessions);
-            }
-        }).
-        fail(FAIL).
-        always(loadingDone);
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-list-ol",
+                                            title: i18n("users.sessions"),
+                                            disabled: !response.users[0].sessions,
+                                            click: uid => {
+                                                modules.users.showSessions(uid);
+                                            },
+                                        },
+                                    ],
+                                },
+                            });
+                        }
+    
+                        return rows;
+                    },
+                });
+    
+                if (params && params.sessions && params.sessions !== true) {
+                    modules.users.showSessions(params.sessions);
+                }
+                
+                loadingDone();
+            }).
+            fail(FAIL).
+            fail(loadingDone);
+        });
     },
 
     route: function (params) {

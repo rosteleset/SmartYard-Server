@@ -17,10 +17,12 @@
             /**
              * get list of all users
              *
+             * @param boolean $withSessions
+             * 
              * @return array
              */
 
-            abstract public function getUsers();
+            abstract public function getUsers($withSessions = false);
 
             /**
              * get user by uid
@@ -102,6 +104,44 @@
             abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1);
 
             /**
+             * @param string $tg
+             * @param string $subject
+             * @param string $message
+             * @param string $token
+             */
+            private function sendTg($tg, $subject, $message, $token) {
+                if ($tg && $token) {
+                    try {
+                        $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
+                        return $tg && @$tg["ok"];
+                    } catch (\Exception $e) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+
+            /**
+             * @param string $login
+             * @param string $email
+             * @param string $subject
+             * @param string $message
+             * @param string $config
+             */
+            private function sendEmail($login, $email, $subject, $message, $config) {
+                try {
+                    if ($email && $config && $login != $email) {
+                        return eMail($config, $email, $subject ? : "-", $message) === true;
+                    } else {
+                        return false;
+                    }
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
              * @param string $login
              * @param string $subject
              * @param string $message
@@ -138,45 +178,20 @@
                     return false;
                 }
 
-                function sendTg($tg, $subject, $message, $token) {
-                    if ($tg && $token) {
-                        try {
-                            $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
-                            return $tg && @$tg["ok"];
-                        } catch (\Exception $e) {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-
-                function sendEmail($email, $subject, $message, $config) {
-                    try {
-                        if ($email && $config) {
-                            return eMail($config, $email, $subject ? : "-", $message) === true;
-                        } else {
-                            return false;
-                        }
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-                }
-
                 if ($user["notification"] == "tg") {
-                    return sendTg($user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
+                    return $this->sendTg($user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
                 }
 
                 if ($user["notification"] == "tgEmail") {
-                    return sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]) || sendEmail(@$user["eMail"], $subject, $message, $this->config);
+                    return $this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]) || $this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config);
                 }
 
                 if ($user["notification"] == "email") {
-                    return sendEmail($user["eMail"], $subject, $message, $this->config);
+                    return $this->sendEmail($login, $user["eMail"], $subject, $message, $this->config);
                 }
 
                 if ($user["notification"] == "emailTg") {
-                    return sendEmail(@$user["eMail"], $subject, $message, $this->config) || sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
+                    return $this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config) || $this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
                 }
             } 
         }

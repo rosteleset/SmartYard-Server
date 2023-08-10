@@ -51,7 +51,7 @@
         class users extends api {
 
             public static function GET($params) {
-                $users = $params["_backends"]["users"]->getUsers();
+                $users = $params["_backends"]["users"]->getUsers(@$params["withSessions"]);
 
                 return api::ANSWER($users, ($users !== false)?"users":"notFound");
             }

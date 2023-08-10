@@ -99,21 +99,41 @@
                                         cell.removeClass("spinner-small");
                                     });
                                 }, () => {
-                                    cell.addClass("spinner-small");
-                                    PUT("cs", "reserveCell", false, {
-                                        action: "reserve",
-                                        sheet: md5($("#csSheet").val()),
-                                        date: md5($("#csDate").val()),
-                                        col: cell.attr("data-col"),
-                                        row: cell.attr("data-row"),
-                                        uid: cell.attr("data-uid"),
-                                        sid: modules.cs.sid,
-                                        expire: 60 * 60 * 24 * 7,
-                                    }).
-                                    fail(FAIL).
-                                    fail(() => {
-                                        cell.removeClass("spinner-small");
-                                    });
+                                    cardForm({
+                                        title: i18n("cs.reserve"),
+                                        footer: true,
+                                        borderless: true,
+                                        topApply: true,
+                                        fields: [
+                                            {
+                                                id: "comment",
+                                                type: "text",
+                                                title: i18n("cs.comment"),
+                                                placeholder: i18n("cs.comment"),
+                                                validate: (v) => {
+                                                    return $.trim(v) !== "";
+                                                }
+                                            }
+                                        ],
+                                        callback: result => {
+                                            cell.addClass("spinner-small");
+                                            PUT("cs", "reserveCell", false, {
+                                                action: "reserve",
+                                                sheet: md5($("#csSheet").val()),
+                                                date: md5($("#csDate").val()),
+                                                col: cell.attr("data-col"),
+                                                row: cell.attr("data-row"),
+                                                uid: cell.attr("data-uid"),
+                                                sid: modules.cs.sid,
+                                                expire: 60 * 60 * 24 * 7,
+                                                comment: result.comment,
+                                            }).
+                                            fail(FAIL).
+                                            fail(() => {
+                                                cell.removeClass("spinner-small");
+                                            });
+                                        },
+                                    }).show();
                                 }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
                                 break;
 
@@ -182,6 +202,9 @@
                                         uid: cell.attr("data-uid"),
                                         sid: modules.cs.sid,
                                     }).
+                                    done(() => {
+                                        lStore("_coordinate_issue", null);
+                                    }).
                                     fail(FAIL).
                                     fail(() => {
                                         modules.cs.idle = true;
@@ -197,7 +220,7 @@
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
-                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
+                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login) + (payload.comment?(" [" + payload.comment + "]"):""));
                     break;
 
                 case "released":
@@ -363,7 +386,7 @@
                     modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%sheet"] = modules.cs.currentSheet.sheet.sheet;
                     modules.cs.currentSheet.sheet.issuesQuery.preprocess["%%date"] = modules.cs.currentSheet.sheet.date;
                     modules.cs.currentSheet.sheet.issuesQuery.project = modules.cs.currentSheet.sheet.project;
-    
+
                     POST("tt", "issues", false, modules.cs.currentSheet.sheet.issuesQuery).
                     fail(FAIL).
                     fail(() => {
@@ -376,13 +399,20 @@
                             let cells = parseInt(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells]);
                             let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
                             let done = modules.cs.issueDone(r.issues.issues[i]);
+                            let closed = modules.cs.issueClosed(r.issues.issues[i]);
     
                             let start = -1;
     
                             for (let j in modules.cs.currentSheet.sheet.data) {
                                 if (modules.cs.currentSheet.sheet.data[j].col == col) {
-                                    for (let k in modules.cs.currentSheet.sheet.data[j].rows) {
-                                        if (modules.cs.currentSheet.sheet.data[j].rows[k] == row || start >= 0) {
+                                    let rs;
+                                    if (typeof modules.cs.currentSheet.sheet.data[j].rows === "string") {
+                                        rs = JSON.parse(JSON.stringify(modules.cs.currentSheet.sheet.rowsTemplates[modules.cs.currentSheet.sheet.data[j].rows]));
+                                    } else {
+                                        rs = modules.cs.currentSheet.sheet.data[j].rows;
+                                    }
+                                    for (let k in rs) {
+                                        if (rs[k] == row || start >= 0) {
                                             if (start < 0) {
                                                 start = k;
                                             }
@@ -391,20 +421,23 @@
                                                 if (!modules.cs.issuesInSheet) {
                                                     modules.cs.issuesInSheet = {};
                                                 }
-                                                let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + col + ":" + modules.cs.currentSheet.sheet.data[j].rows[k]);
+                                                let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + col + ":" + rs[k]);
                                                 if (!modules.cs.issuesInSheet[uid]) {
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
+                                                if (closed) {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueClosedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}">${r.issues.issues[i].issueId}</span><br />`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan hoverable pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueSpan pointer text-dark pl-1 pr-1">${r.issues.issues[i].issueId}</span><br />`;
                                                 }
                                             }
                                         }
@@ -433,15 +466,30 @@
         function renderSheet(response) {
             if (response && response.sheet && response.sheet.sheet && response.sheet.sheet.data) {
                 let s = response.sheet.sheet.data;
+                let parts = {};
+                let cp;
                 for (let i in s) {
-                    if (modules.cs.cols.indexOf(s[i].col) < 0) {
+                    if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
+                        if (typeof s[i].part == "undefined") {
+                            s[i].part = -1;
+                        }
+                        if (!parts[s[i].part]) {
+                            parts[s[i].part] = [];
+                        }
+                        parts[s[i].part].push(s[i].col);
                         modules.cs.cols.push(s[i].col);
                         modules.cs.colsMd5[md5(s[i].col)] = s[i].col;
                     }
-                    for (let j in s[i].rows) {
-                        if (modules.cs.rows.indexOf(s[i].rows[j]) < 0) {
-                            modules.cs.rows.push(s[i].rows[j]);
-                            modules.cs.rowsMd5[md5(s[i].rows[j])] = s[i].rows[j];
+                    let rs;
+                    if (typeof s[i].rows === "string") {
+                        rs = JSON.parse(JSON.stringify(response.sheet.sheet.rowsTemplates[s[i].rows]));
+                    } else {
+                        rs = s[i].rows;
+                    }
+                    for (let j in rs) {
+                        if (modules.cs.rows.indexOf(rs[j]) < 0 && rs[j].charAt(0) != "#") {
+                            modules.cs.rows.push(rs[j]);
+                            modules.cs.rowsMd5[md5(rs[j])] = rs[j];
                         }
                     }
                 }
@@ -464,93 +512,131 @@
                     return 0;
                 }
 
+                let maxCols = 0;
+
+                for (let p in parts) {
+                    if (parts[p].length > maxCols) {
+                        maxCols = parts[p].length;
+                    }
+                }
+
                 modules.cs.cols.sort(sf);
                 modules.cs.rows.sort(sf);
 
                 let h = '';
                 h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
-                h += '<thead>';
-                h += '<tr>';
-                h += '<th>&nbsp;</th>';
-                for (let i in modules.cs.cols) {
-                    let c = false;
-                    for (let j in s) {
-                        if (modules.cs.cols[i] == s[j].col) {
-                            c = s[j];
+                for (let p in parts) {
+                    if (p != cp) {
+                        if (parseInt(p) >= 0 || p) {
+                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'>" + p + "</td></tr>";
                         }
+                        cp = p;
                     }
-                    if (c && c.class) {
-                        h += '<th class="' + c.class + '" nowrap style="vertical-align: top!important;">';
-                    } else {
-                        h += '<th nowrap style="vertical-align: top!important;">';
-                    }
-                    h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
-                    if (c.logins && c.logins.length) {
-                        for (let j in c.logins) {
-                            h += "<br/>";
-                            if (response.sheet.sheet.loginClass) {
-                                h += "<span class='" + response.sheet.sheet.loginClass + "'>"
-                            } else {
-                                h += "<span>";
-                            }
-                            h += modules.users.login2name(c.logins[j]);
-                            h += "</span>";
-                        }
-                    }
-                    h += "</th>";
-                }
-                h += '</tr>';
-                h += '</thead>';
-                h += '<tbody>';
-                for (let i in modules.cs.rows) {
                     h += '<tr>';
-                    if (response.sheet.sheet.timeClass) {
-                        h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
-                    } else {
-                        h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
-                    }
-                    for (let j in modules.cs.cols) {
-                        let f = false;
-                        for (let k in s) {
-                            if (modules.cs.cols[j] == s[k].col) {
-                                for (let l in s[k].rows) {
-                                    if (s[k].rows[l] == modules.cs.rows[i]) {
-                                        f = true;
-                                        let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
-                                        if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, s[k].rows[l])) {
-                                            if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(s[k].rows[l]) >= 0) {
-                                                h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            } else {
-                                                h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            }
-                                        } else {
-                                            if (response.sheet.sheet.emptyClass) {
-                                                h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            } else {
-                                                h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
-                                            }
-                                        }
-                                        if (modules.cs.issuesInSheet[uid]) {
-                                            h += modules.cs.issuesInSheet[uid];
-                                        }
-                                        h += '</td>';
-                                        break;
-                                    }
-                                }
-                                break;
+                    h += '<td>&nbsp;</td>';
+                    let cCols = 0;
+                    for (let i in modules.cs.cols) {
+                        if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
+                            continue;
+                        }
+                        let c = false;
+                        for (let j in s) {
+                            if (modules.cs.cols[i] == s[j].col) {
+                                c = s[j];
                             }
                         }
-                        if (!f) {
-                            if (response.sheet.sheet.emptyClass) {
-                                h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
-                            } else {
-                                h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                        if (c && c.class) {
+                            h += '<td class="' + c.class + '" nowrap style="vertical-align: top!important;">';
+                        } else {
+                            h += '<td nowrap style="vertical-align: top!important;">';
+                        }
+                        h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
+                        if (c.logins && c.logins.length) {
+                            for (let j in c.logins) {
+                                h += "<br/>";
+                                if (response.sheet.sheet.loginClass) {
+                                    h += "<span class='" + response.sheet.sheet.loginClass + "'>"
+                                } else {
+                                    h += "<span>";
+                                }
+                                h += modules.users.login2name(c.logins[j]);
+                                h += "</span>";
                             }
+                        }
+                        h += "</td>";
+                        cCols++;
+                    }
+                    if (cCols < maxCols) {
+                        for (let i = 0; i < maxCols - cCols; i++) {
+                            h += "<td>&nbsp;</td>";
                         }
                     }
                     h += '</tr>';
+                    for (let i in modules.cs.rows) {
+                        h += '<tr>';
+                        if (response.sheet.sheet.timeClass) {
+                            h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                        } else {
+                            h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                        }
+                        cCols = 0;
+                        for (let j in modules.cs.cols) {
+                            if (parts[p].indexOf(modules.cs.cols[j]) < 0) {
+                                continue;
+                            }
+                            let f = false;
+                            for (let k in s) {
+                                let rs;
+                                if (typeof s[k].rows === "string") {
+                                    rs = JSON.parse(JSON.stringify(response.sheet.sheet.rowsTemplates[s[k].rows]));
+                                } else {
+                                    rs = s[k].rows;
+                                }
+                                if (modules.cs.cols[j] == s[k].col) {
+                                    for (let l in rs) {
+                                        if (rs[l] == modules.cs.rows[i]) {
+                                            f = true;
+                                            let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
+                                            if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, rs[l])) {
+                                                if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(rs[l]) >= 0) {
+                                                    h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                } else {
+                                                    h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                }
+                                            } else {
+                                                if (response.sheet.sheet.emptyClass) {
+                                                    h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                } else {
+                                                    h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                }
+                                            }
+                                            if (modules.cs.issuesInSheet[uid]) {
+                                                h += modules.cs.issuesInSheet[uid];
+                                            }
+                                            h += '</td>';
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            if (!f) {
+                                if (response.sheet.sheet.emptyClass) {
+                                    h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                                } else {
+                                    h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                                }
+                            }
+                            cCols++;
+                        }
+                        if (cCols < maxCols) {
+                            for (let i = 0; i < maxCols - cCols; i++) {
+                                h += "<td>&nbsp;</td>";
+                            }
+                        }
+                        h += '</tr>';
+                    }
                 }
-                h += '</tbody>';
                 h += '</table>';
                 
                 $("#mainForm").html(h);
@@ -695,21 +781,23 @@
 
                     if (cell.hasClass(modules.cs.currentSheet.sheet.reservedClass)) {
                         if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != lStore("_login")) {
-                            cell.addClass("spinner-small");
+                            mYesNo(i18n("cs.confirmUnReserve"), i18n("cs.action"), () => {
+                                cell.addClass("spinner-small");
                                 
-                            PUT("cs", "reserveCell", false, {
-                                action: "release-force",
-                                sheet: md5($("#csSheet").val()),
-                                date: md5($("#csDate").val()),
-                                col: cell.attr("data-col"),
-                                row: cell.attr("data-row"),
-                                uid: cell.attr("data-uid"),
-                                sid: modules.cs.sid,
-                            }).
-                            fail(FAIL). 
-                            fail(() => {
-                                modules.cs.idle = true;
-                                cell.removeClass("spinner-small");
+                                DELETE("cs", "reserveCell", false, {
+                                    action: "release-force",
+                                    sheet: md5($("#csSheet").val()),
+                                    date: md5($("#csDate").val()),
+                                    col: cell.attr("data-col"),
+                                    row: cell.attr("data-row"),
+                                    uid: cell.attr("data-uid"),
+                                    sid: modules.cs.sid,
+                                }).
+                                fail(FAIL). 
+                                fail(() => {
+                                    modules.cs.idle = true;
+                                    cell.removeClass("spinner-small");
+                                });
                             });
                         } else
                         if (cell.attr("data-login") == lStore("_login")) {
@@ -783,7 +871,7 @@
                             break;
                         
                         case "reserved":
-                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
+                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment?(" [" + modules.cs.currentSheet.cells[i].comment + "]"):""));
                             break;
                     }
                 }
@@ -852,7 +940,7 @@
         
                 if (AVAIL("cs", "sheet", "PUT")) {
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="cloneCSsheet" class="nav-link text-info mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></div>`;
-                    rtd += `<div class="nav-item mr-0 pr-0 align-middle"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
+                    rtd += `<div class="nav-item mr-0 pr-0"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="editCSsheet" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
                 }
@@ -1016,6 +1104,12 @@
                             modules.cs.issueDone = new Function ("issue", `return false;`);
                         }
             
+                        if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.closedCondition) {
+                            modules.cs.issueClosed = new Function ("issue", `return ${modules.cs.currentSheet.sheet.closedCondition};`);
+                        } else {
+                            modules.cs.issueClosed = new Function ("issue", `return false;`);
+                        }
+            
                         loadIssues(() => {
                             renderSheet(response);
                         });
@@ -1028,7 +1122,7 @@
             });
         }
 
-        modules.users.loadUsers("users", "users").
+        modules.users.loadUsers().
         fail(FAIL).
         fail(() => {
             modules.cs.idle = true;

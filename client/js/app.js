@@ -1,6 +1,8 @@
 const modules = {};
 const moduleLoadQueue = [];
 const loadingProgress = new ldBar("#loadingProgress");
+// TODO f..ck!
+const mainFormTop = 75;
 
 var lastHash = false;
 var currentPage = false;
@@ -295,6 +297,13 @@ function whoAmI(force) {
             myself.phone = _me.user.phone;
             myself.webRtcExtension = _me.user.webRtcExtension;
             myself.webRtcPassword = _me.user.webRtcPassword;
+            if (_me.user.groups) {
+                for (let i in _me.user.groups) {
+                    if (_me.user.groups[i].acronym == _me.user.primaryGroupAcronym) {
+                        myself.primaryGroupName = _me.user.groups[i].name;
+                    }
+                }
+            }
             if (_me.user.defaultRoute) {
                 config.defaultRoute = _me.user.defaultRoute;
             }
@@ -315,6 +324,9 @@ function whoAmI(force) {
             let userCard = _me.user.login;
             if (_me.user.realName) {
                 userCard += "<br />" + _me.user.realName;
+            }
+            if (myself.primaryGroupName) {
+                userCard += "<br />" + myself.primaryGroupName;
             }
             if (_me.user.eMail) {
                 userCard += "<br />" + _me.user.eMail;
@@ -522,7 +534,7 @@ function message(message, caption, timeout) {
         "newestOnTop": true,
         "progressBar": false,
         "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "showDuration": "300",
         "hideDuration": "1000",
         "timeOut": timeout?(timeout * 1000):"0",
@@ -542,7 +554,7 @@ function warning(message, caption, timeout) {
         "newestOnTop": true,
         "progressBar": false,
         "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "showDuration": "300",
         "hideDuration": "1000",
         "timeOut": timeout?(timeout * 1000):"0",
@@ -562,7 +574,7 @@ function error(message, caption, timeout) {
         "newestOnTop": true,
         "progressBar": false,
         "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
+        "preventDuplicates": true,
         "showDuration": "300",
         "hideDuration": "1000",
         "timeOut": timeout?(timeout * 1000):"0",
@@ -609,11 +621,15 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
 
     $('#yesnoModalLabel').html(title);
     $('#yesnoModalBody').html(body);
-    $('#yesnoModalButtonYes').html(yes?yes:i18n("yes")).off('click').on('click', () => {
+    let t = yes?yes:i18n("yes");
+    t = t.charAt(0).toUpperCase() + t.substring(1);
+    $('#yesnoModalButtonYes').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');
         if (typeof callbackYes == 'function') callbackYes();
     });
-    $('#yesnoModalButtonNo').html(no?no:i18n("no")).off('click').on('click', () => {
+    t = no?no:i18n("no");
+    t = t.charAt(0).toUpperCase() + t.substring(1);
+    $('#yesnoModalButtonNo').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');
         if (typeof callbackNo == 'function') callbackNo();
     });
@@ -702,12 +718,14 @@ function loadingStart() {
         backdrop: 'static',
         keyboard: false,
     }));
+//    autoZ($('#loading')).show();
 }
 
 function loadingDone(stayHidden) {
     xblur();
-
+    
     $('#loading').modal('hide');
+//    $('#loading').hide();
 
     if (stayHidden === true) {
         $('#app').addClass("invisible");
@@ -1026,13 +1044,17 @@ function b64_to_utf8(str) {
     return decodeURIComponent(escape(window.atob(str)));
 }
 
-function trimStr(str, len) {
+function trimStr(str, len, abbr) {
     if (!len) {
         len = 33;
     }
     let sub = Math.floor((len - 3) / 2);
     if (str.length > len) {
-        return str.substring(0, sub) + "..." + str.substring(str.length - sub);
+        if (abbr) {
+            return "<abbr title='" + escapeHTML(str) + "'>" + str.substring(0, sub) + "..." + str.substring(str.length - sub) + "</abbr>";
+        } else {
+            return str.substring(0, sub) + "..." + str.substring(str.length - sub);
+        }
     } else {
         return str;
     }
@@ -1137,6 +1159,16 @@ function lStore(key, val) {
     }
 }
 
+function textRTrim(text) {
+    text = text.split("\n");
+
+    for (let i in text) {
+        text[i] = text[i].trimRight()
+    }
+
+    return text.join("\n");
+}
+
 function QUERY(api, method, query, fresh) {
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
@@ -1194,6 +1226,9 @@ function FAIL(response) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         if (response.responseJSON.error == "tokenNotFound") {
             lStore("_token", null);
+            setTimeout(() => {
+                location.reload();
+            }, 5000);
         }
     } else {
         error(i18n("errors.unknown"), i18n("error"), 30);
@@ -1223,12 +1258,18 @@ function AVAIL(api, method, request_method) {
     }
 }
 
+$(document).on('select2:open', () => {
+    document.querySelector('.select2-search__field').focus();
+});
+  
 $(window).off("resize").on("resize", () => {
     if ($("#editorContainer").length) {
-        // TODO f..ck!
-        let top = 75;
-        let height = $(window).height() - top;
+        let height = $(window).height() - mainFormTop;
         $("#editorContainer").css("height", height + "px");
+    }
+    if ($("#mapContainer").length) {
+        let height = $(window).height() - mainFormTop;
+        $("#mapContainer").css("height", height + "px");
     }
 });
 
