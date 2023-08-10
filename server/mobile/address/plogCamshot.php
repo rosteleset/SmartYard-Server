@@ -11,7 +11,11 @@ Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid, 'info' => $img['
 if ($img) {
     header("Content-Type: image/jpeg");
 
-    echo stream_get_contents($img['stream']);
+    $contents = stream_get_contents($img['stream']);
+
+    Logger::channel('plog')->debug('plogCamshot response', ['uuid' => $uuid, 'count' => count($contents)]);
+
+    echo $contents;
 
     exit;
 }
