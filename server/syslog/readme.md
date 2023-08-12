@@ -1,2 +1,2 @@
-[Go to install guide](https://github.com/rosteleset/rbt/blob/main/install/11.syslog.md)  
-[Intercom events (for dev only)](https://github.com/rosteleset/rbt/blob/main/doc/)
+[Go to install guide](https://github.com/rosteleset/SmartYard-Server/blob/main/install/12.syslog.md)  
+[Intercom events (for dev only)](https://github.com/rosteleset/SmartYard-Server/tree/main/doc)
