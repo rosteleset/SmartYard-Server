@@ -632,12 +632,18 @@
 
                 $files = loadBackend("files");
 
-                foreach ($attachments as $attachment) {
+                foreach ($attachments as &$attachment) {
                     $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $issueId, "filename" => $attachment["name"] ]);
                     if (count($list)) {
                         return false;
                     }
-                    if (strlen(base64_decode($attachment["body"])) > $project["maxFileSize"]) {
+                    if ($attachment["body"]) {
+                        $attachment["body"] = base64_decode($attachment["body"]);
+                    } else
+                    if ($attachment["url"]) {
+                        $attachment["body"] = file_get_contents($attachment["url"]);
+                    }
+                    if (strlen($attachment["body"]) <= 0 || strlen($attachment["body"]) > $project["maxFileSize"]) {
                         return false;
                     }
                 }
@@ -658,7 +664,7 @@
                     $meta["attachman"] = $this->login;
 
                     if (!(
-                        $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), $meta) &&
+                        $files->addFile($attachment["name"], $files->contentsToStream($attachment["body"]), $meta) &&
                         $this->mongo->$db->$acr->updateOne(
                             [
                                 "issueId" => $issueId,
