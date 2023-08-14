@@ -1,21 +1,18 @@
 <?php
 
-use logger\Logger;
-
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
 $img = $files->getFile($uuid);
 
-Logger::channel('plog')->debug('plogCamshot', ['uuid' => $uuid, 'info' => $img['fileInfo']]);
-
 if ($img) {
-    header("Content-Type: image/jpeg");
+    $image = imagecreatefromstring(stream_get_contents($img['stream']));
 
-    $contents = stream_get_contents($img['stream']);
+    if ($image) {
+        header("Content-Type: image/jpeg");
 
-    Logger::channel('plog')->debug('plogCamshot response', ['uuid' => $uuid, 'count' => strlen($contents)]);
+        imagejpeg($image);
+        imagedestroy($image);
 
-    echo $contents;
-
-    exit;
+        exit;
+    }
 }
