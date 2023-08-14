@@ -115,9 +115,7 @@ namespace backends\plog {
                         }
                     }
 
-                    Logger::channel('clickhouse')->debug('getCamshot()', ['data' => $camshot_data]);
-
-                    if (!$camshot_data) {
+                    if (!array_key_exists('data', $camshot_data) || count($camshot_data["data"]) === 0) {
                         //получение кадра с DVR-серевера, если нет кадра от FRS
                         $prefix = $cameras[0]["dvrStream"];
                         if ($prefix) {
