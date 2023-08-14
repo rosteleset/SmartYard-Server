@@ -1,6 +1,6 @@
 {
     "topology": {
-        "nat": true
+        "nat": false
     },
     "clickhouse": {
         "host": "127.0.0.1",
