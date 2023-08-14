@@ -75,7 +75,9 @@
             public function getFileBytes($uuid)
             {
                 try {
-                    $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
+                    $db = $this->dbName;
+
+                    $bucket = $this->mongo->$db->selectGridFSBucket();
                     $image = $bucket->findOne(["_id" => new \MongoDB\BSON\ObjectId($uuid)]);
     
                     if ($image)
