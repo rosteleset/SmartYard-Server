@@ -76,7 +76,7 @@
             {
                 try {
                     $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
-                    $image = $bucket->findOne(new \MongoDB\BSON\ObjectId($uuid));
+                    $image = $bucket->findOne(["_id" => new \MongoDB\BSON\ObjectId($uuid)]);
     
                     if ($image)
                         return $image->getBytes();
