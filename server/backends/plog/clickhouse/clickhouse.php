@@ -117,6 +117,8 @@ namespace backends\plog {
 
                     if (!array_key_exists('data', $camshot_data) || count($camshot_data["data"]) === 0) {
                         //получение кадра с DVR-серевера, если нет кадра от FRS
+                        Logger::channel('clickhouse')->debug('getCamshot() drv', ['camera' => $cameras[0]]);
+
                         $prefix = $cameras[0]["dvrStream"];
                         if ($prefix) {
                             $ts_event = $date - $this->back_time_shift_video_shot;
