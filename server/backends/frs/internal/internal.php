@@ -379,6 +379,7 @@ namespace backends\frs {
                 }
                 
             $logger->debug('syncData() rbt all data', ['data' => $rbt_all_data]);
+            $logger->debug('syncData() frs all data', ['data' => $frs_all_data]);
 
             foreach ($rbt_all_data as $base_url => $data) {
                 //syncing video streams
