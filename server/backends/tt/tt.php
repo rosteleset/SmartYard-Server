@@ -1351,21 +1351,24 @@
              * @param string $action
              * @param object $old
              * @param object $new
-             * @param string $workflowAction
+             * @param mixed $workflowAction
+             * @param boolean $silent
              * @return void
              */
-            public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false)
+            public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false, $silent = false)
             {
                 $journal = loadBackend("tt_journal");
 
-                try {
-                    $issue = $this->getIssue($issueId);
-                    if ($issue) {
-                        $workflow = $this->loadWorkflow($issue["workflow"]);
-                        $workflow->issueChanged($issue, $action, $old, $new, $workflowAction);
+                if (!$silent) {
+                    try {
+                        $issue = $this->getIssue($issueId);
+                        if ($issue) {
+                            $workflow = $this->loadWorkflow($issue["workflow"]);
+                            $workflow->issueChanged($issue, $action, $old, $new, $workflowAction);
+                        }
+                    } catch (\Exception $e) {
+                        error_log(print_r($e, true));
                     }
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
                 }
 
                 if ($journal) {

@@ -151,7 +151,7 @@
                     unset($issue["journal"]);
                 }
 
-                if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate)) {
+                if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate, false, true)) {
                     return false;
                 }
 
@@ -435,7 +435,7 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issueId, $comment, $private, $type = false)
+            public function addComment($issueId, $comment, $private, $type = false, $silent = false)
             {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
@@ -455,7 +455,7 @@
                     "commentBody" => $comment,
                     "commentPrivate" => $private,
                     "commentType" => $type,
-                ]);
+                ], $silent);
 
                 return $this->mongo->$db->$acr->updateOne(
                     [
