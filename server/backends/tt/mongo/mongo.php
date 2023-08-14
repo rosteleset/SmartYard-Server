@@ -166,10 +166,7 @@
                         $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
                     }
                     if ($update) {
-                        if ($workflowAction) {
-                            $issue["workflowAction"] = $workflowAction;
-                        }
-                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue);
+                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
                     }
                     return $update;
                 }

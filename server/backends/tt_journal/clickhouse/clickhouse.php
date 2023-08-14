@@ -34,7 +34,7 @@
             /**
              * @inheritDoc
              */
-            public function journal($issueId, $action, $old, $new)
+            public function journal($issueId, $action, $old, $new, $workflowAction = false)
             {
                 if ($old && $new) {
                     foreach ($old as $key => $field) {
@@ -47,6 +47,7 @@
                         }
                     }
                 }
+
                 if (!$old && $new) {
                     foreach ($new as $key => $field) {
                         if (!$field) {
@@ -54,12 +55,17 @@
                         }
                     }
                 }
+                
                 if (!$new && $old) {
                     foreach ($old as $key => $field) {
                         if (!$field) {
                             unset($old[$key]);
                         }
                     }
+                }
+
+                if ($workflowAction) {
+                    $new["workflowAction"] = $workflowAction;
                 }
 
                 if ($new || $old) {

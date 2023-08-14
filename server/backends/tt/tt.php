@@ -1351,24 +1351,28 @@
              * @param string $action
              * @param object $old
              * @param object $new
+             * @param string $workflowAction
              * @return void
              */
-            public function addJournalRecord($issueId, $action, $old, $new)
+            public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false)
             {
                 $journal = loadBackend("tt_journal");
 
                 try {
                     $issue = $this->getIssue($issueId);
                     if ($issue) {
+                        file_put_contents("/tmp/issue", print_r($issue, true));
+                        file_put_contents("/tmp/old", print_r($old, true));
+                        file_put_contents("/tmp/new", print_r($new, true));
                         $workflow = $this->loadWorkflow($issue["workflow"]);
-                        $workflow->issueChanged($issue, $action, $old, $new);
+                        $workflow->issueChanged($issue, $action, $old, $new, $workflowAction);
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                 }
 
                 if ($journal) {
-                    return $journal->journal($issueId, $action, $old, $new);
+                    return $journal->journal($issueId, $action, $old, $new, $workflowAction);
                 }
 
                 return false;
