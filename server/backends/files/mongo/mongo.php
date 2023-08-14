@@ -6,6 +6,8 @@
 
     namespace backends\files {
 
+    use Exception;
+
         /**
          * gridFS storage
          */
@@ -67,6 +69,21 @@
                     "fileInfo" => $bucket->getFileDocumentForStream($stream),
                     "stream" => $stream,
                 ];
+            }
+
+            public function getFileBytes($uuid)
+            {
+                try {
+                    $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
+                    $image = $bucket->findOne(new \MongoDB\BSON\ObjectId($uuid));
+    
+                    if ($image)
+                        return $image->getBytes();
+                } catch(Exception) {
+
+                }
+
+                return null;
             }
 
             /**

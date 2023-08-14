@@ -2,17 +2,12 @@
 
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
-$img = $files->getFile($uuid);
+$bytes = $files->getFileBytes($uuid);
 
-if ($img) {
-    $image = imagecreatefromstring(stream_get_contents($img['stream']));
+if ($bytes) {
+    header("Content-Type: image/jpeg");
 
-    if ($image) {
-        header("Content-Type: image/jpeg");
+    echo $bytes;
 
-        imagejpeg($image);
-        imagedestroy($image);
-
-        exit;
-    }
+    exit;
 }
