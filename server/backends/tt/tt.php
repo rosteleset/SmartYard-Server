@@ -1272,7 +1272,7 @@
              * @param $workflowAction
              * @return mixed
              */
-            abstract protected function modifyIssue($issue, $workflowAction);
+            abstract protected function modifyIssue($issue, $workflowAction = false);
 
             /**
              * @param $issueId
@@ -1347,20 +1347,22 @@
             abstract public function reCreateIndexes();
 
             /**
-             * @param object $old
+             * @param string $issueId
              * @param string $action
+             * @param object $old
              * @param object $new
              * @param string $workflowAction
              * @return void
              */
-            public function addJournalRecord($old, $action, $new, $workflowAction = false)
+            public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false)
             {
                 $journal = loadBackend("tt_journal");
 
                 try {
-                    if ($action != "deleteIssue") {
-                        $workflow = $this->loadWorkflow($old["workflow"]);
-                        $workflow->issueChanged($old, $action, $new, $workflowAction);
+                    $issue = $this->getIssue($issueId);
+                    if ($issue) {
+                        $workflow = $this->loadWorkflow($issue["workflow"]);
+                        $workflow->issueChanged($issue, $action, $old, $new, $workflowAction);
                     }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

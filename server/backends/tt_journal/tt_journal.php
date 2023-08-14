@@ -22,7 +22,7 @@
              * @param string $workflowAction
              * @return boolean
              */
-            public abstract function journal($issueId, $action, $old, $new, $workflowAction = false);
+            public abstract function journal($issueId, $action, $old, $new, $workflowAction);
 
             /**
              * @param string $issueId
