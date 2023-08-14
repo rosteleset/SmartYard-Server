@@ -109,7 +109,7 @@
             /**
              * @inheritDoc
              */
-            protected function modifyIssue($issue)
+            protected function modifyIssue($issue, $workflowAction = false)
             {
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
@@ -166,6 +166,9 @@
                         $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
                     }
                     if ($update) {
+                        if ($workflowAction) {
+                            $issue["workflowAction"] = $workflowAction;
+                        }
                         $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue);
                     }
                     return $update;

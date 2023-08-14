@@ -1269,9 +1269,10 @@
 
             /**
              * @param $issue
+             * @param $workflowAction
              * @return mixed
              */
-            abstract protected function modifyIssue($issue);
+            abstract protected function modifyIssue($issue, $workflowAction);
 
             /**
              * @param $issueId
