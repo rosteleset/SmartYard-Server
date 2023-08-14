@@ -7,6 +7,7 @@
     namespace backends\files {
 
     use Exception;
+    use logger\Logger;
 
         /**
          * gridFS storage
@@ -79,8 +80,8 @@
     
                     if ($image)
                         return $image->getBytes();
-                } catch(Exception) {
-
+                } catch(Exception $e) {
+                    Logger::channel('mongo')->error('Error get file bytes'.PHP_EOL.$e);
                 }
 
                 return null;
