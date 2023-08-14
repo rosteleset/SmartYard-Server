@@ -117,13 +117,14 @@ namespace backends\plog {
 
                     if (!array_key_exists('data', $camshot_data) || count($camshot_data["data"]) === 0) {
                         //получение кадра с DVR-серевера, если нет кадра от FRS
-                        Logger::channel('clickhouse')->debug('getCamshot() drv', ['camera' => $cameras[0]]);
-
                         $prefix = $cameras[0]["dvrStream"];
                         if ($prefix) {
                             $ts_event = $date - $this->back_time_shift_video_shot;
                             $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
                             $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
+
+                            Logger::channel('plog-clickhouse')->debug('getCamshot() dvr', ['url' => $urlOfScreenshot]);
+
                             if (substr($urlOfScreenshot, -4) === ".mp4") {
                                 system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
                             } else {
@@ -149,8 +150,6 @@ namespace backends\plog {
                     }
                 }
             }
-
-            Logger::channel('clickhouse')->debug('getCamshot()', ['data' => $camshot_data]);
 
             return $camshot_data;
         }
