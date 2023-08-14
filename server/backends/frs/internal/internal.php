@@ -331,6 +331,8 @@ namespace backends\frs {
 
             $rbt_data = $this->db->get($query);
 
+            $logger->debug('syncData() rbt data', ['data' => $rbt_data]);
+
             if (is_array($rbt_data))
                 foreach ($rbt_data as $item) {
                     $frs_base_url = $item['frs'];
