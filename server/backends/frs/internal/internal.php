@@ -294,6 +294,7 @@ namespace backends\frs {
             $logger->debug('syncData() remove faces from rbt', ['count' => count($diff_faces)]);
 
             $diff_faces = array_diff($frs_all_faces, $rbt_all_faces);
+
             if ($diff_faces) {
                 foreach ($this->servers() as $frs_server) {
                     $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_DELETE_FACES, [self::P_FACE_IDS => $diff_faces]);
@@ -303,9 +304,12 @@ namespace backends\frs {
             $logger->debug('syncData() remove faces from frs', ['count' => count($diff_faces)]);
 
             $frs_all_data = [];
+
             foreach ($this->servers() as $frs_server) {
+                $frs_all_data[$frs_server[self::FRS_BASE_URL]] = [];
                 $streams = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
-                if ($streams && $streams[self::P_DATA] && is_array($streams[self::P_DATA]))
+
+                if ($streams && isset($streams[self::P_DATA]) && is_array($streams[self::P_DATA]))
                     foreach ($streams[self::P_DATA] as $item) {
                         if (array_key_exists(self::P_FACE_IDS, $item))
                             $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]] = $item[self::P_FACE_IDS];
@@ -375,11 +379,10 @@ namespace backends\frs {
                         //face image doesn't exist in th RBT, so delete it everywhere
                         $this->deleteFaceId($face_id);
                         $this->apiCall($frs_base_url, self::M_DELETE_FACES, [$face_id]);
-                    } else $rbt_all_data[$frs_base_url][$stream_id][] = $face_id;
+                    } else {
+                        $rbt_all_data[$frs_base_url][$stream_id][] = $face_id;
+                    }
                 }
-                
-            $logger->debug('syncData() rbt all data', ['data' => $rbt_all_data]);
-            $logger->debug('syncData() frs all data', ['data' => $frs_all_data]);
 
             foreach ($rbt_all_data as $base_url => $data) {
                 //syncing video streams
