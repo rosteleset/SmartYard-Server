@@ -216,7 +216,7 @@
 
                     return $delete && $this->mongo->$db->$acr->deleteMany([
                         "issueId" => $issueId,
-                    ]) && $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
+                    ]) && $this->addJournalRecord([ "issueId" => $issueId ], "deleteIssue", null);
                 } else {
                     return false;
                 }
