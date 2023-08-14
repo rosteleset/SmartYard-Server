@@ -256,6 +256,7 @@
     "modifyWorkspace": "Редактировать рабочий стол",
     "confirmWorkspaceDelete": "Удалить рабочий стол \"%s\"?",
     "unlinkIssues": "Удалить связь между \"%s\" и \"%s\"?",
+    "workflowAction": "Действие рабочего процесса",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
