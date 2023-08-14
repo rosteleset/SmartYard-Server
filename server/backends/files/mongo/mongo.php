@@ -80,6 +80,7 @@
     
                     if ($image)
                         return $image->getBytes();
+                    else Logger::channel('mongo')->debug('File not found', ['data' => $uuid]);
                 } catch(Exception $e) {
                     Logger::channel('mongo')->error('Error get file bytes'.PHP_EOL.$e);
                 }
