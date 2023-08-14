@@ -108,7 +108,7 @@
 
                 // virtual journal field
                 case "workflowAction":
-                    return i18n("tt.parent");
+                    return i18n("tt.workflowAction");
         
                 default:
                     return fieldId;
