@@ -377,6 +377,8 @@ namespace backends\frs {
                         $this->apiCall($frs_base_url, self::M_DELETE_FACES, [$face_id]);
                     } else $rbt_all_data[$frs_base_url][$stream_id][] = $face_id;
                 }
+                
+            $logger->debug('syncData() rbt all data', ['data' => $rbt_all_data]);
 
             foreach ($rbt_all_data as $base_url => $data) {
                 //syncing video streams
