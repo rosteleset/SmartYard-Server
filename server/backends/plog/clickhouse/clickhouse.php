@@ -148,6 +148,8 @@ namespace backends\plog {
                 }
             }
 
+            Logger::channel('clickhouse')->debug('getCamshot()', ['data' => $camshot_data]);
+
             return $camshot_data;
         }
 
