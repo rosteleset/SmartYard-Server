@@ -455,7 +455,7 @@
                     "commentBody" => $comment,
                     "commentPrivate" => $private,
                     "commentType" => $type,
-                ], $silent);
+                ], false, $silent);
 
                 return $this->mongo->$db->$acr->updateOne(
                     [
