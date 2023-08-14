@@ -203,6 +203,8 @@
 
                 $_keys = $this->redis->keys("CACHE:" . strtoupper($this->backend) . ":*");
 
+                $n = 0;
+                
                 foreach ($_keys as $_key) {
                     $this->redis->del($_key);
                     $n++;
