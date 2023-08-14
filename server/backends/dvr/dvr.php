@@ -43,9 +43,10 @@
             /**
              * @param object $cam Camera object
              * @param integer $time unixtime of screenshot
+             * @param boolean $addTokenToUrl add token information
              * @return string URL with mp4-screenshot on a DVR-server
              */
-            abstract public function getUrlOfScreenshot($cam, $time = false);
+            abstract public function getUrlOfScreenshot($cam, $time = false, $addTokenToUrl = false);
 
 
         }

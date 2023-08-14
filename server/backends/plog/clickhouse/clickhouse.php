@@ -121,7 +121,7 @@ namespace backends\plog {
                         if ($prefix) {
                             $ts_event = $date - $this->back_time_shift_video_shot;
                             $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                            $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
+                            $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event, true);
 
                             Logger::channel('plog-clickhouse')->debug('getCamshot() dvr', ['url' => $urlOfScreenshot]);
 

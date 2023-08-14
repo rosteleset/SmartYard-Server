@@ -302,7 +302,7 @@
             /**
              * @inheritDoc
              */
-            public function getUrlOfScreenshot($cam, $time = false) {
+            public function getUrlOfScreenshot($cam, $time = false, $addTokenToUrl = false) {
                 $prefix = $cam['dvrStream'];
                 if (!$time) $time = now();
                 $dvr = loadBackend("dvr")->getDVRServerByStream($prefix);
@@ -392,7 +392,7 @@
                     return $request_url;
                     break;
                 default: 
-                    return "$prefix/$time-preview.mp4";
+                    return "$prefix/$time-preview.mp4" . ($addTokenToUrl ? ("?token=" . $this->getDVRTokenForCam($cam, $subscriberId)) : "");
                 }
                 return false;
             }
