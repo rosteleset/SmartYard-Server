@@ -23,7 +23,7 @@ syslog.on("message", async ({date, host, message}) => {
     Check ip address from syslog message body, if not valid use src ip address
     <13>1 2023-08-11T13:27:01.000000+03:00 192.168.13.137 DKS15122_rev5.2.6.8.3 1868823272A0 - - RFID 0000003375EACE is not present in database
     */
-    if (topology?.nat && isIpAddress(host)) host = hostname
+    if (topology?.nat && isIpAddress(hostname)) host = hostname
 
     // Spam messages filter
     if (
