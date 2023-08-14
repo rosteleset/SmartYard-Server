@@ -80,6 +80,8 @@
                     $bucket = $this->mongo->$db->selectGridFSBucket();
                     $image = $bucket->findOne(["_id" => new \MongoDB\BSON\ObjectId($uuid)]);
     
+                    Logger::channel('mongo')->debug('Find file', ['data' => $uuid]);
+
                     if ($image)
                         return $image->getBytes();
                     else Logger::channel('mongo')->debug('File not found', ['data' => $uuid]);
