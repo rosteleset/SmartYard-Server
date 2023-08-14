@@ -51,14 +51,10 @@ namespace backends\plog {
         public function cron($part)
         {
             if ($part === $this->cron_process_events_scheduler) {
-                $time = microtime(true) * 1000;
-
                 $this->processEvents();
 
                 $this->db->modify("delete from plog_door_open where expire < " . time());
                 $this->db->modify("delete from plog_call_done where expire < " . time());
-
-                Logger::channel('clickhouse')->debug('Processed events', ['elapsed_ms' => microtime(true) * 1000 - $time]);
 
                 return true;
             }
@@ -74,10 +70,13 @@ namespace backends\plog {
         public function getCamshot($domophone_id, $date, $event_id = false)
         {
             $files = loadBackend('files');
+
             $camshot_data = [];
 
             $households = loadBackend("households");
+
             $entrances = $households->getEntrances("domophoneId", ["domophoneId" => $domophone_id, "output" => "0"]);
+
             if ($entrances && $entrances[0]) {
                 $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
                 if ($cameras && $cameras[0]) {
@@ -115,6 +114,8 @@ namespace backends\plog {
                             }
                         }
                     }
+
+                    Logger::channel('clickhouse')->debug('getCamshot()', ['data' => $camshot_data]);
 
                     if (!$camshot_data) {
                         //получение кадра с DVR-серевера, если нет кадра от FRS
@@ -497,7 +498,8 @@ namespace backends\plog {
 
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
 
-            Logger::channel('clickhouse')->debug('Processing on open doors', ['count' => count($result)]);
+            if (count($result) > 0)
+                Logger::channel('clickhouse')->debug('Processing on open doors', ['count' => count($result)]);
 
             foreach ($result as $row) {
                 $event_data = [];
@@ -608,7 +610,8 @@ namespace backends\plog {
                 ";
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
 
-            Logger::channel('clickhouse')->debug('Processing on calls done', ['count' => count($result)]);
+            if (count($result) > 0)
+                Logger::channel('clickhouse')->debug('Processing on calls done', ['count' => count($result)]);
 
             foreach ($result as $row) {
                 $ip = $row['ip'];
