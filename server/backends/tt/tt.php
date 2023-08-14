@@ -306,7 +306,7 @@
              * @return boolean
              */
             public function putWorkflow($workflow, $body) {
-                $this-clearCache();
+                $this->clearCache();
 
                 $files = loadBackend("files");
 
@@ -338,7 +338,7 @@
              * @return boolean
              */
             public function deleteWorkflow($workflow) {
-                $this-clearCache();
+                $this->clearCache();
 
                 $files = loadBackend("files");
 
