@@ -18,13 +18,15 @@ class Logger
     private string $file;
     private string $tag;
 
-    public function __construct(string $file, string $tag)
+    public function __construct(string $file = null, string $tag = null)
     {
-        $this->file = $file;
-        $this->tag = $tag;
+        if ($file != null && $tag != null) {
+            $this->file = $file;
+            $this->tag = $tag;
 
-        if (!file_exists($this->getFile()))
-            touch($this->getFile());
+            if (!file_exists($this->getFile()))
+                touch($this->getFile());
+        }
     }
 
     public function emergency(string $message, array $context = []): void
@@ -69,7 +71,8 @@ class Logger
 
     public function log(string $level, string $message, array $context = []): void
     {
-        file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $this->tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+        if ($this->file != null)
+            file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $this->tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
     }
 
     private function getFile(): string
@@ -80,13 +83,13 @@ class Logger
     public static function channel(string $file = 'main', string $tag = 'application'): static
     {
         if (!array_key_exists($file . $tag, self::$channels))
-            self::$channels[$file . $tag] = new static($file, $tag);
+            self::$channels[$file . $tag] = new Logger($file, $tag);
 
         return self::$channels[$file . $tag];
     }
 
     public static function channels(array $files, string $tag = 'application'): static
     {
-        return new GroupLogger(array_map(static fn ($file) => self::channel($file, $tag), $files));
+        return new GroupLogger(array_map(static fn($file) => self::channel($file, $tag), $files));
     }
 }

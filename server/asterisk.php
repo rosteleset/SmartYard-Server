@@ -18,7 +18,7 @@ require_once "backends/backend.php";
 
 header('Content-Type: application/json');
 
-$logger = Logger::channel('asterisk');
+$logger = Logger::channel('asterisk', 'request');
 
 try {
     $config = loadConfig();

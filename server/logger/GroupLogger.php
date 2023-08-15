@@ -8,10 +8,13 @@ class GroupLogger extends Logger
     private array $loggers;
 
     /**
+     * GroupLogger constructor.
      * @param Logger[] $loggers
      */
     public function __construct(array $loggers)
     {
+        parent::__construct();
+
         $this->loggers = $loggers;
     }
 

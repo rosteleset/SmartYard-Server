@@ -7,7 +7,6 @@
 namespace backends\plog {
 
     use backends\frs\frs;
-    use logger\Logger;
     use PDO;
 
     /**
@@ -123,8 +122,6 @@ namespace backends\plog {
                             $filename = "/tmp/" . uniqid('camshot_') . ".jpeg";
                             $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event, true);
 
-                            Logger::channel('plog-clickhouse')->debug('getCamshot() dvr', ['url' => $urlOfScreenshot]);
-
                             if (str_contains($urlOfScreenshot, '.mp4')) {
                                 shell_exec("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
                             } else {
@@ -188,13 +185,6 @@ namespace backends\plog {
 
             $query = "insert into plog_call_done(date, ip, call_id, expire) values(:date, :ip, :call_id, :expire)";
 
-            Logger::channel('clickhouse')->debug('addCallDoneData', [
-                'sql' => $query, ":date" => $date,
-                ":ip" => $ip,
-                ":call_id" => $call_id,
-                ":expire" => $expire
-            ]);
-
             return $this->db->insert($query, [
                 ":date" => $date,
                 ":ip" => $ip,
@@ -211,16 +201,6 @@ namespace backends\plog {
             $expire = time() + $this->ttl_temp_record;
 
             $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
-
-            Logger::channel('clickhouse')->debug('addDoorOpenData', [
-                'sql' => $query,
-                ":date" => $date,
-                ":ip" => $ip,
-                ":event" => $event_type,
-                ":door" => $door,
-                ":detail" => $detail,
-                ":expire" => $expire
-            ]);
 
             return $this->db->insert($query, [
                 ":date" => $date,
@@ -499,9 +479,6 @@ namespace backends\plog {
 
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
 
-            if (count($result) > 0)
-                Logger::channel('clickhouse')->debug('Processing on open doors', ['count' => count($result)]);
-
             foreach ($result as $row) {
                 $event_data = [];
                 $event_id = false;
@@ -610,9 +587,6 @@ namespace backends\plog {
                         date
                 ";
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
-
-            if (count($result) > 0)
-                Logger::channel('clickhouse')->debug('Processing on calls done', ['count' => count($result)]);
 
             foreach ($result as $row) {
                 $ip = $row['ip'];

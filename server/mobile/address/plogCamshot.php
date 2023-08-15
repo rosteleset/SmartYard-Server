@@ -1,24 +1,12 @@
 <?php
 
-use logger\Logger;
-
-$logger = Logger::channel('plog', 'camshot');
-
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
 
-$logger->debug('plogCamshot()', ['uuid' => $uuid]);
+$bytes = $files->getFileBytes($uuid);
 
-try {
-    $bytes = $files->getFileBytes($uuid);
+header('Content-Type: image/jpeg');
 
-    $logger->debug('plogCamshot()', ['uuid' => $uuid, 'bytes' => strlen($bytes)]);
+echo $bytes;
 
-    header('Content-Type: image/jpeg');
-
-    echo $bytes;
-
-    exit;
-} catch (Exception $e) {
-    $logger->error($e);
-}
+exit;

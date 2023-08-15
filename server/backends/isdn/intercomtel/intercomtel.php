@@ -13,6 +13,15 @@ namespace backends\isdn {
      */
     class intercomtel extends isdn
     {
+        private Logger $logger;
+
+        public function __construct($config, $db, $redis, $login = false)
+        {
+            parent::__construct($config, $db, $redis, $login);
+
+            $this->logger = Logger::channel('isdn', 'intercomtel');
+        }
+
         /**
          * @inheritDoc
          */
@@ -32,7 +41,7 @@ namespace backends\isdn {
          */
         function sendCode($id)
         {
-            Logger::channel('intercomtel')->debug('Bad method call sendCode', ['id' => $id]);
+            $this->logger->error('Bad method call sendCode', ['id' => $id]);
 
             throw new \BadMethodCallException();
         }
@@ -50,7 +59,7 @@ namespace backends\isdn {
          */
         function checkIncoming($id)
         {
-            Logger::channel('intercomtel')->debug('Bad method call checkIncoming', ['id' => $id]);
+            $this->logger->error('Bad method call checkIncoming', ['id' => $id]);
 
             throw new \BadMethodCallException();
         }
@@ -71,7 +80,7 @@ namespace backends\isdn {
 
             curl_close($request);
 
-            Logger::channel('notification')->debug('Send notification via Intercomtel ' . $idsn['endpoint'] . $endpoint, json_decode($response, true));
+            $this->logger->error('Send notification via Intercomtel ' . $idsn['endpoint'] . $endpoint, json_decode($response, true));
 
             return false;
         }

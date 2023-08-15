@@ -7,7 +7,6 @@
 namespace backends\dvr_exports {
 
     use Exception;
-    use logger\Logger;
 
     class filesystem extends dvr_exports
     {
@@ -67,8 +66,6 @@ namespace backends\dvr_exports {
         {
             $config = $this->config;
 
-            $logger = Logger::channel('cctv');
-
             try {
                 $task = $this->db->get(
                     "select camera_id, subscriber_id, start, finish, filename, expire, state from camera_records where record_id = :record_id AND state = 0",
@@ -94,14 +91,10 @@ namespace backends\dvr_exports {
 
                     if ($dvr_files_path && substr($dvr_files_path, -1) != '/') $dvr_files_path = $dvr_files_path . '/';
 
-                    $logger->debug('runDownloadRecordTask record', ['record' => $recordId, 'camera' => $task['cameraId'], 'from' => $task['start'], 'to' => $task['finish'], 'path' => $dvr_files_path]);
-
                     $cameras = loadBackend("cameras");
                     $cam = $cameras->getCamera($task['cameraId']);
 
                     if (!$cam) {
-                        $logger->error('runDownloadRecordTask camera not found', ['record' => $recordId, 'camera' => $task['cameraId']]);
-
                         echo "Camera with id = " . $task['cameraId'] . " was not found\n";
 
                         exit(0);
@@ -110,8 +103,6 @@ namespace backends\dvr_exports {
                     $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
 
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
-
-                    $logger->debug('runDownloadRecordTask start', ['record' => $recordId, 'url' => $request_url]);
 
                     echo "Record download task with id = $recordId was started\n";
                     echo "Fetching record form {$request_url} to " . $dvr_files_path . $task['filename'] . "\n";
@@ -122,8 +113,6 @@ namespace backends\dvr_exports {
                     $ch = curl_init($request_url);
 
                     if (!$fh) {
-                        $logger->error('runDownloadRecordTask file not open', ['record' => $recordId, 'path' => $dvr_files_path . $task['filename']]);
-
                         return 1;
                     }
 
@@ -141,21 +130,15 @@ namespace backends\dvr_exports {
                     if ($code === 200) {
                         $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
 
-                        $logger->debug('runDownloadRecordTask success', ['record' => $recordId]);
-
                         echo "Record download task with id = $recordId was successfully finished!\n";
                         return 0;
                     } else {
                         $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
 
-                        $logger->error('runDownloadRecordTask error', ['record' => $recordId, 'code' => $code]);
-
                         echo "Record download task with id = $recordId was finished with error code = $code!\n";
                         return 1;
                     }
                 } else {
-                    $logger->debug('runDownloadRecordTask not found', ['record' => $recordId]);
-
                     echo "Task with id = $recordId was not found\n";
 
                     return 1;
@@ -163,8 +146,6 @@ namespace backends\dvr_exports {
 
 
             } catch (Exception $e) {
-                $logger->critical('runDownloadRecordTask' . PHP_EOL . $e);
-
                 echo "Record download task with id = $recordId was failed to start\n";
                 return 1;
             }

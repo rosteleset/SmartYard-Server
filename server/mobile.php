@@ -36,9 +36,13 @@ $subscriber = false;
 $offsetForCityId = 1000000;
 $emptyStreetIdOffset = 1000000;
 
+$logger = Logger::channel('mobile', 'request');
+
 try {
     $config = loadConfig();
 } catch (Exception $e) {
+    $logger->critical('Config fail load' . PHP_EOL . $e);
+
     $config = false;
 }
 
@@ -60,6 +64,8 @@ try {
     }
     $redis->setex("iAmOk", 1, "1");
 } catch (Exception $e) {
+    $logger->critical('Redis fail connect' . PHP_EOL . $e);
+
     error_log(print_r($e, true));
     response(555, [
         "error" => "redis",
@@ -69,6 +75,8 @@ try {
 try {
     $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
 } catch (Exception $e) {
+    $logger->critical('Pdo fail connect' . PHP_EOL . $e);
+
     error_log(print_r($e, true));
     response(555, [
         "error" => "PDO",
@@ -292,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 try {
                     require_once __DIR__ . "/mobile/{$module}/{$method}.php";
                 } catch (Throwable $throwable) {
-                    Logger::channel('mobile')->error('Error handle post request' . PHP_EOL . $throwable);
+                    $logger->error('Error handle post request' . PHP_EOL . $throwable);
                 }
             } else {
                 if (array_key_exists('X-Dm-Api-Refresh', apache_request_headers())) {
@@ -307,7 +315,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 try {
                     require_once __DIR__ . "/mobile/{$module}/{$method}.php";
                 } catch (Exception $e) {
-                    Logger::channel('mobile')->error('Error handle post request' . PHP_EOL . $e);
+                    $logger->error('Error handle post request' . PHP_EOL . $e);
                 }
             }
         }
@@ -326,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         try {
             require_once __DIR__ . "/mobile/{$module}/{$method}.php";
         } catch (Throwable $throwable) {
-            Logger::channel('mobile')->error('Error handle get request' . PHP_EOL . $throwable);
+            $logger->error('Error handle get request' . PHP_EOL . $throwable);
         }
     }
 

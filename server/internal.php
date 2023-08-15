@@ -12,13 +12,15 @@ require_once "utils/db_ext.php";
 require_once "utils/error.php";
 require_once "utils/i18n.php";
 
-$logger = Logger::channel('internal');
+$logger = Logger::channel('internal', 'request');
 
 $config = false;
 
 try {
     $config = loadConfig();
 } catch (Exception $e) {
+    $logger->critical('Config fail load' . PHP_EOL . $e);
+
     $config = false;
 }
 
@@ -39,6 +41,8 @@ try {
     }
     $redis->setex("iAmOk", 1, "1");
 } catch (Exception $e) {
+    $logger->critical('Redis fail connect' . PHP_EOL . $e);
+
     error_log(print_r($e, true));
     response(555, [
         "error" => "redis",
@@ -48,6 +52,8 @@ try {
 try {
     $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
 } catch (Exception $e) {
+    $logger->critical('Pdo fail connect' . PHP_EOL . $e);
+
     error_log(print_r($e, true));
     response(555, [
         "error" => "PDO",
@@ -201,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $postdata = json_decode($raw_postdata, true);
 
     if (!isset($postdata)) {
-        $logger->debug('Body is empty', ['path' => $path]);
+        $logger->error('Body is empty', ['path' => $path]);
 
         response(405, ["error" => "post body"]);
     }
@@ -226,8 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (count($m) == 4 && !$m[0] && $m[1] == 'internal') {
         $module = $m[2];
         $method = $m[3];
-
-        $logger->debug('Call internal method ', ['module' => $module, 'method' => $method]);
 
         if (file_exists(__DIR__ . "/internal/{$module}/{$method}.php")) {
             require_once __DIR__ . "/internal/{$module}/{$method}.php";

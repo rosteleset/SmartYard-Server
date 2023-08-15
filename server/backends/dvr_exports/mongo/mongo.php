@@ -7,7 +7,6 @@
 namespace backends\dvr_exports {
 
     use Exception;
-    use logger\Logger;
 
     class mongo extends dvr_exports
     {
@@ -68,7 +67,6 @@ namespace backends\dvr_exports {
         {
             $config = $this->config;
 
-            $logger = Logger::channel('cctv');
             // TODO: добавить удаление старых заданий на скачивание.
 
             try {
@@ -122,29 +120,21 @@ namespace backends\dvr_exports {
                         $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                         echo "Record download task with id = $recordId was successfully finished!\n";
                         fclose($file);
-                        
-                        $logger->debug('runDownloadRecordTask success', ['record' => $recordId]);
 
                         return $fileId;
                     } else {
                         $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
-
-                        $logger->error('runDownloadRecordTask error', ['record' => $recordId]);
 
                         echo "Record download task with id = $recordId was finished with error!\n";
                         
                         return false;
                     }
                 } else {
-                    $logger->debug('runDownloadRecordTask not found', ['record' => $recordId]);
-
                     echo "Task with id = $recordId was not found\n";
 
                     return false;
                 }
             } catch (Exception $e) {
-                $logger->critical('runDownloadRecordTask' . PHP_EOL . $e);
-
                 echo "Record download task with id = $recordId was failed to start\n";
                 return false;
             }

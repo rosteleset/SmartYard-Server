@@ -244,7 +244,7 @@ namespace backends\frs {
 
         private function syncData()
         {
-            $logger = Logger::channel('frs');
+            $logger = Logger::channel('frs', 'internal');
 
             if (!is_array($this->servers())) {
                 $logger->debug('syncData() skip');
@@ -291,7 +291,8 @@ namespace backends\frs {
                 $this->db->modify($query);
             }
 
-            $logger->debug('syncData() remove faces from rbt', ['count' => count($diff_faces)]);
+            if (count($diff_faces) > 0)
+                $logger->debug('syncData() remove faces from rbt', ['count' => count($diff_faces)]);
 
             $diff_faces = array_diff($frs_all_faces, $rbt_all_faces);
 
@@ -301,7 +302,8 @@ namespace backends\frs {
                 }
             }
 
-            $logger->debug('syncData() remove faces from frs', ['count' => count($diff_faces)]);
+            if (count($diff_faces) > 0)
+                $logger->debug('syncData() remove faces from frs', ['count' => count($diff_faces)]);
 
             $frs_all_data = [];
 
@@ -318,8 +320,6 @@ namespace backends\frs {
                     }
             }
 
-            $logger->debug('syncData() frs all data', ['count' => count($frs_all_data)]);
-
             $rbt_all_data = [];
             $query = "
                     select
@@ -334,8 +334,6 @@ namespace backends\frs {
                 ";
 
             $rbt_data = $this->db->get($query);
-
-            $logger->debug('syncData() rbt data', ['data' => $rbt_data]);
 
             if (is_array($rbt_data))
                 foreach ($rbt_data as $item) {
@@ -388,7 +386,8 @@ namespace backends\frs {
                 //syncing video streams
                 $diff_streams = array_diff_key($data, $frs_all_data[$base_url]);
 
-                $logger->debug('syncData() add streams to frs', ['diff' => $diff_streams]);
+                if (count($diff_streams) > 0)
+                    $logger->debug('syncData() add streams to frs', ['diff' => $diff_streams]);
 
                 foreach ($diff_streams as $stream_id => $faces) {
                     $cam = loadBackend("cameras")->getCamera($stream_id);
@@ -407,7 +406,8 @@ namespace backends\frs {
 
                 $diff_streams = array_diff_key($frs_all_data[$base_url], $data);
 
-                $logger->debug('syncData() remove streams from frs', ['diff' => $diff_streams]);
+                if (count($diff_streams) > 0)
+                    $logger->debug('syncData() remove streams from frs', ['diff' => $diff_streams]);
 
                 foreach (array_keys($diff_streams) as $stream_id) {
                     $this->apiCall($base_url, self::M_REMOVE_STREAM, [self::P_STREAM_ID => $stream_id]);
@@ -417,11 +417,19 @@ namespace backends\frs {
                 $common_streams = array_intersect_key($data, $frs_all_data[$base_url]);
                 foreach ($common_streams as $stream_id => $rbt_faces) {
                     $diff_faces = array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id]);
+
+                    if (count($diff_faces) > 0)
+                        $logger->debug('syncData() add faces to frs', ['diff' => $diff_faces]);
+
                     if ($diff_faces) {
                         $this->apiCall($base_url, self::M_ADD_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                     }
 
                     $diff_faces = array_diff($frs_all_data[$base_url][$stream_id], $rbt_faces);
+
+                    if (count($diff_faces) > 0)
+                        $logger->debug('syncData() remove faces from frs', ['diff' => $diff_faces]);
+
                     if ($diff_faces)
                         $this->apiCall($base_url, self::M_REMOVE_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                 }
@@ -482,7 +490,7 @@ namespace backends\frs {
             }
             $flat_id = $r["flat_id"];
             $query = "delete from frs_links_faces where face_id = :face_id and house_subscriber_id = :house_subscriber_id";
-            $r =  $this->db->modify($query, [
+            $r = $this->db->modify($query, [
                 ":face_id" => $face_id,
                 ":house_subscriber_id" => $house_subscriber_id,
             ]);
