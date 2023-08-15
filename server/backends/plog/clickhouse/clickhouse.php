@@ -120,13 +120,13 @@ namespace backends\plog {
                         $prefix = $cameras[0]["dvrStream"];
                         if ($prefix) {
                             $ts_event = $date - $this->back_time_shift_video_shot;
-                            $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
+                            $filename = "/tmp/" . uniqid('camshot_') . ".jpeg";
                             $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event, true);
 
                             Logger::channel('plog-clickhouse')->debug('getCamshot() dvr', ['url' => $urlOfScreenshot]);
 
                             if (substr($urlOfScreenshot, -4) === ".mp4") {
-                                system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename");
+                                system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
                             } else {
                                 file_put_contents($filename, file_get_contents($urlOfScreenshot));
                             }
