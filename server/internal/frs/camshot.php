@@ -1,5 +1,7 @@
 <?php
 
+use logger\Logger;
+
 require_once __DIR__ . '/../../utils/checkint.php';
 
 $camera_id = $param;
@@ -17,6 +19,8 @@ if (!$cam)
 $model = loadCamera($cam["model"], $cam["url"], $cam["credentials"]);
 if (!$model)
     response(404);
+
+Logger::channel('internal', 'frs')->debug('camshot()', ['camera' => $camera_id]);
 
 header('Content-Type: image/jpeg');
 echo $model->camshot();
