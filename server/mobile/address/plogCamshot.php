@@ -20,7 +20,7 @@ try {
         if ($contents) {
             //$metaData = $file['fileInfo']['metadata'];
 
-            //header('Content-Type: ' . isset($metaData['contentType']) ? $metaData['contentType'] : 'image/jpeg');
+            header('Content-Type: image/jpeg');
 
             echo $contents;
 
