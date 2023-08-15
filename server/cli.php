@@ -601,7 +601,7 @@ if (count($args) == 2 && array_key_exists('--entrance', $args) && !isset($args['
     exit(0);
 }
 
-if (count($args) == 2 && array_key_exists('--inbox', $args) && !isset($args['--inbox'])) {
+if (count($args) == 3 && array_key_exists('--inbox', $args) && !isset($args['--inbox'])) {
     if (array_key_exists("--subscriber", $args) && !empty($args["--subscriber"])) {
         $subscriber = $args["--subscriber"];
     } else {
