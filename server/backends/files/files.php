@@ -38,7 +38,7 @@
              * get file bytes from storage
              * 
              * @param string $uuid
-             * @return mixed
+             * @return string|false
              */
             abstract public function getFileBytes($uuid);
 
