@@ -586,6 +586,21 @@ if (count($args) == 3 && array_key_exists("--plog", $args) && !isset($args["--pl
     exit(0);
 }
 
+if (count($args) == 2 && array_key_exists('--entrance', $args) && !isset($args['----entrance'])) {
+    if (array_key_exists("--camera", $args) && !empty($args["--camera"])) {
+        $camera = $args["--camera"];
+    } else {
+        usage();
+    }
+
+    $query = "select he.house_entrance_id from houses_entrances he where he.camera_id = " . $camera;
+    $r = $db->get($query, [], ["house_entrance_id" => "entranceId"], [self::PDO_SINGLIFY]);
+
+    var_dump($r);
+
+    exit(0);
+}
+
 if (count($args) == 2 && array_key_exists('--inbox', $args) && !isset($args['--inbox'])) {
     if (array_key_exists("--subscriber", $args) && !empty($args["--subscriber"])) {
         $subscriber = $args["--subscriber"];
