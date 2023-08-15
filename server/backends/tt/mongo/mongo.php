@@ -655,7 +655,7 @@
                         $meta = $attachment["metadata"];
                     }
 
-                    $meta["date"] = round($attachment["date"] / 1000);
+                    $meta["date"] = $attachment["date"]?round($attachment["date"] / 1000):time();
                     $meta["added"] = time();
                     $meta["type"] = $attachment["type"];
                     $meta["issue"] = true;
