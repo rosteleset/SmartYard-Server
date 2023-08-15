@@ -12,7 +12,7 @@ $logger->debug('plogCamshot()', ['uuid' => $uuid]);
 try {
     $bytes = $files->getFileBytes($uuid);
 
-    if ($file) {
+    if ($bytes) {
         $bytes->debug('plogCamshot()', ['uuid' => $uuid, 'bytes' => count($bytes)]);
 
         header('Content-Type: image/jpeg');
