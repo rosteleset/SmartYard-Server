@@ -9,7 +9,7 @@ if ($file) {
 
     header('Content-Type: ' . isset($metaData->contentType) ? $metaData->contentType : 'image/jpeg');
 
-    echo(stream_get_contents($file['stream']));
+    echo stream_get_contents($file['stream']);
 
     exit;
 }
