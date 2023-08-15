@@ -641,7 +641,7 @@
                         $attachment["body"] = base64_decode($attachment["body"]);
                     } else
                     if ($attachment["url"]) {
-                        $attachment["body"] = file_get_contents($attachment["url"]);
+                        $attachment["body"] = @file_get_contents($attachment["url"]);
                     }
                     if (strlen($attachment["body"]) <= 0 || strlen($attachment["body"]) > $project["maxFileSize"]) {
                         return false;
