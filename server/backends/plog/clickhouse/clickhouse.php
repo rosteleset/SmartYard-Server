@@ -125,7 +125,7 @@ namespace backends\plog {
 
                             Logger::channel('plog-clickhouse')->debug('getCamshot() dvr', ['url' => $urlOfScreenshot]);
 
-                            if (substr($urlOfScreenshot, -4) === ".mp4") {
+                            if (str_contains($urlOfScreenshot, '.mp4')) {
                                 shell_exec("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
                             } else {
                                 file_put_contents($filename, file_get_contents($urlOfScreenshot));
