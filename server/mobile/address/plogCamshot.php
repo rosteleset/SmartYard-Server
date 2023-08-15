@@ -15,16 +15,20 @@ try {
     if ($file) {
         $logger->debug('plogCamshot()', ['uuid' => $uuid, 'fileInfo' => $file['fileInfo']]);
 
-        $image = imagecreatefromstring(stream_get_contents($file['stream']));
+        $data = stream_get_contents($file['stream']);
 
-        if ($image) {
-            header('Content-Type: image/jpeg');
+        echo '<img src="data:image/jpeg;base64,'.$data.'">';
 
-            imagejpeg($image);
-            imagedestroy($image);
+        // $image = imagecreatefromstring(stream_get_contents($file['stream']));
 
-            exit;
-        }
+        // if ($image) {
+        //     header('Content-Type: image/jpeg');
+
+        //     imagejpeg($image);
+        //     imagedestroy($image);
+
+        //     exit;
+        // }
     }
 } catch (Exception $e) {
     $logger->error('Error get plogCamshot()' . PHP_EOL . $e);
