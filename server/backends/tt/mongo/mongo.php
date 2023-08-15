@@ -648,6 +648,8 @@
                     }
                 }
 
+                $checksums = [];
+
                 foreach ($attachments as $attachment) {
                     $meta = [];
 
@@ -680,10 +682,12 @@
                         ])
                     )) {
                         return false;
+                    } else {
+                        $checksums[$attachment["name"]] = md5($attachment["body"]);
                     }
                 }
 
-                return true;
+                return $checksums;
             }
 
             /**
