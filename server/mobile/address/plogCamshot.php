@@ -14,11 +14,15 @@ $file = $files->getFile($uuid);
 if ($file) {
     $logger->debug('plogCamshot()', ['uuid' => $uuid, 'fileInfo' => $file['fileInfo']]);
 
-    $metaData = $file['fileInfo']->metadata;
+    $contents = stream_get_contents($file['stream']);
 
-    header('Content-Type: ' . isset($metaData->contentType) ? $metaData->contentType : 'image/jpeg');
+    if ($contents) {
+        $metaData = $file['fileInfo']->metadata;
 
-    echo stream_get_contents($file['stream']);
+        header('Content-Type: ' . isset($metaData->contentType) ? $metaData->contentType : 'image/jpeg');
 
-    exit;
+        echo $contents;
+
+        exit;
+    }
 }
