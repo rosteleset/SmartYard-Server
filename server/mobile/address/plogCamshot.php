@@ -17,7 +17,7 @@ try {
 
         header('Content-Type: image/jpeg');
 
-        echo unpack("C*", $bytes);
+        echo unpack("H*", $bytes);
 
         exit;
     }
