@@ -19,6 +19,8 @@ try {
 
         echo '<img src="data:image/jpeg;base64,'.base64_encode($data).'">';
 
+        exit;
+
         // $image = imagecreatefromstring(stream_get_contents($file['stream']));
 
         // if ($image) {
