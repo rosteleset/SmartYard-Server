@@ -65,7 +65,7 @@ if ($entrances && $entrances[0]) {
         $img_uuid = $event_data[plog::COLUMN_IMAGE_UUID];
         $url = @$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
         $face = json_decode($event_data[plog::COLUMN_FACE], true);
-        $result = $frs->registerFace($cameras[0], $event_uuid, $face['left'] ?? 0, $face['top'] ?? 0, $face['width'] ?? 0, $face['height']) ?? 0;
+        $result = $frs->registerFace($cameras[0], $event_uuid, $face['left'] ?? 0, $face['top'] ?? 0, $face['width'] ?? 0, $face['height'] ?? 0);
         if (!isset($result[frs::P_FACE_ID])) {
             response(406, $result[frs::P_MESSAGE]);
         }
