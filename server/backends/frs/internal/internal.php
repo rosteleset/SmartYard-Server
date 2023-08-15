@@ -532,7 +532,7 @@ namespace backends\frs {
             if (count($r) == 1) {
                 $households = loadBackend("households");
 
-                return $households->getEntrance($r["entranceId"]);
+                return $households->getEntrance($r[0]["entranceId"]);
             }
 
             return false;
