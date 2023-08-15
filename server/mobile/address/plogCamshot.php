@@ -10,27 +10,16 @@ $uuid = $files->fromGUIDv4($param);
 $logger->debug('plogCamshot()', ['uuid' => $uuid]);
 
 try {
-    $file = $files->getFile($uuid);
+    $bytes = $files->getFileBytes($uuid);
 
     if ($file) {
-        $logger->debug('plogCamshot()', ['uuid' => $uuid, 'fileInfo' => $file['fileInfo']]);
+        $bytes->debug('plogCamshot()', ['uuid' => $uuid, 'bytes' => count($bytes)]);
 
-        $data = stream_get_contents($file['stream']);
+        header('Content-Type: image/jpeg');
 
-        echo '<img src="data:image/jpeg;base64,'.base64_encode($data).'">';
+        echo $bytes;
 
         exit;
-
-        // $image = imagecreatefromstring(stream_get_contents($file['stream']));
-
-        // if ($image) {
-        //     header('Content-Type: image/jpeg');
-
-        //     imagejpeg($image);
-        //     imagedestroy($image);
-
-        //     exit;
-        // }
     }
 } catch (Exception $e) {
     $logger->error('Error get plogCamshot()' . PHP_EOL . $e);
