@@ -45,7 +45,9 @@ if ($event_data[plog::COLUMN_PREVIEW] == plog::PREVIEW_NONE) {
     response(403, false, 'Нет кадра события');
 }
 
-$flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
+$flat_ids = array_map(function ($item) {
+    return $item['flatId'];
+}, $subscriber['flats']);
 $flat_id = (int)$event_data[plog::COLUMN_FLAT_ID];
 $f = in_array($flat_id, $flat_ids);
 if (!$f) {
@@ -56,14 +58,14 @@ if (!$f) {
 
 $households = loadBackend("households");
 $domophone = json_decode($event_data[plog::COLUMN_DOMOPHONE], false);
-$entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone->domophone_id, "output" => $domophone->domophone_output ]);
+$entrances = $households->getEntrances("domophoneId", ["domophoneId" => $domophone->domophone_id, "output" => $domophone->domophone_output]);
 if ($entrances && $entrances[0]) {
     $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
     if ($cameras && $cameras[0]) {
         $img_uuid = $event_data[plog::COLUMN_IMAGE_UUID];
         $url = @$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
-        $face = json_decode($event_data[plog::COLUMN_FACE], false);
-        $result = $frs->registerFace($cameras[0], $event_uuid, $face->left, $face->top, $face->width, $face->height);
+        $face = json_decode($event_data[plog::COLUMN_FACE], true);
+        $result = $frs->registerFace($cameras[0], $event_uuid, $face['left'] ?? 0, $face['top'] ?? 0, $face['width'] ?? 0, $face['height']) ?? 0;
         if (!isset($result[frs::P_FACE_ID])) {
             response(406, $result[frs::P_MESSAGE]);
         }
@@ -185,26 +187,26 @@ response();
      * dm.faceflats - списки поквартирных лайков в разрезе жильцов, специально для посетителей публичных домов (судя по тех. заданию [обосраться со смеху] у нас таких больше 99% от жилого фонда)
      */
 
-    /*mysql("update dm.face2face set external_face_id = $faceId where face_id = $face_id");
-    mysql("insert ignore into dm.faces (external_face_id) values ($faceId)");
-    mysql("update dm.faces set image = '$faceUUID' where external_face_id = $faceId");*/
+/*mysql("update dm.face2face set external_face_id = $faceId where face_id = $face_id");
+mysql("insert ignore into dm.faces (external_face_id) values ($faceId)");
+mysql("update dm.faces set image = '$faceUUID' where external_face_id = $faceId");*/
 
-    /*
-     * Жуткое, нахуй не нужное уебище!
-     */
+/*
+ * Жуткое, нахуй не нужное уебище!
+ */
 
-    /*$comment = mysqli_escape_string($mysql, @$postdata['comment']);
-    mysql("insert ignore into dm.faceflats (flat_id, external_face_id, owner) values ($flat_id, $faceId, '{$bearer['id']}')");
-    mysql("update dm.faceflats set comment = '$comment' where flat_id = $flat_id and external_face_id = $faceId and owner = '{$bearer['id']}'");*/
+/*$comment = mysqli_escape_string($mysql, @$postdata['comment']);
+mysql("insert ignore into dm.faceflats (flat_id, external_face_id, owner) values ($flat_id, $faceId, '{$bearer['id']}')");
+mysql("update dm.faceflats set comment = '$comment' where flat_id = $flat_id and external_face_id = $faceId and owner = '{$bearer['id']}'");*/
 
-    /*
-     * Еще более жуткое и нахуй не нужное уебище!
-     */
+/*
+ * Еще более жуткое и нахуй не нужное уебище!
+ */
 
-    /*mysql("insert ignore into dm.likes (event, owner) values ('$uuid', '{$bearer['id']}')");
-    mysql("update dm.likes set flat_id = $flat_id, external_face_id = $faceId where event = '$uuid' and owner = '{$bearer['id']}'");
+/*mysql("insert ignore into dm.likes (event, owner) values ('$uuid', '{$bearer['id']}')");
+mysql("update dm.likes set flat_id = $flat_id, external_face_id = $faceId where event = '$uuid' and owner = '{$bearer['id']}'");
 
-    response(200, [
-        'faceId' => $faceId,
-    ]);
+response(200, [
+    'faceId' => $faceId,
+]);
 */
