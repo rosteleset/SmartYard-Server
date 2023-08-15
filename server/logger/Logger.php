@@ -84,4 +84,9 @@ class Logger
 
         return self::$channels[$file . $tag];
     }
+
+    public static function channels(array $files, string $tag = 'application'): static
+    {
+        return new GroupLogger(array_map(static fn ($file) => self::channel($file, $tag), $files));
+    }
 }
