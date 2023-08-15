@@ -2,7 +2,7 @@
 
 use logger\Logger;
 
-$logger = Logger::channel('address-plog');
+$logger = Logger::channel('plog', 'camshot');
 
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
@@ -12,15 +12,13 @@ $logger->debug('plogCamshot()', ['uuid' => $uuid]);
 try {
     $bytes = $files->getFileBytes($uuid);
 
-    if ($bytes) {
-        $logger->debug('plogCamshot()', ['bytes' => strlen($bytes)]);
+    $logger->debug('plogCamshot()', ['uuid' => $uuid, 'bytes' => strlen($bytes)]);
 
-        header('Content-Type: image/jpeg');
+    header('Content-Type: image/jpeg');
 
-        echo $bytes;
+    echo $bytes;
 
-        exit;
-    }
+    exit;
 } catch (Exception $e) {
-    $logger->error('Error get plogCamshot()' . PHP_EOL . $e);
+    $logger->error($e);
 }

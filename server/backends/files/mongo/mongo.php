@@ -75,12 +75,7 @@ namespace backends\files {
         {
             $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
 
-            $stream = $bucket->openDownloadStream(new \MongoDB\BSON\ObjectId($uuid));
-
-            if ($stream) 
-                return stream_get_contents($stream);
-
-            return false;
+            return stream_get_contents($bucket->openDownloadStream(new \MongoDB\BSON\ObjectId($uuid)));
         }
 
         /**
