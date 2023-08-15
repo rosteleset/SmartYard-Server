@@ -139,7 +139,7 @@ namespace backends\plog {
                                         "expire" => time() + $this->ttl_camshot_days * 86400,
                                     ]
                                 ));
-                                unlink($filename);
+                                //unlink($filename);
                                 $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_DVR;
                             } else {
                                 $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
