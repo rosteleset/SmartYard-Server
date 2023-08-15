@@ -9,20 +9,24 @@ $uuid = $files->fromGUIDv4($param);
 
 $logger->debug('plogCamshot()', ['uuid' => $uuid]);
 
-$file = $files->getFile($uuid);
+try {
+    $file = $files->getFile($uuid);
 
-if ($file) {
-    $logger->debug('plogCamshot()', ['uuid' => $uuid, 'fileInfo' => $file['fileInfo']]);
+    if ($file) {
+        $logger->debug('plogCamshot()', ['uuid' => $uuid, 'fileInfo' => $file['fileInfo']]);
 
-    $contents = stream_get_contents($file['stream']);
+        $contents = stream_get_contents($file['stream']);
 
-    if ($contents) {
-        $metaData = $file['fileInfo']->metadata;
+        if ($contents) {
+            $metaData = $file['fileInfo']->metadata;
 
-        header('Content-Type: ' . isset($metaData->contentType) ? $metaData->contentType : 'image/jpeg');
+            header('Content-Type: ' . isset($metaData->contentType) ? $metaData->contentType : 'image/jpeg');
 
-        echo $contents;
+            echo $contents;
 
-        exit;
+            exit;
+        }
     }
+} catch (Exception $e) {
+    $logger->error('Error get plogCamshot()' . PHP_EOL . $e);
 }
