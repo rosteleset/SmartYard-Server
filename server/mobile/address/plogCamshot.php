@@ -1,19 +1,14 @@
 <?php
-
-use logger\Logger;
-
-$logger = Logger::channel('address-plog');
-
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
-$bytes = $files->getFileBytes($uuid);
+$file = $files->getFile($uuid);
 
-$logger->debug('plogCamshot()', ['uuid' => $uuid, 'bytes' => count($bytes)]);
+if ($file) {
+    $metaData = $file['fileInfo']->metadata;
 
-if ($bytes) {
-    header("Content-Type: image/jpeg");
+    header('Content-Type: ' . isset($metaData->contentType) ? $metaData->contentType : 'image/jpeg');
 
-    echo $bytes;
+    echo stream_get_contents($file['steam']);
 
     exit;
 }
