@@ -327,8 +327,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             require_once __DIR__ . "/mobile/{$module}/{$method}.php";
         } catch (Throwable $throwable) {
             Logger::channel('mobile')->error('Error handle get request' . PHP_EOL . $throwable);
-
-            response(500);
         }
     }
 
