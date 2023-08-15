@@ -18,7 +18,7 @@ try {
         $contents = stream_get_contents($file['stream']);
 
         if ($contents) {
-            $image = imagecreatefromstring($contents);
+            $image = imagecreatefromstring(base64_decode($contents));
 
             if ($image) {
                 header('Content-Type: image/jpeg');
