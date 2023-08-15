@@ -3,6 +3,10 @@
 use backends\plog\plog;
 use backends\frs\frs;
 
+use logger\Logger;
+
+$logger = Logger::channel('internal', 'frs');
+
 require_once __DIR__ . '/../../utils/checkint.php';
 
 $frs = loadBackend("frs");
@@ -12,26 +16,41 @@ $camera_id = $_GET['stream_id'];
 $face_id = (int)$postdata[frs::P_FACE_ID];
 $event_id = (int)$postdata[frs::P_EVENT_ID];
 
-if (!isset($camera_id) || $face_id == 0 || $event_id == 0)
+if (!isset($camera_id) || $face_id == 0 || $event_id == 0) {
+    $logger->debug('Send empty data');
+
     response(204);
+}
 
 $frs_key = "frs_key_" . $camera_id;
-if ($redis->get($frs_key) != null)
-    response(204);
+if ($redis->get($frs_key) != null) {
+    $logger->debug('redis frs key empty', ['key' => $frs_key]);
 
-$entrance = $frs->getEntranceByCameraId($camera_id) ;
-if (!$entrance)
     response(204);
+}
+
+$entrance = $frs->getEntranceByCameraId($camera_id);
+
+if (!$entrance) {
+    $logger->debug('entrance is empty', ['camera' => $camera_id]);
+
+    response(204);
+}
 
 $flats = $frs->getFlatsByFaceId($face_id, $entrance["entranceId"]);
-if (!$flats)
+
+if (!$flats) {
+    $logger->debug('flats is empty', ['entrance' => $entrance['entranceId']]);
+
     response(204);
+}
 
 // TODO: check if FRS is allowed for flats
 
 $domophone_id = $entrance["domophoneId"];
 $domophone_output = $entrance["domophoneOutput"];
 $domophone = $households->getDomophone($domophone_id);
+
 try {
     $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
     $model->open_door($domophone_output);
@@ -40,9 +59,12 @@ try {
     if ($plog) {
         $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_FACE, $domophone_output,
             $face_id . "|" . $event_id);
+
+        $logger->debug('Door open', ['domophone' => $domophone_id]);
     }
-}
-catch (\Exception $e) {
+} catch (\Exception $e) {
+    $logger->error('Error open door' . PHP_EOL . $e);
+
     response(404, false, 'Ошибка', 'Домофон недоступен');
 }
 
