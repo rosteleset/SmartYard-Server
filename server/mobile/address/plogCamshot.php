@@ -7,7 +7,7 @@ $logger = Logger::channel('address-plog');
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
 
-$logger->debug('plogCamshot()', ['uuid' => $uuid, 'gd' => gd_info()]);
+$logger->debug('plogCamshot()', ['uuid' => $uuid]);
 
 try {
     $file = $files->getFile($uuid);
@@ -15,19 +15,15 @@ try {
     if ($file) {
         $logger->debug('plogCamshot()', ['uuid' => $uuid, 'fileInfo' => $file['fileInfo']]);
 
-        $contents = stream_get_contents($file['stream']);
+        $image = imagecreatefromstring(stream_get_contents($file['stream']));
 
-        if ($contents) {
-            $image = imagecreatefromstring($contents);
+        if ($image) {
+            header('Content-Type: image/jpeg');
 
-            if ($image) {
-                header('Content-Type: image/jpeg');
+            imagejpeg($image);
+            imagedestroy($image);
 
-                imagejpeg($image);
-                imagedestroy($image);
-
-                exit;
-            }
+            exit;
         }
     }
 } catch (Exception $e) {
