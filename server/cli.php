@@ -594,7 +594,7 @@ if (count($args) == 2 && array_key_exists('--entrance', $args) && !isset($args['
     }
 
     $query = "select he.house_entrance_id from houses_entrances he where he.camera_id = " . $camera;
-    $r = $db->get($query, [], ["house_entrance_id" => "entranceId"], [self::PDO_SINGLIFY]);
+    $r = $db->get($query, [], ["house_entrance_id" => "entranceId"], ["singlify"]);
 
     var_dump($r);
 
