@@ -12,6 +12,8 @@ $logger->debug('plogCamshot()', ['uuid' => $uuid]);
 try {
     $bytes = $files->getFileBytes($uuid);
 
+    $logger->debug('plogCamshot()', ['bytes' => $bytes ? count($bytes) : -1]);
+
     if ($bytes) {
         $bytes->debug('plogCamshot()', ['uuid' => $uuid, 'bytes' => count($bytes)]);
 
