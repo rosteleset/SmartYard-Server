@@ -4,6 +4,7 @@
     "frontend": "https://example.com/frontend",
     "asterisk": "http://127.0.0.1/asterisk",
     "internal": "http://127.0.0.1/internal",
+    "private": "http://10.0.0.1/internal",
     "mobile": "https://example.com/mobile"
   },
   "mobile": {
@@ -68,7 +69,6 @@
       "backend": "${ISDN_BACKEND}",
       "endpoint": "${ISDN_ENDPOINT}",
       "secret": "${ISDN_SECRET}",
-
       "confirm_method": "outgoingCall"
     },
     "inbox": {

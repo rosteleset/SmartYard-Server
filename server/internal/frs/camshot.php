@@ -8,7 +8,9 @@ $camera_id = $param;
 if (!isset($camera_id) || $camera_id === 0)
     response(404);
 
-Logger::channel('internal', 'frs')->debug('camshot() start', ['camera' => $camera_id]);
+$logger = Logger::channel('internal', 'frs');
+
+$logger->debug('camshot() start', ['camera' => $camera_id]);
 
 $cameras = loadBackend("cameras");
 if (!$cameras)
@@ -22,7 +24,7 @@ $model = loadCamera($cam["model"], $cam["url"], $cam["credentials"]);
 if (!$model)
     response(404);
 
-Logger::channel('internal', 'frs')->debug('camshot() end', ['camera' => $camera_id]);
+$logger->debug('camshot() end', ['camera' => $camera_id]);
 
 header('Content-Type: image/jpeg');
 echo $model->camshot();

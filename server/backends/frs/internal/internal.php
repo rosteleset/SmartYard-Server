@@ -13,12 +13,12 @@ namespace backends\frs {
         //private methods
         private function camshotUrl($cam)
         {
-            return $this->config["api"]["internal"] . "/frs/camshot/" . $cam[self::CAMERA_ID];
+            return $this->config["api"]["private"] . "/frs/camshot/" . $cam[self::CAMERA_ID];
         }
 
         private function callback($cam)
         {
-            return $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $cam[self::CAMERA_ID];
+            return $this->config["api"]["private"] . "/frs/callback?stream_id=" . $cam[self::CAMERA_ID];
         }
 
         private function addFace($data, $event_uuid)
