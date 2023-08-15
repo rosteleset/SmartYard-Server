@@ -18,13 +18,16 @@ try {
         $contents = stream_get_contents($file['stream']);
 
         if ($contents) {
-            //$metaData = $file['fileInfo']['metadata'];
+            $image = imagecreatefromstring($contents);
 
-            header('Content-Type: image/jpeg');
+            if ($image) {
+                header('Content-Type: image/jpeg');
 
-            echo $contents;
+                imagejpeg($image);
+                imagedestroy($image);
 
-            exit;
+                exit;
+            }
         }
     }
 } catch (Exception $e) {
