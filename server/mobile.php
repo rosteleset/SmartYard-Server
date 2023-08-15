@@ -308,6 +308,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     require_once __DIR__ . "/mobile/{$module}/{$method}.php";
                 } catch (Exception $e) {
                     Logger::channel('mobile')->error('Error handle post request' . PHP_EOL . $e);
+
+                    response(400);
                 }
             }
         }
