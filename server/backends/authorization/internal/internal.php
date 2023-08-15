@@ -178,6 +178,13 @@
              */
 
             public function allowedMethods($uid) {
+                $key = "ALLOWED:$uid";
+
+                $cache = $this->cacheGet($key);
+                if ($cache) {
+                    return $cache;
+                }
+
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -185,7 +192,7 @@
                 if ($uid === 0) {
                     return $this->methods();
                 } else {
-                    $m = [];
+                    $_m = [];
                     try {
                         $sth = $this->db->prepare("
                             select * from core_api_methods where aid in (
@@ -213,7 +220,7 @@
                             $all = $sth->fetchAll(\PDO::FETCH_ASSOC);
                             $r = [];
                             foreach ($all as $a) {
-                                $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                                $_m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
                                 $r[$a['aid']] = true;
                             }
 
@@ -232,16 +239,18 @@
 
                             foreach ($same as $a) {
                                 if (@$r[$a["permissions_same"]]) {
-                                    $m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
+                                    $_m[$a['api']][$a['method']][$a['request_method']] = $a['aid'];
                                 }
                             }
                         }
                     } catch (\Exception $e) {
                         error_log(print_r($e, true));
+                        $this->unCache($key);
                         return false;
                     }
 
-                    return $m;
+                    $this->cacheSet($key, $_m);
+                    return $_m;
                 }
             }
 
@@ -274,6 +283,8 @@
 
 
             public function setRights($user, $id, $api, $method, $allow, $deny) {
+                $this->clearCache();
+
                 if (!checkInt($id)) {
                     return false;
                 }

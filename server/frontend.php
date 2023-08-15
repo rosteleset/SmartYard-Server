@@ -104,7 +104,7 @@
         ]);
     }
 
-    $redis_cache_ttl = $config["redis"]["cache_ttl"] ? : 3600;
+    $redis_cache_ttl = @$config["redis"]["frontend_cache_ttl"] ? : 3600;
 
     try {
         $redis = new Redis();
@@ -172,6 +172,9 @@
             } else
             if ($key == "_clearCache") {
                 $clearCache = true;
+            } else
+            if ($key == "_http_authorization") {
+                $http_authorization = $value;
             } else
             if ($key === "_") {
                 // prevents timestamps
@@ -281,7 +284,7 @@
     $params["_ip"] = $ip;
 
     if (@$params["_login"]) {
-        $redis->set("last_" . md5($params["_login"]), time());
+        $redis->set("last_action_" . md5($params["_login"]), time());
     }
 
     if ($api == "accounts" && $method == "forgot") {
@@ -292,13 +295,13 @@
             $cache = false;
             if ($params["_request_method"] === "GET") {
                 try {
-                    $cache = json_decode($redis->get("cache_" . $params["_md5"]) . "_" . $auth["uid"], true);
+                    $cache = json_decode($redis->get("CACHE:FRONT:" . strtoupper($params["_md5"])) . ":" . $auth["uid"], true);
                 } catch (Exception $e) {
                     error_log(print_r($e, true));
                 }
             }
             if ($cache && !$refresh) {
-                header("X-Api-Data-Source: cache_" . $params["_md5"] . "_" . $auth["uid"]);
+                header("X-Api-Data-Source: cache");
                 $code = array_key_first($cache);
                 response($code, $cache[$code]);
             } else {
@@ -323,7 +326,9 @@
                         if ((int)$code) {
                             if ($params["_request_method"] == "GET" && (int)$code === 200) {
                                 $ttl = (array_key_exists("cache", $result))?((int)$cache):$redis_cache_ttl;
-                                $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $ttl, json_encode($result));
+                                if ((int)$auth["uid"] > 0) {
+                                    $redis->setex("CACHE:FRONT:" . strtoupper($params["_md5"]) . ":" . $auth["uid"], $ttl, json_encode($result));
+                                }
                             }
                             response($code, $result[$code]);
                         } else {

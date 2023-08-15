@@ -309,8 +309,13 @@ function updateObjectId(issue, original)
         end
 
         if client_info["geo"] ~= nil then
-            issue["_cf_lat"] = client_info["geo"]["lat"]
-            issue["_cf_lon"] = client_info["geo"]["lon"]
+            issue["_cf_geo"] = {
+                ["type"] = "Point",
+                ["coordinates"] = {
+                    client_info["geo"]["lon"],
+                    client_info["geo"]["lat"],
+                }
+            }
         end
     end
 
@@ -365,7 +370,7 @@ function getAvailableActions(issue)
             "Назначить",
             "saAssignToMe",
             "-",
-            "Изменить id",
+            "Изменить идентификатор",
             "-",
             "saWatch",
             "Наблюдатели",
@@ -557,9 +562,9 @@ function getActionTemplate(issue, action)
         }
     end
 
-    if action == "Изменить id" then
+    if action == "Изменить идентификатор" then
         return {
-            "_cf_object_id"
+            "_cf_object_id",
         }
     end
 
@@ -805,7 +810,7 @@ function action(issue, action, original)
         return tt.modifyIssue(issue)
     end
 
-    if action == "Изменить id" then
+    if action == "Изменить идентификатор" then
         issue = updateObjectId(issue, original)
 
         return tt.modifyIssue(issue)

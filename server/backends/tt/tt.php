@@ -31,9 +31,14 @@
                     return false;
                 }
                 
+                $cache = $this->cacheGet("WORKFLOWS");
+                if ($cache) {
+                    return $cache;
+                }
+
                 $workflows = $files->searchFiles([ "metadata.type" => "workflow" ]);
 
-                $list = [];
+                $_list = [];
                 foreach ($workflows as $workflow) {
                     $name = $workflow["metadata"]["workflow"];
                     $catalog = false;
@@ -47,13 +52,14 @@
                     } catch (\Exception $e) {
                         //
                     }
-                    $list[$workflow["metadata"]["workflow"]] = [
+                    $_list[$workflow["metadata"]["workflow"]] = [
                         "name" => $name,
                         "catalog" => $catalog,
                     ];
                 }
 
-                return $list;
+                $this->cacheSet("WORKFLOWS", $_list);
+                return $_list;
             }
 
             /**
@@ -247,7 +253,8 @@
                         },
                     ]);
 
-                    return $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
+                    $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
+                    return $this->workflows[$workflow];
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -263,25 +270,34 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("WORKFLOW:$workflow");
                     return false;
                 }
                 
+                $cache = $this->cacheGet("WORKFLOW:$workflow");
+                if ($cache) {
+                    return $cache;
+                }
+
                 $workflows = $files->searchFiles([
                     "metadata.type" => "workflow",
                     "metadata.workflow" => $workflow,
                 ]);
 
-                $workflow = false;
+                $_workflow = false;
                 foreach ($workflows as $w) {
-                    $workflow = $w;
+                    $_workflow = $w;
                     break;
                 }
 
-                if (!$workflow) {
+                if (!$_workflow) {
+                    $this->unCache("WORKFLOW:$workflow");
                     return "";
                 }
 
-                return $files->streamToContents($files->getFileStream($workflow["id"]));
+                $_workflow = $files->streamToContents($files->getFileStream($_workflow["id"]));
+                $this->cacheSet("WORKFLOW:$workflow", $_workflow);
+                return $_workflow;
             }
 
             /**
@@ -290,6 +306,8 @@
              * @return boolean
              */
             public function putWorkflow($workflow, $body) {
+                $this->clearCache();
+
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -320,6 +338,8 @@
              * @return boolean
              */
             public function deleteWorkflow($workflow) {
+                $this->clearCache();
+
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -346,20 +366,27 @@
              */
 
              public function getWorkflowLibs() {
+
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
                 
-                $libs = $files->searchFiles([ "metadata.type" => "workflow.lib" ]);
-
-                $list = [];
-                foreach ($libs as $lib) {
-                    $list[] = $lib["metadata"]["lib"];
+                $cache = $this->cacheGet("WORKFLOW:LIBS");
+                if ($cache) {
+                    return $cache;
                 }
 
-                return $list;
+                $libs = $files->searchFiles([ "metadata.type" => "workflow.lib" ]);
+
+                $_list = [];
+                foreach ($libs as $lib) {
+                    $_list[] = $lib["metadata"]["lib"];
+                }
+
+                $cache = $this->cacheSet("WORKFLOW:LIBS", $_list);
+                return $_list;
             }
 
             /**
@@ -717,21 +744,28 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("FILTERS");
                     return false;
+                }
+
+                $cache = $this->cacheGet("FILTERS");
+                if ($cache) {
+                    return $cache;
                 }
                 
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
-                $list = [];
+                $_list = [];
                 foreach ($filters as $filter) {
                     try {
-                        $list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"];
+                        $_list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"];
                     } catch (\Exception $e) {
-                        $list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
+                        $_list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
                     }
                 }
 
-                return $list;
+                $this->cacheSet("FILTERS", $_list);
+                return $_list;
             }
 
             /**
@@ -741,26 +775,33 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("FILTERS-EXT");
                     return false;
                 }
                 
+                $cache = $this->cacheGet("FILTERS-EXT");
+                if ($cache) {
+                    return $cache;
+                }
+
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
-                $list = [];
+                $_list = [];
                 foreach ($filters as $filter) {
                     try {
-                        $list[$filter["metadata"]["filter"]] = [
+                        $_list[$filter["metadata"]["filter"]] = [
                             "name" => @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"],
                             "owner" => @$filter["metadata"]["owner"],
                         ];
                     } catch (\Exception $e) {
-                        $list[$filter["metadata"]["filter"]] = [
+                        $_list[$filter["metadata"]["filter"]] = [
                             "name" => $filter["metadata"]["filter"],
                         ];
                     }
                 }
 
-                return $list;
+                $this->cacheSet("FILTERS-EXT", $_list);
+                return $_list;
             }
 
             /**
@@ -818,6 +859,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 if ($owner) {
                     $filters = $files->searchFiles([
                         "metadata.type" => "filter",
@@ -864,6 +907,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 if ($owner) {
                     $filters = $files->searchFiles([
                         "metadata.type" => "filter",
@@ -901,6 +946,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 $viewers = $files->searchFiles([
                     "metadata.type" => "viewer",
                     "metadata.field" => $field,
@@ -931,6 +978,8 @@
                     return false;
                 }
 
+                $this->clearCache();
+
                 $viewers = $files->searchFiles([
                     "metadata.type" => "viewer",
                     "metadata.field" => $field,
@@ -951,24 +1000,31 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
+                    $this->unCache("VIEWERS");
                     return false;
+                }
+
+                $cache = $this->cacheGet("VIEWERS");
+                if ($cache) {
+                    return $cache;
                 }
 
                 $viewers = $files->searchFiles([
                     "metadata.type" => "viewer",
                 ]);
 
-                $vs = [];
+                $_vs = [];
                 foreach ($viewers as $v) {
-                    $vs[] = [
+                    $_vs[] = [
                         "filename" => $v["metadata"]["viewer"],
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
-                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue) {\n\treturn val;\n//}\n",
+                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
                     ]; 
                 }
 
-                return $vs;
+                $this->cacheSet("VIEWERS", $_vs);
+                return $_vs;
             }
 
             /**
@@ -1111,7 +1167,7 @@
                     } else {
                         if (array_key_exists($field, $customFieldsByName)) {
                             if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
-                                $issue[$field] = array_values($dumb);
+                                $issue[$field] = array_values($value);
                             } else {
                                 $issue[$field] = self::av($value);
                             }
@@ -1213,9 +1269,10 @@
 
             /**
              * @param $issue
+             * @param $workflowAction
              * @return mixed
              */
-            abstract protected function modifyIssue($issue);
+            abstract protected function modifyIssue($issue, $workflowAction = false);
 
             /**
              * @param $issueId
@@ -1294,24 +1351,28 @@
              * @param string $action
              * @param object $old
              * @param object $new
+             * @param mixed $workflowAction
+             * @param boolean $silent
              * @return void
              */
-            public function addJournalRecord($issueId, $action, $old, $new)
+            public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false, $silent = false)
             {
                 $journal = loadBackend("tt_journal");
 
-                try {
-                    $issue = $this->getIssue($issueId);
-                    if ($issue) {
-                        $workflow = $this->loadWorkflow($issue["workflow"]);
-                        $workflow->issueChanged($issue, $action, $old, $new);
+                if (!$silent) {
+                    try {
+                        $issue = $this->getIssue($issueId);
+                        if ($issue) {
+                            $workflow = $this->loadWorkflow($issue["workflow"]);
+                            $workflow->issueChanged($issue, $action, $old, $new, $workflowAction);
+                        }
+                    } catch (\Exception $e) {
+                        error_log(print_r($e, true));
                     }
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
                 }
 
                 if ($journal) {
-                    return $journal->journal($issueId, $action, $old, $new);
+                    return $journal->journal($issueId, $action, $old, $new, $workflowAction);
                 }
 
                 return false;

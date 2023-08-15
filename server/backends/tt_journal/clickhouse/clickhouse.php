@@ -23,18 +23,18 @@
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
                 $this->clickhouse = new \clickhouse(
-                    @$config['backends']['accounting']['host']?:'127.0.0.1',
-                    @$config['backends']['accounting']['port']?:8123,
-                    @$config['backends']['accounting']['username']?:'default',
-                    @$config['backends']['accounting']['password']?:'qqq',
-                    @$config['backends']['accounting']['database']?:'default'
+                    @$config['clickhouse']['host']?:'127.0.0.1',
+                    @$config['clickhouse']['port']?:8123,
+                    @$config['clickhouse']['username']?:'default',
+                    @$config['clickhouse']['password']?:'qqq',
+                    @$config['clickhouse']['database']?:'default'
                 );
             }
 
             /**
              * @inheritDoc
              */
-            public function journal($issueId, $action, $old, $new)
+            public function journal($issueId, $action, $old, $new, $workflowAction)
             {
                 if ($old && $new) {
                     foreach ($old as $key => $field) {
@@ -60,6 +60,10 @@
                             unset($old[$key]);
                         }
                     }
+                }
+
+                if ($workflowAction) {
+                    $new["workflowAction"] = $workflowAction;
                 }
 
                 if ($new || $old) {

@@ -285,8 +285,9 @@
 
                 $frs_all_data = [];
                 foreach ($this->servers() as $frs_server) {
+                    $frs_all_data[$frs_server[self::FRS_BASE_URL]] = [];
                     $streams = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
-                    if ($streams && $streams[self::P_DATA] && is_array($streams[self::P_DATA]))
+                    if ($streams && isset($streams[self::P_DATA]) && is_array($streams[self::P_DATA]))
                         foreach ($streams[self::P_DATA] as $item)
                         {
                             if (array_key_exists(self::P_FACE_IDS, $item))

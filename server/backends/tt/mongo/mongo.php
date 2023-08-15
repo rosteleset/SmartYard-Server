@@ -109,7 +109,7 @@
             /**
              * @inheritDoc
              */
-            protected function modifyIssue($issue)
+            protected function modifyIssue($issue, $workflowAction = false)
             {
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
@@ -151,7 +151,7 @@
                     unset($issue["journal"]);
                 }
 
-                if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate)) {
+                if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate, false, true)) {
                     return false;
                 }
 
@@ -166,7 +166,7 @@
                         $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
                     }
                     if ($update) {
-                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue);
+                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
                     }
                     return $update;
                 }
@@ -378,14 +378,14 @@
 
                     $md5 = md5(print_r($fullText, true));
 
-                    if ($this->redis->get("full_text_search_" . $acr) != $md5) {
+                    if ($this->redis->get("FTS:" . $acr) != $md5) {
                         try {
                             $this->mongo->$db->$acr->dropIndex("fullText");
                         } catch (\Exception $e) {
                             //
                         }
                         $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
-                        $this->redis->set("full_text_search_" . $acr, $md5);
+                        $this->redis->set("FTS:" . $acr, $md5);
                     }
                 }
 
@@ -435,7 +435,7 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issueId, $comment, $private)
+            public function addComment($issueId, $comment, $private, $type = false, $silent = false)
             {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
@@ -454,7 +454,8 @@
                 $this->addJournalRecord($issueId, "addComment", null, [
                     "commentBody" => $comment,
                     "commentPrivate" => $private,
-                ]);
+                    "commentType" => $type,
+                ], false, $silent);
 
                 return $this->mongo->$db->$acr->updateOne(
                     [
@@ -467,6 +468,7 @@
                                 "created" => time(),
                                 "author" => $this->login,
                                 "private" => $private,
+                                "type" => $type,
                             ],
                         ],
                     ]
@@ -630,12 +632,18 @@
 
                 $files = loadBackend("files");
 
-                foreach ($attachments as $attachment) {
+                foreach ($attachments as &$attachment) {
                     $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $issueId, "filename" => $attachment["name"] ]);
                     if (count($list)) {
                         return false;
                     }
-                    if (strlen(base64_decode($attachment["body"])) > $project["maxFileSize"]) {
+                    if ($attachment["body"]) {
+                        $attachment["body"] = base64_decode($attachment["body"]);
+                    } else
+                    if ($attachment["url"]) {
+                        $attachment["body"] = file_get_contents($attachment["url"]);
+                    }
+                    if (strlen($attachment["body"]) <= 0 || strlen($attachment["body"]) > $project["maxFileSize"]) {
                         return false;
                     }
                 }
@@ -656,7 +664,7 @@
                     $meta["attachman"] = $this->login;
 
                     if (!(
-                        $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), $meta) &&
+                        $files->addFile($attachment["name"], $files->contentsToStream($attachment["body"]), $meta) &&
                         $this->mongo->$db->$acr->updateOne(
                             [
                                 "issueId" => $issueId,

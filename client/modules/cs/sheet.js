@@ -13,9 +13,7 @@
         }).
         fail(FAILPAGE).
         done(response => {
-            // TODO f..ck!
-            let top = 75;
-            let height = $(window).height() - top;
+            let height = $(window).height() - mainFormTop;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="sheetEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;

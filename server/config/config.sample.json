@@ -28,7 +28,7 @@
     },
 
     "db": {
-        "dsn": "pgsql:host=127.0.0.1;port=5432;dbname=rbt",
+        "dsn": "pgsql:host=127.0.0.1;port=5433;dbname=rbt",
         "username": "rbt",
         "password": "rbt"
     },
@@ -36,12 +36,23 @@
     "redis": {
         "host": "127.0.0.1",
         "port": 6379,
-        "cache_ttl": 3600,
+        "frontend_cache_ttl": 600,
+        "backends_cache_ttl": 604800,
         "max_allowed_tokens": 15,
         "token_idle_ttl": 3600
     },
 
+    "clickhouse": {
+        "host": "localhost",
+        "port": "8123",
+        "username": "default",
+        "password": "qqq",
+        "database": "default"
+    },
+
     "backends": {
+        "cache_ttl": 604800,
+
         "authentication": {
             "backend": "internal"
         },
@@ -91,11 +102,6 @@
 
         "plog": {
             "backend": "clickhouse",
-            "host": "127.0.0.1",
-            "port": 8123,
-            "username": "default",
-            "password": "qqq",
-            "database": "default",
             "time_shift": "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
             "max_call_length": "<!-- your max call length in seconds for backward processing call events (hint 120) --!>",
             "ttl_temp_record": "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
@@ -135,7 +141,7 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "<!-- your asterisk external ip here --!>"
+                    "ip": "<!-- your asterisk server external ip here --!>"
                 },
                 {
                     "title": "SBC server | Kamailio",
@@ -171,8 +177,8 @@
         "mqtt": {
             "backend": "internal",
             "agent": "http://127.0.0.1:8082/broadcast",
-            "ws": "wss://<!-- your server here --!>",
-            "mqtt": "mqtt://<!-- your server here -->",
+            "ws": "wss://example.com/mqtt",
+            "mqtt": "mqtt://127.0.0.1:1883",
             "username": "rbt",
             "password": "<!-- your mosquitto password here --!>"
         }
@@ -181,8 +187,8 @@
     "email": {
         "server": "127.0.0.1",
         "port": 587,
-        "username": "mmikel@localhost",
-        "password": "qwerty",
+        "username": "<!-- your smtp login here -->",
+        "password": "<!-- your smtp password here -->",
         "from": "RBT"
     },
 
@@ -210,11 +216,11 @@
             "syslog.udp:127.0.0.1:45455"
         ],
         "rubetek": [
-            "syslog.udp:192.168.13.60:45456"
+            "syslog.udp:127.0.0.1:45456"
         ]
     },
 
     "ntp_servers": [
-        "ntp:127.0.0.1:123"
+        "ntp:<-- your ntp server ip here -->:123"
     ]
 }

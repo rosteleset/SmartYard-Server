@@ -1,0 +1,21 @@
+{
+  "name": "Domophone API",
+  "version": "1.1.0",
+  "title": "Domophone API",
+  "description": "Domophone API",
+  "url" : "https://yourserver.yourdomain/mobile",
+  "sampleUrl": "https://yourserver.yourdomain/mobile",
+  "template": {
+    "forceLanguage": "ru"
+  },
+  "header": {
+    "title": "Общая информация",
+    "filename": "api-header.md",
+    "version": "1.1.0"
+  },
+  "apidoc": {
+    "title": "Domophone API",
+    "url" : "https://yourserver.yourdomain/mobile",
+    "version": "1.1.0"
+  }
+}

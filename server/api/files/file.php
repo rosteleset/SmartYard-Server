@@ -63,7 +63,11 @@
 
                 $success = $success && $files->addFile(@$params["filename"], $files->contentsToStream(@$params["file"]), $meta);
 
-                return api::ANSWER($success);
+                if ($success) {
+                    return api::ANSWER(md5(@$params["file"]));
+                } else {
+                    return api::ANSWER(false);
+                }
             }
 
             public static function DELETE($params) {

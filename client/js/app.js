@@ -1,6 +1,8 @@
 const modules = {};
 const moduleLoadQueue = [];
 const loadingProgress = new ldBar("#loadingProgress");
+// TODO f..ck!
+const mainFormTop = 75;
 
 var lastHash = false;
 var currentPage = false;
@@ -295,6 +297,13 @@ function whoAmI(force) {
             myself.phone = _me.user.phone;
             myself.webRtcExtension = _me.user.webRtcExtension;
             myself.webRtcPassword = _me.user.webRtcPassword;
+            if (_me.user.groups) {
+                for (let i in _me.user.groups) {
+                    if (_me.user.groups[i].acronym == _me.user.primaryGroupAcronym) {
+                        myself.primaryGroupName = _me.user.groups[i].name;
+                    }
+                }
+            }
             if (_me.user.defaultRoute) {
                 config.defaultRoute = _me.user.defaultRoute;
             }
@@ -315,6 +324,9 @@ function whoAmI(force) {
             let userCard = _me.user.login;
             if (_me.user.realName) {
                 userCard += "<br />" + _me.user.realName;
+            }
+            if (myself.primaryGroupName) {
+                userCard += "<br />" + myself.primaryGroupName;
             }
             if (_me.user.eMail) {
                 userCard += "<br />" + _me.user.eMail;
@@ -1252,10 +1264,12 @@ $(document).on('select2:open', () => {
   
 $(window).off("resize").on("resize", () => {
     if ($("#editorContainer").length) {
-        // TODO f..ck!
-        let top = 75;
-        let height = $(window).height() - top;
+        let height = $(window).height() - mainFormTop;
         $("#editorContainer").css("height", height + "px");
+    }
+    if ($("#mapContainer").length) {
+        let height = $(window).height() - mainFormTop;
+        $("#mapContainer").css("height", height + "px");
     }
 });
 

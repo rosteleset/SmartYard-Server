@@ -90,5 +90,6 @@
                 }
             }
         }
-        echo "reindex done, $n uri(s) (re)created\n";
+        $db->exec("delete from core_api_methods as a1 where permissions_same is not null and permissions_same not in (select aid from core_api_methods as a2)");
+        echo "reindex done\n";
     }

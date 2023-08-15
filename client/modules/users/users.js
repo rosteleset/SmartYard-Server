@@ -9,8 +9,8 @@
         moduleLoaded("users", this);
     },
 
-    loadUsers: function (callback) {
-        return GET("accounts", "users").
+    loadUsers: function (callback, withSessions) {
+        return QUERY("accounts", "users", withSessions?{ withSessions: true }:false).
         done(users => {
             modules.users.meta = users.users;
         }).
@@ -208,7 +208,7 @@
                             value: response.user.primaryGroup,
                             options: gs,
                             title: i18n("users.primaryGroup"),
-                            hidden: !parseInt(response.user.uid),
+                            hidden: !parseInt(response.user.uid) || groups.length == 0,
                         },
                         {
                             id: "phone",
@@ -394,7 +394,7 @@
     showSessions: function (uid) {
         loadingStart();
 
-        GET("accounts", "users", false, true).done(response => {
+        QUERY("accounts", "users", { withSessions: true }, true).done(response => {
             modules.users.users = response.users;
 
             cardTable({
@@ -485,20 +485,30 @@
         always(loadingDone);
     },
 
+    loadGroups: function (callback) {
+        if (modules.groups) {
+            modules.groups.loadGroups(callback);
+        } else {
+            callback(false);
+        }
+    },
+
     render: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
 
         loadingStart();
 
-        modules.groups.loadGroups(hasGroups => {
+        modules.users.loadGroups(hasGroups => {
             let groups = {};
 
-            for (let i in modules.groups.meta) {
-                groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+            if (hasGroups) {
+                for (let i in modules.groups.meta) {
+                    groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+                }
             }
 
-            GET("accounts", "users", false, true).done(response => {
+            QUERY("accounts", "users", { withSessions: true }, true).done(response => {
                 modules.users.users = response.users;
     
                 cardTable({

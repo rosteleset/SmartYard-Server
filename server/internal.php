@@ -56,7 +56,7 @@
     }
 
     function response($code = 204, $data = false, $name = false, $message = false) {
-    global $response_data_source, $response_cahce_req, $response_cache_ttl;
+    global $response_data_source, $response_cache_req, $response_cache_ttl;
     $response_codes = [
         200 => [ 'name' => 'OK', 'message' => 'Хорошо' ],
         201 => [ 'name' => 'Created', 'message' => 'Создано' ],
@@ -103,8 +103,8 @@
     ];
     header('Content-Type: application/json');
     http_response_code($code);
-    if ((int)$code < 300 && $response_cahce_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
-//        $redis->setEx($response_cahce_req, $response_cache_ttl, json_encode([
+    if ((int)$code < 300 && $response_cache_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
+//        $redis->setEx($response_cache_req, $response_cache_ttl, json_encode([
 //            'code' => $code,
 //            'data' => $data,
 //        ], JSON_UNESCAPED_UNICODE));

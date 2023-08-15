@@ -105,6 +105,10 @@
         
                 case "parent":
                     return i18n("tt.parent");
+
+                // virtual journal field
+                case "workflowAction":
+                    return i18n("tt.workflowAction");
         
                 default:
                     return fieldId;
@@ -887,8 +891,7 @@
                                 break;
 
                             case "json":
-                                val = JSON.stringify(val, null, 4);
-                                break;
+                                return "<pre style='padding: 0px!important; margin: 0px!important;'>" + escapeHTML(JSON.stringify(val, null, 2)) + "</pre>";
                                 
                             case "datetime-local":
                                 val = ttDate(val);

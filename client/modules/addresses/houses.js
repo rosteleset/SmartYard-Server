@@ -1478,7 +1478,7 @@
                 modules.addresses.houses.doDeleteEntrance(entranceId, true, houseId);
             }, () => {
                 modules.addresses.houses.doDeleteEntrance(entranceId, false, houseId);
-            }, i18n("addresses.deleteEntranceComletely"), i18n("addresses.deleteEntranceLink"));
+            }, i18n("addresses.deleteEntranceCompletely"), i18n("addresses.deleteEntranceLink"));
         } else {
             mConfirm(i18n("addresses.confirmDeleteEntrance", entranceId), i18n("confirm"), `danger:${i18n("addresses.deleteEntrance")}`, () => {
                 modules.addresses.houses.doDeleteEntrance(entranceId, true, houseId);

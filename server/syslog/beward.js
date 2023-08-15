@@ -1,17 +1,29 @@
 const syslog = new (require("syslog-server"))();
 const hwVer = process.argv.length === 3 && process.argv[2].split("=")[0] === '--config' ? process.argv[2].split("=")[1] : null;
-const { hw } = require("./config.json");
-const board = hw[hwVer]
+const { hw, topology } = require("./config.json");
+const board = hw[hwVer];
 const { getTimestamp } = require("./utils/getTimestamp");
 const { urlParser } = require("./utils/urlParser");
+const { syslogParser } = require("./utils/syslogParser");
+const { isIpAddress } = require("./utils/isIpAddress");
 const API = require("./utils/api");
 const { port } = urlParser(board);
 
 const gateRabbits = [];
 
 syslog.on("message", async ({date, host, message}) => {
+    // server timestamp
     const now = getTimestamp(date);
-    const bwMsg = message.split("- -")[1].trim();
+    let { host: hostname, message: bwMsg} = syslogParser(message);
+
+    /*
+    TODO:
+        - add checking for allowed subnets in config section topology
+    If the intercom is connected behind NAT - enable nat: true  in config
+    Check ip address from syslog message body, if not valid use src ip address
+    <13>1 2023-08-11T13:27:01.000000+03:00 192.168.13.137 DKS15122_rev5.2.6.8.3 1868823272A0 - - RFID 0000003375EACE is not present in database
+    */
+    if (topology?.nat && isIpAddress(hostname)) host = hostname
 
     // Spam messages filter
     if (
@@ -27,7 +39,20 @@ syslog.on("message", async ({date, host, message}) => {
         bwMsg.indexOf("Exits doWriteLoop") >= 0 ||
         bwMsg.indexOf("busybox-lib: udhcpc:") >= 0 ||
         bwMsg.indexOf("ssl_connect") >= 0 ||
-        bwMsg.indexOf("ipdsConnect") >= 0
+        bwMsg.indexOf("ipdsConnect") >= 0 ||
+        bwMsg.indexOf("SS_NETTOOL_SetupNetwork") >= 0 ||
+        bwMsg.indexOf("SS_VO_Init") >= 0 ||
+        bwMsg.indexOf("SS_AI_Init") >= 0 ||
+        bwMsg.indexOf("SS_AENC_Init") >= 0 ||
+        bwMsg.indexOf("SS_ADEC_Init") >= 0 ||
+        bwMsg.indexOf("Start SS") >= 0 ||
+        bwMsg.indexOf("SS_VENC") >= 0 ||
+        bwMsg.indexOf("SS_MEMFILE_") >= 0 ||
+        bwMsg.indexOf("Task") >= 0 ||
+        bwMsg.indexOf("video stream") >= 0 ||
+        bwMsg.indexOf("Modify System KeepAlive") >= 0 ||
+        bwMsg.indexOf("SS_VENC_InitEncoder") >= 0 ||
+        bwMsg.indexOf("SSSNet") >= 0
     ) {
         return;
     }
@@ -35,7 +60,7 @@ syslog.on("message", async ({date, host, message}) => {
     console.log(`${now} || ${host} || ${bwMsg}`);
 
     // Send message to syslog storage
-    await API.sendLog({ date: now, ip: host, unit: "beward", msg: bwMsg });
+    await API.sendLog({ date: now, ip: host, unit: hwVer, msg: bwMsg });
 
     // Motion detection: start
     if (bwMsg.indexOf("SS_MAINAPI_ReportAlarmHappen") >= 0) {
@@ -118,4 +143,4 @@ syslog.on("error", (err) => {
     console.error(err.message);
 });
 
-syslog.start({port}).then(() => console.log(`${hwVer.toUpperCase()} syslog server running on port ${port}`));
+syslog.start({port}).then(() => console.log(`${hwVer.toUpperCase()} syslog server running on port ${port} || NAT is ${topology?.nat || false}`));
