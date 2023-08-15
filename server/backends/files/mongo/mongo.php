@@ -5,16 +5,11 @@
      */
 
     namespace backends\files {
-
-    use Exception;
-    use logger\Logger;
-
         /**
          * gridFS storage
          */
 
         class mongo extends files {
-
             private $mongo, $dbName;
 
             /**
