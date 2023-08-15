@@ -75,7 +75,7 @@ namespace backends\files {
         {
             $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
 
-            $file = $bucket->findOne(['_id' => $uuid]);
+            $file = $bucket->findOne(new \MongoDB\BSON\ObjectId($uuid));
 
             if ($file)
                 return $file->getBytes();
