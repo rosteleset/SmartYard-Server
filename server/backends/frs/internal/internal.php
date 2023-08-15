@@ -528,8 +528,14 @@ namespace backends\frs {
             // TODO: move this to suitable backend
             $query = "select he.house_entrance_id from houses_entrances he where he.camera_id = " . $camera_id . " limit 1";
             $r = $this->db->get($query, [], ["house_entrance_id" => "entranceId"]);
-            $households = loadBackend("households");
-            return $households->getEntrance($r["entranceId"]);
+
+            if (count($r) == 1) {
+                $households = loadBackend("households");
+
+                return $households->getEntrance($r["entranceId"]);
+            }
+
+            return false;
         }
 
         /**
