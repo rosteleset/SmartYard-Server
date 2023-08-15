@@ -7,7 +7,7 @@ $logger = Logger::channel('address-plog');
 $files = loadBackend('files');
 $uuid = $files->fromGUIDv4($param);
 
-$logger->debug('plogCamshot()', ['uuid' => $uuid]);
+$logger->debug('plogCamshot()', ['uuid' => $uuid, 'gd' => gd_info()]);
 
 try {
     $file = $files->getFile($uuid);
