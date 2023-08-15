@@ -73,7 +73,7 @@ namespace backends\files {
          */
         public function getFileBytes($uuid)
         {
-            $bucket = $this->mongo->{$this->dbName}->getGselectGridFSBucketridFS();
+            $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
 
             $file = $bucket->findOne(['_id' => $uuid]);
 
