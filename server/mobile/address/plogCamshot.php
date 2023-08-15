@@ -17,7 +17,7 @@ try {
 
         $data = stream_get_contents($file['stream']);
 
-        echo '<img src="data:image/jpeg,'.$data.'">';
+        echo '<img src="data:image/jpeg;base64,'.base64_encode($data).'">';
 
         // $image = imagecreatefromstring(stream_get_contents($file['stream']));
 
