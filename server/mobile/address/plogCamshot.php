@@ -18,9 +18,9 @@ try {
         $contents = stream_get_contents($file['stream']);
 
         if ($contents) {
-            $metaData = $file['fileInfo']->metadata;
+            $metaData = $file['fileInfo']['metadata'];
 
-            header('Content-Type: ' . isset($metaData->contentType) ? $metaData->contentType : 'image/jpeg');
+            header('Content-Type: ' . isset($metaData['contentType']) ? $metaData['contentType'] : 'image/jpeg');
 
             echo $contents;
 
