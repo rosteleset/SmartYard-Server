@@ -177,7 +177,9 @@ namespace backends\plog {
                 if ($hidden < 0) {
                     return;
                 }
+
                 $event_data[self::COLUMN_HIDDEN] = $hidden;
+
                 $this->clickhouse->insert("plog", [$event_data]);
             }
         }
