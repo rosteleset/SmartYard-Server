@@ -11,6 +11,7 @@ require_once "utils/loader.php";
 require_once "utils/db_ext.php";
 require_once "utils/error.php";
 require_once "utils/i18n.php";
+require_once "utils/validation.php";
 
 $logger = Logger::channel('internal', 'request');
 

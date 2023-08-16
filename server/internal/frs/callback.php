@@ -52,7 +52,7 @@ $domophone_output = $entrance["domophoneOutput"];
 $domophone = $households->getDomophone($domophone_id);
 
 try {
-    $logger->debug('Try oepn door', ['frs_key' => $frs_key]);
+    $logger->debug('Try open door', ['frs_key' => $frs_key]);
 
     $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
     $model->open_door($domophone_output);

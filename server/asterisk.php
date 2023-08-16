@@ -13,6 +13,7 @@ require_once "utils/checkint.php";
 require_once "utils/db_ext.php";
 require_once "utils/debug.php";
 require_once "utils/i18n.php";
+require_once "utils/validation.php";
 
 require_once "backends/backend.php";
 
@@ -367,6 +368,19 @@ switch ($path[0]) {
                 break;
 
             case "flatIdByPrefix":
+                $validator = new Validator([
+                    'domophoneId' => [Rule::required(), Rule::int(min: 0)],
+                    'prefix' => [Rule::required(), Rule::int(min: 0)],
+                    'apartment' => [Rule::required(), Rule::int(min: 0)]
+                ]);
+                $validate = $validator->validate($params);
+
+                if ($validate) {
+                    $logger->alert('flatIdByPrefix() bas params', ['message' => $validate]);
+
+                    break;
+                }
+
                 $households = loadBackend("households");
 
                 $apartment = $households->getFlats("flatIdByPrefix", $params);
