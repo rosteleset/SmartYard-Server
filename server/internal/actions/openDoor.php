@@ -10,8 +10,6 @@ if (!isset(
     $postdata["detail"],
 )) {
     response(406, "Invalid payload");
-
-    exit();
 }
 
 [
@@ -24,7 +22,6 @@ if (!isset(
 
 if (!isset($date, $ip, $event, $door, $detail)) {
     response(406, "Invalid payload");
-    exit();
 }
 
 //TODO: refactor events code ?!
@@ -41,23 +38,13 @@ $plog = loadBackend('plog');
 switch ($event) {
     case $events['OPEN_BY_KEY']:
     case $events['OPEN_BY_CODE']:
-        //Store event to db
         $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $event, $door, $detail);
         response(201, ["id" => $plogDoorOpen]);
 
-        break;
-
     case $events['OPEN_BY_CALL']:
-        /* not used
-            example event: "[49704] Opening door by DTMF command for apartment 1"
-             */
         response(200);
 
-        break;
     case $events['OPEN_BY_BUTTON']:
-        /* "Host-->FRS | Event: open door by button.
-            send request to FRS for "freeze motion detection" on this entry"
-            */
         [0 => [
             "camera_id" => $streamId,
             "frs" => $frsUrl
@@ -79,8 +66,6 @@ switch ($event) {
         }
 
         response(200);
-
-        break;
 }
 
 exit();

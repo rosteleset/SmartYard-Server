@@ -187,7 +187,7 @@ namespace backends\plog {
          */
         public function addCallDoneData($date, $ip, $call_id = null)
         {
-            $expire = $date + $this->ttl_temp_record;
+            $expire = time() + $this->ttl_temp_record;
 
             $query = "insert into plog_call_done(date, ip, call_id, expire) values(:date, :ip, :call_id, :expire)";
 

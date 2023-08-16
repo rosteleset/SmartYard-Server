@@ -11,7 +11,6 @@ if (!isset(
     $postdata["motionActive"]
 )) {
     response(406, "Invalid payload");
-    exit();
 }
 
 $logger = Logger::channel('motion');
@@ -30,7 +29,6 @@ if (!$result) {
     $logger->debug('Motion detection not enabled', ['frs' => '-', 'ip' => $ip]);
 
     response(200, "FRS not enabled on this stream");
-    exit();
 }
 
 [0 => [
@@ -44,5 +42,3 @@ $logger->debug('Motion detection', $payload);
 
 $apiResponse = apiExec("POST", $frsUrl . "/api/motionDetection", $payload);
 response(201, $apiResponse);
-
-exit();
