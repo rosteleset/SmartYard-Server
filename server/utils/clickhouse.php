@@ -107,7 +107,7 @@ class clickhouse
         try {
             $error = curl_exec($curl);
 
-            Logger::channel('clickhouse')->debug('Data', ['error' => $error]);
+            Logger::channel('clickhouse')->debug('Data', ['data' => $_data, 'error' => $error]);
         } catch (\Exception $e) {
             Logger::channel('clickhouse')->error('Error send command' . PHP_EOL . $e);
 
