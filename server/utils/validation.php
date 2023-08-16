@@ -17,7 +17,7 @@ class Validator
         for ($i = 0; $i < count($keys); $i++)
             for ($j = 0; $j < count($this->rules[$keys[$i]]); $j++)
                 if (!$this->rules[$keys[$i]][$j]->onRule($keys[$i], $value))
-                    return $this->rules[$keys[$i]][$j]->getMessage();
+                    return $this->rules[$keys[$i]][$j]->getMessage($keys[$i]);
 
         return null;
     }
