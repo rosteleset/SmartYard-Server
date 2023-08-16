@@ -88,21 +88,26 @@ abstract class Rule
         return new RuleException(new RuleMessage($message), $message);
     }
 
+    /**
+     * @throws RuleException
+     */
     protected function filter(string $key, array $value, int $filter, array|int $options = null): mixed
     {
-        if (!array_key_exists($key, $value))
+        if (!array_key_exists($key, $value) || is_null($value[$key]))
             return null;
 
         if ($options) {
             if (is_array($options)) {
                 $options['flags'] = ($options['flags'] ?? 0) | FILTER_NULL_ON_FAILURE;
 
-                return filter_var($value, $filter, $options);
-            } else if (is_int($options))
-                return filter_var($value, $filter, $options | FILTER_NULL_ON_FAILURE);
-        }
+                $result = filter_var($value, $filter, $options);
+            } else $result = filter_var($value, $filter, $options | FILTER_NULL_ON_FAILURE);
+        } else $result = filter_var($value, $filter, FILTER_NULL_ON_FAILURE);
 
-        return filter_var($value, $filter, FILTER_NULL_ON_FAILURE);
+        if ($result == null)
+            throw $this->toException($key);
+
+        return $result;
     }
 
     /**
@@ -136,7 +141,7 @@ abstract class Rule
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): mixed
             {
-                if (is_null($value[$key]))
+                if ($value[$key] == null)
                     throw $this->toException($key);
 
                 return $value[$key];
