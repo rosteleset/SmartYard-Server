@@ -7,6 +7,7 @@
 namespace backends\plog {
 
     use backends\frs\frs;
+    use logger\Logger;
     use PDO;
 
     /**
@@ -588,6 +589,10 @@ namespace backends\plog {
                 ";
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
 
+            $logger = Logger::channel('plog', 'clickhouse');
+
+            $logger->debug('sync calls', ['calls' => $result]);
+
             foreach ($result as $row) {
                 $ip = $row['ip'];
                 $domophone_id = $this->getDomophoneId($row["ip"]);
@@ -631,7 +636,11 @@ namespace backends\plog {
                         order by
                             date desc
                     ";
+
                 $result = $this->clickhouse->select($query);
+
+                $logger->debug('sync call syslog', ['call' => $row, 'syslogs' => $result]);
+
                 foreach ($result as $item) {
                     $msg = $item['msg'];
                     $unit = $item['unit'];
