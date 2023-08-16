@@ -7,7 +7,6 @@
 namespace backends\plog {
 
     use backends\frs\frs;
-    use logger\Logger;
     use PDO;
 
     /**
@@ -51,11 +50,6 @@ namespace backends\plog {
         public function cron($part)
         {
             if ($part === $this->cron_process_events_scheduler) {
-                $logger = Logger::channel('plog', 'clickhouse');
-
-                $logger->debug('all door opens', ['data' => $this->db->query('select * from plog_door_open order by date', PDO::FETCH_ASSOC)->fetchAll()]);
-                $logger->debug('all call done', ['data' => $this->db->query('select * from plog_call_done order by date', PDO::FETCH_ASSOC)->fetchAll()]);
-
                 $this->processEvents();
 
                 $this->db->modify("delete from plog_door_open where expire < " . time());

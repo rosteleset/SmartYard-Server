@@ -97,8 +97,11 @@ try {
     $date = date('Ymd', strtotime(@$postdata['day']));
     $result = $plog->getDetailEventsByDay($flat_id, $date);
     if ($result) {
+        \logger\Logger::channel('plog')->debug('plogs', $result);
+
         $events_details = [];
-        foreach ($result as &$row) {
+
+        foreach ($result as $row) {
             $e_details = [];
             $e_details['date'] = date('Y-m-d H:i:s', $row[plog::COLUMN_DATE]);
             $e_details['uuid'] = $row[plog::COLUMN_EVENT_UUID];
