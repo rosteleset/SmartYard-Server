@@ -125,7 +125,7 @@ abstract class Item
             } else $result = filter_var($value[$key], $filter, $options | FILTER_NULL_ON_FAILURE);
         } else $result = filter_var($value[$key], $filter, FILTER_NULL_ON_FAILURE);
 
-        if ($result === null)
+        if (is_null($result))
             throw $this->toException($key);
 
         return $result;
@@ -165,7 +165,7 @@ abstract class Rule extends Item
         return new class($message) extends Rule {
             public function onItem(string $key, array $value): mixed
             {
-                if ($value[$key] == null)
+                if (is_null($value[$key]))
                     throw $this->toException($key);
 
                 return $value[$key];
