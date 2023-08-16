@@ -469,7 +469,7 @@ switch ($path[0]) {
 
                 $households = loadBackend("households");
 
-                $domophone = $households->getDomophone($path['domophoneId']);
+                $domophone = $households->getDomophone($params['domophoneId']);
 
                 echo json_encode($domophone);
 
