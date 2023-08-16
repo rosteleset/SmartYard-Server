@@ -125,7 +125,7 @@ abstract class Item
             } else $result = filter_var($value[$key], $filter, $options | FILTER_NULL_ON_FAILURE);
         } else $result = filter_var($value[$key], $filter, FILTER_NULL_ON_FAILURE);
 
-        if ($result == null)
+        if ($result === null)
             throw $this->toException($key);
 
         return $result;
