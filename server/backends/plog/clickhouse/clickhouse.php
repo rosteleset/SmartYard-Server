@@ -1031,6 +1031,8 @@ namespace backends\plog {
                 }
 
                 if ($call_from_panel < 0) {
+                    $logger->debug('sync call ignored', ['call' => $row]);
+
                     //начало звонка было точно не с этой панели - игнорируем звонок
                     continue;
                 }
@@ -1046,6 +1048,8 @@ namespace backends\plog {
                 }
 
                 if (!isset($event_data[self::COLUMN_FLAT_ID])) {
+                    $logger->debug('sync call flat id empty', ['call' => $row]);
+
                     //не удалось получить flat_id - игнорируем звонок
                     continue;
                 }
@@ -1055,6 +1059,8 @@ namespace backends\plog {
                     //проверяем, мог ли звонок идти с другой панели
                     $entrance_count = $this->getEntranceCount($event_data[self::COLUMN_FLAT_ID]);
                     if ($entrance_count > 1) {
+                        $logger->debug('sync call ignored', ['call' => $row]);
+
                         //в квартиру можно позвонить с нескольких домофонов,
                         //в данном случае считаем, что начальный звонок был с другого домофона - игнорируем звонок
                         continue;
@@ -1070,6 +1076,8 @@ namespace backends\plog {
                     $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
                     // TODO: доделать для случая наличия инфы о лице
                 }
+
+                $logger->debug('sync call', ['event' => $event_data]);
 
                 //сохраняем событие
                 $this->writeEventData($event_data);
