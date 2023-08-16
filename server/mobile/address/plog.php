@@ -97,8 +97,6 @@ try {
     $date = date('Ymd', strtotime(@$postdata['day']));
     $result = $plog->getDetailEventsByDay($flat_id, $date);
     if ($result) {
-        \logger\Logger::channel('plog')->debug('plogs', $result);
-
         $events_details = [];
 
         foreach ($result as $row) {
