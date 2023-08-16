@@ -369,9 +369,9 @@ switch ($path[0]) {
 
             case "flatIdByPrefix":
                 $validator = new Validator([
-                    'domophoneId' => [Rule::required(), Rule::int(min: 0)],
-                    'prefix' => [Rule::required(), Rule::int(min: 0)],
-                    'apartment' => [Rule::required(), Rule::int(min: 0)]
+                    'domophoneId' => [Rule::required(), Rule::int()],
+                    'prefix' => [Rule::required(), Rule::int()],
+                    'apartment' => [Rule::required(), Rule::int()]
                 ]);
                 $validate = $validator->validate($params);
 

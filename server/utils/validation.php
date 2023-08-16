@@ -17,7 +17,7 @@ class Validator
         for ($i = 0; $i < count($keys); $i++)
             for ($j = 0; $j < count($this->rules[$keys[$i]]); $j++)
                 if ($this->rules[$keys[$i]][$j]->onRule($keys[$i], $value))
-                    return $this->rules[$keys[$i]][$j]->getMessage();
+                    return sprintf($this->rules[$keys[$i]][$j]->getMessage(), $keys[$i]);
 
         return null;
     }
@@ -43,7 +43,7 @@ abstract class Rule
 
     public abstract function onRule(string $key, array $value): bool;
 
-    public static function required(string $message = 'Поле обязательно для заполнения'): static
+    public static function required(string $message = 'Поле %s обязательно для заполнения'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -53,7 +53,7 @@ abstract class Rule
         };
     }
 
-    public static function bool(string $message = 'Поле должно быть булевым значением'): static
+    public static function bool(string $message = 'Поле %s должно быть булевым значением'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -66,7 +66,7 @@ abstract class Rule
         };
     }
 
-    public static function int(?int $min = null, ?int $max = null, string $message = 'Поле должно быть челочисленным значением'): static
+    public static function int(string $message = 'Поле %s должно быть челочисленным значением'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -79,7 +79,7 @@ abstract class Rule
         };
     }
 
-    public static function float(?float $min = null, ?float $max = null, string $message = 'Поле должно быть числом с плавающей точкой'): static
+    public static function float(string $message = 'Поле %s должно быть числом с плавающей точкой'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -92,7 +92,7 @@ abstract class Rule
         };
     }
 
-    public static function regexp(string $value, string $message = 'Поле должно быть определенного формата'): static
+    public static function regexp(string $value, string $message = 'Поле %s должно быть определенного формата'): static
     {
         return new class($value, $message) extends Rule {
             private string $value;
@@ -114,7 +114,7 @@ abstract class Rule
         };
     }
 
-    public static function url(string $message = 'Поле должно быть формата ссылки', bool $path = false, bool $query = false): static
+    public static function url(string $message = 'Поле %s должно быть формата ссылки', bool $path = false, bool $query = false): static
     {
         return new class($path, $query, $message) extends Rule {
             private bool $path;
@@ -141,7 +141,7 @@ abstract class Rule
         };
     }
 
-    public static function email(string $message = 'Поле должно быть формата почты'): static
+    public static function email(string $message = 'Поле %s должно быть формата почты'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -154,7 +154,7 @@ abstract class Rule
         };
     }
 
-    public static function ipV4(string $message = 'Поле должно быть формата ipV4'): static
+    public static function ipV4(string $message = 'Поле %s должно быть формата ipV4'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -167,7 +167,7 @@ abstract class Rule
         };
     }
 
-    public static function ipV6(string $message = 'Поле должно быть формата ipV6'): static
+    public static function ipV6(string $message = 'Поле %s должно быть формата ipV6'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -180,7 +180,7 @@ abstract class Rule
         };
     }
 
-    public static function mac(string $message = 'Поле должно быть формата MAC-адреса'): static
+    public static function mac(string $message = 'Поле %s должно быть формата MAC-адреса'): static
     {
         return new class($message) extends Rule {
             public function onRule(string $key, array $value): bool
@@ -193,7 +193,7 @@ abstract class Rule
         };
     }
 
-    public static function custom(callable $value, string $message = 'Поле не прошло проверку'): static
+    public static function custom(callable $value, string $message = 'Поле %s не прошло проверку'): static
     {
         return new class($value, $message) extends Rule {
             /** @var callable $value */
