@@ -379,8 +379,8 @@ switch ($path[0]) {
 
                 try {
                     $params = $validator->validate();
-                } catch (RuleException $e) {
-                    $logger->alert('flatIdByPrefix() bas params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
+                } catch (ValidatorException $e) {
+                    $logger->alert('flatIdByPrefix() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
 
                     break;
                 }
@@ -396,6 +396,19 @@ switch ($path[0]) {
                 break;
 
             case "apartment":
+                $validator = new Validator($params, [
+                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                    'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                ]);
+
+                try {
+                    $params = $validator->validate();
+                } catch (ValidatorException $e) {
+                    $logger->alert('apartment() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
+
+                    break;
+                }
+
                 $households = loadBackend("households");
 
                 $apartment = $households->getFlats("apartment", $params);
@@ -407,9 +420,21 @@ switch ($path[0]) {
                 break;
 
             case "subscribers":
+                $validator = new Validator(['flatId' => $params], [
+                    'flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                ]);
+
+                try {
+                    $params = $validator->validate();
+                } catch (ValidatorException $e) {
+                    $logger->alert('subscribers() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
+
+                    break;
+                }
+
                 $households = loadBackend("households");
 
-                $flat = $households->getSubscribers("flatId", (int)$params);
+                $flat = $households->getSubscribers("flatId", $params['flatId']);
 
                 echo json_encode($flat);
 
@@ -418,9 +443,21 @@ switch ($path[0]) {
                 break;
 
             case "domophone":
+                $validator = new Validator(['domophoneId' => $params], [
+                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                ]);
+
+                try {
+                    $params = $validator->validate();
+                } catch (ValidatorException $e) {
+                    $logger->alert('domophone() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
+
+                    break;
+                }
+
                 $households = loadBackend("households");
 
-                $domophone = $households->getDomophone((int)$params);
+                $domophone = $households->getDomophone($path['domophoneId']);
 
                 echo json_encode($domophone);
 
@@ -429,9 +466,21 @@ switch ($path[0]) {
                 break;
 
             case "entrance":
+                $validator = new Validator(['domophoneId' => $params], [
+                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                ]);
+
+                try {
+                    $params = $validator->validate();
+                } catch (ValidatorException $e) {
+                    $logger->alert('entrance() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
+
+                    break;
+                }
+
                 $households = loadBackend("households");
 
-                $entrances = $households->getEntrances("domophoneId", ["domophoneId" => (int)$params, "output" => "0"]);
+                $entrances = $households->getEntrances("domophoneId", ["domophoneId" => $params['domophoneId'], "output" => "0"]);
 
                 if ($entrances) {
                     echo json_encode($entrances[0]);
@@ -444,8 +493,6 @@ switch ($path[0]) {
                 break;
 
             case "camshot":
-                $logger->debug('camshot', ['params' => $params]);
-
                 if ($params["domophoneId"] >= 0) {
                     $households = loadBackend("households");
 
@@ -457,8 +504,6 @@ switch ($path[0]) {
                         if ($cameras && $cameras[0]) {
                             $model = loadCamera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
-                            $logger->debug('camshot', ['shot' => "shot_" . $params["hash"]]);
-
                             $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                             $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
                                 "model" => $cameras[0]["model"],
@@ -467,11 +512,11 @@ switch ($path[0]) {
                             ]));
 
                             echo $params["hash"];
-                        } else $logger->debug('camshot camera not found', ['params' => $params, 'entrance' => $entrances[0]]);
-                    } else $logger->debug('camshot entrance not found', ['params' => $params]);
-                } else {
-                    $logger->debug('camshot default', ['shot' => "shot_" . $params["hash"]]);
 
+                            $logger->debug('camshot()', ['shot' => "shot_" . $params["hash"]]);
+                        }
+                    }
+                } else {
                     $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/hw/cameras/fake/img/callcenter.jpg"));
                     $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
                         "model" => "fake.json",
@@ -480,6 +525,8 @@ switch ($path[0]) {
                     ]));
 
                     echo $params["hash"];
+
+                    $logger->debug('camshot() fake', ['shot' => "shot_" . $params["hash"]]);
                 }
 
                 break;
