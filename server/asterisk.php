@@ -64,7 +64,7 @@ try {
     exit(1);
 }
 
-function paramsToResponse($params)
+function paramsToResponse($params): string
 {
     $r = "";
 
@@ -77,7 +77,7 @@ function paramsToResponse($params)
     return $r;
 }
 
-function getExtension($extension, $section)
+function getExtension($extension, $section): array
 {
     global $redis;
 
@@ -303,6 +303,8 @@ function getExtension($extension, $section)
                 break;
         }
     }
+
+    return [];
 }
 
 $path = $_SERVER["REQUEST_URI"];
@@ -369,15 +371,16 @@ switch ($path[0]) {
                 break;
 
             case "flatIdByPrefix":
-                $validator = new Validator([
-                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647)],
-                    'prefix' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647)],
-                    'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647)]
+                $validator = new Validator($params, [
+                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                    'prefix' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                    'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
                 ]);
-                $validate = $validator->validate($params);
 
-                if ($validate) {
-                    $logger->alert('flatIdByPrefix() bas params', ['message' => $validate, 'data' => $params]);
+                try {
+                    $params = $validator->validate();
+                } catch (RuleException $e) {
+                    $logger->alert('flatIdByPrefix() bas params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
 
                     break;
                 }
@@ -482,11 +485,6 @@ switch ($path[0]) {
                 break;
 
             case "server":
-                $sip = loadBackend("sip");
-
-                if ($sip) {
-                }
-
                 break;
 
             case "push":

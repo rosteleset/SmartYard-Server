@@ -1,6 +1,6 @@
 <?php
 
-class Validator
+class Validators
 {
     /** @var Rule[] $rules */
     private array $rules;
@@ -23,7 +23,7 @@ class Validator
     }
 }
 
-abstract class Rule
+abstract class Rules
 {
     protected string $message;
 
@@ -45,7 +45,7 @@ abstract class Rule
 
     public static function required(string $message = 'Поле %s обязательно для заполнения'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 return array_key_exists($key, $value);
@@ -55,7 +55,7 @@ abstract class Rule
 
     public static function bool(string $message = 'Поле %s должно быть булевым значением'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 if (!array_key_exists($key, $value))
@@ -68,7 +68,7 @@ abstract class Rule
 
     public static function int(string $message = 'Поле %s должно быть челочисленным значением'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 if (!array_key_exists($key, $value))
@@ -81,7 +81,7 @@ abstract class Rule
 
     public static function float(string $message = 'Поле %s должно быть числом с плавающей точкой'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 if (!array_key_exists($key, $value))
@@ -94,7 +94,7 @@ abstract class Rule
 
     public static function min(int|float $min, string $message = 'Поле %s меньше %d'): static
     {
-        return new class($min, $message) extends Rule {
+        return new class($min, $message) extends Rules {
             private int|float $min;
 
             public function __construct(int|float $min, string $message)
@@ -126,7 +126,7 @@ abstract class Rule
 
     public static function max(int|float $max, string $message = 'Поле %s больше %d'): static
     {
-        return new class($max, $message) extends Rule {
+        return new class($max, $message) extends Rules {
             private int|float $max;
 
             public function __construct(int|float $max, string $message)
@@ -158,7 +158,7 @@ abstract class Rule
 
     public static function regexp(string $value, string $message = 'Поле %s должно быть определенного формата'): static
     {
-        return new class($value, $message) extends Rule {
+        return new class($value, $message) extends Rules {
             private string $value;
 
             public function __construct(string $value, string $message)
@@ -180,7 +180,7 @@ abstract class Rule
 
     public static function url(string $message = 'Поле %s должно быть формата ссылки', bool $path = false, bool $query = false): static
     {
-        return new class($path, $query, $message) extends Rule {
+        return new class($path, $query, $message) extends Rules {
             private bool $path;
             private bool $query;
 
@@ -207,7 +207,7 @@ abstract class Rule
 
     public static function email(string $message = 'Поле %s должно быть формата почты'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 if (!array_key_exists($key, $value))
@@ -220,7 +220,7 @@ abstract class Rule
 
     public static function ipV4(string $message = 'Поле %s должно быть формата ipV4'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 if (!array_key_exists($key, $value))
@@ -233,7 +233,7 @@ abstract class Rule
 
     public static function ipV6(string $message = 'Поле %s должно быть формата ipV6'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 if (!array_key_exists($key, $value))
@@ -246,7 +246,7 @@ abstract class Rule
 
     public static function mac(string $message = 'Поле %s должно быть формата MAC-адреса'): static
     {
-        return new class($message) extends Rule {
+        return new class($message) extends Rules {
             public function onRule(string $key, array $value): bool
             {
                 if (!array_key_exists($key, $value))
@@ -259,7 +259,7 @@ abstract class Rule
 
     public static function custom(callable $value, string $message = 'Поле %s не прошло проверку'): static
     {
-        return new class($value, $message) extends Rule {
+        return new class($value, $message) extends Rules {
             /** @var callable $value */
             private $value;
 
