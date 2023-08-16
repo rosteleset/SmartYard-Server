@@ -323,6 +323,28 @@ abstract class Rule extends Item
         };
     }
 
+    public static function in(array $value, string $message = 'Поле %s находится в не допустимого диапазона'): static
+    {
+        return new class($value, $message) extends Rule {
+            private array $value;
+
+            public function __construct(array $value, string $message)
+            {
+                parent::__construct($message);
+
+                $this->value = $value;
+            }
+
+            public function onItem(string $key, array $value): mixed
+            {
+                if (!array_key_exists($key, $value) || !in_array($value[$key], $this->value))
+                    throw $this->toException($key);
+
+                return $value[$key];
+            }
+        };
+    }
+
     public static function custom(callable $value, string $message = 'Поле %s не прошло проверку'): static
     {
         return new class($value, $message) extends Rule {
@@ -346,6 +368,30 @@ abstract class Rule extends Item
 
 abstract class Filter extends Item
 {
+    public static function default(mixed $value, bool $string = false, string $message = 'Ошибка фильтрации данных'): static
+    {
+        return new class($value, $string, $message) extends Filter {
+            private mixed $value;
+            private bool $string;
+
+            public function __construct(mixed $value, bool $string, string $message)
+            {
+                parent::__construct($message);
+
+                $this->value = $value;
+                $this->string = $string;
+            }
+
+            public function onItem(string $key, array $value): mixed
+            {
+                if (array_key_exists($key, $value) && (!is_null($value[$key])) || !$this->string && $value[$key] != '')
+                    return $value[$key];
+
+                return $this->value;
+            }
+        };
+    }
+
     public static function encoded(string $message = 'Ошибка фильтрации данных'): static
     {
         return new class($message) extends Filter {

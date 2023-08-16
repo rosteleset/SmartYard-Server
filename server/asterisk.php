@@ -493,6 +493,19 @@ switch ($path[0]) {
                 break;
 
             case "camshot":
+                $validator = new Validator($params, [
+                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                    'hash' => [Rule::required(), Rule::nonNullable()]
+                ]);
+
+                try {
+                    $params = $validator->validate();
+                } catch (ValidatorException $e) {
+                    $logger->alert('camshot() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
+
+                    break;
+                }
+
                 if ($params["domophoneId"] >= 0) {
                     $households = loadBackend("households");
 
@@ -535,6 +548,26 @@ switch ($path[0]) {
                 break;
 
             case "push":
+                $validator = new Validator($params, [
+                    'token' => [Rule::required(), Rule::nonNullable()],
+                    'type' => [Rule::required(), Rule::nonNullable()],
+                    'hash' => [Rule::required(), Rule::nonNullable()],
+                    'extension' => [Rule::required(), Rule::nonNullable()],
+                    'dtmf' => [Rule::required(), Rule::nonNullable()],
+                    'platform' => [Rule::required(), Rule::int(), Rule::in([0, 1]), Rule::nonNullable()],
+                    'callerId' => [Filter::default('WebRTC', true), Rule::nonNullable()],
+                    'flatId' => [Rule::required(), Rule::int(), Rule::nonNullable()],
+                    'flatNumber' => [Rule::required(), Rule::int(), Rule::nonNullable()],
+                ]);
+
+                try {
+                    $params = $validator->validate();
+                } catch (ValidatorException $e) {
+                    $logger->alert('push() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
+
+                    break;
+                }
+
                 $isdn = loadBackend("isdn");
                 $sip = loadBackend("sip");
 
@@ -558,14 +591,11 @@ switch ($path[0]) {
                     "title" => i18n("sip.incomingTitle"),
                 ];
 
-                if ($params["callerId"] == "")
-                    $params["callerId"] = "WebRTC";
-
-                $stun = $sip->stun($params["extension"]);
+                $stun = $sip->stun($params['extension']);
 
                 if ($stun) {
-                    $params["stun"] = $stun;
-                    $params["stunTransport"] = "udp";
+                    $params['stun'] = $stun;
+                    $params['stunTransport'] = 'udp';
                 }
 
                 $logger->debug('Send push', ['push' => $params]);
