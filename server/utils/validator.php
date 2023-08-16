@@ -100,9 +100,9 @@ abstract class Rule
             if (is_array($options)) {
                 $options['flags'] = ($options['flags'] ?? 0) | FILTER_NULL_ON_FAILURE;
 
-                $result = filter_var($value, $filter, $options);
-            } else $result = filter_var($value, $filter, $options | FILTER_NULL_ON_FAILURE);
-        } else $result = filter_var($value, $filter, FILTER_NULL_ON_FAILURE);
+                $result = filter_var($value[$key], $filter, $options);
+            } else $result = filter_var($value[$key], $filter, $options | FILTER_NULL_ON_FAILURE);
+        } else $result = filter_var($value[$key], $filter, FILTER_NULL_ON_FAILURE);
 
         if ($result == null)
             throw $this->toException($key);
