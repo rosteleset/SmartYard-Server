@@ -346,9 +346,18 @@ switch ($path[0]) {
                 break;
 
             case "autoopen":
+                $params = validate(
+                    ['flatId' => $params],
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    'asterisk.autoopen'
+                );
+
+                if ($params == false)
+                    break;
+
                 $households = loadBackend("households");
 
-                $flat = $households->getFlat((int)$params);
+                $flat = $households->getFlat($params['flatId']);
 
                 $rabbit = (int)$flat["whiteRabbit"];
                 $result = $flat["autoOpen"] > time() || ($rabbit && $flat["lastOpened"] + $rabbit * 60 > time());
@@ -360,9 +369,18 @@ switch ($path[0]) {
                 break;
 
             case "flat":
+                $params = validate(
+                    ['flatId' => $params],
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    'asterisk.flat'
+                );
+
+                if ($params == false)
+                    break;
+
                 $households = loadBackend("households");
 
-                $flat = $households->getFlat((int)$params);
+                $flat = $households->getFlat($params['flatId']);
 
                 echo json_encode($flat);
 
@@ -371,19 +389,18 @@ switch ($path[0]) {
                 break;
 
             case "flatIdByPrefix":
-                $validator = new Validator($params, [
-                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
-                    'prefix' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
-                    'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
-                ]);
+                $params = validate(
+                    $params,
+                    [
+                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                        'prefix' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                        'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                    ],
+                    'asterisk.flatIdByPrefix'
+                );
 
-                try {
-                    $params = $validator->validate();
-                } catch (ValidatorException $e) {
-                    $logger->alert('flatIdByPrefix() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
-
+                if ($params == false)
                     break;
-                }
 
                 $households = loadBackend("households");
 
@@ -396,18 +413,17 @@ switch ($path[0]) {
                 break;
 
             case "apartment":
-                $validator = new Validator($params, [
-                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
-                    'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
-                ]);
+                $params = validate(
+                    $params,
+                    [
+                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                        'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                    ],
+                    'asterisk.apartment'
+                );
 
-                try {
-                    $params = $validator->validate();
-                } catch (ValidatorException $e) {
-                    $logger->alert('apartment() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
-
+                if ($params == false)
                     break;
-                }
 
                 $households = loadBackend("households");
 
@@ -420,17 +436,14 @@ switch ($path[0]) {
                 break;
 
             case "subscribers":
-                $validator = new Validator(['flatId' => $params], [
-                    'flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
-                ]);
+                $params = validate(
+                    ['flatId' => $params],
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    'asterisk.subscribers'
+                );
 
-                try {
-                    $params = $validator->validate();
-                } catch (ValidatorException $e) {
-                    $logger->alert('subscribers() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
-
+                if ($params == false)
                     break;
-                }
 
                 $households = loadBackend("households");
 
@@ -443,17 +456,14 @@ switch ($path[0]) {
                 break;
 
             case "domophone":
-                $validator = new Validator(['domophoneId' => $params], [
-                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
-                ]);
+                $params = validate(
+                    ['domophoneId' => $params],
+                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    'asterisk.domophone'
+                );
 
-                try {
-                    $params = $validator->validate();
-                } catch (ValidatorException $e) {
-                    $logger->alert('domophone() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
-
+                if ($params == false)
                     break;
-                }
 
                 $households = loadBackend("households");
 
@@ -466,17 +476,14 @@ switch ($path[0]) {
                 break;
 
             case "entrance":
-                $validator = new Validator(['domophoneId' => $params], [
-                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
-                ]);
+                $params = validate(
+                    ['domophoneId' => $params],
+                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    'asterisk.entrance'
+                );
 
-                try {
-                    $params = $validator->validate();
-                } catch (ValidatorException $e) {
-                    $logger->alert('entrance() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
-
+                if ($params == false)
                     break;
-                }
 
                 $households = loadBackend("households");
 
@@ -493,18 +500,17 @@ switch ($path[0]) {
                 break;
 
             case "camshot":
-                $validator = new Validator($params, [
-                    'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
-                    'hash' => [Rule::required(), Rule::nonNullable()]
-                ]);
+                $params = validate(
+                    $params,
+                    [
+                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                        'hash' => [Rule::required(), Rule::nonNullable()]
+                    ],
+                    'asterisk.camshot'
+                );
 
-                try {
-                    $params = $validator->validate();
-                } catch (ValidatorException $e) {
-                    $logger->alert('camshot() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
-
+                if ($params == false)
                     break;
-                }
 
                 if ($params["domophoneId"] >= 0) {
                     $households = loadBackend("households");
@@ -548,25 +554,24 @@ switch ($path[0]) {
                 break;
 
             case "push":
-                $validator = new Validator($params, [
-                    'token' => [Rule::required(), Rule::nonNullable()],
-                    'type' => [Rule::required(), Rule::nonNullable()],
-                    'hash' => [Rule::required(), Rule::nonNullable()],
-                    'extension' => [Rule::required(), Rule::nonNullable()],
-                    'dtmf' => [Rule::required(), Rule::nonNullable()],
-                    'platform' => [Rule::required(), Rule::int(), Rule::in([0, 1]), Rule::nonNullable()],
-                    'callerId' => [Filter::default('WebRTC', true), Rule::nonNullable()],
-                    'flatId' => [Rule::required(), Rule::int(), Rule::nonNullable()],
-                    'flatNumber' => [Rule::required(), Rule::int(), Rule::nonNullable()],
-                ]);
+                $params = validate(
+                    $params,
+                    [
+                        'token' => [Rule::required(), Rule::nonNullable()],
+                        'type' => [Rule::required(), Rule::nonNullable()],
+                        'hash' => [Rule::required(), Rule::nonNullable()],
+                        'extension' => [Rule::required(), Rule::nonNullable()],
+                        'dtmf' => [Rule::required(), Rule::nonNullable()],
+                        'platform' => [Rule::required(), Rule::int(), Rule::in([0, 1]), Rule::nonNullable()],
+                        'callerId' => [Filter::default('WebRTC', true), Rule::nonNullable()],
+                        'flatId' => [Rule::required(), Rule::int(), Rule::nonNullable()],
+                        'flatNumber' => [Rule::required(), Rule::int(), Rule::nonNullable()],
+                    ],
+                    'asterisk.push'
+                );
 
-                try {
-                    $params = $validator->validate();
-                } catch (ValidatorException $e) {
-                    $logger->alert('push() bad params', ['message' => $e->getValidatorMessage()->getMessage(), 'data' => $params]);
-
+                if ($params == false)
                     break;
-                }
 
                 $isdn = loadBackend("isdn");
                 $sip = loadBackend("sip");

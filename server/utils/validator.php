@@ -1,5 +1,21 @@
 <?php
 
+use logger\Logger;
+
+function validate(array $value, array $items, ?string $tag = null): array|false
+{
+    $validator = new Validator($value, $items);
+
+    try {
+        return $validator->validate();
+    } catch (ValidatorException $e) {
+        if ($tag)
+            $validator->log($e, $tag);
+
+        return false;
+    }
+}
+
 class Validator
 {
     private array $value;
@@ -28,6 +44,11 @@ class Validator
             }
 
         return $this->value;
+    }
+
+    public function log(ValidatorException $exception, string $tag)
+    {
+        Logger::channel('validator', $tag)->error($exception->getValidatorMessage()->getMessage(), $this->value);
     }
 }
 
