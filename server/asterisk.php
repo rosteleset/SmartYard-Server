@@ -330,6 +330,7 @@ switch ($path[0]) {
 
     case "extensions":
         $params = json_decode(file_get_contents("php://input"), true);
+        ksort($params);
 
         switch ($path[1]) {
             case "log":
