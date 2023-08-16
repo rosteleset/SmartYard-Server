@@ -17,7 +17,7 @@ class Validator
         for ($i = 0; $i < count($keys); $i++)
             for ($j = 0; $j < count($this->rules[$keys[$i]]); $j++)
                 if (!$this->rules[$keys[$i]][$j]->onRule($keys[$i], $value))
-                    return sprintf($this->rules[$keys[$i]][$j]->getMessage(), $keys[$i]);
+                    return $this->rules[$keys[$i]][$j]->getMessage();
 
         return null;
     }
@@ -25,7 +25,7 @@ class Validator
 
 abstract class Rule
 {
-    private string $message;
+    protected string $message;
 
     /**
      * Rule constructor.
@@ -36,9 +36,9 @@ abstract class Rule
         $this->message = $message;
     }
 
-    public function getMessage(): string
+    public function getMessage(string $key): string
     {
-        return $this->message;
+        return sprintf($this->message, $key);
     }
 
     public abstract function onRule(string $key, array $value): bool;
@@ -88,6 +88,70 @@ abstract class Rule
                     return true;
 
                 return filter_var($value[$key], FILTER_VALIDATE_FLOAT) != false;
+            }
+        };
+    }
+
+    public static function min(int|float $min, string $message = 'Поле %s меньше %d'): static
+    {
+        return new class($min, $message) extends Rule {
+            private int|float $min;
+
+            public function __construct(int|float $min, string $message)
+            {
+                parent::__construct($message);
+
+                $this->min = $min;
+            }
+
+            public function getMessage(string $key): string
+            {
+                return sprintf($this->message, $key, $this->min);
+            }
+
+            public function onRule(string $key, array $value): bool
+            {
+                if (!array_key_exists($key, $value))
+                    return true;
+
+                if (is_int($this->min))
+                    return filter_var($value[$key], FILTER_VALIDATE_INT, ['options' => ['min_range' => $this->min]]) != false;
+                else if (is_float($this->min))
+                    return filter_var($value[$key], FILTER_VALIDATE_FLOAT, ['options' => ['min_range' => $this->min]]) != false;
+
+                return false;
+            }
+        };
+    }
+
+    public static function max(int|float $max, string $message = 'Поле %s больше %d'): static
+    {
+        return new class($max, $message) extends Rule {
+            private int|float $max;
+
+            public function __construct(int|float $max, string $message)
+            {
+                parent::__construct($message);
+
+                $this->max = $max;
+            }
+
+            public function getMessage(string $key): string
+            {
+                return sprintf($this->message, $key, $this->max);
+            }
+
+            public function onRule(string $key, array $value): bool
+            {
+                if (!array_key_exists($key, $value))
+                    return true;
+
+                if (is_int($this->max))
+                    return filter_var($value[$key], FILTER_VALIDATE_INT, ['options' => ['max_range' => $this->max]]) != false;
+                else if (is_float($this->max))
+                    return filter_var($value[$key], FILTER_VALIDATE_FLOAT, ['options' => ['max_range' => $this->max]]) != false;
+
+                return false;
             }
         };
     }
