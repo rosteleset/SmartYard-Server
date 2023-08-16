@@ -639,7 +639,7 @@ namespace backends\plog {
 
                 $result = $this->clickhouse->select($query);
 
-                $logger->debug('sync call syslog', ['call' => $row, 'syslogs' => $result]);
+                $logger->debug('sync call syslog', ['call' => $row, 'syslogs' => count($result)]);
 
                 foreach ($result as $item) {
                     $msg = $item['msg'];
