@@ -376,7 +376,7 @@ switch ($path[0]) {
                 $validate = $validator->validate($params);
 
                 if ($validate) {
-                    $logger->alert('flatIdByPrefix() bas params', ['message' => $validate]);
+                    $logger->alert('flatIdByPrefix() bas params', ['message' => $validate, 'data' => $params]);
 
                     break;
                 }
