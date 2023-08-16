@@ -373,13 +373,13 @@ switch ($path[0]) {
                     'prefix' => [Rule::required(), Rule::int(min: 0)],
                     'apartment' => [Rule::required(), Rule::int(min: 0)]
                 ]);
-//                $validate = $validator->validate($params);
-//
-//                if ($validate) {
-//                    $logger->alert('flatIdByPrefix() bas params', ['message' => $validate]);
-//
-//                    break;
-//                }
+                $validate = $validator->validate($params);
+
+                if ($validate) {
+                    $logger->alert('flatIdByPrefix() bas params', ['message' => $validate]);
+
+                    break;
+                }
 
                 $households = loadBackend("households");
 

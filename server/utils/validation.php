@@ -13,17 +13,11 @@ class Validator
     public function validate(array $value): ?string
     {
         $keys = array_keys($this->rules);
-        $index = -1;
 
         for ($i = 0; $i < count($keys); $i++)
-            if ($this->rules[$keys[$i]]->onRule($keys[$i], $value)) {
-                $index = $i;
-
-                break;
-            }
-
-        if ($index >= 0)
-            return $this->rules[$index]->getMessage();
+            for ($j = 0; $j < count($this->rules[$keys[$i]]); $j++)
+                if ($this->rules[$keys[$i]][$j]->onRule($keys[$i], $value))
+                    return $this->rules[$keys[$i]][$j]->getMessage();
 
         return null;
     }
