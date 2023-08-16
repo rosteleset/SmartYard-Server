@@ -35,7 +35,7 @@ require_once "utils/db_ext.php";
 require_once "utils/debug.php";
 require_once "utils/i18n.php";
 require_once "utils/mime_content_type.php";
-require_once "utils/validation.php";
+require_once "utils/validator.php";
 
 require_once "backends/backend.php";
 
