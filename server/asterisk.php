@@ -560,7 +560,7 @@ switch ($path[0]) {
                     $params,
                     [
                         'token' => [Rule::required(), Rule::nonNullable()],
-                        'tokenType' => [Rule::required(), Rule::nonNullable()],
+                        'tokenType' => [Rule::required(), Rule::int(), Rule::nonNullable()],
                         'hash' => [Rule::required(), Rule::nonNullable()],
                         'extension' => [Rule::required(), Rule::nonNullable()],
                         'dtmf' => [Rule::required(), Rule::nonNullable()],
