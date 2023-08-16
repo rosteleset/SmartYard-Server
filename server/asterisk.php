@@ -371,7 +371,7 @@ switch ($path[0]) {
                 $validator = new Validator([
                     'domophoneId' => [Rule::required(), Rule::int()],
                     'prefix' => [Rule::required(), Rule::int()],
-                    'apartment' => [Rule::required(), Rule::int()]
+                    'flatNumber' => [Rule::required(), Rule::int()]
                 ]);
                 $validate = $validator->validate($params);
 
