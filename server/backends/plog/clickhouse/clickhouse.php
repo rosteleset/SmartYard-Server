@@ -321,7 +321,7 @@ namespace backends\plog {
             $query = "
                     select
                         date,
-                        JSONExtractInt(domophone, 'domophone_id') as domophone_id,
+                        JSONExtractInt(domophone, 'domophone_id') as domophone_id
                     from
                         plog
                     where
