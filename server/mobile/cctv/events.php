@@ -28,7 +28,7 @@ $flats = array_filter(
     static function (array $flat) use ($households) {
         $plog = $households->getFlatPlog($flat['id']);
 
-        return $plog == plog::ACCESS_ALL || $plog == plog::ACCESS_OWNER_ONLY && $flat['owner'];
+        return is_null($plog) || $plog == plog::ACCESS_ALL || $plog == plog::ACCESS_OWNER_ONLY && $flat['owner'];
     }
 );
 
@@ -39,4 +39,7 @@ if (count($flatsId) == 0)
 
 $events = $plog->getEventsByFlatsAndDomophone($flats, $domophoneId, $validate['date']);
 
-response(200, array_map(static fn(array $item) => $item['date'], $events));
+if ($events)
+    response(200, array_map(static fn(array $item) => $item['date'], $events));
+
+response(200, []);
