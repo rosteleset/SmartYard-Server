@@ -56,7 +56,7 @@
                         (!@$u['user'] || @$u['user'] == @$url["user"]) &&
                         (!@$u['pass'] || @$u['pass'] == @$url["pass"]) &&
                         ($u['host'] == $url["host"]) &&
-                        (!$u['port'] || $u['port'] == $port)
+                        (!@$u['port'] || $u['port'] == $port)
                     ) {
                         $result = $server;
                         break;

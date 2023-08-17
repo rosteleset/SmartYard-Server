@@ -18,7 +18,7 @@ $plog = loadBackend("plog");
 if (!$households || !$plog)
     response(403);
 
-$domophoneId = $households->getDomophoneIdByEntranceCameraId($validate['camera_id']);
+$domophoneId = $households->getDomophoneIdByEntranceCameraId($validate['cameraId']);
 
 if (is_null($domophoneId))
     response(404);
