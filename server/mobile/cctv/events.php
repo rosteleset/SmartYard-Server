@@ -3,7 +3,7 @@
 use backends\plog\plog;
 
 $validate = validate(@$postdata, [
-    'camera_id' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
+    'cameraId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
     'date' => [Filter::default(1), Rule::int(), Rule::min(0), Rule::max(14), Rule::nonNullable()]
 ], 'mobile.cctv.ranges');
 
