@@ -181,34 +181,37 @@ function mkdir_r($dirName, $rights = 0777)
     }
 }
 
-function auth($_response_cache_ttl = -1)
+function auth($_response_cache_ttl = -1): array
 {
     global $_SERVER, $bearer, $response_cache_ttl, $subscriber;
     $households = loadBackend("households");
 
-    if ($_response_cache_ttl >= 0) {
+    if ($_response_cache_ttl >= 0)
         $response_cache_ttl = $_response_cache_ttl;
-    }
+
+
     $ip = long2ip(ip2long($_SERVER['REMOTE_ADDR']));
+
     if ($ip == '127.0.0.1' && !@$_SERVER['HTTP_AUTHORIZATION'] && $_GET['phone']) {
         $p = trim($_GET['phone']);
         $bearer = false;
         $subscribers = $households->getSubscribers("mobile", $p);
+
         if ($subscribers) {
             $subscriber = $subscribers[0];
             $bearer = $subscriber["authToken"];
         }
-        if (!$bearer) {
+
+        if (!$bearer)
             response(403, false, "Ошибка авторизации", "Ошибка авторизации");
-        }
     } else {
-        if (!@$_SERVER['HTTP_AUTHORIZATION']) {
+        if (!@$_SERVER['HTTP_AUTHORIZATION'])
             response(403, false, "Ошибка авторизации", "Ошибка авторизации");
-        }
+
         $bearer = @trim(explode('Bearer', $_SERVER['HTTP_AUTHORIZATION'])[1]);
-        if (!$bearer) {
+
+        if (!$bearer)
             response(422, false, "Отсутствует токен авторизации", "Отсутствует токен авторизации");
-        }
 
         if (substr_count($bearer, '.') == 2) {
             list($header, $payload, $signature) = explode('.', $bearer);
@@ -256,6 +259,8 @@ function auth($_response_cache_ttl = -1)
             $households->modifySubscriber($subscriber["subscriberId"]);
         }
     }
+
+    return $subscriber;
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

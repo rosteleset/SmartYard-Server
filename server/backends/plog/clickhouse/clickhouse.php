@@ -312,6 +312,32 @@ namespace backends\plog {
         /**
          * @inheritDoc
          */
+        public function getEventsByFlatsAndDomophone(array $flats_id, int $domophone_id, int $date)
+        {
+            $filterFlatsId = implode(',', $flats_id);
+            $filterDate = date('Ymd', time() - $date * 24 * 60 * 60);
+
+            $query = "
+                    select
+                        date,
+                        JSONExtractInt(domophone, 'domophone_id') as domophone_id,
+                    from
+                        plog
+                    where
+                        not hidden
+                        and toYYYYMMDD(FROM_UNIXTIME(date)) >= '$filterDate'
+                        and flat_id in ($filterFlatsId)
+                        and domophone_id = $domophone_id
+                    order by
+                        date desc
+            ";
+
+            return $this->clickhouse->select($query);
+        }
+
+        /**
+         * @inheritDoc
+         */
         public function getEventDetails(string $uuid)
         {
             $query = "
@@ -342,6 +368,7 @@ namespace backends\plog {
         {
             $households = loadBackend('households');
             $result = $households->getDomophones('ip', $ip);
+
             if ($result && $result[0]) {
                 return $result[0]['domophoneId'];
             }

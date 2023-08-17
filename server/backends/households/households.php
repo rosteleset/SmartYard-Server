@@ -99,6 +99,13 @@
             abstract function getFlat($flatId);
 
             /**
+             * Получить значение plog у квартиры
+             * @param int $flatId идентификатор квартиры
+             * @return int|null
+             */
+            abstract function getFlatPlog(int $flatId): ?int;
+
+            /**
              * @param $by
              * @param $params
              * @return boolean|array
@@ -168,6 +175,12 @@
              * @return mixed
              */
             abstract public function getDomophones($by = "all", $query = -1);
+
+            /**
+             * @param int $camera_id
+             * @return int|null
+             */
+            abstract public function getDomophoneIdByEntranceCameraId(int $camera_id): ?int;
 
             /**
              * @param $enabled

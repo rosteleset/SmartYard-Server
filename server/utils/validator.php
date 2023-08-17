@@ -203,7 +203,7 @@ abstract class Rule extends Item
         };
     }
 
-    public static function min(int|float $min, string $message = 'Поле %s меньше %d'): static
+    public static function min(int|float $min = -2147483647, string $message = 'Поле %s меньше %d'): static
     {
         return new class($min, $message) extends Rule {
             private int|float $min;
@@ -232,7 +232,7 @@ abstract class Rule extends Item
         };
     }
 
-    public static function max(int|float $max, string $message = 'Поле %s больше %d'): static
+    public static function max(int|float $max = 2147483647, string $message = 'Поле %s больше %d'): static
     {
         return new class($max, $message) extends Rule {
             private int|float $max;

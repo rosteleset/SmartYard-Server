@@ -350,7 +350,7 @@ switch ($path[0]) {
             case "autoopen":
                 $params = validate(
                     ['flatId' => $params],
-                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
                     'asterisk.autoopen'
                 );
 
@@ -373,7 +373,7 @@ switch ($path[0]) {
             case "flat":
                 $params = validate(
                     ['flatId' => $params],
-                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
                     'asterisk.flat'
                 );
 
@@ -394,9 +394,9 @@ switch ($path[0]) {
                 $params = validate(
                     $params,
                     [
-                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
-                        'prefix' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
-                        'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
+                        'prefix' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
+                        'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]
                     ],
                     'asterisk.flatIdByPrefix'
                 );
@@ -418,8 +418,8 @@ switch ($path[0]) {
                 $params = validate(
                     $params,
                     [
-                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
-                        'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]
+                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
+                        'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]
                     ],
                     'asterisk.apartment'
                 );
@@ -440,7 +440,7 @@ switch ($path[0]) {
             case "subscribers":
                 $params = validate(
                     ['flatId' => $params],
-                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
                     'asterisk.subscribers'
                 );
 
@@ -460,7 +460,7 @@ switch ($path[0]) {
             case "domophone":
                 $params = validate(
                     ['domophoneId' => $params],
-                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
                     'asterisk.domophone'
                 );
 
@@ -480,7 +480,7 @@ switch ($path[0]) {
             case "entrance":
                 $params = validate(
                     ['domophoneId' => $params],
-                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()]],
+                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
                     'asterisk.entrance'
                 );
 
@@ -505,7 +505,7 @@ switch ($path[0]) {
                 $params = validate(
                     $params,
                     [
-                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(2147483647), Rule::nonNullable()],
+                        'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
                         'hash' => [Rule::required(), Rule::nonNullable()]
                     ],
                     'asterisk.camshot'
