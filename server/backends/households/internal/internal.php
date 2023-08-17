@@ -107,7 +107,7 @@ namespace backends\households {
                 ");
 
             if ($result && count($result) > 0)
-                return $result['plog'];
+                return $result[0]['plog'];
 
             return null;
         }
