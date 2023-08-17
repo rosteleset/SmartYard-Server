@@ -41,7 +41,7 @@
 
                 $url = parse_url($url);
                 $scheme = $url["scheme"] ?: 'http';
-                $port = (int)($url["port"] ?? 443);
+                $port = array_key_exists('port', $url) ? (int)($url["port"]) : null;
 
                 if (!$port && $scheme == 'http') $port = 80;
                 if (!$port && $scheme == 'https') $port = 443;
