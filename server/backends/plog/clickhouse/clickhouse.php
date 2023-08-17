@@ -306,7 +306,11 @@ namespace backends\plog {
                         date desc
                 ";
 
-            return $this->clickhouse->select($query);
+            try {
+                return $this->clickhouse->select($query);
+            } catch (\Exception) {
+                return null;
+            }
         }
 
         /**
