@@ -7,6 +7,7 @@
 namespace backends\plog {
 
     use backends\frs\frs;
+    use Exception;
     use logger\Logger;
     use PDO;
 
@@ -308,8 +309,8 @@ namespace backends\plog {
 
             try {
                 return $this->clickhouse->select($query);
-            } catch (\Exception) {
-                return null;
+            } catch (Exception) {
+                return false;
             }
         }
 
@@ -336,7 +337,13 @@ namespace backends\plog {
                         date desc
             ";
 
-            return $this->clickhouse->select($query);
+            try {
+                return $this->clickhouse->select($query);
+            } catch (Exception $e) {
+                Logger::channel('plog', 'clickhouse')->error('getEventsByFlatsAndDomophone()' . PHP_EOL . $e);
+
+                return null;
+            }
         }
 
         /**
