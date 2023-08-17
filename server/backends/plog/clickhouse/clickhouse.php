@@ -327,7 +327,7 @@ namespace backends\plog {
                         not hidden
                         and toYYYYMMDD(FROM_UNIXTIME(date)) >= '$filterDate'
                         and flat_id in ($filterFlatsId)
-                        and JSONExtractInt(domophone, 'domophone_id') = $domophone_id
+                        and tupleElement(domophone, 'domophone_id') = $domophone_id
                     order by
                         date desc
             ";
