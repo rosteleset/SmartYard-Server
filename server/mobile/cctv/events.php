@@ -37,7 +37,7 @@ $flatsId = array_map(static fn(array $item) => $item['id'], $flats);
 if (count($flatsId) == 0)
     response(404);
 
-$events = $plog->getEventsByFlatsAndDomophone($flats, $domophoneId, $validate['date']);
+$events = $plog->getEventsByFlatsAndDomophone($flatsId, $domophoneId, $validate['date']);
 
 if ($events)
     response(200, array_map(static fn(array $item) => $item['date'], $events));
