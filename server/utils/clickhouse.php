@@ -52,13 +52,17 @@ class clickhouse
         try {
             $raw = curl_exec($curl);
             $data = @json_decode($raw, true)['data'];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            Logger::channel('clickhouse')->error($e);
+
             return false;
         }
         curl_close($curl);
 
         if (@$headers['x-clickhouse-exception-code']) {
-            echo "*" . trim($raw) . "*";
+            Logger::channel('clickhouse')->error(trim($raw));
+
+            return false;
         }
 
         return $data;
@@ -106,7 +110,7 @@ class clickhouse
 
         try {
             $error = curl_exec($curl);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Logger::channel('clickhouse')->error('Error send command' . PHP_EOL . $e);
 
             return false;

@@ -307,11 +307,7 @@ namespace backends\plog {
                         date desc
                 ";
 
-            try {
-                return $this->clickhouse->select($query);
-            } catch (Exception) {
-                return false;
-            }
+            return $this->clickhouse->select($query);
         }
 
         /**
@@ -337,13 +333,7 @@ namespace backends\plog {
                         date desc
             ";
 
-            try {
-                return $this->clickhouse->select($query);
-            } catch (Exception $e) {
-                Logger::channel('plog', 'clickhouse')->error('getEventsByFlatsAndDomophone()' . PHP_EOL . $e);
-
-                return null;
-            }
+            return $this->clickhouse->select($query);
         }
 
         /**
