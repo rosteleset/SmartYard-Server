@@ -320,15 +320,14 @@ namespace backends\plog {
 
             $query = "
                     select
-                        date,
-                        JSONExtractInt(domophone, 'domophone_id') as domophone_id
+                        date
                     from
                         plog
                     where
                         not hidden
                         and toYYYYMMDD(FROM_UNIXTIME(date)) >= '$filterDate'
                         and flat_id in ($filterFlatsId)
-                        and domophone_id = $domophone_id
+                        and JSONExtractInt(domophone, 'domophone_id') = $domophone_id
                     order by
                         date desc
             ";
