@@ -82,25 +82,29 @@ class SingleLogger extends Logger
     {
         $this->file = $file;
 
-        if (file_exists($this->getFile())) {
-            if (is_writable($this->getFile()))
-                $this->exist = true;
-            else {
+        try {
+            if (file_exists($this->getFile())) {
+                if (is_writable($this->getFile()))
+                    $this->exist = true;
+                else {
+                    if (!chown($this->getFile(), get_current_user())) return;
+                    if (!chmod($this->getFile(), 0665)) return;
+                }
+            } else {
+                if (!is_dir($this->getDirectory())) {
+                    if (mkdir($this->getDirectory(), 0665, true)) {
+                        if (!chown($this->getDirectory(), get_current_user())) return;
+                    } else return;
+                }
+
+                if (!touch($this->getFile())) return;
                 if (!chown($this->getFile(), get_current_user())) return;
                 if (!chmod($this->getFile(), 0665)) return;
-            }
-        } else {
-            if (!is_dir($this->getDirectory())) {
-                if (mkdir($this->getDirectory(), 0665, true)) {
-                    if (!chown($this->getDirectory(), get_current_user())) return;
-                } else return;
-            }
 
-            if (!touch($this->getFile())) return;
-            if (!chown($this->getFile(), get_current_user())) return;
-            if (!chmod($this->getFile(), 0665)) return;
-
-            $this->exist = is_writable($this->getFile());
+                $this->exist = is_writable($this->getFile());
+            }
+        } catch (Exception) {
+            $this->exist = false;
         }
     }
 
