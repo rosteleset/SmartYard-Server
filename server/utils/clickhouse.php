@@ -1,7 +1,5 @@
 <?php
 
-use logger\Logger;
-
 class clickhouse
 {
     private $host, $port, $username, $password, $database;

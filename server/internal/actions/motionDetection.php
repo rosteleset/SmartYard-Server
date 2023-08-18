@@ -3,8 +3,6 @@
  * Send POST request to FRS.
  */
 
-use logger\Logger;
-
 if (!isset(
     $postdata["date"],
     $postdata["ip"],

@@ -1,7 +1,5 @@
 <?php
 
-use logger\Logger;
-
 mb_internal_encoding("UTF-8");
 
 require_once "logger/Logger.php";
@@ -37,7 +35,7 @@ $subscriber = false;
 $offsetForCityId = 1000000;
 $emptyStreetIdOffset = 1000000;
 
-$logger = Logger::channel('mobile', 'request');
+$logger = Logger::channel('mobile');
 
 try {
     $config = loadConfig();

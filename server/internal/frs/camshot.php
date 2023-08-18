@@ -1,14 +1,12 @@
 <?php
 
-use logger\Logger;
-
 require_once __DIR__ . '/../../utils/checkint.php';
 
 $camera_id = $param;
 if (!isset($camera_id) || $camera_id === 0)
     response(404);
 
-$logger = Logger::channel('internal', 'frs');
+$logger = Logger::channel('internal');
 
 $logger->debug('camshot() start', ['camera' => $camera_id]);
 

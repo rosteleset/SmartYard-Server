@@ -7,8 +7,7 @@
 namespace backends\plog {
 
     use backends\frs\frs;
-    use Exception;
-    use logger\Logger;
+    use Logger;
     use PDO;
 
     /**
@@ -116,7 +115,7 @@ namespace backends\plog {
                         }
                     }
 
-                    Logger::channel('plog', 'camshot')->debug('frs camshot', ['data' => $camshot_data]);
+                    Logger::channel('plog')->debug('frs camshot', ['data' => $camshot_data]);
 
                     if (!array_key_exists('data', $camshot_data) && count($camshot_data["data"]) === 0) {
                         //получение кадра с DVR-серевера, если нет кадра от FRS
@@ -621,7 +620,7 @@ namespace backends\plog {
                 ";
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
 
-            $logger = Logger::channel('plog', 'clickhouse');
+            $logger = Logger::channel('plog');
 
             $logger->debug('sync calls', ['calls' => count($result)]);
 

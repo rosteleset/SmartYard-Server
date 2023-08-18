@@ -3,9 +3,7 @@
 use backends\plog\plog;
 use backends\frs\frs;
 
-use logger\Logger;
-
-$logger = Logger::channel('internal', 'frs');
+$logger = Logger::channel('internal');
 
 require_once __DIR__ . '/../../utils/checkint.php';
 

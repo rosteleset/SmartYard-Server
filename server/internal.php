@@ -1,7 +1,5 @@
 <?php
 
-use logger\Logger;
-
 mb_internal_encoding("UTF-8");
 
 require_once "utils/logger.php";
