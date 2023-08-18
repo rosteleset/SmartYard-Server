@@ -76,7 +76,7 @@ abstract class Logger
 class SingleLogger extends Logger
 {
     private string $file;
-    private bool $exist = false;
+    private bool $writable = false;
 
     public function __construct(string $file)
     {
@@ -85,14 +85,18 @@ class SingleLogger extends Logger
         try {
             if (file_exists($this->getFile())) {
                 if (is_writable($this->getFile()))
-                    $this->exist = true;
+                    $this->writable = true;
                 else {
                     if (!chown($this->getFile(), get_current_user())) return;
                     if (!chmod($this->getFile(), 0665)) return;
                 }
             } else {
                 if (!is_dir($this->getDirectory())) {
+                    $old = umask(0);
+
                     if (mkdir($this->getDirectory(), 0665, true)) {
+                        umask($old);
+
                         if (!chown($this->getDirectory(), get_current_user())) return;
                     } else return;
                 }
@@ -101,16 +105,16 @@ class SingleLogger extends Logger
                 if (!chown($this->getFile(), get_current_user())) return;
                 if (!chmod($this->getFile(), 0665)) return;
 
-                $this->exist = is_writable($this->getFile());
+                $this->writable = is_writable($this->getFile());
             }
         } catch (Exception) {
-            $this->exist = false;
+            $this->writable = false;
         }
     }
 
     public function log(string $level, string $message, array $context = [], string $tag = 'application'): void
     {
-        if ($this->exist)
+        if ($this->writable)
             file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
     }
 
