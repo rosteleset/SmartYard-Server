@@ -86,9 +86,13 @@ class SingleLogger extends Logger
             if (!is_dir($this->getDirectory()))
                 mkdir($this->getDirectory(), 0665, true);
 
-            touch($this->getFile());
-            chmod($this->getFile(), 0665);
-        }
+            try {
+                if (touch($this->getFile()) && chmod($this->getFile(), 0665))
+                    $this->exist = true;
+            } catch (Exception) {
+                $this->exist = false;
+            }
+        } else $this->exist = true;
     }
 
     public function log(string $level, string $message, array $context = [], string $tag = 'application'): void
