@@ -83,7 +83,7 @@ class SingleLogger extends Logger
 
         if (!file_exists($this->getFile())) {
             if (!is_dir($this->getDirectory()))
-                mkdir($this->getDirectory(), 0661, true);
+                mkdir($this->getDirectory(), 0775, true);
 
             touch($this->getFile());
 
