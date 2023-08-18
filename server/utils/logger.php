@@ -76,6 +76,7 @@ abstract class Logger
 class SingleLogger extends Logger
 {
     private string $file;
+    private bool $exist = false;
 
     public function __construct(string $file)
     {
@@ -92,7 +93,8 @@ class SingleLogger extends Logger
 
     public function log(string $level, string $message, array $context = [], string $tag = 'application'): void
     {
-        file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+        if ($this->exist)
+            file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
     }
 
     private function getDirectory(): string
