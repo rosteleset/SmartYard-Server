@@ -82,8 +82,8 @@ class SingleLogger extends Logger
         $this->file = $file;
 
         if (!file_exists($this->getFile())) {
-            //if (!is_dir($this->getDirectory()))
-            //    mkdir($this->getDirectory(), 0661, true);
+            if (!is_dir($this->getDirectory()))
+                mkdir($this->getDirectory(), 0661, true);
 
             touch($this->getFile());
         }
@@ -101,7 +101,7 @@ class SingleLogger extends Logger
 
     private function getFile(): string
     {
-        return __DIR__ . '/../logs/' . $this->file . '-' . date('Y-m-d') . '.log';
+        return __DIR__ . '/../logs/' . $this->file . '/' . $this->file . '-' . date('Y-m-d') . '.log';
     }
 }
 
