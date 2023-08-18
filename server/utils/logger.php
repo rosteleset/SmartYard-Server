@@ -76,46 +76,18 @@ abstract class Logger
 class SingleLogger extends Logger
 {
     private string $file;
-    private bool $writable = false;
 
     public function __construct(string $file)
     {
         $this->file = $file;
 
-        try {
-            if (file_exists($this->getFile())) {
-                if (is_writable($this->getFile()))
-                    $this->writable = true;
-                else {
-                    if (!chown($this->getFile(), get_current_user())) return;
-                    if (!chmod($this->getFile(), 0665)) return;
-                }
-            } else {
-                if (!is_dir($this->getDirectory())) {
-                    $old = umask(0);
-
-                    if (mkdir($this->getDirectory(), 0665, true)) {
-                        umask($old);
-
-                        if (!chown($this->getDirectory(), get_current_user())) return;
-                    } else return;
-                }
-
-                if (!touch($this->getFile())) return;
-                if (!chown($this->getFile(), get_current_user())) return;
-                if (!chmod($this->getFile(), 0665)) return;
-
-                $this->writable = is_writable($this->getFile());
-            }
-        } catch (Exception) {
-            $this->writable = false;
-        }
+        if (!is_dir($this->getDirectory()))
+            mkdir($this->getDirectory(), 0655, true);
     }
 
     public function log(string $level, string $message, array $context = [], string $tag = 'application'): void
     {
-        if ($this->writable)
-            file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+        file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
     }
 
     private function getDirectory(): string
