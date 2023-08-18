@@ -83,12 +83,10 @@ class SingleLogger extends Logger
 
         if (!file_exists($this->getFile())) {
             if (!is_dir($this->getDirectory()))
-                mkdir($this->getDirectory(), 0775, true);
+                mkdir($this->getDirectory(), 0665, true);
 
             touch($this->getFile());
-
-            chown($this->getFile(), get_current_user());
-            chmod($this->getFile(), 0775);
+            chmod($this->getFile(), 0665);
         }
     }
 
