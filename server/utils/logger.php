@@ -86,6 +86,9 @@ class SingleLogger extends Logger
                 mkdir($this->getDirectory(), 0661, true);
 
             touch($this->getFile());
+
+            chown($this->getFile(), "www-data");
+            chmod($this->getFile(), 0775);
         }
     }
 
