@@ -87,7 +87,7 @@ class SingleLogger extends Logger
 
             touch($this->getFile());
 
-            chown($this->getFile(), "www-data");
+            chown($this->getFile(), get_current_user());
             chmod($this->getFile(), 0775);
         }
     }
