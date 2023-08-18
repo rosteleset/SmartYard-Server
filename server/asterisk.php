@@ -197,55 +197,59 @@ function getExtension($extension, $section): array
         $households = loadBackend('households');
 
         $flatId = (int)substr($extension, 1);
-        $cred = $households->getFlat($flatId)['sipPassword'];
+        $flat = $households->getFlat($flatId);
 
-        switch ($section) {
-            case "aors":
-                if ($cred) {
-                    return [
-                        "id" => $extension,
-                        "max_contacts" => "1",
-                        "remove_existing" => "yes"
-                    ];
-                }
+        if ($flat) {
+            $cred = $flat['sipPassword'];
 
-                break;
+            switch ($section) {
+                case "aors":
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "max_contacts" => "1",
+                            "remove_existing" => "yes"
+                        ];
+                    }
 
-            case "auths":
-                if ($cred) {
-                    return [
-                        "id" => $extension,
-                        "username" => $extension,
-                        "auth_type" => "userpass",
-                        "password" => $cred,
-                    ];
-                }
+                    break;
 
-                break;
+                case "auths":
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "username" => $extension,
+                            "auth_type" => "userpass",
+                            "password" => $cred,
+                        ];
+                    }
 
-            case "endpoints":
-                if ($cred) {
-                    return [
-                        "id" => $extension,
-                        "auth" => $extension,
-                        "outbound_auth" => $extension,
-                        "aors" => $extension,
-                        "callerid" => $extension,
-                        "context" => "default",
-                        "disallow" => "all",
-                        "allow" => "alaw,h264",
-                        "rtp_symmetric" => "yes",
-                        "force_rport" => "yes",
-                        "rewrite_contact" => "yes",
-                        "timers" => "no",
-                        "direct_media" => "no",
-                        "allow_subscribe" => "yes",
-                        "dtmf_mode" => "rfc4733",
-                        "ice_support" => "no",
-                    ];
-                }
+                    break;
 
-                break;
+                case "endpoints":
+                    if ($cred) {
+                        return [
+                            "id" => $extension,
+                            "auth" => $extension,
+                            "outbound_auth" => $extension,
+                            "aors" => $extension,
+                            "callerid" => $extension,
+                            "context" => "default",
+                            "disallow" => "all",
+                            "allow" => "alaw,h264",
+                            "rtp_symmetric" => "yes",
+                            "force_rport" => "yes",
+                            "rewrite_contact" => "yes",
+                            "timers" => "no",
+                            "direct_media" => "no",
+                            "allow_subscribe" => "yes",
+                            "dtmf_mode" => "rfc4733",
+                            "ice_support" => "no",
+                        ];
+                    }
+
+                    break;
+            }
         }
     }
 
