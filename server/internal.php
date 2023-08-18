@@ -4,8 +4,7 @@ use logger\Logger;
 
 mb_internal_encoding("UTF-8");
 
-require_once "logger/Logger.php";
-
+require_once "utils/logger.php";
 require_once "backends/backend.php";
 require_once "utils/loader.php";
 require_once "utils/db_ext.php";
@@ -13,7 +12,7 @@ require_once "utils/error.php";
 require_once "utils/i18n.php";
 require_once "utils/validator.php";
 
-$logger = Logger::channel('internal', 'request');
+$logger = Logger::channel('internal');
 
 $config = false;
 

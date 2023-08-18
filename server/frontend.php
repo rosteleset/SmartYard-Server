@@ -14,8 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "OPTIONS") {
     return;
 }
 
-require_once "logger/Logger.php";
-
+require_once "utils/logger.php";
 require_once "utils/error.php";
 require_once "utils/response.php";
 require_once "utils/hooks.php";

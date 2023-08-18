@@ -2,12 +2,9 @@
 
 // command line client
 
-use logger\Logger;
-
 chdir(__DIR__);
 
-require_once "logger/Logger.php";
-
+require_once "utils/logger.php";
 require_once "utils/error.php";
 require_once "utils/response.php";
 require_once "utils/hooks.php";
@@ -228,7 +225,7 @@ try {
     exit(1);
 }
 
-$logger = Logger::channel('cli', 'request');
+$logger = Logger::channel('cli');
 
 try {
     $config = loadConfig();

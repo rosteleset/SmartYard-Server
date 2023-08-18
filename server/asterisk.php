@@ -2,10 +2,7 @@
 
 // asterisk support
 
-use logger\Logger;
-
-require_once "logger/Logger.php";
-
+require_once "utils/logger.php";
 require_once "utils/error.php";
 require_once "utils/guidv4.php";
 require_once "utils/loader.php";
@@ -19,7 +16,7 @@ require_once "backends/backend.php";
 
 header('Content-Type: application/json');
 
-$logger = Logger::channel('asterisk', 'request');
+$logger = Logger::channel('asterisk');
 
 try {
     $config = loadConfig();

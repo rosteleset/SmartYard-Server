@@ -5,9 +5,6 @@
  */
 
 namespace backends\frs {
-
-    use logger\Logger;
-
     class internal extends frs
     {
         //private methods
