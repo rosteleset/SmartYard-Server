@@ -500,9 +500,12 @@
         function realRenderUsers() {
             let groups = {};
 
+            let hasGroups = false;
+
             if (modules.groups) {
                 for (let i in modules.groups.meta) {
                     groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+                    hasGroups = true;
                 }
             }
 
