@@ -145,16 +145,18 @@
             GET("accounts", "user", uid, true).done(response => {
                 let gs = [];
 
-                gs.push({
-                    value: -1,
-                    text: "-",
-                });
-
-                for (let i in modules.groups.meta) {
+                if (modules.groups) {
                     gs.push({
-                        value: modules.groups.meta[i].gid,
-                        text: $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]"),
+                        value: -1,
+                        text: "-",
                     });
+    
+                    for (let i in modules.groups.meta) {
+                        gs.push({
+                            value: modules.groups.meta[i].gid,
+                            text: $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]"),
+                        });
+                    }
                 }
 
                 cardForm({
