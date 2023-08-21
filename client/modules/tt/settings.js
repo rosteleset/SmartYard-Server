@@ -1364,12 +1364,12 @@
         done(modules.tt.tt).
         done(() => {
             if (modules.groups) {
-                modules.groups.loadGroups(response => {
+                modules.groups.loadGroups(() => {
                     let personals = {};
     
-                    for (let i in response.groups) {
-                        if (response.groups[i].gid) {
-                            personals[1000000 + parseInt(response.groups[i].gid)] = $.trim(response.groups[i].name + " [" + response.groups[i].acronym + "]");
+                    for (let i in modules.groups.meta) {
+                        if (modules.groups.meta[i].gid) {
+                            personals[1000000 + parseInt(modules.groups.meta[i].gid)] = $.trim(module.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]");
                         }
                     }
 
@@ -1582,7 +1582,7 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            modules.groups.loadGroups(response => {
+            modules.groups.loadGroups(() => {
                 let project = false;
                 for (let i in modules.tt.meta.projects) {
                     if (modules.tt.meta.projects[i].projectId == projectId) {
@@ -1592,9 +1592,9 @@
                 }
 
                 let groups = {};
-                for (let i in response.groups) {
-                    if (response.groups[i].gid) {
-                        groups[response.groups[i].gid] = $.trim(response.groups[i].name + " [" + response.groups[i].acronym + "]");
+                for (let i in modules.groups.meta) {
+                    if (modules.groups.meta[i].gid) {
+                        groups[modules.groups.meta[i].gid] = $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]");
                     }
                 }
 

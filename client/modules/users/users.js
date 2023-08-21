@@ -141,7 +141,7 @@
 
     modifyUser: function (uid) {
 
-        function realModifyUser(uid, groups) {
+        function realModifyUser(uid) {
             GET("accounts", "user", uid, true).done(response => {
                 let gs = [];
 
@@ -150,10 +150,10 @@
                     text: "-",
                 });
 
-                for (let i in groups) {
+                for (let i in modules.groups.meta) {
                     gs.push({
-                        value: groups[i].gid,
-                        text: $.trim(groups[i].name + " [" + groups[i].acronym + "]"),
+                        value: modules.groups.meta[i].gid,
+                        text: $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]"),
                     });
                 }
 
@@ -358,13 +358,11 @@
 
         loadingStart();
         if (modules.groups) {
-            modules.groups.loadGroups(response => {
-                realModifyUser(uid, response.groups);
-            }).
-            fail(FAIL).
-            fail(loadingDone);
+            modules.groups.loadGroups(() => {
+                realModifyUser(uid);
+            });
         } else {
-            realModifyUser(uid, []);
+            realModifyUser(uid);
         }
     },
 
@@ -499,10 +497,10 @@
 
         loadingStart();
 
-        modules.users.loadGroups(hasGroups => {
+        function realRenderUsers() {
             let groups = {};
 
-            if (hasGroups) {
+            if (modules.groups) {
                 for (let i in modules.groups.meta) {
                     groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
                 }
@@ -645,7 +643,13 @@
             }).
             fail(FAIL).
             fail(loadingDone);
-        });
+        }
+
+        if (modules.groups) {
+            modules.groups.loadGroups(realRenderUsers);
+        } else {
+            realRenderUsers();
+        }
     },
 
     route: function (params) {
