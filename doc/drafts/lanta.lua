@@ -1,6 +1,27 @@
 -- Общий проект (ЛАНТА) Обращение [точка входа]
 
 --
+-- Настройки
+--
+
+-- Офисная работа
+
+office_work = { 5002, 5003, }
+
+-- Монтажные работы
+
+hardware_work = {
+    -- на точку присутствия
+    1001,
+    -- на коммутатор
+    2001,
+    -- абонентские
+    5001, 5004, 5005, 5006, 5007, 5008, 5009, 5010, 501, 5012,
+}
+
+-- Видеонаблюдения
+
+--
 -- Утилиты
 --
 
@@ -125,7 +146,7 @@ function count(tab)
     return c
 end
 
--- переменная сущемтвует и если таблица то есть элементы
+-- переменная существует и если таблица то есть элементы
 
 function exists(v)
     if v == nil then
@@ -173,8 +194,7 @@ function isCoordinated(issue)
         exists(issue["_cf_sheet_date"]) and
         exists(issue["_cf_sheet_col"]) and
         exists(issue["_cf_sheet_cell"]) and
-        exists(issue["_cf_sheet_cells"]) and
-        not strExists(issue["_cf_install_done"])
+        exists(issue["_cf_sheet_cells"])
 end
 
 -- СС. Позвонить сейчас
@@ -205,7 +225,7 @@ end
 -- Заявка не закрыта, добавлен в наблюдатели
 
 function watching(issue)
-    return isCoordinated(issue) and issue["watchers"] ~= nil and utils.in_array(tt.login(), issue["watchers"])
+    return isCoordinated(issue) and issue["watchers"] ~= nil and hasValue(tt.login(), issue["watchers"])
 end
 
 -- Связаться позже
@@ -218,7 +238,7 @@ end
 -- Открытые заявки, Выполнено СИ=да
 
 function fitDone(issue)
-    return isOpened(issue) and issue["_cf_install_done"] == "Да"
+    return isOpened(issue) and (issue["_cf_install_done"] == "Выполнено" or issue["_cf_install_done"] == "Камера установлена" or issue["_cf_install_done"] == "Установлен микрофон" or issue["_cf_install_done"] == "Установлена камера и микрофон")
 end
 
 -- Связаться сегодня
@@ -260,6 +280,26 @@ function waitingForContractUL(issue)
 end
 
 --
+-- Сервисные функции
+--
+
+-- числовой id каталога
+
+function catalogId(catalog)
+    local ok, id = pcall(
+        function ()
+            return tonumberExt(utils.explode("]", utils.explode("[", catalog)[1])[0])
+        end
+    )
+    
+    if not ok then
+        return -1
+    else
+        return id
+    end
+end
+
+--
 -- Заявка
 --
 
@@ -292,16 +332,10 @@ function updateObjectId(issue, original)
 
         if mb.substr(client_info["common"]["contract_name"], 0, 2) == "ФЛ" then
             issue["_cf_client_type"] = "ФЛ"
-            issue["assigned"] = {
-                "callcenter"
-            }
         end
 
         if mb.substr(client_info["common"]["contract_name"], 0, 2) == "ЮЛ" then
             issue["_cf_client_type"] = "ЮЛ"
-            issue["assigned"] = {
-                "office"
-            }
         end
 
         if client_info["polygon"] ~= nil and client_info["polygon"] ~= "" then
@@ -314,6 +348,52 @@ function updateObjectId(issue, original)
                 ["coordinates"] = {
                     client_info["geo"]["lon"],
                     client_info["geo"]["lat"],
+                }
+            }
+        end
+    end
+
+    if tonumberExt(issue["_cf_object_id"]) >= 100000000 and tonumberExt(issue["_cf_object_id"]) < 200000000 then
+        local chest_id = tonumberExt(issue["_cf_object_id"]) - 100000000
+
+        local chest_info = custom.GET({
+            ["action"] = "chest",
+            ["chest_id"] = chest_id,
+        })
+
+        if chest_info["polygon"] ~= nil and chest_info["polygon"] ~= "" then
+            issue["_cf_polygon"] = chest_info["polygon"]
+        end
+
+        if chest_info["lat"] ~= nil and chest_info["lon"] ~= nil then
+            issue["_cf_geo"] = {
+                ["type"] = "Point",
+                ["coordinates"] = {
+                    chest_info["lon"],
+                    chest_info["lat"],
+                }
+            }
+        end
+    end
+
+    if tonumberExt(issue["_cf_object_id"]) >= 200000000 and tonumberExt(issue["_cf_object_id"]) < 300000000 then
+        local l2_sw_id = tonumberExt(issue["_cf_object_id"]) - 200000000
+
+        local l2_sw_info = custom.GET({
+            ["action"] = "l2",
+            ["l2_sw_id"] = l2_sw_id,
+        })
+
+        if l2_sw_info["chest"]["polygon"] ~= nil and l2_sw_info["chest"]["polygon"] ~= "" then
+            issue["_cf_polygon"] = l2_sw_info["chest"]["polygon"]
+        end
+
+        if l2_sw_info["chest"]["lat"] ~= nil and l2_sw_info["chest"]["lon"] ~= nil then
+            issue["_cf_geo"] = {
+                ["type"] = "Point",
+                ["coordinates"] = {
+                    l2_sw_info["chest"]["lon"],
+                    l2_sw_info["chest"]["lat"],
                 }
             }
         end
@@ -388,6 +468,13 @@ function getAvailableActions(issue)
             "-",
             "Закрыть",
         }
+        
+        if not hasValue(hardware_work, catalogId(issue.catalog)) then
+            actions = removeValue(actions, "saCoordinate")
+            actions = removeValue(actions, "Работы завершены")
+            actions = removeValue(actions, "Снять с координации")
+            actions = removeValue(actions, "Исполнители")
+        end
 
         if not isCoordinated(issue) then
             actions = removeValues(actions, {
@@ -469,24 +556,39 @@ function getActionTemplate(issue, action)
 
     if issue["_cf_object_id"] ~= nil then
         if tonumberExt(issue["_cf_object_id"]) > 0 then
-            needAccessInfo = true
-            if tonumberExt(issue["_cf_object_id"]) >= 200000000 and tonumberExt(issue["_cf_object_id"]) < 300000000 then
+            doneFilter = {
+                "Выполнено",
+                "Отмена",
+            }
+            if tonumberExt(issue["_cf_object_id"]) >= 100000000 and tonumberExt(issue["_cf_object_id"]) < 200000000 then
+                needAccessInfo = true
                 doneFilter = {
                     "Выполнено",
-                    "Проблема с доступом",
-                    "Отмена",
-                }
-            else
-                doneFilter = {
-                    "Выполнено",
-                    "Камера установлена",
-                    "Установлен микрофон",
-                    "Установлена камера и микрофон",
                     "Проблема с доступом",
                     "Отмена",
                 }
             end
+            if tonumberExt(issue["_cf_object_id"]) >= 200000000 and tonumberExt(issue["_cf_object_id"]) < 300000000 then
+                needAccessInfo = true
+                doneFilter = {
+                    "Выполнено",
+                    "Проблема с доступом",
+                    "Отмена",
+                }
+            end
+            if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
+                needAccessInfo = true
+                -- абонентские с выездом
+                if hasValue(hardware_work, catalogId(issue.catalog)) then
+                    doneFilter = {
+                        "Выполнено",
+                        "Проблема с доступом",
+                        "Отмена",
+                    }
+                end
+            end
         else
+            -- курьер
             doneFilter = {
                 "Выполнено",
                 "Не доставлено",
@@ -587,11 +689,11 @@ function action(issue, action, original)
         if type(issue["assigned"]) == "table" and count(issue["assigned"]) > 0 then
             issue["assigned"] = normalizeArray(issue["assigned"])
         end
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Наблюдатели" then
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Координация" then
@@ -610,13 +712,13 @@ function action(issue, action, original)
             issue["assigned"] = { }
         end
 
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Исполнители" then
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Работы завершены" then
@@ -626,7 +728,14 @@ function action(issue, action, original)
         issue["assigned"] = {
             original["author"]
         }
+        
         if original["_cf_object_id"] ~= nil then
+            if tonumberExt(original["_cf_object_id"]) >= 100000000 and tonumberExt(original["_cf_object_id"]) < 200000000 then
+                -- точка присутствия - в техотдел
+                issue["assigned"] = {
+                    "tech"
+                }
+            end
             if tonumberExt(original["_cf_object_id"]) >= 200000000 and tonumberExt(original["_cf_object_id"]) < 300000000 then
                 -- l2 - в техотдел
                 issue["assigned"] = {
@@ -650,7 +759,10 @@ function action(issue, action, original)
                 issue["status"] = "Закрыта"
             end
         end
-        return tt.modifyIssue(issue)
+        
+        utils.error_log(catalogId(original.catalog))
+        
+        return true --tt.modifyIssue(issue, action)
     end
 
     if action == "Снять с координации" then
@@ -690,6 +802,12 @@ function action(issue, action, original)
             tt.login()
         }
         if original["_cf_object_id"] ~= nil then
+            if tonumberExt(original["_cf_object_id"]) >= 100000000 and tonumberExt(original["_cf_object_id"]) < 200000000 then
+                -- точка присутствия - в техотдел
+                issue["assigned"] = {
+                    "tech"
+                }
+            end
             if tonumberExt(original["_cf_object_id"]) >= 200000000 and tonumberExt(original["_cf_object_id"]) < 300000000 then
                 -- l2 - в техотдел
                 issue["assigned"] = {
@@ -710,19 +828,19 @@ function action(issue, action, original)
                 end
             end
         end
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Позвонить" then
         issue["_cf_need_call"] = 1
         issue["_cf_calls_count"] = 0
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Звонок совершен" then
         issue["_cf_need_call"] = 0
         issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) + 1
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Недозвон" then
@@ -731,23 +849,23 @@ function action(issue, action, original)
         if issue["_cf_calls_count"] >= 3 then
             issue["_cf_need_call"] = 0
         end
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Отложить" then
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Делопроизводство" then
         issue["assigned"] = {
             "office"
         }
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Закрыть" then
         issue["status"] = "Закрыта"
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Переоткрыть" then
@@ -807,13 +925,13 @@ function action(issue, action, original)
             issue["_cf_quality_control"] = ""
         end
 
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     if action == "Изменить идентификатор" then
         issue = updateObjectId(issue, original)
 
-        return tt.modifyIssue(issue)
+        return tt.modifyIssue(issue, action)
     end
 
     return false
@@ -915,7 +1033,7 @@ function getWorkflowCatalog()
     }
 end
 
-function issueChanged(issue, action, old, new)
+function issueChanged(issue, action, old, new, workflowAction)
     if exists(issue["watchers"]) then
         for i, w in pairs(issue["watchers"]) do
             if w ~= tt.login() then
@@ -944,5 +1062,46 @@ function issueChanged(issue, action, old, new)
             end
         end
     end
+
+    pcall(function ()
+        if isCoordinated(issue) then
+            local title
+            local installers = {}
+
+            if action == "addComment" or utils.explode("#", action)[0] == "modifyComment" then
+                title = "TT: Добавлен комментарий"
+                installers = issue["_cf_installers"]
+            end
+
+            if workflowAction == "Координация" then
+                title = "TT: Заявка скоординирована"
+                installers = issue["_cf_installers"]
+            end
+
+            if workflowAction == "Снять с координации" then
+                title = "TT: Заявка снята с координации"
+                installers = old["_cf_installers"]
+            end
+
+            if workflowAction == "Работы завершены" then
+                title = "TT: Работы завершены"
+                installers = issue["_cf_installers"]
+            end
+
+            if title then
+                for i, w in pairs(installers) do
+                    if w ~= tt.login() then
+                        custom.POST({
+                            ["action"] = "push",
+                            ["login"] = w,
+                            ["title"] = title,
+                            ["body"] = issue.issueId,
+                        })
+                    end
+                end
+            end
+        end
+    end)
+
     return mqtt.broadcast("issue/changed", issue["issueId"])
 end
