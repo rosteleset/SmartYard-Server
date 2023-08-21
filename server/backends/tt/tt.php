@@ -1295,9 +1295,11 @@
              * @param $issueId
              * @param $comment
              * @param $private
+             * @param $type
+             * @param $silent
              * @return mixed
              */
-            abstract public function addComment($issueId, $comment, $private);
+            abstract public function addComment($issueId, $comment, $private, $type = false, $silent = false);
 
             /**
              * @param $issueId

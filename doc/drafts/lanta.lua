@@ -447,7 +447,7 @@ function getAvailableActions(issue)
             "-",
             "Отложить",
             "-",
-            "Назначить",
+            "Назначить (передать)",
             "saAssignToMe",
             "-",
             "Изменить идентификатор",
@@ -513,7 +513,7 @@ end
 
 -- получить шаблон диалога для действия
 function getActionTemplate(issue, action)
-    if action == "Назначить" then
+    if action == "Назначить (передать)" then
         return {
             "assigned",
             "optionalComment",
@@ -675,7 +675,9 @@ end
 
 -- выполнить действие
 function action(issue, action, original)
-    if action == "Назначить" then
+    local comment = false
+    
+    if action == "Назначить (передать)" then
         if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and count(issue["assigned"]) == 0) then
             issue["assigned"] = {
                 tt.login()
@@ -696,6 +698,7 @@ function action(issue, action, original)
         return tt.modifyIssue(issue, action)
     end
 
+    -- координация монтажных работ
     if action == "Координация" then
         if exists(original["_cf_install_done"]) then
             issue["_cf_install_done"] = ""
@@ -715,12 +718,14 @@ function action(issue, action, original)
         return tt.modifyIssue(issue, action)
     end
 
+    -- назначить исполнителей на монтажные работы
     if action == "Исполнители" then
         issue["_cf_coordination_date"] = utils.time()
         issue["_cf_coordinator"] = tt.login()
         return tt.modifyIssue(issue, action)
     end
-
+    
+    -- завершение монтажных работ
     if action == "Работы завершены" then
         issue["_cf_done_date"] = utils.time()
 
@@ -743,7 +748,20 @@ function action(issue, action, original)
                 }
             end
             if tonumberExt(original["_cf_object_id"]) >= 500000000 and tonumberExt(original["_cf_object_id"]) < 600000000 then
-                if original["_cf_client_type"] == "ФЛ" then
+                if hasValue({ 5005, 5006, }, catalogId(original["catalog"])) then
+                    if hasValue({ "Проблема с доступом", "Отмена", }, issue["_cf_install_done"]) then
+                        -- надо-бы в офис, но возникли проблемы, пусть колл-центр разбирается
+                        issue["assigned"] = {
+                            "office"
+                        }
+                    else
+                        comment = "Выполнить перерасчет"
+                        -- на перерасчет в офис
+                        issue["assigned"] = {
+                            "office"
+                        }
+                    end
+                elseif original["_cf_client_type"] == "ФЛ" then
                     -- ФЛ - в коллцентр
                     issue["assigned"] = {
                         "callcenter"
@@ -760,11 +778,16 @@ function action(issue, action, original)
             end
         end
         
-        utils.error_log(catalogId(original.catalog))
+        local result = tt.modifyIssue(issue, action)
         
-        return true --tt.modifyIssue(issue, action)
+        if result and comment then
+            tt.addComment(issue["issueId"], comment, true)
+        end
+        
+        return result
     end
 
+    -- снять заявку с листа координации
     if action == "Снять с координации" then
         if exists(original["_cf_sheet"]) then
             issue["_cf_sheet"] = ""
@@ -992,6 +1015,8 @@ function viewIssue(issue)
         "*_cf_delay",
         "subject",
         "_cf_phone",
+        "_cf_amount",
+        "_cf_bank_details",
         "_cf_object_id",
         "_cf_debt_date",
         "_cf_debt_services",
