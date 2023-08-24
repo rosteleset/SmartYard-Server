@@ -24,6 +24,8 @@ function loadEnvFile(): array
             list($key, $value) = explode('=', $lines[$i], 2);
 
             $result[$key] = $value;
+
+            putenv($key . '=' . $value);
         }
 
         return $result;

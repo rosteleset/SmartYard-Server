@@ -186,6 +186,19 @@ namespace hw\domophones {
             }
         }
 
+        public function configure_mifare(string $key, int $sector)
+        {
+            $mifare = $this->api_call('/key/settings', 'GET');
+
+            $mifare['encryption']['enabled'] = false;
+            $mifare['encryption']['key_type'] = 'A';
+            $mifare['encryption']['key_auth'] = $key;
+            $mifare['encryption']['sector'] = $sector;
+            $mifare['encryption']['increment'] = ['enabled' => true, 'block' => 0, 'openByError' => false];
+
+            $this->api_call('/key/settings', 'PUT', $mifare);
+        }
+
         public function configure_apartment(
             int $apartment,
             bool $private_code_enabled,

@@ -4,6 +4,8 @@ namespace tasks;
 
 require_once dirname(__FILE__) . "/IntercomConfigureTask.php";
 
+use DateInterval;
+use DateTime;
 use Exception;
 use Logger;
 use PDO_EXT;
@@ -55,6 +57,7 @@ class TaskContainer
     private Task $task;
 
     private ?string $queue = null;
+    private ?DateTime $start = null;
 
     public function __construct(Task $task)
     {
@@ -96,9 +99,32 @@ class TaskContainer
         return $this;
     }
 
+    public function start(DateTime $start): static
+    {
+        $this->start = $start;
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function delay(DateInterval|int $delay): static
+    {
+        if (!$this->start)
+            $this->start = new DateTime();
+
+        if (is_int($delay))
+            $this->start->add(new DateInterval('PT' . $delay . 'S'));
+        else
+            $this->start->add($delay);
+
+        return $this;
+    }
+
     public function dispatch(): bool
     {
-        TaskManager::instance()->worker($this->queue ?? 'default')->push($this->task);
+        TaskManager::instance()->worker($this->queue ?? 'default')->push($this->start ?? new DateTime(), $this->task);
 
         return true;
     }
@@ -201,9 +227,10 @@ class TaskWorker
     /**
      * Добавляем новую зачаду в TaskWorker
      * Задача добавляется в начало очереди
+     * @param DateTime $start
      * @param Task $task
      */
-    public function push(Task $task)
+    public function push(DateTime $start, Task $task)
     {
         $this->redis->lPush($this->getWorkerTasksKey(), serialize($task));
         $this->redis->incr($this->getWorkerSizeKey());

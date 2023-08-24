@@ -128,6 +128,8 @@
                 int $stun_port = 3478
             );
 
+            abstract public function configure_mifare(string $key, int $sector);
+
             /** Настроить remote syslog */
             abstract public function configure_syslog(string $server, int $port);
 
