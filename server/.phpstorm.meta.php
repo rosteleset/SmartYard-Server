@@ -31,7 +31,8 @@ namespace PHPSTORM_META {
         'sip',
         'tt',
         'tt_journal',
-        'users'
+        'users',
+        'tasks'
     );
 
     override(
@@ -62,7 +63,8 @@ namespace PHPSTORM_META {
             'sip' => \backends\sip\sip::class,
             'tt' => \backends\tt\tt::class,
             'tt_journal' => \backends\tt_journal\tt_journal::class,
-            'users' => \backends\users\users::class
+            'users' => \backends\users\users::class,
+            'tasks' => \backends\tasks\tasks::class
         ])
     );
 
