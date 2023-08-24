@@ -93,7 +93,6 @@ else {
     pcntl_async_signals(true);
     pcntl_signal(SIGINT, static fn() => exit(0));
 }
-echo json_encode(TaskManager::instance()->queues());
 
 while (true) {
     $command = $worker->command($id);
