@@ -41,9 +41,9 @@ namespace api\tasks {
         {
             $tasks = loadBackend('tasks');
 
-            $params = validate($params, ['queue' => [Rule::required(), Rule::in($tasks->getQueues()), Rule::nonNullable()]], 'tasks.size');
+            $params = validate($params, ['_id' => [Rule::required(), Rule::in($tasks->getQueues()), Rule::nonNullable()]], 'tasks.size');
 
-            return api::ANSWER($tasks->getQueueSize($params['queue']));
+            return api::ANSWER($tasks->getQueueSize($params['_id']));
         }
 
         public static function index()

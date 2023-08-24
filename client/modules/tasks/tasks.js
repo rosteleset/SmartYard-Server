@@ -18,7 +18,7 @@
                                 <p>Статус текущих задач</p>
                                 <div class="dropdown-divider"></div>
                                 <div id="tasksMenuRightContainer">
-                                    ${modules.tasks.queues.map((queue) => `<span style="width: 100%">Очередь (${queue}): 0</span>`).join("\n")}
+                                    ${modules.tasks.queues.map((queue) => `<p id="${queue}" class="m-0 p-0">Очередь (${queue}): 0</p>`).join("\n")}
                                 </div>
                             </div>
                         </li>
@@ -30,6 +30,9 @@
     },
 
     tasksMenuRight() {
-        console.log(modules.tasks.queues)
+        for (let queue of modules.tasks.queues) {
+            GET("tasks", "size", queue)
+                .done((response) => console.log(response))
+        }
     }
 }).init()
