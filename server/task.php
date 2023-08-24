@@ -131,7 +131,7 @@ while (true) {
                 $task->onTask();
 
                 $worker->getLogger()?->info('TaskWorker completed task', ['queue' => $queue, 'id' => $id]);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $task->onError($e);
 
                 $worker->getLogger()?->error('TaskWorker error task' . PHP_EOL . $e, ['queue' => $queue, 'id' => $id]);

@@ -10,6 +10,7 @@ use Exception;
 use Logger;
 use PDO_EXT;
 use Redis;
+use Throwable;
 
 function task(Task $task): TaskContainer
 {
@@ -18,17 +19,23 @@ function task(Task $task): TaskContainer
 
 abstract class Task
 {
+    public string $title;
+
     protected ?Redis $redis = null;
     protected ?PDO_EXT $pdo = null;
     protected ?array $config = null;
 
     protected ?Logger $logger = null;
 
+    public function __construct(string $title)
+    {
+        $this->title = $title;
+    }
+
     public abstract function onTask();
 
-    public function onError(Exception $exception)
+    public function onError(Throwable $exception)
     {
-
     }
 
     public function setRedis(?Redis $redis)
@@ -124,7 +131,7 @@ class TaskContainer
 
     public function dispatch(): bool
     {
-        TaskManager::instance()->worker($this->queue ?? 'default')->push($this->start ?? new DateTime(), $this->task);
+        TaskManager::instance()->worker($this->queue ?? 'default')->push($this->start?->getTimestamp() ?? time(), $this->task);
 
         return true;
     }
@@ -227,13 +234,12 @@ class TaskWorker
     /**
      * Добавляем новую зачаду в TaskWorker
      * Задача добавляется в начало очереди
-     * @param DateTime $start
+     * @param int $start
      * @param Task $task
      */
-    public function push(DateTime $start, Task $task)
+    public function push(int $start, Task $task)
     {
-        $this->redis->lPush($this->getWorkerTasksKey(), serialize($task));
-        $this->redis->incr($this->getWorkerSizeKey());
+        $this->rawPush($start, serialize($task));
 
         $this->logger?->info('Push new Task', ['queue' => $this->queue, 'class' => get_class($this)]);
     }
@@ -252,10 +258,17 @@ class TaskWorker
         $this->redis->decr($this->getWorkerSizeKey());
 
         try {
-            $task = unserialize($raw);
+            $json = json_decode($raw);
+            $task = unserialize($json['d']);
 
             if (!$task)
                 return null;
+
+            if (time() < $json['s']) {
+                $this->rawPush($json['s'], $json['d']);
+
+                return null;
+            }
 
             return $task;
         } catch (Exception $e) {
@@ -310,6 +323,12 @@ class TaskWorker
     private function getWorkerSizeKey(): string
     {
         return 'task:' . $this->queue . ':size';
+    }
+
+    private function rawPush(int $start, string $task)
+    {
+        $this->redis->lPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
+        $this->redis->incr($this->getWorkerSizeKey());
     }
 }
 
