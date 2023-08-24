@@ -32,12 +32,6 @@ abstract class Task
         $this->title = $title;
     }
 
-    public abstract function onTask();
-
-    public function onError(Throwable $exception)
-    {
-    }
-
     public function setRedis(?Redis $redis)
     {
         $this->redis = $redis;
@@ -56,6 +50,12 @@ abstract class Task
     public function setLogger(?Logger $logger)
     {
         $this->logger = $logger;
+    }
+
+    public abstract function onTask();
+
+    public function onError(Throwable $exception)
+    {
     }
 }
 
@@ -239,7 +239,7 @@ class TaskWorker
      */
     public function push(int $start, Task $task)
     {
-        $this->rawPush($start, serialize($task));
+        $this->rawPush(false, $start, serialize($task));
 
         $this->logger?->info('Push new Task', ['queue' => $this->queue, 'class' => get_class($this)]);
     }
@@ -258,14 +258,14 @@ class TaskWorker
         $this->redis->decr($this->getWorkerSizeKey());
 
         try {
-            $json = json_decode($raw, true);
+            $json = json_decode($raw, true, flags: JSON_THROW_ON_ERROR);
             $task = unserialize($json['d']);
 
             if (!$task)
                 return null;
 
             if (time() < $json['s']) {
-                $this->rawPush($json['s'], $json['d']);
+                $this->rawPush(true, $json['s'], $json['d']);
 
                 return null;
             }
@@ -325,9 +325,13 @@ class TaskWorker
         return 'task:' . $this->queue . ':size';
     }
 
-    private function rawPush(int $start, string $task)
+    private function rawPush(bool $r, int $start, string $task)
     {
-        $this->redis->lPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
+        if ($r)
+            $this->redis->rPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
+        else
+            $this->redis->lPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
+
         $this->redis->incr($this->getWorkerSizeKey());
     }
 }
