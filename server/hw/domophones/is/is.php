@@ -190,7 +190,7 @@ namespace hw\domophones {
         {
             $mifare = $this->api_call('/key/settings', 'GET');
 
-            $mifare['encryption']['enabled'] = false;
+            $mifare['encryption']['enabled'] = true;
             $mifare['encryption']['key_type'] = 'A';
             $mifare['encryption']['key_auth'] = $key;
             $mifare['encryption']['sector'] = $sector;

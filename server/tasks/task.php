@@ -179,6 +179,10 @@ class TaskWorker
         return in_array($id, $ids);
     }
 
+    /**
+     * Получить следующее значение id от последнего
+     * @return int
+     */
     public function next(): int
     {
         $id = $this->redis->lIndex($this->getWorkerKey(), -1);
@@ -305,6 +309,16 @@ class TaskWorker
         $this->logger?->info('Stop TaskWorker', ['queue' => $this->queue, 'id' => $id]);
     }
 
+    private function rawPush(bool $r, int $start, string $task)
+    {
+        if ($r)
+            $this->redis->rPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
+        else
+            $this->redis->lPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
+
+        $this->redis->incr($this->getWorkerSizeKey());
+    }
+
     private function getWorkerKey(): string
     {
         return 'task:' . $this->queue . ':worker';
@@ -323,16 +337,6 @@ class TaskWorker
     private function getWorkerSizeKey(): string
     {
         return 'task:' . $this->queue . ':size';
-    }
-
-    private function rawPush(bool $r, int $start, string $task)
-    {
-        if ($r)
-            $this->redis->rPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
-        else
-            $this->redis->lPush($this->getWorkerTasksKey(), json_encode(['s' => $start, 'd' => $task]));
-
-        $this->redis->incr($this->getWorkerSizeKey());
     }
 }
 
