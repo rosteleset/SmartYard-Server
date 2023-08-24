@@ -13,6 +13,7 @@ require_once "utils/i18n.php";
 require_once "utils/validator.php";
 
 require_once "backends/backend.php";
+require_once "tasks/task.php";
 
 header('Content-Type: application/json');
 

@@ -85,9 +85,9 @@ class SingleLogger extends Logger
             mkdir($this->getDirectory(), 0655, true);
     }
 
-    public function log(string $level, string $message, array $context = [], string $tag = 'application'): void
+    public function log(string $level, string $message, array $context = []): void
     {
-        file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $tag . '.' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+        file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
     }
 
     private function getDirectory(): string

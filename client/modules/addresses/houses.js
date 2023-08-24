@@ -1598,7 +1598,7 @@
                                     data: modules.addresses.houses.meta.flats[i].flatId,
                                 },
                                 {
-                                    data: modules.addresses.houses.meta.flats[i].floor?modules.addresses.houses.meta.flats[i].floor:"-",
+                                    data: modules.addresses.houses.meta.flats[i].floor ? modules.addresses.houses.meta.flats[i].floor:"-",
                                 },
                                 {
                                     data: modules.addresses.houses.meta.flats[i].flat,

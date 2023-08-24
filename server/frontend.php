@@ -37,6 +37,7 @@ require_once "utils/mime_content_type.php";
 require_once "utils/validator.php";
 
 require_once "backends/backend.php";
+require_once "tasks/task.php";
 
 require_once "api/api.php";
 

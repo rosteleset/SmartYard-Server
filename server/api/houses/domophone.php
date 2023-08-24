@@ -1,49 +1,59 @@
 <?php
 
+/**
+ * houses api
+ */
+
+namespace api\houses {
+
+    use api\api;
+    use tasks\IntercomConfigureTask;
+    use function tasks\task;
+
     /**
-     * houses api
+     * domophone method
      */
+    class domophone extends api
+    {
 
-    namespace api\houses {
+        public static function POST($params)
+        {
+            $households = loadBackend("households");
 
-        use api\api;
+            $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comment"]);
 
-        /**
-         * domophone method
-         */
+            return api::ANSWER($domophoneId, ($domophoneId !== false) ? "domophoneId" : false);
+        }
 
-        class domophone extends api {
+        public static function PUT($params)
+        {
+            $households = loadBackend("households");
 
-            public static function POST($params) {
-                $households = loadBackend("households");
-
-                $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comment"]);
-
-                return api::ANSWER($domophoneId, ($domophoneId !== false)?"domophoneId":false);
-            }
-
-            public static function PUT($params) {
-                $households = loadBackend("households");
-
+            if (array_key_exists('configure', $params))
+                return api::ANSWER(task(new IntercomConfigureTask($params['_id'], false))->queue('default')->dispatch());
+            else {
                 $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["firstTime"], $params["nat"], $params["locksAreOpen"], $params["comment"]);
 
                 return api::ANSWER($success);
             }
+        }
 
-            public static function DELETE($params) {
-                $households = loadBackend("households");
+        public static function DELETE($params)
+        {
+            $households = loadBackend("households");
 
-                $success = $households->deleteDomophone($params["_id"]);
+            $success = $households->deleteDomophone($params["_id"]);
 
-                return api::ANSWER($success);
-            }
+            return api::ANSWER($success);
+        }
 
-            public static function index() {
-                return [
-                    "PUT" => "#same(addresses,house,PUT)",
-                    "POST" => "#same(addresses,house,PUT)",
-                    "DELETE" => "#same(addresses,house,PUT)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "PUT" => "#same(addresses,house,PUT)",
+                "POST" => "#same(addresses,house,PUT)",
+                "DELETE" => "#same(addresses,house,PUT)",
+            ];
         }
     }
+}

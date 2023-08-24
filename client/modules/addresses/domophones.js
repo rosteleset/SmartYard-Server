@@ -12,35 +12,33 @@
 
     doAddDomophone: function (domophone) {
         loadingStart();
-        POST("houses", "domophone", false, domophone).
-        fail(FAIL).
-        done(() => {
+        POST("houses", "domophone", false, domophone).fail(FAIL).done(() => {
             message(i18n("addresses.domophoneWasAdded"))
             modules.addresses.domophones.route({
                 flter: domophone.url
             });
-        }).
-        fail(modules.addresses.domophones.route);
+        }).fail(modules.addresses.domophones.route);
     },
 
     doModifyDomophone: function (domophone) {
         loadingStart();
-        PUT("houses", "domophone", domophone.domophoneId, domophone).
-        fail(FAIL).
-        done(() => {
+        PUT("houses", "domophone", domophone.domophoneId, domophone).fail(FAIL).done(() => {
             message(i18n("addresses.domophoneWasChanged"))
-        }).
-        always(modules.addresses.domophones.route);
+        }).always(modules.addresses.domophones.route);
+    },
+
+    doConfigureDomophone: function (domophoneId) {
+        loadingStart()
+        PUT("houses", "domophone", domophoneId, {configure: true}).fail(FAIL).done(() => {
+            message(i18n("addresses.domophoneConfigure"))
+        }).always(modules.addresses.domophones.route);
     },
 
     doDeleteDomophone: function (domophoneId) {
         loadingStart();
-        DELETE("houses", "domophone", domophoneId).
-        fail(FAIL).
-        done(() => {
+        DELETE("houses", "domophone", domophoneId).fail(FAIL).done(() => {
             message(i18n("addresses.domophoneWasDeleted"))
-        }).
-        always(modules.addresses.domophones.route);
+        }).always(modules.addresses.domophones.route);
     },
 
     addDomophone: function () {
@@ -119,7 +117,7 @@
                     placeholder: i18n("addresses.dtmf"),
                     value: "1",
                     validate: v => {
-                        return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
+                        return ["*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].indexOf($.trim(v)) >= 0;
                     },
                 },
                 {
@@ -240,7 +238,7 @@
                         placeholder: i18n("addresses.dtmf"),
                         value: domophone.dtmf,
                         validate: v => {
-                            return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
+                            return ["*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].indexOf($.trim(v)) >= 0;
                         },
                     },
                     {
@@ -297,8 +295,7 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
 
-        GET("houses", "domophones", false, true).
-        done(response => {
+        GET("houses", "domophones", false, true).done(response => {
             modules.addresses.domophones.meta = response.domophones;
 
             cardTable({
@@ -309,7 +306,7 @@
                         caption: i18n("addresses.addDomophone"),
                         click: modules.addresses.domophones.addDomophone,
                     },
-                    filter: params.flter?params.flter:(modules.addresses.domophones.flter?modules.addresses.domophones.flter:true),
+                    filter: params.flter ? params.flter : (modules.addresses.domophones.flter ? modules.addresses.domophones.flter : true),
                 },
                 edit: modules.addresses.domophones.modifyDomophone,
                 startPage: modules.addresses.domophones.startPage,
@@ -350,14 +347,23 @@
                                     nowrap: true,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: 'far fa-list-check',
+                                        title: i18n("addresses.domophoneSync"),
+                                        click: (domophoneId) => {
+                                            modules.addresses.domophones.doConfigureDomophone(domophoneId);
+                                        }
+                                    }
+                                ]
+                            }
                         });
                     }
 
                     return rows;
                 },
             }).show();
-        }).
-        fail(FAIL).
-        always(loadingDone);
+        }).fail(FAIL).always(loadingDone);
     },
 }).init();

@@ -4,6 +4,7 @@ mb_internal_encoding("UTF-8");
 
 require_once "utils/logger.php";
 require_once "backends/backend.php";
+require_once "tasks/task.php";
 require_once "utils/loader.php";
 require_once "utils/guidv4.php";
 require_once "utils/db_ext.php";

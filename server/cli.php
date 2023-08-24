@@ -2,6 +2,10 @@
 
 // command line client
 
+use tasks\IntercomConfigureTask;
+use tasks\TaskManager;
+use function tasks\task;
+
 chdir(__DIR__);
 
 require_once "utils/logger.php";
@@ -20,6 +24,7 @@ require_once "utils/i18n.php";
 require_once "utils/validator.php";
 
 require_once "backends/backend.php";
+require_once "tasks/task.php";
 
 require_once "api/api.php";
 
@@ -71,6 +76,10 @@ function usage()
             
         inbox:
             [--inbox --subscriber=<subscriber>]
+
+        task:
+            [--task --queue=<queue> --command=<exit|reset> [--id=<id>]]
+
         \n";
 
     exit(1);
@@ -440,12 +449,22 @@ if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigur
 
         autoconfigure_domophone($domophone_id, $first_time);
 
-        $logger->debug('Autoconfigure domophone', ['id' => $domophone_id, 'first_time' => $first_time]);
-
         exit(0);
     } else {
         usage();
     }
+}
+
+if (array_key_exists('--intercom-configure-task', $args) && !isset($args['----intercom-configure-task'])) {
+    $id = array_key_exists('--id', $args) ? $args['--id'] : null;
+    $first = array_key_exists('--first', $args);
+
+    if (is_null($id))
+        usage();
+
+    task(new IntercomConfigureTask($id, $first))->queue('default')->dispatch();
+
+    exit(0);
 }
 
 if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
@@ -514,7 +533,7 @@ if (count($args) == 1 && array_key_exists("--run-record-download", $args) && iss
 
         $metadata = $files->getFileMetadata($uuid);
 
-        $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays"), $config['api']['mobile'] . '/cctv/download/'.$uuid);
+        $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays"), $config['api']['mobile'] . '/cctv/download/' . $uuid);
     }
 
     exit(0);
@@ -610,6 +629,23 @@ if (count($args) == 3 && array_key_exists('--inbox', $args) && !isset($args['--i
     $messages = $inbox->getMessages($subscriber, "all", []);
 
     var_dump($messages);
+
+    exit(0);
+}
+
+if (array_key_exists('--task', $args) && !isset($args['--task'])) {
+    $command = array_key_exists('--command', $args) && isset($args['--command']) ? $args['--command'] : null;
+    $queue = array_key_exists('--queue', $args) && isset($args['--queue']) ? $args['--queue'] : null;
+    $id = array_key_exists('--id', $args) && isset($args['--id']) ? $args['--id'] : null;
+
+    if (is_null($command) || !in_array($command, ['exit', 'reset']))
+        usage();
+
+    if (is_null($queue))
+        usage();
+
+    if (is_string($id)) TaskManager::instance()->worker($queue)->send($id, $command);
+    else TaskManager::instance()->worker($queue)->send(null, $command);
 
     exit(0);
 }
