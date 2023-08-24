@@ -160,14 +160,14 @@ function autoconfigure_domophone($domophoneId, $firstTime = false)
         $panel->configure_gate($links);
     }
 
-    $panel->configure_md();
-    $panel->set_display_text($panel_text);
-    $panel->set_video_overlay($panel_text);
-    $panel->keep_doors_unlocked($entrances[0]['locksDisabled']);
-
     $key = getenv('MIFARE_KEY');
     $sector = getenv('MIFARE_SECTOR');
 
     if ($key !== false && $sector !== false)
         $panel->configure_mifare($key, $sector);
+
+    $panel->configure_md();
+    $panel->set_display_text($panel_text);
+    $panel->set_video_overlay($panel_text);
+    $panel->keep_doors_unlocked($entrances[0]['locksDisabled']);
 }
