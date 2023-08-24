@@ -350,7 +350,7 @@
                             dropDown: {
                                 items: [
                                     {
-                                        icon: 'fas fa-list-check',
+                                        icon: 'fas fa-rotate',
                                         title: i18n("addresses.domophoneSync"),
                                         click: (domophoneId) => {
                                             modules.addresses.domophones.doConfigureDomophone(domophoneId);
