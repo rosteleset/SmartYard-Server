@@ -213,6 +213,8 @@ class TaskWorker
     public function clear()
     {
         $this->redis->del('task:' . $this->queue . ':tasks');
+
+        $this->logger?->info('Clear TaskWorker', ['queue' => $this->queue]);
     }
 
     /**
