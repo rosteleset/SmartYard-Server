@@ -2,7 +2,7 @@
 
 namespace tasks;
 
-require_once __DIR__ . "./IntercomConfigureTask.php";
+include_once __DIR__ . "./IntercomConfigureTask.php";
 
 use Exception;
 use Logger;
