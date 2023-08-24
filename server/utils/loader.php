@@ -21,11 +21,13 @@ function loadEnvFile(): array
         $result = [];
 
         for ($i = 0; $i < count($lines); $i++) {
-            list($key, $value) = explode('=', $lines[$i], 2);
+            $value = explode('=', $lines[$i], 2);
 
-            $result[$key] = $value;
+            if (count($value) == 2) {
+                $result[$value[0]] = $value[1];
 
-            putenv($key . '=' . $value);
+                putenv($value[0] . '=' . $value[1]);
+            }
         }
 
         return $result;
