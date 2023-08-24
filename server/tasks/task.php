@@ -68,6 +68,34 @@ class TaskContainer
         return $this;
     }
 
+    public function high(): static
+    {
+        $this->queue = TaskManager::HIGH;
+
+        return $this;
+    }
+
+    public function medium(): static
+    {
+        $this->queue = TaskManager::MEDIUM;
+
+        return $this;
+    }
+
+    public function low(): static
+    {
+        $this->queue = TaskManager::LOW;
+
+        return $this;
+    }
+
+    public function default(): static
+    {
+        $this->queue = TaskManager::DEFAULT;
+
+        return $this;
+    }
+
     public function dispatch(): bool
     {
         TaskManager::instance()->worker($this->queue ?? 'default')->push($this->task);
@@ -113,14 +141,14 @@ class TaskWorker
      */
     public function has(int $id): bool
     {
-        $ids = $this->redis->lRange('task:' . $this->queue . ':worker', 0, -1);
+        $ids = $this->redis->lRange($this->getWorkerKey(), 0, -1);
 
         return in_array($id, $ids);
     }
 
     public function next(): int
     {
-        $id = $this->redis->lIndex('task:' . $this->queue . ':worker', -1);
+        $id = $this->redis->lIndex($this->getWorkerKey(), -1);
 
         return $id + 1;
     }
@@ -131,7 +159,7 @@ class TaskWorker
      */
     public function start(int $id)
     {
-        $this->redis->lPush('task:' . $this->queue . ':worker', $id);
+        $this->redis->lPush($this->getWorkerKey(), $id);
 
         $this->logger?->info('Start TaskWorker', ['queue' => $this->queue, 'id' => $id]);
     }
@@ -143,7 +171,7 @@ class TaskWorker
      */
     public function command(int $id): ?string
     {
-        $command = $this->redis->lPop('task:' . $this->queue . ':worker:' . $id);
+        $command = $this->redis->lPop($this->getWorkerIdKey($id));
 
         return is_string($command) ? $command : null;
     }
@@ -156,15 +184,15 @@ class TaskWorker
     public function send(?int $id, string $command)
     {
         if (is_null($id)) {
-            $ids = $this->redis->lRange('task:' . $this->queue . ':worker', 0, -1);
+            $ids = $this->redis->lRange($this->getWorkerKey(), 0, -1);
 
             foreach ($ids as $id) {
-                $this->redis->lPush('task:' . $this->queue . ':worker:' . $id, $command);
+                $this->redis->lPush($this->getWorkerIdKey($id), $command);
 
                 $this->logger?->info('Send command TaskWorker', ['queue' => $this->queue, 'id' => $id, 'command' => $command]);
             }
         } else if ($this->has($id)) {
-            $this->redis->lPush('task:' . $this->queue . ':worker:' . $id, $command);
+            $this->redis->lPush($this->getWorkerIdKey($id), $command);
 
             $this->logger?->info('Send command TaskWorker', ['queue' => $this->queue, 'id' => $id, 'command' => $command]);
         }
@@ -177,7 +205,8 @@ class TaskWorker
      */
     public function push(Task $task)
     {
-        $this->redis->lPush('task:' . $this->queue . ':tasks', serialize($task));
+        $this->redis->lPush($this->getWorkerTasksKey(), serialize($task));
+        $this->redis->incr($this->getWorkerSizeKey());
 
         $this->logger?->info('Push new Task', ['queue' => $this->queue, 'class' => get_class($this)]);
     }
@@ -188,10 +217,12 @@ class TaskWorker
      */
     public function pop(): ?Task
     {
-        $raw = $this->redis->lPop('task:' . $this->queue . ':tasks');
+        $raw = $this->redis->lPop($this->getWorkerTasksKey());
 
-        if (is_null($raw))
+        if (is_null($raw) || $raw === FALSE)
             return null;
+
+        $this->redis->decr($this->getWorkerSizeKey());
 
         try {
             $task = unserialize($raw);
@@ -207,12 +238,18 @@ class TaskWorker
         }
     }
 
+    public function size(): int
+    {
+        return $this->redis->get($this->getWorkerSizeKey());
+    }
+
     /**
      * Удалить все задачи из TaskWorker
      */
     public function clear()
     {
-        $this->redis->del('task:' . $this->queue . ':tasks');
+        $this->redis->del($this->getWorkerTasksKey());
+        $this->redis->set($this->getWorkerSizeKey(), 0);
 
         $this->logger?->info('Clear TaskWorker', ['queue' => $this->queue]);
     }
@@ -223,14 +260,39 @@ class TaskWorker
      */
     public function stop(int $id)
     {
-        $this->redis->lRem('task:' . $this->queue . ':worker', $id, 1);
+        $this->redis->lRem($this->getWorkerKey(), $id, 1);
 
         $this->logger?->info('Stop TaskWorker', ['queue' => $this->queue, 'id' => $id]);
+    }
+
+    private function getWorkerKey(): string
+    {
+        return 'task:' . $this->queue . ':worker';
+    }
+
+    private function getWorkerIdKey(int $id): string
+    {
+        return 'task:' . $this->queue . ':worker:' . $id;
+    }
+
+    private function getWorkerTasksKey(): string
+    {
+        return 'task:' . $this->queue . ':tasks';
+    }
+
+    private function getWorkerSizeKey(): string
+    {
+        return 'task:' . $this->queue . ':size';
     }
 }
 
 class TaskManager
 {
+    public const HIGH = 'high';
+    public const MEDIUM = 'medium';
+    public const LOW = 'low';
+    public const DEFAULT = 'default';
+
     private static ?TaskManager $instance = null;
 
     private Redis $redis;

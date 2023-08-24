@@ -463,7 +463,7 @@ if (array_key_exists('--intercom-configure-task', $args) && !isset($args['----in
     if (is_null($id))
         usage();
 
-    task(new IntercomConfigureTask($id, $first))->queue('default')->dispatch();
+    task(new IntercomConfigureTask($id, $first))->high()->dispatch();
 
     exit(0);
 }
