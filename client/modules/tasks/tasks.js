@@ -7,6 +7,8 @@
         if (AVAIL("tasks", "queues", "GET")) {
             GET("tasks", "queues")
                 .done((response) => {
+                    modules.tasks.queues = response
+
                     $(`
                         <li class="nav-item dropdown">
                             <a id="tasksMenuRight" class="nav-link text-dark" data-toggle="dropdown" title="${i18n("tasks.title")}" href="#">
@@ -16,7 +18,7 @@
                                 <p>Статус текущих задач</p>
                                 <div class="dropdown-divider"></div>
                                 <div id="tasksMenuRightContainer">
-                                    ${response}
+                                    ${response.map((queue) => `<p>Очередь (${queue}): 0</p>`)}
                                 </div>
                             </div>
                         </li>
@@ -28,6 +30,6 @@
     },
 
     tasksMenuRight() {
-        console.log('Hello world!')
+        console.log(modules.tasks.queues)
     }
 }).init()
