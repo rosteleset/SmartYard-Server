@@ -12,7 +12,7 @@
  */
 function loadEnvFile(): array
 {
-    $path = __DIR__ . '/../.env';
+    $path = dirname(__FILE__) . '/../.env';
 
     if (file_exists($path)) {
         $content = file_get_contents($path);
