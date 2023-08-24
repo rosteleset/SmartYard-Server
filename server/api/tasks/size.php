@@ -26,7 +26,7 @@
  * tasks api
  */
 
-namespace api\server {
+namespace api\tasks {
 
     use api\api;
     use Rule;
