@@ -7,7 +7,7 @@
         if (AVAIL("tasks", "queues", "GET")) {
             GET("tasks", "queues")
                 .done((response) => {
-                    modules.tasks.queues = response
+                    modules.tasks.queues = response[0]
 
                     $(`
                         <li class="nav-item dropdown">
