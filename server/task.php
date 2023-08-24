@@ -93,6 +93,7 @@ else {
     pcntl_async_signals(true);
     pcntl_signal(SIGINT, static fn() => exit(0));
 }
+echo json_encode(TaskManager::instance()->queues());
 
 while (true) {
     $command = $worker->command($id);
@@ -123,6 +124,8 @@ while (true) {
 
                 $worker->getLogger()?->info('TaskWorker completed task', ['queue' => $queue, 'id' => $id]);
             } catch (Exception $e) {
+                $task->onError($e);
+
                 $worker->getLogger()?->error('TaskWorker error task' . PHP_EOL . $e, ['queue' => $queue, 'id' => $id]);
             }
         } else usleep($sleep);

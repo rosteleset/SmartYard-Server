@@ -78,7 +78,8 @@ function usage()
             [--inbox --subscriber=<subscriber>]
 
         task:
-            [--task --queue=<queue> --command=<exit|reset> [--id=<id>]]
+            [--task=<queue> --command=<exit|reset> [--id=<id>]]
+            [--task-clear=<queue>]
 
         \n";
 
@@ -633,19 +634,24 @@ if (count($args) == 3 && array_key_exists('--inbox', $args) && !isset($args['--i
     exit(0);
 }
 
-if (array_key_exists('--task', $args) && !isset($args['--task'])) {
+if (array_key_exists('--task', $args) && isset($args['--task'])) {
+    $queue = $args['--task'];
     $command = array_key_exists('--command', $args) && isset($args['--command']) ? $args['--command'] : null;
-    $queue = array_key_exists('--queue', $args) && isset($args['--queue']) ? $args['--queue'] : null;
     $id = array_key_exists('--id', $args) && isset($args['--id']) ? $args['--id'] : null;
 
     if (is_null($command) || !in_array($command, ['exit', 'reset']))
         usage();
 
-    if (is_null($queue))
-        usage();
-
     if (is_string($id)) TaskManager::instance()->worker($queue)->send($id, $command);
     else TaskManager::instance()->worker($queue)->send(null, $command);
+
+    exit(0);
+}
+
+if (array_key_exists('--task-clear', $args) && isset($args['--task-clear'])) {
+    $queue = $args['--task-clear'];
+
+    TaskManager::instance()->worker($queue)->clear();
 
     exit(0);
 }

@@ -24,6 +24,11 @@ abstract class Task
 
     public abstract function onTask();
 
+    public function onError(Exception $exception)
+    {
+
+    }
+
     public function setRedis(?Redis $redis)
     {
         $this->redis = $redis;
@@ -200,6 +205,14 @@ class TaskWorker
 
             return null;
         }
+    }
+
+    /**
+     * Удалить все задачи из TaskWorker
+     */
+    public function clear()
+    {
+        $this->redis->del('task:' . $this->queue . ':tasks');
     }
 
     /**
