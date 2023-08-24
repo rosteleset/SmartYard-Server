@@ -352,9 +352,10 @@
                                     {
                                         icon: 'fas fa-sync',
                                         title: i18n("addresses.domophoneSync"),
-                                        click: (domophoneId) => {
-                                            modules.addresses.domophones.doConfigureDomophone(domophoneId);
-                                        }
+                                        click: (domophoneId) => modules.addresses.domophones.doConfigureDomophone(domophoneId)
+                                    },
+                                    {
+                                        title: "-",
                                     }
                                 ]
                             }
