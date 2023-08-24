@@ -258,7 +258,7 @@ class TaskWorker
         $this->redis->decr($this->getWorkerSizeKey());
 
         try {
-            $json = json_decode($raw);
+            $json = json_decode($raw, true);
             $task = unserialize($json['d']);
 
             if (!$task)
