@@ -15,7 +15,7 @@ class IntercomConfigureTask extends Task
 
     public function onTask()
     {
-        require_once __DIR__ . './../utils/autoconfigure_domophone.php';
+        include_once __DIR__ . './../utils/autoconfigure_domophone.php';
 
         autoconfigure_domophone($this->id, $this->first);
     }
