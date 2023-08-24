@@ -18,7 +18,7 @@
                                 <p>Статус текущих задач</p>
                                 <div class="dropdown-divider"></div>
                                 <div id="tasksMenuRightContainer">
-                                    ${modules.tasks.queues.map((queue) => `<p>Очередь (${queue}): 0</p>`)}
+                                    ${modules.tasks.queues.map((queue) => `<span style="width: 100%">Очередь (${queue}): 0</span>`).join("\n")}
                                 </div>
                             </div>
                         </li>
