@@ -143,7 +143,7 @@ function autoconfigure_domophone($domophoneId, $firstTime = false)
                 $keys = $households->getKeys('flatId', $flat['flatId']);
 
                 foreach ($keys as $key) {
-                    $panel->add_rfid($key['rfId']);
+                    $panel->add_rfid($key['rfId'], $apartment);
                 }
             }
 
