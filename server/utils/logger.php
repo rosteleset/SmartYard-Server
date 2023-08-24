@@ -80,9 +80,6 @@ class SingleLogger extends Logger
     public function __construct(string $file)
     {
         $this->file = $file;
-
-        if (!is_dir($this->getDirectory()))
-            mkdir($this->getDirectory(), 0655, true);
     }
 
     public function log(string $level, string $message, array $context = []): void
@@ -90,14 +87,9 @@ class SingleLogger extends Logger
         file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
     }
 
-    private function getDirectory(): string
-    {
-        return __DIR__ . '/../logs/' . $this->file;
-    }
-
     private function getFile(): string
     {
-        return __DIR__ . '/../logs/' . $this->file . '/' . $this->file . '-' . date('Y-m-d') . '.log';
+        return __DIR__ . '/../logs/' . $this->file . '-' . date('Y-m-d') . '.log';
     }
 }
 
