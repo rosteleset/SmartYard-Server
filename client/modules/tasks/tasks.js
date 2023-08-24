@@ -32,7 +32,7 @@
     tasksMenuRight() {
         for (let queue of modules.tasks.queues) {
             GET("tasks", "size", queue)
-                .done((response) => $("#tasksMenuRightContainer #" + queue).text(`Очередь (${queue}): ` + response[0][0]))
+                .done((response) => $("#tasksMenuRightContainer #" + queue).text(`Очередь (${queue}): ` + response[0]))
         }
     }
 }).init()
