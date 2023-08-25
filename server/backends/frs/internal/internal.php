@@ -5,6 +5,9 @@
  */
 
 namespace backends\frs {
+
+    use Logger;
+
     class internal extends frs
     {
         //private methods
@@ -241,7 +244,7 @@ namespace backends\frs {
 
         private function syncData()
         {
-            $logger = Logger::channel('frs', 'internal');
+            $logger = Logger::channel('frs');
 
             if (!is_array($this->servers())) {
                 $logger->debug('syncData() skip');
