@@ -326,7 +326,9 @@ class TaskManager
 
     public function getQueues(): array
     {
-        return $this->redis->lRange($this->getManagerQueuesKey(), 0, -1) ?? [];
+        $queues = $this->redis->lRange($this->getManagerQueuesKey(), 0, -1);
+
+        return is_array($queues) ? $queues : [];
     }
 
     public function worker(string $queue): TaskWorker
