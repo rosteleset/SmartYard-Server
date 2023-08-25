@@ -182,7 +182,7 @@ class TaskWorker
 
     public function next(): int
     {
-        $id = $this->redis->lIndex($this->getWorkerIdsKey(), -1);
+        $id = $this->redis->lIndex($this->getWorkerIdsKey(), 0);
 
         return $id !== false ? $id + 1 : 1;
     }
