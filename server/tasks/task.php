@@ -350,7 +350,7 @@ class TaskManager
 
     public function clear()
     {
-        $this->redis->del('task');
+        $this->redis->del($this->redis->keys('task:*'));
     }
 
     private function getManagerQueuesKey(): string
