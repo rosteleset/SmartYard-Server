@@ -254,7 +254,9 @@ class TaskWorker
 
     public function popCommand(int $id): ?string
     {
-        return $this->redis->lPop($this->getWorkerCommandKey($id)) ?? null;
+        $command = $this->redis->lPop($this->getWorkerCommandKey($id));
+
+        return $command === false ? null : $command;
     }
 
     public function stop(int $id)
