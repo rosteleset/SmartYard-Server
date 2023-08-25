@@ -76,7 +76,7 @@ $sleep = array_key_exists('--sleep', $args) ? $args['--sleep'] : 10;
 $id = array_key_exists('--id', $args) ? $args['--id'] : 1;
 $auto = array_key_exists('--auto', $args);
 
-TaskManager::setLogger(new class extends SingleLogger {
+TaskManager::setLogger(new class('task') extends SingleLogger {
     public function log(string $level, string $message, array $context = []): void
     {
         if ((self::LEVELS[$level] ?? self::LEVELS[self::ERROR]) > self::LEVELS[self::DEBUG])
