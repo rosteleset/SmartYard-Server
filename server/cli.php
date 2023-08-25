@@ -687,15 +687,18 @@ if (array_key_exists('--task-status', $args)) {
     foreach ($queues as $queue) {
         $worker = TaskManager::instance()->worker($queue);
 
-        echo 'Очередь: ' . $queue;
-        echo 'Размер очереди:' . $worker->getSize();
+        echo 'Очередь: ' . $queue . PHP_EOL;
+        echo 'Размер очереди: ' . $worker->getSize() . PHP_EOL;
 
         $ids = $worker->getIds();
 
-        echo 'Запущенные TaskWorker: ' . $ids;
+        echo 'Запущенные TaskWorker: ' . implode(', ', $ids) . PHP_EOL;
 
         foreach ($ids as $id) {
-            echo 'Текущая задача TaskWorker(' . $id . '): ' . $worker->getTitle($id) . ', ' . $worker->getProgress($id) . '%';
+            $title = $worker->getTitle($id);
+
+            if ($title)
+                echo 'Текущая задача TaskWorker(' . $id . '): ' . $title . ', ' . $worker->getProgress($id) . '%' . PHP_EOL;
         }
     }
 
