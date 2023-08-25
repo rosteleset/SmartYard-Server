@@ -238,11 +238,11 @@ class TaskWorker
             if (!$task)
                 return null;
 
-            //if (time() < $json['s']) {
-            //    $this->rawPush(true, $json['s'], $json['d']);
+            if (time() < $json['s']) {
+                $this->rawPush(true, $json['s'], $json['d']);
 
-            //    return null;
-            //}
+                return null;
+            }
 
             return $task;
         } catch (Throwable $throwable) {
