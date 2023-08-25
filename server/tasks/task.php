@@ -6,7 +6,6 @@ require_once dirname(__FILE__) . "/IntercomConfigureTask.php";
 
 use DateInterval;
 use DateTime;
-use Exception;
 use Logger;
 use PDO_EXT;
 use Redis;
@@ -21,41 +20,49 @@ abstract class Task
 {
     public string $title;
 
-    protected ?Redis $redis = null;
-    protected ?PDO_EXT $pdo = null;
-    protected ?array $config = null;
+    protected ?Redis $redis;
+    protected ?PDO_EXT $pdo;
+    protected ?array $config;
 
-    protected ?Logger $logger = null;
+    /** @var callable $progressCallable */
+    private mixed $progressCallable;
 
     public function __construct(string $title)
     {
         $this->title = $title;
     }
 
-    public function setRedis(?Redis $redis)
+    public function setRedis(?Redis $redis): void
     {
         $this->redis = $redis;
     }
 
-    public function setPdo(?PDO_EXT $pdo)
+    public function setPdo(?PDO_EXT $pdo): void
     {
         $this->pdo = $pdo;
     }
 
-    public function setConfig(?array $config)
+    public function setConfig(?array $config): void
     {
         $this->config = $config;
     }
 
-    public function setLogger(?Logger $logger)
+    public function setProgressCallable(?callable $progressCallable)
     {
-        $this->logger = $logger;
+        $this->progressCallable = $progressCallable;
     }
 
     public abstract function onTask();
 
-    public function onError(Throwable $exception)
+    public function onError(Throwable $throwable)
     {
+
+    }
+
+    protected function setProgress(int $progress)
+    {
+        if ($this->progressCallable)
+            call_user_func($this->progressCallable, $progress);
     }
 }
 
@@ -64,14 +71,14 @@ class TaskContainer
     private Task $task;
 
     private ?string $queue = null;
-    private ?DateTime $start = null;
+    private DateTime|DateInterval|int|null $start = null;
 
     public function __construct(Task $task)
     {
         $this->task = $task;
     }
 
-    public function queue(string $queue): static
+    public function queue(?string $queue): static
     {
         $this->queue = $queue;
 
@@ -80,60 +87,44 @@ class TaskContainer
 
     public function high(): static
     {
-        $this->queue = TaskManager::HIGH;
-
-        return $this;
+        return $this->queue(TaskManager::QUEUE_HIGH);
     }
 
     public function medium(): static
     {
-        $this->queue = TaskManager::MEDIUM;
-
-        return $this;
+        return $this->queue(TaskManager::QUEUE_MEDIUM);
     }
 
     public function low(): static
     {
-        $this->queue = TaskManager::LOW;
-
-        return $this;
+        return $this->queue(TaskManager::QUEUE_LOW);
     }
 
     public function default(): static
     {
-        $this->queue = TaskManager::DEFAULT;
-
-        return $this;
+        return $this->queue(TaskManager::QUEUE_DEFAULT);
     }
 
-    public function start(DateTime $start): static
+    public function start(?DateTime $start): static
     {
         $this->start = $start;
 
         return $this;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function delay(DateInterval|int $delay): static
+    public function delay(DateInterval|int|null $start): static
     {
-        if (!$this->start)
-            $this->start = new DateTime();
-
-        if (is_int($delay))
-            $this->start->add(new DateInterval('PT' . $delay . 'S'));
-        else
-            $this->start->add($delay);
+        $this->start = $start;
 
         return $this;
     }
 
-    public function dispatch(): bool
+    public function dispatch()
     {
-        TaskManager::instance()->worker($this->queue ?? 'default')->push($this->start?->getTimestamp() ?? time(), $this->task);
+        $queue = $this->queue ?? TaskManager::QUEUE_DEFAULT;
+        $start = is_null($this->start) ? time() : ($this->start instanceof DateInterval ? ((new DateTime())->add($this->start)->getTimestamp()) : $this->start->getTimestamp());
 
-        return true;
+        TaskManager::instance()->worker($queue)->pushTask($start, $this->task);
     }
 }
 
@@ -142,117 +133,88 @@ class TaskWorker
     private string $queue;
 
     private Redis $redis;
+    private Logger $logger;
 
-    private ?Logger $logger = null;
-
-    public function __construct(string $queue, Redis $redis)
+    public function __construct(string $queue, Redis $redis, Logger $logger)
     {
         $this->queue = $queue;
-
         $this->redis = $redis;
+        $this->logger = $logger;
     }
 
-    public function getRedis(): Redis
-    {
-        return $this->redis;
-    }
-
-    public function getLogger(): ?Logger
+    public function getLogger(): Logger
     {
         return $this->logger;
     }
 
-    public function setLogger(Logger $logger)
+    public function getTitle(int $id): ?string
     {
-        $this->logger = $logger;
+        $title = $this->redis->get($this->getWorkerTitleKey($id));
+
+        return $title === false ? null : $title;
     }
 
-    /**
-     * Проверяет, существует ли TaskWorker с таким id
-     * @param int $id
-     * @return bool
-     */
+    public function getProgress(int $id): ?int
+    {
+        $progress = $this->redis->get($this->getWorkerProgressKey($id));
+
+        return $progress === false ? null : $progress;
+    }
+
+    public function getIds(): array
+    {
+        return $this->redis->lRange($this->getWorkerIdsKey(), 0, -1);
+    }
+
+    public function getSize(): int
+    {
+        return $this->redis->get($this->getWorkerSizeKey());
+    }
+
     public function has(int $id): bool
     {
-        $ids = $this->redis->lRange($this->getWorkerKey(), 0, -1);
-
-        return in_array($id, $ids);
+        return in_array($id, $this->getIds());
     }
 
-    /**
-     * Получить следующее значение id от последнего
-     * @return int
-     */
     public function next(): int
     {
-        $id = $this->redis->lIndex($this->getWorkerKey(), -1);
-
-        return $id + 1;
+        return ($this->redis->lIndex($this->getWorkerIdsKey(), -1) ?? 0) + 1;
     }
 
-    /**
-     * Добавляем информацию, что TaskWorker запущен
-     * @param int $id
-     */
     public function start(int $id)
     {
-        $this->redis->lPush($this->getWorkerKey(), $id);
+        $this->redis->lPush($this->getWorkerIdsKey(), $id);
 
-        $this->logger?->info('Start TaskWorker', ['queue' => $this->queue, 'id' => $id]);
+        $this->logger->info('Start TaskWorker', ['queue' => $this->queue, 'id' => $id]);
     }
 
-    /**
-     * Получить команду, адресованную TaskWorker с определенным id
-     * @param int $id
-     * @return string|null
-     */
-    public function command(int $id): ?string
-    {
-        $command = $this->redis->lPop($this->getWorkerIdKey($id));
-
-        return is_string($command) ? $command : null;
-    }
-
-    /**
-     * Отправить команду TaskWorker
-     * @param int|null $id Идентификатор TaskWorker
-     * @param string $command
-     */
-    public function send(?int $id, string $command)
-    {
-        if (is_null($id)) {
-            $ids = $this->redis->lRange($this->getWorkerKey(), 0, -1);
-
-            foreach ($ids as $id) {
-                $this->redis->lPush($this->getWorkerIdKey($id), $command);
-
-                $this->logger?->info('Send command TaskWorker', ['queue' => $this->queue, 'id' => $id, 'command' => $command]);
-            }
-        } else if ($this->has($id)) {
-            $this->redis->lPush($this->getWorkerIdKey($id), $command);
-
-            $this->logger?->info('Send command TaskWorker', ['queue' => $this->queue, 'id' => $id, 'command' => $command]);
-        }
-    }
-
-    /**
-     * Добавляем новую зачаду в TaskWorker
-     * Задача добавляется в начало очереди
-     * @param int $start
-     * @param Task $task
-     */
-    public function push(int $start, Task $task)
+    public function pushTask(int $start, Task $task)
     {
         $this->rawPush(false, $start, serialize($task));
 
-        $this->logger?->info('Push new Task', ['queue' => $this->queue, 'class' => get_class($this)]);
+        $this->logger->info('Push new Task', ['queue' => $this->queue, 'class' => get_class($this)]);
     }
 
-    /**
-     * Вытащить и вернуть задачу
-     * @return Task|null
-     */
-    public function pop(): ?Task
+    public function pushCommand(int $id, string $command)
+    {
+        $this->redis->lPush($this->getWorkerCommandKey($id), $command);
+
+        $this->logger->info('Push command TaskWorker', ['queue' => $this->queue, 'id' => $id, 'command' => $command]);
+    }
+
+    public function setTitle(int $id, ?string $title)
+    {
+        if ($title !== null) $this->redis->set($this->getWorkerTitleKey($id), $title);
+        else $this->redis->del($this->getWorkerTitleKey($id));
+    }
+
+    public function setProgress(int $id, ?int $progress)
+    {
+        if ($progress !== null) $this->redis->set($this->getWorkerProgressKey($id), $progress);
+        else $this->redis->del($this->getWorkerProgressKey($id));
+    }
+
+    public function popTask(): ?Task
     {
         $raw = $this->redis->lPop($this->getWorkerTasksKey());
 
@@ -275,38 +237,31 @@ class TaskWorker
             }
 
             return $task;
-        } catch (Exception $e) {
-            $this->logger?->error('Unserializable error' . PHP_EOL . $e, ['queue' => $this->queue]);
+        } catch (Throwable $throwable) {
+            $this->logger?->error('Pop task error' . PHP_EOL . $throwable, ['queue' => $this->queue]);
 
             return null;
         }
     }
 
-    public function size(): int
+    public function popCommand(int $id): ?string
     {
-        return $this->redis->get($this->getWorkerSizeKey());
+        return $this->redis->lPop($this->getWorkerCommandKey($id)) ?? null;
     }
 
-    /**
-     * Удалить все задачи из TaskWorker
-     */
+    public function stop(int $id)
+    {
+        $this->redis->lRem($this->getWorkerIdsKey(), $id, 1);
+
+        $this->logger->info('Stop TaskWorker', ['queue' => $this->queue, 'id' => $id]);
+    }
+
     public function clear()
     {
         $this->redis->del($this->getWorkerTasksKey());
         $this->redis->set($this->getWorkerSizeKey(), 0);
 
-        $this->logger?->info('Clear TaskWorker', ['queue' => $this->queue]);
-    }
-
-    /**
-     * Убираем информацию, что TaskWorker запущен
-     * @param int $id
-     */
-    public function stop(int $id)
-    {
-        $this->redis->lRem($this->getWorkerKey(), $id, 1);
-
-        $this->logger?->info('Stop TaskWorker', ['queue' => $this->queue, 'id' => $id]);
+        $this->logger->info('Clear Taskworker', ['queue' => $this->queue]);
     }
 
     private function rawPush(bool $r, int $start, string $task)
@@ -319,19 +274,29 @@ class TaskWorker
         $this->redis->incr($this->getWorkerSizeKey());
     }
 
-    private function getWorkerKey(): string
-    {
-        return 'task:' . $this->queue . ':worker';
-    }
-
-    private function getWorkerIdKey(int $id): string
-    {
-        return 'task:' . $this->queue . ':worker:' . $id;
-    }
-
     private function getWorkerTasksKey(): string
     {
         return 'task:' . $this->queue . ':tasks';
+    }
+
+    private function getWorkerCommandKey(int $id): string
+    {
+        return 'task:' . $this->queue . ':worker:' . $id . ':command';
+    }
+
+    private function getWorkerTitleKey(int $id): string
+    {
+        return 'task:' . $this->queue . ':worker:' . $id . ':title';
+    }
+
+    private function getWorkerProgressKey(int $id): string
+    {
+        return 'task:' . $this->queue . ':worker:' . $id . ':progress';
+    }
+
+    private function getWorkerIdsKey(): string
+    {
+        return 'task:' . $this->queue . ':workers';
     }
 
     private function getWorkerSizeKey(): string
@@ -342,10 +307,10 @@ class TaskWorker
 
 class TaskManager
 {
-    public const HIGH = 'high';
-    public const MEDIUM = 'medium';
-    public const LOW = 'low';
-    public const DEFAULT = 'default';
+    public const QUEUE_HIGH = 'high';
+    public const QUEUE_MEDIUM = 'medium';
+    public const QUEUE_LOW = 'low';
+    public const QUEUE_DEFAULT = 'default';
 
     private static ?TaskManager $instance = null;
 
@@ -359,17 +324,25 @@ class TaskManager
         $this->redis = $redis;
     }
 
-    /**
-     * Если TaskWorker не существует, он его создает
-     * @param string $queue
-     * @return TaskWorker
-     */
+    public function getQueues(): array
+    {
+        return $this->redis->lRange($this->getManagerQueuesKey(), 0, -1);
+    }
+
     public function worker(string $queue): TaskWorker
     {
-        if (!array_key_exists($queue, $this->workers))
-            $this->workers[$queue] = new TaskWorker($queue, $this->redis);
+        if (!array_key_exists($queue, $this->workers)) {
+            $this->workers[$queue] = new TaskWorker($queue, $this->redis, Logger::channel('task'));
+
+            $this->redis->sAdd($this->getManagerQueuesKey(), $queue);
+        }
 
         return $this->workers[$queue];
+    }
+
+    private function getManagerQueuesKey(): string
+    {
+        return 'task:queues';
     }
 
     public static function instance(): TaskManager

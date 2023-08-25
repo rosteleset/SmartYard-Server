@@ -15,12 +15,15 @@ namespace backends\tasks {
          */
         public function getQueues(): array
         {
-            return $this->config['backends']['tasks']['queues'];
+            return TaskManager::instance()->getQueues();
         }
 
+        /**
+         * @inheritDoc
+         */
         public function getQueueSize(string $queue): int
         {
-            return TaskManager::instance()->worker($queue)->size();
+            return TaskManager::instance()->worker($queue)->getSize();
         }
     }
 }

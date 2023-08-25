@@ -77,9 +77,12 @@ function usage()
         inbox:
             [--inbox --subscriber=<subscriber>]
 
+        intercom:
+            [--intercom-configure-task=<id> [--first]]
+
         task:
-            [--task=<queue> --command=<exit|reset> [--id=<id>]]
-            [--task-clear=<queue>]
+            [--task=[<queue>] --command=<exit|reset> [--id=<id>]]
+            [--task-clear=[<queue>]]
 
         \n";
 
@@ -456,18 +459,6 @@ if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigur
     }
 }
 
-if (array_key_exists('--intercom-configure-task', $args) && !isset($args['----intercom-configure-task'])) {
-    $id = array_key_exists('--id', $args) ? $args['--id'] : null;
-    $first = array_key_exists('--first', $args);
-
-    if (is_null($id))
-        usage();
-
-    task(new IntercomConfigureTask($id, $first))->high()->dispatch();
-
-    exit(0);
-}
-
 if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
     require_once "utils/install_crontabs.php";
 
@@ -634,24 +625,57 @@ if (count($args) == 3 && array_key_exists('--inbox', $args) && !isset($args['--i
     exit(0);
 }
 
-if (array_key_exists('--task', $args) && isset($args['--task'])) {
-    $queue = $args['--task'];
+if (array_key_exists('--intercom-configure-task', $args) && isset($args['--intercom-configure-task'])) {
+    $id = $args['--intercom-configure-task'];
+    $first = array_key_exists('--first', $args);
+
+    task(new IntercomConfigureTask($id, $first))->high()->dispatch();
+
+    exit(0);
+}
+
+if (array_key_exists('--task', $args)) {
+    $queue = $args['--task'] ?? null;
     $command = array_key_exists('--command', $args) && isset($args['--command']) ? $args['--command'] : null;
     $id = array_key_exists('--id', $args) && isset($args['--id']) ? $args['--id'] : null;
 
     if (is_null($command) || !in_array($command, ['exit', 'reset']))
         usage();
 
-    if (is_string($id)) TaskManager::instance()->worker($queue)->send($id, $command);
-    else TaskManager::instance()->worker($queue)->send(null, $command);
+    if ($id !== null) {
+        if ($queue === null) usage();
+
+        TaskManager::instance()->worker($queue)->pushCommand($id, $command);
+    } else {
+        if ($queue === null) {
+            $queues = TaskManager::instance()->getQueues();
+
+            foreach ($queues as $queue) {
+                $ids = TaskManager::instance()->worker($queue)->getIds();
+
+                foreach ($ids as $id)
+                    TaskManager::instance()->worker($queue)->pushCommand($id, $command);
+            }
+        } else {
+            $ids = TaskManager::instance()->worker($queue)->getIds();
+
+            foreach ($ids as $id)
+                TaskManager::instance()->worker($queue)->pushCommand($id, $command);
+        }
+    }
 
     exit(0);
 }
 
-if (array_key_exists('--task-clear', $args) && isset($args['--task-clear'])) {
-    $queue = $args['--task-clear'];
+if (array_key_exists('--task-clear', $args)) {
+    $queue = $args['--task-clear'] ?? null;
 
-    TaskManager::instance()->worker($queue)->clear();
+    if ($queue === null) {
+        $queues = TaskManager::instance()->getQueues();
+
+        foreach ($queues as $queue)
+            TaskManager::instance()->worker($queue)->clear();
+    } else TaskManager::instance()->worker($queue)->clear();
 
     exit(0);
 }

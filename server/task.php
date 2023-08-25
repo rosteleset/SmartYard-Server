@@ -77,7 +77,6 @@ $id = array_key_exists('--id', $args) ? $args['--id'] : 1;
 $auto = array_key_exists('--auto', $args);
 
 $worker = TaskManager::instance()->worker($queue);
-$worker->setLogger(Logger::channel('task'));
 
 if ($worker->has($id)) {
     if ($auto)
@@ -104,29 +103,38 @@ else {
 }
 
 while (true) {
-    $command = $worker->command($id);
+    $command = $worker->popCommand($id);
 
-    if ($command) {
+    if ($command !== null) {
         switch ($command) {
             case 'exit':
-                $worker->getLogger()?->info('TaskWorker exit on command', ['queue' => $queue, 'id' => $id]);
+                $worker->getLogger()->info('TaskWorker exit on command', ['queue' => $queue, 'id' => $id]);
 
                 exit(0);
             case 'reset':
-                $worker->getLogger()?->info('TaskWorker reset on command', ['queue' => $queue, 'id' => $id]);
+                $worker->getLogger()->info('TaskWorker reset on command', ['queue' => $queue, 'id' => $id]);
 
                 if (function_exists('opcache_reset'))
                     opcache_reset();
+
+                break;
+            default:
+                usleep($sleep);
+
+                break;
         }
     } else {
-        $task = $worker->pop();
+        $task = $worker->popTask();
 
         if (!is_null($task)) {
             try {
-                $task->setRedis($worker->getRedis());
+                $worker->setTitle($id, $task->title);
+                $worker->setProgress($id, 0);
+
+                $task->setRedis($redis);
                 $task->setPdo($db);
-                $task->setLogger($worker->getLogger());
                 $task->setConfig($config);
+                $task->setProgressCallable(static fn(int $progress) => $worker->setProgress($id, $progress));
 
                 $task->onTask();
 
@@ -135,6 +143,9 @@ while (true) {
                 $task->onError($e);
 
                 $worker->getLogger()?->error('TaskWorker error task' . PHP_EOL . $e, ['queue' => $queue, 'id' => $id]);
+            } finally {
+                $worker->setTitle($id, null);
+                $worker->setProgress($id, null);
             }
         } else usleep($sleep);
     }
