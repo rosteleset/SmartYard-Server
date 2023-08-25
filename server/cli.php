@@ -671,12 +671,8 @@ if (array_key_exists('--task', $args)) {
 if (array_key_exists('--task-clear', $args)) {
     $queue = $args['--task-clear'] ?? null;
 
-    if ($queue === null) {
-        $queues = TaskManager::instance()->getQueues();
-
-        foreach ($queues as $queue)
-            TaskManager::instance()->worker($queue)->clear();
-    } else TaskManager::instance()->worker($queue)->clear();
+    if ($queue === null) TaskManager::instance()->clear();
+    else TaskManager::instance()->worker($queue)->clear();
 
     exit(0);
 }

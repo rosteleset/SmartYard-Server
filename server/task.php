@@ -99,7 +99,9 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
     });
 else {
     pcntl_async_signals(true);
+
     pcntl_signal(SIGINT, static fn() => exit(0));
+    pcntl_signal(SIGTERM, static fn() => exit(0));
 }
 
 while (true) {

@@ -182,7 +182,9 @@ class TaskWorker
 
     public function next(): int
     {
-        return ($this->redis->lIndex($this->getWorkerIdsKey(), -1) ?? 0) + 1;
+        $id = $this->redis->lIndex($this->getWorkerIdsKey(), -1);
+
+        return $id !== false ? $id + 1 : 1;
     }
 
     public function start(int $id)
@@ -344,6 +346,11 @@ class TaskManager
         }
 
         return $this->workers[$queue];
+    }
+
+    public function clear()
+    {
+        $this->redis->del('task');
     }
 
     private function getManagerQueuesKey(): string
