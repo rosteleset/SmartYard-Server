@@ -1,25 +1,18 @@
 <?php
 
 /**
- * @api {post} /tasks/size get size on queue
+ * @api {get} /tasks/status get queues status
  *
  * @apiVersion 1.0.0
  *
- * @apiName size
+ * @apiName status
  * @apiGroup tasks
  *
  * @apiHeader {String} authorization authentication token
  *
- * @apiSuccess {String} size on queue
- *
- * @apiSuccessExample Success-Response:
- *  HTTP/1.1 200 OK
- *  {
- *      "size": 0
- *  }
- *
+ * @apiSuccess {Array} queues status
  * @apiExample {curl} Example usage:
- *  curl -X POST http://127.0.0.1:8000/server/api.php/tasks/size
+ *  curl -X GET http://127.0.0.1:8000/server/api.php/tasks/status
  */
 
 /**
@@ -29,21 +22,17 @@
 namespace api\tasks {
 
     use api\api;
-    use Rule;
 
     /**
      * queues method
      */
-    class size extends api
+    class status extends api
     {
-
         public static function GET($params)
         {
             $tasks = loadBackend('tasks');
 
-            $params = validate($params, ['_id' => [Rule::required(), Rule::in($tasks->getQueues()), Rule::nonNullable()]], 'tasks.size');
-
-            return api::ANSWER($tasks->getQueueSize($params['_id']));
+            return api::ANSWER($tasks->getStatus());
         }
 
         public static function index()

@@ -14,16 +14,9 @@ namespace backends\tasks {
     abstract class tasks extends backend
     {
         /**
-         * Получить список очередей из настроек бэкенда
-         * @return string[]
+         * Получить текущее состояние задач
+         * @return array
          */
-        public abstract function getQueues(): array;
-
-        /**
-         * Получить количество задач в очереди
-         * @param string $queue
-         * @return int
-         */
-        public abstract function getQueueSize(string $queue): int;
+        public abstract function getStatus(): array;
     }
 }

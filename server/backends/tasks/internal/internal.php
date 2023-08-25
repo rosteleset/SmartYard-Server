@@ -13,17 +13,23 @@ namespace backends\tasks {
         /**
          * @inheritDoc
          */
-        public function getQueues(): array
+        public function getStatus(): array
         {
-            return TaskManager::instance()->getQueues();
-        }
+            $result = [];
 
-        /**
-         * @inheritDoc
-         */
-        public function getQueueSize(string $queue): int
-        {
-            return TaskManager::instance()->worker($queue)->getSize();
+            $queues = TaskManager::instance()->getQueues();
+
+            foreach ($queues as $queue) {
+                $worker = TaskManager::instance()->worker($queue);
+                $ids = $worker->getIds();
+
+                $result[$queue] = ['worker' => [], 'workers' => $ids, 'size' => $worker->getSize()];
+
+                foreach ($ids as $id)
+                    $result[$queue]['worker'][$id] = ['title' => $worker->getTitle($id), 'progress' => $worker->getProgress($id)];
+            }
+
+            return $result;
         }
     }
 }

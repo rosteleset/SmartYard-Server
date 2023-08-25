@@ -163,12 +163,16 @@ class TaskWorker
 
     public function getIds(): array
     {
-        return $this->redis->lRange($this->getWorkerIdsKey(), 0, -1);
+        $ids = $this->redis->lRange($this->getWorkerIdsKey(), 0, -1);
+
+        return $ids != false ? $ids : [];
     }
 
     public function getSize(): int
     {
-        return $this->redis->get($this->getWorkerSizeKey());
+        $size = $this->redis->get($this->getWorkerSizeKey());
+
+        return $size != false ? $size : 0;
     }
 
     public function has(int $id): bool
