@@ -83,6 +83,7 @@ function usage()
         task:
             [--task=[<queue>] --command=<exit|reset> [--id=<id>]]
             [--task-clear=[<queue>]]
+            [--task-status]
 
         \n";
 
@@ -676,6 +677,27 @@ if (array_key_exists('--task-clear', $args)) {
         foreach ($queues as $queue)
             TaskManager::instance()->worker($queue)->clear();
     } else TaskManager::instance()->worker($queue)->clear();
+
+    exit(0);
+}
+
+if (array_key_exists('--task-status', $args)) {
+    $queues = TaskManager::instance()->getQueues();
+
+    foreach ($queues as $queue) {
+        $worker = TaskManager::instance()->worker($queue);
+
+        echo 'Очередь: ' . $queue;
+        echo 'Размер очереди:' . $worker->getSize();
+
+        $ids = $worker->getIds();
+
+        echo 'Запущенные TaskWorker: ' . $ids;
+
+        foreach ($ids as $id) {
+            echo 'Текущая задача TaskWorker(' . $id . '): ' . $worker->getTitle($id) . ', ' . $worker->getProgress($id) . '%';
+        }
+    }
 
     exit(0);
 }
