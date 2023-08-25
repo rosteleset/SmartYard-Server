@@ -79,7 +79,8 @@ $auto = array_key_exists('--auto', $args);
 TaskManager::setLogger(new class extends SingleLogger {
     public function log(string $level, string $message, array $context = []): void
     {
-        echo '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL;
+        if ((self::LEVELS[$level] ?? self::LEVELS[self::ERROR]) > self::LEVELS[self::DEBUG])
+            echo '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL;
 
         parent::log($level, $message, $context);
     }
