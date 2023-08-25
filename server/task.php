@@ -76,6 +76,15 @@ $sleep = array_key_exists('--sleep', $args) ? $args['--sleep'] : 10;
 $id = array_key_exists('--id', $args) ? $args['--id'] : 1;
 $auto = array_key_exists('--auto', $args);
 
+TaskManager::setLogger(new class extends SingleLogger {
+    public function log(string $level, string $message, array $context = []): void
+    {
+        echo '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL;
+
+        parent::log($level, $message, $context);
+    }
+});
+
 $worker = TaskManager::instance()->worker($queue);
 
 if ($worker->has($id)) {

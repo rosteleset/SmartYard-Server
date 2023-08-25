@@ -133,16 +133,16 @@ class TaskWorker
     private string $queue;
 
     private Redis $redis;
-    private Logger $logger;
+    private ?Logger $logger;
 
-    public function __construct(string $queue, Redis $redis, Logger $logger)
+    public function __construct(string $queue, Redis $redis, ?Logger $logger)
     {
         $this->queue = $queue;
         $this->redis = $redis;
         $this->logger = $logger;
     }
 
-    public function getLogger(): Logger
+    public function getLogger(): ?Logger
     {
         return $this->logger;
     }
@@ -191,21 +191,21 @@ class TaskWorker
     {
         $this->redis->lPush($this->getWorkerIdsKey(), $id);
 
-        $this->logger->info('Start TaskWorker', ['queue' => $this->queue, 'id' => $id]);
+        $this->logger?->info('Start TaskWorker', ['queue' => $this->queue, 'id' => $id]);
     }
 
     public function pushTask(int $start, Task $task)
     {
         $this->rawPush(false, $start, serialize($task));
 
-        $this->logger->info('Push new Task', ['queue' => $this->queue, 'class' => get_class($this)]);
+        $this->logger?->info('Push new Task', ['queue' => $this->queue, 'class' => get_class($this)]);
     }
 
     public function pushCommand(int $id, string $command)
     {
         $this->redis->lPush($this->getWorkerCommandKey($id), $command);
 
-        $this->logger->info('Push command TaskWorker', ['queue' => $this->queue, 'id' => $id, 'command' => $command]);
+        $this->logger?->info('Push command TaskWorker', ['queue' => $this->queue, 'id' => $id, 'command' => $command]);
     }
 
     public function setTitle(int $id, ?string $title)
@@ -259,7 +259,7 @@ class TaskWorker
     {
         $this->redis->lRem($this->getWorkerIdsKey(), $id, 1);
 
-        $this->logger->info('Stop TaskWorker', ['queue' => $this->queue, 'id' => $id]);
+        $this->logger?->info('Stop TaskWorker', ['queue' => $this->queue, 'id' => $id]);
     }
 
     public function clear()
@@ -267,7 +267,7 @@ class TaskWorker
         $this->redis->del($this->getWorkerTasksKey());
         $this->redis->set($this->getWorkerSizeKey(), 0);
 
-        $this->logger->info('Clear Taskworker', ['queue' => $this->queue]);
+        $this->logger?->info('Clear Taskworker', ['queue' => $this->queue]);
     }
 
     private function rawPush(bool $r, int $start, string $task)
@@ -319,6 +319,7 @@ class TaskManager
     public const QUEUE_DEFAULT = 'default';
 
     private static ?TaskManager $instance = null;
+    private static ?Logger $logger = null;
 
     private Redis $redis;
 
@@ -340,7 +341,7 @@ class TaskManager
     public function worker(string $queue): TaskWorker
     {
         if (!array_key_exists($queue, $this->workers)) {
-            $this->workers[$queue] = new TaskWorker($queue, $this->redis, Logger::channel('task'));
+            $this->workers[$queue] = new TaskWorker($queue, $this->redis, self::$logger);
 
             $this->redis->sAdd($this->getManagerQueuesKey(), $queue);
         }
@@ -351,11 +352,18 @@ class TaskManager
     public function clear()
     {
         $this->redis->del($this->redis->keys('task:*'));
+
+        self::$logger?->info('Clear TaskManager');
     }
 
     private function getManagerQueuesKey(): string
     {
         return 'task:queues';
+    }
+
+    public static function setLogger(?Logger $logger)
+    {
+        self::$logger = $logger;
     }
 
     public static function instance(): TaskManager
