@@ -18,7 +18,7 @@
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             minZoom: 4,
-            maxZoom: 20,
+            maxZoom: 18,
         }).addTo(modules.map.map);
 
         let lat, lon;
