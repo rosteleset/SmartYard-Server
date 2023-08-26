@@ -16,7 +16,10 @@
         
         modules.map.map = L.map('mapContainer');
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(modules.map.map);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            minZoom: 4,
+            maxZoom: 20,
+        }).addTo(modules.map.map);
 
         let lat, lon;
 
