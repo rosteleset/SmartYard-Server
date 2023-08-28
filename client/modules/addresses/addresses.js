@@ -1095,18 +1095,26 @@
             },
             type: 'POST',
             contentType: "json",
-            data: JSON.stringify({override})
-        }).done((blob) => {
-            const link = document.createElement('a')
+            data: JSON.stringify({override}),
+            success: (blob) => {
+                console.log(blob)
 
-            link.href = window.URL.createObjectURL(blob)
-            link.download = 'qr.zip'
+                const link = document.createElement('a')
 
-            link.click()
+                link.href = window.URL.createObjectURL(blob)
+                link.download = 'qr.zip'
 
-            setTimeout(() => {
-                window.URL.revokeObjectURL(link.href)
-            }, 1)
+                link.click()
+
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(link.href)
+                }, 1)
+            },
+            error: (xhr, textStatus, errorThrown) => {
+                console.log(xhr.responseText)
+                console.log(textStatus)
+                console.error(errorThrown)
+            }
         });
     },
 
