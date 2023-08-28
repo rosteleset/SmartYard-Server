@@ -1095,7 +1095,7 @@
             },
             type: 'POST',
             contentType: "json",
-            data: {override},
+            data: JSON.stringify({override}),
             success: (blob) => {
                 //const blob = new Blob([response], {type: "application/octet-stream"})
                 const link = document.createElement('a')
