@@ -4,6 +4,7 @@ namespace Selpol\Task\Tasks;
 
 use backends\files\files;
 use Exception;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Selpol\Task\Task;
 use ZipArchive;
@@ -60,7 +61,8 @@ class QrTask extends Task
 
     private function createQrZip(array $qr): ?string
     {
-        $file = tempnam('tmp', 'qr-zip');
+        $file = tempnam(Settings::getTempDir(), 'qr-zip');
+        $files = [];
 
         try {
             $zip = new ZipArchive();
@@ -72,10 +74,9 @@ class QrTask extends Task
                 $template->setValue('address', $qr['address'] . ', кв' . $flat['flat']);
 
                 $templateFile = $template->save();
+                $files[] = $templateFile;
 
                 $zip->addFile($templateFile);
-
-                unlink($templateFile);
             }
 
             $zip->close();
@@ -85,6 +86,9 @@ class QrTask extends Task
             return null;
         } finally {
             unlink($file);
+
+            foreach ($files as $file)
+                unlink($file);
         }
     }
 
