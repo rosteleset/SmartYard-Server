@@ -1,6 +1,6 @@
 ({
     init() {
-        moduleLoaded("task", this)
+        moduleLoaded("tasks", this)
 
         if (AVAIL("tasks", "status", "GET")) {
             $(`
