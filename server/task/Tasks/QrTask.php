@@ -3,6 +3,7 @@
 namespace Selpol\Task\Tasks;
 
 use backends\files\files;
+use chillerlan\QRCode\QRCode;
 use Exception;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -83,9 +84,15 @@ class QrTask extends Task
             $zip->open($file, ZipArchive::OVERWRITE);
 
             foreach ($qr['flats'] as $flat) {
+                $codeFile = tempnam(Settings::getTempDir(), 'qr');
+                $files[] = $codeFile;
+
+                (new QRCode())->render($flat['code'], $codeFile);
+
                 $template = new TemplateProcessor(path('private/qr-template.docx'));
 
                 $template->setValue('address', $qr['address'] . ', кв ' . $flat['flat']);
+                $template->setImageValue('qr', ['path' => $codeFile, 'width' => 256, 'height' => 256]);
 
                 $templateFile = $template->save();
                 $files[] = $templateFile;
