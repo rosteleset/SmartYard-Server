@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../utils/checkint.php';
-
 $camera_id = $param;
 if (!isset($camera_id) || $camera_id === 0)
     response(404);

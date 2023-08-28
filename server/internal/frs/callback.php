@@ -5,8 +5,6 @@ use backends\frs\frs;
 
 $logger = logger('internal');
 
-require_once __DIR__ . '/../../utils/checkint.php';
-
 $frs = loadBackend("frs");
 $households = loadBackend("households");
 
