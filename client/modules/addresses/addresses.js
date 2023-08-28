@@ -1096,9 +1096,8 @@
             type: 'POST',
             contentType: "json",
             data: JSON.stringify({override}),
-            success: (blob) => {
-                console.log(blob)
-
+            success: (response) => {
+                const blob = new Blob([response], {type: "application/octet-stream"})
                 const link = document.createElement('a')
 
                 link.href = window.URL.createObjectURL(blob)
@@ -1109,11 +1108,6 @@
                 setTimeout(() => {
                     window.URL.revokeObjectURL(link.href)
                 }, 1)
-            },
-            error: (xhr, textStatus, errorThrown) => {
-                console.log(xhr.responseText)
-                console.log(textStatus)
-                console.error(errorThrown)
             }
         });
     },
