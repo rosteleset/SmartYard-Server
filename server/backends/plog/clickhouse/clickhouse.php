@@ -188,7 +188,7 @@ namespace backends\plog {
          */
         public function addCallDoneData($date, $ip, $call_id = null)
         {
-            task(new PlogCallTask($this->getDomophoneId($ip), $date, $call_id))->high()->dispatch();
+            task(new PlogCallTask($this->getDomophoneId($ip), $date, $call_id))->medium()->delay(10)->dispatch();
         }
 
         /**
@@ -196,7 +196,7 @@ namespace backends\plog {
          */
         public function addDoorOpenData($date, $ip, $event_type, $door, $detail)
         {
-            task(new PlogOpenTask($this->getDomophoneId($ip), $event_type, $door, $date, $detail))->high()->dispatch();
+            task(new PlogOpenTask($this->getDomophoneId($ip), $event_type, $door, $date, $detail))->medium()->delay(10)->dispatch();
         }
 
         /**
@@ -204,7 +204,7 @@ namespace backends\plog {
          */
         public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
         {
-            task(new PlogOpenTask($domophone_id, $event_type, $door, $date, $detail))->high()->dispatch();
+            task(new PlogOpenTask($domophone_id, $event_type, $door, $date, $detail))->medium()->delay(10)->dispatch();
         }
 
         public function getSyslog(string $ip, int $date): false|array

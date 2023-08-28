@@ -72,7 +72,7 @@ class TaskContainer
     public function dispatch(): bool
     {
         $queue = $this->queue ?? TaskManager::QUEUE_DEFAULT;
-        $start = is_null($this->start) ? time() : ($this->start instanceof DateInterval ? ((new DateTime())->add($this->start)->getTimestamp()) : $this->start->getTimestamp());
+        $start = is_null($this->start) ? time() : ($this->start instanceof DateInterval ? ((new DateTime())->add($this->start)->getTimestamp()) : ($this->start instanceof DateTime ? $this->start->getTimestamp() : time() + $this->start));
 
         TaskManager::instance()->worker($queue)->pushTask($start, $this->task);
 

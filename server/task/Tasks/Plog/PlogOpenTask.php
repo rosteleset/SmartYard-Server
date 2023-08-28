@@ -80,6 +80,7 @@ class PlogOpenTask extends PlogTask
             $event_data[plog::COLUMN_OPENED] = 1;
 
             $details = explode("|", $this->detail);
+
             $face_id = $details[0];
             $event_id = $details[1];
 
