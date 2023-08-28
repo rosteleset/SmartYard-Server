@@ -1097,7 +1097,7 @@
             contentType: "json",
             data: JSON.stringify({override}),
             success: (response) => {
-                const blob = new Blob([response], {type: "application/octet-stream"})
+                const blob = new Blob(response, {type: "application/octet-stream"})
                 const link = document.createElement('a')
 
                 link.href = window.URL.createObjectURL(blob)
