@@ -92,7 +92,7 @@ class QrTask extends Task
                 $template = new TemplateProcessor(path('private/qr-template.docx'));
 
                 $template->setValue('address', $qr['address'] . ', кв ' . $flat['flat']);
-                $template->setImageValue('qr', ['path' => $codeFile, 'width' => 64, 'height' => 64]);
+                $template->setImageValue('qr', ['path' => $codeFile, 'width' => 96, 'height' => 96]);
 
                 $templateFile = $template->save();
                 $files[] = $templateFile;
