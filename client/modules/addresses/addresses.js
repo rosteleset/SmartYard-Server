@@ -1093,7 +1093,17 @@
 
             link.href = window.URL.createObjectURL(blob)
             link.download = 'qr.zip'
-            link.click()
+
+            document.body.append(link)
+
+            setTimeout(() => {
+                link.click()
+
+                setTimeout(() => {
+                    document.body.removeChild(link)
+                    window.URL.revokeObjectURL(link.href)
+                }, 1)
+            }, 1)
         })
     },
 
