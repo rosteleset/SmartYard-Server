@@ -24,8 +24,6 @@ namespace api\addresses {
 
             $uuid = task(new QrTask($validate['_id'], null, $validate['override']))->sync(null, null, null);
 
-            header('Content-Type: application/zip');
-
             echo loadBackend('files')->getFileBytes($uuid);
 
             exit(0);
