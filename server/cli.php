@@ -757,7 +757,8 @@ if (array_key_exists('--qr', $args) && isset($args['--qr'])) {
 
     $uuid = task(new QrTask($houseId, $flatId))->sync($redis, $db, $config);
 
-    echo json_encode($uuid);
+    if ($uuid)
+        echo loadBackend('files')->getFileBytes($uuid);
 
     exit(0);
 }
