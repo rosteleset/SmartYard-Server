@@ -1087,20 +1087,21 @@
     },
 
     qrGenerate(houseId, override) {
-        $.ajax({
-            url: lStore("_server") + "/addresses/qr/" + houseId,
-            beforeSend: xhr => {
-                xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
-                xhr.responseType = 'text'
-            },
-            type: 'POST',
-            contentType: "json",
-            data: JSON.stringify({override}),
-            success: (response) => {
-                const blob = new Blob([response], {type: "application/octet-stream"})
+        fetch(
+            lStore("_server") + "/addresses/qr/" + houseId,
+            {
+                headers: {
+                    Authorization: "Bearer " + lStore("_token")
+                },
+                body: JSON.stringify({override}),
+                method: "POST"
+            }
+        )
+            .then((transfer) => transfer.blob())
+            .then((bytes) => {
                 const link = document.createElement('a')
 
-                link.href = window.URL.createObjectURL(blob)
+                link.href = window.URL.createObjectURL(bytes)
                 link.download = 'qr.zip'
 
                 link.click()
@@ -1108,8 +1109,7 @@
                 setTimeout(() => {
                     window.URL.revokeObjectURL(link.href)
                 }, 1)
-            }
-        });
+            })
     },
 
     deleteRegion: function (regionId) {
