@@ -2,8 +2,6 @@
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-// command line client
-
 use Selpol\Task\Tasks\EmailTask;
 use Selpol\Task\Tasks\IntercomConfigureTask;
 use Selpol\Task\TaskManager;
