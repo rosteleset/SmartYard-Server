@@ -1088,9 +1088,17 @@
 
     qrGenerate(houseId, override) {
         POST("addresses", "qr", houseId, {override}).done((response) => {
-            const blob = new Blob([response])
+            const blob = new Blob([response], {type: "application/zip"})
+            const link = document.createElement('a')
 
-            window.open(window.URL.createObjectURL(blob), "_blank", 'toolbar=0,location=no,directories=0,status=0,scrollbars=0,resizeable=0,width=1,height=1,top=0,left=0')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = 'qr.zip'
+
+            link.click()
+
+            setTimeout(() => {
+                window.URL.revokeObjectURL(link.href)
+            }, 1)
         })
     },
 
