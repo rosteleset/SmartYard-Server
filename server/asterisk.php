@@ -1,23 +1,19 @@
 <?php
 
+require_once './vendor/autoload.php';
+
 // asterisk support
 
-require_once "utils/logger.php";
-require_once "utils/error.php";
-require_once "utils/guidv4.php";
-require_once "utils/loader.php";
-require_once "utils/checkint.php";
-require_once "utils/db_ext.php";
-require_once "utils/debug.php";
-require_once "utils/i18n.php";
-require_once "utils/validator.php";
+use Selpol\Validator\Filter;
+use Selpol\Validator\Rule;
 
 require_once "backends/backend.php";
-require_once "tasks/task.php";
+require_once "utils/loader.php";
+require_once "utils/db_ext.php";
 
 header('Content-Type: application/json');
 
-$logger = Logger::channel('asterisk');
+$logger = logger('asterisk');
 
 try {
     $config = loadConfig();
@@ -340,13 +336,14 @@ switch ($path[0]) {
 
         switch ($path[1]) {
             case "log":
-                logMsg($params);
+                error_log(">>>>>>>>>>>> " . $params);
+                $accounting = loadBackend('accounting');
+                if ($accounting)
+                    $accounting->raw("127.0.0.1", basename(get_included_files()[0]) . ":log", $params);
 
                 break;
 
             case "debug":
-                debugMsg($params);
-
                 break;
 
             case "autoopen":

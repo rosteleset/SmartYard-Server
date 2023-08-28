@@ -1,134 +1,10 @@
 <?php
 
-namespace tasks;
+namespace Selpol\Task;
 
-require_once dirname(__FILE__) . "/IntercomConfigureTask.php";
-
-use DateInterval;
-use DateTime;
-use Logger;
-use PDO_EXT;
+use Selpol\Logger\Logger;
 use Redis;
 use Throwable;
-
-function task(Task $task): TaskContainer
-{
-    return new TaskContainer($task);
-}
-
-abstract class Task
-{
-    public string $title;
-
-    protected ?Redis $redis;
-    protected ?PDO_EXT $pdo;
-    protected ?array $config;
-
-    /** @var callable $progressCallable */
-    private mixed $progressCallable;
-
-    public function __construct(string $title)
-    {
-        $this->title = $title;
-    }
-
-    public function setRedis(?Redis $redis): void
-    {
-        $this->redis = $redis;
-    }
-
-    public function setPdo(?PDO_EXT $pdo): void
-    {
-        $this->pdo = $pdo;
-    }
-
-    public function setConfig(?array $config): void
-    {
-        $this->config = $config;
-    }
-
-    public function setProgressCallable(?callable $progressCallable)
-    {
-        $this->progressCallable = $progressCallable;
-    }
-
-    public abstract function onTask();
-
-    public function onError(Throwable $throwable)
-    {
-
-    }
-
-    protected function setProgress(int $progress)
-    {
-        if ($this->progressCallable)
-            call_user_func($this->progressCallable, $progress);
-    }
-}
-
-class TaskContainer
-{
-    private Task $task;
-
-    private ?string $queue = null;
-    private DateTime|DateInterval|int|null $start = null;
-
-    public function __construct(Task $task)
-    {
-        $this->task = $task;
-    }
-
-    public function queue(?string $queue): static
-    {
-        $this->queue = $queue;
-
-        return $this;
-    }
-
-    public function high(): static
-    {
-        return $this->queue(TaskManager::QUEUE_HIGH);
-    }
-
-    public function medium(): static
-    {
-        return $this->queue(TaskManager::QUEUE_MEDIUM);
-    }
-
-    public function low(): static
-    {
-        return $this->queue(TaskManager::QUEUE_LOW);
-    }
-
-    public function default(): static
-    {
-        return $this->queue(TaskManager::QUEUE_DEFAULT);
-    }
-
-    public function start(?DateTime $start): static
-    {
-        $this->start = $start;
-
-        return $this;
-    }
-
-    public function delay(DateInterval|int|null $start): static
-    {
-        $this->start = $start;
-
-        return $this;
-    }
-
-    public function dispatch(): bool
-    {
-        $queue = $this->queue ?? TaskManager::QUEUE_DEFAULT;
-        $start = is_null($this->start) ? time() : ($this->start instanceof DateInterval ? ((new DateTime())->add($this->start)->getTimestamp()) : $this->start->getTimestamp());
-
-        TaskManager::instance()->worker($queue)->pushTask($start, $this->task);
-
-        return true;
-    }
-}
 
 class TaskWorker
 {
@@ -286,7 +162,7 @@ class TaskWorker
 
     private function getWorkerTasksKey(): string
     {
-        return 'task:' . $this->queue . ':tasks';
+        return 'task:' . $this->queue . ':task';
     }
 
     private function getWorkerCommandKey(int $id): string
@@ -312,71 +188,5 @@ class TaskWorker
     private function getWorkerSizeKey(): string
     {
         return 'task:' . $this->queue . ':size';
-    }
-}
-
-class TaskManager
-{
-    public const QUEUE_HIGH = 'high';
-    public const QUEUE_MEDIUM = 'medium';
-    public const QUEUE_LOW = 'low';
-    public const QUEUE_DEFAULT = 'default';
-
-    private static ?TaskManager $instance = null;
-    private static ?Logger $logger = null;
-
-    private Redis $redis;
-
-    /** @var TaskWorker[] $workers */
-    private array $workers = [];
-
-    public function __construct(Redis $redis)
-    {
-        $this->redis = $redis;
-    }
-
-    public function getQueues(): array
-    {
-        $queues = $this->redis->sMembers($this->getManagerQueuesKey());
-
-        return is_array($queues) ? $queues : [];
-    }
-
-    public function worker(string $queue): TaskWorker
-    {
-        if (!array_key_exists($queue, $this->workers)) {
-            $this->workers[$queue] = new TaskWorker($queue, $this->redis, self::$logger);
-
-            $this->redis->sAdd($this->getManagerQueuesKey(), $queue);
-        }
-
-        return $this->workers[$queue];
-    }
-
-    public function clear()
-    {
-        $this->redis->del($this->redis->keys('task:*'));
-
-        self::$logger?->info('Clear TaskManager');
-    }
-
-    private function getManagerQueuesKey(): string
-    {
-        return 'task:queues';
-    }
-
-    public static function setLogger(?Logger $logger)
-    {
-        self::$logger = $logger;
-    }
-
-    public static function instance(): TaskManager
-    {
-        global $redis;
-
-        if (is_null(self::$instance))
-            self::$instance = new TaskManager($redis);
-
-        return self::$instance;
     }
 }

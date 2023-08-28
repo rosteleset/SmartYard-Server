@@ -35,7 +35,7 @@
              */
             function getRegion($regionId)
             {
-                if (!checkInt($regionId)) {
+                if (!check_int($regionId)) {
                     return false;
                 }
 
@@ -69,7 +69,7 @@
                     $timezone = null;
                 }
 
-                if (!checkInt($regionId)) {
+                if (!check_int($regionId)) {
                     return false;
                 }
 
@@ -117,7 +117,7 @@
              */
             function deleteRegion($regionId)
             {
-                if (!checkInt($regionId)) {
+                if (!check_int($regionId)) {
                     return false;
                 }
 
@@ -130,7 +130,7 @@
             function getAreas($regionId = false)
             {
                 if ($regionId) {
-                    if (!checkInt($regionId)) {
+                    if (!check_int($regionId)) {
                         return false;
                     }
                     $query = "select address_area_id, address_region_id, area_uuid, area_with_type, area_type, area_type_full, area, timezone from addresses_areas where address_region_id = $regionId order by area";
@@ -154,7 +154,7 @@
              */
             function getArea($areaId)
             {
-                if (!checkInt($areaId)) {
+                if (!check_int($areaId)) {
                     return false;
                 }
 
@@ -184,11 +184,11 @@
                     $timezone = null;
                 }
 
-                if (!checkInt($areaId)) {
+                if (!check_int($areaId)) {
                     return false;
                 }
 
-                if (!checkInt($regionId)) {
+                if (!check_int($regionId)) {
                     return false;
                 }
 
@@ -216,7 +216,7 @@
                     $timezone = null;
                 }
 
-                if (!checkInt($regionId)) {
+                if (!check_int($regionId)) {
                     return false;
                 }
 
@@ -240,7 +240,7 @@
              */
             function deleteArea($areaId)
             {
-                if (!checkInt($areaId)) {
+                if (!check_int($areaId)) {
                     return false;
                 }
 
@@ -256,11 +256,11 @@
                     return false;
                 }
 
-                if ($regionId && !checkInt($regionId)) {
+                if ($regionId && !check_int($regionId)) {
                     return false;
                 }
 
-                if ($areaId && !checkInt($areaId)) {
+                if ($areaId && !check_int($areaId)) {
                     return false;
                 }
 
@@ -291,7 +291,7 @@
              */
             function getCity($cityId)
             {
-                if (!checkInt($cityId)) {
+                if (!check_int($cityId)) {
                     return false;
                 }
 
@@ -322,7 +322,7 @@
                     $timezone = null;
                 }
 
-                if (!checkInt($cityId)) {
+                if (!check_int($cityId)) {
                     return false;
                 }
 
@@ -330,11 +330,11 @@
                     return false;
                 }
 
-                if ($regionId && !checkInt($regionId)) {
+                if ($regionId && !check_int($regionId)) {
                     return false;
                 }
 
-                if ($areaId && !checkInt($areaId)) {
+                if ($areaId && !check_int($areaId)) {
                     return false;
                 }
 
@@ -371,11 +371,11 @@
                     return false;
                 }
 
-                if ($regionId && !checkInt($regionId)) {
+                if ($regionId && !check_int($regionId)) {
                     return false;
                 }
 
-                if ($areaId && !checkInt($areaId)) {
+                if ($areaId && !check_int($areaId)) {
                     return false;
                 }
 
@@ -404,7 +404,7 @@
              */
             function deleteCity($cityId)
             {
-                if (!checkInt($cityId)) {
+                if (!check_int($cityId)) {
                     return false;
                 }
 
@@ -420,11 +420,11 @@
                     return false;
                 }
 
-                if ($areaId && !checkInt($areaId)) {
+                if ($areaId && !check_int($areaId)) {
                     return false;
                 }
 
-                if ($cityId && !checkInt($cityId)) {
+                if ($cityId && !check_int($cityId)) {
                     return false;
                 }
 
@@ -454,7 +454,7 @@
              */
             function getSettlement($settlementId)
             {
-                if (!checkInt($settlementId)) {
+                if (!check_int($settlementId)) {
                     return false;
                 }
 
@@ -480,7 +480,7 @@
              */
             function modifySettlement($settlementId, $areaId, $cityId, $settlementUuid, $settlementWithType, $settlementType, $settlementTypeFull, $settlement)
             {
-                if (!checkInt($settlementId)) {
+                if (!check_int($settlementId)) {
                     return false;
                 }
 
@@ -488,11 +488,11 @@
                     return false;
                 }
 
-                if ($areaId && !checkInt($areaId)) {
+                if ($areaId && !check_int($areaId)) {
                     return false;
                 }
 
-                if ($cityId && !checkInt($cityId)) {
+                if ($cityId && !check_int($cityId)) {
                     return false;
                 }
 
@@ -524,11 +524,11 @@
                     return false;
                 }
 
-                if ($areaId && !checkInt($areaId)) {
+                if ($areaId && !check_int($areaId)) {
                     return false;
                 }
 
-                if ($cityId && !checkInt($cityId)) {
+                if ($cityId && !check_int($cityId)) {
                     return false;
                 }
 
@@ -556,7 +556,7 @@
              */
             function deleteSettlement($settlementId)
             {
-                if (!checkInt($settlementId)) {
+                if (!check_int($settlementId)) {
                     return false;
                 }
 
@@ -572,11 +572,11 @@
                     return false;
                 }
 
-                if ($cityId && !checkInt($cityId)) {
+                if ($cityId && !check_int($cityId)) {
                     return false;
                 }
 
-                if ($settlementId && !checkInt($settlementId)) {
+                if ($settlementId && !check_int($settlementId)) {
                     return false;
                 }
 
@@ -605,7 +605,7 @@
              */
             function getStreet($streetId)
             {
-                if (!checkInt($streetId)) {
+                if (!check_int($streetId)) {
                     return false;
                 }
 
@@ -631,7 +631,7 @@
              */
             function modifyStreet($streetId, $cityId, $settlementId, $streetUuid, $streetWithType, $streetType, $streetTypeFull, $street)
             {
-                if (!checkInt($streetId)) {
+                if (!check_int($streetId)) {
                     return false;
                 }
 
@@ -639,11 +639,11 @@
                     return false;
                 }
 
-                if ($cityId && !checkInt($cityId)) {
+                if ($cityId && !check_int($cityId)) {
                     return false;
                 }
 
-                if ($settlementId && !checkInt($settlementId)) {
+                if ($settlementId && !check_int($settlementId)) {
                     return false;
                 }
 
@@ -675,11 +675,11 @@
                     return false;
                 }
 
-                if ($cityId && !checkInt($cityId)) {
+                if ($cityId && !check_int($cityId)) {
                     return false;
                 }
 
-                if ($settlementId && !checkInt($settlementId)) {
+                if ($settlementId && !check_int($settlementId)) {
                     return false;
                 }
 
@@ -707,7 +707,7 @@
              */
             function deleteStreet($streetId)
             {
-                if (!checkInt($streetId)) {
+                if (!check_int($streetId)) {
                     return false;
                 }
 
@@ -723,11 +723,11 @@
                     return false;
                 }
 
-                if ($settlementId && !checkInt($settlementId)) {
+                if ($settlementId && !check_int($settlementId)) {
                     return false;
                 }
 
-                if ($streetId && !checkInt($streetId)) {
+                if ($streetId && !check_int($streetId)) {
                     return false;
                 }
 
@@ -757,7 +757,7 @@
              */
             function getHouse($houseId)
             {
-                if (!checkInt($houseId)) {
+                if (!check_int($houseId)) {
                     return false;
                 }
 
@@ -783,7 +783,7 @@
              */
             function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house)
             {
-                if (!checkInt($houseId)) {
+                if (!check_int($houseId)) {
                     return false;
                 }
 
@@ -791,11 +791,11 @@
                     return false;
                 }
 
-                if ($settlementId && !checkInt($settlementId)) {
+                if ($settlementId && !check_int($settlementId)) {
                     return false;
                 }
 
-                if ($streetId && !checkInt($streetId)) {
+                if ($streetId && !check_int($streetId)) {
                     return false;
                 }
 
@@ -827,11 +827,11 @@
                     return false;
                 }
 
-                if ($settlementId && !checkInt($settlementId)) {
+                if ($settlementId && !check_int($settlementId)) {
                     return false;
                 }
 
-                if ($streetId && !checkInt($streetId)) {
+                if ($streetId && !check_int($streetId)) {
                     return false;
                 }
 
@@ -859,7 +859,7 @@
              */
             function deleteHouse($houseId)
             {
-                if (!checkInt($houseId)) {
+                if (!check_int($houseId)) {
                     return false;
                 }
 

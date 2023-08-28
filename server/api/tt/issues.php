@@ -35,11 +35,11 @@
             
                             $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
                         } else {
-                            setLastError("filterNotFound");
+                            last_error("filterNotFound");
                             return api::ERROR();
                         }
                     } catch (\Exception $e) {
-                        setLastError($e->getMessage());
+                        last_error($e->getMessage());
                         $issues["exception"] = $e->getMessage();
                         return api::ANSWER($issues, "issues");
                     }
@@ -57,7 +57,7 @@
                     try {
                         $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : []);
                     } catch (\Exception $e) {
-                        setLastError($e->getMessage());
+                        last_error($e->getMessage());
                         return api::ERROR();
                     }
                 }

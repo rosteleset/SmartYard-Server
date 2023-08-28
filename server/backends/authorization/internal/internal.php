@@ -24,7 +24,7 @@
                     return true;
                 }
 
-                if (!checkInt($params["_uid"])) {
+                if (!check_int($params["_uid"])) {
                     return false;
                 }
 
@@ -178,7 +178,7 @@
              */
 
             public function allowedMethods($uid) {
-                if (!checkInt($uid)) {
+                if (!check_int($uid)) {
                     return false;
                 }
 
@@ -274,7 +274,7 @@
 
 
             public function setRights($user, $id, $api, $method, $allow, $deny) {
-                if (!checkInt($id)) {
+                if (!check_int($id)) {
                     return false;
                 }
 

@@ -7,8 +7,8 @@
 namespace api\houses {
 
     use api\api;
-    use tasks\IntercomConfigureTask;
-    use function tasks\task;
+
+    use Selpol\Task\Tasks\IntercomConfigureTask;
 
     /**
      * domophone method

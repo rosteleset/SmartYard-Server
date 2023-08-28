@@ -17,7 +17,7 @@ namespace backends\households {
          */
         function getFlat($flatId)
         {
-            if (!checkInt($flatId)) {
+            if (!check_int($flatId)) {
                 return false;
             }
 
@@ -295,7 +295,7 @@ namespace backends\households {
          */
         function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
         {
-            if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
+            if (!check_int($houseId) || !trim($entranceType) || !trim($entrance) || !check_int($cmsType) || !check_int($plog)) {
                 return false;
             }
 
@@ -307,7 +307,7 @@ namespace backends\households {
                 $prefix = 0;
             }
 
-            if (!checkStr($callerId)) {
+            if (!check_string($callerId)) {
                 return false;
             }
 
@@ -344,7 +344,7 @@ namespace backends\households {
          */
         function addEntrance($houseId, $entranceId, $prefix)
         {
-            if (!checkInt($houseId) || !checkInt($entranceId) || !checkInt($prefix)) {
+            if (!check_int($houseId) || !check_int($entranceId) || !check_int($prefix)) {
                 return false;
             }
 
@@ -360,7 +360,7 @@ namespace backends\households {
          */
         function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $locksDisabled, $cmsLevels)
         {
-            if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
+            if (!check_int($entranceId) || !trim($entranceType) || !trim($entrance) || !check_int($cmsType) || !check_int($plog)) {
                 return false;
             }
 
@@ -371,7 +371,7 @@ namespace backends\households {
                 return false;
             }
 
-            if (!checkStr($callerId)) {
+            if (!check_string($callerId)) {
                 return false;
             }
 
@@ -412,7 +412,7 @@ namespace backends\households {
          */
         function deleteEntrance($entranceId, $houseId)
         {
-            if (!checkInt($houseId) || !checkInt($entranceId)) {
+            if (!check_int($houseId) || !check_int($entranceId)) {
                 return false;
             }
 
@@ -431,7 +431,7 @@ namespace backends\households {
         {
             $autoOpen = (int)strtotime($autoOpen);
 
-            if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($adminBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
+            if (check_int($houseId) && trim($flat) && check_int($manualBlock) && check_int($adminBlock) && check_int($whiteRabbit) && check_int($sipEnabled) && check_int($plog) && check_int($autoOpen)) {
 
                 if ($openCode == "!") {
                     // TODO add unique check !!!
@@ -455,7 +455,7 @@ namespace backends\households {
 
                 if ($flatId) {
                     for ($i = 0; $i < count($entrances); $i++) {
-                        if (!checkInt($entrances[$i])) {
+                        if (!check_int($entrances[$i])) {
                             return false;
                         } else {
                             $ap = $flat;
@@ -491,39 +491,39 @@ namespace backends\households {
          */
         function modifyFlat($flatId, $params)
         {
-            if (checkInt($flatId)) {
-                if (array_key_exists("manualBlock", $params) && !checkInt($params["manualBlock"])) {
-                    setLastError("invalidParams");
+            if (check_int($flatId)) {
+                if (array_key_exists("manualBlock", $params) && !check_int($params["manualBlock"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
-                if (array_key_exists("adminBlock", $params) && !checkInt($params["adminBlock"])) {
-                    setLastError("invalidParams");
+                if (array_key_exists("adminBlock", $params) && !check_int($params["adminBlock"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
-                if (array_key_exists("autoBlock", $params) && !checkInt($params["autoBlock"])) {
-                    setLastError("invalidParams");
+                if (array_key_exists("autoBlock", $params) && !check_int($params["autoBlock"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
-                if (array_key_exists("whiteRabbit", $params) && !checkInt($params["whiteRabbit"])) {
-                    setLastError("invalidParams");
+                if (array_key_exists("whiteRabbit", $params) && !check_int($params["whiteRabbit"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
-                if (array_key_exists("sipEnabled", $params) && !checkInt($params["sipEnabled"])) {
-                    setLastError("invalidParams");
+                if (array_key_exists("sipEnabled", $params) && !check_int($params["sipEnabled"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
-                if (array_key_exists("code", $params) && !checkStr($params["code"])) {
-                    setLastError("invalidParams");
+                if (array_key_exists("code", $params) && !check_string($params["code"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
-                if (array_key_exists("plog", $params) && !checkInt($params["plog"])) {
-                    setLastError("invalidParams");
+                if (array_key_exists("plog", $params) && !check_int($params["plog"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -532,7 +532,7 @@ namespace backends\households {
                 }
 
                 if (@$params["code"] == "!") {
-                    $params["code"] = md5(GUIDv4());
+                    $params["code"] = md5(guid_v4());
                 }
 
                 if (@$params["openCode"] == "!") {
@@ -563,7 +563,7 @@ namespace backends\households {
                         return false;
                     }
                     for ($i = 0; $i < count($entrances); $i++) {
-                        if (!checkInt($entrances[$i])) {
+                        if (!check_int($entrances[$i])) {
                             return false;
                         } else {
                             $ap = $params["flat"];
@@ -597,7 +597,7 @@ namespace backends\households {
          */
         function deleteFlat($flatId)
         {
-            if (!checkInt($flatId)) {
+            if (!check_int($flatId)) {
                 return false;
             }
 
@@ -618,7 +618,7 @@ namespace backends\households {
          */
         function getSharedEntrances($houseId = false)
         {
-            if ($houseId && !checkInt($houseId)) {
+            if ($houseId && !check_int($houseId)) {
                 return false;
             }
 
@@ -644,7 +644,7 @@ namespace backends\households {
          */
         function destroyEntrance($entranceId)
         {
-            if (!checkInt($entranceId)) {
+            if (!check_int($entranceId)) {
                 return false;
             }
 
@@ -661,8 +661,8 @@ namespace backends\households {
          */
         public function getCms($entranceId)
         {
-            if (!checkInt($entranceId)) {
-                setLastError("noEntranceId");
+            if (!check_int($entranceId)) {
+                last_error("noEntranceId");
                 return false;
             }
 
@@ -679,16 +679,16 @@ namespace backends\households {
          */
         public function setCms($entranceId, $cms)
         {
-            if (!checkInt($entranceId)) {
-                setLastError("noEntranceId");
+            if (!check_int($entranceId)) {
+                last_error("noEntranceId");
                 return false;
             }
 
             $result = $this->db->modify("delete from houses_entrances_cmses where house_entrance_id = $entranceId") !== false;
 
             foreach ($cms as $e) {
-                if (!checkInt($e["cms"]) || !checkInt($e["dozen"]) || !checkInt($e["unit"]) || !checkInt($e["apartment"])) {
-                    setLastError("cmsError");
+                if (!check_int($e["cms"]) || !check_int($e["dozen"]) || !check_int($e["unit"]) || !check_int($e["apartment"])) {
+                    last_error("cmsError");
                     return false;
                 }
 
@@ -807,7 +807,7 @@ namespace backends\households {
         public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comment)
         {
             if (!$model) {
-                setLastError("moModel");
+                last_error("moModel");
                 return false;
             }
 
@@ -815,12 +815,12 @@ namespace backends\households {
             $models = $configs->getDomophonesModels();
 
             if (!@$models[$model]) {
-                setLastError("modelUnknown");
+                last_error("modelUnknown");
                 return false;
             }
 
             if (!trim($server)) {
-                setLastError("noServer");
+                last_error("noServer");
                 return false;
             }
 
@@ -829,12 +829,12 @@ namespace backends\households {
             }
 
             if (in_array(trim($dtmf), ["*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]) === false) {
-                setLastError("dtmf");
+                last_error("dtmf");
                 return false;
             }
 
-            if (!checkInt($nat)) {
-                setLastError("nat");
+            if (!check_int($nat)) {
+                last_error("nat");
                 return false;
             }
 
@@ -863,18 +863,18 @@ namespace backends\households {
          */
         public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
         {
-            if (!checkInt($domophoneId)) {
-                setLastError("noId");
+            if (!check_int($domophoneId)) {
+                last_error("noId");
                 return false;
             }
 
             if (!$model) {
-                setLastError("noModel");
+                last_error("noModel");
                 return false;
             }
 
             if (!trim($server)) {
-                setLastError("noServer");
+                last_error("noServer");
                 return false;
             }
 
@@ -882,32 +882,32 @@ namespace backends\households {
             $models = $configs->getDomophonesModels();
 
             if (!@$models[$model]) {
-                setLastError("modelUnknown");
+                last_error("modelUnknown");
                 return false;
             }
 
             if (!trim($url)) {
-                setLastError("noUrl");
+                last_error("noUrl");
                 return false;
             }
 
             if (in_array(trim($dtmf), ["*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]) === false) {
-                setLastError("dtmf");
+                last_error("dtmf");
                 return false;
             }
 
-            if (!checkInt($firstTime)) {
-                setLastError("firstTime");
+            if (!check_int($firstTime)) {
+                last_error("firstTime");
                 return false;
             }
 
-            if (!checkInt($nat)) {
-                setLastError("nat");
+            if (!check_int($nat)) {
+                last_error("nat");
                 return false;
             }
 
-            if (!checkInt($locksAreOpen)) {
-                setLastError("nat");
+            if (!check_int($locksAreOpen)) {
+                last_error("nat");
                 return false;
             }
 
@@ -938,8 +938,8 @@ namespace backends\households {
          */
         public function deleteDomophone($domophoneId)
         {
-            if (!checkInt($domophoneId)) {
-                setLastError("noId");
+            if (!check_int($domophoneId)) {
+                last_error("noId");
                 return false;
             }
 
@@ -960,7 +960,7 @@ namespace backends\households {
          */
         public function getDomophone($domophoneId)
         {
-            if (!checkInt($domophoneId)) {
+            if (!check_int($domophoneId)) {
                 return false;
             }
 
@@ -1083,11 +1083,11 @@ namespace backends\households {
         public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false)
         {
             if (
-                !checkStr($mobile, ["minLength" => 6, "maxLength" => 32, "validChars" => ['+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']]) ||
-                !checkStr($name, ["maxLength" => 32]) ||
-                !checkStr($patronymic, ["maxLength" => 32])
+                !check_string($mobile, ["minLength" => 6, "maxLength" => 32, "validChars" => ['+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']]) ||
+                !check_string($name, ["maxLength" => 32]) ||
+                !check_string($patronymic, ["maxLength" => 32])
             ) {
-                setLastError("invalidParams");
+                last_error("invalidParams");
                 return false;
             }
 
@@ -1114,8 +1114,8 @@ namespace backends\households {
             }
 
             if ($subscriberId && $flatId) {
-                if (!checkInt($flatId)) {
-                    setLastError("invalidFlat");
+                if (!check_int($flatId)) {
+                    last_error("invalidFlat");
                     return false;
                 }
 
@@ -1143,7 +1143,7 @@ namespace backends\households {
          */
         public function deleteSubscriber($subscriberId)
         {
-            if (!checkInt($subscriberId)) {
+            if (!check_int($subscriberId)) {
                 return false;
             }
 
@@ -1161,11 +1161,11 @@ namespace backends\households {
          */
         public function removeSubscriberFromFlat($flatId, $subscriberId)
         {
-            if (!checkInt($flatId)) {
+            if (!check_int($flatId)) {
                 return false;
             }
 
-            if (!checkInt($subscriberId)) {
+            if (!check_int($subscriberId)) {
                 return false;
             }
 
@@ -1180,13 +1180,13 @@ namespace backends\households {
          */
         public function modifySubscriber($subscriberId, $params = [])
         {
-            if (!checkInt($subscriberId)) {
+            if (!check_int($subscriberId)) {
                 return false;
             }
 
             if (@$params["mobile"]) {
-                if (!checkStr($params["mobile"], ["minLength" => 6, "maxLength" => 32, "validChars" => ['+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']])) {
-                    setLastError("invalidParams");
+                if (!check_string($params["mobile"], ["minLength" => 6, "maxLength" => 32, "validChars" => ['+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1196,8 +1196,8 @@ namespace backends\households {
             }
 
             if (@$params["subscriberName"] || @$params["forceNames"]) {
-                if (!checkStr($params["subscriberName"], ["maxLength" => 32])) {
-                    setLastError("invalidParams");
+                if (!check_string($params["subscriberName"], ["maxLength" => 32])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1207,8 +1207,8 @@ namespace backends\households {
             }
 
             if (@$params["subscriberPatronymic"] || @$params["forceNames"]) {
-                if (!checkStr($params["subscriberPatronymic"], ["maxLength" => 32])) {
-                    setLastError("invalidParams");
+                if (!check_string($params["subscriberPatronymic"], ["maxLength" => 32])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1218,8 +1218,8 @@ namespace backends\households {
             }
 
             if (@$params["authToken"]) {
-                if (!checkStr($params["authToken"])) {
-                    setLastError("invalidParams");
+                if (!check_string($params["authToken"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1229,8 +1229,8 @@ namespace backends\households {
             }
 
             if (array_key_exists("platform", $params)) {
-                if (!checkInt($params["platform"])) {
-                    setLastError("invalidParams");
+                if (!check_int($params["platform"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1240,8 +1240,8 @@ namespace backends\households {
             }
 
             if (@$params["pushToken"]) {
-                if (!checkStr($params["pushToken"])) {
-                    setLastError("invalidParams");
+                if (!check_string($params["pushToken"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1251,8 +1251,8 @@ namespace backends\households {
             }
 
             if (array_key_exists("tokenType", $params)) {
-                if (!checkInt($params["tokenType"])) {
-                    setLastError("invalidParams");
+                if (!check_int($params["tokenType"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1262,8 +1262,8 @@ namespace backends\households {
             }
 
             if (@$params["voipToken"]) {
-                if (!checkStr($params["voipToken"])) {
-                    setLastError("invalidParams");
+                if (!check_string($params["voipToken"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1273,8 +1273,8 @@ namespace backends\households {
             }
 
             if (array_key_exists("voipEnabled", $params)) {
-                if (!checkInt($params["voipEnabled"])) {
-                    setLastError("invalidParams");
+                if (!check_int($params["voipEnabled"])) {
+                    last_error("invalidParams");
                     return false;
                 }
 
@@ -1295,8 +1295,8 @@ namespace backends\households {
          */
         public function setSubscriberFlats($subscriberId, $flats)
         {
-            if (!checkInt($subscriberId)) {
-                setLastError("invalidParams");
+            if (!check_int($subscriberId)) {
+                last_error("invalidParams");
                 return false;
             }
 
@@ -1349,8 +1349,8 @@ namespace backends\households {
          */
         public function addKey($rfId, $accessType, $accessTo, $comments)
         {
-            if (!checkInt($accessTo) || !checkInt($accessType) || !checkStr($rfId, ["minLength" => 6, "maxLength" => 32]) || !checkStr($rfId, ["minLength" => 6, "maxLength" => 32]) || !checkStr($comments, ["maxLength" => 128])) {
-                setLastError("invalidParams");
+            if (!check_int($accessTo) || !check_int($accessType) || !check_string($rfId, ["minLength" => 6, "maxLength" => 32]) || !check_string($rfId, ["minLength" => 6, "maxLength" => 32]) || !check_string($comments, ["maxLength" => 128])) {
+                last_error("invalidParams");
                 return false;
             }
 
@@ -1367,8 +1367,8 @@ namespace backends\households {
          */
         public function deleteKey($keyId)
         {
-            if (!checkInt($keyId)) {
-                setLastError("invalidParams");
+            if (!check_int($keyId)) {
+                last_error("invalidParams");
                 return false;
             }
 
@@ -1380,8 +1380,8 @@ namespace backends\households {
          */
         public function modifyKey($keyId, $comments)
         {
-            if (!checkInt($keyId)) {
-                setLastError("invalidParams");
+            if (!check_int($keyId)) {
+                last_error("invalidParams");
                 return false;
             }
 
@@ -1395,8 +1395,8 @@ namespace backends\households {
          */
         function doorOpened($flatId)
         {
-            if (!checkInt($flatId)) {
-                setLastError("invalidParams");
+            if (!check_int($flatId)) {
+                last_error("invalidParams");
                 return false;
             }
 
@@ -1410,7 +1410,7 @@ namespace backends\households {
          */
         function getEntrance($entranceId)
         {
-            if (!checkInt($entranceId)) {
+            if (!check_int($entranceId)) {
                 return false;
             }
 
@@ -1467,14 +1467,14 @@ namespace backends\households {
                     break;
 
                 case "houseId":
-                    if (!checkInt($query)) {
+                    if (!check_int($query)) {
                         return false;
                     }
                     $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                     break;
 
                 case "flatId":
-                    if (!checkInt($query)) {
+                    if (!check_int($query)) {
                         return false;
                     }
                     $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, locks_disabled from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
@@ -1526,28 +1526,28 @@ namespace backends\households {
 
             switch ($by) {
                 case "id":
-                    if (!checkInt($params)) {
+                    if (!check_int($params)) {
                         return [];
                     }
                     $q = "select camera_id from cameras where camera_id = $params";
                     break;
 
                 case "houseId":
-                    if (!checkInt($params)) {
+                    if (!check_int($params)) {
                         return [];
                     }
                     $q = "select camera_id from houses_cameras_houses where address_house_id = $params";
                     break;
 
                 case "flatId":
-                    if (!checkInt($params)) {
+                    if (!check_int($params)) {
                         return [];
                     }
                     $q = "select camera_id from houses_cameras_flats where house_flat_id = $params";
                     break;
 
                 case "subscriberId":
-                    if (!checkInt($params)) {
+                    if (!check_int($params)) {
                         return [];
                     }
                     $q = "select camera_id from houses_cameras_subscribers where house_subscriber_id = $params";
@@ -1579,19 +1579,19 @@ namespace backends\households {
         {
             switch ($to) {
                 case "house":
-                    if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                    if (check_int($id) !== false && check_int($cameraId) !== false) {
                         return $this->db->insert("insert into houses_cameras_houses (camera_id, address_house_id) values ($cameraId, $id)");
                     } else {
                         return false;
                     }
                 case "flat":
-                    if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                    if (check_int($id) !== false && check_int($cameraId) !== false) {
                         return $this->db->insert("insert into houses_cameras_flats (camera_id, house_flat_id) values ($cameraId, $id)");
                     } else {
                         return false;
                     }
                 case "subscriber":
-                    if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                    if (check_int($id) !== false && check_int($cameraId) !== false) {
                         return $this->db->insert("insert into houses_cameras_subscribers (camera_id, house_subscriber_id) values ($cameraId, $id)");
                     } else {
                         return false;
@@ -1608,19 +1608,19 @@ namespace backends\households {
         {
             switch ($from) {
                 case "house":
-                    if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                    if (check_int($id) !== false && check_int($cameraId) !== false) {
                         return $this->db->modify("delete from houses_cameras_houses where camera_id = $cameraId and address_house_id = $id");
                     } else {
                         return false;
                     }
                 case "flat":
-                    if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                    if (check_int($id) !== false && check_int($cameraId) !== false) {
                         return $this->db->modify("delete from houses_cameras_flats where camera_id = $cameraId and house_flat_id = $id");
                     } else {
                         return false;
                     }
                 case "subscriber":
-                    if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                    if (check_int($id) !== false && check_int($cameraId) !== false) {
                         return $this->db->modify("delete from houses_cameras_subscribers where camera_id = $cameraId and house_subscriber_id = $id");
                     } else {
                         return false;

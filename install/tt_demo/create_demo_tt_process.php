@@ -7,7 +7,6 @@
     require_once "../../server/utils/email.php";
     require_once "../../server/utils/is_executable.php";
     require_once "../../server/utils/db_ext.php";
-    require_once "../../server/utils/parse_uri.php";
     require_once "../../server/utils/debug.php";
     require_once "../../server/utils/i18n.php";
 

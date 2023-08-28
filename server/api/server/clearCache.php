@@ -32,7 +32,7 @@
         class clearCache extends api {
 
             public static function POST($params) {
-                clearCache($params["_uid"]);
+                clear_cache($params["_uid"]);
 
                 return api::ANSWER();
             }

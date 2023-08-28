@@ -1,20 +1,12 @@
 <?php
 
+require_once './vendor/autoload.php';
+
 mb_internal_encoding("UTF-8");
 
-require_once "utils/logger.php";
 require_once "backends/backend.php";
-require_once "tasks/task.php";
 require_once "utils/loader.php";
-require_once "utils/guidv4.php";
 require_once "utils/db_ext.php";
-require_once "utils/checkint.php";
-require_once "utils/checkstr.php";
-require_once "utils/purifier.php";
-require_once "utils/error.php";
-require_once "utils/apache_request_headers.php";
-require_once "utils/i18n.php";
-require_once "utils/validator.php";
 
 $LanTa_services = [
     'internet' => ["icon" => "internet", "title" => "Интернет", "description" => "Высокоскоростной доступ в интернет", "canChange" => "t"],
@@ -35,7 +27,7 @@ $subscriber = false;
 $offsetForCityId = 1000000;
 $emptyStreetIdOffset = 1000000;
 
-$logger = Logger::channel('mobile');
+$logger = logger('mobile');
 
 try {
     $config = loadConfig();
@@ -66,9 +58,8 @@ try {
     $logger->critical('Redis fail connect' . PHP_EOL . $e);
 
     error_log(print_r($e, true));
-    response(555, [
-        "error" => "redis",
-    ]);
+
+    response(555, ["error" => "redis"]);
 }
 
 try {
@@ -77,9 +68,8 @@ try {
     $logger->critical('Pdo fail connect' . PHP_EOL . $e);
 
     error_log(print_r($e, true));
-    response(555, [
-        "error" => "PDO",
-    ]);
+
+    response(555, ["error" => "PDO"]);
 }
 
 function response($code = 204, $data = false, $name = false, $message = false)
@@ -131,38 +121,31 @@ function response($code = 204, $data = false, $name = false, $message = false)
     ];
     header('Content-Type: application/json');
     http_response_code($code);
-    if ((int)$code < 300 && $response_cahce_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
+//    if ((int)$code < 300 && $response_cahce_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
 //        $redis->setEx($response_cahce_req, $response_cache_ttl, json_encode([
 //            'code' => $code,
 //            'data' => $data,
 //        ], JSON_UNESCAPED_UNICODE));
-    }
-    if ((int)$code == 204) {
+//    }
+
+    if ((int)$code == 204)
         exit;
-    }
-    $ret = [
-        'code' => $code,
-    ];
+
+    $ret = ['code' => $code];
+
     if (!$message) {
-        if ($name) {
-            $message = $name;
-        } else {
-            $message = @$response_codes[$code]['message'];
-        }
+        if ($name) $message = $name;
+        else $message = @$response_codes[$code]['message'];
     }
-    if (!$name) {
-        $name = @$response_codes[$code]['name'];
-    }
-    if ($name) {
-        $ret['name'] = $name;
-    }
-    if ($message) {
-        $ret['message'] = $message;
-    }
-    if ($data) {
-        $ret['data'] = $data;
-    }
+
+    if (!$name) $name = @$response_codes[$code]['name'];
+
+    if ($name) $ret['name'] = $name;
+    if ($message) $ret['message'] = $message;
+    if ($data) $ret['data'] = $data;
+
     echo json_encode($ret, JSON_UNESCAPED_UNICODE);
+
     exit;
 }
 
@@ -292,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $response_cahce_req = false;
                 $cache = false;
             }
-            if ($cache && !array_key_exists('X-Dm-Api-Refresh', apache_request_headers())) {
+            if ($cache && !array_key_exists('X-Dm-Api-Refresh', request_headers())) {
 //                $redis->incr('cache-hit');
 //                $response_data_source = 'cache';
 //                header("X-Dm-Api-Data-Source: $response_data_source");
@@ -307,7 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $logger->error('Error handle post request' . PHP_EOL . $throwable);
                 }
             } else {
-                if (array_key_exists('X-Dm-Api-Refresh', apache_request_headers())) {
+                if (array_key_exists('X-Dm-Api-Refresh', request_headers())) {
                     // $redis->incr('cache-force-miss');
                 } else {
                     // $redis->incr('cache-miss');

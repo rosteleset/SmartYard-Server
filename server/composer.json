@@ -1,0 +1,23 @@
+{
+  "name": "rbt/server",
+  "homepage": "https://github.com/Selpol/SmartYard-Server",
+  "license": "GNU GENERAL PUBLIC LICENSE",
+  "autoload": {
+    "psr-4": {
+      "Selpol\\Task\\": "./task/",
+      "Selpol\\Validator\\": "./validator/",
+      "Selpol\\Logger\\": "./logger/"
+    },
+    "files": [
+      "./utils/helper.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "Ruslan KHudoborodov"
+    }
+  ],
+  "require": {
+    "php": ">=8.1"
+  }
+}

@@ -6,7 +6,7 @@
 
 namespace backends\isdn {
 
-    use Logger;
+    use Selpol\Logger\Logger;
 
     /**
      * Intercomtel variant of flash calls and sms sending
@@ -19,7 +19,7 @@ namespace backends\isdn {
         {
             parent::__construct($config, $db, $redis, $login);
 
-            $this->logger = Logger::channel('isdn');
+            $this->logger = logger('isdn');
         }
 
         /**

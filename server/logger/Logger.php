@@ -1,5 +1,7 @@
 <?php
 
+namespace Selpol\Logger;
+
 abstract class Logger
 {
     private static array $channels = [];
@@ -72,46 +74,5 @@ abstract class Logger
     public static function channels(array $files): Logger
     {
         return new MultipleLogger(array_map(static fn($file) => self::channel($file), $files));
-    }
-}
-
-class SingleLogger extends Logger
-{
-    private string $file;
-
-    public function __construct(string $file)
-    {
-        $this->file = $file;
-    }
-
-    public function log(string $level, string $message, array $context = []): void
-    {
-        file_put_contents($this->getFile(), '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
-    }
-
-    private function getFile(): string
-    {
-        return __DIR__ . '/../logs/' . $this->file . '-' . date('Y-m-d') . '.log';
-    }
-}
-
-class MultipleLogger extends Logger
-{
-    /** @var Logger[] $loggers */
-    private array $loggers;
-
-    /**
-     * MultipleLogger constructor.
-     * @param Logger[] $loggers
-     */
-    public function __construct(array $loggers)
-    {
-        $this->loggers = $loggers;
-    }
-
-    public function log(string $level, string $message, array $context = []): void
-    {
-        foreach ($this->loggers as $logger)
-            $logger->log($level, $message, $context);
     }
 }

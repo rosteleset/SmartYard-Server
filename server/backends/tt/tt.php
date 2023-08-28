@@ -109,7 +109,7 @@
 
                     $sandbox->registerLibrary("rbt", [
                         "setLastError" => function (...$args) {
-                            return [ setLastError(...$args) ];
+                            return [ last_error(...$args) ];
                         },
                         "i18n" => function (...$args) {
                             return [ i18n(...$args) ];
@@ -1270,14 +1270,14 @@
                 $myRoles = $this->myRoles();
 
                 if ((int)$myRoles[$acr] < 50) {
-                    setLastError("insufficentRights");
+                    last_error("insufficentRights");
                     return false;
                 }
 
                 $issue = $this->getIssue($issue);
 
                 if (!$issue) {
-                    setLastError("issueNotFound");
+                    last_error("issueNotFound");
                     return false;
                 }
 
@@ -1300,14 +1300,14 @@
                 $myRoles = $this->myRoles();
 
                 if ((int)$myRoles[$acr] < 30) {
-                    setLastError("insufficentRights");
+                    last_error("insufficentRights");
                     return false;
                 }
 
                 $issue = $this->getIssue($issue);
 
                 if (!$issue) {
-                    setLastError("issueNotFound");
+                    last_error("issueNotFound");
                     return false;
                 }
 

@@ -6,7 +6,7 @@ $camera_id = $param;
 if (!isset($camera_id) || $camera_id === 0)
     response(404);
 
-$logger = Logger::channel('internal');
+$logger = logger('internal');
 
 $logger->debug('camshot() start', ['camera' => $camera_id]);
 

@@ -22,7 +22,7 @@
                 if ($uid === false) {
                     $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login as \"adminLogin\" from core_groups left join core_users on core_groups.admin = core_users.uid order by gid", \PDO::FETCH_ASSOC)->fetchAll();
                 } else {
-                    if (!checkInt($uid)) {
+                    if (!check_int($uid)) {
                         return false;
                     }
                     $groups = $this->db->query("select gid, name, acronym, (select count (*) from core_users_groups as g1 where g1.gid = core_groups.gid) users, admin, login as \"adminLogin\" from core_groups left join core_users on core_groups.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) or gid in (select primary_group from core_users where uid = $uid) or admin = $uid order by gid", \PDO::FETCH_ASSOC)->fetchAll();
@@ -40,7 +40,7 @@
              */
 
             public function getGroup($gid) {
-                if (!checkInt($gid)) {
+                if (!check_int($gid)) {
                     return false;
                 }
 
@@ -63,7 +63,7 @@
              */
 
             public function modifyGroup($gid, $acronym, $name, $admin) {
-                if (!checkInt($gid)) {
+                if (!check_int($gid)) {
                     return false;
                 }
 
@@ -116,7 +116,7 @@
              */
             
             public function deleteGroup($gid) {
-                if (!checkInt($gid)) {
+                if (!check_int($gid)) {
                     return false;
                 }
 
@@ -137,7 +137,7 @@
              */
 
             public function getUsers($gid) {
-                if (!checkInt($gid)) {
+                if (!check_int($gid)) {
                     return false;
                 }
 
@@ -160,7 +160,7 @@
             public function setUsers($gid, $uids) {
                 // TODO: add transaction, commint, rollback
 
-                if (!checkInt($gid)) {
+                if (!check_int($gid)) {
                     return false;
                 }
 
@@ -179,7 +179,7 @@
                 }
 
                 foreach ($uids as $uid) {
-                    if (!checkInt($uid)) {
+                    if (!check_int($uid)) {
                         return false;
                     }
 
@@ -195,7 +195,7 @@
             }
 
             public function deleteUser($uid) {
-                if (!checkInt($gid)) {
+                if (!check_int($gid)) {
                     return false;
                 }
 
@@ -255,7 +255,7 @@
              */
             public function addUserToGroup($uid, $gid)
             {
-                if (!checkInt($uid) || !checkInt($gid)) {
+                if (!check_int($uid) || !check_int($gid)) {
                     return false;
                 }
 

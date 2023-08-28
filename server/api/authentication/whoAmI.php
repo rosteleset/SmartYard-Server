@@ -59,7 +59,7 @@
                 $extension = sprintf("7%09d", (int)$params["_uid"]);
                 $cred = $params["_redis"]->get("webrtc_" . md5($extension));
                 if (!$cred) {
-                    $cred = md5(GUIDv4());
+                    $cred = md5(guid_v4());
                 }
                 $params["_redis"]->setex("webrtc_" . md5($extension), 24 * 60 * 60, $cred);
 

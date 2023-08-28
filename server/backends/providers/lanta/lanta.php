@@ -62,7 +62,7 @@
                         "data" => $provs,
                     ]));
                 } catch (\Exception $e) {
-                    setLastError($e->getMessage());
+                    last_error($e->getMessage());
                     return false;
                 }
 
@@ -96,11 +96,11 @@
                     if ($error === JSON_ERROR_NONE) {
                         file_put_contents($this->config["backends"]["providers"]["providers.json"], $text);
                     } else {
-                        setLastError("Json error: $error");
+                        last_error("Json error: $error");
                         return false;
                     }
                 } catch (\Exception $e) {
-                    setLastError($e->getMessage());
+                    last_error($e->getMessage());
                     return false;
                 }
 
@@ -129,7 +129,7 @@
              */
             public function createProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
             {
-                if (!checkInt($hidden)) {
+                if (!check_int($hidden)) {
                     return false;
                 }
 
@@ -156,11 +156,11 @@
              */
             public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
             {
-                if (!checkInt($providerId)) {
+                if (!check_int($providerId)) {
                     return false;
                 }
 
-                if (!checkInt($hidden)) {
+                if (!check_int($hidden)) {
                     return false;
                 }
 
@@ -186,7 +186,7 @@
              */
             public function deleteProvider($providerId)
             {
-                if (!checkInt($providerId)) {
+                if (!check_int($providerId)) {
                     return false;
                 }
 

@@ -1,29 +1,15 @@
 <?php
 
-use tasks\TaskManager;
+use Selpol\Logger\SingleLogger;
+use Selpol\Task\TaskManager;
+
+require_once './vendor/autoload.php';
 
 mb_internal_encoding("UTF-8");
 
-require_once "utils/logger.php";
-require_once "utils/loader.php";
-require_once "utils/guidv4.php";
-require_once "utils/db_ext.php";
-require_once "utils/checkint.php";
-require_once "utils/checkstr.php";
-require_once "utils/purifier.php";
-require_once "utils/error.php";
-require_once "utils/apache_request_headers.php";
-require_once "utils/i18n.php";
-require_once "utils/validator.php";
-require_once "utils/response.php";
-require_once "utils/hooks.php";
-require_once "utils/email.php";
-require_once "utils/is_executable.php";
-require_once "utils/parse_uri.php";
-require_once "utils/debug.php";
-
 require_once "backends/backend.php";
-require_once "tasks/task.php";
+require_once "utils/loader.php";
+require_once "utils/db_ext.php";
 
 require_once "api/api.php";
 

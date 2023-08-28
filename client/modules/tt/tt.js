@@ -9,10 +9,10 @@
         
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
-                leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
+                leftSide("fas fa-fw fa-task", i18n("tt.tt"), "?#tt.settings", "tt");
                 this.menuItem = false;
             } else {
-                this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
+                this.menuItem = leftSide("fas fa-fw fa-task", i18n("tt.tt"), "?#tt", "tt");
             }
         }
         loadSubModules("tt", [

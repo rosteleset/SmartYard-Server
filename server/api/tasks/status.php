@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @api {get} /tasks/status get queues status
+ * @api {get} /task/status get queues status
  *
  * @apiVersion 1.0.0
  *
  * @apiName status
- * @apiGroup tasks
+ * @apiGroup task
  *
  * @apiHeader {String} authorization authentication token
  *
@@ -16,7 +16,7 @@
  */
 
 /**
- * tasks api
+ * task api
  */
 
 namespace api\tasks {
@@ -30,7 +30,7 @@ namespace api\tasks {
     {
         public static function GET($params)
         {
-            $tasks = loadBackend('tasks');
+            $tasks = loadBackend('task');
 
             return api::ANSWER($tasks->getStatus());
         }

@@ -122,11 +122,11 @@ function loadBackend($backend, $login = false)
                     return false;
                 }
             } catch (Exception $e) {
-                setLastError("cantLoadBackend");
+                last_error("cantLoadBackend");
                 return false;
             }
         } else {
-            setLastError("backendNotFound");
+            last_error("backendNotFound");
             return false;
         }
     }

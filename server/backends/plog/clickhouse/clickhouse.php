@@ -7,7 +7,6 @@
 namespace backends\plog {
 
     use backends\frs\frs;
-    use Logger;
     use PDO;
 
     /**
@@ -115,7 +114,7 @@ namespace backends\plog {
                         }
                     }
 
-                    Logger::channel('plog')->debug('frs camshot', ['data' => $camshot_data]);
+                    logger('plog')->debug('frs camshot', ['data' => $camshot_data]);
 
                     if (!$camshot_data) {
                         //получение кадра с DVR-серевера, если нет кадра от FRS
@@ -529,7 +528,7 @@ namespace backends\plog {
                     $event_data[self::COLUMN_DOMOPHONE]['domophone_id'],
                     $event_data[self::COLUMN_DOMOPHONE]['domophone_output']
                 );
-                $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
+                $event_data[self::COLUMN_EVENT_UUID] = guid_v4();
 
                 if ($event_type == self::EVENT_OPENED_BY_KEY) {
                     $event_data[self::COLUMN_OPENED] = 1;
@@ -620,7 +619,7 @@ namespace backends\plog {
                 ";
             $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
 
-            $logger = Logger::channel('plog');
+            $logger = logger('plog');
 
             $logger->debug('sync calls', ['calls' => count($result)]);
 
@@ -637,7 +636,7 @@ namespace backends\plog {
                     $event_data[self::COLUMN_DOMOPHONE]['domophone_id'],
                     $event_data[self::COLUMN_DOMOPHONE]['domophone_output']
                 );
-                $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
+                $event_data[self::COLUMN_EVENT_UUID] = guid_v4();
 
                 $call_id = (int)$row['call_id'];
                 if ($call_id == 0) {

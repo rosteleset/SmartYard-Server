@@ -1,12 +1,12 @@
 <?php
 
 /**
- * backends tasks namespace
+ * backends task namespace
  */
 
 namespace backends\tasks {
 
-    use tasks\TaskManager;
+    use Rbt\Tasks\TaskManager;
 
     class internal extends tasks
     {

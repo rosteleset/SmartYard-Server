@@ -1,30 +1,20 @@
 <?php
 
+require_once './vendor/autoload.php';
+
 // command line client
 
-use tasks\IntercomConfigureTask;
-use tasks\TaskManager;
-use function tasks\task;
+use Selpol\Task\Tasks\EmailTask;
+use Selpol\Task\Tasks\IntercomConfigureTask;
+use Selpol\Task\TaskManager;
+use Selpol\Task\Tasks\ReindexTask;
 
 chdir(__DIR__);
 
-require_once "utils/logger.php";
-require_once "utils/error.php";
-require_once "utils/response.php";
-require_once "utils/hooks.php";
-require_once "utils/guidv4.php";
 require_once "utils/loader.php";
-require_once "utils/checkint.php";
-require_once "utils/email.php";
-require_once "utils/is_executable.php";
 require_once "utils/db_ext.php";
-require_once "utils/parse_uri.php";
-require_once "utils/debug.php";
-require_once "utils/i18n.php";
-require_once "utils/validator.php";
 
 require_once "backends/backend.php";
-require_once "tasks/task.php";
 
 require_once "api/api.php";
 
@@ -52,9 +42,6 @@ function usage()
             [--check-mail=<your email address>]
             [--get-db-version]
             [--check-backends]
-
-        autoconfigure:
-            [--autoconfigure-domophone=<domophone_id> [--first-time]]
 
         cron:
             [--cron=<minutely|5min|hourly|daily|monthly>]
@@ -100,14 +87,14 @@ $args = [];
 for ($i = 1; $i < count($argv); $i++) {
     $a = explode('=', $argv[$i]);
     if ($a[0] == '--parent-pid') {
-        if (!checkInt($a[1])) {
+        if (!check_int($a[1])) {
             usage();
         } else {
             $script_parent_pid = $a[1];
         }
     } else
         if ($a[0] == '--debug' && !isset($a[1])) {
-            debugOn();
+//            debugOn();
         } else {
             $args[$a[0]] = @$a[1];
         }
@@ -189,6 +176,23 @@ function check_if_pid_exists()
 
 register_shutdown_function('shutdown');
 
+function is_executable_pathenv($filename): bool
+{
+    if (is_executable($filename)) {
+        return true;
+    }
+    if ($filename !== basename($filename)) {
+        return false;
+    }
+    $paths = explode(PATH_SEPARATOR, getenv("PATH"));
+    foreach ($paths as $path) {
+        if (is_executable($path . DIRECTORY_SEPARATOR . $filename)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 if ((count($args) == 1 || count($args) == 2) && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
     $db = null;
     if (is_executable_pathenv(PHP_BINARY)) {
@@ -239,7 +243,7 @@ try {
     exit(1);
 }
 
-$logger = Logger::channel('cli');
+$logger = logger('cli');
 
 try {
     $config = loadConfig();
@@ -297,14 +301,14 @@ foreach ($required_backends as $backend) {
 
 if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
     require_once "sql/install.php";
-    require_once "utils/clear_cache.php";
-    require_once "utils/reindex.php";
 
     init_db();
     startup();
-    $n = clearCache(true);
+    $n = clear_cache(true);
     echo "$n cache entries cleared\n\n";
-    reindex();
+
+    task(new ReindexTask())->high()->dispatch();
+
     echo "\n";
     exit(0);
 }
@@ -326,34 +330,38 @@ if (@$db) {
 }
 
 if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
-    require_once "utils/cleanup.php";
-    cleanup();
+    foreach ($config["backends"] as $backend => $_) {
+        $b = loadBackend($backend);
+
+        if ($b) {
+            $n = $b->cleanup();
+
+            if ($n !== false) {
+                echo "$backend: $n items cleaned\n";
+            }
+        } else {
+            echo "$backend: not found\n";
+        }
+    }
+
     exit(0);
 }
 
 if (count($args) == 1 && array_key_exists("--init-mobile-issues-project", $args) && !isset($args["--init-mobile-issues-project"])) {
-    require_once "utils/mobile_project.php";
-    init_mp();
     exit(0);
 }
 
 if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["--reindex"])) {
-    require_once "utils/reindex.php";
-    require_once "utils/clear_cache.php";
-
-    reindex();
-    $n = clearCache(true);
+    $n = clear_cache(true);
     echo "$n cache entries cleared\n";
 
-    $logger->debug('Reindex routes', ['entries_count' => $n]);
+    task(new ReindexTask())->high()->dispatch();
 
     exit(0);
 }
 
 if (count($args) == 1 && array_key_exists("--clear-cache", $args) && !isset($args["--clear-cache"])) {
-    require_once "utils/clear_cache.php";
-
-    $n = clearCache(true);
+    $n = clear_cache(true);
 
     $logger->debug('Clear cache', ['entries_count' => $n]);
 
@@ -383,15 +391,8 @@ if (count($args) == 1 && array_key_exists("--admin-password", $args) && isset($a
 }
 
 if (count($args) == 1 && array_key_exists("--check-mail", $args) && isset($args["--check-mail"])) {
-    $r = email($config, $args["--check-mail"], "test email", "test email");
-    if ($r === true) {
-        echo "email sended\n";
-    } else
-        if ($r === false) {
-            echo "no email config found\n";
-        } else {
-            print_r($r);
-        }
+    task(new EmailTask($args["--check-mail"], "test email", "test email"));
+
     exit(0);
 }
 
@@ -436,48 +437,92 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
     exit(0);
 }
 
-if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigure-domophone", $args) && isset($args["--autoconfigure-domophone"])) {
-    $domophone_id = $args["--autoconfigure-domophone"];
+if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
+    global $script_filename;
 
-    $first_time = false;
+    $crontab = [];
+    exec("crontab -l", $crontab);
 
-    if (count($args) == 2) {
-        if (array_key_exists("--first-time", $args)) {
-            $first_time = true;
-        } else {
-            usage();
+    $clean = [];
+    $skip = false;
+
+    $cli = PHP_BINARY . " " . $script_filename . " --cron";
+
+    $lines = 0;
+
+    foreach ($crontab as $line) {
+        if ($line === "## RBT crons start, dont touch!!!") {
+            $skip = true;
+        }
+        if (!$skip) {
+            $clean[] = $line;
+        }
+        if ($line === "## RBT crons end, dont touch!!!") {
+            $skip = false;
         }
     }
 
-    if (checkInt($domophone_id)) {
-        require_once "utils/autoconfigure_domophone.php";
+    $clean = explode("\n", trim(implode("\n", $clean)));
 
-        autoconfigure_domophone($domophone_id, $first_time);
+    $clean[] = "";
 
-        exit(0);
-    } else {
-        usage();
-    }
-}
+    $clean[] = "## RBT crons start, dont touch!!!";
+    $lines++;
+    $clean[] = "*/1 * * * * $cli=minutely";
+    $lines++;
+    $clean[] = "*/5 * * * * $cli=5min";
+    $lines++;
+    $clean[] = "1 */1 * * * $cli=hourly";
+    $lines++;
+    $clean[] = "1 1 */1 * * $cli=daily";
+    $lines++;
+    $clean[] = "1 1 1 */1 * $cli=monthly";
+    $lines++;
+    $clean[] = "## RBT crons end, dont touch!!!";
+    $lines++;
 
-if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
-    require_once "utils/install_crontabs.php";
+    file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)));
 
-    $n = installCrontabs();
-    echo "$n crontabs lines added\n";
+    system("crontab " . sys_get_temp_dir() . "/rbt_crontab");
+    echo "$lines crontabs lines added\n";
 
-    $logger->debug('Install crontabs', ['lines' => $n]);
+    $logger->debug('Install crontabs', ['lines' => $lines]);
 
     exit(0);
 }
 
 if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--uninstall-crontabs"])) {
-    require_once "utils/install_crontabs.php";
+    $crontab = [];
+    exec("crontab -l", $crontab);
 
-    $n = unInstallCrontabs();
-    echo "$n crontabs lines removed\n";
+    $clean = [];
+    $skip = false;
 
-    $logger->debug('Uninstall crontabs', ['lines' => $n]);
+    $lines = 0;
+
+    foreach ($crontab as $line) {
+        if ($line === "## RBT crons start, dont touch!!!") {
+            $skip = true;
+        }
+        if (!$skip) {
+            $clean[] = $line;
+        } else {
+            $lines++;
+        }
+        if ($line === "## RBT crons end, dont touch!!!") {
+            $skip = false;
+        }
+    }
+
+    $clean = explode("\n", trim(implode("\n", $clean)));
+
+    file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)));
+
+    system("crontab " . sys_get_temp_dir() . "/rbt_crontab");
+
+    echo "$lines crontabs lines removed\n";
+
+    $logger->debug('Uninstall crontabs', ['lines' => $lines]);
 
     exit(0);
 }

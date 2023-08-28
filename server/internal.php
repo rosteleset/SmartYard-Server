@@ -1,17 +1,14 @@
 <?php
 
+require_once './vendor/autoload.php';
+
 mb_internal_encoding("UTF-8");
 
-require_once "utils/logger.php";
 require_once "backends/backend.php";
-require_once "tasks/task.php";
 require_once "utils/loader.php";
 require_once "utils/db_ext.php";
-require_once "utils/error.php";
-require_once "utils/i18n.php";
-require_once "utils/validator.php";
 
-$logger = Logger::channel('internal');
+$logger = logger('internal');
 
 $config = false;
 
@@ -206,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $postdata = json_decode($raw_postdata, true);
 
     if (!isset($postdata)) {
-        $logger->error('Body is empty', ['path' => $path]);
+        $logger->error('Body is empty');
 
         response(405, ["error" => "post body"]);
     }
@@ -232,9 +229,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $module = $m[2];
         $method = $m[3];
 
-        if (file_exists(__DIR__ . "/internal/{$module}/{$method}.php")) {
+        if (file_exists(__DIR__ . "/internal/{$module}/{$method}.php"))
             require_once __DIR__ . "/internal/{$module}/{$method}.php";
-        }
     }
 
     response(405);
@@ -242,10 +238,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $m = explode('/', $_SERVER["REQUEST_URI"]);
+
     if (count($m) == 5 && !$m[0] && $m[1] == 'internal') {
         $module = $m[2];
         $method = $m[3];
         $param = $m[4];
+
         require_once __DIR__ . "/internal/{$module}/{$method}.php";
     }
 

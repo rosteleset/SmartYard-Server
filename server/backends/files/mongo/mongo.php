@@ -152,7 +152,7 @@ namespace backends\files {
                     $bucket->delete(new \MongoDB\BSON\ObjectId($uuid));
                     return true;
                 } catch (\Exception $e) {
-                    setLastError($e->getMessage());
+                    last_error($e->getMessage());
                 }
             }
 

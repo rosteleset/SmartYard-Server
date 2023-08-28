@@ -45,8 +45,8 @@ namespace backends\inbox {
                 "push_token_type" => "tokenType"
             ], ["singlify"]);
 
-            if (!checkInt($subscriber["platform"]) || !checkInt($subscriber["tokenType"]) || !$subscriber["id"] || !$subscriber["token"]) {
-                setLastError("mobileSubscriberNotRegistered");
+            if (!check_int($subscriber["platform"]) || !check_int($subscriber["tokenType"]) || !$subscriber["id"] || !$subscriber["token"]) {
+                last_error("mobileSubscriberNotRegistered");
                 return false;
             }
 
@@ -64,7 +64,7 @@ namespace backends\inbox {
                 $unreaded = $this->unreaded($subscriberId);
 
                 if (!$msgId) {
-                    setLastError("cantStoreMessage");
+                    last_error("cantStoreMessage");
                     return false;
                 }
 
@@ -91,15 +91,15 @@ namespace backends\inbox {
                     ])) {
                         return $msgId;
                     } else {
-                        setLastError("errorSendingPush: " . $result[1] ? $result[1] : $result[0]);
+                        last_error("errorSendingPush: " . $result[1] ? $result[1] : $result[0]);
                         return false;
                     }
                 } else {
-                    setLastError("pushCantBeSent");
+                    last_error("pushCantBeSent");
                     return false;
                 }
             } else {
-                setLastError("subscriberNotFound");
+                last_error("subscriberNotFound");
                 return false;
             }
         }
@@ -112,8 +112,8 @@ namespace backends\inbox {
             $w = "";
             $q = [];
 
-            if (!checkInt($subscriberId)) {
-                setLastError("invalidSubscriberId");
+            if (!check_int($subscriberId)) {
+                last_error("invalidSubscriberId");
                 return false;
             }
 
@@ -212,8 +212,8 @@ namespace backends\inbox {
          */
         public function unreaded($subscriberId)
         {
-            if (!checkInt($subscriberId)) {
-                setLastError("invalidSubscriberId");
+            if (!check_int($subscriberId)) {
+                last_error("invalidSubscriberId");
                 return false;
             }
 
@@ -233,8 +233,8 @@ namespace backends\inbox {
          */
         public function undelivered($subscriberId)
         {
-            if (!checkInt($subscriberId)) {
-                setLastError("invalidSubscriberId");
+            if (!check_int($subscriberId)) {
+                last_error("invalidSubscriberId");
                 return false;
             }
 

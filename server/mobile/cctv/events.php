@@ -2,6 +2,9 @@
 
 use backends\plog\plog;
 
+use Selpol\Validator\Filter;
+use Selpol\Validator\Rule;
+
 $validate = validate(@$postdata, [
     'cameraId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
     'date' => [Filter::default(1), Rule::int(), Rule::min(0), Rule::max(14), Rule::nonNullable()]

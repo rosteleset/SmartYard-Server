@@ -57,7 +57,7 @@
                         if ($did === "Base64") {
                             $token = md5($uid . ":" . $login . ":" . $password);
                         } else {
-                            $token = md5(GUIDv4());
+                            $token = md5(guid_v4());
                         }
                     }
                     $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode([

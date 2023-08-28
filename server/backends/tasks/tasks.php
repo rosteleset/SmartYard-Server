@@ -1,7 +1,7 @@
 <?php
 
 /**
- * backends tasks namespace
+ * backends task namespace
  */
 
 namespace backends\tasks {

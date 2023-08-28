@@ -58,7 +58,7 @@ namespace backends\cameras
          */
         public function getCamera($cameraId)
         {
-            if (!checkInt($cameraId)) {
+            if (!check_int($cameraId)) {
                 return false;
             }
 
@@ -87,11 +87,11 @@ namespace backends\cameras
                 return false;
             }
 
-            if (!checkStr($url)) {
+            if (!check_string($url)) {
                 return false;
             }
 
-            if (!checkInt($mdLeft) || !checkInt($mdTop) || !checkInt($mdWidth) || !checkInt($mdHeight)) {
+            if (!check_int($mdLeft) || !check_int($mdTop) || !check_int($mdWidth) || !check_int($mdHeight)) {
                 return false;
             }
 
@@ -124,13 +124,13 @@ namespace backends\cameras
          */
         public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comment)
         {
-            if (!checkInt($cameraId)) {
-                setLastError("noId");
+            if (!check_int($cameraId)) {
+                last_error("noId");
                 return false;
             }
 
             if (!$model) {
-                setLastError("noModel");
+                last_error("noModel");
                 return false;
             }
 
@@ -138,11 +138,11 @@ namespace backends\cameras
             $models = $configs->getCamerasModels();
 
             if (!@$models[$model]) {
-                setLastError("modelUnknown");
+                last_error("modelUnknown");
                 return false;
             }
 
-            if (!checkStr($url)) {
+            if (!check_string($url)) {
                 return false;
             }
 
@@ -175,8 +175,8 @@ namespace backends\cameras
          */
         public function deleteCamera($cameraId)
         {
-            if (!checkInt($cameraId)) {
-                setLastError("noId");
+            if (!check_int($cameraId)) {
+                last_error("noId");
                 return false;
             }
 

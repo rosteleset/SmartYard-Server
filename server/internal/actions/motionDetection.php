@@ -11,7 +11,7 @@ if (!isset(
     response(406, "Invalid payload");
 }
 
-$logger = Logger::channel('motion');
+$logger = logger('motion');
 
 [
     "date" => $date,

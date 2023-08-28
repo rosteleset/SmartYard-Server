@@ -1,11 +1,11 @@
 ({
     init() {
-        moduleLoaded("tasks", this)
+        moduleLoaded("task", this)
 
-        if (AVAIL("tasks", "status", "GET")) {
+        if (AVAIL("task", "status", "GET")) {
             $(`
                         <li class="nav-item dropdown">
-                            <a id="tasksMenuRight" class="nav-link text-dark" data-toggle="dropdown" title="${i18n("tasks.title")}" href="#">
+                            <a id="tasksMenuRight" class="nav-link text-dark" data-toggle="dropdown" title="${i18n("task.title")}" href="#">
                                 <i class="fas fa-lg fa-fw fa-server"></i>
                             </a>
                             <div id="tasksMenuRightContainer" class="dropdown-menu dropdown-menu-lg dropdown-menu-right p-3" style="max-width: none;">
@@ -18,7 +18,7 @@
     },
 
     tasksMenuRight() {
-        GET("tasks", "status")
+        GET("task", "status")
             .done((response) => $("#tasksMenuRightContainer").text(JSON.stringify(response)))
     }
 }).init()

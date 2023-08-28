@@ -49,7 +49,7 @@
             } else {
                 $redis->del("userpin_".$user_phone);
                 $redis->del("userpin.attempts_".$user_phone);
-                $token = GUIDv4();
+                $token = guid_v4();
                 $subscribers = $households->getSubscribers("mobile", $user_phone);
                 $names = [ "name" => "", "patronymic" => "" ];
                 if ($subscribers) {

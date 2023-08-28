@@ -32,7 +32,7 @@ namespace PHPSTORM_META {
         'tt',
         'tt_journal',
         'users',
-        'tasks'
+        'task'
     );
 
     override(
@@ -64,10 +64,11 @@ namespace PHPSTORM_META {
             'tt' => \backends\tt\tt::class,
             'tt_journal' => \backends\tt_journal\tt_journal::class,
             'users' => \backends\users\users::class,
-            'tasks' => \backends\tasks\tasks::class
+            'task' => \backends\tasks\tasks::class
         ])
     );
 
+    exitPoint(\forgot());
     exitPoint(\response());
     exitPoint(\usage());
 }
