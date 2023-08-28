@@ -10,12 +10,12 @@ abstract class Task
 {
     public string $title;
 
-    protected ?Redis $redis;
-    protected ?PDO_EXT $pdo;
-    protected ?array $config;
+    protected ?Redis $redis = null;
+    protected ?PDO_EXT $pdo = null;
+    protected ?array $config = null;
 
     /** @var callable $progressCallable */
-    private mixed $progressCallable;
+    private mixed $progressCallable = null;
 
     public function __construct(string $title)
     {

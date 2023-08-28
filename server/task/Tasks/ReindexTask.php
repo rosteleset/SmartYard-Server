@@ -32,7 +32,8 @@ class ReindexTask extends Task
         $n = 0;
 
         foreach ($apis as $api) {
-            $this->setProgress(count($apis) / $n * 100);
+            if ($n > 0)
+                $this->setProgress(count($apis) / $n * 100);
 
             if ($api != "." && $api != ".." && is_dir($dir . "/$api")) {
                 $methods = scandir($dir . "/$api");

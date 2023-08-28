@@ -4,6 +4,8 @@ namespace Selpol\Task;
 
 use DateInterval;
 use DateTime;
+use PDO_EXT;
+use Redis;
 
 class TaskContainer
 {
@@ -56,6 +58,15 @@ class TaskContainer
         $this->start = $start;
 
         return $this;
+    }
+
+    public function sync(?Redis $redis, ?PDO_EXT $pdo, ?array $config)
+    {
+        $this->task->setRedis($redis);
+        $this->task->setPdo($pdo);
+        $this->task->setConfig($config);
+
+        $this->task->onTask();
     }
 
     public function dispatch(): bool

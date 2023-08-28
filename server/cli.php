@@ -305,9 +305,8 @@ if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["-
     $n = clear_cache(true);
     echo "$n cache entries cleared\n\n";
 
-    task(new ReindexTask())->high()->dispatch();
+    task(new ReindexTask())->sync($redis, $db, $config);
 
-    echo "\n";
     exit(0);
 }
 
@@ -353,7 +352,7 @@ if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["-
     $n = clear_cache(true);
     echo "$n cache entries cleared\n";
 
-    task(new ReindexTask())->high()->dispatch();
+    task(new ReindexTask())->sync($redis, $db, $config);
 
     exit(0);
 }
