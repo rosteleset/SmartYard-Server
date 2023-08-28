@@ -9,17 +9,21 @@ class PlogCallTask extends PlogTask
     /** @var int Идентификатор устройства */
     public int $id;
 
+    /** @var string IP-адресс устройства */
+    public string $ip;
+
     /** @var int Дата события */
     public int $date;
 
     /** @var int|null Идентификатор звонка */
     public ?int $call;
 
-    public function __construct(int $id, int $date, ?int $call)
+    public function __construct(int $id, string $ip, int $date, ?int $call)
     {
         parent::__construct('Событие звонка');
 
         $this->id = $id;
+        $this->ip = $ip;
 
         $this->date = $date;
         $this->call = $call;
@@ -37,7 +41,7 @@ class PlogCallTask extends PlogTask
         $event_data[plog::COLUMN_DOMOPHONE]['domophone_description'] = $this->getDomophoneDescription($event_data[plog::COLUMN_DOMOPHONE]['domophone_output']);
         $event_data[plog::COLUMN_EVENT_UUID] = guid_v4();
 
-        $logs = $plog->getSyslog('', $this->date);
+        $logs = $plog->getSyslog($this->ip, $this->date);
 
         $call_from_panel = 0;
         $call_start_found = false;
@@ -56,14 +60,11 @@ class PlogCallTask extends PlogTask
 
             if ($unit == 'beward')
                 $this->beward($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
-
-            if ($unit == 'is')
+            else if ($unit == 'is')
                 $this->is($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
-
-            if ($unit == 'qtech')
+            else if ($unit == 'qtech')
                 $this->qtech($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
-
-            if ($unit == 'akuvox')
+            else if ($unit == 'akuvox')
                 $this->akuvox($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
 
             if ($call_start_found || $call_from_panel < 0)
@@ -100,7 +101,6 @@ class PlogCallTask extends PlogTask
                 $event_data[plog::COLUMN_IMAGE_UUID] = $image_data[plog::COLUMN_IMAGE_UUID];
 
             $event_data[plog::COLUMN_PREVIEW] = $image_data[plog::COLUMN_PREVIEW];
-
         }
 
         $plog->writeEventData($event_data);

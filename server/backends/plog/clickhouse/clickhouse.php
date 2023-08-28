@@ -188,7 +188,7 @@ namespace backends\plog {
          */
         public function addCallDoneData($date, $ip, $call_id = null)
         {
-            task(new PlogCallTask($this->getDomophoneId($ip), $date, $call_id))->medium()->delay(10)->dispatch();
+            task(new PlogCallTask($this->getDomophoneId($ip), $ip, $date, $call_id))->medium()->delay(10)->dispatch();
         }
 
         /**
