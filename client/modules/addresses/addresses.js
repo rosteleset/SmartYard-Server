@@ -1087,26 +1087,14 @@
     },
 
     qrGenerate(houseId, override) {
-        try {
-            $.ajax({
-                url: lStore("_server") + "/" + encodeURIComponent("addresses") + "/" + encodeURIComponent("qr") + ((typeof houseId !== "undefined" && houseId !== false) ? ("/" + encodeURIComponent(houseId)) : ""),
-                beforeSend: xhr => {
-                    xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
-                },
-                type: type,
-                contentType: "json",
-                data: JSON.stringify({override}),
-                success: (data) => {
-                    const blob = new Blob([data])
-                    const link = document.createElement('a')
-                    link.href = window.URL.createObjectURL(blob)
-                    link.download = 'qr.docx'
-                    link.click()
-                }
-            });
-        } catch (e) {
+        POST("addresses", "qr", houseId, {override}).done((response) => {
+            const blob = new Blob([response])
+            const link = document.createElement('a')
 
-        }
+            link.href = window.URL.createObjectURL(blob)
+            link.download = 'qr.docx'
+            link.click()
+        })
     },
 
     deleteRegion: function (regionId) {
