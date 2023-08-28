@@ -72,7 +72,7 @@ function usage()
             [--task-status]
 
         qr:
-            [--qr=<houseId> [--flat=<flatId>]]
+            [--qr=<houseId> --output=<output> [--flat=<flatId>]]
 
         \n";
 
@@ -751,14 +751,16 @@ if (array_key_exists('--task-status', $args)) {
     exit(0);
 }
 
-if (array_key_exists('--qr', $args) && isset($args['--qr'])) {
+if (array_key_exists('--qr', $args) && isset($args['--qr']) && array_key_exists('--output', $args) && isset($args['--output'])) {
     $houseId = $args['--qr'];
+    $output = $args['--output'];
+
     $flatId = array_key_exists('--flat', $args) && isset($args['--flat']) ? $args['--flat'] : null;
 
     $uuid = task(new QrTask($houseId, $flatId))->sync($redis, $db, $config);
 
     if ($uuid)
-        echo loadBackend('files')->getFileBytes($uuid);
+        fwrite(fopen($output, 'w'), loadBackend('files')->getFileBytes($uuid));
 
     exit(0);
 }
