@@ -42,6 +42,11 @@ class PlogCallTask extends PlogTask
         $call_from_panel = 0;
         $call_start_found = false;
 
+        $call_id = $this->call;
+
+        if ($call_id == 0)
+            $call_id = null;
+
         $flat_id = null;
         $prefix = null;
         $flat_number = null;
@@ -50,16 +55,16 @@ class PlogCallTask extends PlogTask
             $unit = $item['unit'];
 
             if ($unit == 'beward') {
-                if (!$this->beward($event_data, $call_from_panel, $call_start_found, $flat_id, $prefix, $flat_number, $item, $item['msg']))
+                if (!$this->beward($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
             } else if ($unit == 'is') {
-                if (!$this->is($event_data, $call_from_panel, $call_start_found, $flat_id, $prefix, $flat_number, $item, $item['msg']))
+                if (!$this->is($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
             } else if ($unit == 'qtech') {
-                if (!$this->qtech($event_data, $call_from_panel, $call_start_found, $flat_id, $prefix, $flat_number, $item, $item['msg']))
+                if (!$this->qtech($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
             } else if ($unit == 'akuvox') {
-                if (!$this->akuvox($event_data, $call_from_panel, $call_start_found, $flat_id, $prefix, $flat_number, $item, $item['msg']))
+                if (!$this->akuvox($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
             }
 
@@ -70,9 +75,9 @@ class PlogCallTask extends PlogTask
         if ($call_from_panel < 0)
             return false;
 
-        if (isset($flat_id)) $event_data[plog::COLUMN_FLAT_ID] = $flat_id;
-        else if (isset($prefix) && isset($flat_number)) $event_data[plog::COLUMN_FLAT_ID] = $this->getFlatIdByPrefixAndNumber($prefix, $flat_number);
-        else if (isset($flat_number)) $event_data[plog::COLUMN_FLAT_ID] = $this->getFlatIdByNumber($flat_number);
+        if ($flat_id != null) $event_data[plog::COLUMN_FLAT_ID] = $flat_id;
+        else if ($prefix != null && $flat_number != null) $event_data[plog::COLUMN_FLAT_ID] = $this->getFlatIdByPrefixAndNumber($prefix, $flat_number);
+        else if ($flat_number != null) $event_data[plog::COLUMN_FLAT_ID] = $this->getFlatIdByNumber($flat_number);
         else $event_data[plog::COLUMN_FLAT_ID] = $this->getFlatIdByDomophoneId();
 
         //не удалось получить flat_id - игнорируем звонок
@@ -91,6 +96,7 @@ class PlogCallTask extends PlogTask
         }
 
         $image_data = $plog->getCamshot($this->id, $event_data[plog::COLUMN_DATE]);
+
         if ($image_data) {
             if (isset($image_data[plog::COLUMN_IMAGE_UUID]))
                 $event_data[plog::COLUMN_IMAGE_UUID] = $image_data[plog::COLUMN_IMAGE_UUID];
@@ -104,7 +110,7 @@ class PlogCallTask extends PlogTask
         return true;
     }
 
-    private function beward(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function beward(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
     {
         $patterns_call = [
             //pattern start  talk  open   call_from_panel
@@ -188,21 +194,20 @@ class PlogCallTask extends PlogTask
                     $now_sip_call_id = intval(substr($msg, $p1 + strlen($parts[0]), $p2 - $p1 - strlen($parts[0])));
                 }
 
-                $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
-                    || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
+                $call_start_lost = isset($now_flat_id) && $flat_id != null && $now_flat_id != $flat_id
+                    || isset($now_flat_number) && $flat_number != null && $now_flat_number != $flat_number
                     || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
-                    || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+                    || isset($now_call_id) && $call_id != null && $now_call_id != $call_id;
 
-                if ($call_start_lost) {
+                if ($call_start_lost)
                     return false;
-                }
 
                 $event_data[plog::COLUMN_DATE] = $item['date'];
 
-                if (isset($now_call_id) && !isset($call_id)) $call_id = $now_call_id;
+                if (isset($now_call_id) && $call_id == null) $call_id = $now_call_id;
                 if (isset($now_sip_call_id) && !isset($sip_call_id)) $sip_call_id = $now_sip_call_id;
-                if (isset($now_flat_number) && !isset($flat_number)) $flat_number = $now_flat_number;
-                if (isset($now_flat_id) && !isset($flat_id)) $flat_id = $now_flat_id;
+                if (isset($now_flat_number) && $flat_number == null) $flat_number = $now_flat_number;
+                if (isset($now_flat_id) && $flat_id == null) $flat_id = $now_flat_id;
                 if ($flag_talk_started) $event_data[plog::COLUMN_EVENT] = plog::EVENT_ANSWERED_CALL;
                 if ($flag_door_opened) $event_data[plog::COLUMN_OPENED] = 1;
 
@@ -217,7 +222,7 @@ class PlogCallTask extends PlogTask
         return true;
     }
 
-    private function is(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function is(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
     {
         $patterns_call = [
             // pattern         start  talk  open   call_from_panel
@@ -269,20 +274,20 @@ class PlogCallTask extends PlogTask
                     }
                 }
 
-                $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
-                    || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
+                $call_start_lost = isset($now_flat_id) && $flat_id != null && $now_flat_id != $flat_id
+                    || isset($now_flat_number) && $flat_number != null && $now_flat_number != $flat_number
                     || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
-                    || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+                    || isset($now_call_id) && $call_id != null && $now_call_id != $call_id;
 
                 if ($call_start_lost)
                     return false;
 
                 $event_data[plog::COLUMN_DATE] = $item["date"];
 
-                if (isset($now_call_id) && !isset($call_id)) $call_id = $now_call_id;
+                if (isset($now_call_id) && $call_id == null) $call_id = $now_call_id;
                 if (isset($now_sip_call_id) && !isset($sip_call_id)) $sip_call_id = $now_sip_call_id;
-                if (isset($now_flat_number) && !isset($flat_number)) $flat_number = $now_flat_number;
-                if (isset($now_flat_id) && !isset($flat_id)) $flat_id = $now_flat_id;
+                if (isset($now_flat_number) && $flat_number == null) $flat_number = $now_flat_number;
+                if (isset($now_flat_id) && $flat_id == null) $flat_id = $now_flat_id;
                 if ($flag_talk_started) $event_data[plog::COLUMN_EVENT] = plog::EVENT_ANSWERED_CALL;
                 if ($flag_door_opened) $event_data[plog::COLUMN_OPENED] = 1;
 
@@ -297,7 +302,7 @@ class PlogCallTask extends PlogTask
         return true;
     }
 
-    private function qtech(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function qtech(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
     {
         $patterns_call = [
             // pattern         start  talk  open   call_from_panel
@@ -396,7 +401,7 @@ class PlogCallTask extends PlogTask
         return true;
     }
 
-    private function akuvox(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function akuvox(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
     {
         $patterns_call = [
             // pattern         start  talk  open   call_from_panel
