@@ -86,7 +86,7 @@ class QrTask extends Task
         } catch (Exception) {
             return null;
         } finally {
-            unlink($file);
+            //unlink($file);
 
             foreach ($files as $file)
                 unlink($file);
