@@ -2,7 +2,7 @@
     init() {
         moduleLoaded("task", this)
 
-        if (AVAIL("task", "status", "GET")) {
+        if (AVAIL("tasks", "status", "GET")) {
             $(`
                         <li class="nav-item dropdown">
                             <a id="tasksMenuRight" class="nav-link text-dark" data-toggle="dropdown" title="${i18n("task.title")}" href="#">
@@ -18,7 +18,7 @@
     },
 
     tasksMenuRight() {
-        GET("task", "status")
+        GET("tasks", "status")
             .done((response) => $("#tasksMenuRightContainer").text(JSON.stringify(response)))
     }
 }).init()
