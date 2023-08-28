@@ -8,6 +8,8 @@ namespace backends\plog {
 
     use backends\frs\frs;
     use PDO;
+    use Selpol\Task\Tasks\Plog\PlogCallTask;
+    use Selpol\Task\Tasks\Plog\PlogOpenTask;
 
     /**
      * clickhouse archive class
@@ -186,16 +188,7 @@ namespace backends\plog {
          */
         public function addCallDoneData($date, $ip, $call_id = null)
         {
-            $expire = time() + $this->ttl_temp_record;
-
-            $query = "insert into plog_call_done(date, ip, call_id, expire) values(:date, :ip, :call_id, :expire)";
-
-            return $this->db->insert($query, [
-                ":date" => $date,
-                ":ip" => $ip,
-                ":call_id" => $call_id,
-                ":expire" => $expire,
-            ]);
+            task(new PlogCallTask($this->getDomophoneId($ip), $date, $call_id))->high()->dispatch();
         }
 
         /**
@@ -203,18 +196,7 @@ namespace backends\plog {
          */
         public function addDoorOpenData($date, $ip, $event_type, $door, $detail)
         {
-            $expire = time() + $this->ttl_temp_record;
-
-            $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
-
-            return $this->db->insert($query, [
-                ":date" => $date,
-                ":ip" => $ip,
-                ":event" => $event_type,
-                ":door" => $door,
-                ":detail" => $detail,
-                ":expire" => $expire,
-            ]);
+            task(new PlogOpenTask($this->getDomophoneId($ip), $event_type, $door, $date, $detail))->high()->dispatch();
         }
 
         /**
@@ -222,10 +204,15 @@ namespace backends\plog {
          */
         public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
         {
-            $households = loadBackend('households');
-            $ip = $households->getDomophone($domophone_id)['ip'];
+            task(new PlogOpenTask($domophone_id, $event_type, $door, $date, $detail))->high()->dispatch();
+        }
 
-            return $this->addDoorOpenData($date, $ip, $event_type, $door, $detail);
+        public function getSyslog(string $ip, int $date): false|array
+        {
+            $start_date = $date - $this->max_call_length;
+            $query = "select date, msg, unit from syslog s where IPv4NumToString(s.ip) = '$ip' and s.date > $start_date and s.date <= $date order by date desc";
+
+            return $this->clickhouse->select($query);
         }
 
         /**

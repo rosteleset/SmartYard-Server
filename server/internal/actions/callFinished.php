@@ -15,6 +15,6 @@ if (!isset(
 
 $plog = loadBackend("plog");
 
-$callDone = $plog->addCallDoneData($date, $ip, $callId);
+$plog->addCallDoneData($date, $ip, $callId);
 
-response(201, ["id" => $callDone]);
+response(200);

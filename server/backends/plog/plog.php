@@ -122,5 +122,7 @@ namespace backends\plog {
          * @param (int | null) $call_id идентификатор звонка (beward only)
          */
         abstract public function addCallDoneData($date, $ip, $call_id);
+
+        abstract public function getSyslog(string $ip, int $date): false|array;
     }
 }

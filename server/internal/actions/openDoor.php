@@ -38,8 +38,9 @@ $plog = loadBackend('plog');
 switch ($event) {
     case $events['OPEN_BY_KEY']:
     case $events['OPEN_BY_CODE']:
-        $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $event, $door, $detail);
-        response(201, ["id" => $plogDoorOpen]);
+        $plog->addDoorOpenData($date, $ip, $event, $door, $detail);
+
+        response(200);
 
     case $events['OPEN_BY_CALL']:
         response(200);
