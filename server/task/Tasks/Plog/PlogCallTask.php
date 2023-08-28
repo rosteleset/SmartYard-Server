@@ -55,20 +55,16 @@ class PlogCallTask extends PlogTask
             $unit = $item['unit'];
 
             if ($unit == 'beward')
-                if (!$this->beward($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
-                    break;
+                $this->beward($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
 
             if ($unit == 'is')
-                if (!$this->is($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
-                    break;
+                $this->is($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
 
             if ($unit == 'qtech')
-                if (!$this->qtech($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
-                    break;
+                $this->qtech($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
 
             if ($unit == 'akuvox')
-                if (!$this->akuvox($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
-                    break;
+                $this->akuvox($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']);
 
             if ($call_start_found || $call_from_panel < 0)
                 break;
@@ -112,7 +108,7 @@ class PlogCallTask extends PlogTask
         return true;
     }
 
-    private function beward(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function beward(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg)
     {
         $patterns_call = [
             //pattern start  talk  open   call_from_panel
@@ -149,7 +145,7 @@ class PlogCallTask extends PlogTask
                 elseif ($now_call_from_panel < 0) {
                     $call_from_panel = -1;
 
-                    return false;
+                    break;
                 }
 
                 if (str_contains($msg, "[")) {
@@ -202,7 +198,7 @@ class PlogCallTask extends PlogTask
                     || isset($now_call_id) && $call_id != null && $now_call_id != $call_id;
 
                 if ($call_start_lost)
-                    return false;
+                    break;
 
                 $event_data[plog::COLUMN_DATE] = $item['date'];
 
@@ -216,15 +212,13 @@ class PlogCallTask extends PlogTask
                 if ($flag_start) {
                     $call_start_found = true;
 
-                    return false;
+                    break;
                 }
             }
         }
-
-        return true;
     }
 
-    private function is(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function is(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg)
     {
         $patterns_call = [
             // pattern         start  talk  open   call_from_panel
@@ -259,7 +253,7 @@ class PlogCallTask extends PlogTask
                 } else if ($now_call_from_panel < 0) {
                     $call_from_panel = -1;
 
-                    return false;
+                    break;
                 }
 
                 // Get message parts
@@ -283,7 +277,7 @@ class PlogCallTask extends PlogTask
                     || isset($now_call_id) && $call_id != null && $now_call_id != $call_id;
 
                 if ($call_start_lost)
-                    return false;
+                    break;
 
                 $event_data[plog::COLUMN_DATE] = $item["date"];
 
@@ -297,15 +291,13 @@ class PlogCallTask extends PlogTask
                 if ($flag_start) {
                     $call_start_found = true;
 
-                    return false;
+                    break;
                 }
             }
         }
-
-        return true;
     }
 
-    private function qtech(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function qtech(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg)
     {
         $patterns_call = [
             // pattern         start  talk  open   call_from_panel
@@ -382,7 +374,7 @@ class PlogCallTask extends PlogTask
                     || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
 
                 if ($call_start_lost)
-                    return false;
+                    break;
 
                 $event_data[plog::COLUMN_DATE] = $item["date"];
 
@@ -396,15 +388,13 @@ class PlogCallTask extends PlogTask
                 if ($flag_start) {
                     $call_start_found = true;
 
-                    return false;
+                    break;
                 }
             }
         }
-
-        return true;
     }
 
-    private function akuvox(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg): bool
+    private function akuvox(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg)
     {
         $patterns_call = [
             // pattern         start  talk  open   call_from_panel
@@ -440,7 +430,7 @@ class PlogCallTask extends PlogTask
                     || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
 
                 if ($call_start_lost)
-                    return false;
+                    break;
 
                 $event_data[plog::COLUMN_DATE] = $item["date"];
 
@@ -452,11 +442,9 @@ class PlogCallTask extends PlogTask
                 if ($flag_start) {
                     $call_start_found = true;
 
-                    return false;
+                    break;
                 }
             }
         }
-
-        return true;
     }
 }

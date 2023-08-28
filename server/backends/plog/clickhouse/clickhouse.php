@@ -637,24 +637,7 @@ namespace backends\plog {
                 $call_start_found = false;
 
                 //забираем данные из сислога для звонка
-                $query_end_date = $row['date'];
-                $query_start_date = $query_end_date - $this->max_call_length;
-                $query = "
-                        select
-                            date,
-                            msg,
-                            unit
-                        from
-                            syslog s
-                        where
-                            IPv4NumToString(s.ip) = '$ip'
-                            and s.date > $query_start_date
-                            and s.date <= $query_end_date
-                        order by
-                            date desc
-                    ";
-
-                $result = $this->clickhouse->select($query);
+                $result = $this->getSyslog($ip, $row['date']);
 
                 $logger->debug('sync call syslog', ['call' => $row, 'syslogs' => count($result)]);
 
