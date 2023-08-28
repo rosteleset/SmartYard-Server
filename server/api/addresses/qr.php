@@ -24,7 +24,7 @@ namespace api\addresses {
 
             $uuid = task(new QrTask($validate['_id'], null, $validate['override']))->sync(null, null, null);
 
-            header('Content-Type: application/zip');
+            header('Content-Type: application/octet-stream');
             header('Content-Disposition: attachment; filename="' . $uuid . '.zip"');
 
             echo stream_get_contents(loadBackend('files')->getFileStream($uuid));
