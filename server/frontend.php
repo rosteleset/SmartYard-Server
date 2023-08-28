@@ -1,8 +1,8 @@
 <?php
 
-use Selpol\Task\Tasks\EmailTask;
+require_once dirname(__FILE__) . './vendor/autoload.php';
 
-require_once './vendor/autoload.php';
+use Selpol\Task\Tasks\EmailTask;
 
 $real_ip_header = 'HTTP_X_FORWARDED_FOR';
 

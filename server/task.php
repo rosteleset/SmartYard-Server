@@ -1,9 +1,9 @@
 <?php
 
+require_once dirname(__FILE__) . './vendor/autoload.php';
+
 use Selpol\Logger\SingleLogger;
 use Selpol\Task\TaskManager;
-
-require_once './vendor/autoload.php';
 
 mb_internal_encoding("UTF-8");
 
