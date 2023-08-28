@@ -1096,13 +1096,11 @@
 
             document.body.append(link)
 
-            setTimeout(() => {
-                link.click()
+            link.click()
 
-                setTimeout(() => {
-                    document.body.removeChild(link)
-                    window.URL.revokeObjectURL(link.href)
-                }, 1)
+            setTimeout(() => {
+                document.body.removeChild(link)
+                window.URL.revokeObjectURL(link.href)
             }, 1)
         })
     },
