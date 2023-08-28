@@ -13,14 +13,17 @@ class QrTask extends Task
 {
     public int $houseId;
     public ?int $flatId;
+    public bool $override;
 
     private files $files;
 
-    public function __construct(int $houseId, ?int $flatId)
+    public function __construct(int $houseId, ?int $flatId, bool $override)
     {
         parent::__construct('Qr (' . $houseId . ', ' . ($flatId ?? -1) . ')');
 
         $this->houseId = $houseId;
+        $this->flatId = $flatId;
+        $this->override = $override;
     }
 
     public function onTask(): ?string
@@ -28,6 +31,17 @@ class QrTask extends Task
         $this->files = loadBackend('files');
 
         $house = loadBackend('addresses')->getHouse($this->houseId);
+
+        if ($this->override) {
+            $uuids = $this->files->searchFiles(['filename' => $house['houseFull'] . ' QR.zip']);
+            foreach ($uuids as $uuid)
+                $this->files->deleteFile($uuid['id']);
+        } else {
+            $uuids = $this->files->searchFiles(['filename' => $house['houseFull'] . ' QR.zip']);
+
+            if (count($uuids) > 0)
+                return $uuids[count($uuids) - 1]['id'];
+        }
 
         $qr = $this->getOrCreateQr($house);
 
@@ -71,7 +85,7 @@ class QrTask extends Task
             foreach ($qr['flats'] as $flat) {
                 $template = new TemplateProcessor(path('private/qr-template.docx'));
 
-                $template->setValue('address', $qr['address'] . ', кв' . $flat['flat']);
+                $template->setValue('address', $qr['address'] . ', кв ' . $flat['flat']);
 
                 $templateFile = $template->save();
                 $files[] = $templateFile;
