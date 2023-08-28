@@ -1107,11 +1107,9 @@
 
                 link.click()
 
-                setTimeout(() => {
-                    window.URL.revokeObjectURL(link.href)
-                }, 1)
+                setTimeout(() => window.URL.revokeObjectURL(link.href), 1)
             })
-            .finally(() => loadingDone(true))
+            .finally(() => loadingDone(false))
     },
 
     deleteRegion: function (regionId) {
