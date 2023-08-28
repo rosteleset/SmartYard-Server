@@ -20,7 +20,7 @@ class WaitTask extends Task
         for ($i = 0; $i < $this->wait; $i++) {
             sleep(1);
 
-            $this->setProgress($i);
+            $this->setProgress($i / $this->wait * 100);
         }
     }
 }
