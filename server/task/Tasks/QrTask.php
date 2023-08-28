@@ -79,6 +79,7 @@ class QrTask extends Task
                 $zip->addFile($templateFile);
             }
 
+            echo json_encode($zip->count());
             $zip->close();
 
             return $this->files->addFile($qr['address'] . ' QR.zip', fopen($file, "r"));
