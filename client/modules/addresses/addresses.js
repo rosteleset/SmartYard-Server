@@ -1087,6 +1087,7 @@
     },
 
     qrGenerate(houseId, override) {
+        loadingStart()
         fetch(
             lStore("_server") + "/addresses/qr/" + houseId,
             {
@@ -1110,6 +1111,7 @@
                     window.URL.revokeObjectURL(link.href)
                 }, 1)
             })
+            .finally(() => loadingDone(true))
     },
 
     deleteRegion: function (regionId) {
