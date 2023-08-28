@@ -1090,7 +1090,7 @@
         POST("addresses", "qr", houseId, {override}).done((response) => {
             const blob = new Blob([response])
 
-            window.open(window.URL.createObjectURL(blob), "_blank")
+            window.open(window.URL.createObjectURL(blob), "_blank", 'toolbar=0,location=no,directories=0,status=0,scrollbars=0,resizeable=0,width=1,height=1,top=0,left=0')
         })
     },
 
