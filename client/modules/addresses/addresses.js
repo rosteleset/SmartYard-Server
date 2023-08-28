@@ -1087,8 +1087,7 @@
     },
 
     qrGenerate(houseId, override) {
-        loadingStart()
-        POST("addresses", "qr", {houseId, override}).fail(FAIL)
+        POST("addresses", "qr", houseId, {override})
     },
 
     deleteRegion: function (regionId) {

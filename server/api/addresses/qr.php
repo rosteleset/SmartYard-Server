@@ -18,11 +18,11 @@ namespace api\addresses {
         public static function POST($params)
         {
             $validate = validate($params, [
-                'houseId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
+                '_id' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
                 'override' => [Rule::required(), Rule::bool(), Rule::nonNullable()]
             ]);
 
-            $uuid = task(new QrTask($validate['houseId'], null, $validate['override']))->sync(null, null, null);
+            $uuid = task(new QrTask($validate['_id'], null, $validate['override']))->sync(null, null, null);
 
             header('Content-Disposition: attachment; filename="' . $uuid . '.zip"');
 
