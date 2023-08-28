@@ -76,7 +76,7 @@ class QrTask extends Task
                 $templateFile = $template->save();
                 $files[] = $templateFile;
 
-                $zip->addFile($templateFile);
+                $zip->addFile($templateFile, $flat['flat'] . '.docx');
             }
 
             echo json_encode($zip->count());
