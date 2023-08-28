@@ -4,9 +4,9 @@ namespace Selpol\Task\Tasks;
 
 use backends\files\files;
 use Exception;
-use PhpOffice\PhpWord\Shared\ZipArchive;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Selpol\Task\Task;
+use ZipArchive;
 
 class QrTask extends Task
 {
@@ -67,7 +67,7 @@ class QrTask extends Task
             $zip->open($file, ZipArchive::OVERWRITE);
 
             foreach ($qr['flats'] as $flat) {
-                $template = new TemplateProcessor(path('.docx'));
+                $template = new TemplateProcessor(path('private/qr-template.docx'));
 
                 $template->setValue('address', $qr['address'] . ', кв' . $flat['flat']);
 
