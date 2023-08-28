@@ -12,10 +12,8 @@ class ReindexTask extends Task
         parent::__construct('Индексация API');
     }
 
-    public function onTask()
+    public function onTask(): bool
     {
-        $this->setProgress(0);
-
         $dir = dirname(__FILE__) . '/../../api';
         $apis = scandir($dir);
 
@@ -98,6 +96,6 @@ class ReindexTask extends Task
             }
         }
 
-        $this->setProgress(100);
+        return true;
     }
 }

@@ -22,7 +22,7 @@ class EmailTask extends Task
         $this->text = $text;
     }
 
-    public function onTask()
+    public function onTask(): bool
     {
         if (@$this->config['email']) {
             $mail = new PHPMailer(true);
@@ -53,5 +53,7 @@ class EmailTask extends Task
             } catch (Exception) {
             }
         }
+
+        return true;
     }
 }

@@ -4,8 +4,7 @@
  * backends cameras namespace
  */
 
-namespace backends\cameras
-{
+namespace backends\cameras {
 
     /**
      * internal.db cameras class
@@ -74,7 +73,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comment)
+        public function addCamera($enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comment)
         {
             if (!$model) {
                 return false;
@@ -186,7 +185,8 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function cron($part) {
+        public function cron($part)
+        {
             if ($part === "hourly") {
                 $cameras = $this->db->get("select camera_id, url from cameras");
 

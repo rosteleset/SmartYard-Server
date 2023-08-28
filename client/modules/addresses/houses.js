@@ -695,8 +695,7 @@
                     id: "code",
                     type: "text",
                     title: i18n("addresses.addCode"),
-                    placeholder: i18n("addresses.addCode"),
-                    value: md5(guid()),
+                    placeholder: i18n("addresses.addCode")
                 },
                 {
                     id: "entrances",

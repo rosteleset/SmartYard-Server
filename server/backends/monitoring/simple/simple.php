@@ -1,33 +1,27 @@
 <?php
 
-    /**
-     * backends monitoring namespace.
-     */
+/**
+ * backends monitoring namespace.
+ */
 
-    namespace backends\monitoring;
+namespace backends\monitoring;
 
+/**
+ * simple monitoring class.
+ */
+class simple extends monitoring
+{
     /**
-     * simple monitoring class.
+     * @inheritDoc
      */
-    class simple extends monitoring
+    public function deviceStatus($deviceType, $deviceId)
     {
-        /**
-         * @inheritDoc
-         */
-        public function deviceStatus($deviceType, $deviceId)
-        {
-            switch ($deviceType) {
-                case 'domophone':
-                    return [
-                        "status" => "unknown",
-                        "message" => i18n("monitoring.unknown"),
-                    ];
-
-                case 'camera':
-                    return [
-                        "status" => "unknown",
-                        "message" => i18n("monitoring.unknown"),
-                    ];
-            }
+        switch ($deviceType) {
+            case 'camera':
+            case 'domophone':
+                return ["status" => "unknown", "message" => i18n("monitoring.unknown")];
         }
+
+        return ["status" => "unknown", "message" => i18n("monitoring.unknown")];
     }
+}

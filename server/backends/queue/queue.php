@@ -1,34 +1,28 @@
 <?php
 
+/**
+ * backends queue namespace
+ */
+
+namespace backends\queue {
+
+    use backends\backend;
+
     /**
-    * backends queue namespace
-    */
-
-    namespace backends\queue
+     * base processes class
+     */
+    abstract class queue extends backend
     {
-
-        use backends\backend;
+        /**
+         * @param $objectType
+         * @param $objectId
+         * @return mixed
+         */
+        abstract function changed($objectType, $objectId);
 
         /**
-         * base processes class
+         * @return mixed
          */
-        abstract class queue extends backend
-        {
-            /**
-             * @param $objectType
-             * @param $objectId
-             * @return mixed
-             */
-            abstract function changed($objectType, $objectId);
-
-            /**
-             * @return mixed
-             */
-            abstract function autoconfigureDomophones();
-
-            /**
-             * @return mixed
-             */
-            abstract function wait();
-        }
+        abstract function wait();
     }
+}

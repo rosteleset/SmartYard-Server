@@ -8,6 +8,13 @@ use Selpol\Logger\Logger;
 
 $lastError = false;
 
+if (!function_exists('path')) {
+    function path(string $value): string
+    {
+        return dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . $value;
+    }
+}
+
 if (!function_exists('task')) {
     function task(Task $task): TaskContainer
     {
@@ -139,17 +146,15 @@ if (!function_exists('check_string')) {
         if (!in_array("dontStrip", $options))
             $str = preg_replace('/\s+/', ' ', $str);
 
-//        if (!in_array("dontPurify", $options)) {
-//            require_once __DIR__ . '/../lib/htmlpurifier/library/HTMLPurifier.auto.php';
-//
-//            $config = HTMLPurifier_Config::createDefault();
-//            $config->set('Core.Encoding', 'UTF-8');
-//            $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-//            $config->set('Cache.DefinitionImpl', null);
-//
-//            $purifier = new HTMLPurifier($config);
-//            $str = $purifier->purify($str);
-//        }
+        if (!in_array("dontPurify", $options)) {
+            $config = HTMLPurifier_Config::createDefault();
+            $config->set('Core.Encoding', 'UTF-8');
+            $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+            $config->set('Cache.DefinitionImpl', null);
+
+            $purifier = new HTMLPurifier($config);
+            $str = $purifier->purify($str);
+        }
 
         if (array_key_exists("minLength", $options) && mb_strlen($str) < $options["minLength"])
             return false;

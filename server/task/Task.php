@@ -2,6 +2,7 @@
 
 namespace Selpol\Task;
 
+use Exception;
 use PDO_EXT;
 use Redis;
 use Throwable;
@@ -42,7 +43,11 @@ abstract class Task
         $this->progressCallable = $progressCallable;
     }
 
-    public abstract function onTask();
+    /**
+     * @return mixed
+     * @throws Exception
+     */
+    public abstract function onTask(): mixed;
 
     public function onError(Throwable $throwable)
     {

@@ -5,6 +5,7 @@ require_once dirname(__FILE__) . '/vendor/autoload.php';
 use Selpol\Task\Tasks\EmailTask;
 use Selpol\Task\Tasks\IntercomConfigureTask;
 use Selpol\Task\TaskManager;
+use Selpol\Task\Tasks\QrTask;
 use Selpol\Task\Tasks\ReindexTask;
 
 chdir(__DIR__);
@@ -69,6 +70,9 @@ function usage()
             [--task=[<queue>] --command=<exit|reset> [--id=<id>]]
             [--task-clear=[<queue>]]
             [--task-status]
+
+        qr:
+            [--qr=<houseId> [--flat=<flatId>]]
 
         \n";
 
@@ -743,6 +747,17 @@ if (array_key_exists('--task-status', $args)) {
             }
         }
     }
+
+    exit(0);
+}
+
+if (array_key_exists('--qr', $args) && isset($args['--qr'])) {
+    $houseId = $args['--qr'];
+    $flatId = array_key_exists('--flat', $args) && isset($args['--flat']) ? $args['--flat'] : null;
+
+    $uuid = task(new QrTask($houseId, $flatId))->sync($redis, $db, $config);
+
+    echo json_encode($uuid);
 
     exit(0);
 }

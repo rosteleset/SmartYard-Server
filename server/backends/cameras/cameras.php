@@ -4,8 +4,7 @@
  * backends cameras namespace
  */
 
-namespace backends\cameras
-{
+namespace backends\cameras {
 
     use backends\backend;
 

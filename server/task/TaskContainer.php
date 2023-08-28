@@ -60,13 +60,13 @@ class TaskContainer
         return $this;
     }
 
-    public function sync(?Redis $redis, ?PDO_EXT $pdo, ?array $config)
+    public function sync(?Redis $redis, ?PDO_EXT $pdo, ?array $config): mixed
     {
         $this->task->setRedis($redis);
         $this->task->setPdo($pdo);
         $this->task->setConfig($config);
 
-        $this->task->onTask();
+        return $this->task->onTask();
     }
 
     public function dispatch(): bool

@@ -6,7 +6,6 @@
 
 namespace backends\plog {
 
-    use api\subscribers\subscriber;
     use backends\backend;
 
     /**

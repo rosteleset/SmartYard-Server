@@ -80,10 +80,10 @@ function loadEnv(array $env, array $value): array
  */
 function loadConfig(): array
 {
-    if (file_exists(__DIR__ . '/../cache/config.php'))
-        return require __DIR__ . '/../cache/config.php';
+    if (file_exists(path('cache/config.php')))
+        return require path('cache/config.php');
 
-    $path = __DIR__ . '/../config/config';
+    $path = path('config/config');
 
     $env = loadEnvFile();
 
@@ -93,7 +93,7 @@ function loadConfig(): array
         $config = loadEnv($env, json_decode(json_encode(yaml_parse_file($path . '.yml'), JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR));
 
     if (isset($config)) {
-        file_put_contents(__DIR__ . '/../cache/config.php', '<?php return ' . var_export($config, true) . ';');
+        file_put_contents(path('cache/config.php'), '<?php return ' . var_export($config, true) . ';');
 
         return $config;
     }

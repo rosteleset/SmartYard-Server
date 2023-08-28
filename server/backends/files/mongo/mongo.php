@@ -5,13 +5,18 @@
  */
 
 namespace backends\files {
+
+    use Exception;
+    use MongoDB\BSON\ObjectId;
+    use MongoDB\Client;
+
     /**
      * gridFS storage
      */
-
     class mongo extends files
     {
-        private $mongo, $dbName;
+        private Client $mongo;
+        private string $dbName;
 
         /**
          * @inheritDoc
@@ -24,11 +29,10 @@ namespace backends\files {
 
             $this->dbName = @$config["backends"]["files"]["db"] ?: "rbt";
 
-            if (@$config["backends"]["files"]["uri"]) {
-                $this->mongo = new \MongoDB\Client($config["backends"]["files"]["uri"]);
-            } else {
-                $this->mongo = new \MongoDB\Client();
-            }
+            if (@$config["backends"]["files"]["uri"])
+                $this->mongo = new Client($config["backends"]["files"]["uri"]);
+            else
+                $this->mongo = new Client();
         }
 
         /**
@@ -36,15 +40,12 @@ namespace backends\files {
          */
         public function addFile($realFileName, $stream, $metadata = [])
         {
-            $db = $this->dbName;
-
-            $bucket = $this->mongo->$db->selectGridFSBucket();
+            $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
 
             $id = $bucket->uploadFromStream($realFileName, $stream);
 
-            if ($metadata) {
+            if ($metadata)
                 $this->setFileMetadata($id, $metadata);
-            }
 
             return (string)$id;
         }
@@ -54,18 +55,13 @@ namespace backends\files {
          */
         public function getFile($uuid)
         {
-            $db = $this->dbName;
+            $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
 
-            $bucket = $this->mongo->$db->selectGridFSBucket();
-
-            $fileId = new \MongoDB\BSON\ObjectId($uuid);
+            $fileId = new ObjectId($uuid);
 
             $stream = $bucket->openDownloadStream($fileId);
 
-            return [
-                "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                "stream" => $stream,
-            ];
+            return ["fileInfo" => $bucket->getFileDocumentForStream($stream), "stream" => $stream];
         }
 
         /**
@@ -75,7 +71,7 @@ namespace backends\files {
         {
             $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
 
-            return stream_get_contents($bucket->openDownloadStream(new \MongoDB\BSON\ObjectId($uuid)));
+            return stream_get_contents($bucket->openDownloadStream(new ObjectId($uuid)));
         }
 
         /**
@@ -99,10 +95,7 @@ namespace backends\files {
          */
         public function setFileMetadata($uuid, $metadata)
         {
-            $collection = "fs.files";
-            $db = $this->dbName;
-
-            return $this->mongo->$db->$collection->updateOne(["_id" => new \MongoDB\BSON\ObjectId($uuid)], ['$set' => ["metadata" => $metadata]]);
+            return $this->mongo->{$this->dbName}->{"fs.files"}->updateOne(["_id" => new ObjectId($uuid)], ['$set' => ["metadata" => $metadata]]);
         }
 
         /**
@@ -118,20 +111,16 @@ namespace backends\files {
          */
         public function searchFiles($query)
         {
-            $collection = "fs.files";
-            $db = $this->dbName;
-
-            $cursor = $this->mongo->$db->$collection->find($query, [
-                "sort" => [
-                    "filename" => 1,
-                ],
-            ]);
+            $cursor = $this->mongo->{$this->dbName}->{"fs.files"}->find($query, ["sort" => ["filename" => 1]]);
 
             $files = [];
+
             foreach ($cursor as $document) {
                 $document = json_decode(json_encode($document), true);
                 $document["id"] = (string)$document["_id"]["\$oid"];
+
                 unset($document["_id"]);
+
                 $files[] = $document;
             }
 
@@ -143,15 +132,13 @@ namespace backends\files {
          */
         public function deleteFile($uuid)
         {
-            $db = $this->dbName;
-
-            $bucket = $this->mongo->$db->selectGridFSBucket();
+            $bucket = $this->mongo->{$this->dbName}->selectGridFSBucket();
 
             if ($bucket) {
                 try {
-                    $bucket->delete(new \MongoDB\BSON\ObjectId($uuid));
+                    $bucket->delete(new ObjectId($uuid));
                     return true;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     last_error($e->getMessage());
                 }
             }
@@ -167,7 +154,7 @@ namespace backends\files {
             $uuid = "10001000" . $uuid;
 
             $hyphen = chr(45);
-            return substr($uuid,  0,  8) . $hyphen . substr($uuid,  8,  4) . $hyphen . substr($uuid, 12,  4) . $hyphen . substr($uuid, 16,  4) . $hyphen . substr($uuid, 20, 12);
+            return substr($uuid, 0, 8) . $hyphen . substr($uuid, 8, 4) . $hyphen . substr($uuid, 12, 4) . $hyphen . substr($uuid, 16, 4) . $hyphen . substr($uuid, 20, 12);
         }
 
         /**
@@ -184,13 +171,10 @@ namespace backends\files {
         public function cron($part)
         {
             if ($part == '5min') {
-                $collection = "fs.files";
-                $db = $this->dbName;
+                $cursor = $this->mongo->{$this->dbName}->{"fs.files"}->find(["metadata.expire" => ['$lt' => time()]]);
 
-                $cursor = $this->mongo->$db->$collection->find(["metadata.expire" => ['$lt' => time()]]);
-                foreach ($cursor as $document) {
+                foreach ($cursor as $document)
                     $this->deleteFile($document->_id);
-                }
             }
 
             return true;

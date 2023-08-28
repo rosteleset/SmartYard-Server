@@ -33,19 +33,19 @@ class PDO_EXT extends PDO
             if ($sth->execute($this->trimParams($params))) {
                 try {
                     return $this->lastInsertId();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     return -1;
                 }
             } else {
                 return false;
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (!in_array("silent", $options)) {
                 last_error($e->errorInfo[2] ?: $e->getMessage());
                 error_log(print_r($e, true));
             }
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             last_error($e->getMessage());
             error_log(print_r($e, true));
             return false;
@@ -61,13 +61,13 @@ class PDO_EXT extends PDO
             } else {
                 return false;
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (!in_array("silent", $options)) {
                 last_error($e->errorInfo[2] ?: $e->getMessage());
                 error_log(print_r($e, true));
             }
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             last_error($e->getMessage());
             error_log(print_r($e, true));
             return false;
@@ -77,29 +77,30 @@ class PDO_EXT extends PDO
     function modifyEx($query, $map, $params, $options = [])
     {
         $mod = false;
+
         try {
             foreach ($map as $db => $param) {
                 if (array_key_exists($param, $params)) {
                     $sth = $this->prepare(sprintf($query, $db, $db));
-                    if ($sth->execute($this->trimParams([
-                        $db => $params[$param],
-                    ]))) {
-                        if ($sth->rowCount()) {
+
+                    if ($sth->execute($this->trimParams([$db => $params[$param]])))
+                        if ($sth->rowCount())
                             $mod = true;
-                        }
-                    }
+
                 }
             }
             return $mod;
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (!in_array("silent", $options)) {
                 last_error($e->errorInfo[2] ?: $e->getMessage());
                 error_log(print_r($e, true));
             }
+
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             last_error($e->getMessage());
             error_log(print_r($e, true));
+
             return false;
         }
     }
@@ -150,13 +151,13 @@ class PDO_EXT extends PDO
 
             return $r;
 
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (!in_array("silent", $options)) {
                 last_error($e->errorInfo[2] ?: $e->getMessage());
                 error_log(print_r($e, true));
             }
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             last_error($e->getMessage());
             error_log(print_r($e, true));
             return false;

@@ -15,12 +15,14 @@ class WaitTask extends Task
         $this->wait = $wait;
     }
 
-    public function onTask()
+    public function onTask(): bool
     {
         for ($i = 0; $i < $this->wait; $i++) {
             sleep(1);
 
             $this->setProgress($i / $this->wait * 100);
         }
+
+        return true;
     }
 }

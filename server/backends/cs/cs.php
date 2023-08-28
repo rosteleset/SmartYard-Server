@@ -1,308 +1,308 @@
 <?php
 
+/**
+ * backends cs namespace
+ */
+
+namespace backends\cs {
+
+    use backends\backend;
+
     /**
-     * backends cs namespace
+     * base cs class
      */
+    abstract class cs extends backend
+    {
+        /**
+         * @param $sheet
+         * @param $date
+         * @return mixed
+         */
+        public function getCS($sheet, $date, $extended = false)
+        {
+            $files = loadBackend("files");
 
-    namespace backends\cs {
+            if (!$files) {
+                return false;
+            }
 
-        use backends\backend;
+            $css = $files->searchFiles([
+                "metadata.type" => "csheet",
+                "metadata.sheet" => $sheet,
+                "metadata.date" => $date,
+            ]);
+
+            $cs = "{\n\t\"sheet\": \"$sheet\",\n\t\"date\": \"$date\"\n}";
+
+            foreach ($css as $s) {
+                $cs = $files->streamToContents($files->getFileStream($s["id"])) ?: $cs;
+                break;
+            }
+
+            if ($extended) {
+                $cells = $this->redis->keys("cell_" . md5($sheet) . "_" . md5($date) . "_*");
+                if ($cells) {
+                    $cells = $this->redis->mget($cells);
+
+                    foreach ($cells as &$cell) {
+                        $cell = json_decode($cell, true);
+                    }
+                }
+                return [
+                    "sheet" => json_decode($cs),
+                    "cells" => $cells ? $cells : false,
+                ];
+            } else {
+                return $cs;
+            }
+        }
 
         /**
-         * base cs class
+         * @param $sheet
+         * @param $date
+         * @param $data
+         * @return boolean
          */
+        public function putCS($sheet, $date, $data)
+        {
+            $files = loadBackend("files");
+            $mqtt = loadBackend("mqtt");
 
-        abstract class cs extends backend {
-            /**
-             * @param $sheet
-             * @param $date
-             * @return mixed
-             */
-            public function getCS($sheet, $date, $extended = false)
-            {
-                $files = loadBackend("files");
-
-                if (!$files) {
-                    return false;
-                }
-
-                $css = $files->searchFiles([
-                    "metadata.type" => "csheet",
-                    "metadata.sheet" => $sheet,
-                    "metadata.date" => $date,
-                ]);
-
-                $cs = "{\n\t\"sheet\": \"$sheet\",\n\t\"date\": \"$date\"\n}";
-
-                foreach ($css as $s) {
-                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ? : $cs;
-                    break;
-                }
-
-                if ($extended) {
-                    $cells = $this->redis->keys("cell_" . md5($sheet) . "_" . md5($date) . "_*");
-                    if ($cells) {
-                        $cells = $this->redis->mget($cells);
-
-                        foreach ($cells as &$cell) {
-                            $cell = json_decode($cell, true);
-                        }
-                    }
-                    return [
-                        "sheet" => json_decode($cs),
-                        "cells" => $cells ? $cells : false,
-                    ];
-                } else {
-                    return $cs;
-                }
+            if (!$files) {
+                return false;
             }
 
-            /**
-             * @param $sheet
-             * @param $date
-             * @param $data
-             * @return boolean
-             */
-            public function putCS($sheet, $date, $data)
-            {
-                $files = loadBackend("files");
-                $mqtt = loadBackend("mqtt");
+            $css = $files->searchFiles([
+                "metadata.type" => "csheet",
+                "metadata.sheet" => $sheet,
+                "metadata.date" => $date,
+            ]);
 
-                if (!$files) {
-                    return false;
-                }
+            foreach ($css as $s) {
+                $cs = $files->deleteFile($s["id"]);
+            }
 
-                $css = $files->searchFiles([
-                    "metadata.type" => "csheet",
-                    "metadata.sheet" => $sheet,
-                    "metadata.date" => $date,
-                ]);
+            try {
+                $data_parsed = json_decode($data, true);
+            } catch (\Exception $e) {
+                $data_parsed = false;
+            }
 
-                foreach ($css as $s) {
-                    $cs = $files->deleteFile($s["id"]);
-                }
+            if ($data_parsed) {
+                $data_parsed["sheet"] = $sheet;
+                $data_parsed["date"] = $date;
+                $data = json_encode($data_parsed);
+            }
 
-                try {
-                    $data_parsed = json_decode($data, true);
-                } catch (\Exception $e) {
-                    $data_parsed = false;
-                }
+            $success = $files->addFile($date . "_" . $sheet . ".json", $files->contentsToStream($data), [
+                "type" => "csheet",
+                "sheet" => $sheet,
+                "date" => $date,
+                "by" => $this->login,
+            ]);
 
-                if ($data_parsed) {
-                    $data_parsed["sheet"] = $sheet;
-                    $data_parsed["date"] = $date;
-                    $data = json_encode($data_parsed);
-                }
+            if ($mqtt) {
+                $success = $success && $mqtt->broadcast("sheet/changed", [
+                        "sheet" => $sheet,
+                        "date" => $date
+                    ]);
+            }
 
-                $success = $files->addFile($date . "_" . $sheet . ".json", $files->contentsToStream($data), [
-                    "type" => "csheet",
+            return $success;
+        }
+
+        /**
+         * @param $date
+         * @return boolean
+         */
+        public function deleteCS($sheet, $date)
+        {
+            $files = loadBackend("files");
+            $mqtt = loadBackend("mqtt");
+
+            if (!$files) {
+                return false;
+            }
+
+            $css = $files->searchFiles([
+                "metadata.type" => "csheet",
+                "metadata.sheet" => $sheet,
+                "metadata.date" => $date,
+            ]);
+
+            foreach ($css as $s) {
+                $cs = $files->deleteFile($s["id"]);
+            }
+
+            if ($mqtt) {
+                return $mqtt->broadcast("sheet/changed", [
                     "sheet" => $sheet,
-                    "date" => $date,
-                    "by" => $this->login,
+                    "date" => $date
                 ]);
+            } else {
+                return true;
+            }
+        }
 
-                if ($mqtt) {
-                    $success = $success && $mqtt->broadcast("sheet/changed", [
-                        "sheet" => $sheet,
-                        "date" => $date
-                    ]);
-                }
+        /**
+         * @return false|array
+         */
+        public function getCSes()
+        {
+            $files = loadBackend("files");
 
-                return $success; 
+            if (!$files) {
+                return false;
             }
 
-            /**
-             * @param $date
-             * @return boolean
-             */
-            public function deleteCS($sheet, $date)
-            {
-                $files = loadBackend("files");
-                $mqtt = loadBackend("mqtt");
+            return $files->searchFiles([
+                "metadata.type" => "csheet",
+            ]);
+        }
 
-                if (!$files) {
-                    return false;
-                }
+        /**
+         * @param $action
+         * @param $sheet
+         * @param $date
+         * @param $col
+         * @param $row
+         * @param $uid
+         * @param $expire
+         */
+        public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0)
+        {
+            $mqtt = loadBackend("mqtt");
 
-                $css = $files->searchFiles([
-                    "metadata.type" => "csheet",
-                    "metadata.sheet" => $sheet,
-                    "metadata.date" => $date,
-                ]);
+            $expire = (int)($expire ?: 60);
 
-                foreach ($css as $s) {
-                    $cs = $files->deleteFile($s["id"]);
-                }
+            switch ($action) {
+                case "claim":
+                case "release":
+                case "release-force":
+                    $keys = $this->redis->keys("cell_{$sheet}_{$date}_*");
 
-                if ($mqtt) {
-                    return $mqtt->broadcast("sheet/changed", [
-                        "sheet" => $sheet,
-                        "date" => $date
-                    ]);
-                } else {
-                    return true;
-                }
-            }
+                    foreach ($keys as $key) {
+                        $cell = json_decode($this->redis->get($key), true);
+                        if (
+                            ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
+                            ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
+                            ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && $cell["uid"] == $uid) ||
+                            ($action == "release-force" && $cell["mode"] == "reserved" && $cell["uid"] == $uid)
+                        ) {
+                            $this->redis->delete($key);
+                            $payload = explode("_", $key);
 
-            /**
-             * @return false|array
-             */
-            public function getCSes()
-            {
-                $files = loadBackend("files");
-
-                if (!$files) {
-                    return false;
-                }
-
-                return $files->searchFiles([
-                    "metadata.type" => "csheet",
-                ]);
-            }
-
-            /**
-             * @param $action
-             * @param $sheet
-             * @param $date
-             * @param $col
-             * @param $row
-             * @param $uid
-             * @param $expire
-             */
-            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0)
-            {
-                $mqtt = loadBackend("mqtt");
-
-                $expire = (int)($expire ? : 60);
-
-                switch ($action) {
-                    case "claim":
-                    case "release":
-                    case "release-force":
-                        $keys = $this->redis->keys("cell_{$sheet}_{$date}_*");
-
-                        foreach ($keys as $key) {
-                            $cell = json_decode($this->redis->get($key), true);
-                            if (
-                                ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && $cell["uid"] == $uid) ||
-                                ($action == "release-force" && $cell["mode"] == "reserved" && $cell["uid"] == $uid)
-                            ) {
-                                $this->redis->delete($key);
-                                $payload = explode("_", $key);
-
-                                if ($mqtt) {
-                                    $mqtt->broadcast("cs/cell", [
-                                        "action" => "released",
-                                        "sheet" => $payload[1],
-                                        "date" => $payload[2],
-                                        "col" => $payload[3],
-                                        "row" => $payload[4],
-                                        "uid" => $payload[5],
-                                    ]);
-                                }
+                            if ($mqtt) {
+                                $mqtt->broadcast("cs/cell", [
+                                    "action" => "released",
+                                    "sheet" => $payload[1],
+                                    "date" => $payload[2],
+                                    "col" => $payload[3],
+                                    "row" => $payload[4],
+                                    "uid" => $payload[5],
+                                ]);
                             }
                         }
+                    }
 
-                        if ($action == "claim") {
-                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
-                                "login" => $this->login,
-                                "mode" => "claimed",
+                    if ($action == "claim") {
+                        $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
+                            "login" => $this->login,
+                            "mode" => "claimed",
+                            "step" => $step,
+                            "sheet" => $sheet,
+                            "date" => $date,
+                            "col" => $col,
+                            "row" => $row,
+                            "uid" => $uid,
+                            "expire" => $expire,
+                            "claimed" => time(),
+                        ]));
+
+                        if ($mqtt) {
+                            $mqtt->broadcast("cs/cell", [
+                                "action" => "claimed",
                                 "step" => $step,
                                 "sheet" => $sheet,
                                 "date" => $date,
                                 "col" => $col,
                                 "row" => $row,
                                 "uid" => $uid,
-                                "expire" => $expire,
-                                "claimed" => time(),
-                            ]));
-
-                            if ($mqtt) {
-                                $mqtt->broadcast("cs/cell", [
-                                    "action" => "claimed",
-                                    "step" => $step,
-                                    "sheet" => $sheet,
-                                    "date" => $date,
-                                    "col" => $col,
-                                    "row" => $row,
-                                    "uid" => $uid,
-                                    "login" => $this->login,
-                                    "sid" => $sid,
-                                ]);
-                            }
-                        }
-
-                        break;
-
-                    case "reserve":
-                        try {
-                            $cell = json_decode($this->redis->get($this->redis->keys("cell_*_" . $uid)[0]), true);
-                        } catch (\Exception $e) {
-                            $cell = false;
-                        }
-
-                        if ($cell && $cell["login"] == $this->login) {
-                            $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
-                                "mode" => "reserved",
+                                "sid" => $sid,
+                            ]);
+                        }
+                    }
+
+                    break;
+
+                case "reserve":
+                    try {
+                        $cell = json_decode($this->redis->get($this->redis->keys("cell_*_" . $uid)[0]), true);
+                    } catch (\Exception $e) {
+                        $cell = false;
+                    }
+
+                    if ($cell && $cell["login"] == $this->login) {
+                        $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
+                            "login" => $this->login,
+                            "mode" => "reserved",
+                            "sheet" => $sheet,
+                            "date" => $date,
+                            "col" => $col,
+                            "row" => $row,
+                            "uid" => $uid,
+                            "expire" => $expire,
+                            "reserved" => time(),
+                        ]));
+
+                        if ($mqtt) {
+                            $mqtt->broadcast("cs/cell", [
+                                "action" => "reserved",
                                 "sheet" => $sheet,
                                 "date" => $date,
                                 "col" => $col,
                                 "row" => $row,
                                 "uid" => $uid,
-                                "expire" => $expire,
-                                "reserved" => time(),
-                            ]));
-
-                            if ($mqtt) {
-                                $mqtt->broadcast("cs/cell", [
-                                    "action" => "reserved",
-                                    "sheet" => $sheet,
-                                    "date" => $date,
-                                    "col" => $col,
-                                    "row" => $row,
-                                    "uid" => $uid,
-                                    "login" => $this->login,
-                                    "sid" => $sid,
-                                ]);
-                            }
+                                "login" => $this->login,
+                                "sid" => $sid,
+                            ]);
                         }
+                    }
 
-                        break;
-                }
-
-                return true;
+                    break;
             }
 
-            /**
-             * @param $sheet
-             * @param $date
-             * @param $col
-             * @param $row
-             */
-            public function getCellByXYZ($sheet, $date, $col, $row)
-            {
-
-            }
-
-            /**
-             * @param $uid
-             */
-            public function getCellByUID($uid)
-            {
-
-            }
-
-            /**
-             * @param $sheet
-             * @param $date
-             */
-            public function cells($sheet, $date)
-            {
-
-            }
-            
+            return true;
         }
+
+        /**
+         * @param $sheet
+         * @param $date
+         * @param $col
+         * @param $row
+         */
+        public function getCellByXYZ($sheet, $date, $col, $row)
+        {
+
+        }
+
+        /**
+         * @param $uid
+         */
+        public function getCellByUID($uid)
+        {
+
+        }
+
+        /**
+         * @param $sheet
+         * @param $date
+         */
+        public function cells($sheet, $date)
+        {
+
+        }
+
     }
+}

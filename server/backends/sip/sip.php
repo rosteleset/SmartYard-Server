@@ -1,31 +1,29 @@
 <?php
 
+/**
+ * backends sip namespace
+ */
+
+namespace backends\sip {
+
+    use backends\backend;
+
     /**
-    * backends sip namespace
-    */
-
-    namespace backends\sip
+     * base sip class
+     */
+    abstract class sip extends backend
     {
-
-        use backends\backend;
+        /**
+         * @param $by
+         * @param $query
+         * @return mixed
+         */
+        abstract public function server($by, $query = false);
 
         /**
-         * base sip class
+         * @param $extension
+         * @return mixed
          */
-        abstract class sip extends backend
-        {
-
-            /**
-             * @param $by
-             * @param $query
-             * @return mixed
-             */
-            abstract public function server($by, $query = false);
-
-            /**
-             * @param $extension
-             * @return mixed
-             */
-            abstract public function stun($extension);
-        }
+        abstract public function stun($extension);
     }
+}

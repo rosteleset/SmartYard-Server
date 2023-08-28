@@ -2,6 +2,8 @@
 
 namespace Selpol\Validator;
 
+use Selpol\Logger\Logger;
+
 class Validator
 {
     private array $value;

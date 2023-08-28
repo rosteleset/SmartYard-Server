@@ -20,10 +20,8 @@ class IntercomConfigureTask extends Task
         $this->first = $first;
     }
 
-    public function onTask()
+    public function onTask(): bool
     {
-        $this->setProgress(0);
-
         $households = loadBackend('households');
         $addresses = loadBackend('addresses');
         $configs = loadBackend('configs');
@@ -34,7 +32,7 @@ class IntercomConfigureTask extends Task
         if (!$domophone) {
             echo 'Domophone not found' . PHP_EOL;
 
-            return;
+            return false;
         }
 
         $this->setProgress(1);
@@ -44,7 +42,7 @@ class IntercomConfigureTask extends Task
         if (!$entrances) {
             echo 'This domophone is not linked with any entrance' . PHP_EOL;
 
-            return;
+            return false;
         }
 
         $this->setProgress(2);
@@ -59,7 +57,7 @@ class IntercomConfigureTask extends Task
         } catch (Exception $e) {
             echo $e->getMessage() . "\n";
 
-            return;
+            return false;
         }
 
         $this->setProgress(5);
@@ -221,7 +219,7 @@ class IntercomConfigureTask extends Task
         if ($key !== false && $sector !== false)
             $panel->configure_mifare($key, $sector);
 
-        $this->setProgress(100);
+        return true;
     }
 
     public function onError(Throwable $throwable)

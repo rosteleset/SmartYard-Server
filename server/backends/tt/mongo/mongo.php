@@ -5,12 +5,16 @@
  */
 
 namespace backends\tt {
+
+    use MongoDB\Client;
+
     /**
      * internal.db + mongoDB tt class
      */
     class mongo extends tt
     {
-        protected $mongo, $dbName;
+        protected Client $mongo;
+        protected string $dbName;
 
         /**
          * @inheritDoc
@@ -19,14 +23,12 @@ namespace backends\tt {
         {
             parent::__construct($config, $db, $redis, $login);
 
-            require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
-
             $this->dbName = @$config["backends"]["tt"]["db"] ?: "tt";
 
             if (@$config["backends"]["tt"]["uri"]) {
-                $this->mongo = new \MongoDB\Client($config["backends"]["tt"]["uri"]);
+                $this->mongo = new Client($config["backends"]["tt"]["uri"]);
             } else {
-                $this->mongo = new \MongoDB\Client();
+                $this->mongo = new Client();
             }
         }
 
