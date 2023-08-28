@@ -6,7 +6,7 @@
 
 namespace backends\tasks {
 
-    use Rbt\Tasks\TaskManager;
+    use Selpol\Task\TaskManager;
 
     class internal extends tasks
     {

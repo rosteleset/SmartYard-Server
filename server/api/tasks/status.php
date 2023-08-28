@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @api {get} /task/status get queues status
+ * @api {get} /tasks/status get queues status
  *
  * @apiVersion 1.0.0
  *
  * @apiName status
- * @apiGroup task
+ * @apiGroup tasks
  *
  * @apiHeader {String} authorization authentication token
  *
@@ -16,7 +16,7 @@
  */
 
 /**
- * task api
+ * tasks api
  */
 
 namespace api\tasks {
