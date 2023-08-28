@@ -54,19 +54,21 @@ class PlogCallTask extends PlogTask
         foreach ($logs as $item) {
             $unit = $item['unit'];
 
-            if ($unit == 'beward') {
+            if ($unit == 'beward')
                 if (!$this->beward($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
-            } else if ($unit == 'is') {
+
+            if ($unit == 'is')
                 if (!$this->is($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
-            } else if ($unit == 'qtech') {
+
+            if ($unit == 'qtech')
                 if (!$this->qtech($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
-            } else if ($unit == 'akuvox') {
+
+            if ($unit == 'akuvox')
                 if (!$this->akuvox($event_data, $call_from_panel, $call_start_found, $call_id, $flat_id, $prefix, $flat_number, $item, $item['msg']))
                     break;
-            }
 
             if ($call_start_found || $call_from_panel < 0)
                 break;
@@ -254,9 +256,10 @@ class PlogCallTask extends PlogTask
                 // Check if call started from this panel
                 if ($now_call_from_panel > 0) {
                     $call_from_panel = 1;
-                } elseif ($now_call_from_panel < 0) {
+                } else if ($now_call_from_panel < 0) {
                     $call_from_panel = -1;
-                    break;
+
+                    return false;
                 }
 
                 // Get message parts
