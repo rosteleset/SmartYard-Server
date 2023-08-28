@@ -755,12 +755,9 @@
             regionTypeFull,
             region,
             timezone,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.regionWasAdded"));
-        }).
-        always(modules.addresses.renderRegions);
+        }).always(modules.addresses.renderRegions);
     },
 
     doAddArea: function (regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, timezone) {
@@ -773,12 +770,9 @@
             areaTypeFull,
             area,
             timezone,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.areaWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.renderRegion(regionId);
         });
     },
@@ -794,12 +788,9 @@
             cityTypeFull,
             city,
             timezone,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.cityWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             if (regionId) {
                 modules.addresses.renderRegion(regionId);
             } else {
@@ -818,12 +809,9 @@
             settlementType,
             settlementTypeFull,
             settlement,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.settlementWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             if (areaId) {
                 modules.addresses.renderArea(areaId);
             } else {
@@ -842,12 +830,9 @@
             streetType,
             streetTypeFull,
             street,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.streetWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             if (cityId) {
                 modules.addresses.renderCity(cityId);
             } else {
@@ -866,12 +851,9 @@
             houseTypeFull,
             houseFull,
             house,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.houseWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             if (settlementId) {
                 modules.addresses.renderSettlement(settlementId);
             } else {
@@ -890,12 +872,9 @@
             regionTypeFull,
             region,
             timezone,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.regionWasChanged"));
-        }).
-        always(modules.addresses.renderRegions);
+        }).always(modules.addresses.renderRegions);
     },
 
     doModifyArea: function (areaId, regionId, areaUuid, areaWithType, areaType, areaTypeFull, area, targetRegionId, timezone) {
@@ -908,12 +887,9 @@
             areaTypeFull,
             area,
             timezone,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.areaWasChanged"));
-        }).
-        always(() => {
+        }).always(() => {
             if (regionId == targetRegionId) {
                 modules.addresses.renderRegion(regionId);
             } else {
@@ -933,12 +909,9 @@
             cityTypeFull,
             city,
             timezone,
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.cityWasChanged"));
-        }).
-        always(() => {
+        }).always(() => {
             if (regionId) {
                 if (regionId == targetRegionId) {
                     modules.addresses.renderRegion(regionId);
@@ -966,12 +939,9 @@
             settlementType,
             settlementTypeFull,
             settlement
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.settlementWasChanged"));
-        }).
-        always(() => {
+        }).always(() => {
             if (areaId) {
                 if (areaId == targetAreaId) {
                     modules.addresses.renderArea(areaId);
@@ -999,12 +969,9 @@
             streetType,
             streetTypeFull,
             street
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.streetWasChanged"));
-        }).
-        always(() => {
+        }).always(() => {
             if (cityId) {
                 if (cityId == targetCityId) {
                     modules.addresses.renderCity(cityId);
@@ -1032,12 +999,9 @@
             houseTypeFull,
             houseFull,
             house
-        }).
-        fail(FAIL).
-        done(() => {
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.houseWasChanged"));
-        }).
-        always(() => {
+        }).always(() => {
             if (settlementId) {
                 if (settlementId == targetSettlementId) {
                     modules.addresses.renderSettlement(settlementId);
@@ -1056,34 +1020,25 @@
 
     doDeleteRegion: function (regionId) {
         loadingStart();
-        DELETE("addresses", "region", regionId).
-        fail(FAIL).
-        done(() => {
+        DELETE("addresses", "region", regionId).fail(FAIL).done(() => {
             message(i18n("addresses.regionWasDeleted"));
-        }).
-        always(modules.addresses.renderRegions);
+        }).always(modules.addresses.renderRegions);
     },
 
     doDeleteArea: function (areaId, regionId) {
         loadingStart();
-        DELETE("addresses", "area", areaId).
-        fail(FAIL).
-        done(() => {
+        DELETE("addresses", "area", areaId).fail(FAIL).done(() => {
             message(i18n("addresses.areaWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.renderRegion(regionId);
         });
     },
 
     doDeleteCity: function (cityId, regionId, areaId) {
         loadingStart();
-        DELETE("addresses", "city", cityId).
-        fail(FAIL).
-        done(() => {
+        DELETE("addresses", "city", cityId).fail(FAIL).done(() => {
             message(i18n("addresses.cityWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             if (regionId) {
                 modules.addresses.renderRegion(regionId);
             } else {
@@ -1094,12 +1049,9 @@
 
     doDeleteSettlement: function (settlementId, areaId, cityId) {
         loadingStart();
-        DELETE("addresses", "settlement", settlementId).
-        fail(FAIL).
-        done(() => {
+        DELETE("addresses", "settlement", settlementId).fail(FAIL).done(() => {
             message(i18n("addresses.settlementWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             if (areaId) {
                 modules.addresses.renderArea(areaId);
             } else {
@@ -1110,12 +1062,9 @@
 
     doDeleteStreet: function (streetId, cityId, settlementId) {
         loadingStart();
-        DELETE("addresses", "street", streetId).
-        fail(FAIL).
-        done(() => {
+        DELETE("addresses", "street", streetId).fail(FAIL).done(() => {
             message(i18n("addresses.streetWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             if (cityId) {
                 modules.addresses.renderCity(cityId);
             } else {
@@ -1126,18 +1075,19 @@
 
     doDeleteHouse: function (houseId, settlementId, streetId) {
         loadingStart();
-        DELETE("addresses", "house", houseId).
-        fail(FAIL).
-        done(() => {
+        DELETE("addresses", "house", houseId).fail(FAIL).done(() => {
             message(i18n("addresses.houseWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             if (settlementId) {
                 modules.addresses.renderSettlement(settlementId);
             } else {
                 modules.addresses.renderStreet(streetId);
             }
         });
+    },
+
+    qrGenerate(houseId, override) {
+        console.log(houseId, override)
     },
 
     deleteRegion: function (regionId) {
@@ -2535,6 +2485,23 @@
                                     click: "#addresses.houses&houseId=%s",
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: 'fas fa-qrcode',
+                                        title: i18n("addresses.qrGenerate"),
+                                        click: (houseId) => modules.addresses.qrGenerate(houseId, false)
+                                    },
+                                    {
+                                        icon: 'fas fa-qrcode',
+                                        title: i18n("addresses.qrOverride"),
+                                        click: (houseId) => modules.addresses.qrGenerate(houseId, true)
+                                    },
+                                    {
+                                        title: "-",
+                                    }
+                                ]
+                            }
                         });
                     }
                 }
@@ -2548,9 +2515,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             include: "regions",
-        }, true).
-        done(modules.addresses.addresses).
-        done(() => {
+        }, true).done(modules.addresses.addresses).done(() => {
             cardTable({
                 title: {
                     caption: i18n("addresses.regions"),
@@ -2593,9 +2558,7 @@
                 },
                 target: "#mainForm",
             });
-        }).
-        fail(FAIL).
-        always(loadingDone);
+        }).fail(FAIL).always(loadingDone);
     },
 
     renderRegion: function (regionId) {
@@ -2603,9 +2566,7 @@
         QUERY("addresses", "addresses", {
             regionId: regionId,
             include: "regions,areas,cities",
-        }, true).
-        done(modules.addresses.addresses).
-        done(() => {
+        }, true).done(modules.addresses.addresses).done(() => {
             let region = false;
 
             for (let i in modules.addresses.meta.regions) {
@@ -2668,9 +2629,7 @@
                 },
             });
             modules.addresses.renderCities("#altForm", regionId, false);
-        }).
-        fail(FAIL).
-        always(loadingDone);
+        }).fail(FAIL).always(loadingDone);
     },
 
     renderArea: function (areaId) {
@@ -2678,9 +2637,7 @@
         QUERY("addresses", "addresses", {
             areaId: areaId,
             include: "regions,areas,cities,settlements",
-        }, true).
-        done(modules.addresses.addresses).
-        done(() => {
+        }, true).done(modules.addresses.addresses).done(() => {
             let area = false;
 
             for (let i in modules.addresses.meta.areas) {
@@ -2699,9 +2656,7 @@
 
             modules.addresses.renderCities("#mainForm", false, areaId);
             modules.addresses.renderSettlements("#altForm", areaId, false);
-        }).
-        fail(FAIL).
-        always(loadingDone);
+        }).fail(FAIL).always(loadingDone);
     },
 
     renderCity: function (cityId) {
@@ -2709,9 +2664,7 @@
         QUERY("addresses", "addresses", {
             cityId: cityId,
             include: "regions,areas,cities,settlements,streets",
-        }, true).
-        done(modules.addresses.addresses).
-        done(() => {
+        }, true).done(modules.addresses.addresses).done(() => {
             let f = false;
 
             for (let i in modules.addresses.meta.cities) {
@@ -2729,9 +2682,7 @@
 
             modules.addresses.renderStreets("#mainForm", cityId, false);
             modules.addresses.renderSettlements("#altForm", false, cityId);
-        }).
-        fail(FAIL).
-        always(loadingDone);
+        }).fail(FAIL).always(loadingDone);
     },
 
     renderSettlement: function (settlementId) {
@@ -2739,9 +2690,7 @@
         QUERY("addresses", "addresses", {
             settlementId: settlementId,
             include: "regions,areas,settlements,streets",
-        }, true).
-        done(modules.addresses.addresses).
-        done(() => {
+        }, true).done(modules.addresses.addresses).done(() => {
             let f = false;
 
             for (let i in modules.addresses.meta.settlements) {
@@ -2759,9 +2708,7 @@
 
             modules.addresses.renderStreets("#mainForm", false, settlementId);
             modules.addresses.renderHouses("#altForm", settlementId, false);
-        }).
-        fail(FAIL).
-        always(loadingDone);
+        }).fail(FAIL).always(loadingDone);
     },
 
     renderStreet: function (streetId) {
@@ -2769,9 +2716,7 @@
         QUERY("addresses", "addresses", {
             streetId: streetId,
             include: "regions,areas,cities,settlements,streets,houses",
-        }, true).
-        done(modules.addresses.addresses).
-        done(() => {
+        }, true).done(modules.addresses.addresses).done(() => {
             let f = false;
 
             for (let i in modules.addresses.meta.streets) {
@@ -2790,9 +2735,7 @@
             modules.addresses.renderHouses("#mainForm", false, streetId);
 
             loadingDone();
-        }).
-        fail(FAIL).
-        fail(loadingDone);
+        }).fail(FAIL).fail(loadingDone);
     },
 
     topMenu: function () {
