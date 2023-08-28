@@ -4,9 +4,9 @@ namespace Selpol\Task\Tasks;
 
 use backends\files\files;
 use Exception;
+use PhpOffice\PhpWord\Shared\ZipArchive;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Selpol\Task\Task;
-use ZipArchive;
 
 class QrTask extends Task
 {
