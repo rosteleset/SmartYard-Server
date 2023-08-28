@@ -1088,7 +1088,7 @@
 
     qrGenerate(houseId, override) {
         POST("addresses", "qr", houseId, {override}).done((response) => {
-            const blob = new Blob([response], {type: "application/zip"})
+            const blob = new Blob([response], {type: "octet/stream"})
             const link = document.createElement('a')
 
             link.href = window.URL.createObjectURL(blob)
