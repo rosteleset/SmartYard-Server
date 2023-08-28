@@ -27,7 +27,7 @@ namespace api\addresses {
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="' . $uuid . '.zip"');
 
-            fpassthru(loadBackend('files')->getFileStream($uuid));
+            echo stream_get_contents(loadBackend('files')->getFileStream($uuid));
 
             exit(0);
         }
