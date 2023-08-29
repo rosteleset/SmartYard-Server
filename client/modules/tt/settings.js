@@ -722,15 +722,15 @@
                     options: [
                         {
                             id: 0,
-                            text: i18n("tt.usersAndGroups"),
+                            text: i18n("tt.assignedUsersAndGroups"),
                         },
                         {
                             id: 1,
-                            text: i18n("tt.onlyUsers"),
+                            text: i18n("tt.assignedOnlyUsers"),
                         },
                         {
                             id: 2,
-                            text: i18n("tt.onlyGroups"),
+                            text: i18n("tt.assignedOnlyGroups"),
                         },
                     ],
                 },
