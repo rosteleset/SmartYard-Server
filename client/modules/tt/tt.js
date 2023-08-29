@@ -515,12 +515,12 @@
                             if (cf.editor == "noyes") {
                                 prefferredValue = 0;
                             }
+
+                            let ro = cf.editor == "text-ro";
                             
                             if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
-
-                            console.log(cf);
 
                             return {
                                 id: "_cf_" + fieldId,
@@ -530,7 +530,7 @@
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 sec: true,
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:""),
-                                readonly: cf.editor == "text-ro",
+                                readonly: ro,
                                 validate: validate,
                             }
 
