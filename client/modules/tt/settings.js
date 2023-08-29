@@ -721,15 +721,15 @@
                     title: i18n("tt.assigned"),
                     options: [
                         {
-                            id: 0,
+                            id: "0",
                             text: i18n("tt.assignedUsersAndGroups"),
                         },
                         {
-                            id: 1,
+                            id: "1",
                             text: i18n("tt.assignedOnlyUsers"),
                         },
                         {
-                            id: 2,
+                            id: "2",
                             text: i18n("tt.assignedOnlyGroups"),
                         },
                     ],
