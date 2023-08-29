@@ -224,6 +224,7 @@
         }
 
         if (fieldId && fieldId.substring(0, 4) !== "_cf_") {
+            console.log(project);
             // regular issue fields
             switch (fieldId) {
                 case "issueId":
