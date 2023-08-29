@@ -516,7 +516,7 @@
                                 prefferredValue = 0;
                             }
                             
-                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
+                            if ([ "text", "text-ro", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
 
@@ -528,6 +528,7 @@
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 sec: true,
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:""),
+                                readonly: cf.editor == "text-ro",
                                 validate: validate,
                             }
 

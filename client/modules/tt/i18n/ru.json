@@ -116,6 +116,7 @@
     "allowedMimeTypes": "Разрешенные типы файлов",
     "customFieldEditor": "Редактор",
     "customFieldEditorString": "Строка",
+    "customFieldEditorStringRO": "Строка (RO)",
     "customFieldEditorNumber": "Число",
     "customFieldEditorText": "Текст",
     "customFieldEditorEmail": "Электронная почта",

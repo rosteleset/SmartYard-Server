@@ -966,6 +966,10 @@
                                 text: i18n("tt.customFieldEditorString"),
                             },
                             {
+                                id: "text-ro",
+                                text: i18n("tt.customFieldEditorStringRO"),
+                            },
+                            {
                                 id: "number",
                                 text: i18n("tt.customFieldEditorNumber"),
                             },
@@ -2511,6 +2515,9 @@
                             switch (modules.tt.meta.customFields[i].editor) {
                                 case "text":
                                     editor = i18n("tt.customFieldEditorString");
+                                    break;
+                                case "text-ro":
+                                    editor = i18n("tt.customFieldEditorStringRO");
                                     break;
                                 case "number":
                                     editor = i18n("tt.customFieldEditorNumber");
