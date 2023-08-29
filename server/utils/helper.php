@@ -1,10 +1,11 @@
 <?php
 
+use Psr\Log\LoggerInterface;
+use Selpol\Logger\FileLogger;
 use Selpol\Task\Task;
 use Selpol\Task\TaskContainer;
 use Selpol\Validator\Validator;
 use Selpol\Validator\ValidatorException;
-use Selpol\Logger\Logger;
 
 $lastError = false;
 
@@ -12,6 +13,13 @@ if (!function_exists('path')) {
     function path(string $value): string
     {
         return dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . $value;
+    }
+}
+
+if (!function_exists('logger')) {
+    function logger(string $channel): LoggerInterface
+    {
+        return FileLogger::channel($channel);
     }
 }
 
@@ -31,63 +39,10 @@ if (!function_exists('validate')) {
             return $validator->validate();
         } catch (ValidatorException $e) {
             if ($tag)
-                $validator->log($e, $tag);
+                logger('validate')->error($e->getValidatorMessage()->getMessage(), $value);
 
             return false;
         }
-    }
-}
-
-if (!function_exists('logger')) {
-    function logger(string $channel): Logger
-    {
-        return Logger::channel($channel);
-    }
-}
-
-if (!function_exists('logger_filter')) {
-    function logger_filter(Logger $logger, string $level): Logger
-    {
-        return new class($logger, $level) extends Logger {
-            private Logger $logger;
-            private string $level;
-
-            public function __construct(Logger $logger, string $level)
-            {
-                $this->logger = $logger;
-                $this->level = $level;
-            }
-
-            public function log(string $level, string $message, array $context = []): void
-            {
-                if ((self::LEVELS[$level] ?? self::LEVELS[self::ERROR]) >= self::LEVELS[$this->level])
-                    $this->logger->log($level, $message, $context);
-            }
-        };
-    }
-}
-
-if (!function_exists('logger_echo')) {
-    function logger_echo(Logger $logger, string $level): Logger
-    {
-        return new class($logger, $level) extends Logger {
-            private Logger $logger;
-            private string $level;
-
-            public function __construct(Logger $logger, string $level)
-            {
-                $this->logger = $logger;
-                $this->level = $level;
-            }
-
-            public function log(string $level, string $message, array $context = []): void
-            {
-                if ((self::LEVELS[$level] ?? self::LEVELS[self::ERROR]) >= self::LEVELS[$this->level])
-                    echo '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL;
-
-                $this->logger->log($level, $message, $context);
-            }
-        };
     }
 }
 

@@ -2,8 +2,6 @@
 
 namespace Selpol\Validator;
 
-use Selpol\Logger\Logger;
-
 class Validator
 {
     private array $value;
@@ -32,10 +30,5 @@ class Validator
             }
 
         return $this->value;
-    }
-
-    public function log(ValidatorException $exception, string $tag)
-    {
-        Logger::channel('validator')->error($exception->getValidatorMessage()->getMessage(), $this->value);
     }
 }

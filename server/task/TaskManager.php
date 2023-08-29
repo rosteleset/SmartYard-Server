@@ -2,18 +2,20 @@
 
 namespace Selpol\Task;
 
-use Selpol\Logger\Logger;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Redis;
 
-class TaskManager
+class TaskManager implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public const QUEUE_HIGH = 'high';
     public const QUEUE_MEDIUM = 'medium';
     public const QUEUE_LOW = 'low';
     public const QUEUE_DEFAULT = 'default';
 
     private static ?TaskManager $instance = null;
-    private static ?Logger $logger = null;
 
     private Redis $redis;
 
@@ -35,7 +37,8 @@ class TaskManager
     public function worker(string $queue): TaskWorker
     {
         if (!array_key_exists($queue, $this->workers)) {
-            $this->workers[$queue] = new TaskWorker($queue, $this->redis, self::$logger);
+            $this->workers[$queue] = new TaskWorker($queue, $this->redis);
+            $this->workers[$queue]->setLogger($this->logger);
 
             $this->redis->sAdd($this->getManagerQueuesKey(), $queue);
         }
@@ -47,7 +50,7 @@ class TaskManager
     {
         $this->redis->del($this->redis->keys('task:*'));
 
-        self::$logger?->info('Clear TaskManager');
+        $this->logger?->info('Clear TaskManager');
     }
 
     private function getManagerQueuesKey(): string
@@ -55,17 +58,14 @@ class TaskManager
         return 'task:queues';
     }
 
-    public static function setLogger(?Logger $logger)
-    {
-        self::$logger = $logger;
-    }
-
     public static function instance(): TaskManager
     {
         global $redis;
 
-        if (is_null(self::$instance))
+        if (is_null(self::$instance)) {
             self::$instance = new TaskManager($redis);
+            self::$instance->setLogger(logger('task'));
+        }
 
         return self::$instance;
     }

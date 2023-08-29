@@ -2,7 +2,6 @@
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-use Selpol\Logger\Logger;
 use Selpol\Task\TaskManager;
 
 mb_internal_encoding("UTF-8");
@@ -61,8 +60,6 @@ $queue = array_key_exists('--queue', $args) ? $args['--queue'] : 'default';
 $sleep = array_key_exists('--sleep', $args) ? $args['--sleep'] : 10;
 $id = array_key_exists('--id', $args) ? $args['--id'] : 1;
 $auto = array_key_exists('--auto', $args);
-
-TaskManager::setLogger(logger_echo(logger_filter(logger('task'), Logger::ERROR), Logger::INFO));
 
 $worker = TaskManager::instance()->worker($queue);
 

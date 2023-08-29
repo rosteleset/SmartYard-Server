@@ -6,14 +6,14 @@
 
 namespace backends\isdn {
 
-    use Selpol\Logger\Logger;
+    use Psr\Log\LoggerInterface;
 
     /**
      * Intercomtel variant of flash calls and sms sending
      */
     class intercomtel extends isdn
     {
-        private Logger $logger;
+        private LoggerInterface $logger;
 
         public function __construct($config, $db, $redis, $login = false)
         {

@@ -10,7 +10,6 @@ use hw\domophones\domophones;
  * @param string $backend module name
  * @return false|backend
  */
-
 function loadBackend($backend, $login = false)
 {
     global $config, $db, $redis, $backends;

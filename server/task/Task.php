@@ -4,11 +4,15 @@ namespace Selpol\Task;
 
 use Exception;
 use PDO_EXT;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Redis;
 use Throwable;
 
-abstract class Task
+abstract class Task implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public string $title;
 
     protected ?Redis $redis = null;

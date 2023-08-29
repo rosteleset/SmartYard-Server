@@ -2,25 +2,27 @@
 
 namespace Selpol\Task;
 
-use Selpol\Logger\Logger;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Redis;
 use Throwable;
 
-class TaskWorker
+class TaskWorker implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private string $queue;
 
     private Redis $redis;
-    private ?Logger $logger;
 
-    public function __construct(string $queue, Redis $redis, ?Logger $logger)
+    public function __construct(string $queue, Redis $redis)
     {
         $this->queue = $queue;
         $this->redis = $redis;
-        $this->logger = $logger;
     }
 
-    public function getLogger(): ?Logger
+    public function getLogger(): ?LoggerInterface
     {
         return $this->logger;
     }
