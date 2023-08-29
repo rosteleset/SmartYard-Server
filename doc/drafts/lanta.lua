@@ -469,15 +469,30 @@ function getActionTemplate(issue, action)
     end
 
     if action == "Закрыть" then
-        if hasValue(tt.myGroups(), "callcenter") then
-            return {
-                "_cf_quality_control",
-                "optionalComment"
-            }
+        if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
+            if hasValue(tt.myGroups(), "callcenter") then
+                return {
+                    "_cf_quality_control",
+                    "_cf_amount",
+                    "optionalComment"
+                }
+            else
+                return {
+                    "_cf_amount",
+                    "optionalComment"
+                }
+            end
         else
-            return {
-                "optionalComment"
-            }
+            if hasValue(tt.myGroups(), "callcenter") then
+                return {
+                    "_cf_quality_control",
+                    "optionalComment"
+                }
+            else
+                return {
+                    "optionalComment"
+                }
+            end
         end
     end
 
@@ -631,25 +646,14 @@ function action(issue, action, original)
             end
         end
         
-        if tonumberExt(original._cf_amount) > 0 and issue["_cf_install_done"] == "Выполнено" then
-            local client_info = custom.POST({
-                ["action"] = "writeoff",
-                ["client_id"] = tonumberExt(original["_cf_object_id"]) - 500000000,
-                ["amount"] = tonumberExt(original._cf_amount),
-                ["credit"] = true,
-                ["issue_id"] = issue["issueId"],
-            })
-            issue._cf_amount = -tonumberExt(original._cf_amount)
-        end
-        
         if catalogId(original["catalog"]) == 5009 and issue["_cf_install_done"] == "Выполнено" then
-            local client_info = custom.POST({
+            custom.POST({
                 ["action"] = "extAttrib",
                 ["client_id"] = tonumberExt(original["_cf_object_id"]) - 500000000,
                 ["attrib"] = "FTTX",
                 ["value"] = utils.date("Y-m-d"),
             })
-            local client_info = custom.POST({
+            custom.POST({
                 ["action"] = "extAttrib",
                 ["client_id"] = tonumberExt(original["_cf_object_id"]) - 500000000,
                 ["attrib"] = "CONNECTION_TYPE",
@@ -767,6 +771,21 @@ function action(issue, action, original)
 
     if action == "Закрыть" then
         issue["status"] = "Закрыта"
+
+        if tonumberExt(issue._cf_amount) > 0 then
+            -- заявки на возврат через бухгалтерию "ходят" сами по себе
+            if catalogId(original["catalog"]) ~= 5003 then
+                custom.POST({
+                    ["action"] = "writeoff",
+                    ["client_id"] = tonumberExt(original["_cf_object_id"]) - 500000000,
+                    ["amount"] = tonumberExt(issue._cf_amount),
+                    ["credit"] = true,
+                    ["issue_id"] = issue["issueId"],
+                })
+                issue._cf_amount = -tonumberExt(issue._cf_amount)
+            end
+        end
+        
         return tt.modifyIssue(issue, action)
     end
 
@@ -806,24 +825,24 @@ function action(issue, action, original)
         end
 
 -- блок звонков
-        if original(issue["_cf_calls_count"]) then
+        if exists(original["_cf_calls_count"]) then
             issue["_cf_calls_count"] = 0
         end
-        if original(issue["_cf_need_call"]) then
+        if exists(original["_cf_need_call"]) then
             issue["_cf_need_call"] = 0
         end
-        if original(issue["_cf_call_date"]) then
+        if exists(original["_cf_call_date"]) then
             issue["_cf_call_date"] = 0
         end
-        if original(issue["_cf_anytime_call"]) then
+        if exists(original["_cf_anytime_call"]) then
             issue["_cf_anytime_call"] = 0
         end
 
 -- общее
-        if original(issue["_cf_delay"]) then
+        if exists(original["_cf_delay"]) then
             issue["_cf_delay"] = 0
         end
-        if original(issue["_cf_quality_control"]) then
+        if exists(original["_cf_quality_control"]) then
             issue["_cf_quality_control"] = ""
         end
 
