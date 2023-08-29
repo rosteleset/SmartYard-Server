@@ -9,12 +9,24 @@ namespace api\houses {
     use api\api;
 
     use Selpol\Task\Tasks\IntercomConfigureTask;
+    use Selpol\Validator\Rule;
 
     /**
      * domophone method
      */
     class domophone extends api
     {
+        public static function GET($params)
+        {
+            $validate = validate($params, ['_id' => Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]);
+
+            if ($validate == false)
+                return api::ERROR();
+
+            $households = loadBackend("households");
+
+            return api::ANSWER($households->getDomophone($validate['_id']));
+        }
 
         public static function POST($params)
         {
@@ -50,6 +62,7 @@ namespace api\houses {
         public static function index()
         {
             return [
+                "GET" => "#same(addresses,house,GET)",
                 "PUT" => "#same(addresses,house,PUT)",
                 "POST" => "#same(addresses,house,PUT)",
                 "DELETE" => "#same(addresses,house,PUT)",
