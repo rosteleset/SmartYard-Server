@@ -3,6 +3,7 @@
 namespace Selpol\Task\Tasks\Plog;
 
 use backends\plog\plog;
+use Throwable;
 
 class PlogCallTask extends PlogTask
 {
@@ -18,6 +19,8 @@ class PlogCallTask extends PlogTask
     /** @var int|null Идентификатор звонка */
     public ?int $call;
 
+    public int $retry = 0;
+
     public function __construct(int $id, string $ip, int $date, ?int $call)
     {
         parent::__construct('Событие звонка');
@@ -31,6 +34,8 @@ class PlogCallTask extends PlogTask
 
     public function onTask(): bool
     {
+        $this->retry++;
+
         $plog = loadBackend('plog');
 
         $event_data = [];
@@ -106,6 +111,14 @@ class PlogCallTask extends PlogTask
         $plog->writeEventData($event_data);
 
         return true;
+    }
+
+    public function onError(Throwable $throwable)
+    {
+        logger('task')->debug('PlogCallTask error' . PHP_EOL . $throwable);
+
+        if ($this->retry < 3)
+            task(new PlogCallTask($this->id, $this->ip, $this->date, $this->call))->low()->delay(30000)->dispatch();
     }
 
     private function beward(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg)

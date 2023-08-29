@@ -4,6 +4,7 @@ namespace Selpol\Task\Tasks\Plog;
 
 use backends\frs\frs;
 use backends\plog\plog;
+use Throwable;
 
 class PlogOpenTask extends PlogTask
 {
@@ -19,6 +20,8 @@ class PlogOpenTask extends PlogTask
     /** @var string Информация о событие */
     public string $detail;
 
+    public int $retry = 0;
+
     public function __construct(int $id, int $type, int $door, int $date, string $detail)
     {
         parent::__construct('Событие открытие двери');
@@ -33,6 +36,8 @@ class PlogOpenTask extends PlogTask
 
     public function onTask(): bool
     {
+        $this->retry++;
+
         $plog = loadBackend('plog');
 
         $event_data = [];
@@ -116,5 +121,13 @@ class PlogOpenTask extends PlogTask
         $plog->writeEventData($event_data, $flat_list);
 
         return true;
+    }
+
+    public function onError(Throwable $throwable)
+    {
+        logger('task')->debug('PlogOpenTask error' . PHP_EOL . $throwable);
+
+        if ($this->retry < 3)
+            task(new PlogOpenTask($this->id, $this->type, $this->door, $this->date, $this->detail))->low()->delay(30000)->dispatch();
     }
 }
