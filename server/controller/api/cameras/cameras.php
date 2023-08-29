@@ -1,37 +1,39 @@
 <?php
 
+/**
+ * cameras api
+ */
+
+namespace api\cameras {
+
+    use api\api;
+
     /**
-     * cameras api
+     * cameras method
      */
+    class cameras extends api
+    {
 
-    namespace api\cameras {
+        public static function GET($params)
+        {
+            $cameras = loadBackend("cameras");
+            $configs = loadBackend("configs");
+            $frs = loadBackend("frs");
 
-        use api\api;
+            $response = [
+                "cameras" => $cameras->getCameras(),
+                "models" => $configs->getCamerasModels(),
+                "frsServers" => $frs->servers(),
+            ];
 
-        /**
-         * cameras method
-         */
+            return api::ANSWER($response, "cameras");
+        }
 
-        class cameras extends api {
-
-            public static function GET($params) {
-                $cameras = loadBackend("cameras");
-                $configs = loadBackend("configs");
-                $frs = loadBackend("frs");
-
-                $response = [
-                    "cameras" => $cameras->getCameras(),
-                    "models" => $configs->getCamerasModels(),
-                    "frsServers" => $frs->servers(),
-                ];
-
-                return api::ANSWER($response, "cameras");
-            }
-
-            public static function index() {
-                return [
-                    "GET" => "#same(addresses,house,GET)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "GET" => "#same(addresses,house,GET)",
+            ];
         }
     }
+}
