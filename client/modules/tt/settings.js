@@ -732,6 +732,18 @@
                             id: "2",
                             text: i18n("tt.assignedOnlyGroups"),
                         },
+                        {
+                            id: "3",
+                            text: i18n("tt.assignedUsersAndGroupsMultiple"),
+                        },
+                        {
+                            id: "4",
+                            text: i18n("tt.assignedOnlyUsersMultiple"),
+                        },
+                        {
+                            id: "5",
+                            text: i18n("tt.assignedOnlyGroupsMultiple"),
+                        },
                     ],
                 },
             ],

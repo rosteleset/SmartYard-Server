@@ -337,10 +337,10 @@
                     return {
                         id: "assigned",
                         type: "select2",
-                        multiple: true,
+                        multiple: [3, 4, 5].indexOf(parseInt(project.assigned)) >= 0,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        options: select2Filter(peoples(project, parseInt(project.assigned) == 0 || parseInt(project.assigned) == 2, parseInt(project.assigned) == 0 || parseInt(project.assigned) == 1), filter),
+                        options: select2Filter(peoples(project, [0, 2, 3, 5].indexOf(parseInt(project.assigned)) >= 0, [0, 1, 3, 4].indexOf(parseInt(project.assigned)) >= 0), filter),
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.assigned)?Object.values(issue.assigned):[]),
                     };
 
