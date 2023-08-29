@@ -6,7 +6,7 @@
 
 -- Офисная работа
 
-office_work = { 5002, 5003, }
+office_work = { 5002, 5003, 5013, 5017, 5018, }
 
 -- Монтажные работы
 
@@ -16,156 +16,12 @@ hardware_work = {
     -- на коммутатор
     2001,
     -- абонентские
-    5001, 5004, 5005, 5006, 5007, 5008, 5009, 5010, 501, 5012,
+    5001, 5004, 5005, 5006, 5007, 5008, 5009, 5010, 5011, 5012, 5014, 5015, 5016,
 }
 
+refund_work = { 5005, 5006, 5015, }
+
 -- Видеонаблюдения
-
---
--- Утилиты
---
-
-function trim(s)
-    return s:match "^%s*(.-)%s*$"
-end
-
-function tonumberExt(v)
-    if not pcall(function () v = tonumber(v) end) then
-        v = 0
-    end
-
-    if v ~= nil then
-        return v
-    else
-        return 0
-    end
-end
-
-function hasValue(tab, val)
-    if tab[0] == val then
-        return true
-    end
-
-    for index, value in ipairs(tab) do
-        if value == val then
-            return true
-        end
-    end
-
-    return false
-end
-
-function removeValue(tab, val)
-    local new = {}
-
-    for index, value in ipairs(tab) do
-        if value ~= val then
-            new[#new + 1] = value
-        end
-    end
-
-    return new
-end
-
-function replaceValue(tab, valFrom, valTo)
-    local new = {}
-
-    for index, value in ipairs(tab) do
-        if value == valFrom then
-            new[#new + 1] = valTo
-        else
-            new[#new + 1] = value
-        end
-    end
-
-    return new
-end
-
-function removeValues(tab, vals)
-    for index, value in ipairs(vals) do
-        tab = removeValue(tab, value)
-    end
-
-    return tab
-end
-
-function insertAfter(tab, after, val, withSep)
-    local new = {}
-
-    for index, value in ipairs(tab) do
-        if value == after then
-            new[#new + 1] = value
-            if withSep then
-                new[#new + 1] = withSep
-            end
-            new[#new + 1] = val
-        else
-            new[#new + 1] = value
-        end
-    end
-
-    return new
-end
-
-function insertFirst(tab, val, withSep)
-    local new = {}
-
-    new[#new + 1] = val
-    if withSep then
-        new[#new + 1] = withSep
-    end
-
-    for index, value in ipairs(tab) do
-        new[#new + 1] = value
-    end
-
-    return new
-end
-
-function normalizeArray(tab)
-    local new = {}
-
-    if tab[0] ~= nil then
-        new[#new + 1] = tab[0]
-    end
-
-    for index, value in ipairs(tab) do
-        new[#new + 1] = value
-    end
-
-    return new
-end
-
-function count(tab)
-    local c = 0
-
-    for i, v in pairs(tab) do
-        c = c + 1
-    end
-
-    return c
-end
-
--- переменная существует и если таблица то есть элементы
-
-function exists(v)
-    if v == nil then
-        return false
-    end
-
-    if type(v) == "table" then
-        for i, v in pairs(v) do
-            return true
-        end
-        return false
-    end
-
-    return true
-end
-
-function strExists(v)
-    return exists(v) and trim(v) ~= ""
-end
 
 --
 -- Условия
@@ -291,7 +147,7 @@ function catalogId(catalog)
             return tonumberExt(utils.explode("]", utils.explode("[", catalog)[1])[0])
         end
     )
-    
+
     if not ok then
         return -1
     else
@@ -468,7 +324,7 @@ function getAvailableActions(issue)
             "-",
             "Закрыть",
         }
-        
+
         if not hasValue(hardware_work, catalogId(issue.catalog)) then
             actions = removeValue(actions, "saCoordinate")
             actions = removeValue(actions, "Работы завершены")
@@ -676,7 +532,7 @@ end
 -- выполнить действие
 function action(issue, action, original)
     local comment = false
-    
+
     if action == "Назначить (передать)" then
         if issue["assigned"] == nil or issue["assigned"] == "" or (type(issue["assigned"]) == "table" and count(issue["assigned"]) == 0) then
             issue["assigned"] = {
@@ -724,7 +580,7 @@ function action(issue, action, original)
         issue["_cf_coordinator"] = tt.login()
         return tt.modifyIssue(issue, action)
     end
-    
+
     -- завершение монтажных работ
     if action == "Работы завершены" then
         issue["_cf_done_date"] = utils.time()
@@ -733,23 +589,21 @@ function action(issue, action, original)
         issue["assigned"] = {
             original["author"]
         }
-        
+
         if original["_cf_object_id"] ~= nil then
             if tonumberExt(original["_cf_object_id"]) >= 100000000 and tonumberExt(original["_cf_object_id"]) < 200000000 then
                 -- точка присутствия - в техотдел
                 issue["assigned"] = {
                     "tech"
                 }
-            end
-            if tonumberExt(original["_cf_object_id"]) >= 200000000 and tonumberExt(original["_cf_object_id"]) < 300000000 then
+            elseif tonumberExt(original["_cf_object_id"]) >= 200000000 and tonumberExt(original["_cf_object_id"]) < 300000000 then
                 -- l2 - в техотдел
                 issue["assigned"] = {
                     "tech"
                 }
-            end
-            if tonumberExt(original["_cf_object_id"]) >= 500000000 and tonumberExt(original["_cf_object_id"]) < 600000000 then
-                if hasValue({ 5005, 5006, }, catalogId(original["catalog"])) then
-                    if hasValue({ "Проблема с доступом", "Отмена", }, issue["_cf_install_done"]) then
+            elseif tonumberExt(original["_cf_object_id"]) >= 500000000 and tonumberExt(original["_cf_object_id"]) < 600000000 then
+                if hasValue(refund_work, catalogId(original["catalog"])) then
+                    if hasValue({ "Не доставлено", "Проблема с доступом", "Отмена", }, issue["_cf_install_done"]) then
                         -- надо-бы в офис, но возникли проблемы, пусть колл-центр разбирается
                         issue["assigned"] = {
                             "office"
@@ -772,18 +626,43 @@ function action(issue, action, original)
                         "office"
                     }
                 end
-            end
-            if tonumberExt(original["_cf_object_id"]) < 0 and issue["_cf_install_done"] == "Выполнено" then
+            elseif tonumberExt(original["_cf_object_id"]) < 0 and issue["_cf_install_done"] == "Выполнено" then
                 issue["status"] = "Закрыта"
             end
         end
         
-        local result = tt.modifyIssue(issue, action)
+        if tonumberExt(original._cf_amount) > 0 and issue["_cf_install_done"] == "Выполнено" then
+            local client_info = custom.POST({
+                ["action"] = "writeoff",
+                ["client_id"] = tonumberExt(original["_cf_object_id"]) - 500000000,
+                ["amount"] = tonumberExt(original._cf_amount),
+                ["credit"] = true,
+                ["issue_id"] = issue["issueId"],
+            })
+            issue._cf_amount = -tonumberExt(original._cf_amount)
+        end
         
+        if catalogId(original["catalog"]) == 5009 and issue["_cf_install_done"] == "Выполнено" then
+            local client_info = custom.POST({
+                ["action"] = "extAttrib",
+                ["client_id"] = tonumberExt(original["_cf_object_id"]) - 500000000,
+                ["attrib"] = "FTTX",
+                ["value"] = utils.date("Y-m-d"),
+            })
+            local client_info = custom.POST({
+                ["action"] = "extAttrib",
+                ["client_id"] = tonumberExt(original["_cf_object_id"]) - 500000000,
+                ["attrib"] = "CONNECTION_TYPE",
+                ["value"] = 2,
+            })
+        end
+
+        local result = tt.modifyIssue(issue, action)
+
         if result and comment then
             tt.addComment(issue["issueId"], comment, true)
         end
-        
+
         return result
     end
 
