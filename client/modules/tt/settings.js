@@ -714,6 +714,26 @@
                     title: i18n("tt.searchComments"),
                     placeholder: i18n("tt.searchComments"),
                 },
+                {
+                    id: "assigned",
+                    type: "select",
+                    value: project.assigned,
+                    title: i18n("tt.assigned"),
+                    options: [
+                        {
+                            id: 0,
+                            text: i18n("tt.usersAndGroups"),
+                        },
+                        {
+                            id: 1,
+                            text: i18n("tt.onlyUsers"),
+                        },
+                        {
+                            id: 2,
+                            text: i18n("tt.onlyGroups"),
+                        },
+                    ],
+                },
             ],
             delete: i18n("tt.projectDelete"),
             callback: function (result) {

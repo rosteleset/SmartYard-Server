@@ -1,0 +1,1 @@
+ALTER TABLE tt_projects ADD COLUMN assigned integer DEFAULT 0;

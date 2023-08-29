@@ -524,9 +524,10 @@
              * @param $searchSubject
              * @param $searchDescription
              * @param $searchComments
+             * @param $assigned
              * @return boolean
              */
-            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments);
+            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments, $assigned);
 
             /**
              * delete project and all it derivatives

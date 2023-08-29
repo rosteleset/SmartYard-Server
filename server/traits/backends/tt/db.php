@@ -44,11 +44,11 @@
 
                 try {
                     if ($acronym) {
-                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects where acronym = :acronym", [
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned from tt_projects where acronym = :acronym", [
                             "acronym" => $acronym,
                         ]);
                     } else {
-                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments from tt_projects order by acronym");
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned from tt_projects order by acronym");
                     }
                     $_projects = [];
 
@@ -181,6 +181,7 @@
                             "searchSubject" => $project["search_subject"],
                             "searchDescription" => $project["search_description"],
                             "searchComments" => $project["search_comments"],
+                            "assigned" => $project["assigned"],
                             "workflows" => $w,
                             "filters" => $f,
                             "resolutions" => $r,
@@ -234,16 +235,16 @@
             /**
              * @inheritDoc
              */
-            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments)
+            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments, $assigned)
             {
                 $this->clearCache();
 
-                if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize) || !checkInt($searchSubject) || !checkInt($searchDescription) || !checkInt($searchComments)) {
+                if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize) || !checkInt($searchSubject) || !checkInt($searchDescription) || !checkInt($searchComments) || !checkInt($assigned)) {
                     return false;
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, search_subject = :search_subject, search_description = :search_description, search_comments = :search_comments where project_id = $projectId");
+                    $sth = $this->db->prepare("update tt_projects set acronym = :acronym, project = :project, max_file_size = :max_file_size, search_subject = :search_subject, search_description = :search_description, search_comments = :search_comments, assigned = :assigned where project_id = $projectId");
                     $sth->execute([
                         "acronym" => $acronym,
                         "project" => $project,
@@ -251,6 +252,7 @@
                         "search_subject" => $searchSubject,
                         "search_description" => $searchDescription,
                         "search_comments" => $searchComments,
+                        "assigned" => $assigned,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
