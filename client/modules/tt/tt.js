@@ -516,7 +516,7 @@
                                 prefferredValue = 0;
                             }
                             
-                            if ([ "text", "text-ro", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
+                            if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
 
