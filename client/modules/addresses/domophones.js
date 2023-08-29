@@ -27,9 +27,9 @@
         }).always(modules.addresses.domophones.route);
     },
 
-    doConfigureDomophone: function (domophoneId) {
+    doConfigureDomophone: function (domophoneId, first) {
         loadingStart()
-        PUT("houses", "domophone", domophoneId, {configure: true}).fail(FAIL).done(() => {
+        PUT("houses", "domophone", domophoneId, {configure: true, first}).fail(FAIL).done(() => {
             message(i18n("addresses.domophoneConfigure"))
         }).always(modules.addresses.domophones.route);
     },
@@ -352,7 +352,12 @@
                                     {
                                         icon: 'fas fa-sync',
                                         title: i18n("addresses.domophoneSync"),
-                                        click: (domophoneId) => modules.addresses.domophones.doConfigureDomophone(domophoneId)
+                                        click: (domophoneId) => modules.addresses.domophones.doConfigureDomophone(domophoneId, false)
+                                    },
+                                    {
+                                        icon: 'fas fa-sync',
+                                        title: i18n("addresses.domophoneFirst"),
+                                        click: (domophoneId) => modules.addresses.domophones.doConfigureDomophone(domophoneId, true)
                                     },
                                     {
                                         title: "-",
