@@ -224,7 +224,6 @@
         }
 
         if (fieldId && fieldId.substring(0, 4) !== "_cf_") {
-            console.log(project);
             // regular issue fields
             switch (fieldId) {
                 case "issueId":
@@ -341,7 +340,7 @@
                         multiple: true,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        options: select2Filter(peoples(project, true, true), filter),
+                        options: select2Filter(peoples(project, parseInt(project.assigned) == 0 || parseInt(project.assigned) == 2, parseInt(project.assigned) == 0 || parseInt(project.assigned) == 1), filter),
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.assigned)?Object.values(issue.assigned):[]),
                     };
 
