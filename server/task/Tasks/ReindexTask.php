@@ -14,7 +14,7 @@ class ReindexTask extends Task
 
     public function onTask(): bool
     {
-        $dir = dirname(__FILE__) . '/../../api';
+        $dir = path('controller/api');
         $apis = scandir($dir);
 
         $this->pdo->exec("delete from core_api_methods");
