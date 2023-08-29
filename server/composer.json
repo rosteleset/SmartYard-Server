@@ -4,6 +4,7 @@
   "license": "GNU GENERAL PUBLIC LICENSE",
   "autoload": {
     "psr-4": {
+      "Selpol\\Container\\": "./container/",
       "Selpol\\Task\\": "./task/",
       "Selpol\\Validator\\": "./validator/",
       "Selpol\\Logger\\": "./logger/"
@@ -35,6 +36,7 @@
     "mongodb/mongodb": "^1.12",
     "chillerlan/php-qrcode": "^4.3",
     "phpoffice/phpword": "^1.1",
-    "psr/log": "^3.0"
+    "psr/log": "^3.0",
+    "psr/container": "^2.0"
   }
 }

@@ -2,8 +2,6 @@
 
 namespace PHPSTORM_META {
 
-    use cli\Cli;
-
     expectedArguments(
         \loadBackend(),
         0,
