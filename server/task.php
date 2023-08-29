@@ -10,7 +10,7 @@ require_once "backends/backend.php";
 require_once "utils/loader.php";
 require_once "utils/db_ext.php";
 
-require_once "api/api.php";
+require_once "controller/api/api.php";
 
 try {
     $config = config();

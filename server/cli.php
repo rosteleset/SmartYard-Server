@@ -15,7 +15,7 @@ require_once "utils/db_ext.php";
 
 require_once "backends/backend.php";
 
-require_once "api/api.php";
+require_once "controller/api/api.php";
 
 function usage()
 {

@@ -224,8 +224,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $module = $m[2];
         $method = $m[3];
 
-        if (file_exists(__DIR__ . "/internal/{$module}/{$method}.php"))
-            require_once __DIR__ . "/internal/{$module}/{$method}.php";
+        if (file_exists(path("controller/internal/{$module}/{$method}.php")))
+            include_once path("controller/internal/{$module}/{$method}.php");
     }
 
     response(405);
@@ -239,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $method = $m[3];
         $param = $m[4];
 
-        require_once __DIR__ . "/internal/{$module}/{$method}.php";
+        include_once path("controller/internal/{$module}/{$method}.php");
     }
 
 }

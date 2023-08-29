@@ -27,7 +27,7 @@ class FileLogger implements LoggerInterface
 
     private function getFile(): string
     {
-        return __DIR__ . '/../logs/' . $this->file . '-' . date('Y-m-d') . '.log';
+        return path('var/log/' . $this->file . '-' . date('Y-m-d') . '.log');
     }
 
     public static function channel(string $channel): FileLogger

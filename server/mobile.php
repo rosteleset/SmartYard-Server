@@ -264,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (count($m) == 4 && !$m[0] && $m[1] == 'mobile') {
         $module = $m[2];
         $method = $m[3];
-        if (file_exists(__DIR__ . "/mobile/{$module}/{$method}.php")) {
+        if (file_exists(path("controller/mobile/{$module}/{$method}.php"))) {
             $b = @explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
             if ($b) {
                 $response_cahce_req = strtolower($module . '-' . $method . '-' . $b . '-' . md5(serialize($postdata)));
@@ -284,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("X-Dm-Api-Data-Source: $response_data_source");
 
                 try {
-                    require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+                    include_once path("controller/mobile/{$module}/{$method}.php");
                 } catch (Throwable $throwable) {
                     $logger->error('Error handle post request' . PHP_EOL . $throwable);
                 }
@@ -299,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("X-Dm-Api-Data-Source: $response_data_source");
 
                 try {
-                    require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+                    include_once path("controller/mobile/{$module}/{$method}.php");
                 } catch (Exception $e) {
                     $logger->error('Error handle post request' . PHP_EOL . $e);
                 }
@@ -312,18 +312,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $m = explode('/', $_SERVER["REQUEST_URI"]);
+
     if (count($m) == 5 && !$m[0] && $m[1] == 'mobile') {
         $module = $m[2];
         $method = $m[3];
         $param = $m[4];
 
         try {
-            require_once __DIR__ . "/mobile/{$module}/{$method}.php";
+            include_once path("controller/mobile/{$module}/{$method}.php");
         } catch (Throwable $throwable) {
             $logger->error('Error handle get request' . PHP_EOL . $throwable);
         }
     }
-
 }
 
 response(404);

@@ -22,7 +22,7 @@ require_once "utils/db_ext.php";
 
 require_once "backends/backend.php";
 
-require_once "api/api.php";
+require_once "controller/api/api.php";
 
 $required_backends = ["authentication", "authorization", "accounting", "users"];
 
@@ -298,7 +298,7 @@ if ($api == "accounts" && $method == "forgot") {
                 if ($clearCache)
                     clear_cache($auth["uid"]);
 
-                require_once __DIR__ . "/api/$api/$method.php";
+                include_once path("controller/api/{$api}/{$method}.php");
 
                 if (class_exists("\\api\\$api\\$method")) {
                     try {
