@@ -137,57 +137,6 @@ function response(int $code = 204, mixed $data = false)
     exit;
 }
 
-function forgot($params)
-{
-    if (@$params["eMail"]) {
-        $uid = $params["_backends"]["users"]->getUidByEMail($params["eMail"]);
-        if ($uid !== false) {
-            $keys = $params["_redis"]->keys("forgot_*_" . $uid);
-
-            if (!count($keys)) {
-                $token = md5(guid_v4());
-                $params["_redis"]->setex("forgot_" . $token . "_" . $uid, 900, "1");
-
-                task(new EmailTask($params["eMail"], "password restoration", "<a href='{$params['_config']['server']}/accounts/forgot?token=$token'>{$params['_config']['server']}/accounts/forgot?token=$token</a>"));
-            }
-        }
-    }
-
-    if (@$params["token"]) {
-        $keys = $params["_redis"]->keys("forgot_{$params["token"]}_*");
-
-        $uid = false;
-
-        foreach ($keys as $key) {
-            $params["_redis"]->del($key);
-            $uid = explode("_", $key)[2];
-        }
-
-        if ($uid !== false) {
-            $pw = generate_password();
-            $params["_backends"]["users"]->setPassword($uid, $pw);
-            $user = $params["_backends"]["users"]->getUser($uid);
-
-            task(new EmailTask($user["eMail"], "password restoration", "your new password is $pw"));
-
-            $keys = $params["_redis"]->keys("auth_*_$uid");
-
-            foreach ($keys as $key)
-                $params["_redis"]->del($key);
-
-            echo "check your mailbox for your new password";
-
-            exit;
-        }
-    }
-
-    if (@$params["available"])
-        if ($params["_backends"]["users"]->capabilities()["mode"] !== "rw" || !$params["_config"]["email"])
-            response(403);
-
-    response();
-}
-
 if (count($_GET))
     foreach ($_GET as $key => $value)
         if ($key == "_token") $http_authorization = "Bearer " . urldecode($value);
@@ -271,56 +220,55 @@ $params["_ip"] = $ip;
 if (@$params["_login"])
     $redis->set("last_" . md5($params["_login"]), time());
 
-if ($api == "accounts" && $method == "forgot") {
-    forgot($params);
-} else
-    if (file_exists(__DIR__ . "/api/$api/$method.php")) {
-        if ($backends["authorization"]->allow($params)) {
-            $cache = false;
+if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
+    if ($backends["authorization"]->allow($params)) {
+        $cache = false;
 
-            if ($params["_request_method"] === "GET") {
+        if ($params["_request_method"] === "GET") {
+            try {
+                $cache = json_decode($redis->get("cache_" . $params["_md5"]) . "_" . $auth["uid"], true);
+            } catch (Exception $e) {
+                error_log(print_r($e, true));
+            }
+        }
+
+        if ($cache && !$refresh) {
+            header("X-Api-Data-Source: cache_" . $params["_md5"] . "_" . $auth["uid"]);
+            $code = array_key_first($cache);
+
+            response($code, $cache[$code]);
+
+        } else {
+            header("X-Api-Data-Source: db");
+
+            if ($clearCache)
+                clear_cache($auth["uid"]);
+
+            include_once path("controller/api/{$api}/{$method}.php");
+
+            if (class_exists("\\api\\$api\\$method")) {
                 try {
-                    $cache = json_decode($redis->get("cache_" . $params["_md5"]) . "_" . $auth["uid"], true);
+                    $result = call_user_func(["\\api\\$api\\$method", $params["_request_method"]], $params);
+
+                    $code = array_key_first($result);
+
+                    if ((int)$code) {
+                        if ($params["_request_method"] == "GET" && (int)$code === 200) {
+                            $ttl = (array_key_exists("cache", $result)) ? ((int)$cache) : $redis_cache_ttl;
+                            $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $ttl, json_encode($result));
+                        }
+
+                        response($code, $result[$code]);
+                    } else
+                        response(555, ["error" => "resultCode",]);
                 } catch (Exception $e) {
                     error_log(print_r($e, true));
+
+                    response(555, ["error" => "internal",]);
                 }
-            }
+            } else response(405, ["error" => "methodNotFound",]);
+        }
+    } else response(403, ["error" => "accessDenied",]);
+}
 
-            if ($cache && !$refresh) {
-                header("X-Api-Data-Source: cache_" . $params["_md5"] . "_" . $auth["uid"]);
-                $code = array_key_first($cache);
-
-                response($code, $cache[$code]);
-
-            } else {
-                header("X-Api-Data-Source: db");
-
-                if ($clearCache)
-                    clear_cache($auth["uid"]);
-
-                include_once path("controller/api/{$api}/{$method}.php");
-
-                if (class_exists("\\api\\$api\\$method")) {
-                    try {
-                        $result = call_user_func(["\\api\\$api\\$method", $params["_request_method"]], $params);
-
-                        $code = array_key_first($result);
-
-                        if ((int)$code) {
-                            if ($params["_request_method"] == "GET" && (int)$code === 200) {
-                                $ttl = (array_key_exists("cache", $result)) ? ((int)$cache) : $redis_cache_ttl;
-                                $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $ttl, json_encode($result));
-                            }
-
-                            response($code, $result[$code]);
-                        } else
-                            response(555, ["error" => "resultCode",]);
-                    } catch (Exception $e) {
-                        error_log(print_r($e, true));
-
-                        response(555, ["error" => "internal",]);
-                    }
-                } else response(405, ["error" => "methodNotFound",]);
-            }
-        } else response(403, ["error" => "accessDenied",]);
-    } else response(404, ["error" => "methodNotFound"]);
+response(404, ["error" => "methodNotFound"]);

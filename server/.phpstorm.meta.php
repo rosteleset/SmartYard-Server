@@ -68,7 +68,6 @@ namespace PHPSTORM_META {
         ])
     );
 
-    exitPoint(\forgot());
     exitPoint(\response());
     exitPoint(\usage());
 }
