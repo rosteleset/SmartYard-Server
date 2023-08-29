@@ -24,7 +24,7 @@ class EmailTask extends Task
 
     public function onTask(): bool
     {
-        if (@$this->config['email']) {
+        if (config('email')) {
             $mail = new PHPMailer(true);
 
             try {
@@ -33,15 +33,14 @@ class EmailTask extends Task
 
                 $mail->isSMTP();
 
-                $mail->Host = $this->config["email"]["server"];
+                $mail->Host = config('email.server');
                 $mail->SMTPAuth = true;
-                $mail->Username = $this->config["email"]["username"];
-                $mail->Password = $this->config["email"]["password"];
+                $mail->Username = config('email.username');
+                $mail->Password = config('email.password');
                 $mail->SMTPSecure = 'tls';
-                $mail->Port = $this->config["email"]["port"];
+                $mail->Port = config('email.port');
 
-                if (@$this->config["email"]["from_name"]) $mail->setFrom($this->config["email"]["from"], $this->config["email"]["from_name"]);
-                else $mail->setFrom($this->config["email"]["from"], $this->config["email"]["from"]);
+                $mail->setFrom(config('email.from'), config('email.from_name') ?? config('email.from'));
 
                 $mail->addAddress($this->to);
                 $mail->isHTML(true);

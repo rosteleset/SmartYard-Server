@@ -45,6 +45,52 @@ if (!function_exists('logger')) {
     }
 }
 
+if (!function_exists('logger_filter')) {
+    function logger_filter(Logger $logger, string $level): Logger
+    {
+        return new class($logger, $level) extends Logger {
+            private Logger $logger;
+            private string $level;
+
+            public function __construct(Logger $logger, string $level)
+            {
+                $this->logger = $logger;
+                $this->level = $level;
+            }
+
+            public function log(string $level, string $message, array $context = []): void
+            {
+                if ((self::LEVELS[$level] ?? self::LEVELS[self::ERROR]) >= self::LEVELS[$this->level])
+                    $this->logger->log($level, $message, $context);
+            }
+        };
+    }
+}
+
+if (!function_exists('logger_echo')) {
+    function logger_echo(Logger $logger, string $level): Logger
+    {
+        return new class($logger, $level) extends Logger {
+            private Logger $logger;
+            private string $level;
+
+            public function __construct(Logger $logger, string $level)
+            {
+                $this->logger = $logger;
+                $this->level = $level;
+            }
+
+            public function log(string $level, string $message, array $context = []): void
+            {
+                if ((self::LEVELS[$level] ?? self::LEVELS[self::ERROR]) >= self::LEVELS[$this->level])
+                    echo '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL;
+
+                $this->logger->log($level, $message, $context);
+            }
+        };
+    }
+}
+
 if (!function_exists('parse_uri')) {
     function parse_uri(string $value): array
     {
@@ -119,9 +165,10 @@ if (!function_exists('check_int')) {
     {
         $int = trim($int);
         $_int = strval((int)$int);
-        if ($int != $_int) {
+
+        if ($int != $_int)
             return false;
-        } else {
+        else {
             $int = (int)$_int;
             return true;
         }
@@ -225,7 +272,7 @@ if (!function_exists('i18n')) {
             }
 
             if (count($t) === 2) $loc = $lang[$t[0]][$t[1]];
-            else$loc = $lang[$t[0]];
+            else $loc = $lang[$t[0]];
 
             if ($loc) {
                 if (is_array($loc) && !($loc !== array_values($loc)))
@@ -250,36 +297,32 @@ if (!function_exists('guid_v4')) {
         // copyright (c) by Dave Pearson (dave at pds-uk dot com)
         // https://www.php.net/manual/ru/function.com-create-guid.php#119168
 
-        // Windows
         if (function_exists('com_create_guid') === true) {
-            if ($trim === true)
-                return trim(com_create_guid(), '{}');
-            else
-                return com_create_guid();
-        }
-
-        // OSX/Linux
-        if (function_exists('openssl_random_pseudo_bytes') === true) {
+            if ($trim === true) return trim(com_create_guid(), '{}');
+            else return com_create_guid();
+        } else if (function_exists('openssl_random_pseudo_bytes') === true) {
             $data = openssl_random_pseudo_bytes(16);
             $data[6] = chr(ord($data[6]) & 0x0f | 0x40);    // set version to 0100
             $data[8] = chr(ord($data[8]) & 0x3f | 0x80);    // set bits 6-7 to 10
+
             return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
         }
 
-        // Fallback (PHP 4.2+)
         mt_srand((double)microtime() * 10000);
-        $charid = strtolower(md5(uniqid(rand(), true)));
+
+        $char = strtolower(md5(uniqid(rand(), true)));
+
         $hyphen = chr(45);                  // "-"
+
         $lbrace = $trim ? "" : chr(123);    // "{"
         $rbrace = $trim ? "" : chr(125);    // "}"
-        $guidv4 = $lbrace .
-            substr($charid, 0, 8) . $hyphen .
-            substr($charid, 8, 4) . $hyphen .
-            substr($charid, 12, 4) . $hyphen .
-            substr($charid, 16, 4) . $hyphen .
-            substr($charid, 20, 12) .
-            $rbrace;
 
-        return $guidv4;
+        return $lbrace .
+            substr($char, 0, 8) . $hyphen .
+            substr($char, 8, 4) . $hyphen .
+            substr($char, 12, 4) . $hyphen .
+            substr($char, 16, 4) . $hyphen .
+            substr($char, 20, 12) .
+            $rbrace;
     }
 }

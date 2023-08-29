@@ -83,7 +83,7 @@ namespace backends\frs {
          * Call API method
          * @param string $base_url base URL FRS
          * @param string $method API method name
-         * @param obect $params call parameters
+         * @param object $params call parameters
          * @return false|array
          */
         abstract public function apiCall($base_url, $method, $params);

@@ -4,6 +4,7 @@ namespace Selpol\Task;
 
 use DateInterval;
 use DateTime;
+use Exception;
 use PDO_EXT;
 use Redis;
 
@@ -60,11 +61,13 @@ class TaskContainer
         return $this;
     }
 
-    public function sync(?Redis $redis, ?PDO_EXT $pdo, ?array $config): mixed
+    /**
+     * @throws Exception
+     */
+    public function sync(?Redis $redis, ?PDO_EXT $pdo): mixed
     {
         $this->task->setRedis($redis);
         $this->task->setPdo($pdo);
-        $this->task->setConfig($config);
 
         return $this->task->onTask();
     }

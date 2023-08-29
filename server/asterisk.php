@@ -16,7 +16,7 @@ header('Content-Type: application/json');
 $logger = logger('asterisk');
 
 try {
-    $config = loadConfig();
+    $config = config();
 } catch (Exception $e) {
     $logger->emergency('Error load config' . PHP_EOL . $e);
 

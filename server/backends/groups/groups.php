@@ -1,106 +1,106 @@
 <?php
 
+/**
+ * backends groups namespace
+ */
+
+namespace backends\groups {
+
+    use backends\backend;
+
     /**
-     * backends groups namespace
+     * base groups class
      */
-
-    namespace backends\groups {
-
-        use backends\backend;
+    abstract class groups extends backend
+    {
 
         /**
-         * base groups class
+         * get list of all groups or all groups by uid
+         *
+         * @param integer|boolean $uid
+         *
+         * @return array
          */
 
-        abstract class groups extends backend {
+        abstract public function getGroups($uid = false);
 
-            /**
-             * get list of all groups or all groups by uid
-             *
-             * @param integer|boolean $uid
-             *
-             * @return array
-             */
+        /**
+         * get group by gid
+         *
+         * @param integer $gid gid
+         *
+         * @return array
+         */
 
-            abstract public function getGroups($uid = false);
+        abstract public function getGroup($gid);
 
-            /**
-             * get group by gid
-             *
-             * @param integer $gid gid
-             *
-             * @return array
-             */
+        /**
+         * @param $acronym
+         * @return mixed
+         */
+        abstract public function getGroupByAcronym($acronym);
 
-            abstract public function getGroup($gid);
+        /**
+         * @param integer $gid gid
+         * @param string $acronym group name
+         * @param string $name group name
+         * @param integer $admin uid
+         *
+         * @return boolean
+         */
 
-            /**
-             * @param $acronym
-             * @return mixed
-             */
-            abstract public function getGroupByAcronym($acronym);
+        abstract public function modifyGroup($gid, $acronym, $name, $admin);
 
-            /**
-             * @param integer $gid gid
-             * @param string $acronym group name
-             * @param string $name group name
-             * @param integer $admin uid
-             *
-             * @return boolean
-             */
+        /**
+         * add user to group
+         *
+         * @param $acronym
+         * @param $name
+         * @return boolean
+         */
 
-            abstract public function modifyGroup($gid, $acronym, $name, $admin);
+        abstract public function addGroup($acronym, $name);
 
-            /**
-             * add user to group
-             *
-             * @param $acronym
-             * @param $name
-             * @return boolean
-             */
+        /**
+         * delete group
+         *
+         * @param integer $gid
+         *
+         * @return boolean
+         */
 
-            abstract public function addGroup($acronym, $name);
+        abstract public function deleteGroup($gid);
 
-            /**
-             * delete group
-             *
-             * @param integer $gid
-             *
-             * @return boolean
-             */
+        /**
+         * list of all uids in group
+         *
+         * @return array
+         */
 
-            abstract public function deleteGroup($gid);
+        abstract public function getUsers($gid);
 
-            /**
-             * list of all uids in group
-             *
-             * @return array
-             */
+        /**
+         * modify users in group
+         *
+         * @return array
+         */
 
-            abstract public function getUsers($gid);
+        abstract public function setUsers($gid, $uids);
 
-            /**
-             * modify users in group
-             *
-             * @return array
-             */
+        /**
+         * delete user from all groups
+         *
+         * @param $uid
+         * @return boolean
+         */
 
-            abstract public function setUsers($gid, $uids);
+        abstract public function deleteUser($uid);
 
-            /**
-             * delete user from all groups
-             *
-             * @param $uid
-             * @return boolean
-             */
-
-            abstract public function deleteUser($uid);
-
-            /**
-             * @param $uid
-             * @param $gid
-             * @return mixed
-             */
-            abstract public function addUserToGroup($uid, $gid);
-        }
+        /**
+         * @param $uid
+         * @param $gid
+         * @return mixed
+         */
+        abstract public function addUserToGroup($uid, $gid);
     }
+}

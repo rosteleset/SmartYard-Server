@@ -9,7 +9,8 @@
       "Selpol\\Logger\\": "./logger/"
     },
     "files": [
-      "./utils/helper.php"
+      "./utils/helper.php",
+      "./utils/config.php"
     ]
   },
   "authors": [
@@ -24,6 +25,10 @@
     "ext-redis": "*",
     "ext-yaml": "*",
     "ext-zip": "*",
+    "ext-curl": "*",
+    "ext-mbstring": "*",
+    "ext-openssl": "*",
+    "ext-pcntl": "*",
     "phpmailer/phpmailer": "^6.8",
     "ezyang/htmlpurifier": "^4.16",
     "erusev/parsedown": "1.7.x",

@@ -248,7 +248,7 @@ try {
 $logger = logger('cli');
 
 try {
-    $config = loadConfig();
+    $config = config();
 } catch (Exception $e) {
     $config = false;
 }
@@ -309,7 +309,7 @@ if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["-
     $n = clear_cache(true);
     echo "$n cache entries cleared\n\n";
 
-    task(new ReindexTask())->sync($redis, $db, $config);
+    task(new ReindexTask())->sync($redis, $db);
 
     exit(0);
 }
@@ -356,7 +356,7 @@ if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["-
     $n = clear_cache(true);
     echo "$n cache entries cleared\n";
 
-    task(new ReindexTask())->sync($redis, $db, $config);
+    task(new ReindexTask())->sync($redis, $db);
 
     exit(0);
 }
@@ -758,7 +758,7 @@ if (array_key_exists('--qr', $args) && isset($args['--qr']) && array_key_exists(
     $flatId = array_key_exists('--flat', $args) && isset($args['--flat']) ? $args['--flat'] : null;
     $override = array_key_exists('--override', $args);
 
-    $uuid = task(new QrTask($houseId, $flatId, $override))->sync($redis, $db, $config);
+    $uuid = task(new QrTask($houseId, $flatId, $override))->sync($redis, $db);
 
     if ($uuid)
         fwrite(fopen($output, 'w'), loadBackend('files')->getFileBytes($uuid));

@@ -13,18 +13,15 @@ $logger = logger('internal');
 $config = false;
 
 try {
-    $config = loadConfig();
+    $config = config();
 } catch (Exception $e) {
     $logger->critical('Config fail load' . PHP_EOL . $e);
 
     $config = false;
 }
 
-if (!$config) {
-    response(555, [
-        "error" => "noConfig",
-    ]);
-}
+if (!$config)
+    response(555, ["error" => "noConfig"]);
 
 $backends = [];
 $redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
@@ -32,17 +29,17 @@ $redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
 try {
     $redis = new Redis();
     $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
-    if (@$config["redis"]["password"]) {
+
+    if (@$config["redis"]["password"])
         $redis->auth($config["redis"]["password"]);
-    }
+
     $redis->setex("iAmOk", 1, "1");
 } catch (Exception $e) {
     $logger->critical('Redis fail connect' . PHP_EOL . $e);
 
     error_log(print_r($e, true));
-    response(555, [
-        "error" => "redis",
-    ]);
+
+    response(555, ["error" => "redis"]);
 }
 
 try {
@@ -51,9 +48,7 @@ try {
     $logger->critical('Pdo fail connect' . PHP_EOL . $e);
 
     error_log(print_r($e, true));
-    response(555, [
-        "error" => "PDO",
-    ]);
+    response(555, ["error" => "PDO"]);
 }
 
 function response($code = 204, $data = false, $name = false, $message = false)

@@ -101,7 +101,7 @@ namespace backends\dvr_exports {
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
 
                     echo "Record download task with id = $recordId was started\n";
-                    echo "Fetching record form {$request_url} to " . $task['filename']  . "\n";
+                    echo "Fetching record form {$request_url} to " . $task['filename'] . "\n";
 
                     $files = loadBackend("files");
 
@@ -126,7 +126,7 @@ namespace backends\dvr_exports {
                         $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
 
                         echo "Record download task with id = $recordId was finished with error!\n";
-                        
+
                         return false;
                     }
                 } else {

@@ -1,41 +1,42 @@
 <?php
 
-    /**
-     * "silent" accounting (logging) class, do nothing
-     */
+/**
+ * "silent" accounting (logging) class, do nothing
+ */
 
-    namespace backends\accounting {
+namespace backends\accounting {
+
+    /**
+     * "silent" accounting (logging) class
+     */
+    class none extends accounting
+    {
 
         /**
-         * "silent" accounting (logging) class
+         * @param object $params all params passed to api handlers
+         * @param integer $code return code
+         * @return void
          */
 
-        class none extends accounting {
+        public function log($params, $code)
+        {
+            // do nothing
+        }
 
-            /**
-             * @param object $params all params passed to api handlers
-             * @param integer $code return code
-             * @return void
-             */
+        /**
+         * @inheritDoc
+         */
+        public function raw($ip, $unit, $msg)
+        {
+            // do nothing
+        }
 
-            public function log($params, $code) {
-                // do nothing
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function raw($ip, $unit, $msg)
-            {
-                // do nothing
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function get($query)
-            {
-                // TODO: Implement get() method.
-            }
+        /**
+         * @inheritDoc
+         */
+        public function get($query)
+        {
+            // TODO: Implement get() method.
         }
     }
+}

@@ -22,6 +22,8 @@ class IntercomConfigureTask extends Task
 
     public function onTask(): bool
     {
+        $this->config = config();
+
         $households = loadBackend('households');
         $addresses = loadBackend('addresses');
         $configs = loadBackend('configs');
@@ -52,7 +54,6 @@ class IntercomConfigureTask extends Task
         $panel_text = $entrances[0]['callerId'];
 
         try {
-            /** @var domophones $panel */
             $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $this->first);
         } catch (Exception $e) {
             echo $e->getMessage() . "\n";
@@ -211,10 +212,8 @@ class IntercomConfigureTask extends Task
 
         $this->setProgress(95);
 
-        loadEnvFile();
-
-        $key = getenv('MIFARE_KEY');
-        $sector = getenv('MIFARE_SECTOR');
+        $key = env('MIFARE_KEY');
+        $sector = env('MIFARE_SECTOR');
 
         if ($key !== false && $sector !== false)
             $panel->configure_mifare($key, $sector);

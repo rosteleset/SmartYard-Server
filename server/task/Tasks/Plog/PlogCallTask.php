@@ -414,14 +414,14 @@ class PlogCallTask extends PlogTask
             unset($now_call_id);
             unset($now_sip_call_id);
 
-            if (strpos($msg, $pattern) !== false) {
+            if (str_contains($msg, $pattern)) {
                 // Get call ID
-                if (strpos($msg, 'SIP_LOG') !== false) {
+                if (str_contains($msg, 'SIP_LOG')) {
                     $now_call_id = explode('=', $msg)[1];
                 }
 
                 // Get flat ID
-                if (strpos($msg, 'DTMF_LOG:From') !== false) {
+                if (str_contains($msg, 'DTMF_LOG:From')) {
                     $number = explode(' ', $msg)[1];
                     $now_flat_id = substr($number, 1);
                 }

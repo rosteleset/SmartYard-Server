@@ -13,7 +13,6 @@ abstract class Task
 
     protected ?Redis $redis = null;
     protected ?PDO_EXT $pdo = null;
-    protected ?array $config = null;
 
     /** @var callable $progressCallable */
     private mixed $progressCallable = null;
@@ -31,11 +30,6 @@ abstract class Task
     public function setPdo(?PDO_EXT $pdo): void
     {
         $this->pdo = $pdo;
-    }
-
-    public function setConfig(?array $config): void
-    {
-        $this->config = $config;
     }
 
     public function setProgressCallable(?callable $progressCallable)

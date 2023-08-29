@@ -11,26 +11,6 @@ namespace backends\inbox {
      */
     class clickhouse extends inbox
     {
-        private $clickhouse;
-
-        /**
-         * @inheritDoc
-         */
-        function __construct($config, $db, $redis, $login = false)
-        {
-            parent::__construct($config, $db, $redis, $login);
-
-            require_once __DIR__ . '/../../../utils/clickhouse.php';
-
-            $this->clickhouse = new \clickhouse(
-                @$config['backends']['accounting']['host'] ?: '127.0.0.1',
-                @$config['backends']['accounting']['port'] ?: 8123,
-                @$config['backends']['accounting']['username'] ?: 'default',
-                @$config['backends']['accounting']['password'] ?: 'qqq',
-                @$config['backends']['accounting']['database'] ?: 'default'
-            );
-        }
-
         /**
          * @inheritDoc
          */
@@ -247,18 +227,6 @@ namespace backends\inbox {
                 [
                     "fieldlify"
                 ]);
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function cron($part)
-        {
-            if ($part == '5min') {
-                return false;
-            } else {
-                return true;
-            }
         }
     }
 }

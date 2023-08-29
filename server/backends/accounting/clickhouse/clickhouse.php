@@ -1,69 +1,70 @@
 <?php
 
-    /**
-     * "clickhouse" accounting (logging) class
-     */
+/**
+ * "clickhouse" accounting (logging) class
+ */
 
-    namespace backends\accounting {
+namespace backends\accounting {
+
+    /**
+     * clickhouse accounting (logging) class
+     */
+    class clickhouse extends accounting
+    {
+        private $clickhouse;
 
         /**
-         * clickhouse accounting (logging) class
+         * @param $config
+         * @param $db
+         * @param $redis
          */
+        function __construct($config, $db, $redis, $login = false)
+        {
+            parent::__construct($config, $db, $redis, $login);
 
-        class clickhouse extends accounting {
-            private $clickhouse;
+            require_once __DIR__ . '/../../../utils/clickhouse.php';
 
-            /**
-             * @param $config
-             * @param $db
-             * @param $redis
-             */
-            function __construct($config, $db, $redis, $login = false)
-            {
-                parent::__construct($config, $db, $redis, $login);
+            $this->clickhouse = new \clickhouse(
+                @$config['backends']['accounting']['host'] ?: '127.0.0.1',
+                @$config['backends']['accounting']['port'] ?: 8123,
+                @$config['backends']['accounting']['username'] ?: 'default',
+                @$config['backends']['accounting']['password'] ?: 'qqq',
+                @$config['backends']['accounting']['database'] ?: 'default'
+            );
+        }
 
-                require_once __DIR__ . '/../../../utils/clickhouse.php';
+        /**
+         * @param $params
+         * @param $code
+         * @return void
+         */
+        public function log($params, $code)
+        {
+            $login = $this->login;
 
-                $this->clickhouse = new \clickhouse(
-                    @$config['backends']['accounting']['host']?:'127.0.0.1',
-                    @$config['backends']['accounting']['port']?:8123,
-                    @$config['backends']['accounting']['username']?:'default',
-                    @$config['backends']['accounting']['password']?:'qqq',
-                    @$config['backends']['accounting']['database']?:'default'
-                );
+            if (@$params["_id"]) {
+                $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}/{$params["_id"]}";
+            } else {
+                $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}";
             }
 
-            /**
-             * @param $params
-             * @param $code
-             * @return void
-             */
-            public function log($params, $code) {
-                $login = $this->login;
+            $this->raw($params["_ip"], "frontend", $msg);
+        }
 
-                if (@$params["_id"]) {
-                    $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}/{$params["_id"]}";
-                } else {
-                    $msg = "{$params["_ip"]}:{$_SERVER['REMOTE_PORT']} [$code] $login {$params["_request_method"]} {$params["_path"]["api"]}/{$params["_path"]["method"]}";
-                }
+        /**
+         * @inheritDoc
+         */
+        public function raw($ip, $unit, $msg)
+        {
+            return $this->clickhouse->insert("syslog", [["date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg]]);
+        }
 
-                $this->raw($params["_ip"], "frontend", $msg);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function raw($ip, $unit, $msg)
-            {
-                return $this->clickhouse->insert("syslog", [ [ "date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function get($query)
-            {
-                // TODO: Implement get() method.
-            }
+        /**
+         * @inheritDoc
+         */
+        public function get($query)
+        {
+            // TODO: Implement get() method.
         }
     }
+}

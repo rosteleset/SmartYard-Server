@@ -156,18 +156,18 @@ namespace backends\frs {
         public function registerFace($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0)
         {
             $plog = loadBackend("plog");
+
             if (!$plog)
                 return false;
 
             $event_data = $plog->getEventDetails($event_uuid);
+
             if (!$event_data)
                 return false;
 
             $image_url = $this->config["api"]["mobile"] . "/address/plogCamshot/" . $event_data['image_uuid'];
-            $method_params = [
-                self::P_STREAM_ID => $cam[self::CAMERA_ID],
-                self::P_URL => $image_url
-            ];
+            $method_params = [self::P_STREAM_ID => $cam[self::CAMERA_ID], self::P_URL => $image_url];
+
             if ($width > 0 && $height > 0) {
                 $method_params[self::P_FACE_LEFT] = $left;
                 $method_params[self::P_FACE_TOP] = $top;
@@ -176,11 +176,9 @@ namespace backends\frs {
             }
 
             $response = $this->apiCall($cam[self::CAMERA_FRS], self::M_REGISTER_FACE, $method_params);
-            if ($response && $response[self::P_CODE] == self::R_CODE_OK && $response[self::P_DATA]) {
-                return [
-                    self::P_FACE_ID => $this->addFace($response[self::P_DATA], $event_uuid)
-                ];
-            }
+
+            if ($response && $response[self::P_CODE] == self::R_CODE_OK && $response[self::P_DATA])
+                return [self::P_FACE_ID => $this->addFace($response[self::P_DATA], $event_uuid)];
 
             return $response;
         }
@@ -218,9 +216,9 @@ namespace backends\frs {
          */
         public function cron($part)
         {
-            if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler']) {
+            if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler'])
                 $this->syncData();
-            }
+
             return true;
         }
 

@@ -42,7 +42,7 @@ try {
 }
 
 try {
-    $config = loadConfig();
+    $config = config();
 } catch (Exception $e) {
     $config = false;
 }

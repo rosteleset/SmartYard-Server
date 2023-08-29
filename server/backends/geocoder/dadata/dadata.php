@@ -9,13 +9,14 @@ namespace backends\geocoder {
     /**
      * datata geocoder
      */
-
-    class dadata extends geocoder {
+    class dadata extends geocoder
+    {
 
         /**
          * @inheritDoc
          */
-        public function suggestions($search) {
+        public function suggestions($search)
+        {
             if ($search) {
                 $curl = curl_init();
                 curl_setopt($curl, CURLOPT_HTTPHEADER, [
@@ -25,9 +26,9 @@ namespace backends\geocoder {
                 ]);
                 curl_setopt($curl, CURLOPT_POST, 1);
                 if (@$this->config["backends"]["geocoder"]["locations"]) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([ "query" => $search, "locations" => $this->config["backends"]["geocoder"]["locations"] ]));
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(["query" => $search, "locations" => $this->config["backends"]["geocoder"]["locations"]]));
                 } else {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([ "query" => $search ]));
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(["query" => $search]));
                 }
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);

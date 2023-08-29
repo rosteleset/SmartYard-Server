@@ -30,7 +30,7 @@ $emptyStreetIdOffset = 1000000;
 $logger = logger('mobile');
 
 try {
-    $config = loadConfig();
+    $config = config();
 } catch (Exception $e) {
     $logger->critical('Config fail load' . PHP_EOL . $e);
 
@@ -170,7 +170,6 @@ function auth($_response_cache_ttl = -1): array
     if ($_response_cache_ttl >= 0)
         $response_cache_ttl = $_response_cache_ttl;
 
-
     $ip = long2ip(ip2long($_SERVER['REMOTE_ADDR']));
 
     if ($ip == '127.0.0.1' && !@$_SERVER['HTTP_AUTHORIZATION'] && $_GET['phone']) {
@@ -200,7 +199,7 @@ function auth($_response_cache_ttl = -1): array
             $decoded_signature = base64_decode(str_replace(array('-', '_'), array('+', '/'), $signature));
 
             try {
-                $oauth = loadConfig()['backends']['oauth'];
+                $oauth = config()['backends']['oauth'];
             } catch (Exception) {
                 response(401, false, 'Не авторизован', 'Не авторизован');
             }

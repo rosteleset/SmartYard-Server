@@ -22,7 +22,7 @@ namespace api\addresses {
                 'override' => [Rule::required(), Rule::bool(), Rule::nonNullable()]
             ]);
 
-            $uuid = task(new QrTask($validate['_id'], null, $validate['override']))->sync(null, null, null);
+            $uuid = task(new QrTask($validate['_id'], null, $validate['override']))->sync(null, null);
 
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="' . $uuid . '.zip"');
