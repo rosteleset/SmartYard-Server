@@ -520,6 +520,8 @@
                                 cf.editor = "text";
                             }
 
+                            console.log(cf);
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: cf.editor,
