@@ -32,7 +32,7 @@ if (isset($postdata)) {
             static fn(array $subscriber) => [
                 'subscriberId' => $subscriber['subscriberId'],
                 'name' => $subscriber['subscriberName'] . ' ' . $subscriber['subscriberPatronymic'],
-                'mobile' => substr($subscriber['mobile'], -4, 0),
+                'mobile' => substr($subscriber['mobile'], -4),
                 'role' => @(get_flat($subscriber['flats'], $flat['flatId'])['role'])
             ],
             $subscribers
