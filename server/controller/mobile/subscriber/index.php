@@ -8,7 +8,7 @@ if (isset($postdata)) {
     $validate = validate(@$postdata ?? [], ['flatId' => [Rule::required(), Rule::min(0), Rule::max(), Rule::nonNullable()]]);
 
     if (!$validate)
-        response(400, message: 'Идентификатор квартиры обязателен');
+        response(400, message: 'Идентификатор квартиры обязателен для заполнения');
 
     function get_flat(array $value, int $id): ?array
     {
@@ -22,8 +22,11 @@ if (isset($postdata)) {
 
     $flat = get_flat($user['flats'], $validate['flatId']);
 
-    if ($flat === null)
+    if ($flat === null) {
+        logger('mobile')->debug('Flat is null', $user);
+
         response(404, message: 'Квартира не найдена');
+    }
 
     $subscribers = loadBackend('households')->getSubscribers('flatId', $flat['flatId']);
 
