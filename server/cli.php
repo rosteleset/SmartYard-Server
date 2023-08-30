@@ -678,7 +678,7 @@ if (array_key_exists('--intercom-configure-task', $args) && isset($args['--inter
     $id = $args['--intercom-configure-task'];
     $first = array_key_exists('--first', $args);
 
-    task(new IntercomConfigureTask($id, $first))->high()->dispatch();
+    task(new IntercomConfigureTask($id, $first))->sync($redis, $db);
 
     exit(0);
 }
