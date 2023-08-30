@@ -602,6 +602,8 @@ if (count($args) == 1 && array_key_exists('--clear-config', $args) && !isset($ar
 
     $logger->debug('Clear config cache');
 
+    config();
+
     exit(0);
 }
 
