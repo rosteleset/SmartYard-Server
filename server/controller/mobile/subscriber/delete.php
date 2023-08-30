@@ -49,4 +49,6 @@ if (isset($postdata)) {
 
     if (!$households->removeSubscriberFromFlat($flat['flatId'], $subscriber['subscriberId']))
         response(400, message: 'Житель не был удален');
+
+    response(200);
 }
