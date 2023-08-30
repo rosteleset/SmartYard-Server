@@ -284,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("X-Dm-Api-Data-Source: $response_data_source");
 
                 try {
-                    include_once path("controller/mobile/{$module}/{$method}.php");
+                    require_once path("controller/mobile/{$module}/{$method}.php");
                 } catch (Throwable $throwable) {
                     $logger->error('Error handle post request' . PHP_EOL . $throwable);
                 }
@@ -299,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("X-Dm-Api-Data-Source: $response_data_source");
 
                 try {
-                    include_once path("controller/mobile/{$module}/{$method}.php");
+                    require_once path("controller/mobile/{$module}/{$method}.php");
                 } catch (Exception $e) {
                     $logger->error('Error handle post request' . PHP_EOL . $e);
                 }
@@ -319,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $param = $m[4];
 
         try {
-            include_once path("controller/mobile/{$module}/{$method}.php");
+            require_once path("controller/mobile/{$module}/{$method}.php");
         } catch (Throwable $throwable) {
             $logger->error('Error handle get request' . PHP_EOL . $throwable);
         }

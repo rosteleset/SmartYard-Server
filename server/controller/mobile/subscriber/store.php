@@ -13,6 +13,15 @@ if (isset($postdata)) {
     if (!$validate)
         response(400, message: 'Идентификатор квартиры или номер телефона указан не верно');
 
+    function get_flat(array $value, int $id): ?array
+    {
+        foreach ($value as $item)
+            if ($item['flatId'] === $id)
+                return $item;
+
+        return null;
+    }
+
     $flat = get_flat($user['flats'], $validate['flatId']);
 
     if ($flat === null)
@@ -22,6 +31,9 @@ if (isset($postdata)) {
         response(403, message: 'Недостаточно прав для добавления нового жителя');
 
     $households = loadBackend('households');
+
+    if (!$households)
+        response(500);
 
     $subscribers = $households->getSubscribers('mobile', $validate['mobile']);
 
