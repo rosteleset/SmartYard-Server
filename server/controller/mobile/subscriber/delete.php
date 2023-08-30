@@ -7,7 +7,7 @@ $user = auth();
 if (isset($postdata)) {
     $validate = validate(@$postdata ?? [], [
         'flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
-        'subscriberId' => [Rule::required(), Rule::int(), Rule::min(11), Rule::max(11), Rule::nonNullable()]
+        'subscriberId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]
     ]);
 
     if (!$validate)
