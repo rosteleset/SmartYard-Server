@@ -38,8 +38,6 @@
             zoom = (config.map && config.map.default && config.map.default.zoom)?config.map.default.zoom:13
         ;
 
-        console.log(config.map);
-
         if (params.coords) {
             lat = parseFloat(coords.split(",")[0]);
             lon = parseFloat(coords.split(",")[1]);
