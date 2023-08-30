@@ -19,13 +19,15 @@
         }
     ],
     "map": {
-        "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "tile": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         "crs": "EPSG3857",
         "default": {
             "lat": 51.505,
             "lon": -0.09,
             "zoom": 13
-        }
+        },
+        "min": 4,
+        "max": 18
     },
     "phonePattern": "7 (###) ###-##-##",
     "sipDomain": "<!-- your asterisk server external ip here -->"
