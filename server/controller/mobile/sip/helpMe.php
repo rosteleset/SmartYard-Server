@@ -1,4 +1,4 @@
-<?php
+\<?php
 
 /**
  * @api {post} /sip/helpMe звонок в техподержку
