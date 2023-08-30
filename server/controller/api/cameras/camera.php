@@ -16,10 +16,10 @@ namespace api\cameras {
     {
         public static function GET($params)
         {
-            $validate = validate($params, ['_id' => Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]);
+            $validate = validate($params, ['_id' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]);
 
             if ($validate == false)
-                return api::ERROR('Неверные данные');
+                return api::ERROR();
 
             $cameras = loadBackend('cameras');
 

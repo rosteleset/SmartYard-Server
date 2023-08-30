@@ -244,7 +244,7 @@ if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
             if ($clearCache)
                 clear_cache($auth["uid"]);
 
-            include_once path("controller/api/{$api}/{$method}.php");
+            require_once path("controller/api/{$api}/{$method}.php");
 
             if (class_exists("\\api\\$api\\$method")) {
                 try {
