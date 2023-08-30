@@ -7,7 +7,7 @@ $user = auth();
 if (isset($postdata)) {
     $validate = validate(@$postdata ?? [], [
         'flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
-        'mobile' => [Rule::required(), Rule::int(), Rule::min(11), Rule::max(11), Rule::nonNullable()]
+        'subscriberId' => [Rule::required(), Rule::int(), Rule::min(11), Rule::max(11), Rule::nonNullable()]
     ]);
 
     if (!$validate)
@@ -23,7 +23,7 @@ if (isset($postdata)) {
 
     $households = loadBackend('households');
 
-    $subscribers = $households->getSubscribers('mobile', $validate['mobile']);
+    $subscribers = $households->getSubscribers('id', $validate['subscriberId']);
 
     if (!$subscribers || count($subscribers) === 0)
         response(404, message: 'Житель не зарегестрирован');
