@@ -252,6 +252,8 @@ namespace backends\households {
          */
         abstract public function deleteSubscriber($subscriberId);
 
+        abstract public function addSubscriberToFlat(int $flatId, int $subscriberId): bool;
+
         /**
          * @param $flatId
          * @param $subscriberId

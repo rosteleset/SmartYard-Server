@@ -1156,6 +1156,18 @@ namespace backends\households {
             }
         }
 
+        public function addSubscriberToFlat(int $flatId, int $subscriberId): bool
+        {
+            return $this->db->insert(
+                "insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)",
+                [
+                    "house_subscriber_id" => $subscriberId,
+                    "house_flat_id" => $flatId,
+                    "role" => 1,
+                ]
+            );
+        }
+
         /**
          * @inheritDoc
          */
