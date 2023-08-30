@@ -4,8 +4,8 @@ use Selpol\Validator\Rule;
 
 $user = auth();
 
-if (isset($params)) {
-    $validate = validate(@$params ?? [], ['_id' => [Rule::required(), Rule::min(0), Rule::max(), Rule::nonNullable()]]);
+if (isset($postdata)) {
+    $validate = validate(@$postdata ?? [], ['flatId' => [Rule::required(), Rule::min(0), Rule::max(), Rule::nonNullable()]]);
 
     if (!$validate)
         response(400);
@@ -20,7 +20,7 @@ if (isset($params)) {
         return $value[$index];
     }
 
-    $flat = get_flat($user['flats'], $validate['_id']);
+    $flat = get_flat($user['flats'], $validate['flatId']);
 
     if ($flat === null)
         response(404);

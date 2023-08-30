@@ -46,6 +46,11 @@ class TaskManager implements LoggerAwareInterface
         return $this->workers[$queue];
     }
 
+    public function processor(string $queue, ?int $id): TaskProcessor
+    {
+        return new TaskProcessor($this->worker($queue), $id);
+    }
+
     public function clear()
     {
         $this->redis->del($this->redis->keys('task:*'));
