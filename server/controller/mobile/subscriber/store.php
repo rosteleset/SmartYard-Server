@@ -37,4 +37,6 @@ if (isset($postdata)) {
 
     if (!$households->addSubscriberToFlat($flat['flatId'], $subscriber['subscriberId']))
         response(400, message: 'Житель не был добавлен');
+
+    response(200);
 }
