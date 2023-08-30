@@ -357,7 +357,7 @@ namespace backends\dvr {
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
 
-                    $token = $this->getDVRTokenForCam($cam, $subscriberId);
+                    $token = $this->getDVRTokenForCam($cam, null);
                     if ($token !== '') {
                         $query = $query . "&$token";
                     }
@@ -394,7 +394,7 @@ namespace backends\dvr {
                     return $request_url;
                     break;
                 default:
-                    return "$prefix/$time-preview.mp4" . ($addTokenToUrl ? ("?token=" . $this->getDVRTokenForCam($cam, $subscriberId)) : "");
+                    return "$prefix/$time-preview.mp4" . ($addTokenToUrl ? ("?token=" . $this->getDVRTokenForCam($cam, null)) : "");
             }
             return false;
         }
