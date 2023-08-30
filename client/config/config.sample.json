@@ -18,6 +18,15 @@
             "urls": [ "stun:stun.l.google.com:19302" ]
         }
     ],
+    "map": {
+        "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "crs": "EPSG3857",
+        "default": {
+            "lat": 51.505,
+            "lon": -0.09,
+            "zoom": 13
+        }
+    },
     "phonePattern": "7 (###) ###-##-##",
     "sipDomain": "<!-- your asterisk server external ip here -->"
 }

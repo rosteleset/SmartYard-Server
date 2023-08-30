@@ -21,7 +21,9 @@
             maxZoom: 18,
         }).addTo(modules.map.map);
 
-        let lat, lon, zoom = 13;
+        let lat, lon, zoom = 18;
+
+        console.log(config.map);
 
         if (params.coords) {
             lat = parseFloat(coords.split(",")[0]);
