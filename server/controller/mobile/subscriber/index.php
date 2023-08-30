@@ -12,21 +12,17 @@ if (isset($postdata)) {
 
     function get_flat(array $value, int $id): ?array
     {
-        $index = array_search(static fn(array $item) => $item['flatId'] == $id, $value);
+        foreach ($value as $item)
+            if ($item['flatId'] === $id)
+                return $item;
 
-        if ($index === false)
-            return null;
-
-        return $value[$index];
+        return null;
     }
 
     $flat = get_flat($user['flats'], $validate['flatId']);
 
-    if ($flat === null) {
-        logger('mobile')->debug('Flat is null', $user);
-
+    if ($flat === null)
         response(404, message: 'Квартира не найдена');
-    }
 
     $subscribers = loadBackend('households')->getSubscribers('flatId', $flat['flatId']);
 
