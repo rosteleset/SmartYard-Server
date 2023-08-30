@@ -23,7 +23,7 @@ class API {
      *
      * @param {number} date event date in timestamp format
      * @param {string} ip device IP address
-     * @param {"beward"|"qtech"|"is"|"akuvox"|"rubetek"} unit device vendor
+     * @param {"beward"|"qtech"|"is"|"akuvox"|"rubetek"|"sputnik"} unit device vendor
      * @param {string} msg syslog message
      */
     async sendLog({ date, ip, unit, msg }) {
