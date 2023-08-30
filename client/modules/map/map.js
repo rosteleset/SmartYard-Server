@@ -21,7 +21,7 @@
             maxZoom: 18,
         }).addTo(modules.map.map);
 
-        let lat, lon;
+        let lat, lon, zoom = 13;
 
         if (params.coords) {
             lat = parseFloat(coords.split(",")[0]);
@@ -31,21 +31,24 @@
         if (params.lat && params.lon) {
             lon = parseFloat(params.lon);
             lat = parseFloat(params.lat);
+            if (params.zoom && parseInt(params.zoom)) {
+                zoom = parseInt(params.zoom);
+            }
         }
 
         if (typeof lon != "undefined" && typeof lat != "undefined") {
-            modules.map.map.setView([lat, lon], 13);
+            modules.map.map.setView([lat, lon], zoom);
             L.marker([lat, lon]).addTo(modules.map.map);
         } else {
             if (!navigator.geolocation) {
-                modules.map.map.setView([51.505, -0.09], 13);
+                modules.map.map.setView([51.505, -0.09], zoom);
             } else {
                 navigator.geolocation.getCurrentPosition(success => {
                     console.log(success.coords.latitude, success.coords.longitude);
-                    modules.map.map.setView([success.coords.latitude, success.coords.longitude], 13);
+                    modules.map.map.setView([success.coords.latitude, success.coords.longitude], zoom);
                     L.marker([success.coords.latitude, success.coords.longitude]).addTo(modules.map.map);
                 }, () => {
-                    modules.map.map.setView([51.505, -0.09], 13);
+                    modules.map.map.setView([51.505, -0.09], zoom);
                 });
             }
         }
