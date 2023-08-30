@@ -19,7 +19,7 @@ namespace api\cameras {
             $validate = validate($params, ['_id' => Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]);
 
             if ($validate == false)
-                return api::ERROR();
+                return api::ERROR('Неверные данные');
 
             $cameras = loadBackend('cameras');
 
