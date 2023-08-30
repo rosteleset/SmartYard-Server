@@ -7,7 +7,7 @@ $user = auth();
 if (isset($postdata)) {
     $validate = validate(@$postdata ?? [], [
         'flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
-        'mobile' => [Rule::required(), Rule::int(), Rule::min(11), Rule::max(11), Rule::nonNullable()]
+        'mobile' => [Rule::required(), Rule::int(), Rule::min(70000000000), Rule::max(79999999999), Rule::nonNullable()]
     ]);
 
     if (!$validate)
