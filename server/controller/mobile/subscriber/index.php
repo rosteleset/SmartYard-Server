@@ -31,7 +31,7 @@ if (isset($postdata)) {
         array_map(
             static fn(array $subscriber) => [
                 'subscriberId' => $subscriber['subscriberId'],
-                'name' => $subscriber['subscriber_name'] . ' ' . $subscriber['subscriber_patronymic'],
+                'name' => $subscriber['subscriberName'] . ' ' . $subscriber['subscriberPatronymic'],
                 'mobile' => substr($subscriber['mobile'], -4, 0),
                 'role' => @(get_flat($subscriber['flats'], $flat['flatId'])['role'])
             ],
