@@ -16,7 +16,7 @@
  * @apiSuccess {Number} - идентификатор фрагмента
  */
 
-auth();
+$user = auth();
 
 $cameraId = (int)@$postdata['id'];
 
@@ -25,37 +25,21 @@ date_default_timezone_set('Europe/Moscow');
 $from = strtotime(@$postdata['from']);
 $to = strtotime(@$postdata['to']);
 
-if (!$cameraId || !$from || !$to) {
+if (!$cameraId || !$from || !$to)
     response(404);
-}
 
 $dvr_exports = loadBackend("dvr_exports");
 
 // проверяем, не был ли уже запрошен данный кусок из архива.
-$check = $dvr_exports->checkDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
+$check = $dvr_exports->checkDownloadRecord($cameraId, $user["subscriberId"], $from, $to);
 
-if (@$check['id']) {
+if (@$check['id'])
     response(200, $check['id']);
-}
 
 // если такой кусок ещё не запрашивали, то добавляем запрос на скачивание.
-$res = (int)$dvr_exports->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
+$res = (int)$dvr_exports->addDownloadRecord($cameraId, $user["subscriberId"], $from, $to);
 
 session_write_close();
 exec("php " . __DIR__ . "/../../cli.php --run-record-download=$res >/dev/null 2>/dev/null &");
 
 response(200, $res);
-
-/*
-$cam = (int)@$postdata['id'];
-$from = strtotime(@$postdata['from']);
-$to = strtotime(@$postdata['to']);
-
-$id = (int)demo('download', [ 'phone' => $bearer['id'], 'cameraId' => $cam, 'timeStart' => $from, 'timeEnd' => $to ], true);
-
-if ($id) {
-    response(200, $id);
-} else {
-    response();
-}
-*/

@@ -12,15 +12,15 @@
  * @apiParam {String} [messageId] идентификатор сообщения
  */
 
-auth();
+$user = auth();
 
 $msg_id = @$postdata['messageId'];
 
 $inbox = loadBackend("inbox");
-$subscriber_id = (int)$subscriber['subscriberId'];
-if ($msg_id) {
-    $inbox->markMessageAsReaded($subscriber_id, $msg_id);
-} else {
-    $inbox->markMessageAsReaded($subscriber_id);
-}
+
+$subscriber_id = (int)$user['subscriberId'];
+
+if ($msg_id) $inbox->markMessageAsReaded($subscriber_id, $msg_id);
+else $inbox->markMessageAsReaded($subscriber_id);
+
 response();

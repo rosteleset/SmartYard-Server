@@ -21,19 +21,12 @@ auth();
 $street_id = (int)@$postdata['streetId'];
 $addresses = loadBackend("addresses");
 
+if ($street_id > $emptyStreetIdOffset) $houses = $addresses->getHouses($street_id - $emptyStreetIdOffset, false);
+else $houses = $addresses->getHouses(false, $street_id);
 
-if ($street_id > $emptyStreetIdOffset) {
-    $houses = $addresses->getHouses($street_id - $emptyStreetIdOffset, false);
-} else {
-    $houses = $addresses->getHouses(false, $street_id);
-}
+$result = [];
 
-$houses_ = [];
+foreach ($houses as $house)
+    $result[] = ['houseId' => strval($house['houseId']), 'number' => $house['house']];
 
-foreach ($houses as $house) {
-    $houses_[] = array(
-        "houseId" => strval($house["houseId"]),
-        "number" => $house["house"]
-    );
-}
-response(200, $houses_);
+response(200, $result);

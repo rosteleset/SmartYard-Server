@@ -16,28 +16,18 @@
  * @apiSuccess {String} address адрес
  */
 
-    auth();
+auth();
 
-    if (!@$postdata['address']) {
-        response(422, false, 'Отсутствуют данные', 'Отсутствуют данные');
-    }
-    $query = $postdata['address'];
+if (!@$postdata['address'])
+    response(422, false, 'Отсутствуют данные', 'Отсутствуют данные');
 
-    $geocoder = loadBackend('geocoder');
+$query = $postdata['address'];
 
-    $queryResult = @$geocoder->suggestions($query)[0];
+$geocoder = loadBackend('geocoder');
 
-    if ($queryResult) {
-        $response = [
-            "lat" => $queryResult['data']['geo_lat'],
-            "lon" => $queryResult['data']['geo_lon'],
-            "address" => $queryResult['unrestricted_value']
-        ];
-    } else {
-        $response = [
-            "lat" => "0.0",
-            "lon" => "0.0",
-            "address" => 'Адрес не найден ('.$postdata['address'].')',
-        ];
-    }
-    response(200, $response);
+$queryResult = @$geocoder->suggestions($query)[0];
+
+if ($queryResult) $response = ['lat' => $queryResult['data']['geo_lat'], 'lon' => $queryResult['data']['geo_lon'], "address" => $queryResult['unrestricted_value']];
+else $response = ['lat' => "0.0", 'lon' => '0.0', 'address' => 'Адрес не найден (' . $postdata['address'] . ')'];
+
+response(200, $response);

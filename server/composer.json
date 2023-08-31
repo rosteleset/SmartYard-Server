@@ -32,7 +32,6 @@
     "ext-pcntl": "*",
     "phpmailer/phpmailer": "^6.8",
     "ezyang/htmlpurifier": "^4.16",
-    "erusev/parsedown": "1.7.x",
     "mongodb/mongodb": "^1.12",
     "chillerlan/php-qrcode": "^4.3",
     "phpoffice/phpword": "^1.1",

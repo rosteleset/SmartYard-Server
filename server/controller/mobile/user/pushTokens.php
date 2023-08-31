@@ -22,8 +22,6 @@
  * 406 неправильный токен
  */
 
-auth();
-response(200, [
-    "pushToken" => $subscriber['pushToken'],
-    "voipToken" => $subscriber['voipToken'],
-    ]);
+$user = auth();
+
+response(200, ['pushToken' => $user['pushToken'], 'voipToken' => $user['voipToken']]);

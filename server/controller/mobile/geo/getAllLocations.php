@@ -28,6 +28,7 @@ $locations = [];
 
 foreach ($regions as $region) {
     $regionId = $region["regionId"];
+
     $areas_ = $addresses->getAreas($regionId);
     $cities_ = $addresses->getCities($regionId, false);
 
@@ -89,7 +90,6 @@ foreach ($regions as $region) {
                 "locationName" => $city["city"]
             );
 
-
             // Населенные пункты городского подчинения
             $settlements_ = $addresses->getSettlements($areaId, $cityId);
             $settlements_ = $settlements_ ?:[];
@@ -105,5 +105,7 @@ foreach ($regions as $region) {
         }
     }
 }
+
 array_multisort(array_column($locations, 'locationId'), SORT_ASC, $locations);
+
 response(200, $locations);

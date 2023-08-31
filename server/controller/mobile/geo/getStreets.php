@@ -29,26 +29,14 @@ if ($location_id > $offsetForCityId) {
 } else {
     $settlementId = $location_id;
     $streets = $addresses->getStreets(false, $settlementId);
-    
-    if ($addresses->getHouses($settlementId, false)) {
-        $streets[] = array(
-                           "streetId" => strval($emptyStreetIdOffset + $settlementId),
-                           "streetUuid" => "", // TODO: сделать генерацию UUID
-                           "street" => "(отсутствует)",
-                           "streetType" => "улица"
-                       );
-    }
+
+    if ($addresses->getHouses($settlementId, false))
+        $streets[] = ['streetId' => strval($emptyStreetIdOffset + $settlementId), 'streetUuid' => '', 'street' => '(отсутствует)', 'streetType' => 'улица'];
 }
 
-$streets_ = [];
+$result = [];
 
+foreach ($streets as $street)
+    $result[] = ['streetId' => strval($street['streetId']), 'streetUUid' => $street['streetUuid'], 'name' => $street['street'], 'type' => $street['streetType']];
 
-foreach ($streets as $street) {
-    $streets_[] = array(
-        "streetId" => strval($street["streetId"]),
-        "streetUUid" => $street["streetUuid"],
-        "name" => $street["street"],
-        "type" => $street["streetType"]
-    );
-}
-response(200, $streets_);
+response(200, $result);

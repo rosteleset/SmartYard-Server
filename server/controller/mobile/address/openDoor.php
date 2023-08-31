@@ -20,51 +20,52 @@
  * 424 неверный токен
  */
 
-    auth(15);
+$user = auth(15);
 
-    $domophone_id = (int)@$postdata['domophoneId'];
-    $door_id = (int)@$postdata['doorId'];
-    $households = loadBackend("households");
-    
-    // Check intercom is blocking
-    $blocked = true;
-    foreach($subscriber['flats'] as $flat) {
-        $flatDetail = $households->getFlat($flat['flatId']);
-        if ($flatDetail['autoBlock'] || $flatDetail['adminBlock']) {
-            continue;
-        }
+$domophone_id = (int)@$postdata['domophoneId'];
+$door_id = (int)@$postdata['doorId'];
 
-        foreach ($flatDetail['entrances'] as $entrance) {
-            $domophoneId = intval($entrance['domophoneId']);
-            $e = $households->getEntrance($entrance['entranceId']);
-            $doorId = intval($e['domophoneOutput']);
-            if($domophone_id == $domophoneId && $door_id == $doorId && !$flatDetail['manualBlock'] ) {
-                $blocked = false;
-                break;
-            }
-        }
+$households = loadBackend("households");
 
-        if ($blocked == false) {
+// Check intercom is blocking
+$blocked = true;
+
+foreach ($user['flats'] as $flat) {
+    $flatDetail = $households->getFlat($flat['flatId']);
+    if ($flatDetail['autoBlock'] || $flatDetail['adminBlock'])
+        continue;
+
+    foreach ($flatDetail['entrances'] as $entrance) {
+        $domophoneId = intval($entrance['domophoneId']);
+        $e = $households->getEntrance($entrance['entranceId']);
+        $doorId = intval($e['domophoneOutput']);
+
+        if ($domophone_id == $domophoneId && $door_id == $doorId && !$flatDetail['manualBlock']) {
+            $blocked = false;
+
             break;
         }
     }
 
-    if (!$blocked) {
-        $households = loadBackend("households");
-        $domophone = $households->getDomophone($domophone_id);
+    if ($blocked == false)
+        break;
+}
 
-        try {
-            $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
-            $model->open_door($door_id);
-            $plog = loadBackend("plog");
-            if ($plog) {
-                $plog->addDoorOpenDataById(time(), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $subscriber['mobile']);
-            }
-        }
-        catch (\Exception $e) {
-            response(404, false, 'Ошибка', 'Домофон недоступен');
-        }
-        response();
-    } else {
-        response(404, false, 'Не найдено', 'Услуга недоступна (договор заблокирован либо не оплачен)');
+if (!$blocked) {
+    $households = loadBackend("households");
+    $domophone = $households->getDomophone($domophone_id);
+
+    try {
+        $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
+        $model->open_door($door_id);
+        $plog = loadBackend("plog");
+
+        if ($plog)
+            $plog->addDoorOpenDataById(time(), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $user['mobile']);
+    } catch (Exception $e) {
+        response(404, false, 'Ошибка', 'Домофон недоступен');
     }
+    response();
+} else {
+    response(404, false, 'Не найдено', 'Услуга недоступна (договор заблокирован либо не оплачен)');
+}

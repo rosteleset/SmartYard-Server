@@ -25,31 +25,31 @@
  * 406 неправильный токен
  */
 
-auth();
+$user = auth();
+
 $households = loadBackend("households");
 $isdn = loadBackend("isdn");
 
-$old_push = $subscriber["pushToken"];
+$old_push = $user["pushToken"];
+
 $push = trim(@$postdata['pushToken']);
 $voip = trim(@$postdata['voipToken'] ?: "");
+
 $production = trim(@$postdata['production']);
 
-if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android' && $postdata['platform'] != 'huawei')) {
+if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android' && $postdata['platform'] != 'huawei'))
     response(422);
-}
 
-if ($push && (strlen($push) < 16 || strlen($push) >= 1024)) {
+if ($push && (strlen($push) < 16 || strlen($push) >= 1024))
     response(406);
-}
 
-if ($voip && (strlen($voip) < 16 || strlen($voip) >= 1024)) {
+if ($voip && (strlen($voip) < 16 || strlen($voip) >= 1024))
     response(406);
-}
 
 if ($postdata['platform'] == 'ios') {
     $platform = 1;
     if ($voip) {
-        $type = ($production == 'f')?2:1; // apn:apn.dev
+        $type = ($production == 'f') ? 2 : 1; // apn:apn.dev
     } else {
         $type = 0; // fcm (resend)
     }
@@ -61,13 +61,13 @@ if ($postdata['platform'] == 'ios') {
     $type = 0; // fcm
 }
 
-$households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform ]);
+$households->modifySubscriber($user["subscriberId"], ["pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform]);
 
-if (!$push) {
-    $households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => "off" ]);   
-} else {
+if (!$push)
+    $households->modifySubscriber($user["subscriberId"], ["pushToken" => "off"]);
+else {
     if ($old_push && $old_push != $push) {
-        $md5 = md5($push.$old_push);
+        $md5 = md5($push . $old_push);
         $payload = [
             "token" => $old_push,
             "messageId" => $md5,
@@ -75,12 +75,12 @@ if (!$push) {
             "badge" => "1",
             "pushAction" => "logout"
         ];
+
         $isdn->push($payload);
     }
 }
 
-if (!$voip) {
-    $households->modifySubscriber($subscriber["subscriberId"], [ "voipToken" => "off" ]);   
-}
+if (!$voip)
+    $households->modifySubscriber($user["subscriberId"], ["voipToken" => "off"]);
 
 response();

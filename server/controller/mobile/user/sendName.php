@@ -22,25 +22,18 @@
  * 400 имя не указано
  */
 
-auth();
+$user = auth();
 
 $name = htmlspecialchars(trim(@$postdata['name']));
 $patronymic = htmlspecialchars(trim(@$postdata['patronymic']));
 
 $households = loadBackend("households");
 
-if (!$name) {
-    response(400);
-}
+if (!$name) response(400);
 
-if ($subscriber) {
-    if ($patronymic) { 
-        $households->modifySubscriber($subscriber["subscriberId"], [ "subscriberName" => $name, "subscriberPatronymic" => $patronymic ]);
-    } else {
-        $households->modifySubscriber($subscriber["subscriberId"], [ "subscriberName" => $name ]);
-    }
+if ($user) {
+    if ($patronymic) $households->modifySubscriber($user["subscriberId"], ["subscriberName" => $name, "subscriberPatronymic" => $patronymic]);
+    else $households->modifySubscriber($user["subscriberId"], ["subscriberName" => $name]);
+
     response();
-} else {
-    response(400);
-}
-
+} else response(400);
