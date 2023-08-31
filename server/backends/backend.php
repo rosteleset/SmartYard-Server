@@ -167,7 +167,7 @@
                     
                     if ($value != @$this->cache[$key]) {
                         $this->cache[$key] = $value;
-                        $this->redis->setex($key, @$this->config["redis"]["frontend_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
+                        $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
                         return false;
                     }
                 }
