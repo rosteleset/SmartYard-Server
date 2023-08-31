@@ -556,22 +556,6 @@ if (count($args) == 1 && array_key_exists("--check-backends", $args) && !isset($
     exit(0);
 }
 
-if (count($args) == 1 && array_key_exists("--run-record-download", $args) && isset($args["--run-record-download"])) {
-    $recordId = (int)$args["--run-record-download"];
-    $dvr_exports = loadBackend("dvr_exports");
-
-    if ($dvr_exports && ($uuid = $dvr_exports->runDownloadRecordTask($recordId))) {
-        $inbox = loadBackend("inbox");
-        $files = loadBackend("files");
-
-        $metadata = $files->getFileMetadata($uuid);
-
-        $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays"), $config['api']['mobile'] . '/cctv/download/' . $uuid);
-    }
-
-    exit(0);
-}
-
 if (count($args) == 1 && array_key_exists("--write-yaml-config", $args) && !isset($args["--write-yaml-config"])) {
     file_put_contents("config/config.yml", yaml_emit($config));
 
@@ -591,79 +575,16 @@ if (count($args) == 1 && array_key_exists("--print-config", $args) && !isset($ar
 }
 
 if (count($args) == 1 && array_key_exists('--clear-config', $args) && !isset($args['----clear-config'])) {
-    if (file_exists('cache/config.php'))
-        unlink('cache/config.php');
+    if (file_exists(path('var/cache/env.php')))
+        unlink(path('var/cache/env.php'));
 
-    $logger->debug('Clear config cache');
+    if (file_exists(path('var/cache/config.php')))
+        unlink(path('var/cache/config.php'));
 
+    $logger->debug('Clear config and env cache');
+
+    env();
     config();
-
-    exit(0);
-}
-
-if (count($args) == 2 && array_key_exists("--plog-days", $args) && !isset($args["--plog-days"])) {
-    if (array_key_exists("--flat", $args) && !empty($args["--flat"])) {
-        $flat = $args["--flat"];
-    } else {
-        usage();
-    }
-
-    $plog = loadBackend("plog");
-    $result = $plog->getEventsDays($flat, false);
-
-    var_dump($result);
-
-    exit(0);
-}
-
-if (count($args) == 3 && array_key_exists("--plog", $args) && !isset($args["--plog"])) {
-    if (array_key_exists("--flat", $args) && !empty($args["--flat"])) {
-        $flat = $args["--flat"];
-    } else {
-        usage();
-    }
-
-    if (array_key_exists("--day", $args) && !empty($args["--day"])) {
-        $day = $args["--day"];
-    } else {
-        usage();
-    }
-
-    $plog = loadBackend("plog");
-    $result = $plog->getDetailEventsByDay($flat, date('Ymd', strtotime($day)));
-
-    var_dump($result);
-
-    exit(0);
-}
-
-if (count($args) == 2 && array_key_exists('--entrance', $args) && !isset($args['----entrance'])) {
-    if (array_key_exists("--camera", $args) && !empty($args["--camera"])) {
-        $camera = $args["--camera"];
-    } else {
-        usage();
-    }
-
-    $query = "select house_entrance_id from houses_entrances where camera_id = " . $camera . " limit 1";
-    $r = $db->get($query, [], ["house_entrance_id" => "entranceId"]);
-
-    echo json_encode($r);
-
-    exit(0);
-}
-
-if (count($args) == 3 && array_key_exists('--inbox', $args) && !isset($args['--inbox'])) {
-    if (array_key_exists("--subscriber", $args) && !empty($args["--subscriber"])) {
-        $subscriber = $args["--subscriber"];
-    } else {
-        usage();
-    }
-
-    $inbox = loadBackend('inbox');
-
-    $messages = $inbox->getMessages($subscriber, "all", []);
-
-    var_dump($messages);
 
     exit(0);
 }

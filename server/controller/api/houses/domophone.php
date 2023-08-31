@@ -41,9 +41,14 @@ namespace api\houses {
         {
             $households = loadBackend("households");
 
-            if (array_key_exists('configure', $params))
-                return api::ANSWER(task(new IntercomConfigureTask($params['_id'], array_key_exists('first', $params) ? $params['first'] : false))->high()->dispatch());
-            else {
+            if (array_key_exists('configure', $params)) {
+                $first = array_key_exists('first', $params) ? $params['first'] : false;
+
+                if ($first)
+                    $households->modifyDomophone(null, null, null, null, null, null, null, true, null, null, null);
+
+                return api::ANSWER(task(new IntercomConfigureTask($params['_id'], $first))->high()->dispatch());
+            } else {
                 $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["firstTime"], $params["nat"], $params["locksAreOpen"], $params["comment"]);
 
                 return api::ANSWER($success);

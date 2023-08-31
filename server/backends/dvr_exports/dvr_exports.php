@@ -37,6 +37,5 @@ namespace backends\dvr_exports {
          * @return oid|false file id
          */
         abstract public function runDownloadRecordTask($recordId);
-
     }
 }
