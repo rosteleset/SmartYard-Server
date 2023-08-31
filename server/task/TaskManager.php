@@ -39,13 +39,12 @@ class TaskManager
 
         $this->channel->queue_declare($queue, durable: true);
 
+        $message = new AMQPMessage(serialize($task), ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
+
         if ($delay)
-            $this->channel->basic_publish(new AMQPMessage(
-                serialize($task),
-                ['application_headers' => new AMQPTable(['x-delay' => $delay * 1000])]
-            ), routing_key: $queue);
-        else
-            $this->channel->basic_publish(new AMQPMessage(serialize($task)), routing_key: $queue);
+            $message->set('application_headers', new AMQPTable(['x-delay' => $delay * 1000]));
+
+        $this->channel->basic_publish($message, routing_key: $queue);
     }
 
     /**
@@ -58,6 +57,7 @@ class TaskManager
 
         $this->channel->queue_declare($queue, durable: true);
 
+        $this->channel->basic_qos(null, 1, null);
         $this->channel->basic_consume($queue, no_ack: true, callback: static function (AMQPMessage $message) use ($callback) {
             try {
                 $task = unserialize($message->body);
