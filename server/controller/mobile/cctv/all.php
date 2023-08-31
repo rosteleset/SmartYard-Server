@@ -75,7 +75,7 @@ foreach ($houses as $house_key => $h) {
     unset($houses[$house_key]['cameras']);
 
     foreach ($h['cameras'] as $camera) {
-        if ($cameras['cameraId'] === null)
+        if ($camera['cameraId'] === null)
             continue;
 
         $dvr = loadBackend("dvr")->getDVRServerByStream($camera['dvrStream']);
