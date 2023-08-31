@@ -1,8 +1,11 @@
 <?php
 
-require_once dirname(__FILE__) . '/vendor/autoload.php';
-
+use Psr\Log\LoggerInterface;
+use Selpol\Task\Task;
+use Selpol\Task\TaskCallback;
 use Selpol\Task\TaskManager;
+
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 mb_internal_encoding("UTF-8");
 
@@ -57,28 +60,15 @@ for ($i = 1; $i < count($argv); $i++) {
 }
 
 $queue = array_key_exists('--queue', $args) ? $args['--queue'] : 'default';
-$sleep = array_key_exists('--sleep', $args) ? $args['--sleep'] : 10;
-$id = array_key_exists('--id', $args) ? $args['--id'] : 1;
-$auto = array_key_exists('--auto', $args);
 
-$worker = TaskManager::instance()->worker($queue);
+$logger = logger('task');
 
-if ($worker->has($id)) {
-    if ($auto)
-        $id = $worker->next();
-    else {
-        echo 'Id already exist';
+$manager = TaskManager::instance();
 
-        exit(1);
-    }
-}
-
-$worker->start($id);
-
-register_shutdown_function(static fn() => $worker->stop($id));
+register_shutdown_function(static fn() => $manager->close());
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
-    sapi_windows_set_ctrl_handler(static function (int $event) use ($worker, $id) {
+    sapi_windows_set_ctrl_handler(static function (int $event) {
         if ($event == PHP_WINDOWS_EVENT_CTRL_C)
             exit(0);
     });
@@ -89,50 +79,38 @@ else {
     pcntl_signal(SIGTERM, static fn() => exit(0));
 }
 
-while (true) {
-    $command = $worker->popCommand($id);
+try {
+    $manager->dequeue($queue, new class($redis, $db, $logger) implements TaskCallback {
+        private Redis $redis;
+        private PDO_EXT $db;
+        private LoggerInterface $logger;
 
-    if ($command !== null) {
-        switch ($command) {
-            case 'exit':
-                $worker->getLogger()->info('TaskWorker exit on command', ['queue' => $queue, 'id' => $id]);
-
-                exit(0);
-            case 'reset':
-                $worker->getLogger()->info('TaskWorker reset on command', ['queue' => $queue, 'id' => $id]);
-
-                if (function_exists('opcache_reset'))
-                    opcache_reset();
-
-                break;
-            default:
-                usleep($sleep);
-
-                break;
+        public function __construct(Redis $redis, PDO_EXT $db, LoggerInterface $logger)
+        {
+            $this->redis = $redis;
+            $this->db = $db;
+            $this->logger = $logger;
         }
-    } else {
-        $task = $worker->popTask();
 
-        if (!is_null($task)) {
+        public function __invoke(Task $task)
+        {
+            $this->logger->info('Dequeue start task', ['class' => get_class($task), 'title' => $task->title]);
+
+            $task->setLogger($this->logger);
+            $task->setRedis($this->redis);
+            $task->setPdo($this->db);
+
             try {
-                $worker->setTitle($id, $task->title);
-                $worker->setProgress($id, 0);
-
-                $task->setRedis($redis);
-                $task->setPdo($db);
-                $task->setProgressCallable(static fn(int $progress) => $worker->setProgress($id, $progress));
-
                 $task->onTask();
 
-                $worker->getLogger()?->info('TaskWorker completed task', ['queue' => $queue, 'id' => $id]);
-            } catch (Throwable $e) {
-                $task->onError($e);
+                $this->logger->info('Dequeue complete task', ['class' => get_class($task), 'title' => $task->title]);
+            } catch (Throwable $throwable) {
+                $this->logger->info('Dequeue error task', ['class' => get_class($task), 'title' => $task->title, 'message' => $throwable->getMessage()]);
 
-                $worker->getLogger()?->error('TaskWorker error task' . PHP_EOL . $e, ['queue' => $queue, 'id' => $id]);
-            } finally {
-                $worker->setTitle($id, null);
-                $worker->setProgress($id, null);
+                $task->onError($throwable);
             }
-        } else usleep($sleep);
-    }
+        }
+    });
+} catch (Exception $exception) {
+    $logger->critical($exception);
 }

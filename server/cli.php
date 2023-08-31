@@ -4,7 +4,6 @@ require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 use Selpol\Task\Tasks\EmailTask;
 use Selpol\Task\Tasks\IntercomConfigureTask;
-use Selpol\Task\TaskManager;
 use Selpol\Task\Tasks\QrTask;
 use Selpol\Task\Tasks\ReindexTask;
 
@@ -65,11 +64,6 @@ function usage()
 
         intercom:
             [--intercom-configure-task=<id> [--first]]
-
-        task:
-            [--task=[<queue>] --command=<exit|reset> [--id=<id>]]
-            [--task-clear=[<queue>]]
-            [--task-status]
 
         qr:
             [--qr=<houseId> --output=<output> [--flat=<flatId>] [--override]]
@@ -679,76 +673,6 @@ if (array_key_exists('--intercom-configure-task', $args) && isset($args['--inter
     $first = array_key_exists('--first', $args);
 
     task(new IntercomConfigureTask($id, $first))->sync($redis, $db);
-
-    exit(0);
-}
-
-if (array_key_exists('--task', $args)) {
-    $queue = $args['--task'] ?? null;
-    $command = array_key_exists('--command', $args) && isset($args['--command']) ? $args['--command'] : null;
-    $id = array_key_exists('--id', $args) && isset($args['--id']) ? $args['--id'] : null;
-
-    if (is_null($command) || !in_array($command, ['exit', 'reset']))
-        usage();
-
-    if ($id !== null) {
-        if ($queue === null) usage();
-
-        TaskManager::instance()->worker($queue)->pushCommand($id, $command);
-    } else {
-        if ($queue === null) {
-            $queues = TaskManager::instance()->getQueues();
-
-            foreach ($queues as $queue) {
-                $ids = TaskManager::instance()->worker($queue)->getIds();
-
-                foreach ($ids as $id)
-                    TaskManager::instance()->worker($queue)->pushCommand($id, $command);
-            }
-        } else {
-            $ids = TaskManager::instance()->worker($queue)->getIds();
-
-            foreach ($ids as $id)
-                TaskManager::instance()->worker($queue)->pushCommand($id, $command);
-        }
-    }
-
-    exit(0);
-}
-
-if (array_key_exists('--task-clear', $args)) {
-    $queue = $args['--task-clear'] ?? null;
-
-    if ($queue === null) TaskManager::instance()->clear();
-    else TaskManager::instance()->worker($queue)->clear();
-
-    exit(0);
-}
-
-if (array_key_exists('--task-status', $args)) {
-    $queues = TaskManager::instance()->getQueues();
-
-    foreach ($queues as $queue) {
-        echo '----';
-
-        $worker = TaskManager::instance()->worker($queue);
-
-        echo 'Очередь: ' . $queue . PHP_EOL;
-        echo 'Размер очереди: ' . $worker->getSize() . PHP_EOL;
-
-        $ids = $worker->getIds();
-
-        if (count($ids) > 0) {
-            echo 'Запущенные TaskWorker: ' . implode(', ', $ids) . PHP_EOL;
-
-            foreach ($ids as $id) {
-                $title = $worker->getTitle($id);
-
-                if ($title)
-                    echo 'Текущая задача TaskWorker(' . $id . '): ' . $title . ', ' . $worker->getProgress($id) . '%' . PHP_EOL;
-            }
-        }
-    }
 
     exit(0);
 }

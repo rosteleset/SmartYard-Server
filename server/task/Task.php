@@ -18,9 +18,6 @@ abstract class Task implements LoggerAwareInterface
     protected ?Redis $redis = null;
     protected ?PDO_EXT $pdo = null;
 
-    /** @var callable $progressCallable */
-    private mixed $progressCallable = null;
-
     public function __construct(string $title)
     {
         $this->title = $title;
@@ -36,11 +33,6 @@ abstract class Task implements LoggerAwareInterface
         $this->pdo = $pdo;
     }
 
-    public function setProgressCallable(?callable $progressCallable)
-    {
-        $this->progressCallable = $progressCallable;
-    }
-
     /**
      * @return mixed
      * @throws Exception
@@ -54,7 +46,6 @@ abstract class Task implements LoggerAwareInterface
 
     protected function setProgress(int $progress)
     {
-        if ($this->progressCallable)
-            call_user_func($this->progressCallable, $progress);
+
     }
 }

@@ -118,7 +118,7 @@ class PlogCallTask extends PlogTask
         logger('task')->debug('PlogCallTask error' . PHP_EOL . $throwable);
 
         if ($this->retry < 3)
-            task(new PlogCallTask($this->id, $this->ip, $this->date, $this->call))->low()->delay(30000)->dispatch();
+            task(new PlogCallTask($this->id, $this->ip, $this->date, $this->call))->low()->delay(300)->dispatch();
     }
 
     private function beward(array &$event_data, int &$call_from_panel, bool &$call_start_found, ?int $call_id, ?int $flat_id, ?string &$prefix, ?int &$flat_number, array $item, string $msg)

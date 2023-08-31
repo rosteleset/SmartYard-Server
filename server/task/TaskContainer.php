@@ -2,8 +2,6 @@
 
 namespace Selpol\Task;
 
-use DateInterval;
-use DateTime;
 use Exception;
 use PDO_EXT;
 use Redis;
@@ -13,7 +11,7 @@ class TaskContainer
     private Task $task;
 
     private ?string $queue = null;
-    private DateTime|DateInterval|int|null $start = null;
+    private ?int $start = null;
 
     public function __construct(Task $task)
     {
@@ -47,14 +45,7 @@ class TaskContainer
         return $this->queue(TaskManager::QUEUE_DEFAULT);
     }
 
-    public function start(?DateTime $start): static
-    {
-        $this->start = $start;
-
-        return $this;
-    }
-
-    public function delay(DateInterval|int|null $start): static
+    public function delay(?int $start): static
     {
         $this->start = $start;
 
@@ -75,10 +66,18 @@ class TaskContainer
     public function dispatch(): bool
     {
         $queue = $this->queue ?? TaskManager::QUEUE_DEFAULT;
-        $start = is_null($this->start) ? time() : ($this->start instanceof DateInterval ? ((new DateTime())->add($this->start)->getTimestamp()) : ($this->start instanceof DateTime ? $this->start->getTimestamp() : time() + $this->start));
+        $start = $this->start;
 
-        TaskManager::instance()->worker($queue)->pushTask($start, $this->task);
+        try {
+            TaskManager::instance()->enqueue($queue, $this->task, $start);
 
-        return true;
+            return true;
+        } catch (Exception $exception) {
+            logger('task')->error($exception);
+
+            return false;
+        } finally {
+            TaskManager::instance()->close();
+        }
     }
 }

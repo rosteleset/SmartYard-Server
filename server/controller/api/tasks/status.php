@@ -30,9 +30,7 @@ namespace api\tasks {
     {
         public static function GET($params)
         {
-            $tasks = loadBackend('tasks');
-
-            return api::ANSWER($tasks->getStatus());
+            return api::ERROR('');
         }
 
         public static function index()

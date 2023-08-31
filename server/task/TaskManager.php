@@ -2,13 +2,16 @@
 
 namespace Selpol\Task;
 
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Redis;
+use Exception;
+use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
-class TaskManager implements LoggerAwareInterface
+class TaskManager
 {
-    use LoggerAwareTrait;
+    private ?AMQPStreamConnection $connection = null;
+    private ?AMQPChannel $channel = null;
 
     public const QUEUE_HIGH = 'high';
     public const QUEUE_MEDIUM = 'medium';
@@ -17,60 +20,73 @@ class TaskManager implements LoggerAwareInterface
 
     private static ?TaskManager $instance = null;
 
-    private Redis $redis;
-
-    /** @var TaskWorker[] $workers */
-    private array $workers = [];
-
-    public function __construct(Redis $redis)
+    /**
+     * @throws Exception
+     */
+    public function connect()
     {
-        $this->redis = $redis;
+        $this->connection = new AMQPStreamConnection(config('amqp.host'), config('amqp.port'), config('amqp.username'), config('amqp.password'));
+        $this->channel = $this->connection->channel();
     }
 
-    public function getQueues(): array
+    /**
+     * @throws Exception
+     */
+    public function enqueue(string $queue, Task $task, ?int $delay)
     {
-        $queues = $this->redis->sMembers($this->getManagerQueuesKey());
+        if ($this->connection == null || $this->channel == null)
+            $this->connect();
 
-        return is_array($queues) ? $queues : [];
+        $this->channel->queue_declare($queue, durable: true);
+
+        if ($delay)
+            $this->channel->basic_publish(new AMQPMessage(
+                serialize($task),
+                ['delivery_mode' => 2, 'application_headers' => new AMQPTable(['x-delay' => $delay * 1000])]
+            ), routing_key: $queue);
+        else
+            $this->channel->basic_publish(new AMQPMessage(serialize($task)), routing_key: $queue);
     }
 
-    public function worker(string $queue): TaskWorker
+    /**
+     * @throws Exception
+     */
+    public function dequeue(string $queue, TaskCallback|callable $callback)
     {
-        if (!array_key_exists($queue, $this->workers)) {
-            $this->workers[$queue] = new TaskWorker($queue, $this->redis);
-            $this->workers[$queue]->setLogger($this->logger);
+        if ($this->connection == null || $this->channel == null)
+            $this->connect();
 
-            $this->redis->sAdd($this->getManagerQueuesKey(), $queue);
+        $this->channel->queue_declare($queue, durable: true);
+
+        $this->channel->basic_consume($queue, no_ack: true, callback: static function (AMQPMessage $message) use ($callback) {
+            try {
+                $task = unserialize($message->body);
+
+                if ($task instanceof Task)
+                    $callback($task);
+            } catch (Exception $exception) {
+                logger('task')->error($exception);
+            }
+        });
+
+        while ($this->channel->is_consuming())
+            $this->channel->wait(non_blocking: true);
+    }
+
+    public function close()
+    {
+        try {
+            $this->channel?->close();
+            $this->connection?->close();
+        } catch (Exception $exception) {
+            logger('task')->critical($exception);
         }
-
-        return $this->workers[$queue];
-    }
-
-    public function processor(string $queue, ?int $id): TaskProcessor
-    {
-        return new TaskProcessor($this->worker($queue), $id);
-    }
-
-    public function clear()
-    {
-        $this->redis->del($this->redis->keys('task:*'));
-
-        $this->logger?->info('Clear TaskManager');
-    }
-
-    private function getManagerQueuesKey(): string
-    {
-        return 'task:queues';
     }
 
     public static function instance(): TaskManager
     {
-        global $redis;
-
-        if (is_null(self::$instance)) {
-            self::$instance = new TaskManager($redis);
-            self::$instance->setLogger(logger('task'));
-        }
+        if (is_null(self::$instance))
+            self::$instance = new TaskManager();
 
         return self::$instance;
     }
