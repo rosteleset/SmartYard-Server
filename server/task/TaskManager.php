@@ -70,7 +70,7 @@ class TaskManager
         });
 
         while ($this->channel->is_consuming())
-            $this->channel->wait(non_blocking: true);
+            $this->channel->wait();
     }
 
     public function close()
