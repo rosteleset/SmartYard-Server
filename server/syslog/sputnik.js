@@ -14,38 +14,29 @@ const createLogMessage = data => {
 }
 
 const eventHandler = async data => {
-    const {device_id, date_time, Data: payload} = data;
-    const action = payload?.action;
-
-    if (!action) {
-        return;
-    }
-
+    const {device_id, date_time, event, Data: payload} = data;
     const now = getTimestamp(new Date(date_time));
 
-    switch (action) {
-        case 'digital_key': // Opening door by personal code
-            await API.openDoor({date: now, ip: device_id, detail: payload.num, by: 'code'});
-            break;
-        case 'intercom_log':
-            const {module, state} = payload;
-
-            // Opening door by RFID key
-            if (module === 'key' && state === 'valid') {
+    switch (event) {
+        case 'intercom.key': // Opening door by RFID key
+            if (payload.state === 'valid') {
                 const rfidParts = payload.id.match(/.{1,2}/g);
                 const rfid = '000000' + rfidParts.reverse().join('');
                 await API.openDoor({date: now, ip: device_id, door: 0, detail: rfid, by: 'rfid'});
             }
+            break;
 
-            // Opening door by button pressed
-            if (module === 'button') {
-                await API.openDoor({date: now, ip: device_id, door: 0, detail: 'main', by: 'button'});
+        case 'intercom.exit-button': // Opening main door by button pressed
+            await API.openDoor({date: now, ip: device_id, door: 0, detail: 'main', by: 'button'});
+            break;
+
+        default:
+            if (payload?.action === 'digital_key') { // Opening door by personal code
+                await API.openDoor({date: now, ip: device_id, detail: payload.num, by: 'code'});
             }
-
             break;
     }
 
-    console.log(data);
     // await API.sendLog({date: now, ip: device_id, unit: "sputnik", msg: createLogMessage(payload)});
 }
 
