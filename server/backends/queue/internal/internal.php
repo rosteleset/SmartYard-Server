@@ -14,7 +14,7 @@ namespace backends\queue {
          */
         function changed($objectType, $objectId)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
             $domophones = [];
 
             switch ($objectType) {

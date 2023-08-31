@@ -38,7 +38,7 @@ namespace backends\frs {
                     $content_type = end($matches[1]);
                 }
             }
-            $files = loadBackend('files');
+            $files = backend('files');
             $face_uuid = $files->toGUIDv4($files->addFile(
                 "face_image",
                 $files->contentsToStream($image_data),
@@ -155,7 +155,7 @@ namespace backends\frs {
          */
         public function registerFace($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0)
         {
-            $plog = loadBackend("plog");
+            $plog = backend("plog");
 
             if (!$plog)
                 return false;
@@ -230,7 +230,7 @@ namespace backends\frs {
             $query = "select face_uuid from frs_faces where face_id = :face_id";
             $r = $this->db->get($query, [":face_id" => $face_id], [], [self::PDO_SINGLIFY]);
             if ($r) {
-                $files = loadBackend("files");
+                $files = backend("files");
                 $files->deleteFile($files->fromGUIDv4($r["face_uuid"]));
             }
 
@@ -268,7 +268,7 @@ namespace backends\frs {
 
             $diff_faces = array_diff($rbt_all_faces, $frs_all_faces);
             if ($diff_faces) {
-                $files = loadBackend("files");
+                $files = backend("files");
 
                 foreach ($diff_faces as $f_id) {
                     $query = "select face_uuid from frs_faces where face_id = :face_id";
@@ -386,7 +386,7 @@ namespace backends\frs {
                     $logger->debug('syncData() add streams to frs', ['diff' => $diff_streams]);
 
                 foreach ($diff_streams as $stream_id => $faces) {
-                    $cam = loadBackend("cameras")->getCamera($stream_id);
+                    $cam = backend("cameras")->getCamera($stream_id);
                     if ($cam) {
                         $method_params = [
                             self::P_STREAM_ID => $stream_id,
@@ -492,9 +492,9 @@ namespace backends\frs {
             ]);
 
             //detach face_id from video streams
-            $households = loadBackend("households");
+            $households = backend("households");
             $entrances = $households->getEntrances("flatId", $flat_id);
-            $cameras = loadBackend("cameras");
+            $cameras = backend("cameras");
             foreach ($entrances as $entrance) {
                 $cam = $cameras->getCamera($entrance["cameraId"]);
                 $this->removeFaces($cam, [$face_id]);
@@ -526,7 +526,7 @@ namespace backends\frs {
             $r = $this->db->get($query, [], ["house_entrance_id" => "entranceId"]);
 
             if (count($r) == 1) {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 return $households->getEntrance($r[0]["entranceId"]);
             }

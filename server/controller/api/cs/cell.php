@@ -15,7 +15,7 @@
         class cell extends api {
 
             public static function GET($params) {
-                $cs = loadBackend("cs");
+                $cs = backend("cs");
 
                 $sheet = false;
                 
@@ -31,7 +31,7 @@
             }
 
             public static function PUT($params) {
-                $cs = loadBackend("cs");
+                $cs = backend("cs");
 
                 $success = false;
 
@@ -43,7 +43,7 @@
             }
 
             public static function index() {
-                if (loadBackend("tt")) {
+                if (backend("tt")) {
                     return [
                         "GET" => "#same(tt,issue,GET)",
                         "PUT" => "#same(tt,issue,GET)",

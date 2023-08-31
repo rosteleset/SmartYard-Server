@@ -89,21 +89,21 @@ namespace backends\dvr_exports {
                     ]
                 );
                 if ($task) {
-                    $cameras = loadBackend("cameras");
+                    $cameras = backend("cameras");
                     $cam = $cameras->getCamera($task['cameraId']);
 
                     if (!$cam) {
                         echo "Camera with id = " . $task['cameraId'] . " was not found\n";
                         return false;
                     }
-                    $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
+                    $request_url = backend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
 
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
 
                     echo "Record download task with id = $recordId was started\n";
                     echo "Fetching record form {$request_url} to " . $task['filename'] . "\n";
 
-                    $files = loadBackend("files");
+                    $files = backend("files");
 
                     $arrContextOptions = array("ssl" => array("verify_peer" => false, "verify_peer_name" => false));
 

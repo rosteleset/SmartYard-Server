@@ -18,7 +18,7 @@ namespace api\subscribers
 
         public static function GET($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
 
             return api::ANSWER($keys, ($keys !== false)?"keys":false);

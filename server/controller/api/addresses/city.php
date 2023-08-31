@@ -15,7 +15,7 @@
         class city extends api {
 
             public static function PUT($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->modifyCity($params["_id"], $params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
@@ -23,7 +23,7 @@
             }
 
             public static function POST($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $cityId = $addresses->addCity($params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function DELETE($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->deleteCity($params["_id"]);
 

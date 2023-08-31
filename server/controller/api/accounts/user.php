@@ -199,7 +199,7 @@
             }
 
             public static function index() {
-                $users = loadBackend("users");
+                $users = backend("users");
 
                 if ($users && $users->capabilities()["mode"] === "rw") {
                     return [

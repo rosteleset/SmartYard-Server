@@ -15,7 +15,7 @@
         class settlement extends api {
 
             public static function PUT($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->modifySettlement($params["_id"], $params["areaId"], $params["cityId"], $params["settlementUuid"], $params["settlementWithType"], $params["settlementType"], $params["settlementTypeFull"], $params["settlement"]);
 
@@ -23,7 +23,7 @@
             }
 
             public static function POST($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $settlementId = $addresses->addSettlement($params["areaId"], $params["cityId"], $params["settlementUuid"], $params["settlementWithType"], $params["settlementType"], $params["settlementTypeFull"], $params["settlement"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function DELETE($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->deleteSettlement($params["_id"]);
 

@@ -3,7 +3,7 @@
 namespace PHPSTORM_META {
 
     expectedArguments(
-        \loadBackend(),
+        \backend(),
         0,
         'accounting',
         'addresses',
@@ -34,7 +34,7 @@ namespace PHPSTORM_META {
     );
 
     override(
-        \loadBackend(0),
+        \backend(0),
         map([
             'accounting' => \backends\accounting\accounting::class,
             'addresses' => \backends\addresses\addresses::class,

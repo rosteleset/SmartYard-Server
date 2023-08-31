@@ -21,14 +21,14 @@ namespace api\cameras {
             if ($validate == false)
                 return api::ERROR();
 
-            $cameras = loadBackend('cameras');
+            $cameras = backend('cameras');
 
             return api::ANSWER($cameras->getCamera($validate['_id']));
         }
 
         public static function POST($params)
         {
-            $cameras = loadBackend("cameras");
+            $cameras = backend("cameras");
 
             $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdLeft"], $params["mdTop"], $params["mdWidth"], $params["mdHeight"], $params["common"], $params["comment"]);
 
@@ -37,7 +37,7 @@ namespace api\cameras {
 
         public static function PUT($params)
         {
-            $cameras = loadBackend("cameras");
+            $cameras = backend("cameras");
 
             $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdLeft"], $params["mdTop"], $params["mdWidth"], $params["mdHeight"], $params["common"], $params["comment"]);
 
@@ -46,7 +46,7 @@ namespace api\cameras {
 
         public static function DELETE($params)
         {
-            $cameras = loadBackend("cameras");
+            $cameras = backend("cameras");
 
             $success = $cameras->deleteCamera($params["_id"]);
 

@@ -15,7 +15,7 @@
         class custom extends api {
 
             public static function GET($params) {
-                $custom = loadBackend("custom");
+                $custom = backend("custom");
 
                 $answer = false;
 
@@ -27,7 +27,7 @@
             }
 
             public static function POST($params) {
-                $custom = loadBackend("custom");
+                $custom = backend("custom");
 
                 $answer = false;
 
@@ -39,7 +39,7 @@
             }
 
             public static function PUT($params) {
-                $custom = loadBackend("custom");
+                $custom = backend("custom");
 
                 $answer = false;
 
@@ -51,7 +51,7 @@
             }
 
             public static function DELETE($params) {
-                $custom = loadBackend("custom");
+                $custom = backend("custom");
 
                 $answer = false;
 

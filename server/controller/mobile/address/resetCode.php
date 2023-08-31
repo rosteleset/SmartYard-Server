@@ -23,7 +23,7 @@
 
 $user = auth();
 
-$households = loadBackend("households");
+$households = backend("households");
 
 $flat_id = (int)@$postdata['flatId'];
 

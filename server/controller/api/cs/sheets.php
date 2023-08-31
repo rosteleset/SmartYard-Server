@@ -15,7 +15,7 @@
         class sheets extends api {
 
             public static function GET($params) {
-                $cs = loadBackend("cs");
+                $cs = backend("cs");
 
                 $sheets = false;
 
@@ -27,7 +27,7 @@
             }
 
             public static function index() {
-                if (loadBackend("tt")) {
+                if (backend("tt")) {
                     return [
                         "GET" => "#same(tt,issue,GET)",
                     ];

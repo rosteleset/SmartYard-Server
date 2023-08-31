@@ -20,14 +20,14 @@ class RecordTask extends Task
 
     public function onTask(): bool
     {
-        $dvr_exports = loadBackend('dvr_exports');
+        $dvr_exports = backend('dvr_exports');
 
         if (!$dvr_exports)
             return false;
 
         $uuid = $dvr_exports->runDownloadRecordTask($this->recordId);
 
-        $inbox = loadBackend('inbox');
+        $inbox = backend('inbox');
 
         if (!$inbox)
             return false;
@@ -39,7 +39,7 @@ class RecordTask extends Task
 
     public function onError(Throwable $throwable)
     {
-        $inbox = loadBackend('inbox');
+        $inbox = backend('inbox');
 
         if (!$inbox)
             return;

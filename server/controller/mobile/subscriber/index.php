@@ -24,7 +24,7 @@ if (isset($postdata)) {
     if ($flat === null)
         response(404, message: 'Квартира не найдена');
 
-    $subscribers = loadBackend('households')->getSubscribers('flatId', $flat['flatId']);
+    $subscribers = backend('households')->getSubscribers('flatId', $flat['flatId']);
 
     response(
         200,

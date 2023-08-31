@@ -56,7 +56,7 @@ use backends\frs\frs;
 
 $user = auth();
 
-$households = loadBackend("households");
+$households = backend("households");
 $flat_id = (int)@$postdata['flatId'];
 
 if (!$flat_id) {
@@ -72,7 +72,7 @@ if (!$f)
 if (!@$postdata['day'])
     response(404);
 
-$plog = loadBackend("plog");
+$plog = backend("plog");
 
 if (!$plog)
     response(403);
@@ -128,7 +128,7 @@ try {
                     'width' => $face->width,
                     'height' => $face->height
                 ];
-                $frs = loadBackend("frs");
+                $frs = backend("frs");
                 if ($frs) {
                     $e_details['detailX']['flags'] = [frs::FLAG_CAN_LIKE];
                     $face_id = null;

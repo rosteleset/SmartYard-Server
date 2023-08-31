@@ -18,7 +18,7 @@ namespace api\subscribers
 
         public static function GET($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $flat = [
                 "subscribers" => $households->getSubscribers(@$params["by"], @$params["query"]),

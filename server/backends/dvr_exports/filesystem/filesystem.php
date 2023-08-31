@@ -91,7 +91,7 @@ namespace backends\dvr_exports {
 
                     if ($dvr_files_path && substr($dvr_files_path, -1) != '/') $dvr_files_path = $dvr_files_path . '/';
 
-                    $cameras = loadBackend("cameras");
+                    $cameras = backend("cameras");
                     $cam = $cameras->getCamera($task['cameraId']);
 
                     if (!$cam) {
@@ -100,7 +100,7 @@ namespace backends\dvr_exports {
                         exit(0);
                     }
 
-                    $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
+                    $request_url = backend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
 
                     $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
 

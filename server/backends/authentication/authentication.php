@@ -118,7 +118,7 @@
     
                         $this->redis->set($key, json_encode($auth));
     
-                        $users = loadBackend("users");
+                        $users = backend("users");
     
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
@@ -146,7 +146,7 @@
 
                         $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
     
-                        $users = loadBackend("users");
+                        $users = backend("users");
     
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;

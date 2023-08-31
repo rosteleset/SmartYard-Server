@@ -30,7 +30,7 @@ if (isset($postdata)) {
     if ($flat['role'] !== 0)
         response(403, message: 'Недостаточно прав для добавления нового жителя');
 
-    $households = loadBackend('households');
+    $households = backend('households');
 
     if (!$households)
         response(500);

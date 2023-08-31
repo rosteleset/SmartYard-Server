@@ -36,7 +36,7 @@ class PlogCallTask extends PlogTask
     {
         $this->retry++;
 
-        $plog = loadBackend('plog');
+        $plog = backend('plog');
 
         $event_data = [];
         $event_data[plog::COLUMN_DATE] = $this->date;

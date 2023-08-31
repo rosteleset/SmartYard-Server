@@ -3,8 +3,7 @@
 namespace Selpol\Task;
 
 use Exception;
-use PDO_EXT;
-use Redis;
+use Selpol\Service\TaskService;
 
 class TaskContainer
 {
@@ -27,22 +26,22 @@ class TaskContainer
 
     public function high(): static
     {
-        return $this->queue(TaskManager::QUEUE_HIGH);
+        return $this->queue(TaskService::QUEUE_HIGH);
     }
 
     public function medium(): static
     {
-        return $this->queue(TaskManager::QUEUE_MEDIUM);
+        return $this->queue(TaskService::QUEUE_MEDIUM);
     }
 
     public function low(): static
     {
-        return $this->queue(TaskManager::QUEUE_LOW);
+        return $this->queue(TaskService::QUEUE_LOW);
     }
 
     public function default(): static
     {
-        return $this->queue(TaskManager::QUEUE_DEFAULT);
+        return $this->queue(TaskService::QUEUE_DEFAULT);
     }
 
     public function delay(?int $start): static
@@ -55,10 +54,9 @@ class TaskContainer
     /**
      * @throws Exception
      */
-    public function sync(?Redis $redis, ?PDO_EXT $pdo): mixed
+    public function sync(): mixed
     {
-        $this->task->setRedis($redis);
-        $this->task->setPdo($pdo);
+        $this->task->setContainer(bootstrap_if_need());
 
         return $this->task->onTask();
     }
@@ -66,10 +64,10 @@ class TaskContainer
     public function dispatch(): bool
     {
         $logger = logger('task');
-        $queue = $this->queue ?? TaskManager::QUEUE_DEFAULT;
+        $queue = $this->queue ?? TaskService::QUEUE_DEFAULT;
 
         try {
-            $manager = TaskManager::instance();
+            $manager = TaskService::instance();
             $manager->setLogger($logger);
 
             $manager->enqueue($queue, $this->task, $this->start);
@@ -80,7 +78,7 @@ class TaskContainer
 
             return false;
         } finally {
-            TaskManager::instance()->close();
+            TaskService::instance()->close();
         }
     }
 }

@@ -29,9 +29,9 @@ class QrTask extends Task
 
     public function onTask(): ?string
     {
-        $this->files = loadBackend('files');
+        $this->files = backend('files');
 
-        $house = loadBackend('addresses')->getHouse($this->houseId);
+        $house = backend('addresses')->getHouse($this->houseId);
 
         if ($this->override) {
             $uuids = $this->files->searchFiles(['filename' => $house['houseFull'] . ' QR.zip']);
@@ -53,7 +53,7 @@ class QrTask extends Task
 
     private function getOrCreateQr(array $house): array
     {
-        $households = loadBackend('households');
+        $households = backend('households');
 
         $flats = $households->getFlats('houseId', $this->houseId); // code
 

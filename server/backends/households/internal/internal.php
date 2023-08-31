@@ -773,7 +773,7 @@ namespace backends\households {
                     break;
             }
 
-            $monitoring = loadBackend("monitoring");
+            $monitoring = backend("monitoring");
 
             if ($monitoring && $withStatus) {
                 $domophones = $this->db->get($q, false, $r);
@@ -811,7 +811,7 @@ namespace backends\households {
                 return false;
             }
 
-            $configs = loadBackend("configs");
+            $configs = backend("configs");
             $models = $configs->getDomophonesModels();
 
             if (!@$models[$model]) {
@@ -849,7 +849,7 @@ namespace backends\households {
                 "comment" => $comment,
             ]);
 
-            $queue = loadBackend("queue");
+            $queue = backend("queue");
 
             if ($queue) {
                 $queue->changed("domophone", $domophoneId);
@@ -878,7 +878,7 @@ namespace backends\households {
                 return false;
             }
 
-            $configs = loadBackend("configs");
+            $configs = backend("configs");
             $models = $configs->getDomophonesModels();
 
             if (!@$models[$model]) {
@@ -924,7 +924,7 @@ namespace backends\households {
                 "comment" => $comment,
             ]);
 
-            $queue = loadBackend("queue");
+            $queue = backend("queue");
 
             if ($queue) {
                 $queue->changed("domophone", $domophoneId);
@@ -982,7 +982,7 @@ namespace backends\households {
             ]);
 
             if ($domophone) {
-                $monitoring = loadBackend("monitoring");
+                $monitoring = backend("monitoring");
 
                 if ($monitoring) {
                     $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
@@ -1054,7 +1054,7 @@ namespace backends\households {
                 "voip_enabled" => "voipEnabled",
             ]);
 
-            $addresses = loadBackend("addresses");
+            $addresses = backend("addresses");
 
             foreach ($subscribers as &$subscriber) {
                 $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
@@ -1120,7 +1120,7 @@ namespace backends\households {
                 }
 
                 if ($message) {
-                    $inbox = loadBackend("inbox");
+                    $inbox = backend("inbox");
 
                     if ($inbox) {
                         $inbox->sendMessage($subscriberId, $message['title'], $message['msg'], $action = "newAddress");
@@ -1527,7 +1527,7 @@ namespace backends\households {
         public function getCameras($by, $params)
         {
 
-            $cameras = loadBackend("cameras");
+            $cameras = backend("cameras");
 
             if (!$cameras) {
                 return false;
@@ -1647,8 +1647,8 @@ namespace backends\households {
          */
         public function cleanup()
         {
-            $cameras = loadBackend("cameras");
-            $addresses = loadBackend("addresses");
+            $cameras = backend("cameras");
+            $addresses = backend("addresses");
 
             $n = 0;
 

@@ -56,9 +56,9 @@ backends:
     common_secret: <!-- your secret here --!>
     confirm_method: outgoingCall
   inbox:
-    backend: clickhouse
+    backend: clickhouseService
   plog:
-    backend: clickhouse
+    backend: clickhouseService
     host: 127.0.0.1
     port: 8123
     username: default

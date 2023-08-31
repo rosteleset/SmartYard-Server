@@ -28,7 +28,7 @@
 
 $user = auth();
 
-$households = loadBackend("households");
+$households = backend("households");
 $flat_id = (int)@$postdata['flatId'];
 
 if (!$flat_id)
@@ -40,7 +40,7 @@ $f = in_array($flat_id, $flat_ids);
 if (!$f)
     response(404);
 
-$plog = loadBackend("plog");
+$plog = backend("plog");
 if (!$plog) response(403);
 
 $flat_owner = false;

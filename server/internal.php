@@ -1,55 +1,35 @@
 <?php
 
+use Selpol\Service\DatabaseService;
+
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 mb_internal_encoding("UTF-8");
 
 require_once "backends/backend.php";
-require_once "utils/loader.php";
-require_once "utils/db_ext.php";
+
+$container = bootstrap();
+
+try {
+    // TODO: Со временем удалить
+    /** @var array $config */
+    $config = $container->get('config');
+
+    /** @var DatabaseService $db */
+    $db = $container->get(DatabaseService::class);
+
+    /** @var Redis $redis */
+    $redis = $container->get(Redis::class);
+} catch (Exception $exception) {
+    echo json_encode(['code' => 503, 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен'], JSON_UNESCAPED_UNICODE);
+
+    exit(0);
+}
 
 $logger = logger('internal');
 
-$config = false;
-
-try {
-    $config = config();
-} catch (Exception $e) {
-    $logger->critical('Config fail load' . PHP_EOL . $e);
-
-    $config = false;
-}
-
-if (!$config)
-    response(555, ["error" => "noConfig"]);
-
 $backends = [];
 $redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
-
-try {
-    $redis = new Redis();
-    $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
-
-    if (@$config["redis"]["password"])
-        $redis->auth($config["redis"]["password"]);
-
-    $redis->setex("iAmOk", 1, "1");
-} catch (Exception $e) {
-    $logger->critical('Redis fail connect' . PHP_EOL . $e);
-
-    error_log(print_r($e, true));
-
-    response(555, ["error" => "redis"]);
-}
-
-try {
-    $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-} catch (Exception $e) {
-    $logger->critical('Pdo fail connect' . PHP_EOL . $e);
-
-    error_log(print_r($e, true));
-    response(555, ["error" => "PDO"]);
-}
 
 function response($code = 204, $data = false, $name = false, $message = false)
 {

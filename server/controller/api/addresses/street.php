@@ -15,7 +15,7 @@
         class street extends api {
 
             public static function PUT($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->modifyStreet($params["_id"], $params["cityId"], $params["settlementId"], $params["streetUuid"], $params["streetWithType"], $params["streetType"], $params["streetTypeFull"], $params["street"]);
 
@@ -23,7 +23,7 @@
             }
 
             public static function POST($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $streetId = $addresses->addStreet($params["cityId"], $params["settlementId"], $params["streetUuid"], $params["streetWithType"], $params["streetType"], $params["streetTypeFull"], $params["street"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function DELETE($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->deleteStreet($params["_id"]);
 

@@ -5,7 +5,6 @@
         "v1_houses.sql",
         "v1_cameras.sql",
         "v1_dvr.sql",
-        "v1_tt.sql",
         "v1_inbox.sql",
         "v1_providers.sql",
         "v1_tasks.sql",

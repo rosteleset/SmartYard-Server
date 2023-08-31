@@ -1,17 +1,19 @@
 <?php
 
 /**
- * "clickhouse" accounting (logging) class
+ * "clickhouseService" accounting (logging) class
  */
 
 namespace backends\accounting {
 
+    use Selpol\Service\ClickhouseService;
+
     /**
-     * clickhouse accounting (logging) class
+     * clickhouseService accounting (logging) class
      */
     class clickhouse extends accounting
     {
-        private $clickhouse;
+        private ClickhouseService $clickhouse;
 
         /**
          * @param $config
@@ -22,9 +24,9 @@ namespace backends\accounting {
         {
             parent::__construct($config, $db, $redis, $login);
 
-            require_once __DIR__ . '/../../../utils/clickhouse.php';
+            require_once __DIR__ . '/../../../service/ClickhouseService.php';
 
-            $this->clickhouse = new \clickhouse(
+            $this->clickhouse = new ClickhouseService(
                 @$config['backends']['accounting']['host'] ?: '127.0.0.1',
                 @$config['backends']['accounting']['port'] ?: 8123,
                 @$config['backends']['accounting']['username'] ?: 'default',

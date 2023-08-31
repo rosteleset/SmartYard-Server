@@ -15,9 +15,9 @@
         class domophones extends api {
 
             public static function GET($params) {
-                $households = loadBackend("households");
-                $configs = loadBackend("configs");
-                $sip = loadBackend("sip");
+                $households = backend("households");
+                $configs = backend("configs");
+                $sip = backend("sip");
 
                 if (!$households) {
                     return api::ERROR();

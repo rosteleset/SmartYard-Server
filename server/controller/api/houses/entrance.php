@@ -19,7 +19,7 @@
 
             public static function POST($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 if (@$params["entranceId"]) {
                     $success = $households->addEntrance($params["houseId"], $params["entranceId"], $params["prefix"]);
@@ -34,7 +34,7 @@
 
             public static function PUT($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["locksDisabled"], $params["cmsLevels"]);
 
@@ -43,7 +43,7 @@
 
             public static function DELETE($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 if (@$params["houseId"]) {
                     $success = $households->deleteEntrance($params["_id"], $params["houseId"]);

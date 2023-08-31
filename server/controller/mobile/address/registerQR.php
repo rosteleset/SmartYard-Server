@@ -33,7 +33,7 @@ for ($i = strlen($code) - 1; $i >= 0; --$i) {
 if ($hash == '')
     response(200, "QR-код не является кодом для доступа к квартире");
 
-$households = loadBackend("households");
+$households = backend("households");
 $flat = $households->getFlats("code", ["code" => $hash])[0];
 
 if (!$flat)

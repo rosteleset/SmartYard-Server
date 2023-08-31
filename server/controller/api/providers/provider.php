@@ -15,7 +15,7 @@
         class provider extends api {
 
             public static function GET($params) {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 $providers = $providers->getProviders();
 
@@ -23,7 +23,7 @@
             }
 
             public static function PUT($params) {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 $success = $providers->modifyProvider($params["_id"], $params["uid"], $params["name"], $params["baseUrl"], @$params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["hidden"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function POST($params) {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 $success = $providers->createProvider($params["uid"], $params["name"], $params["baseUrl"], $params["logo"], $params["tokenCommon"], $params["tokenSms"], $params["hidden"]);
 
@@ -39,7 +39,7 @@
             }
 
             public static function DELETE($params) {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 $success = $providers->deleteProvider($params["_id"]);
 
@@ -47,7 +47,7 @@
             }
 
             public static function index() {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 if ($providers) {
                     return [

@@ -1,6 +1,12 @@
 <?php
 
-class PDO_EXT extends PDO
+namespace Selpol\Service;
+
+use Exception;
+use PDO;
+use PDOException;
+
+class DatabaseService extends PDO
 {
     public function __construct($dsn, $username = null, $password = null, $options = null)
     {
@@ -9,7 +15,7 @@ class PDO_EXT extends PDO
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    function trimParams($map)
+    function trimParams($map): array
     {
         $remap = [];
 
@@ -26,14 +32,14 @@ class PDO_EXT extends PDO
         return $remap;
     }
 
-    function insert($query, $params = [], $options = [])
+    function insert($query, $params = [], $options = []): bool|int|string
     {
         try {
             $sth = $this->prepare($query);
             if ($sth->execute($this->trimParams($params))) {
                 try {
                     return $this->lastInsertId();
-                } catch (Exception $e) {
+                } catch (Exception) {
                     return -1;
                 }
             } else {
@@ -52,7 +58,7 @@ class PDO_EXT extends PDO
         }
     }
 
-    function modify($query, $params = [], $options = [])
+    function modify($query, $params = [], $options = []): bool|int
     {
         try {
             $sth = $this->prepare($query);
@@ -74,7 +80,7 @@ class PDO_EXT extends PDO
         }
     }
 
-    function modifyEx($query, $map, $params, $options = [])
+    function modifyEx($query, $map, $params, $options = []): bool
     {
         $mod = false;
 
@@ -111,12 +117,12 @@ class PDO_EXT extends PDO
             if ($params) {
                 $sth = $this->prepare($query);
                 if ($sth->execute($params)) {
-                    $a = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                    $a = $sth->fetchAll(PDO::FETCH_ASSOC);
                 } else {
                     return false;
                 }
             } else {
-                $a = $this->query($query, \PDO::FETCH_ASSOC)->fetchAll();
+                $a = $this->query($query, PDO::FETCH_ASSOC)->fetchAll();
             }
 
             $r = [];

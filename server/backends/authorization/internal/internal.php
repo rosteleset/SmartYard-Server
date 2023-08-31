@@ -95,7 +95,7 @@ namespace backends\authorization {
                         $_params["_path"]["method"] = $rights_method;
                         $_params["_request_method"] = $rights_request_method;
 
-                        return loadBackend($b[0]["backend"])->allow($_params);
+                        return backend($b[0]["backend"])->allow($_params);
                     }
                 }
             } catch (\Exception $e) {

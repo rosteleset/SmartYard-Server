@@ -32,7 +32,7 @@ namespace backends\isdn {
                 error_log("isdn push send error:\n query = $query\n result = $result\n");
 
                 if (strtolower($result) === "err:broken") {
-                    loadBackend("households")->dismissToken($push["token"]);
+                    backend("households")->dismissToken($push["token"]);
                 }
             }
 

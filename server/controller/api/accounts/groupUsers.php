@@ -67,19 +67,19 @@
         class groupUsers extends api {
 
             public static function GET($params) {
-                $uids = loadBackend("groups")->getUsers($params["_id"]);
+                $uids = backend("groups")->getUsers($params["_id"]);
 
                 return api::ANSWER($uids, ($uids !== false)?"uids":"notFound");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("groups")->setUsers($params["_id"], $params["uids"]);
+                $success = backend("groups")->setUsers($params["_id"], $params["uids"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notFound");
             }
 
             public static function index() {
-                $groups = loadBackend("groups");
+                $groups = backend("groups");
 
                 if ($groups) {
                     if ($groups->capabilities()["mode"] === "rw") {

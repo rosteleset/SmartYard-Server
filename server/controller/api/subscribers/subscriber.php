@@ -18,7 +18,7 @@ namespace api\subscribers
 
         public static function POST($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $subscriberId = $households->addSubscriber($params["mobile"], $params["subscriberName"], $params["subscriberPatronymic"], @$params["flatId"], @$params["message"]);
 
@@ -27,7 +27,7 @@ namespace api\subscribers
 
         public static function PUT($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $success = $households->modifySubscriber($params["_id"], $params)
                 && $households->setSubscriberFlats($params["_id"], $params["flats"]);
@@ -37,7 +37,7 @@ namespace api\subscribers
 
         public static function DELETE($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $success = $households->removeSubscriberFromFlat($params["_id"], $params["subscriberId"], $params["message"]);
 

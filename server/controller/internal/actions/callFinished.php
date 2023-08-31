@@ -13,7 +13,7 @@ if (!isset(
     "callId" => $callId
 ] = $postdata;
 
-$plog = loadBackend("plog");
+$plog = backend("plog");
 
 $plog->addCallDoneData($date, $ip, $callId);
 

@@ -16,9 +16,9 @@ namespace api\cameras {
 
         public static function GET($params)
         {
-            $cameras = loadBackend("cameras");
-            $configs = loadBackend("configs");
-            $frs = loadBackend("frs");
+            $cameras = backend("cameras");
+            $configs = backend("configs");
+            $frs = backend("frs");
 
             $response = [
                 "cameras" => $cameras->getCameras(),

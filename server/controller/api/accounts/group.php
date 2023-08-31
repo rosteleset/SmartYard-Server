@@ -149,31 +149,31 @@
         class group extends api {
 
             public static function GET($params) {
-                $group = loadBackend("groups")->getGroup($params["_id"]);
+                $group = backend("groups")->getGroup($params["_id"]);
 
                 return api::ANSWER($group, ($group !== false)?"group":"notAcceptable");
             }
 
             public static function POST($params) {
-                $gid = loadBackend("groups")->addGroup($params["acronym"], $params["name"]);
+                $gid = backend("groups")->addGroup($params["acronym"], $params["name"]);
 
                 return api::ANSWER($gid, ($gid !== false)?"gid":"notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("groups")->modifyGroup($params["_id"], $params["acronym"], $params["name"], $params["admin"]);
+                $success = backend("groups")->modifyGroup($params["_id"], $params["acronym"], $params["name"], $params["admin"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
-                $success = loadBackend("groups")->deleteGroup($params["_id"]);
+                $success = backend("groups")->deleteGroup($params["_id"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function index() {
-                $groups = loadBackend("groups");
+                $groups = backend("groups");
 
                 if ($groups && $groups->capabilities()["mode"] === "rw") {
                     return [

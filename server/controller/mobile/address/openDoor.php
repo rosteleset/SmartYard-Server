@@ -25,7 +25,7 @@ $user = auth(15);
 $domophone_id = (int)@$postdata['domophoneId'];
 $door_id = (int)@$postdata['doorId'];
 
-$households = loadBackend("households");
+$households = backend("households");
 
 // Check intercom is blocking
 $blocked = true;
@@ -52,13 +52,13 @@ foreach ($user['flats'] as $flat) {
 }
 
 if (!$blocked) {
-    $households = loadBackend("households");
+    $households = backend("households");
     $domophone = $households->getDomophone($domophone_id);
 
     try {
-        $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
+        $model = domophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
         $model->open_door($door_id);
-        $plog = loadBackend("plog");
+        $plog = backend("plog");
 
         if ($plog)
             $plog->addDoorOpenDataById(time(), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $user['mobile']);

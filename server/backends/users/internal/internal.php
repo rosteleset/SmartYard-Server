@@ -43,7 +43,7 @@ namespace backends\users {
                     ];
                 }
 
-                $a = loadBackend("authorization");
+                $a = backend("authorization");
 
                 if ($a->allow([
                     "_uid" => $this->uid,
@@ -113,7 +113,7 @@ namespace backends\users {
                         "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
                     ];
 
-                    $groups = loadBackend("groups");
+                    $groups = backend("groups");
 
                     if ($groups !== false) {
                         $_user["groups"] = $groups->getGroups($uid);
@@ -232,7 +232,7 @@ namespace backends\users {
                         $this->redis->del($_key);
                     }
 
-                    $groups = loadBackend("groups");
+                    $groups = backend("groups");
                     if ($groups) {
                         $groups->deleteUser($uid);
                     }

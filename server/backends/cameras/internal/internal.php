@@ -79,7 +79,7 @@ namespace backends\cameras {
                 return false;
             }
 
-            $configs = loadBackend("configs");
+            $configs = backend("configs");
             $models = $configs->getCamerasModels();
 
             if (!@$models[$model]) {
@@ -133,7 +133,7 @@ namespace backends\cameras {
                 return false;
             }
 
-            $configs = loadBackend("configs");
+            $configs = backend("configs");
             $models = $configs->getCamerasModels();
 
             if (!@$models[$model]) {

@@ -21,7 +21,7 @@
 auth();
 
 $location_id = (int)@$postdata['locationId'];
-$addresses = loadBackend("addresses");
+$addresses = backend("addresses");
 
 if ($location_id > $offsetForCityId) {
     $cityId = $location_id - $offsetForCityId;

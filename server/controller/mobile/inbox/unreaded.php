@@ -19,7 +19,7 @@ $user = auth();
 // TODO: получить число непрочитанных сообщений в чате
 $chat = 0;
 
-$inbox = loadBackend("inbox");
+$inbox = backend("inbox");
 
 $subscriber_id = (int)$user['subscriberId'];
 $count_unread = (int)$inbox->unreaded($subscriber_id);

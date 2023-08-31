@@ -1,8 +1,8 @@
 <?php
 
-require_once dirname(__FILE__) . '/vendor/autoload.php';
+use Selpol\Service\DatabaseService;
 
-use Selpol\Task\Tasks\EmailTask;
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $real_ip_header = 'HTTP_X_FORWARDED_FOR';
 
@@ -17,18 +17,29 @@ if ($_SERVER["REQUEST_METHOD"] == "OPTIONS") {
     return;
 }
 
-require_once "utils/loader.php";
-require_once "utils/db_ext.php";
-
 require_once "backends/backend.php";
 
 require_once "controller/api/api.php";
 
-$required_backends = ["authentication", "authorization", "accounting", "users"];
+$container = bootstrap();
 
-$config = false;
-$db = false;
-$redis = false;
+try {
+    // TODO: Со временем удалить
+    /** @var array $config */
+    $config = $container->get('config');
+
+    /** @var DatabaseService $db */
+    $db = $container->get(DatabaseService::class);
+
+    /** @var Redis $redis */
+    $redis = $container->get(Redis::class);
+} catch (Exception $exception) {
+    echo json_encode(['code' => 503, 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен'], JSON_UNESCAPED_UNICODE);
+
+    exit(0);
+}
+
+$required_backends = ["authentication", "authorization", "accounting", "users"];
 
 $http_authorization = @$_SERVER['HTTP_AUTHORIZATION'];
 $refresh = array_key_exists('X-Api-Refresh', request_headers());
@@ -41,15 +52,6 @@ try {
     response(555, ["error" => "mbstring"]);
 }
 
-try {
-    $config = config();
-} catch (Exception $e) {
-    $config = false;
-}
-
-if (!$config) response(555, ["error" => "noConfig"]);
-if (@!$config["backends"]) response(555, ["error" => "noBackends"]);
-
 $ip = false;
 
 if (isset($_SERVER['REMOTE_ADDR']))
@@ -61,28 +63,6 @@ if (!$ip)
     response(555, ["error" => "noIp"]);
 
 $redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
-
-try {
-    $redis = new Redis();
-    $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
-
-    if (@$config["redis"]["password"])
-        $redis->auth($config["redis"]["password"]);
-
-    $redis->setex("iAmOk", 1, "1");
-} catch (Exception $e) {
-    error_log(print_r($e, true));
-
-    response(555, ["error" => "redis"]);
-}
-
-try {
-    $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-} catch (Exception $e) {
-    error_log(print_r($e, true));
-
-    response(555, ["error" => "PDO"]);
-}
 
 $path = explode("?", $_SERVER["REQUEST_URI"])[0];
 
@@ -162,7 +142,7 @@ if ($_RAW && count($_RAW))
 
 $backends = [];
 foreach ($required_backends as $backend)
-    if (loadBackend($backend) === false)
+    if (backend($backend) === false)
         response(555, ["error" => "noRequiredBackend"]);
 
 $auth = false;

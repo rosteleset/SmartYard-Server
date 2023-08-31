@@ -29,7 +29,7 @@ $to = strtotime(@$postdata['to']);
 if (!$cameraId || !$from || !$to)
     response(404);
 
-$dvr_exports = loadBackend("dvr_exports");
+$dvr_exports = backend("dvr_exports");
 
 // проверяем, не был ли уже запрошен данный кусок из архива.
 $check = $dvr_exports->checkDownloadRecord($cameraId, $user["subscriberId"], $from, $to);

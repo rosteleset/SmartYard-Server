@@ -20,10 +20,10 @@ use backends\plog\plog;
 
 $user = auth(5);
 
-$plog = loadBackend("plog");
+$plog = backend("plog");
 if (!$plog) response(422);
 
-$frs = loadBackend("frs");
+$frs = backend("frs");
 if (!$frs) response(422);
 
 

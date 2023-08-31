@@ -49,7 +49,7 @@
             }
 
             public static function index() {
-                $authorization = loadBackend("authorization");
+                $authorization = backend("authorization");
 
                 if ($authorization->capabilities() && $authorization->capabilities()["mode"] === "rw") {
                     return [ "GET", "POST", ];

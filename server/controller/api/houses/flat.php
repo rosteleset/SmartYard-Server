@@ -18,7 +18,7 @@
 
             public static function POST($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $flatId = $households->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["code"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["adminBlock"], $params["openCode"], $params["plog"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
 
@@ -27,7 +27,7 @@
 
             public static function PUT($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $success = $households->modifyFlat($params["_id"], $params);
 
@@ -36,7 +36,7 @@
 
             public static function DELETE($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $success = $households->deleteFlat($params["_id"]);
 

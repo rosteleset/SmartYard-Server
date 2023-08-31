@@ -33,7 +33,7 @@ try {
         "error" => "events config is missing",
     ]);
 }
-$plog = loadBackend('plog');
+$plog = backend('plog');
 
 switch ($event) {
     case $events['OPEN_BY_KEY']:

@@ -19,7 +19,7 @@
 auth();
 
 $street_id = (int)@$postdata['streetId'];
-$addresses = loadBackend("addresses");
+$addresses = backend("addresses");
 
 if ($street_id > $emptyStreetIdOffset) $houses = $addresses->getHouses($street_id - $emptyStreetIdOffset, false);
 else $houses = $addresses->getHouses(false, $street_id);

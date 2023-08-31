@@ -8,7 +8,7 @@ $logger = logger('internal');
 
 $logger->debug('camshot() start', ['camera' => $camera_id]);
 
-$cameras = loadBackend("cameras");
+$cameras = backend("cameras");
 if (!$cameras)
     response(404);
 
@@ -16,7 +16,7 @@ $cam = $cameras->getCamera($camera_id);
 if (!$cam)
     response(404);
 
-$model = loadCamera($cam["model"], $cam["url"], $cam["credentials"]);
+$model = camera($cam["model"], $cam["url"], $cam["credentials"]);
 if (!$model)
     response(404);
 

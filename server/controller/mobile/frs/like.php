@@ -21,10 +21,10 @@ use backends\frs\frs;
 
 $user = auth(5);
 
-$plog = loadBackend("plog");
+$plog = backend("plog");
 if (!$plog) response(422);
 
-$frs = loadBackend("frs");
+$frs = backend("frs");
 if (!$frs) response(422);
 
 $event_uuid = $postdata['event'];
@@ -50,7 +50,7 @@ if (!$f)
 
 // TODO: check if FRS is allowed for flat_id
 
-$households = loadBackend('households');
+$households = backend('households');
 $domophone = json_decode($event_data[plog::COLUMN_DOMOPHONE], false);
 $entrances = $households->getEntrances('domophoneId', ['domophoneId' => $domophone->domophone_id, 'output' => $domophone->domophone_output]);
 

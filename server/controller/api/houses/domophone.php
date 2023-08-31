@@ -23,14 +23,14 @@ namespace api\houses {
             if ($validate == false)
                 return api::ERROR();
 
-            $households = loadBackend("households");
+            $households = backend("households");
 
             return api::ANSWER($households->getDomophone($validate['_id']));
         }
 
         public static function POST($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comment"]);
 
@@ -39,7 +39,7 @@ namespace api\houses {
 
         public static function PUT($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             if (array_key_exists('configure', $params) && $params['configure'])
                 task(new IntercomConfigureTask($params['_id'], array_key_exists('first', $params) ? $params["first"] : false))->high()->dispatch();
@@ -51,7 +51,7 @@ namespace api\houses {
 
         public static function DELETE($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $success = $households->deleteDomophone($params["_id"]);
 

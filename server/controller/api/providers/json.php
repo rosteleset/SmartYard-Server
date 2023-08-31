@@ -15,7 +15,7 @@
         class json extends api {
 
             public static function GET($params) {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 $providers = $providers->getJson();
 
@@ -23,7 +23,7 @@
             }
 
             public static function PUT($params) {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 $success = $providers->putJson($params["body"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function index() {
-                $providers = loadBackend("providers");
+                $providers = backend("providers");
 
                 if ($providers) {
                     return [

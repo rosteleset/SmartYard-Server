@@ -20,13 +20,13 @@ $user = auth();
 
 $camera_id = (int)@$postdata['cameraId'];
 
-$cameras = loadBackend("cameras");
+$cameras = backend("cameras");
 
 $cam = $cameras->getCamera($camera_id);
 if (!$cam) {
     response(404);
 }
 
-$ranges = loadBackend("dvr")->getRanges($cam, $user['subscriberId']);
+$ranges = backend("dvr")->getRanges($cam, $user['subscriberId']);
 
 response(200, $ranges);

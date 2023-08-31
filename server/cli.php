@@ -2,15 +2,13 @@
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
+use Selpol\Service\DatabaseService;
 use Selpol\Task\Tasks\EmailTask;
 use Selpol\Task\Tasks\IntercomConfigureTask;
 use Selpol\Task\Tasks\QrTask;
 use Selpol\Task\Tasks\ReindexTask;
 
 chdir(__DIR__);
-
-require_once "utils/loader.php";
-require_once "utils/db_ext.php";
 
 require_once "backends/backend.php";
 
@@ -46,21 +44,11 @@ function usage()
             [--install-crontabs]
             [--uninstall-crontabs]
 
-        dvr:
-            [--run-record-download=<id>]
-
         config:
             [--clear-config]
             [--print-config]
             [--write-yaml-config]
             [--write-json-config]
-
-        plog:
-            [--plog-days --flat=<flat>]
-            [--plog --flat=<flat> --day=<day>]
-            
-        inbox:
-            [--inbox --subscriber=<subscriber>]
 
         intercom:
             [--intercom-configure-task=<id> [--first]]
@@ -239,31 +227,19 @@ try {
     exit(1);
 }
 
+$container = bootstrap();
+
+// TODO: Со временем удалить
+/** @var array $config */
+$config = $container->get('config');
+
+/** @var DatabaseService $db */
+$db = $container->get(DatabaseService::class);
+
+/** @var Redis $redis */
+$redis = $container->get(Redis::class);
+
 $logger = logger('cli');
-
-try {
-    $config = config();
-} catch (Exception $e) {
-    $config = false;
-}
-
-if (!$config) {
-    echo "config is empty\n";
-    exit(1);
-}
-
-if (@!$config["backends"]) {
-    echo "no backends defined\n";
-    exit(1);
-}
-
-try {
-    $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-} catch (Exception $e) {
-    echo "can't open database " . $config["db"]["dsn"] . "\n";
-    echo $e->getMessage() . "\n";
-    exit(1);
-}
 
 try {
     $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
@@ -276,21 +252,9 @@ try {
     $version = 0;
 }
 
-try {
-    $redis = new Redis();
-    $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
-    if (@$config["redis"]["password"]) {
-        $redis->auth($config["redis"]["password"]);
-    }
-    $redis->setex("iAmOk", 1, "1");
-} catch (Exception $e) {
-    echo "can't connect to redis server\n";
-    exit(1);
-}
-
 $backends = [];
 foreach ($required_backends as $backend) {
-    if (loadBackend($backend) === false) {
+    if (backend($backend) === false) {
         die("can't load required backend [$backend]\n");
     }
 }
@@ -326,7 +290,7 @@ if (@$db) {
 
 if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
     foreach ($config["backends"] as $backend => $_) {
-        $b = loadBackend($backend);
+        $b = backend($backend);
 
         if ($b) {
             $n = $b->cleanup();
@@ -410,7 +374,7 @@ if (count($args) == 1 && array_key_exists("--cron", $args)) {
         $logger->debug('Processing cron', ['part' => $part, 'backends' => array_keys($cronBackends)]);
 
         foreach ($cronBackends as $backend_name => $cfg) {
-            $backend = loadBackend($backend_name);
+            $backend = backend($backend_name);
 
             if ($backend) {
                 try {
@@ -532,7 +496,7 @@ if (count($args) == 1 && array_key_exists("--check-backends", $args) && !isset($
     $all_ok = true;
 
     foreach ($config["backends"] as $backend => $null) {
-        $t = loadBackend($backend);
+        $t = backend($backend);
         if (!$t) {
             echo "loading $backend failed\n";
             $all_ok = false;
@@ -593,7 +557,7 @@ if (array_key_exists('--intercom-configure-task', $args) && isset($args['--inter
     $id = $args['--intercom-configure-task'];
     $first = array_key_exists('--first', $args);
 
-    task(new IntercomConfigureTask($id, $first))->sync($redis, $db);
+    task(new IntercomConfigureTask($id, $first))->sync();
 
     exit(0);
 }
@@ -605,10 +569,10 @@ if (array_key_exists('--qr', $args) && isset($args['--qr']) && array_key_exists(
     $flatId = array_key_exists('--flat', $args) && isset($args['--flat']) ? $args['--flat'] : null;
     $override = array_key_exists('--override', $args);
 
-    $uuid = task(new QrTask($houseId, $flatId, $override))->sync($redis, $db);
+    $uuid = task(new QrTask($houseId, $flatId, $override))->sync();
 
     if ($uuid)
-        fwrite(fopen($output, 'w'), loadBackend('files')->getFileBytes($uuid));
+        fwrite(fopen($output, 'w'), backend('files')->getFileBytes($uuid));
 
     exit(0);
 }

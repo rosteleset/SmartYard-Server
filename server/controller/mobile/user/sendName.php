@@ -27,7 +27,7 @@ $user = auth();
 $name = htmlspecialchars(trim(@$postdata['name']));
 $patronymic = htmlspecialchars(trim(@$postdata['patronymic']));
 
-$households = loadBackend("households");
+$households = backend("households");
 
 if (!$name) response(400);
 

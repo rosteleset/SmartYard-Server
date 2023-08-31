@@ -18,7 +18,7 @@
 
             public static function POST($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $cameraId = $households->addCamera("flat", $params["flatId"], $params["cameraId"]);
 
@@ -27,7 +27,7 @@
 
             public static function DELETE($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $success = $households->unlinkCamera("flat", $params["flatId"], $params["cameraId"]);
 

@@ -15,7 +15,7 @@
         class reserveCell extends api {
 
             public static function PUT($params) {
-                $cs = loadBackend("cs");
+                $cs = backend("cs");
 
                 $success = false;
 
@@ -27,7 +27,7 @@
             }
 
             public static function DELETE($params) {
-                $cs = loadBackend("cs");
+                $cs = backend("cs");
 
                 $success = false;
 
@@ -39,7 +39,7 @@
             }
 
             public static function index() {
-                if (loadBackend("tt")) {
+                if (backend("tt")) {
                     return [
                         "PUT",
                         "DELETE",

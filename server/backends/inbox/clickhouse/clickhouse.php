@@ -7,7 +7,7 @@
 namespace backends\inbox {
 
     /**
-     * clickhouse archive class
+     * clickhouseService archive class
      */
     class clickhouse extends inbox
     {
@@ -48,7 +48,7 @@ namespace backends\inbox {
                     return false;
                 }
 
-                $isdn = loadBackend("isdn");
+                $isdn = backend("isdn");
                 if ($isdn) {
                     $result = $isdn->message([
                         "token" => $subscriber["token"],

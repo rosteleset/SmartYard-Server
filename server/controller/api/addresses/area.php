@@ -15,7 +15,7 @@
         class area extends api {
 
             public static function PUT($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->modifyArea($params["_id"], $params["regionId"], $params["areaUuid"], $params["areaWithType"], $params["areaType"], $params["areaTypeFull"], $params["area"], $params["timezone"]);
 
@@ -23,7 +23,7 @@
             }
 
             public static function POST($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $areaId = $addresses->addArea($params["regionId"], $params["areaUuid"], $params["areaWithType"], $params["areaType"], $params["areaTypeFull"], $params["area"], $params["timezone"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function DELETE($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->deleteArea($params["_id"]);
 

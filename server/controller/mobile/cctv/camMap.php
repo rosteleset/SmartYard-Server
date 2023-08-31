@@ -21,8 +21,8 @@ $user = auth();
 $return = [];
 
 $house_id = (int)@$postdata['houseId'];
-$households = loadBackend("households");
-$cameras = loadBackend("cameras");
+$households = backend("households");
+$cameras = backend("cameras");
 
 $houses = [];
 $cams = [];
@@ -58,9 +58,9 @@ foreach ($user['flats'] as $flat) {
 
 foreach ($cams as $entrance_id => $cam) {
     $e = $households->getEntrance($entrance_id);
-    $dvr = loadBackend("dvr")->getDVRServerByStream($cam['dvrStream']);
+    $dvr = backend("dvr")->getDVRServerByStream($cam['dvrStream']);
     $frs = 'f';
-    $cameras = loadBackend("cameras");
+    $cameras = backend("cameras");
 
     if ($cameras) {
         $vstream = $cameras->getCamera($e['cameraId']);
@@ -70,7 +70,7 @@ foreach ($cams as $entrance_id => $cam) {
     $return[] = [
         'id' => strval($e['domophoneId']),
         'url' => $cam['dvrStream'],
-        'token' => loadBackend("dvr")->getDVRTokenForCam($cam, $user['subscriberId']),
+        'token' => backend("dvr")->getDVRTokenForCam($cam, $user['subscriberId']),
         'frs' => $frs,
         'serverType' => $dvr['type']
     ];

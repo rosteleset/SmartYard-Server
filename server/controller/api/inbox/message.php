@@ -15,7 +15,7 @@
         class message extends api {
 
             public static function GET($params) {
-                $inbox = loadBackend("inbox");
+                $inbox = backend("inbox");
 
                 if (@$params["messageId"]) {
                     $messages = $inbox->getMessages($params["_id"], "id", $params["messageId"]);
@@ -27,7 +27,7 @@
             }
 
             public static function POST($params) {
-                $inbox = loadBackend("inbox");
+                $inbox = backend("inbox");
 
                 $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
 

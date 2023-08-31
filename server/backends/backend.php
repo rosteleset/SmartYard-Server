@@ -45,7 +45,7 @@
                         $this->uid = 0;
                         break;
                     default:
-                        $this->uid = loadBackend("users")->getUidByLogin($this->login);
+                        $this->uid = backend("users")->getUidByLogin($this->login);
                         break;
                 }
             }

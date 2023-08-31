@@ -307,7 +307,7 @@ namespace backends\dvr {
         {
             $prefix = $cam['dvrStream'];
             if (!$time) $time = now();
-            $dvr = loadBackend("dvr")->getDVRServerByStream($prefix);
+            $dvr = backend("dvr")->getDVRServerByStream($prefix);
             $type = $dvr['type'];
 
             switch ($type) {

@@ -5,8 +5,8 @@ use backends\frs\frs;
 
 $logger = logger('internal');
 
-$frs = loadBackend("frs");
-$households = loadBackend("households");
+$frs = backend("frs");
+$households = backend("households");
 
 $camera_id = $_GET['stream_id'];
 $face_id = (int)$postdata[frs::P_FACE_ID];
@@ -50,10 +50,10 @@ $domophone = $households->getDomophone($domophone_id);
 try {
     $logger->debug('Try open door', ['frs_key' => $frs_key]);
 
-    $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
+    $model = domophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
     $model->open_door($domophone_output);
     $redis->set($frs_key, 1, $config["backends"]["frs"]["open_door_timeout"]);
-    $plog = loadBackend("plog");
+    $plog = backend("plog");
     if ($plog) {
         $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_FACE, $domophone_output,
             $face_id . "|" . $event_id);

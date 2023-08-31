@@ -41,8 +41,8 @@ use backends\plog\plog;
 
 $user = auth(3600);
 
-$households = loadBackend("households");
-$plog = loadBackend("plog");
+$households = backend("households");
+$plog = backend("plog");
 $flats = [];
 
 foreach ($user['flats'] as $flat) {

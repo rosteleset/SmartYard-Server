@@ -18,7 +18,7 @@
 
             public static function GET($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $entrances = $households->getSharedEntrances(@$params["_id"]);
 

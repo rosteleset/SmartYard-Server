@@ -10,7 +10,7 @@
  * @apiParam {String} id идентификатор файла
  */
 $contentType = "video/mp4";
-$files = loadBackend("files");
+$files = backend("files");
 $stream = $files->getFileStream($param);
 $info = $files->getFileInfo($param);
 $fileName = $info['filename'];

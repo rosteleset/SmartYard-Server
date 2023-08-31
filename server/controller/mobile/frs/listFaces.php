@@ -23,7 +23,7 @@ $flat_id = (int)@$postdata['flatId'];
 
 if (!$flat_id) response(422);
 
-$frs = loadBackend('frs');
+$frs = backend('frs');
 
 if (!$frs) response(422);
 

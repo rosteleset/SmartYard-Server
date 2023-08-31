@@ -3,6 +3,7 @@
 namespace Selpol\Task\Tasks;
 
 use Exception;
+use Selpol\Service\DatabaseService;
 use Selpol\Task\Task;
 
 class ReindexTask extends Task
@@ -14,18 +15,21 @@ class ReindexTask extends Task
 
     public function onTask(): bool
     {
+        /** @var DatabaseService $pdo */
+        $pdo = $this->container->get(DatabaseService::class);
+
         $dir = path('controller/api');
         $apis = scandir($dir);
 
-        $this->pdo->exec("delete from core_api_methods");
-        $this->pdo->exec("delete from core_api_methods_common");
-        $this->pdo->exec("delete from core_api_methods_by_backend");
-        $this->pdo->exec("delete from core_api_methods_personal");
+        $pdo->exec("delete from core_api_methods");
+        $pdo->exec("delete from core_api_methods_common");
+        $pdo->exec("delete from core_api_methods_by_backend");
+        $pdo->exec("delete from core_api_methods_personal");
 
-        $add = $this->pdo->prepare("insert into core_api_methods (aid, api, method, request_method) values (:md5, :api, :method, :request_method)");
-        $aid = $this->pdo->prepare("select aid from core_api_methods where api = :api and method = :method and request_method = :request_method");
-        $adb = $this->pdo->prepare("insert into core_api_methods_by_backend (aid, backend) values (:aid, :backend)");
-        $ads = $this->pdo->prepare("update core_api_methods set permissions_same = :permissions_same where aid = :aid");
+        $add = $pdo->prepare("insert into core_api_methods (aid, api, method, request_method) values (:md5, :api, :method, :request_method)");
+        $aid = $pdo->prepare("select aid from core_api_methods where api = :api and method = :method and request_method = :request_method");
+        $adb = $pdo->prepare("insert into core_api_methods_by_backend (aid, backend) values (:aid, :backend)");
+        $ads = $pdo->prepare("update core_api_methods set permissions_same = :permissions_same where aid = :aid");
 
         $n = 0;
 
@@ -58,14 +62,14 @@ class ReindexTask extends Task
                                         switch ($backend) {
                                             case "#common";
                                                 try {
-                                                    $this->pdo->exec("insert into core_api_methods_common (aid) values ('$md5')");
+                                                    $pdo->exec("insert into core_api_methods_common (aid) values ('$md5')");
                                                 } catch (Exception) {
                                                     // uniq violation?
                                                 }
                                                 break;
                                             case "#personal";
                                                 try {
-                                                    $this->pdo->exec("insert into core_api_methods_personal (aid) values ('$md5')");
+                                                    $pdo->exec("insert into core_api_methods_personal (aid) values ('$md5')");
                                                 } catch (Exception) {
                                                     // uniq violation?
                                                 }

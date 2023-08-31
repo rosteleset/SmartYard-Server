@@ -40,9 +40,9 @@ use backends\plog\plog;
 
 $user = auth(3600);
 
-$households = loadBackend("households");
-$plog = loadBackend("plog");
-$cameras = loadBackend("cameras");
+$households = backend("households");
+$plog = backend("plog");
+$cameras = backend("cameras");
 
 $houses = [];
 

@@ -1,6 +1,6 @@
 <?php
 
-$files = loadBackend('files');
+$files = backend('files');
 $uuid = $files->fromGUIDv4($param);
 
 $bytes = $files->getFileBytes($uuid);

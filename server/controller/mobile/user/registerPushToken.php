@@ -27,8 +27,8 @@
 
 $user = auth();
 
-$households = loadBackend("households");
-$isdn = loadBackend("isdn");
+$households = backend("households");
+$isdn = backend("isdn");
 
 $old_push = $user["pushToken"];
 

@@ -15,7 +15,7 @@
         class config extends api {
 
             public static function GET($params) {
-                $mqtt = loadBackend("mqtt");
+                $mqtt = backend("mqtt");
 
                 if ($mqtt) {
                     $config = $mqtt->getConfig();

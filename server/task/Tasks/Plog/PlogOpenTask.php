@@ -38,7 +38,7 @@ class PlogOpenTask extends PlogTask
     {
         $this->retry++;
 
-        $plog = loadBackend('plog');
+        $plog = backend('plog');
 
         $event_data = [];
         $event_id = false;
@@ -89,11 +89,11 @@ class PlogOpenTask extends PlogTask
             $face_id = $details[0];
             $event_id = $details[1];
 
-            $households = loadBackend('households');
+            $households = backend('households');
 
             $entrance = $households->getEntrances("domophoneId", ["domophoneId" => $this->id, "output" => $this->door])[0];
 
-            $frs = loadBackend("frs");
+            $frs = backend("frs");
 
             if ($frs)
                 $flat_list = $frs->getFlatsByFaceId($face_id, $entrance["entranceId"]);

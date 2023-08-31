@@ -18,7 +18,7 @@ auth();
 
 $house_id = (int)@$postdata['houseId'];
 
-$addresses = loadBackend('addresses');
+$addresses = backend('addresses');
 
 $address = $addresses->getHouse($house_id);
 

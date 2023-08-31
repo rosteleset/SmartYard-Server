@@ -4,59 +4,27 @@ require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 // asterisk support
 
+use Selpol\Service\DatabaseService;
 use Selpol\Validator\Filter;
 use Selpol\Validator\Rule;
 
 require_once "backends/backend.php";
-require_once "utils/loader.php";
-require_once "utils/db_ext.php";
 
 header('Content-Type: application/json');
 
+$container = bootstrap();
+
+// TODO: Со временем удалить
+/** @var array $config */
+$config = $container->get('config');
+
+/** @var DatabaseService $db */
+$db = $container->get(DatabaseService::class);
+
+/** @var Redis $redis */
+$redis = $container->get(Redis::class);
+
 $logger = logger('asterisk');
-
-try {
-    $config = config();
-} catch (Exception $e) {
-    $logger->emergency('Error load config' . PHP_EOL . $e);
-
-    $config = false;
-}
-
-if (!$config) {
-    echo "config is empty\n";
-    exit(1);
-}
-
-if (@!$config["backends"]) {
-    echo "no backends defined\n";
-    exit(1);
-}
-
-try {
-    $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-} catch (Exception $e) {
-    $logger->emergency('Error open database' . PHP_EOL . $e);
-
-    echo "can't open database " . $config["db"]["dsn"] . "\n";
-    echo $e->getMessage() . "\n";
-
-    exit(1);
-}
-
-try {
-    $redis = new Redis();
-    $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
-    if (@$config["redis"]["password"]) {
-        $redis->auth($config["redis"]["password"]);
-    }
-} catch (Exception $e) {
-    $logger->emergency('Error open redis' . PHP_EOL . $e);
-
-    echo "can't connect to redis server\n";
-
-    exit(1);
-}
 
 function paramsToResponse($params): string
 {
@@ -77,7 +45,7 @@ function getExtension($extension, $section): array
 
     // domophone panel
     if ($extension[0] === "1" && strlen($extension) === 6) {
-        $domophones = loadBackend("households");
+        $domophones = backend("households");
         $panel = $domophones->getDomophone((int)substr($extension, 1));
 
         switch ($section) {
@@ -188,7 +156,7 @@ function getExtension($extension, $section): array
 
     // sip extension
     if ($extension[0] === "4" && strlen($extension) === 10) {
-        $households = loadBackend('households');
+        $households = backend('households');
 
         $flatId = (int)substr($extension, 1);
         $flat = $households->getFlat($flatId);
@@ -280,7 +248,7 @@ function getExtension($extension, $section): array
             case "endpoints":
                 $cred = $redis->get("webrtc_" . md5($extension));
 
-                $users = loadBackend("users");
+                $users = backend("users");
                 $user = $users->getUser((int)substr($extension, 1));
 
                 if ($user && $cred) {
@@ -337,7 +305,7 @@ switch ($path[0]) {
         switch ($path[1]) {
             case "log":
                 error_log(">>>>>>>>>>>> " . $params);
-                $accounting = loadBackend('accounting');
+                $accounting = backend('accounting');
                 if ($accounting)
                     $accounting->raw("127.0.0.1", basename(get_included_files()[0]) . ":log", $params);
 
@@ -356,7 +324,7 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $flat = $households->getFlat($params['flatId']);
 
@@ -379,7 +347,7 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $flat = $households->getFlat($params['flatId']);
 
@@ -403,7 +371,7 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $apartment = $households->getFlats("flatIdByPrefix", $params);
 
@@ -426,7 +394,7 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $apartment = $households->getFlats("apartment", $params);
 
@@ -446,7 +414,7 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $flat = $households->getSubscribers("flatId", $params['flatId']);
 
@@ -466,7 +434,7 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $domophone = $households->getDomophone($params['domophoneId']);
 
@@ -486,7 +454,7 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $entrances = $households->getEntrances("domophoneId", ["domophoneId" => $params['domophoneId'], "output" => "0"]);
 
@@ -514,7 +482,7 @@ switch ($path[0]) {
                     break;
 
                 if ($params["domophoneId"] >= 0) {
-                    $households = loadBackend("households");
+                    $households = backend("households");
 
                     $entrances = $households->getEntrances("domophoneId", ["domophoneId" => $params["domophoneId"], "output" => "0"]);
 
@@ -522,7 +490,7 @@ switch ($path[0]) {
                         $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
                         if ($cameras && $cameras[0]) {
-                            $model = loadCamera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+                            $model = camera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
                             $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                             $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
@@ -574,8 +542,8 @@ switch ($path[0]) {
                 if ($params == false)
                     break;
 
-                $isdn = loadBackend("isdn");
-                $sip = loadBackend("sip");
+                $isdn = backend("isdn");
+                $sip = backend("sip");
 
                 $server = $sip->server("extension", $params["extension"]);
 

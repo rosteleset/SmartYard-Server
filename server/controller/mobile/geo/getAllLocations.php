@@ -19,7 +19,7 @@
 
 auth();
 
-$addresses = loadBackend("addresses");
+$addresses = backend("addresses");
 
 $regions = $addresses->getRegions();
 $areas = [];

@@ -16,7 +16,7 @@ $user = auth();
 
 $msg_id = @$postdata['messageId'];
 
-$inbox = loadBackend("inbox");
+$inbox = backend("inbox");
 
 $subscriber_id = (int)$user['subscriberId'];
 

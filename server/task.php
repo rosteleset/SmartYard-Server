@@ -1,55 +1,31 @@
 <?php
 
 use Psr\Log\LoggerInterface;
+use Selpol\Container\Container;
+use Selpol\Service\DatabaseService;
 use Selpol\Task\Task;
 use Selpol\Task\TaskCallback;
-use Selpol\Task\TaskManager;
+use Selpol\Service\TaskService;
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 mb_internal_encoding("UTF-8");
 
 require_once "backends/backend.php";
-require_once "utils/loader.php";
-require_once "utils/db_ext.php";
 
 require_once "controller/api/api.php";
 
-try {
-    $config = config();
-} catch (Exception $e) {
-    $config = false;
-}
+$container = bootstrap();
 
-if (!$config) {
-    echo 'Config not found';
+// TODO: Со временем удалить
+/** @var array $config */
+$config = $container->get('config');
 
-    exit(1);
-}
+/** @var DatabaseService $db */
+$db = $container->get(DatabaseService::class);
 
-$redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
-
-try {
-    $redis = new Redis();
-    $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
-
-    if (@$config["redis"]["password"])
-        $redis->auth(@$config["redis"]["password"]);
-
-    $redis->setex("iAmOk", 1, "1");
-} catch (Exception $e) {
-    echo 'Redis not connected';
-
-    exit(1);
-}
-
-try {
-    $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-} catch (Exception $e) {
-    echo 'DB not connected';
-
-    exit(1);
-}
+/** @var Redis $redis */
+$redis = $container->get(Redis::class);
 
 $args = [];
 
@@ -63,7 +39,7 @@ $queue = array_key_exists('--queue', $args) ? $args['--queue'] : 'default';
 
 $logger = logger('task');
 
-$manager = TaskManager::instance();
+$manager = TaskService::instance();
 $manager->setLogger($logger);
 
 register_shutdown_function(static fn() => $manager->close());
@@ -81,32 +57,33 @@ else {
 }
 
 try {
-    $manager->dequeue($queue, new class($redis, $db, $logger) implements TaskCallback {
-        private Redis $redis;
-        private PDO_EXT $db;
-        private LoggerInterface $logger;
+    $manager->dequeue($queue, new class($queue, $logger, $container) implements TaskCallback {
+        private string $queue;
 
-        public function __construct(Redis $redis, PDO_EXT $db, LoggerInterface $logger)
+        private LoggerInterface $logger;
+        private Container $container;
+
+        public function __construct(string $queue, LoggerInterface $logger, Container $container)
         {
-            $this->redis = $redis;
-            $this->db = $db;
+            $this->queue = $queue;
+
             $this->logger = $logger;
+            $this->container = $container;
         }
 
         public function __invoke(Task $task)
         {
-            $this->logger->info('Dequeue start task', ['class' => get_class($task), 'title' => $task->title]);
+            $this->logger->info('Dequeue start task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title]);
 
             $task->setLogger($this->logger);
-            $task->setRedis($this->redis);
-            $task->setPdo($this->db);
+            $task->setContainer($this->container);
 
             try {
                 $task->onTask();
 
-                $this->logger->info('Dequeue complete task', ['class' => get_class($task), 'title' => $task->title]);
+                $this->logger->info('Dequeue complete task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title]);
             } catch (Throwable $throwable) {
-                $this->logger->info('Dequeue error task', ['class' => get_class($task), 'title' => $task->title, 'message' => $throwable->getMessage()]);
+                $this->logger->info('Dequeue error task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title, 'message' => $throwable->getMessage()]);
 
                 $task->onError($throwable);
             }

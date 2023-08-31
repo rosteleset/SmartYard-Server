@@ -3,10 +3,9 @@
 namespace Selpol\Task;
 
 use Exception;
-use PDO_EXT;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Redis;
 use Throwable;
 
 abstract class Task implements LoggerAwareInterface
@@ -15,22 +14,16 @@ abstract class Task implements LoggerAwareInterface
 
     public string $title;
 
-    protected ?Redis $redis = null;
-    protected ?PDO_EXT $pdo = null;
+    protected ContainerInterface $container;
 
     public function __construct(string $title)
     {
         $this->title = $title;
     }
 
-    public function setRedis(?Redis $redis): void
+    public function setContainer(ContainerInterface $container)
     {
-        $this->redis = $redis;
-    }
-
-    public function setPdo(?PDO_EXT $pdo): void
-    {
-        $this->pdo = $pdo;
+        $this->container = $container;
     }
 
     /**

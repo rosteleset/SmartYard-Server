@@ -11,7 +11,7 @@ abstract class PlogTask extends Task
 
     protected function getDomophoneDescription($domophone_output)
     {
-        $households = loadBackend('households');
+        $households = backend('households');
 
         $result = $households->getEntrances('domophoneId', ['domophoneId' => $this->id, 'output' => $domophone_output]);
 
@@ -23,7 +23,7 @@ abstract class PlogTask extends Task
 
     protected function getFlatIdByRfid($rfid): array
     {
-        $households = loadBackend('households');
+        $households = backend('households');
 
         $flats1 = array_map('self::getFlatId', $households->getFlats('rfId', ['rfId' => $rfid]));
         $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $this->id));
@@ -33,7 +33,7 @@ abstract class PlogTask extends Task
 
     protected function getFlatIdByCode($code): array
     {
-        $households = loadBackend('households');
+        $households = backend('households');
 
         $flats1 = array_map('self::getFlatId', $households->getFlats('openCode', ['openCode' => $code]));
         $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $this->id));
@@ -43,7 +43,7 @@ abstract class PlogTask extends Task
 
     protected function getFlatIdByUserPhone($user_phone): bool|array
     {
-        $households = loadBackend('households');
+        $households = backend('households');
 
         $result = $households->getSubscribers('mobile', $user_phone);
 
@@ -59,7 +59,7 @@ abstract class PlogTask extends Task
 
     protected function getFlatIdByPrefixAndNumber($prefix, $flat_number)
     {
-        $households = loadBackend('households');
+        $households = backend('households');
         $result = $households->getFlats('flatIdByPrefix', ['prefix' => $prefix, 'flatNumber' => $flat_number, 'domophoneId' => $this->id]);
 
         if ($result && $result[0])
@@ -70,7 +70,7 @@ abstract class PlogTask extends Task
 
     protected function getFlatIdByNumber($flat_number)
     {
-        $households = loadBackend('households');
+        $households = backend('households');
         $result = $households->getFlats('apartment', ['domophoneId' => $this->id, 'flatNumber' => $flat_number]);
 
         if ($result && $result[0])
@@ -81,7 +81,7 @@ abstract class PlogTask extends Task
 
     protected function getFlatIdByDomophoneId()
     {
-        $households = loadBackend('households');
+        $households = backend('households');
         $result = $households->getFlats('domophoneId', $this->id);
 
         // Only if one apartment is linked
@@ -93,7 +93,7 @@ abstract class PlogTask extends Task
 
     protected function getEntranceCount($flat_id)
     {
-        $households = loadBackend('households');
+        $households = backend('households');
         $result = $households->getEntrances('flatId', $flat_id);
 
         if ($result)

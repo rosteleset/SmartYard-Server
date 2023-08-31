@@ -7,11 +7,14 @@
       "Selpol\\Container\\": "./container/",
       "Selpol\\Task\\": "./task/",
       "Selpol\\Validator\\": "./validator/",
-      "Selpol\\Logger\\": "./logger/"
+      "Selpol\\Logger\\": "./logger/",
+      "Selpol\\Service\\": "./service/"
     },
     "files": [
+      "./utils/bootstrap.php",
       "./utils/helper.php",
-      "./utils/config.php"
+      "./utils/config.php",
+      "./utils/loader.php"
     ]
   },
   "authors": [

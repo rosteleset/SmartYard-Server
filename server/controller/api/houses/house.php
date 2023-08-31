@@ -16,8 +16,8 @@ namespace api\houses {
 
         public static function GET($params)
         {
-            $households = loadBackend("households");
-            $configs = loadBackend("configs");
+            $households = backend("households");
+            $configs = backend("configs");
 
             if (!$households) {
                 return api::ERROR();

@@ -15,8 +15,8 @@ if (!$validate)
 
 $user = auth();
 
-$households = loadBackend("households");
-$plog = loadBackend("plog");
+$households = backend("households");
+$plog = backend("plog");
 
 if (!$households || !$plog)
     response(403);

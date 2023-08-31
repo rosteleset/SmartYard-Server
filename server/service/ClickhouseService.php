@@ -1,6 +1,10 @@
 <?php
 
-class clickhouse
+namespace Selpol\Service;
+
+use Exception;
+
+class ClickhouseService
 {
     private $host, $port, $username, $password, $database;
 
@@ -51,14 +55,14 @@ class clickhouse
             $raw = curl_exec($curl);
             $data = @json_decode($raw, true)['data'];
         } catch (Exception $e) {
-            logger('clickhouse')->error($e);
+            logger('clickhouseService')->error($e);
 
             return false;
         }
         curl_close($curl);
 
-        if (@$headers['x-clickhouse-exception-code']) {
-            logger('clickhouse')->error(trim($raw));
+        if (@$headers['x-clickhouseService-exception-code']) {
+            logger('clickhouseService')->error(trim($raw));
 
             return false;
         }
@@ -109,13 +113,13 @@ class clickhouse
         try {
             $error = curl_exec($curl);
         } catch (Exception $e) {
-            logger('clickhouse')->error('Error send command' . PHP_EOL . $e);
+            logger('clickhouseService')->error('Error send command' . PHP_EOL . $e);
 
             return false;
         }
         curl_close($curl);
 
-        if (@$headers['x-clickhouse-exception-code']) {
+        if (@$headers['x-clickhouseService-exception-code']) {
             return $error;
         } else {
             return true;

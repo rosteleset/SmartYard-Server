@@ -20,7 +20,7 @@ namespace backends\cs {
          */
         public function getCS($sheet, $date, $extended = false)
         {
-            $files = loadBackend("files");
+            $files = backend("files");
 
             if (!$files) {
                 return false;
@@ -65,8 +65,8 @@ namespace backends\cs {
          */
         public function putCS($sheet, $date, $data)
         {
-            $files = loadBackend("files");
-            $mqtt = loadBackend("mqtt");
+            $files = backend("files");
+            $mqtt = backend("mqtt");
 
             if (!$files) {
                 return false;
@@ -117,8 +117,8 @@ namespace backends\cs {
          */
         public function deleteCS($sheet, $date)
         {
-            $files = loadBackend("files");
-            $mqtt = loadBackend("mqtt");
+            $files = backend("files");
+            $mqtt = backend("mqtt");
 
             if (!$files) {
                 return false;
@@ -149,7 +149,7 @@ namespace backends\cs {
          */
         public function getCSes()
         {
-            $files = loadBackend("files");
+            $files = backend("files");
 
             if (!$files) {
                 return false;
@@ -171,7 +171,7 @@ namespace backends\cs {
          */
         public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0)
         {
-            $mqtt = loadBackend("mqtt");
+            $mqtt = backend("mqtt");
 
             $expire = (int)($expire ?: 60);
 

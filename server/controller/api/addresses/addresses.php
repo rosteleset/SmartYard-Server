@@ -15,7 +15,7 @@
         class addresses extends api {
 
             public static function GET($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $regionId = @(int)$params["regionId"];
                 $areaId = @(int)$params["areaId"];

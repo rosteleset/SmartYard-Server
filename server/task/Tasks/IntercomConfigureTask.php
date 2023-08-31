@@ -21,12 +21,10 @@ class IntercomConfigureTask extends Task
 
     public function onTask(): bool
     {
-        $this->config = config();
-
-        $households = loadBackend('households');
-        $addresses = loadBackend('addresses');
-        $configs = loadBackend('configs');
-        $sip = loadBackend("sip");
+        $households = backend('households');
+        $addresses = backend('addresses');
+        $configs = backend('configs');
+        $sip = backend("sip");
 
         $domophone = $households->getDomophone($this->id);
 
@@ -53,7 +51,7 @@ class IntercomConfigureTask extends Task
         $panel_text = $entrances[0]['callerId'];
 
         try {
-            $panel = loadDomophone($domophone['model'], $domophone['url'], $domophone['credentials'], $this->first);
+            $panel = domophone($domophone['model'], $domophone['url'], $domophone['credentials'], $this->first);
         } catch (Exception $e) {
             echo $e->getMessage() . "\n";
 
@@ -67,13 +65,13 @@ class IntercomConfigureTask extends Task
 
         $this->setProgress(10);
 
-        $ntps = $this->config['ntp_servers'];
+        $ntps = config('ntp_servers');
 
         $ntp = parse_uri($ntps[array_rand($ntps)]);
         $ntp_server = $ntp['host'];
         $ntp_port = $ntp['port'] ?? 123;
 
-        $syslogs = $this->config['syslog_servers'][$domophone['json']['syslog']];
+        $syslogs = config('syslog_servers')[$domophone['json']['syslog']];
 
         $syslog = parse_uri($syslogs[array_rand($syslogs)]);
         $syslog_server = $syslog['host'];

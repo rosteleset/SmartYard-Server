@@ -2,10 +2,10 @@
 
 /** Return syslog config
  * TODO: - need modify "syslog_servers" config section,
- *         added used clickhouse server similar to other backends
+ *         added used clickhouseService server similar to other backends
  */
 
-$payload = ['clickhouse' => [
+$payload = ['clickhouseService' => [
     'host' => $config['backends']['plog']['host'],
     'port' => $config['backends']['plog']['port'],
     'database' => $config['backends']['plog']['database'],

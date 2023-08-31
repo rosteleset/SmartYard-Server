@@ -15,7 +15,7 @@
         class configs extends api {
 
             public static function GET($params) {
-                $frs = loadBackend("frs");
+                $frs = backend("frs");
 
                 $sections = [
                     "FRSServers" => $frs->servers(),

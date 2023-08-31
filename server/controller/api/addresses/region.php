@@ -15,7 +15,7 @@
         class region extends api {
 
             public static function PUT($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->modifyRegion($params["_id"], $params["regionUuid"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"], $params["timezone"]);
 
@@ -23,7 +23,7 @@
             }
 
             public static function POST($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $regionId = $addresses->addRegion($params["regionUuid"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"], $params["timezone"]);
 
@@ -31,7 +31,7 @@
             }
 
             public static function DELETE($params) {
-                $addresses = loadBackend("addresses");
+                $addresses = backend("addresses");
 
                 $success = $addresses->deleteRegion($params["_id"]);
 

@@ -30,7 +30,7 @@
                     if ($this->already) {
                         return false;
                     }
-                    $users = loadBackend("users");
+                    $users = backend("users");
                     if ($users->getUidByLogin($login) !== false) {
                         return false;
                     }
@@ -53,7 +53,7 @@
                                 if ($uid) {
                                     $users->setPassword($uid, $password);
                                     if (@$this->config["backends"]["authentication"]["default_group"]) {
-                                        $groups = loadBackend("groups");
+                                        $groups = backend("groups");
                                         if ($groups) {
                                             $gid = $groups->getGroupByAcronym($this->config["backends"]["authentication"]["default_group"]);
                                             if ($gid) {

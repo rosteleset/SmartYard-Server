@@ -18,7 +18,7 @@ namespace api\subscribers
 
         public static function POST($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"]);
 
@@ -27,7 +27,7 @@ namespace api\subscribers
 
         public static function PUT($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $success = $households->modifyKey($params["_id"], $params["comments"]);
 
@@ -36,7 +36,7 @@ namespace api\subscribers
 
         public static function DELETE($params)
         {
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $success = $households->deleteKey($params["_id"]);
 

@@ -42,7 +42,7 @@
         class groups extends api {
 
             public static function GET($params) {
-                $groups = loadBackend("groups");
+                $groups = backend("groups");
                 
                 if ($groups) {
                     $groups = $groups->getGroups(false);
@@ -52,7 +52,7 @@
             }
 
             public static function index() {
-                if (loadBackend("groups")) {
+                if (backend("groups")) {
                     return [
                         "GET" => "#common",
                     ];

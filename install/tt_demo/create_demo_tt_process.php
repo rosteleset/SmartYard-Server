@@ -6,7 +6,7 @@
     require_once "../../server/utils/checkint.php";
     require_once "../../server/utils/email.php";
     require_once "../../server/utils/is_executable.php";
-    require_once "../../server/utils/db_ext.php";
+    require_once "../../server/utils/DatabaseService.php";
     require_once "../../server/utils/debug.php";
     require_once "../../server/utils/i18n.php";
 
@@ -58,7 +58,7 @@
     }
 
     try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new DatabaseService(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         echo "can't open database " . $config["db"]["dsn"] . "\n";
         exit(1);
@@ -78,9 +78,9 @@
 
     $backends = [];
     foreach ($required_backends as $backend) {
-        if (loadBackend($backend) === false) {
+        if (backend($backend) === false) {
             die("can't load required backend [$backend]\n");
         }
     }
 
-    $files = loadBackend("files");
+    $files = backend("files");

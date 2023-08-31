@@ -1,6 +1,6 @@
 <?php
 
-namespace Selpol\Task;
+namespace Selpol\Service;
 
 use Exception;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -9,8 +9,10 @@ use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Selpol\Task\Task;
+use Selpol\Task\TaskCallback;
 
-class TaskManager implements LoggerAwareInterface
+class TaskService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -22,7 +24,7 @@ class TaskManager implements LoggerAwareInterface
     public const QUEUE_LOW = 'low';
     public const QUEUE_DEFAULT = 'default';
 
-    private static ?TaskManager $instance = null;
+    private static ?TaskService $instance = null;
 
     /**
      * @throws Exception
@@ -91,10 +93,10 @@ class TaskManager implements LoggerAwareInterface
         }
     }
 
-    public static function instance(): TaskManager
+    public static function instance(): TaskService
     {
         if (is_null(self::$instance))
-            self::$instance = new TaskManager();
+            self::$instance = new TaskService();
 
         return self::$instance;
     }

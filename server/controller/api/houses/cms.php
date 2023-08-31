@@ -18,7 +18,7 @@
 
             public static function GET($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $cms = $households->getCms($params["_id"]);
 
@@ -27,7 +27,7 @@
 
             public static function PUT($params)
             {
-                $households = loadBackend("households");
+                $households = backend("households");
 
                 $success = $households->setCms($params["_id"], $params["cms"]);
 

@@ -39,8 +39,8 @@ use backends\plog\plog;
 
 $user = auth();
 
-$households = loadBackend("households");
-$plog = loadBackend("plog");
+$households = backend("households");
+$plog = backend("plog");
 
 $flat_id = (int)@$postdata['flatId'];
 
@@ -130,10 +130,10 @@ if ($flat_owner && $plog && $flat['plog'] != plog::ACCESS_RESTRICTED_BY_ADMIN) {
 }
 
 //check for FRS presence on at least one entrance of the flat
-$frs = loadBackend("frs");
+$frs = backend("frs");
 
 if ($frs) {
-    $cameras = loadBackend("cameras");
+    $cameras = backend("cameras");
     $frsDisabled = null;
 
     foreach ($flat['entrances'] as $entrance) {

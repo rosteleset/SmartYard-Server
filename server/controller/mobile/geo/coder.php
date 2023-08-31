@@ -23,7 +23,7 @@ if (!@$postdata['address'])
 
 $query = $postdata['address'];
 
-$geocoder = loadBackend('geocoder');
+$geocoder = backend('geocoder');
 
 $queryResult = @$geocoder->suggestions($query)[0];
 

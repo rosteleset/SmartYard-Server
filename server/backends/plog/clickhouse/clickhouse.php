@@ -9,15 +9,16 @@ namespace backends\plog {
 
     use backends\frs\frs;
     use Exception;
+    use Selpol\Service\ClickhouseService;
     use Selpol\Task\Tasks\Plog\PlogCallTask;
     use Selpol\Task\Tasks\Plog\PlogOpenTask;
 
     /**
-     * clickhouse archive class
+     * clickhouseService archive class
      */
     class clickhouse extends plog
     {
-        private \clickhouse $clickhouse;
+        private ClickhouseService $clickhouse;
 
         private int $max_call_length;  // максимальная длительность звонка в секундах
         private int $ttl_camshot_days;  // время жизни кадра события
@@ -27,9 +28,7 @@ namespace backends\plog {
         {
             parent::__construct($config, $db, $redis, $login);
 
-            require_once __DIR__ . '/../../../utils/clickhouse.php';
-
-            $this->clickhouse = new \clickhouse(
+            $this->clickhouse = new ClickhouseService(
                 $config['backends']['plog']['host'],
                 $config['backends']['plog']['port'],
                 $config['backends']['plog']['username'],
@@ -48,18 +47,18 @@ namespace backends\plog {
          */
         public function getCamshot($domophone_id, $date, $event_id = false)
         {
-            $files = loadBackend('files');
+            $files = backend('files');
 
             $camshot_data = [];
 
-            $households = loadBackend("households");
+            $households = backend("households");
 
             $entrances = $households->getEntrances("domophoneId", ["domophoneId" => $domophone_id, "output" => "0"]);
 
             if ($entrances && $entrances[0]) {
                 $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
                 if ($cameras && $cameras[0]) {
-                    $frs = loadBackend("frs");
+                    $frs = backend("frs");
                     if ($frs) {
                         if ($event_id === false) {
                             $response = $frs->bestQualityByDate($cameras[0], $date);
@@ -102,7 +101,7 @@ namespace backends\plog {
                         if ($prefix) {
                             $ts_event = $date - $this->back_time_shift_video_shot;
                             $filename = "/tmp/" . uniqid('camshot_') . ".jpeg";
-                            $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event, true);
+                            $urlOfScreenshot = backend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event, true);
 
                             if (str_contains($urlOfScreenshot, '.mp4')) {
                                 shell_exec("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
@@ -343,7 +342,7 @@ namespace backends\plog {
 
         public function getDomophoneId($ip)
         {
-            $households = loadBackend('households');
+            $households = backend('households');
             $result = $households->getDomophones('ip', $ip);
 
             if ($result && $result[0]) {
@@ -355,7 +354,7 @@ namespace backends\plog {
 
         private function getPlogHidden($flat_id)
         {
-            $households = loadBackend('households');
+            $households = backend('households');
             $flat = $households->getFlat($flat_id);
             if ($flat['plog'] == self::ACCESS_RESTRICTED_BY_ADMIN) {
                 //ignore event
