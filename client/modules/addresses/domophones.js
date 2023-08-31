@@ -27,11 +27,26 @@
         }).always(modules.addresses.domophones.route);
     },
 
-    doConfigureDomophone: function (domophoneId, first) {
-        loadingStart()
-        PUT("houses", "domophone", domophoneId, {configure: true, first}).fail(FAIL).done(() => {
-            message(i18n("addresses.domophoneConfigure"))
-        }).always(modules.addresses.domophones.route);
+    doConfigureDomophone: function (domophoneId) {
+        const domophone = modules.addresses.domophones.meta.domophones.find((item) => item.domophoneId === domophoneId)
+
+        if (domophone !== undefined) {
+            let first = false
+
+            if (domophone.firstTime === false) {
+                first = true
+
+                domophone.firstTime = true
+            }
+
+            loadingStart()
+            PUT("houses", "domophone", domophoneId, Object.assign(domophone, {
+                configure: true,
+                first
+            })).fail(FAIL).done(() => {
+                message(i18n("addresses.domophoneConfigure"))
+            }).always(modules.addresses.domophones.route);
+        }
     },
 
     doDeleteDomophone: function (domophoneId) {
@@ -352,12 +367,7 @@
                                     {
                                         icon: 'fas fa-sync',
                                         title: i18n("addresses.domophoneSync"),
-                                        click: (domophoneId) => modules.addresses.domophones.doConfigureDomophone(domophoneId, false)
-                                    },
-                                    {
-                                        icon: 'fas fa-sync',
-                                        title: i18n("addresses.domophoneFirst"),
-                                        click: (domophoneId) => modules.addresses.domophones.doConfigureDomophone(domophoneId, true)
+                                        click: modules.addresses.domophones.doConfigureDomophone
                                     },
                                     {
                                         title: "-",
