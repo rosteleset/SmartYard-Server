@@ -33,7 +33,7 @@
         if (domophone !== undefined) {
             let first = false
 
-            if (domophone.firstTime === false) {
+            if (domophone.firstTime == false || domophone.firstTime == 0) {
                 first = true
 
                 domophone.firstTime = true
