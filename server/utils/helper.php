@@ -146,16 +146,6 @@ if (!function_exists('check_string')) {
         if (!in_array("dontStrip", $options))
             $str = preg_replace('/\s+/', ' ', $str);
 
-        if (!in_array("dontPurify", $options)) {
-            $config = HTMLPurifier_Config::createDefault();
-            $config->set('Core.Encoding', 'UTF-8');
-            $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-            $config->set('Cache.DefinitionImpl', null);
-
-            $purifier = new HTMLPurifier($config);
-            $str = $purifier->purify($str);
-        }
-
         if (array_key_exists("minLength", $options) && mb_strlen($str) < $options["minLength"])
             return false;
 

@@ -5,4 +5,9 @@ cd /opt/rbt
 git pull
 supervisorctl restart all
 
-php server/cli.php --clear-config
+cd /opt/rbt/server
+
+composer install --no-dev
+composer dump-autoload
+
+php cli.php --clear-config

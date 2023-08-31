@@ -28,7 +28,6 @@ $redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
 
 function response($code = 204, $data = false, $name = false, $message = false)
 {
-    global $response_data_source, $response_cahce_req, $response_cache_ttl;
     $response_codes = [
         200 => ['name' => 'OK', 'message' => 'Хорошо'],
         201 => ['name' => 'Created', 'message' => 'Создано'],
@@ -73,40 +72,29 @@ function response($code = 204, $data = false, $name = false, $message = false)
         499 => ['name' => 'Client Closed Request', 'message' => 'Клиент закрыл соединение'],
         503 => ['name' => 'Service Unavailable', 'message' => 'Сервис недоступен'],
     ];
+
     header('Content-Type: application/json');
     http_response_code($code);
-    if ((int)$code < 300 && $response_cahce_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
-//        $redis->setEx($response_cahce_req, $response_cache_ttl, json_encode([
-//            'code' => $code,
-//            'data' => $data,
-//        ], JSON_UNESCAPED_UNICODE));
-    }
-    if ((int)$code == 204) {
+
+    if ((int)$code == 204)
         exit;
-    }
-    $ret = [
-        'code' => $code,
-    ];
-    if (!$message) {
+
+    $ret = ['code' => $code,];
+
+    if (!$message)
         if ($name) {
             $message = $name;
         } else {
             $message = @$response_codes[$code]['message'];
         }
-    }
-    if (!$name) {
-        $name = @$response_codes[$code]['name'];
-    }
-    if ($name) {
-        $ret['name'] = $name;
-    }
-    if ($message) {
-        $ret['message'] = $message;
-    }
-    if ($data) {
-        $ret['data'] = $data;
-    }
+
+    if (!$name) $name = @$response_codes[$code]['name'];
+    if ($name) $ret['name'] = $name;
+    if ($message) $ret['message'] = $message;
+    if ($data) $ret['data'] = $data;
+
     echo json_encode($ret, JSON_UNESCAPED_UNICODE);
+
     exit;
 }
 

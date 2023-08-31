@@ -3,7 +3,6 @@
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 use Selpol\Service\DatabaseService;
-use Selpol\Task\Tasks\EmailTask;
 use Selpol\Task\Tasks\IntercomConfigureTask;
 use Selpol\Task\Tasks\QrTask;
 use Selpol\Task\Tasks\ReindexTask;
@@ -35,7 +34,6 @@ function usage()
             [--init-mobile-issues-project]
 
         tests:
-            [--check-mail=<your email address>]
             [--get-db-version]
             [--check-backends]
 
@@ -341,12 +339,6 @@ if (count($args) == 1 && array_key_exists("--admin-password", $args) && isset($a
     } catch (Exception $e) {
         echo "admin account update failed\n";
     }
-    exit(0);
-}
-
-if (count($args) == 1 && array_key_exists("--check-mail", $args) && isset($args["--check-mail"])) {
-    task(new EmailTask($args["--check-mail"], "test email", "test email"));
-
     exit(0);
 }
 

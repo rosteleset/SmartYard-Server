@@ -33,8 +33,6 @@
     "ext-mbstring": "*",
     "ext-openssl": "*",
     "ext-pcntl": "*",
-    "phpmailer/phpmailer": "^6.8",
-    "ezyang/htmlpurifier": "^4.16",
     "mongodb/mongodb": "^1.12",
     "chillerlan/php-qrcode": "^4.3",
     "phpoffice/phpword": "^1.1",

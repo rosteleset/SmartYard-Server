@@ -7,7 +7,6 @@
 namespace backends\users {
 
     use Exception;
-    use Selpol\Task\Tasks\EmailTask;
 
     /**
      * internal.db users class
@@ -150,7 +149,6 @@ namespace backends\users {
          *
          * @return integer|false
          */
-
         public function addUser($login, $realName = null, $eMail = null, $phone = null)
         {
             $login = trim($login);
@@ -165,10 +163,7 @@ namespace backends\users {
                     ":e_mail" => $eMail ? trim($eMail) : null,
                     ":phone" => $phone ? trim($phone) : null,
                 ])) {
-                    $uid = $this->db->lastInsertId();
-                    if ($eMail)
-                        task(new EmailTask(trim($eMail), "new user", "your new password is $password"));
-                    return $uid;
+                    return $this->db->lastInsertId();
                 } else return false;
             } catch (Exception $e) {
                 error_log(print_r($e, true));

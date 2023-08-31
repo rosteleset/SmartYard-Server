@@ -7,7 +7,6 @@
 namespace backends\users {
 
     use backends\backend;
-    use Selpol\Task\Tasks\EmailTask;
 
     /**
      * base users class
@@ -101,89 +100,5 @@ namespace backends\users {
          */
 
         abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1);
-
-        /**
-         * @param string $login
-         * @param string $subject
-         * @param string $message
-         */
-        public function notify($login, $subject, $message)
-        {
-            $uid = $this->getUidByLogin($login);
-
-            if (!$uid) {
-                return false;
-            }
-
-            $user = $this->getUser($uid);
-
-            if (!$user) {
-                return false;
-            }
-
-            if (!in_array($user["notification"], ["tgEmail", "emailTg", "tg", "email"])) {
-                return false;
-            }
-
-            if ($user["notification"] == "tg" && (!$user["tg"] || !@$this->config["telegram"]["bot"])) {
-                return false;
-            }
-
-            if ($user["notification"] == "email" && (!$user["eMail"] || !$this->config["email"])) {
-                return false;
-            }
-
-            $message = trim($message);
-            $subject = trim($subject);
-
-            if (!$message) {
-                return false;
-            }
-
-            function sendTg($tg, $subject, $message, $token)
-            {
-                if ($tg && $token) {
-                    try {
-                        $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
-                        return $tg && @$tg["ok"];
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-
-            function sendEmail($email, $subject, $message, $config)
-            {
-                try {
-                    if ($email && $config) {
-                        task(new EmailTask($email, $subject ?: "-", $message));
-
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } catch (\Exception $e) {
-                    return false;
-                }
-            }
-
-            if ($user["notification"] == "tg") {
-                return sendTg($user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
-            }
-
-            if ($user["notification"] == "tgEmail") {
-                return sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]) || sendEmail(@$user["eMail"], $subject, $message, $this->config);
-            }
-
-            if ($user["notification"] == "email") {
-                return sendEmail($user["eMail"], $subject, $message, $this->config);
-            }
-
-            if ($user["notification"] == "emailTg") {
-                return sendEmail(@$user["eMail"], $subject, $message, $this->config) || sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
-            }
-        }
     }
 }

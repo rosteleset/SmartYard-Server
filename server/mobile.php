@@ -47,7 +47,6 @@ $redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
 
 function response($code = 204, $data = false, $name = false, $message = false)
 {
-    global $response_data_source, $response_cahce_req, $response_cache_ttl;
     $response_codes = [
         200 => ['name' => 'OK', 'message' => 'Хорошо'],
         201 => ['name' => 'Created', 'message' => 'Создано'],
@@ -94,12 +93,6 @@ function response($code = 204, $data = false, $name = false, $message = false)
     ];
     header('Content-Type: application/json');
     http_response_code($code);
-//    if ((int)$code < 300 && $response_cahce_req && $response_data_source == 'db' && (int)$response_cache_ttl > 0) {
-//        $redis->setEx($response_cahce_req, $response_cache_ttl, json_encode([
-//            'code' => $code,
-//            'data' => $data,
-//        ], JSON_UNESCAPED_UNICODE));
-//    }
 
     if ((int)$code == 204)
         exit;
@@ -120,19 +113,6 @@ function response($code = 204, $data = false, $name = false, $message = false)
     echo json_encode($ret, JSON_UNESCAPED_UNICODE);
 
     exit;
-}
-
-function mkdir_r($dirName, $rights = 0777)
-{
-    $dirs = explode('/', $dirName);
-    $dir = '';
-    foreach ($dirs as $part) {
-        $dir .= $part . '/';
-        if (!is_dir($dir) && strlen($dir) > 0) {
-            mkdir($dir, $rights);
-            chmod($dir, $rights);
-        }
-    }
 }
 
 function auth($_response_cache_ttl = -1): array
@@ -224,9 +204,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $server = parse_url($config["api"]["mobile"]);
 
-    if ($server && $server['path']) {
+    if ($server && $server['path'])
         $path = substr($path, strlen($server['path']));
-    }
 
     $path = trim($path, '/');
     $m = explode('/', $path);
@@ -239,21 +218,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $method = $m[3];
         if (file_exists(path("controller/mobile/{$module}/{$method}.php"))) {
             $b = @explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
+
             if ($b) {
                 $response_cahce_req = strtolower($module . '-' . $method . '-' . $b . '-' . md5(serialize($postdata)));
-//                $cache = @json_decode($redis->get($response_cahce_req), true);
+
                 $cache = false;
             } else {
                 $response_cahce_req = false;
                 $cache = false;
             }
+
             if ($cache && !array_key_exists('X-Dm-Api-Refresh', request_headers())) {
-//                $redis->incr('cache-hit');
-//                $response_data_source = 'cache';
-//                header("X-Dm-Api-Data-Source: $response_data_source");
-//                response($cache['code'], $cache['data']);
                 $response_data_source = 'db';
                 $response_cache_ttl = 60;
+
                 header("X-Dm-Api-Data-Source: $response_data_source");
 
                 try {
