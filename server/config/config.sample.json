@@ -51,8 +51,6 @@
     },
 
     "backends": {
-        "cache_ttl": 604800,
-
         "authentication": {
             "backend": "internal"
         },

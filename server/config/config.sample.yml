@@ -41,7 +41,6 @@ clickhouse:
   password: qqq
   database: default
 backends:
-  cache_ttl: 604800
   authentication:
     backend: internal
   authorization:
