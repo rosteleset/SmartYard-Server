@@ -7,10 +7,10 @@
         "port": 8123,
         "database": "default",
         "username": "default",
-        "password": "default_password"
+        "password": "qqq"
     },
     "api": {
-        "internal": "https://rbt-example-host.com/internal"
+        "internal": "http://127.0.0.1/internal"
     },
     "hw": {
         "beward": [
