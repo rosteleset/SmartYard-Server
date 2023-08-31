@@ -45,7 +45,7 @@ namespace api\houses {
                 $first = array_key_exists('first', $params) ? $params['first'] : false;
 
                 if ($first)
-                    $households->modifyDomophone(null, null, null, null, null, null, null, true, null, null, null);
+                    $households->modifyDomophone($params["_id"], null, null, null, null, null, null, true, null, null, null);
 
                 return api::ANSWER(task(new IntercomConfigureTask($params['_id'], $first))->high()->dispatch());
             } else {

@@ -13,7 +13,7 @@ class IntercomConfigureTask extends Task
 
     public function __construct(int $id, bool $first)
     {
-        parent::__construct('Настройка домофона (' . $id . ')');
+        parent::__construct($first ? ('Первичная настройка домофона (' . $id . ')') : ('Настройка домофона (' . $id . ')'));
 
         $this->id = $id;
         $this->first = $first;
