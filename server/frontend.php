@@ -25,13 +25,8 @@ $container = bootstrap();
 
 try {
     // TODO: Со временем удалить
-    /** @var array $config */
     $config = $container->get('config');
-
-    /** @var DatabaseService $db */
     $db = $container->get(DatabaseService::class);
-
-    /** @var Redis $redis */
     $redis = $container->get(Redis::class);
 } catch (Exception $exception) {
     echo json_encode(['code' => 503, 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен'], JSON_UNESCAPED_UNICODE);

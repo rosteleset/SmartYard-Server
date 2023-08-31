@@ -2,6 +2,9 @@
 
 namespace PHPSTORM_META {
 
+    use Selpol\Service\DatabaseService;
+    use Selpol\Service\TaskService;
+
     expectedArguments(
         \backend(),
         0,
@@ -65,6 +68,8 @@ namespace PHPSTORM_META {
             'tasks' => \backends\tasks\tasks::class
         ])
     );
+
+    override(\Selpol\Container\Container::get(0), map(['' => '@']));
 
     exitPoint(\response());
     exitPoint(\usage());

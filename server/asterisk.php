@@ -15,13 +15,8 @@ header('Content-Type: application/json');
 $container = bootstrap();
 
 // TODO: Со временем удалить
-/** @var array $config */
 $config = $container->get('config');
-
-/** @var DatabaseService $db */
 $db = $container->get(DatabaseService::class);
-
-/** @var Redis $redis */
 $redis = $container->get(Redis::class);
 
 $logger = logger('asterisk');
@@ -50,25 +45,15 @@ function getExtension($extension, $section): array
 
         switch ($section) {
             case "aors":
-                if ($panel && $panel["credentials"]) {
-                    return [
-                        "id" => $extension,
-                        "max_contacts" => "1",
-                        "remove_existing" => "yes"
-                    ];
-                }
+                if ($panel && $panel["credentials"])
+                    return ["id" => $extension, "max_contacts" => "1", "remove_existing" => "yes"];
+
                 break;
 
             case "auths":
 
-                if ($panel && $panel["credentials"]) {
-                    return [
-                        "id" => $extension,
-                        "username" => $extension,
-                        "auth_type" => "userpass",
-                        "password" => $panel["credentials"],
-                    ];
-                }
+                if ($panel && $panel["credentials"])
+                    return ["id" => $extension, "username" => $extension, "auth_type" => "userpass", "password" => $panel["credentials"]];
                 break;
 
             case "endpoints":
@@ -102,27 +87,16 @@ function getExtension($extension, $section): array
             case "aors":
                 $cred = $redis->get("mobile_extension_" . $extension);
 
-                if ($cred) {
-                    return [
-                        "id" => $extension,
-                        "max_contacts" => "1",
-                        "remove_existing" => "yes"
-                    ];
-                }
+                if ($cred)
+                    return ["id" => $extension, "max_contacts" => "1", "remove_existing" => "yes"];
 
                 break;
 
             case "auths":
                 $cred = $redis->get("mobile_extension_" . $extension);
 
-                if ($cred) {
-                    return [
-                        "id" => $extension,
-                        "username" => $extension,
-                        "auth_type" => "userpass",
-                        "password" => $cred,
-                    ];
-                }
+                if ($cred)
+                    return ["id" => $extension, "username" => $extension, "auth_type" => "userpass", "password" => $cred];
 
                 break;
 
@@ -166,25 +140,14 @@ function getExtension($extension, $section): array
 
             switch ($section) {
                 case "aors":
-                    if ($cred) {
-                        return [
-                            "id" => $extension,
-                            "max_contacts" => "1",
-                            "remove_existing" => "yes"
-                        ];
-                    }
+                    if ($cred)
+                        return ["id" => $extension, "max_contacts" => "1", "remove_existing" => "yes"];
 
                     break;
 
                 case "auths":
-                    if ($cred) {
-                        return [
-                            "id" => $extension,
-                            "username" => $extension,
-                            "auth_type" => "userpass",
-                            "password" => $cred,
-                        ];
-                    }
+                    if ($cred)
+                        return ["id" => $extension, "username" => $extension, "auth_type" => "userpass", "password" => $cred];
 
                     break;
 
@@ -221,27 +184,16 @@ function getExtension($extension, $section): array
             case "aors":
                 $cred = $redis->get("webrtc_" . md5($extension));
 
-                if ($cred) {
-                    return [
-                        "id" => $extension,
-                        "max_contacts" => "1",
-                        "remove_existing" => "yes"
-                    ];
-                }
+                if ($cred)
+                    return ["id" => $extension, "max_contacts" => "1", "remove_existing" => "yes"];
 
                 break;
 
             case "auths":
                 $cred = $redis->get("webrtc_" . md5($extension));
 
-                if ($cred) {
-                    return [
-                        "id" => $extension,
-                        "username" => $extension,
-                        "auth_type" => "userpass",
-                        "password" => $cred,
-                    ];
-                }
+                if ($cred)
+                    return ["id" => $extension, "username" => $extension, "auth_type" => "userpass", "password" => $cred];
 
                 break;
 
@@ -517,9 +469,6 @@ switch ($path[0]) {
                     $logger->debug('camshot() fake', ['shot' => "shot_" . $params["hash"]]);
                 }
 
-                break;
-
-            case "server":
                 break;
 
             case "push":

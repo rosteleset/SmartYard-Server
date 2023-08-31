@@ -18,13 +18,8 @@ require_once "controller/api/api.php";
 $container = bootstrap();
 
 // TODO: Со временем удалить
-/** @var array $config */
 $config = $container->get('config');
-
-/** @var DatabaseService $db */
 $db = $container->get(DatabaseService::class);
-
-/** @var Redis $redis */
 $redis = $container->get(Redis::class);
 
 $args = [];

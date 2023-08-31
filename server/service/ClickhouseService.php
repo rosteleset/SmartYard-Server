@@ -6,9 +6,14 @@ use Exception;
 
 class ClickhouseService
 {
-    private $host, $port, $username, $password, $database;
+    private string $host;
+    private int $port;
 
-    function __construct($host, $port, $username, $password, $database = 'default')
+    private string $username;
+    private string $password;
+    private string $database;
+
+    function __construct(string $host, int $port, string $username, string $password, string $database = 'default')
     {
         $this->host = $host;
         $this->port = $port;
