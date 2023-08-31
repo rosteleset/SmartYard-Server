@@ -64,6 +64,7 @@ $queue = array_key_exists('--queue', $args) ? $args['--queue'] : 'default';
 $logger = logger('task');
 
 $manager = TaskManager::instance();
+$manager->setLogger($logger);
 
 register_shutdown_function(static fn() => $manager->close());
 

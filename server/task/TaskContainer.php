@@ -65,14 +65,18 @@ class TaskContainer
 
     public function dispatch(): bool
     {
+        $logger = logger('task');
         $queue = $this->queue ?? TaskManager::QUEUE_DEFAULT;
 
         try {
-            TaskManager::instance()->enqueue($queue, $this->task, $this->start);
+            $manager = TaskManager::instance();
+            $manager->setLogger($logger);
+
+            $manager->enqueue($queue, $this->task, $this->start);
 
             return true;
         } catch (Exception $exception) {
-            logger('task')->error($exception);
+            $logger->error($exception);
 
             return false;
         } finally {

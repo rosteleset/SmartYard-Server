@@ -7,9 +7,13 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
-class TaskManager
+class TaskManager implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private ?AMQPStreamConnection $connection = null;
     private ?AMQPChannel $channel = null;
 
@@ -34,7 +38,7 @@ class TaskManager
      */
     public function enqueue(string $queue, Task $task, ?int $delay)
     {
-        logger('task')->info('Enqueue task', ['queue' => $queue, 'title' => $task->title, 'delay' => $delay]);
+        $this->logger?->info('Enqueue task', ['queue' => $queue, 'title' => $task->title, 'delay' => $delay]);
 
         if ($this->connection == null || $this->channel == null)
             $this->connect();
@@ -67,7 +71,7 @@ class TaskManager
                 if ($task instanceof Task)
                     $callback($task);
             } catch (Exception $exception) {
-                logger('task')->error($exception);
+                $this->logger?->error($exception);
             }
         });
 
@@ -81,7 +85,7 @@ class TaskManager
             $this->channel?->close();
             $this->connection?->close();
         } catch (Exception $exception) {
-            logger('task')->critical($exception);
+            $this->logger?->critical($exception);
         }
     }
 
