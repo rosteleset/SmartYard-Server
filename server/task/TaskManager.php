@@ -45,6 +45,8 @@ class TaskManager
             $message->set('application_headers', new AMQPTable(['x-delay' => $delay * 1000]));
 
         $this->channel->basic_publish($message, routing_key: $queue);
+
+        logger('task')->debug('Enqueue task', ['queue' => $queue, 'title' => $task->title, 'delay' => $delay]);
     }
 
     /**
