@@ -42,7 +42,7 @@ class TaskManager
         if ($delay)
             $this->channel->basic_publish(new AMQPMessage(
                 serialize($task),
-                ['delivery_mode' => 2, 'application_headers' => new AMQPTable(['x-delay' => $delay * 1000])]
+                ['application_headers' => new AMQPTable(['x-delay' => $delay * 1000])]
             ), routing_key: $queue);
         else
             $this->channel->basic_publish(new AMQPMessage(serialize($task)), routing_key: $queue);
