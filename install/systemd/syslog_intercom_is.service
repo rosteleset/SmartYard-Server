@@ -1,0 +1,20 @@
+[Unit]
+Description=Intercom syslog service for Intersviaz
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/rbt/server/syslog/
+ExecStart=/usr/bin/node /opt/rbt/server/syslog/is.js
+RestartSec=10
+Restart=always
+User=isyslog
+Group=isyslog
+LimitCORE=infinity
+KillMode=process
+StandardOutput=file:/var/log/syslog_intercom/syslog_intercom_is.log
+StandardError=file:/var/log/syslog_intercom/syslog_intercom_is.error.log
+
+[Install]
+WantedBy=multi-user.target
