@@ -44,7 +44,7 @@ abstract class Task implements LoggerAwareInterface
 
     }
 
-    protected function setProgress(int $progress)
+    protected function setProgress(int|float $progress)
     {
 
     }

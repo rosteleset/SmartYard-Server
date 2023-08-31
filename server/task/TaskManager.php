@@ -38,19 +38,22 @@ class TaskManager implements LoggerAwareInterface
      */
     public function enqueue(string $queue, Task $task, ?int $delay)
     {
-        $this->logger?->info('Enqueue task', ['queue' => $queue, 'title' => $task->title, 'delay' => $delay]);
-
         if ($this->connection == null || $this->channel == null)
             $this->connect();
 
+        $this->channel->exchange_declare('delayed_exchange', 'x-delayed-message', durable: true, arguments: new AMQPTable(['x-delayed-type' => 'direct']));
+
         $this->channel->queue_declare($queue, durable: true);
+        $this->channel->queue_bind($queue, 'delayed_exchange', $queue);
 
         $message = new AMQPMessage(serialize($task), ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
 
         if ($delay)
             $message->set('application_headers', new AMQPTable(['x-delay' => $delay * 1000]));
 
-        $this->channel->basic_publish($message, routing_key: $queue);
+        $this->channel->basic_publish($message, 'delayed_exchange', $queue);
+
+        $this->logger?->info('Enqueue task', ['queue' => $queue, 'title' => $task->title, 'delay' => $delay]);
     }
 
     /**
@@ -63,7 +66,6 @@ class TaskManager implements LoggerAwareInterface
 
         $this->channel->queue_declare($queue, durable: true);
 
-        $this->channel->basic_qos(null, 1, null);
         $this->channel->basic_consume($queue, no_ack: true, callback: static function (AMQPMessage $message) use ($callback) {
             try {
                 $task = unserialize($message->body);
