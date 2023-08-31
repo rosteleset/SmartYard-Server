@@ -66,10 +66,9 @@ class TaskContainer
     public function dispatch(): bool
     {
         $queue = $this->queue ?? TaskManager::QUEUE_DEFAULT;
-        $start = $this->start;
 
         try {
-            TaskManager::instance()->enqueue($queue, $this->task, $start);
+            TaskManager::instance()->enqueue($queue, $this->task, $this->start);
 
             return true;
         } catch (Exception $exception) {
