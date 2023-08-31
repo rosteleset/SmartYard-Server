@@ -28,7 +28,7 @@
     },
 
     doConfigureDomophone: function (domophoneId) {
-        const domophone = modules.addresses.domophones.meta.domophones.find((item) => item.domophoneId === domophoneId)
+        const domophone = modules.addresses.domophones.meta.domophones.find((item) => item.domophoneId == domophoneId)
 
         if (domophone !== undefined) {
             let first = false
