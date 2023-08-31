@@ -2,11 +2,10 @@
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-// asterisk support
-
 use Selpol\Service\DatabaseService;
 use Selpol\Validator\Filter;
 use Selpol\Validator\Rule;
+use Selpol\Validator\ValidatorMessage;
 
 require_once "backends/backend.php";
 
@@ -269,11 +268,10 @@ switch ($path[0]) {
             case "autoopen":
                 $params = validate(
                     ['flatId' => $params],
-                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
-                    'asterisk.autoopen'
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $households = backend("households");
@@ -292,11 +290,10 @@ switch ($path[0]) {
             case "flat":
                 $params = validate(
                     ['flatId' => $params],
-                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
-                    'asterisk.flat'
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $households = backend("households");
@@ -316,11 +313,10 @@ switch ($path[0]) {
                         'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
                         'prefix' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
                         'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]
-                    ],
-                    'asterisk.flatIdByPrefix'
+                    ]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $households = backend("households");
@@ -339,11 +335,10 @@ switch ($path[0]) {
                     [
                         'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
                         'flatNumber' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]
-                    ],
-                    'asterisk.apartment'
+                    ]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $households = backend("households");
@@ -359,11 +354,10 @@ switch ($path[0]) {
             case "subscribers":
                 $params = validate(
                     ['flatId' => $params],
-                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
-                    'asterisk.subscribers'
+                    ['flatId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $households = backend("households");
@@ -379,11 +373,10 @@ switch ($path[0]) {
             case "domophone":
                 $params = validate(
                     ['domophoneId' => $params],
-                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
-                    'asterisk.domophone'
+                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $households = backend("households");
@@ -399,11 +392,10 @@ switch ($path[0]) {
             case "entrance":
                 $params = validate(
                     ['domophoneId' => $params],
-                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]],
-                    'asterisk.entrance'
+                    ['domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $households = backend("households");
@@ -426,11 +418,10 @@ switch ($path[0]) {
                     [
                         'domophoneId' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
                         'hash' => [Rule::required(), Rule::nonNullable()]
-                    ],
-                    'asterisk.camshot'
+                    ]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 if ($params["domophoneId"] >= 0) {
@@ -484,11 +475,10 @@ switch ($path[0]) {
                         'callerId' => [Filter::default('WebRTC', true), Rule::nonNullable()],
                         'flatId' => [Rule::required(), Rule::int(), Rule::nonNullable()],
                         'flatNumber' => [Rule::required(), Rule::int(), Rule::nonNullable()],
-                    ],
-                    'asterisk.push'
+                    ]
                 );
 
-                if ($params == false)
+                if ($params instanceof ValidatorMessage)
                     break;
 
                 $isdn = backend("isdn");

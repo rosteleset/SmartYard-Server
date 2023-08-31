@@ -10,6 +10,7 @@ namespace api\houses {
 
     use Selpol\Task\Tasks\IntercomConfigureTask;
     use Selpol\Validator\Rule;
+    use Selpol\Validator\ValidatorMessage;
 
     /**
      * domophone method
@@ -20,8 +21,8 @@ namespace api\houses {
         {
             $validate = validate($params, ['_id' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]);
 
-            if ($validate == false)
-                return api::ERROR();
+            if ($validate instanceof ValidatorMessage)
+                return api::ERROR($validate->getMessage());
 
             $households = backend("households");
 

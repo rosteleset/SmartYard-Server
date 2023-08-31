@@ -8,6 +8,7 @@ namespace api\cameras {
 
     use api\api;
     use Selpol\Validator\Rule;
+    use Selpol\Validator\ValidatorMessage;
 
     /**
      * camera method
@@ -18,8 +19,8 @@ namespace api\cameras {
         {
             $validate = validate($params, ['_id' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()]]);
 
-            if ($validate == false)
-                return api::ERROR();
+            if ($validate instanceof ValidatorMessage)
+                return api::ERROR($validate->getMessage());
 
             $cameras = backend('cameras');
 

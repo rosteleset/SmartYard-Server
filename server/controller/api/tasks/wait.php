@@ -23,6 +23,7 @@ namespace api\tasks {
     use api\api;
     use Selpol\Task\Tasks\WaitTask;
     use Selpol\Validator\Rule;
+    use Selpol\Validator\ValidatorMessage;
 
     /**
      * queues method
@@ -36,13 +37,12 @@ namespace api\tasks {
                 'wait' => [Rule::required(), Rule::min(0), Rule::max(100), Rule::nonNullable()]
             ]);
 
-            if ($validate) {
-                task(new WaitTask($validate['wait']))->queue($validate['queue'])->dispatch();
+            if ($validate instanceof ValidatorMessage)
+                return api::ERROR($validate->getMessage());
 
-                return api::ANSWER();
-            }
+            task(new WaitTask($validate['wait']))->queue($validate['queue'])->dispatch();
 
-            return api::ERROR();
+            return api::ANSWER();
         }
 
         public static function index()

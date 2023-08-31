@@ -9,6 +9,7 @@ namespace api\addresses {
     use api\api;
     use Selpol\Task\Tasks\QrTask;
     use Selpol\Validator\Rule;
+    use Selpol\Validator\ValidatorMessage;
 
     /**
      * qr method
@@ -21,6 +22,9 @@ namespace api\addresses {
                 '_id' => [Rule::required(), Rule::int(), Rule::min(0), Rule::max(), Rule::nonNullable()],
                 'override' => [Rule::required(), Rule::bool(), Rule::nonNullable()]
             ]);
+
+            if ($validate instanceof ValidatorMessage)
+                return self::ERROR($validate->getMessage());
 
             $uuid = task(new QrTask($validate['_id'], null, $validate['override']))->sync();
 

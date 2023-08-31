@@ -1,14 +1,15 @@
 <?php
 
 use Selpol\Validator\Rule;
+use Selpol\Validator\ValidatorMessage;
 
 $user = auth();
 
 if (isset($postdata)) {
     $validate = validate(@$postdata ?? [], ['flatId' => [Rule::required(), Rule::min(0), Rule::max(), Rule::nonNullable()]]);
 
-    if (!$validate)
-        response(400, message: 'Идентификатор квартиры обязателен для заполнения');
+    if ($validate instanceof ValidatorMessage)
+        response(400, message: $validate->getMessage());
 
     function get_flat(array $value, int $id): ?array
     {

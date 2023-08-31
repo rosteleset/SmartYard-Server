@@ -6,6 +6,7 @@ use Selpol\Task\Task;
 use Selpol\Task\TaskContainer;
 use Selpol\Validator\Validator;
 use Selpol\Validator\ValidatorException;
+use Selpol\Validator\ValidatorMessage;
 
 $lastError = false;
 
@@ -31,17 +32,14 @@ if (!function_exists('task')) {
 }
 
 if (!function_exists('validate')) {
-    function validate(array $value, array $items, ?string $tag = null): array|false
+    function validate(array $value, array $items): array|ValidatorMessage
     {
         $validator = new Validator($value, $items);
 
         try {
             return $validator->validate();
         } catch (ValidatorException $e) {
-            if ($tag)
-                logger('validate')->error($e->getValidatorMessage()->getMessage(), $value);
-
-            return false;
+            return $e->getValidatorMessage();
         }
     }
 }
