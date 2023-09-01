@@ -49,13 +49,15 @@ else if (isset($_SERVER[$real_ip_header]))
 if (!$ip)
     response(555, ["error" => "noIp"]);
 
-$redis_cache_ttl = config('redis.cache_ttl');
+$config = config();
+
+$redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
 
 $path = explode("?", $_SERVER["REQUEST_URI"])[0];
 
-$server = parse_uri(config('api.frontend'));
+$server = parse_url($config["api"]["frontend"]);
 
-if ($server && @$server['path']) $path = substr($path, strlen($server['path']));
+if ($server && $server['path']) $path = substr($path, strlen($server['path']));
 if ($path && $path[0] == '/') $path = substr($path, 1);
 
 $m = explode('/', $path);
