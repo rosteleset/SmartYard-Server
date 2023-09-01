@@ -1,45 +1,43 @@
 <?php
 
-    /**
-     * subscribers api
-     */
+/**
+ * subscribers api
+ */
 
-    namespace api\subscribers
+namespace api\subscribers {
+
+    use api\api;
+
+    /**
+     * flatCameras method
+     */
+    class flatCameras extends api
     {
 
-        use api\api;
-
-        /**
-         * flatCameras method
-         */
-
-        class flatCameras extends api
+        public static function POST($params)
         {
+            $households = backend("households");
 
-            public static function POST($params)
-            {
-                $households = backend("households");
+            $cameraId = $households->addCamera("flat", $params["flatId"], $params["cameraId"]);
 
-                $cameraId = $households->addCamera("flat", $params["flatId"], $params["cameraId"]);
+            return api::ANSWER($cameraId, ($cameraId !== false) ? "cameraId" : "notAcceptable");
+        }
 
-                return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":"notAcceptable");
-            }
+        public static function DELETE($params)
+        {
+            $households = backend("households");
 
-            public static function DELETE($params)
-            {
-                $households = backend("households");
+            $success = $households->unlinkCamera("flat", $params["flatId"], $params["cameraId"]);
 
-                $success = $households->unlinkCamera("flat", $params["flatId"], $params["cameraId"]);
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
-
-            public static function index()
-            {
-                return [
-                    "POST" => "#same(addresses,house,PUT)",
-                    "DELETE" => "#same(addresses,house,PUT)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "POST" => "#same(addresses,house,PUT)",
+                "DELETE" => "#same(addresses,house,PUT)",
+            ];
         }
     }
+}

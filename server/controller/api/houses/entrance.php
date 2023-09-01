@@ -1,66 +1,64 @@
 <?php
 
-    /**
-     * houses api
-     */
+/**
+ * houses api
+ */
 
-    namespace api\houses
+namespace api\houses {
+
+    use api\api;
+
+    /**
+     * entrance method
+     */
+    class entrance extends api
     {
 
-        use api\api;
 
-        /**
-         * entrance method
-         */
-
-        class entrance extends api
+        public static function POST($params)
         {
+            $households = backend("households");
 
-
-            public static function POST($params)
-            {
-                $households = backend("households");
-
-                if (@$params["entranceId"]) {
-                    $success = $households->addEntrance($params["houseId"], $params["entranceId"], $params["prefix"]);
-
-                    return api::ANSWER($success);
-                } else {
-                    $entranceId = $households->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["locksDisabled"], $params["cmsLevels"]);
-
-                    return api::ANSWER($entranceId, ($entranceId !== false)?"entranceId":false);
-                }
-            }
-
-            public static function PUT($params)
-            {
-                $households = backend("households");
-
-                $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["locksDisabled"], $params["cmsLevels"]);
+            if (@$params["entranceId"]) {
+                $success = $households->addEntrance($params["houseId"], $params["entranceId"], $params["prefix"]);
 
                 return api::ANSWER($success);
-            }
+            } else {
+                $entranceId = $households->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["locksDisabled"], $params["cmsLevels"]);
 
-            public static function DELETE($params)
-            {
-                $households = backend("households");
-
-                if (@$params["houseId"]) {
-                    $success = $households->deleteEntrance($params["_id"], $params["houseId"]);
-                } else {
-                    $success = $households->destroyEntrance($params["_id"]);
-                }
-
-                return api::ANSWER($success);
-            }
-
-            public static function index()
-            {
-                return [
-                    "POST" => "#same(addresses,house,PUT)",
-                    "PUT" => "#same(addresses,house,PUT)",
-                    "DELETE" => "#same(addresses,house,PUT)",
-                ];
+                return api::ANSWER($entranceId, ($entranceId !== false) ? "entranceId" : false);
             }
         }
+
+        public static function PUT($params)
+        {
+            $households = backend("households");
+
+            $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["locksDisabled"], $params["cmsLevels"]);
+
+            return api::ANSWER($success);
+        }
+
+        public static function DELETE($params)
+        {
+            $households = backend("households");
+
+            if (@$params["houseId"]) {
+                $success = $households->deleteEntrance($params["_id"], $params["houseId"]);
+            } else {
+                $success = $households->destroyEntrance($params["_id"]);
+            }
+
+            return api::ANSWER($success);
+        }
+
+        public static function index()
+        {
+            return [
+                "POST" => "#same(addresses,house,PUT)",
+                "PUT" => "#same(addresses,house,PUT)",
+                "DELETE" => "#same(addresses,house,PUT)",
+            ];
+        }
     }
+}

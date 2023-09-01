@@ -340,14 +340,14 @@ namespace backends\authorization {
             return true;
         }
 
-        public function capabilities()
+        public function capabilities(): array
         {
             return [
                 "mode" => "rw",
             ];
         }
 
-        public function cleanup()
+        public function cleanup(): int
         {
             $n = 0;
 

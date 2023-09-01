@@ -108,17 +108,3 @@ CREATE TABLE core_api_methods_by_backend
     aid character varying not null primary key,
     backend character varying
 );
-
--- running processes
-CREATE TABLE core_running_processes
-(
-    running_process_id serial primary key,
-    pid integer,
-    ppid integer,
-    start integer,
-    process character varying,
-    params character varying,
-    done integer,
-    result character varying,
-    expire integer
-);

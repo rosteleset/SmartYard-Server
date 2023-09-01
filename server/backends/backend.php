@@ -44,10 +44,9 @@ namespace backends {
         /**
          * returns class capabilities
          *
-         * @return mixed
+         * @return array|bool
          */
-
-        public function capabilities()
+        public function capabilities(): array|bool
         {
             return false;
         }
@@ -55,12 +54,11 @@ namespace backends {
         /**
          * garbage collector
          *
-         * @return boolean
+         * @return int
          */
-
-        public function cleanup()
+        public function cleanup(): int
         {
-            return false;
+            return 0;
         }
 
         /**
@@ -69,8 +67,7 @@ namespace backends {
          * @param $params
          * @return boolean
          */
-
-        public function allow($params)
+        public function allow($params): bool
         {
             return false;
         }
@@ -79,10 +76,11 @@ namespace backends {
          * check if object is used in backend
          * for example, usage("house", 4474)
          *
+         * @param $object
+         * @param $id
          * @return boolean
          */
-
-        public function usage($object, $id)
+        public function usage($object, $id): bool
         {
             return false;
         }
@@ -91,8 +89,7 @@ namespace backends {
          * @param $part = [ 'minutely', '5min', 'hourly', 'daily', 'monthly' ]
          * @return false
          */
-
-        public function cron($part)
+        public function cron(string $part): bool
         {
             return true;
         }
@@ -100,7 +97,7 @@ namespace backends {
         /**
          * @return bool
          */
-        public function check()
+        public function check(): bool
         {
             return true;
         }
@@ -110,7 +107,7 @@ namespace backends {
          * @param $login string
          * @return void
          */
-        public function setCreds($uid, $login)
+        public function setCreds(int $uid, string $login)
         {
             $this->uid = $uid;
             $this->login = $login;

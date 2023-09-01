@@ -17,11 +17,9 @@ namespace api\configs {
         {
             $frs = backend("frs");
 
-            $sections = [
-                "FRSServers" => $frs->servers(),
-            ];
+            $sections = ["FRSServers" => $frs->servers(),];
 
-            return api::ANSWER($sections, ($sections !== false) ? "sections" : false);
+            return api::ANSWER($sections, "sections");
         }
 
         public static function index()

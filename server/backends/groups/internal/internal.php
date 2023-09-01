@@ -217,7 +217,7 @@ namespace backends\groups {
             return true;
         }
 
-        public function cleanup()
+        public function cleanup(): int
         {
             $n = 0;
 
@@ -239,7 +239,7 @@ namespace backends\groups {
             return $n;
         }
 
-        public function capabilities()
+        public function capabilities(): array
         {
             return [
                 "mode" => "rw",
@@ -275,7 +275,7 @@ namespace backends\groups {
         /**
          * @inheritDoc
          */
-        public function cron($part)
+        public function cron($part): bool
         {
             if ($part == "5min") {
                 $this->cleanup();

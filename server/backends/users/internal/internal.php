@@ -325,17 +325,17 @@ namespace backends\users {
         /**
          * returns class capabilities
          *
-         * @return mixed
+         * @return array
          */
 
-        public function capabilities()
+        public function capabilities(): array
         {
             return [
                 "mode" => "rw",
             ];
         }
 
-        public function cleanup()
+        public function cleanup(): int
         {
             $n = 0;
 

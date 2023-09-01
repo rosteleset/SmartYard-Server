@@ -8,9 +8,8 @@ if (!isset(
     $postdata["apartmentNumber"],
     $postdata["apartmentId"],
     $postdata["date"],
-)) {
+))
     response(406, "Invalid payload");
-}
 
 [
     "ip" => $ip,

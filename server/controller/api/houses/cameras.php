@@ -1,45 +1,43 @@
 <?php
 
-    /**
-     * houses api
-     */
+/**
+ * houses api
+ */
 
-    namespace api\houses
+namespace api\houses {
+
+    use api\api;
+
+    /**
+     * entrance method
+     */
+    class cameras extends api
     {
 
-        use api\api;
-
-        /**
-         * entrance method
-         */
-
-        class cameras extends api
+        public static function POST($params)
         {
+            $households = backend("households");
 
-            public static function POST($params)
-            {
-                $households = backend("households");
+            $cameraId = $households->addCamera("house", $params["houseId"], $params["cameraId"]);
 
-                $cameraId = $households->addCamera("house", $params["houseId"], $params["cameraId"]);
+            return api::ANSWER($cameraId, ($cameraId !== false) ? "cameraId" : false);
+        }
 
-                return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":false);
-            }
+        public static function DELETE($params)
+        {
+            $households = backend("households");
 
-            public static function DELETE($params)
-            {
-                $households = backend("households");
+            $success = $households->unlinkCamera("house", $params["houseId"], $params["cameraId"]);
 
-                $success = $households->unlinkCamera("house", $params["houseId"], $params["cameraId"]);
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
-
-            public static function index()
-            {
-                return [
-                    "POST" => "#same(addresses,house,PUT)",
-                    "DELETE" => "#same(addresses,house,PUT)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "POST" => "#same(addresses,house,PUT)",
+                "DELETE" => "#same(addresses,house,PUT)",
+            ];
         }
     }
+}

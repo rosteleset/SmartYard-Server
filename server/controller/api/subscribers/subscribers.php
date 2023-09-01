@@ -4,15 +4,13 @@
  * subscribers api
  */
 
-namespace api\subscribers
-{
+namespace api\subscribers {
 
     use api\api;
 
     /**
      * subscribers method
      */
-
     class subscribers extends api
     {
 
@@ -26,7 +24,7 @@ namespace api\subscribers
                 "keys" => $households->getKeys(@$params["by"], @$params["query"]),
             ];
 
-            return api::ANSWER($flat, $flat?"flat":false);
+            return api::ANSWER($flat, $flat ? "flat" : false);
         }
 
         public static function index()

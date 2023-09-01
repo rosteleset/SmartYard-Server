@@ -4,15 +4,13 @@
  * subscribers api
  */
 
-namespace api\subscribers
-{
+namespace api\subscribers {
 
     use api\api;
 
     /**
      * key method
      */
-
     class key extends api
     {
 
@@ -22,7 +20,7 @@ namespace api\subscribers
 
             $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"]);
 
-            return api::ANSWER($keyId, ($keyId !== false)?"key":false);
+            return api::ANSWER($keyId, ($keyId !== false) ? "key" : false);
         }
 
         public static function PUT($params)

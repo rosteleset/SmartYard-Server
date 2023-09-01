@@ -1037,7 +1037,7 @@ namespace backends\addresses {
         /**
          * @inheritDoc
          */
-        function cleanup()
+        function cleanup(): int
         {
             $n = 0;
 
@@ -1066,7 +1066,7 @@ namespace backends\addresses {
         /**
          * @inheritDoc
          */
-        function cron($part)
+        function cron($part): bool
         {
             if ($part === "5min") {
                 $this->cleanup();

@@ -6,6 +6,8 @@ use hw\domophones\domophones;
 use Selpol\Service\DatabaseService;
 use Selpol\Service\RedisService;
 
+$backends = [];
+
 if (!function_exists('backend')) {
     /**
      * loads backend module by config, returns false if backend not found or can't be loaded

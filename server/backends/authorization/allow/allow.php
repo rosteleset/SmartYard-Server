@@ -1,61 +1,66 @@
 <?php
 
-    /**
-     * backends authorization namespace
-     */
+/**
+ * backends authorization namespace
+ */
 
-    namespace backends\authorization {
+namespace backends\authorization {
+
+    /**
+     * allow-all security class
+     */
+    class allow extends authorization
+    {
 
         /**
-         * allow-all security class
+         * allow all
+         *
+         * @param object $params all params passed to api handlers
+         * @return boolean allow or not
          */
 
-        class allow extends authorization {
+        public function allow($params): bool
+        {
+            return true;
+        }
 
-            /**
-             * allow all
-             *
-             * @param object $params all params passed to api handlers
-             * @return boolean allow or not
-             */
+        /**
+         * list of available methods for user
+         *
+         * @param integer $uid uid
+         * @return array
+         */
 
-            public function allow($params) {
-                return true;
-            }
+        public function allowedMethods($uid)
+        {
+            return $this->methods();
+        }
 
-            /**
-             * list of available methods for user
-             *
-             * @param integer $uid uid
-             * @return array
-             */
+        /**
+         * stub
+         */
 
-            public function allowedMethods($uid) {
-                return $this->methods();
-            }
+        public function getRights()
+        {
+            return false;
+        }
 
-            /**
-             * stub
-             */
+        /**
+         * stub
+         */
 
-            public function getRights() {
-                return false;
-            }
+        public function setRights($user, $id, $api, $method, $allow, $deny)
+        {
+            return false;
+        }
 
-            /**
-             * stub
-             */
+        /**
+         * stub
+         */
 
-            public function setRights($user, $id, $api, $method, $allow, $deny) {
-                return false;
-            }
-
-            /**
-             * stub
-             */
-
-            public function capabilities() {
-                return false;
-            }
+        public function capabilities(): bool
+        {
+            return false;
         }
     }
+}

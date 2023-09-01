@@ -166,7 +166,7 @@ namespace backends\files {
         /**
          * @inheritDoc
          */
-        public function cron($part)
+        public function cron($part): bool
         {
             if ($part == '5min') {
                 $cursor = $this->mongo->{$this->dbName}->{"fs.files"}->find(["metadata.expire" => ['$lt' => time()]]);

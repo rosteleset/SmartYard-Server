@@ -185,7 +185,7 @@ namespace backends\cameras {
         /**
          * @inheritDoc
          */
-        public function cron($part)
+        public function cron($part): bool
         {
             if ($part === "hourly") {
                 $cameras = $this->db->get("select camera_id, url from cameras");

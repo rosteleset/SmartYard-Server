@@ -214,7 +214,7 @@ namespace backends\frs {
         /**
          * @inheritDoc
          */
-        public function cron($part)
+        public function cron($part): bool
         {
             if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler'])
                 $this->syncData();

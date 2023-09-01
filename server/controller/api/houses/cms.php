@@ -1,45 +1,43 @@
 <?php
 
-    /**
-     * houses api
-     */
+/**
+ * houses api
+ */
 
-    namespace api\houses
+namespace api\houses {
+
+    use api\api;
+
+    /**
+     * house method
+     */
+    class cms extends api
     {
 
-        use api\api;
-
-        /**
-         * house method
-         */
-
-        class cms extends api
+        public static function GET($params)
         {
+            $households = backend("households");
 
-            public static function GET($params)
-            {
-                $households = backend("households");
+            $cms = $households->getCms($params["_id"]);
 
-                $cms = $households->getCms($params["_id"]);
+            return api::ANSWER($cms, ($cms !== false) ? "cms" : false);
+        }
 
-                return api::ANSWER($cms, ($cms !== false)?"cms":false);
-            }
+        public static function PUT($params)
+        {
+            $households = backend("households");
 
-            public static function PUT($params)
-            {
-                $households = backend("households");
+            $success = $households->setCms($params["_id"], $params["cms"]);
 
-                $success = $households->setCms($params["_id"], $params["cms"]);
+            return api::ANSWER($success);
+        }
 
-                return api::ANSWER($success);
-            }
-
-            public static function index()
-            {
-                return [
-                    "GET" => "#same(addresses,house,GET)",
-                    "PUT" => "#same(addresses,house,PUT)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "GET" => "#same(addresses,house,GET)",
+                "PUT" => "#same(addresses,house,PUT)",
+            ];
         }
     }
+}

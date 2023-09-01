@@ -5,23 +5,14 @@
 
 use Selpol\Service\DatabaseService;
 
-if (!isset(
-    $postdata["date"],
-    $postdata["ip"],
-    $postdata["motionActive"]
-)) {
+if (!isset($postdata["date"], $postdata["ip"], $postdata["motionActive"]))
     response(406, "Invalid payload");
-}
 
 $db = container(DatabaseService::class);
 
 $logger = logger('motion');
 
-[
-    "date" => $date,
-    "ip" => $ip,
-    "motionActive" => $motionActive
-] = $postdata;
+["date" => $date, "ip" => $ip, "motionActive" => $motionActive] = $postdata;
 
 $query = 'SELECT camera_id, frs FROM cameras WHERE frs != :frs AND ip = :ip';
 $params = ["ip" => $ip, "frs" => "-"];
@@ -33,10 +24,7 @@ if (!$result) {
     response(200, "FRS not enabled on this stream");
 }
 
-[0 => [
-    "camera_id" => $streamId,
-    "frs" => $frsUrl
-]] = $result;
+[0 => ["camera_id" => $streamId, "frs" => $frsUrl]] = $result;
 
 $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
 

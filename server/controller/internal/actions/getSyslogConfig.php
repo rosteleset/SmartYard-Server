@@ -13,7 +13,6 @@ $payload = ['clickhouseService' => [
     'database' => $config['backends']['plog']['database'],
     'username' => $config['backends']['plog']['username'],
     'password' => $config['backends']['plog']['password'],
-],
-    'hw' => $config['syslog_servers']];
+], 'hw' => $config['syslog_servers']];
 
 response(200, $payload);

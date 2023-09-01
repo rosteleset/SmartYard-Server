@@ -42,7 +42,7 @@ namespace backends\queue {
         /**
          * @inheritDoc
          */
-        function cron($part)
+        function cron($part): bool
         {
             $this->db->modify("delete from core_running_processes where done is not null and expire < :expire", ["expire" => time()]);
 

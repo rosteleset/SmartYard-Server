@@ -1,18 +1,24 @@
 <?php
 
-/**
- * initialize or upgrade database
- *
- * @return void
- */
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Selpol\Service\DatabaseService;
 
+/**
+ * @throws ContainerExceptionInterface
+ * @throws NotFoundExceptionInterface
+ */
 function init_db()
 {
-    global $config, $db, $version;
+    $db = container(DatabaseService::class);
+
+    $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
+
+    $version = $query ? (int)($query->fetch())['var_value'] : 0;
 
     $install = json_decode(file_get_contents("sql/install.json"), true);
 
-    $driver = explode(":", $config["db"]["dsn"])[0];
+    $driver = explode(":", config('db.dsn'))[0];
 
     echo "current version $version\n";
 

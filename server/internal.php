@@ -10,19 +10,10 @@ $container = bootstrap();
 
 register_shutdown_function(static fn() => $container->dispose());
 
-try {
-    // TODO: Со временем удалить
-    $config = config();
-} catch (Exception $exception) {
-    echo json_encode(['code' => 503, 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен'], JSON_UNESCAPED_UNICODE);
-
-    exit(0);
-}
-
 $logger = logger('internal');
 
 $backends = [];
-$redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
+$redis_cache_ttl = config('redis.cache_ttl') ?? 3600;
 
 function response($code = 204, $data = false, $name = false, $message = false)
 {
@@ -166,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $path = explode("?", $_SERVER["REQUEST_URI"])[0];
 
-    $server = parse_url($config["api"]["internal"]);
+    $server = config('api.internal');
 
     if ($server && $server['path']) {
         $path = substr($path, strlen($server['path']));

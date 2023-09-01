@@ -9,25 +9,8 @@ class Container implements ContainerInterface
 {
     private static ?Container $container = null;
 
-    private array $files = [];
-
     private array $instances = [];
     private array $factories = [];
-
-    public function file(string $path)
-    {
-        if (array_key_exists($path, $this->files))
-            return;
-
-        if (file_exists($path)) {
-            $callable = require_once $path;
-
-            if (is_callable($callable))
-                $callable($this);
-
-            $this->files[$path] = true;
-        }
-    }
 
     public function singleton(string $id, ContainerFactory|callable $factory)
     {
@@ -37,6 +20,11 @@ class Container implements ContainerInterface
     public function factory(string $id, ContainerFactory|callable $factory)
     {
         $this->factories[$id] = [false, $factory];
+    }
+
+    public function set(string $id, mixed $value)
+    {
+        $this->instances[$id] = $value;
     }
 
     public function get(string $id)
@@ -76,7 +64,24 @@ class Container implements ContainerInterface
         }
     }
 
-    // TODO: Потом удалить полностью статический доступ к классу
+    public static function file(string $path): Container
+    {
+        if (file_exists($path)) {
+            $callable = require_once $path;
+
+            if (is_callable($callable)) {
+                $container = self::instance();
+
+                $callable($container);
+
+                return $container;
+            }
+        }
+
+        throw new ContainerException(null, 'File "' . $path . '" not exist');
+    }
+
+    // TODO: Потом полностью удалить статический доступ к классу
     public static function instance(): Container
     {
         if (self::$container === null)

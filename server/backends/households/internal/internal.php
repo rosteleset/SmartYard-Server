@@ -1645,7 +1645,7 @@ namespace backends\households {
         /**
          * @inheritDoc
          */
-        public function cleanup()
+        public function cleanup(): int
         {
             $cameras = backend("cameras");
             $addresses = backend("addresses");
@@ -1743,7 +1743,7 @@ namespace backends\households {
         /**
          * @inheritDoc
          */
-        public function cron($part)
+        public function cron($part): bool
         {
             if ($part === "hourly") {
                 $domophones = $this->db->get("select house_domophone_id, url from houses_domophones");

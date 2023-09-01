@@ -4,6 +4,7 @@
   "license": "GNU GENERAL PUBLIC LICENSE",
   "autoload": {
     "psr-4": {
+      "Selpol\\Kernel\\": "./kernel/",
       "Selpol\\Container\\": "./container/",
       "Selpol\\Cache\\": "./cache/",
       "Selpol\\Task\\": "./task/",

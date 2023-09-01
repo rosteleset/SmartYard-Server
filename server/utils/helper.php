@@ -4,6 +4,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Selpol\Container\Container;
+use Selpol\Kernel\Kernel;
 use Selpol\Logger\FileLogger;
 use Selpol\Task\Task;
 use Selpol\Task\TaskContainer;
@@ -27,6 +28,26 @@ if (!function_exists('logger')) {
     }
 }
 
+if (!function_exists('kernel')) {
+    function kernel(): ?Kernel
+    {
+        return Kernel::instance();
+    }
+}
+
+if (!function_exists('container')) {
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    function container(string $key): mixed
+    {
+        $container = kernel()?->getContainer() ?? Container::instance();
+
+        return $container->get($key);
+    }
+}
+
 if (!function_exists('task')) {
     function task(Task $task): TaskContainer
     {
@@ -44,17 +65,6 @@ if (!function_exists('validate')) {
         } catch (ValidatorException $e) {
             return $e->getValidatorMessage();
         }
-    }
-}
-
-if (!function_exists('container')) {
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    function container(string $key): mixed
-    {
-        return Container::instance()->get($key);
     }
 }
 
