@@ -49,11 +49,11 @@ else if (isset($_SERVER[$real_ip_header]))
 if (!$ip)
     response(555, ["error" => "noIp"]);
 
-$redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
+$redis_cache_ttl = config('redis.cache_ttl');
 
 $path = explode("?", $_SERVER["REQUEST_URI"])[0];
 
-$server = parse_url($config["api"]["frontend"]);
+$server = parse_uri(config('api.frontend'));
 
 if ($server && $server['path']) $path = substr($path, strlen($server['path']));
 if ($path && $path[0] == '/') $path = substr($path, 1);
@@ -176,7 +176,7 @@ if ($http_authorization && $auth) {
 
 $params["_md5"] = md5(print_r($params, true));
 
-$params["_config"] = $config;
+$params["_config"] = config();
 $params["_redis"] = container(RedisService::class)->getRedis();
 $params["_db"] = container(DatabaseService::class);
 
