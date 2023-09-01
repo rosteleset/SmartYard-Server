@@ -43,7 +43,7 @@ class API {
 
             return await axios(config);
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| sendLog error: ", error.message); // TODO: hm
+            console.error(getTimestamp(new Date()),"||", ip, "|| sendLog error: ", error.message);
         }
     }
 
@@ -58,7 +58,7 @@ class API {
         try {
             return await internalAPI.post("/actions/motionDetection",{ date, ip, motionActive });
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message); // TODO: hm
+            console.error(getTimestamp(new Date()),"||", ip, "|| motionDetection error: ", error.message);
         }
     }
 
@@ -73,7 +73,7 @@ class API {
         try {
             return await internalAPI.post("/actions/callFinished", { date, ip, callId });
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message); // TODO: hm
+            console.error(getTimestamp(new Date()),"||", ip, "|| callFinished error: ", error.message);
         }
     }
 
@@ -96,7 +96,7 @@ class API {
                 apartmentId
             });
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message); // TODO: hm
+            console.error(getTimestamp(new Date()),"||", ip, "|| setRabbitGates error: ", error.message);
         }
     }
 
@@ -126,7 +126,7 @@ class API {
             }
             return await internalAPI.post("/actions/openDoor", payload);
         } catch (error) {
-            console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message); // TODO: hm
+            console.error(getTimestamp(new Date()),"||", ip, "|| openDoor error: ", error.message);
         }
     }
 }

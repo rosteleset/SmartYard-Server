@@ -18,10 +18,28 @@ const eventHandler = async data => {
     const now = getTimestamp(new Date(date_time));
 
     switch (event) {
+        case 'intercom.talking':
+            switch (payload?.step) {
+                case 'cancel': // The call ended by pressing the cancel button or by timeout
+                case 'finish_handset': // CMS call ended
+                case 'finish_cloud': // SIP call ended
+                    await API.callFinished({date: now, ip: device_id});
+                    break;
+
+                case 'open_door_handset': // Opening door by CMS handset
+                    await API.setRabbitGates({date: now, ip: device_id, apartmentNumber: parseInt(payload?.flat)});
+                    break;
+            }
+            break;
+
+        case 'intercom.open_door':
+            await API.setRabbitGates({date: now, ip: device_id, apartmentNumber: parseInt(payload?.flat)});
+            break;
+
         case 'intercom.key': // Opening door by RFID key
             if (payload.state === 'valid') {
                 const rfidParts = payload.id.match(/.{1,2}/g);
-                const rfid = '000000' + rfidParts.reverse().join('');
+                const rfid = rfidParts.reverse().join('').padStart(14, '0');
                 await API.openDoor({date: now, ip: device_id, door: 0, detail: rfid, by: 'rfid'});
             }
             break;
