@@ -48,7 +48,14 @@ class QrTask extends Task
 
         $this->setProgress(25);
 
-        return $this->createQrZip($qr);
+        $this->createQrZip($qr);
+
+        $uuids = $this->files->searchFiles(['filename' => $house['houseFull'] . ' QR.zip']);
+
+        if (count($uuids) > 0)
+            return $uuids[count($uuids) - 1]['id'];
+
+        return null;
     }
 
     private function getOrCreateQr(array $house): array
