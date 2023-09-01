@@ -26,6 +26,8 @@ namespace api\addresses {
             if ($validate instanceof ValidatorMessage)
                 return self::ERROR($validate->getMessage());
 
+            usleep(100);
+
             $uuid = task(new QrTask($validate['_id'], null, $validate['override']))->sync();
 
             header('Content-Type: application/zip');
