@@ -1,6 +1,7 @@
 <?php
 
 use Selpol\Service\DatabaseService;
+use Selpol\Service\RedisService;
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
@@ -23,11 +24,11 @@ require_once "controller/api/api.php";
 
 $container = bootstrap();
 
+register_shutdown_function(static fn() => $container->dispose());
+
 try {
     // TODO: Со временем удалить
-    $config = $container->get('config');
-    $db = $container->get(DatabaseService::class);
-    $redis = $container->get(Redis::class);
+    $config = config();
 } catch (Exception $exception) {
     echo json_encode(['code' => 503, 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен'], JSON_UNESCAPED_UNICODE);
 
@@ -185,15 +186,15 @@ if ($http_authorization && $auth) {
 $params["_md5"] = md5(print_r($params, true));
 
 $params["_config"] = $config;
-$params["_redis"] = $redis;
-$params["_db"] = $db;
+$params["_redis"] = container(RedisService::class)->getRedis();
+$params["_db"] = container(DatabaseService::class);
 
 $params["_backends"] = $backends;
 
 $params["_ip"] = $ip;
 
 if (@$params["_login"])
-    $redis->set("last_" . md5($params["_login"]), time());
+    $params["_redis"]->set("last_" . md5($params["_login"]), time());
 
 if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
     if ($backends["authorization"]->allow($params)) {
@@ -201,7 +202,7 @@ if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
 
         if ($params["_request_method"] === "GET") {
             try {
-                $cache = json_decode($redis->get("cache_" . $params["_md5"]) . "_" . $auth["uid"], true);
+                $cache = json_decode($params["_redis"]->get("cache_" . $params["_md5"]) . "_" . $auth["uid"], true);
             } catch (Exception $e) {
                 error_log(print_r($e, true));
             }
@@ -230,7 +231,7 @@ if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
                     if ((int)$code) {
                         if ($params["_request_method"] == "GET" && (int)$code === 200) {
                             $ttl = (array_key_exists("cache", $result)) ? ((int)$cache) : $redis_cache_ttl;
-                            $redis->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $ttl, json_encode($result));
+                            $params["_redis"]->setex("cache_" . $params["_md5"] . "_" . $auth["uid"], $ttl, json_encode($result));
                         }
 
                         response($code, $result[$code]);

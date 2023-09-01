@@ -2,10 +2,10 @@
 
 namespace Selpol\Container;
 
-use Exception;
 use Psr\Container\ContainerExceptionInterface;
+use RuntimeException;
 
-class ContainerException extends Exception implements ContainerExceptionInterface
+class ContainerException extends RuntimeException implements ContainerExceptionInterface
 {
     private Container $container;
 

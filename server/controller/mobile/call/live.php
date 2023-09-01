@@ -1,8 +1,10 @@
 <?php
 
+use Selpol\Service\RedisService;
+
 $hash = $param;
 
-$json_camera = @$redis->get("live_" . $hash);
+$json_camera = container(RedisService::class)->getRedis()->get("live_" . $hash);
 $camera_params = @json_decode($json_camera, true);
 
 $camera = @camera($camera_params["model"], $camera_params["url"], $camera_params["credentials"]);

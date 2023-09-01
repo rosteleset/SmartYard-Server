@@ -56,8 +56,6 @@ class TaskContainer
      */
     public function sync(): mixed
     {
-        $this->task->setContainer(bootstrap_if_need());
-
         return $this->task->onTask();
     }
 
@@ -67,18 +65,13 @@ class TaskContainer
         $queue = $this->queue ?? TaskService::QUEUE_DEFAULT;
 
         try {
-            $manager = TaskService::instance();
-            $manager->setLogger($logger);
-
-            $manager->enqueue($queue, $this->task, $this->start);
+            container(TaskService::class)->enqueue($queue, $this->task, $this->start);
 
             return true;
         } catch (Exception $exception) {
             $logger->error($exception);
 
             return false;
-        } finally {
-            TaskService::instance()->close();
         }
     }
 }

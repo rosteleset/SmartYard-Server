@@ -1,49 +1,52 @@
 <?php
 
+/**
+ * addresses api
+ */
+
+namespace api\addresses {
+
+    use api\api;
+
     /**
-     * addresses api
+     * city method
      */
+    class city extends api
+    {
+        public static function PUT($params)
+        {
+            $addresses = backend("addresses");
 
-    namespace api\addresses {
+            $success = $addresses->modifyCity($params["_id"], $params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
-        use api\api;
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-        /**
-         * city method
-         */
+        public static function POST($params)
+        {
+            $addresses = backend("addresses");
 
-        class city extends api {
+            $cityId = $addresses->addCity($params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
-            public static function PUT($params) {
-                $addresses = backend("addresses");
+            return api::ANSWER($cityId, ($cityId !== false) ? "cityId" : "notAcceptable");
+        }
 
-                $success = $addresses->modifyCity($params["_id"], $params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
+        public static function DELETE($params)
+        {
+            $addresses = backend("addresses");
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
+            $success = $addresses->deleteCity($params["_id"]);
 
-            public static function POST($params) {
-                $addresses = backend("addresses");
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-                $cityId = $addresses->addCity($params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
-
-                return api::ANSWER($cityId, ($cityId !== false)?"cityId":"notAcceptable");
-            }
-
-            public static function DELETE($params) {
-                $addresses = backend("addresses");
-
-                $success = $addresses->deleteCity($params["_id"]);
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
-
-            public static function index() {
-                return [
-                    "PUT" => "#same(addresses,house,PUT)",
-                    "POST" => "#same(addresses,house,POST)",
-                    "DELETE" => "#same(addresses,house,DELETE)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "PUT" => "#same(addresses,house,PUT)",
+                "POST" => "#same(addresses,house,POST)",
+                "DELETE" => "#same(addresses,house,DELETE)",
+            ];
         }
     }
+}

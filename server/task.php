@@ -1,15 +1,12 @@
 <?php
 
 use Psr\Log\LoggerInterface;
-use Selpol\Container\Container;
-use Selpol\Service\DatabaseService;
+use Psr\Log\LoggerTrait;
 use Selpol\Task\Task;
 use Selpol\Task\TaskCallback;
 use Selpol\Service\TaskService;
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
-
-mb_internal_encoding("UTF-8");
 
 require_once "backends/backend.php";
 
@@ -17,10 +14,10 @@ require_once "controller/api/api.php";
 
 $container = bootstrap();
 
+register_shutdown_function(static fn() => $container->dispose());
+
 // TODO: Со временем удалить
-$config = $container->get('config');
-$db = $container->get(DatabaseService::class);
-$redis = $container->get(Redis::class);
+$config = config();
 
 $args = [];
 
@@ -32,12 +29,26 @@ for ($i = 1; $i < count($argv); $i++) {
 
 $queue = array_key_exists('--queue', $args) ? $args['--queue'] : 'default';
 
-$logger = logger('task');
+$logger = new class(logger('task')) implements LoggerInterface {
+    use LoggerTrait;
 
-$manager = TaskService::instance();
+    private LoggerInterface $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    public function log($level, Stringable|string $message, array $context = []): void
+    {
+        echo '[' . date('Y-m-d H:i:s') . '] ' . $level . ': ' . $message . ' ' . json_encode($context, JSON_UNESCAPED_UNICODE) . PHP_EOL;
+
+        $this->logger->log($level, $message, $context);
+    }
+};
+
+$manager = container(TaskService::class);
 $manager->setLogger($logger);
-
-register_shutdown_function(static fn() => $manager->close());
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
     sapi_windows_set_ctrl_handler(static function (int $event) {
@@ -52,18 +63,16 @@ else {
 }
 
 try {
-    $manager->dequeue($queue, new class($queue, $logger, $container) implements TaskCallback {
+    $manager->dequeue($queue, new class($queue, $logger) implements TaskCallback {
         private string $queue;
 
         private LoggerInterface $logger;
-        private Container $container;
 
-        public function __construct(string $queue, LoggerInterface $logger, Container $container)
+        public function __construct(string $queue, LoggerInterface $logger)
         {
             $this->queue = $queue;
 
             $this->logger = $logger;
-            $this->container = $container;
         }
 
         public function __invoke(Task $task)
@@ -71,7 +80,6 @@ try {
             $this->logger->info('Dequeue start task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title]);
 
             $task->setLogger($this->logger);
-            $task->setContainer($this->container);
 
             try {
                 $task->onTask();

@@ -1,7 +1,5 @@
 <?php
 
-use Selpol\Service\DatabaseService;
-
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 mb_internal_encoding("UTF-8");
@@ -10,11 +8,11 @@ require_once "backends/backend.php";
 
 $container = bootstrap();
 
+register_shutdown_function(static fn() => $container->dispose());
+
 try {
     // TODO: Со временем удалить
-    $config = $container->get('config');
-    $db = $container->get(DatabaseService::class);
-    $redis = $container->get(Redis::class);
+    $config = config();
 } catch (Exception $exception) {
     echo json_encode(['code' => 503, 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен'], JSON_UNESCAPED_UNICODE);
 

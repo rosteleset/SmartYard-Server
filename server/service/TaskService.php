@@ -9,10 +9,11 @@ use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Selpol\Container\ContainerDispose;
 use Selpol\Task\Task;
 use Selpol\Task\TaskCallback;
 
-class TaskService implements LoggerAwareInterface
+class TaskService implements LoggerAwareInterface, ContainerDispose
 {
     use LoggerAwareTrait;
 
@@ -25,6 +26,11 @@ class TaskService implements LoggerAwareInterface
     public const QUEUE_DEFAULT = 'default';
 
     private static ?TaskService $instance = null;
+
+    public function __construct()
+    {
+        $this->setLogger(logger('task'));
+    }
 
     /**
      * @throws Exception
@@ -93,11 +99,8 @@ class TaskService implements LoggerAwareInterface
         }
     }
 
-    public static function instance(): TaskService
+    public function dispose()
     {
-        if (is_null(self::$instance))
-            self::$instance = new TaskService();
-
-        return self::$instance;
+        $this->close();
     }
 }

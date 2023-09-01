@@ -3,6 +3,8 @@
 use backends\backend;
 use hw\cameras\cameras;
 use hw\domophones\domophones;
+use Selpol\Service\DatabaseService;
+use Selpol\Service\RedisService;
 
 if (!function_exists('backend')) {
     /**
@@ -14,20 +16,23 @@ if (!function_exists('backend')) {
      */
     function backend(string $backend, bool $login = false): backend|false
     {
-        global $config, $db, $redis, $backends;
+        global $backends;
 
         if (@$backends[$backend])
             return $backends[$backend];
         else {
-            if (@$config["backends"][$backend]) {
+            if (config('backends.' . $backend)) {
+                $config = config('backends.' . $backend);
+
                 try {
                     if (file_exists(path('backends/' . $backend . '/' . $backend . '.php')) && !class_exists("backends\\$backend\\$backend"))
                         require_once path('backends/' . $backend . '/' . $backend . '.php');
-                    if (file_exists(path("backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php"))) {
-                        require_once path("backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php");
 
-                        $className = "backends\\$backend\\" . $config["backends"][$backend]["backend"];
-                        $backends[$backend] = new $className($config, $db, $redis, $login);
+                    if (file_exists(path("backends/$backend/" . $config["backend"] . "/" . $config["backend"] . ".php"))) {
+                        require_once path("backends/$backend/" . $config["backend"] . "/" . $config["backend"] . ".php");
+
+                        $className = "backends\\$backend\\" . $config["backend"];
+                        $backends[$backend] = new $className(config(), container(DatabaseService::class), container(RedisService::class)->getRedis(), $login);
 
                         return $backends[$backend];
                     } else return false;

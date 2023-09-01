@@ -1,49 +1,53 @@
 <?php
 
+/**
+ * addresses api
+ */
+
+namespace api\addresses {
+
+    use api\api;
+
     /**
-     * addresses api
+     * street method
      */
+    class street extends api
+    {
 
-    namespace api\addresses {
+        public static function PUT($params)
+        {
+            $addresses = backend("addresses");
 
-        use api\api;
+            $success = $addresses->modifyStreet($params["_id"], $params["cityId"], $params["settlementId"], $params["streetUuid"], $params["streetWithType"], $params["streetType"], $params["streetTypeFull"], $params["street"]);
 
-        /**
-         * street method
-         */
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-        class street extends api {
+        public static function POST($params)
+        {
+            $addresses = backend("addresses");
 
-            public static function PUT($params) {
-                $addresses = backend("addresses");
+            $streetId = $addresses->addStreet($params["cityId"], $params["settlementId"], $params["streetUuid"], $params["streetWithType"], $params["streetType"], $params["streetTypeFull"], $params["street"]);
 
-                $success = $addresses->modifyStreet($params["_id"], $params["cityId"], $params["settlementId"], $params["streetUuid"], $params["streetWithType"], $params["streetType"], $params["streetTypeFull"], $params["street"]);
+            return api::ANSWER($streetId, ($streetId !== false) ? "streetId" : "notAcceptable");
+        }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
+        public static function DELETE($params)
+        {
+            $addresses = backend("addresses");
 
-            public static function POST($params) {
-                $addresses = backend("addresses");
+            $success = $addresses->deleteStreet($params["_id"]);
 
-                $streetId = $addresses->addStreet($params["cityId"], $params["settlementId"], $params["streetUuid"], $params["streetWithType"], $params["streetType"], $params["streetTypeFull"], $params["street"]);
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-                return api::ANSWER($streetId, ($streetId !== false)?"streetId":"notAcceptable");
-            }
-
-            public static function DELETE($params) {
-                $addresses = backend("addresses");
-
-                $success = $addresses->deleteStreet($params["_id"]);
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
-
-            public static function index() {
-                return [
-                    "PUT" => "#same(addresses,house,PUT)",
-                    "POST" => "#same(addresses,house,POST)",
-                    "DELETE" => "#same(addresses,house,DELETE)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "PUT" => "#same(addresses,house,PUT)",
+                "POST" => "#same(addresses,house,POST)",
+                "DELETE" => "#same(addresses,house,DELETE)",
+            ];
         }
     }
+}

@@ -85,11 +85,11 @@ __pycache__
 /server/config/config.json
 /server/config/config.yml
 /server/vendor
-/server/syslog/config.json
+/syslog/config.json
 /.stylelintrc.json
 package.json
 package-lock.json
-!/server/syslog/package.json
+!/syslog/package.json
 /server/test.php
 /server/integration.php
 /server/mqtt/node_modules

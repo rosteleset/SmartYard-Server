@@ -2,14 +2,32 @@
 
 namespace Selpol\Container;
 
+use Exception;
 use Psr\Container\ContainerInterface;
 
 class Container implements ContainerInterface
 {
     private static ?Container $container = null;
 
+    private array $files = [];
+
     private array $instances = [];
     private array $factories = [];
+
+    public function file(string $path)
+    {
+        if (array_key_exists($path, $this->files))
+            return;
+
+        if (file_exists($path)) {
+            $callable = require_once $path;
+
+            if (is_callable($callable))
+                $callable($this);
+
+            $this->files[$path] = true;
+        }
+    }
 
     public function singleton(string $id, ContainerFactory|callable $factory)
     {
@@ -46,9 +64,16 @@ class Container implements ContainerInterface
         return array_key_exists($id, $this->instances) || array_key_exists($id, $this->factories);
     }
 
-    public static function hasInstance(): bool
+    public function dispose()
     {
-        return self::$container !== null;
+        foreach ($this->instances as $instance) {
+            if ($instance instanceof ContainerDispose)
+                try {
+                    $instance->dispose();
+                } catch (Exception $exception) {
+                    logger('container')->error($exception);
+                }
+        }
     }
 
     // TODO: Потом удалить полностью статический доступ к классу

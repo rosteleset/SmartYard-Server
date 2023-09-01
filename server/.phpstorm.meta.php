@@ -70,6 +70,7 @@ namespace PHPSTORM_META {
     );
 
     override(\Selpol\Container\Container::get(0), map(['' => '@']));
+    override(\container(0), map(['' => '@']));
 
     exitPoint(\response());
     exitPoint(\usage());

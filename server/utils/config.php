@@ -29,8 +29,17 @@ function env(?string $key = null): mixed
         file_put_contents(path('var/cache/env.php'), '<?php return ' . var_export($env, true) . ';');
     } else throw new RuntimeException('Env not found or can\'t be loaded');
 
-    if ($key !== null)
-        return @$env[$key] ?? getenv($key);
+    if ($key !== null) {
+        $realEnv = getenv($key);
+
+        if ($realEnv !== false)
+            return $realEnv;
+
+        if (array_key_exists($key, $env))
+            return $env[$key];
+
+        return null;
+    }
 
     return $env;
 }

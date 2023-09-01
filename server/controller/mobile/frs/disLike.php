@@ -26,7 +26,6 @@ if (!$plog) response(422);
 $frs = backend("frs");
 if (!$frs) response(422);
 
-
 $event_uuid = @$postdata['event'];
 
 $face_id = null;

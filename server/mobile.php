@@ -1,23 +1,10 @@
 <?php
 
-use Selpol\Service\DatabaseService;
-
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 mb_internal_encoding("UTF-8");
 
 require_once "backends/backend.php";
-
-$LanTa_services = [
-    'internet' => ["icon" => "internet", "title" => "Интернет", "description" => "Высокоскоростной доступ в интернет", "canChange" => "t"],
-    'iptv' => ["icon" => "iptv", "title" => "Телевидение", "description" => "Более 200 каналов", "canChange" => "t"],
-    'ctv' => ["icon" => "ctv", "title" => "Телевидение", "description" => "Менее 200 каналов", "canChange" => "t"],
-    'phone' => ["icon" => "phone", "title" => "Телефония", "description" => "Местная и прочая телефония", "canChange" => "t"],
-    'cctv' => ["icon" => "cctv", "title" => "Видеонаблюдение", "description" => "Всё под контролем", "canChange" => "f"],
-    'domophone' => ["icon" => "domophone", "title" => "Умный домофон", "description" => "Смотри кто пришёл", "canChange" => "f"],
-    'gsm' => ["icon" => "gsm", "title" => "Мобильная связь", "description" => "Бла-бла-бла 2", "canChange" => "t"],
-    'faceid' => ["icon" => "faceid", "title" => "Распознование лица", "description" => "Бла-бла-бла 3", "canChange" => "t"],
-];
 
 $bearer = [];
 $cache = [];
@@ -29,11 +16,11 @@ $emptyStreetIdOffset = 1000000;
 
 $container = bootstrap();
 
+register_shutdown_function(static fn() => $container->dispose());
+
 try {
     // TODO: Со временем удалить
-    $config = $container->get('config');
-    $db = $container->get(DatabaseService::class);
-    $redis = $container->get(Redis::class);
+    $config = config();
 } catch (Exception $exception) {
     echo json_encode(['code' => 503, 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен'], JSON_UNESCAPED_UNICODE);
 
@@ -118,6 +105,7 @@ function response($code = 204, $data = false, $name = false, $message = false)
 function auth($_response_cache_ttl = -1): array
 {
     global $_SERVER, $bearer, $response_cache_ttl, $subscriber;
+
     $households = backend("households");
 
     if ($_response_cache_ttl >= 0)
@@ -152,7 +140,7 @@ function auth($_response_cache_ttl = -1): array
             $decoded_signature = base64_decode(str_replace(array('-', '_'), array('+', '/'), $signature));
 
             try {
-                $oauth = config()['backends']['oauth'];
+                $oauth = config('backends.oauth');
             } catch (Exception) {
                 response(401, false, 'Не авторизован', 'Не авторизован');
             }
@@ -216,44 +204,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (count($m) == 4 && !$m[0] && $m[1] == 'mobile') {
         $module = $m[2];
         $method = $m[3];
+
         if (file_exists(path("controller/mobile/{$module}/{$method}.php"))) {
-            $b = @explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
+            $response_data_source = 'db';
+            $response_cache_ttl = 60;
 
-            if ($b) {
-                $response_cahce_req = strtolower($module . '-' . $method . '-' . $b . '-' . md5(serialize($postdata)));
+            header("X-Dm-Api-Data-Source: $response_data_source");
 
-                $cache = false;
-            } else {
-                $response_cahce_req = false;
-                $cache = false;
-            }
-
-            if ($cache && !array_key_exists('X-Dm-Api-Refresh', request_headers())) {
-                $response_data_source = 'db';
-                $response_cache_ttl = 60;
-
-                header("X-Dm-Api-Data-Source: $response_data_source");
-
-                try {
-                    require_once path("controller/mobile/{$module}/{$method}.php");
-                } catch (Throwable $throwable) {
-                    $logger->error('Error handle post request' . PHP_EOL . $throwable);
-                }
-            } else {
-                if (array_key_exists('X-Dm-Api-Refresh', request_headers())) {
-                    // $redis->incr('cache-force-miss');
-                } else {
-                    // $redis->incr('cache-miss');
-                }
-                $response_data_source = 'db';
-                $response_cache_ttl = 60;
-                header("X-Dm-Api-Data-Source: $response_data_source");
-
-                try {
-                    require_once path("controller/mobile/{$module}/{$method}.php");
-                } catch (Exception $e) {
-                    $logger->error('Error handle post request' . PHP_EOL . $e);
-                }
+            try {
+                require_once path("controller/mobile/{$module}/{$method}.php");
+            } catch (Exception $e) {
+                $logger->error('Error handle post request' . PHP_EOL . $e);
             }
         }
     }

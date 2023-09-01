@@ -2,11 +2,15 @@
 
 use backends\plog\plog;
 use backends\frs\frs;
+use Selpol\Service\RedisService;
 
 $logger = logger('internal');
 
 $frs = backend("frs");
 $households = backend("households");
+
+$config = config();
+$redis = container(RedisService::class)->getRedis();
 
 $camera_id = $_GET['stream_id'];
 $face_id = (int)$postdata[frs::P_FACE_ID];

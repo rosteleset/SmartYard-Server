@@ -182,7 +182,7 @@ try {
             }
             if ((int)$row[plog::COLUMN_PREVIEW]) {
                 $img_uuid = $row[plog::COLUMN_IMAGE_UUID];
-                $url = @$config["api"]["mobile"] . "/address/plogCamshot/$img_uuid";
+                $url = config('api.mobile') . "/address/plogCamshot/$img_uuid";
                 $e_details['preview'] = $url;
             }
 

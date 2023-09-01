@@ -8,7 +8,7 @@ use PDOException;
 
 class DatabaseService extends PDO
 {
-    public function __construct($dsn, $username = null, $password = null, $options = null)
+    public function __construct(string $dsn, ?string $username = null, ?string $password = null, ?array $options = null)
     {
         parent::__construct($dsn, $username, $password, $options);
 

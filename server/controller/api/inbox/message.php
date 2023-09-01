@@ -1,44 +1,47 @@
 <?php
 
+/**
+ * inbox api
+ */
+
+namespace api\inbox {
+
+    use api\api;
+
     /**
-     * inbox api
+     * message method
      */
+    class message extends api
+    {
 
-    namespace api\inbox {
+        public static function GET($params)
+        {
+            $inbox = backend("inbox");
 
-        use api\api;
-
-        /**
-         * message method
-         */
-
-        class message extends api {
-
-            public static function GET($params) {
-                $inbox = backend("inbox");
-
-                if (@$params["messageId"]) {
-                    $messages = $inbox->getMessages($params["_id"], "id", $params["messageId"]);
-                } else {
-                    $messages = $inbox->getMessages($params["_id"], "dates", [ "dateFrom" => 0, "dateTo" => time() ]);
-                }
-
-                return api::ANSWER($messages, ($messages !== false)?"messages":"notAcceptable");
+            if (@$params["messageId"]) {
+                $messages = $inbox->getMessages($params["_id"], "id", $params["messageId"]);
+            } else {
+                $messages = $inbox->getMessages($params["_id"], "dates", ["dateFrom" => 0, "dateTo" => time()]);
             }
 
-            public static function POST($params) {
-                $inbox = backend("inbox");
+            return api::ANSWER($messages, ($messages !== false) ? "messages" : "notAcceptable");
+        }
 
-                $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
+        public static function POST($params)
+        {
+            $inbox = backend("inbox");
 
-                return api::ANSWER($msgId, ($msgId !== false)?"$msgId":"");
-            }
+            $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
 
-            public static function index() {
-                return [
-                    "GET" => "#same(addresses,house,GET)",
-                    "POST" => "#same(addresses,house,PUT)",
-                ];
-            }
+            return api::ANSWER($msgId, ($msgId !== false) ? "$msgId" : "");
+        }
+
+        public static function index()
+        {
+            return [
+                "GET" => "#same(addresses,house,GET)",
+                "POST" => "#same(addresses,house,PUT)",
+            ];
         }
     }
+}

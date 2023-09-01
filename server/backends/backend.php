@@ -5,50 +5,40 @@
  */
 
 namespace backends {
+
+    use Redis;
+    use Selpol\Service\DatabaseService;
+
     /**
      * base class for all backends
      */
     abstract class backend
     {
+        protected int $uid;
 
-        /**
-         * @var object $config link to config structute
-         * @var object $db link to default PDO database object
-         * @var object $redis link to redis object
-         */
+        protected array $config;
 
-        protected $config, $db, $redis, $login, $uid;
+        protected DatabaseService $db;
+        protected Redis $redis;
 
-        /**
-         * default constructor
-         *
-         * @param object $config link to config structute
-         * @param object $db link to default PDO database object
-         * @param object $redis link to redis object
-         *
-         * @return void
-         */
+        protected string $login;
 
-        public function __construct($config, $db, $redis, $login = false)
+        public function __construct(array $config, DatabaseService $db, Redis $redis, bool $login = false)
         {
             global $params;
 
             $this->config = $config;
+
             $this->db = $db;
             $this->redis = $redis;
+
             $this->login = $login ?: ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
 
-            switch ($this->login) {
-                case "-":
-                    $this->uid = -1;
-                    break;
-                case "admin":
-                    $this->uid = 0;
-                    break;
-                default:
-                    $this->uid = backend("users")->getUidByLogin($this->login);
-                    break;
-            }
+            $this->uid = match ($this->login) {
+                "-" => -1,
+                "admin" => 0,
+                default => backend("users")->getUidByLogin($this->login),
+            };
         }
 
         /**

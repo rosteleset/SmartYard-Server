@@ -1,4 +1,7 @@
 <?php
+
+use Selpol\Service\DatabaseService;
+
 if (!isset(
     $postdata["ip"],
     $postdata["prefix"],
@@ -31,6 +34,6 @@ $params = [
     "last_opened" => $date,
 ];
 
-$result = $db->modify($query, $params);
+$result = container(DatabaseService::class)->modify($query, $params);
 
 response(202, ["id" => $result]);

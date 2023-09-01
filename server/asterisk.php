@@ -13,8 +13,10 @@ header('Content-Type: application/json');
 
 $container = bootstrap();
 
+register_shutdown_function(static fn() => $container->dispose());
+
 // TODO: Со временем удалить
-$config = $container->get('config');
+$config = config();
 $db = $container->get(DatabaseService::class);
 $redis = $container->get(Redis::class);
 
@@ -501,7 +503,7 @@ switch ($path[0]) {
                     "callerId" => $params["callerId"],
                     "flatId" => $params["flatId"],
                     "flatNumber" => $params["flatNumber"],
-                    "title" => i18n("sip.incomingTitle"),
+                    "title" => 'Входящий вызов',
                 ];
 
                 $stun = $sip->stun($params['extension']);

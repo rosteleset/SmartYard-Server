@@ -1,40 +1,35 @@
 {
   "language": "ru",
   "api": {
-    "frontend": "https://example.com/frontend",
-    "asterisk": "http://127.0.0.1/asterisk",
-    "internal": "http://127.0.0.1/internal",
-    "private": "http://10.0.0.1/internal",
-    "mobile": "https://example.com/mobile"
+    "frontend": "${API_FRONTEND}",
+    "asterisk": "${API_ASTERISK}",
+    "internal": "${API_INTERNAL}",
+    "private": "${API_PRIVATE}",
+    "mobile": "${API_MOBILE}"
   },
   "mobile": {
-    "web_server_base_path": "https://example.com/static/",
-    "payments": true,
-    "payments_url": "https://example.com/static/payments/template.html",
-    "city_cams": false,
-    "support_phone": "+7(4752)429999",
-    "chat": true,
-    "chat_url": "<!-- your chat url or remove it and use talkMe by default with options below--!>",
-    "talk_me_id": "<!-- put your talkMe chat id here --!>",
-    "talk_me_domain": "<!-- put your talkMe chat domain id here --!>",
-    "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>",
-    "phonePattern": "7 (###) ###-##-##",
-    "tt_project": "TDM",
-    "tt_workflow": "mobile",
-    "tt_user": "mobile",
-    "time_zone": "Europe/Moscow"
+    "web_server_base_path": "${MOBILE_STATIC}",
+    "support_phone": "${MOBILE_PHONE_SUPPORT}",
+    "phonePattern": "${MOBILE_PHONE_PATTERN}",
+    "time_zone": "${MOBILE_TIMEZONE}"
   },
   "db": {
-    "dsn": "pgsql:host=127.0.0.1;port=5432;dbname=rbt",
-    "username": "rbt",
-    "password": "rbt"
+    "dsn": "pgsql:host=${DB_HOST};port=${DB_PORT};dbname=${DB_DATABASE}",
+    "username": "${DB_USERNAME}",
+    "password": "${DB_PASSWORD}"
   },
   "redis": {
-    "host": "127.0.0.1",
-    "port": 6379,
+    "host": "${REDIS_HOST}",
+    "port": "${REDIS_PORT}",
     "cache_ttl": 3600,
     "max_allowed_tokens": 15,
     "token_idle_ttl": 3600
+  },
+  "amqp": {
+    "host": "${AMQP_HOST}",
+    "port": "${AMQP_PORT}",
+    "username": "${AMQP_USERNAME}",
+    "password": "${AMQP_PASSWORD}"
   },
   "backends": {
     "authentication": {
@@ -51,7 +46,7 @@
     },
     "geocoder": {
       "backend": "dadata",
-      "token": "<!-- your dadata token here --!>"
+      "token": "${BACKEND_GEOCODER_DADATA}"
     },
     "files": {
       "backend": "mongo"
@@ -66,9 +61,9 @@
       "backend": "internal"
     },
     "isdn": {
-      "backend": "${ISDN_BACKEND}",
-      "endpoint": "${ISDN_ENDPOINT}",
-      "secret": "${ISDN_SECRET}",
+      "backend": "${BACKEND_ISDN_BACKEND}",
+      "endpoint": "${BACKEND_ISDN_ENDPOINT}",
+      "secret": "${BACKEND_ISDN_SECRET}",
       "confirm_method": "outgoingCall"
     },
     "inbox": {
@@ -76,16 +71,16 @@
     },
     "plog": {
       "backend": "clickhouse",
-      "host": "127.0.0.1",
-      "port": 8123,
-      "username": "default",
-      "password": "qqq",
-      "database": "default",
-      "time_shift": "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
-      "max_call_length": "<!-- your max call length in seconds for backward processing call events (hint 120) --!>",
-      "ttl_temp_record": "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
-      "ttl_camshot_days": "<!-- your time to live in days for camshots (hint 180 - approx. half year) --!>",
-      "back_time_shift_video_shot": "<!-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>",
+      "host": "${BACKEND_PLOG_HOST}",
+      "port": "${BACKEND_PLOG_PORT}",
+      "database": "${BACKEND_PLOG_DATABASE}",
+      "username": "${BACKEND_PLOG_USERNAME}",
+      "password": "${BACKEND_PLOG_PASSWORD}",
+      "time_shift": "60",
+      "max_call_length": "120",
+      "ttl_temp_record": "86400",
+      "ttl_camshot_days": "180",
+      "back_time_shift_video_shot": "3",
       "cron_process_events_scheduler": "minutely"
     },
     "configs": {
@@ -98,10 +93,7 @@
           "title": "Local server",
           "type": "nimble or flussonic or  or trassir",
           "url": "https://video.server.hostname:8443",
-          "token": "<!-- mediaserver security token here (only if you use it) --!>",
-          "management_ip": "127.0.0.1",
-          "management_port": "8086",
-          "management_token": "<!-- management token --!>"
+          "token": "<!-- mediaserver security token here (only if you use it) --!>"
         }
       ]
     },
@@ -134,31 +126,19 @@
         }
       ]
     },
-    "cs": {
-      "backend": "internal"
-    },
     "mqtt": {
       "backend": "internal",
-      "agent": "http://127.0.0.1:8082/broadcast",
-      "ws": "wss://<!-- your server here --!>",
-      "mqtt": "mqtt://<!-- your server here -->",
-      "username": "rbt",
-      "password": "<!-- your mosquitto password here --!>"
+      "agent": "${BACKEND_MQTT_AGENT}",
+      "ws": "${BACKEND_MQTT_WS}",
+      "mqtt": "${BACKEND_MQTT_WSS}",
+      "username": "${BACKEND_MQTT_USERNAME}",
+      "password": "${BACKEND_MQTT_PASSWORD}"
     },
     "oauth": {
-      "public_key": "<!-- path to public key --!>",
-      "audience": "<!-- a string or array of strings that identifies the recipients that the JWT is intended for (example - lk,guest) --!>"
+      "backend": "internal",
+      "public_key": "${BACKEND_OAUTH_PUBLIC_KEY}",
+      "audience": "${BACKEND_OAUTH_AUDIENCE}"
     }
-  },
-  "email": {
-    "server": "127.0.0.1",
-    "port": 587,
-    "username": "mmikel@localhost",
-    "password": "qwerty",
-    "from": "RBT"
-  },
-  "telegram": {
-    "bot": "<!-- your telegram bot token here --!>"
   },
   "syslog_servers": {
     "beward": [

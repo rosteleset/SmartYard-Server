@@ -1,6 +1,9 @@
 <?php
 
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
+use Selpol\Container\Container;
 use Selpol\Logger\FileLogger;
 use Selpol\Task\Task;
 use Selpol\Task\TaskContainer;
@@ -41,6 +44,17 @@ if (!function_exists('validate')) {
         } catch (ValidatorException $e) {
             return $e->getValidatorMessage();
         }
+    }
+}
+
+if (!function_exists('container')) {
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    function container(string $key): mixed
+    {
+        return Container::instance()->get($key);
     }
 }
 
@@ -88,18 +102,17 @@ if (!function_exists('request_headers')) {
 }
 
 if (!function_exists('array_key_first')) {
-    function array_key_first(array $arr)
+    function array_key_first(array $arr): string|int|null
     {
-        foreach ($arr as $key => $unused) {
+        foreach ($arr as $key => $unused)
             return $key;
-        }
 
-        return NULL;
+        return null;
     }
 }
 
 if (!function_exists('generate_password')) {
-    function generate_password($length = 8)
+    function generate_password($length = 8): string
     {
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $count = mb_strlen($chars);
@@ -188,49 +201,6 @@ if (!function_exists('last_error')) {
             $lastError = $error;
 
         return $lastError;
-    }
-}
-
-if (!function_exists('i18n')) {
-    function i18n($msg, ...$args)
-    {
-        global $config;
-
-        $lang = @$config["language"] ?: "ru";
-
-        try {
-            $lang = json_decode(file_get_contents(__DIR__ . "/../i18n/$lang.json"), true);
-        } catch (Exception) {
-            $lang = [];
-        }
-
-        try {
-            $t = explode(".", $msg);
-
-            if (count($t) > 2) {
-                $st = [];
-                $st[0] = array_shift($t);
-                $st[1] = implode(".", $t);
-                $t = $st;
-            }
-
-            if (count($t) === 2) $loc = $lang[$t[0]][$t[1]];
-            else $loc = $lang[$t[0]];
-
-            if ($loc) {
-                if (is_array($loc) && !($loc !== array_values($loc)))
-                    $loc = nl2br(implode("\n", $loc));
-
-                $loc = sprintf($loc, ...$args);
-            }
-
-            if (!$loc)
-                return $t[0] === "errors" ? $t[1] : $msg;
-
-            return $loc;
-        } catch (Exception) {
-            return $msg;
-        }
     }
 }
 

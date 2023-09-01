@@ -32,7 +32,12 @@ class RecordTask extends Task
         if (!$inbox)
             return false;
 
-        $inbox->sendMessage($this->subscriberId, i18n('dvr.videoReady'), i18n('dvr.threeDays'), config('api.mobile') . '/cctv/download/' . $uuid);
+        $inbox->sendMessage(
+            $this->subscriberId,
+            'Видео готово к загрузке',
+            'Внимание! Файлы на сервере будут доступны в течение 3 суток',
+            config('api.mobile') . '/cctv/download/' . $uuid
+        );
 
         return true;
     }
@@ -44,6 +49,11 @@ class RecordTask extends Task
         if (!$inbox)
             return;
 
-        $inbox->sendMessage($this->subscriberId, i18n('dvr.video'), i18n('dvr.videoFailed'), 'icomtel://main/chat');
+        $inbox->sendMessage(
+            $this->subscriberId,
+            'Видео',
+            'К сожалению не удалось выгрузить ваше видео, обратитесь за помощью к технической поддержке',
+            'icomtel://main/chat'
+        );
     }
 }

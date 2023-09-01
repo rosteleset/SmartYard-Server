@@ -5,6 +5,7 @@ namespace Selpol\Task\Tasks;
 use Exception;
 use Selpol\Service\DatabaseService;
 use Selpol\Task\Task;
+use function container;
 
 class ReindexTask extends Task
 {
@@ -15,8 +16,7 @@ class ReindexTask extends Task
 
     public function onTask(): bool
     {
-        /** @var DatabaseService $pdo */
-        $pdo = $this->container->get(DatabaseService::class);
+        $pdo = container(DatabaseService::class);
 
         $dir = path('controller/api');
         $apis = scandir($dir);

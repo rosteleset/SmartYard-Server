@@ -2,6 +2,9 @@
 /*Store events to db plog_door_open.
      "freeze motion detection" request for SRS
     */
+
+use Selpol\Service\DatabaseService;
+
 if (!isset(
     $postdata["date"],
     $postdata["ip"],
@@ -46,6 +49,8 @@ switch ($event) {
         response(200);
 
     case $events['OPEN_BY_BUTTON']:
+        $db = container(DatabaseService::class);
+
         [0 => [
             "camera_id" => $streamId,
             "frs" => $frsUrl

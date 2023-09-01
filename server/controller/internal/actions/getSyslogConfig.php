@@ -5,6 +5,8 @@
  *         added used clickhouseService server similar to other backends
  */
 
+$config = config();
+
 $payload = ['clickhouseService' => [
     'host' => $config['backends']['plog']['host'],
     'port' => $config['backends']['plog']['port'],

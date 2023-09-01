@@ -3,6 +3,8 @@
  * Send POST request to FRS.
  */
 
+use Selpol\Service\DatabaseService;
+
 if (!isset(
     $postdata["date"],
     $postdata["ip"],
@@ -10,6 +12,8 @@ if (!isset(
 )) {
     response(406, "Invalid payload");
 }
+
+$db = container(DatabaseService::class);
 
 $logger = logger('motion');
 

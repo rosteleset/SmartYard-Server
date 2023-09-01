@@ -1,49 +1,53 @@
 <?php
 
+/**
+ * addresses api
+ */
+
+namespace api\addresses {
+
+    use api\api;
+
     /**
-     * addresses api
+     * region method
      */
+    class region extends api
+    {
 
-    namespace api\addresses {
+        public static function PUT($params)
+        {
+            $addresses = backend("addresses");
 
-        use api\api;
+            $success = $addresses->modifyRegion($params["_id"], $params["regionUuid"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"], $params["timezone"]);
 
-        /**
-         * region method
-         */
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-        class region extends api {
+        public static function POST($params)
+        {
+            $addresses = backend("addresses");
 
-            public static function PUT($params) {
-                $addresses = backend("addresses");
+            $regionId = $addresses->addRegion($params["regionUuid"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"], $params["timezone"]);
 
-                $success = $addresses->modifyRegion($params["_id"], $params["regionUuid"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"], $params["timezone"]);
+            return api::ANSWER($regionId, ($regionId !== false) ? "regionId" : "notAcceptable");
+        }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
+        public static function DELETE($params)
+        {
+            $addresses = backend("addresses");
 
-            public static function POST($params) {
-                $addresses = backend("addresses");
+            $success = $addresses->deleteRegion($params["_id"]);
 
-                $regionId = $addresses->addRegion($params["regionUuid"], $params["regionIsoCode"], $params["regionWithType"], $params["regionType"], $params["regionTypeFull"], $params["region"], $params["timezone"]);
+            return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+        }
 
-                return api::ANSWER($regionId, ($regionId !== false)?"regionId":"notAcceptable");
-            }
-
-            public static function DELETE($params) {
-                $addresses = backend("addresses");
-
-                $success = $addresses->deleteRegion($params["_id"]);
-
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
-            }
-
-            public static function index() {
-                return [
-                    "PUT" => "#same(addresses,house,PUT)",
-                    "POST" => "#same(addresses,house,POST)",
-                    "DELETE" => "#same(addresses,house,DELETE)",
-                ];
-            }
+        public static function index()
+        {
+            return [
+                "PUT" => "#same(addresses,house,PUT)",
+                "POST" => "#same(addresses,house,POST)",
+                "DELETE" => "#same(addresses,house,DELETE)",
+            ];
         }
     }
+}
