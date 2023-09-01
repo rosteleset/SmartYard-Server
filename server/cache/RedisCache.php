@@ -45,7 +45,12 @@ class RedisCache implements CacheInterface
 
     public function clear(): bool
     {
-        return $this->service->getRedis()->del($this->service->getRedis()->keys('cache:*')) > 0;
+        $keys = $this->service->getRedis()->keys('cache:*');
+
+        if (count($keys) > 0)
+            $this->service->getRedis()->del($keys) > 0;
+
+        return true;
     }
 
     public function getMultiple(iterable $keys, mixed $default = null): iterable
