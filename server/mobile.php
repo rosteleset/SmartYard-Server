@@ -19,10 +19,8 @@ register_shutdown_function(static fn() => $container->dispose());
 
 $logger = logger('mobile');
 
-$config = config();
-
 $backends = [];
-$redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
+$redis_cache_ttl = config('redis.cache_ttl') ?? 3600;
 
 function response($code = 204, $data = false, $name = false, $message = false)
 {
@@ -182,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $path = explode("?", $_SERVER["REQUEST_URI"])[0];
 
-    $server = parse_url($config["api"]["mobile"]);
+    $server = parse_url(config('api.mobile'));
 
     if ($server && $server['path'])
         $path = substr($path, strlen($server['path']));

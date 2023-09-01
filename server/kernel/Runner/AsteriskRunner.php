@@ -354,11 +354,9 @@ class AsteriskRunner implements KernelRunner
 
     private function getPath(): array
     {
-        $config = config();
-
         $path = $_SERVER['REQUEST_URI'];
 
-        $server = parse_uri($config['api']['asterisk']);
+        $server = parse_url(config('api.asterisk'));
 
         if ($server && $server['path'])
             $path = substr($path, strlen($server['path']));
