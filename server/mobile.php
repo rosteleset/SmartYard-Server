@@ -8,7 +8,6 @@ require_once "backends/backend.php";
 
 $bearer = [];
 $cache = [];
-$config = false;
 $subscriber = false;
 
 $offsetForCityId = 1000000;
@@ -19,6 +18,8 @@ $container = bootstrap();
 register_shutdown_function(static fn() => $container->dispose());
 
 $logger = logger('mobile');
+
+$config = config();
 
 $backends = [];
 $redis_cache_ttl = $config["redis"]["cache_ttl"] ?: 3600;
