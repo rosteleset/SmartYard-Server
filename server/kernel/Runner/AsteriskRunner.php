@@ -30,8 +30,6 @@ class AsteriskRunner implements KernelRunner
     {
         $path = $this->getPath();
 
-        $this->logger->debug('__invoke()', ['path' => $path]);
-
         switch ($path[0]) {
             case 'aors':
             case 'auths':
