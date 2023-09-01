@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $path = explode("?", $_SERVER["REQUEST_URI"])[0];
 
-    $server = config('api')['internal'];
+    $server = config()['api']['internal'];
 
     if ($server && $server['path']) {
         $path = substr($path, strlen($server['path']));
