@@ -8,7 +8,7 @@ use Throwable;
 class BackendService
 {
     /** @var backend[] $backends */
-    private array $backends;
+    private array $backends = [];
 
     public function get(string $backend, bool $login = false): backend|false
     {
