@@ -58,7 +58,7 @@ if (!$blocked) {
     $domophone = $households->getDomophone($domophone_id);
 
     try {
-        $model = container(DomophoneService::class)->model($domophone["model"], $domophone["url"], $domophone["credentials"]);
+        $model = container(DomophoneService::class)->get($domophone["model"], $domophone["url"], $domophone["credentials"]);
         $model->open_door($door_id);
 
         $plog = backend("plog");

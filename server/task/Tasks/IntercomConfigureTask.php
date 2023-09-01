@@ -52,7 +52,7 @@ class IntercomConfigureTask extends Task
         $panel_text = $entrances[0]['callerId'];
 
         try {
-            $panel = container(DomophoneService::class)->model($domophone['model'], $domophone['url'], $domophone['credentials'], $this->first);
+            $panel = container(DomophoneService::class)->get($domophone['model'], $domophone['url'], $domophone['credentials'], $this->first);
         } catch (Exception $e) {
             echo $e->getMessage() . "\n";
 

@@ -8,7 +8,7 @@ use RecursiveIteratorIterator;
 
 class DomophoneService
 {
-    public function model(string $model, string $url, string $password, bool $first_time = false): domophones|false
+    public function get(string $model, string $url, string $password, bool $first_time = false): domophones|false
     {
         $path_to_model = path('hw/domophones/models/' . $model);
 

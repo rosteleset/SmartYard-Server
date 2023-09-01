@@ -1,11 +1,13 @@
 <?php
 
+use backends\backend;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Selpol\Container\Container;
 use Selpol\Kernel\Kernel;
 use Selpol\Logger\FileLogger;
+use Selpol\Service\BackendService;
 use Selpol\Task\Task;
 use Selpol\Task\TaskContainer;
 use Selpol\Validator\Validator;
@@ -65,6 +67,17 @@ if (!function_exists('validate')) {
         } catch (ValidatorException $e) {
             return $e->getValidatorMessage();
         }
+    }
+}
+
+if (!function_exists('backend')) {
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    function backend(string $backend, bool $login = false): backend|false
+    {
+        return container(BackendService::class)->get($backend, $login);
     }
 }
 

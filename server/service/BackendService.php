@@ -1,27 +1,19 @@
 <?php
 
+namespace Selpol\Service;
+
 use backends\backend;
-use Psr\Container\ContainerExceptionInterface;
-use Selpol\Service\DatabaseService;
-use Selpol\Service\RedisService;
+use Throwable;
 
-$backends = [];
+class BackendService
+{
+    /** @var backend[] $backends */
+    private array $backends;
 
-if (!function_exists('backend')) {
-    /**
-     * loads backend module by config, returns false if backend not found or can't be loaded
-     *
-     * @param string $backend module name
-     * @param bool $login
-     * @return false|backend
-     * @throws ContainerExceptionInterface
-     */
-    function backend(string $backend, bool $login = false): backend|false
+    public function get(string $backend, bool $login = false): backend|false
     {
-        global $backends;
-
-        if (@$backends[$backend])
-            return $backends[$backend];
+        if (array_key_exists($backend, $this->backends))
+            return $this->backends[$backend];
         else {
             if (config('backends.' . $backend)) {
                 $config = config('backends.' . $backend);
@@ -34,11 +26,12 @@ if (!function_exists('backend')) {
                         require_once path("backends/$backend/" . $config["backend"] . "/" . $config["backend"] . ".php");
 
                         $className = "backends\\$backend\\" . $config["backend"];
-                        $backends[$backend] = new $className(config(), container(DatabaseService::class), container(RedisService::class)->getRedis(), $login);
 
-                        return $backends[$backend];
+                        $this->backends[$backend] = new $className(config(), container(DatabaseService::class), container(RedisService::class)->getRedis(), $login);
+
+                        return $this->backends[$backend];
                     } else return false;
-                } catch (Exception) {
+                } catch (Throwable) {
                     last_error("cantLoadBackend");
 
                     return false;

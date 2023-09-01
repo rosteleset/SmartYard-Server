@@ -55,7 +55,7 @@ $domophone = $households->getDomophone($domophone_id);
 try {
     $logger->debug('Try open door', ['frs_key' => $frs_key]);
 
-    $model = container(DomophoneService::class)->model($domophone["model"], $domophone["url"], $domophone["credentials"]);
+    $model = container(DomophoneService::class)->get($domophone["model"], $domophone["url"], $domophone["credentials"]);
     $model->open_door($domophone_output);
     $redis->set($frs_key, 1, $config["backends"]["frs"]["open_door_timeout"]);
     $plog = backend("plog");

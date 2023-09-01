@@ -18,7 +18,7 @@ $cam = $cameras->getCamera($camera_id);
 if (!$cam)
     response(404);
 
-$model = container(CameraService::class)->model($cam['model'], $cam['url'], $cam['credentials']);
+$model = container(CameraService::class)->get($cam['model'], $cam['url'], $cam['credentials']);
 
 if (!$model)
     response(404);

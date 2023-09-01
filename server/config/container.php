@@ -2,6 +2,7 @@
 
 use Selpol\Cache\RedisCache;
 use Selpol\Container\Container;
+use Selpol\Service\BackendService;
 use Selpol\Service\CameraService;
 use Selpol\Service\DatabaseService;
 use Selpol\Service\DomophoneService;
@@ -26,6 +27,7 @@ return static function (Container $container) {
 
     $container->singleton(CameraService::class, static fn() => new CameraService());
     $container->singleton(DomophoneService::class, static fn() => new DomophoneService());
+    $container->singleton(BackendService::class, static fn() => new BackendService());
 
     $container->singleton(RedisCache::class, static fn(Container $container) => new RedisCache($container->get(RedisService::class)));
 };

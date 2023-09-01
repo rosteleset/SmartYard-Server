@@ -15,8 +15,7 @@
     "files": [
       "./utils/bootstrap.php",
       "./utils/helper.php",
-      "./utils/config.php",
-      "./utils/loader.php"
+      "./utils/config.php"
     ]
   },
   "authors": [

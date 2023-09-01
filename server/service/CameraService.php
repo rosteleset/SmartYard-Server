@@ -8,7 +8,7 @@ use RecursiveIteratorIterator;
 
 class CameraService
 {
-    public function model(string $model, string $url, string $password, bool $first_time = false): cameras|false
+    public function get(string $model, string $url, string $password, bool $first_time = false): cameras|false
     {
         $path_to_model = path('hw/cameras/models/' . $model);
 
