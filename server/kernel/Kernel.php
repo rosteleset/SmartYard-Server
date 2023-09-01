@@ -7,7 +7,7 @@ use Throwable;
 
 class Kernel
 {
-    private static ?Kernel $instance;
+    private static ?Kernel $instance = null;
 
     private Container $container;
 
