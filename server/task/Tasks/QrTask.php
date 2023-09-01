@@ -98,6 +98,7 @@ class QrTask extends Task
                 $files[] = $templateFile;
 
                 $zip->addFile($templateFile, $flat['flat'] . '.docx');
+                $zip->setCompressionName($flat['flat'] . '.docx', ZipArchive::CM_STORE);
             }
 
             echo json_encode($zip->count());
