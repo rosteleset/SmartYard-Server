@@ -566,9 +566,8 @@ class AsteriskRunner implements KernelRunner
     {
         $result = '';
 
-        if ($params)
-            foreach ($params as $key => $value)
-                $result .= urldecode($key) . '=' . urldecode($value) . '&';
+        foreach ($params as $key => $value)
+            $result .= urldecode($key) . '=' . urldecode($value) . '&';
 
         return $result;
     }
