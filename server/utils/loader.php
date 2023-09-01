@@ -1,7 +1,6 @@
 <?php
 
 use backends\backend;
-use hw\domophones\domophones;
 use Psr\Container\ContainerExceptionInterface;
 use Selpol\Service\DatabaseService;
 use Selpol\Service\RedisService;
@@ -50,42 +49,5 @@ if (!function_exists('backend')) {
                 return false;
             }
         }
-    }
-}
-
-if (!function_exists('domophone')) {
-    /**
-     * loads domophone class, returns false if .json or class not found
-     *
-     * @param string $model .json
-     * @param string $url
-     * @param string $password
-     * @param boolean $first_time
-     * @return false|domophones
-     */
-    function domophone(string $model, string $url, string $password, bool $first_time = false): domophones|false
-    {
-        $path_to_model = path('hw/domophones/models/' . $model);
-
-        if (file_exists($path_to_model)) {
-            $class = @json_decode(file_get_contents($path_to_model), true)['class'];
-
-            $directory = new RecursiveDirectoryIterator(path('hw/domophones/'));
-            $iterator = new RecursiveIteratorIterator($directory);
-
-            foreach ($iterator as $file) {
-                if ($file->getFilename() == "$class.php") {
-                    $path_to_class = $file->getPath() . "/" . $class . ".php";
-
-                    require_once $path_to_class;
-
-                    $className = "hw\\domophones\\$class";
-
-                    return new $className($url, $password, $first_time);
-                }
-            }
-        }
-
-        return false;
     }
 }

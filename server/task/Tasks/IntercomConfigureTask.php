@@ -3,6 +3,7 @@
 namespace Selpol\Task\Tasks;
 
 use Exception;
+use Selpol\Service\DomophoneService;
 use Selpol\Task\Task;
 use Throwable;
 
@@ -51,7 +52,7 @@ class IntercomConfigureTask extends Task
         $panel_text = $entrances[0]['callerId'];
 
         try {
-            $panel = domophone($domophone['model'], $domophone['url'], $domophone['credentials'], $this->first);
+            $panel = container(DomophoneService::class)->model($domophone['model'], $domophone['url'], $domophone['credentials'], $this->first);
         } catch (Exception $e) {
             echo $e->getMessage() . "\n";
 

@@ -20,6 +20,8 @@
  * 424 неверный токен
  */
 
+use Selpol\Service\DomophoneService;
+
 $user = auth(15);
 
 $domophone_id = (int)@$postdata['domophoneId'];
@@ -56,8 +58,9 @@ if (!$blocked) {
     $domophone = $households->getDomophone($domophone_id);
 
     try {
-        $model = domophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
+        $model = container(DomophoneService::class)->model($domophone["model"], $domophone["url"], $domophone["credentials"]);
         $model->open_door($door_id);
+
         $plog = backend("plog");
 
         if ($plog)
