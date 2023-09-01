@@ -356,7 +356,9 @@ class AsteriskRunner implements KernelRunner
     {
         $path = $_SERVER['REQUEST_URI'];
 
-        $server = parse_uri(config()['api']['asterisk']);
+        $config = config();
+
+        $server = parse_uri($config['api']['asterisk']);
 
         if ($server && $server['path'])
             $path = substr($path, strlen($server['path']));
