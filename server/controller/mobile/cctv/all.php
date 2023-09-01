@@ -23,8 +23,6 @@
 
 $user = auth();
 
-$result = [];
-
 $house_id = (int)@$postdata['houseId'];
 $households = backend("households");
 $cameras = backend("cameras");
@@ -32,6 +30,9 @@ $cameras = backend("cameras");
 $houses = [];
 
 foreach ($user['flats'] as $flat) {
+    if ($flat['addressHouseId'] != $house_id)
+        continue;
+
     $houseId = $flat['addressHouseId'];
 
     if (array_key_exists($houseId, $houses)) {
