@@ -7,6 +7,7 @@ use chillerlan\QRCode\QRCode;
 use Exception;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Psr\Container\ContainerExceptionInterface;
 use Selpol\Task\Task;
 use ZipArchive;
 
@@ -27,6 +28,9 @@ class QrTask extends Task
         $this->override = $override;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     */
     public function onTask(): ?string
     {
         $this->files = backend('files');
@@ -35,6 +39,7 @@ class QrTask extends Task
 
         if ($this->override) {
             $uuids = $this->files->searchFiles(['filename' => $house['houseFull'] . ' QR.zip']);
+
             foreach ($uuids as $uuid)
                 $this->files->deleteFile($uuid['id']);
         } else {
@@ -48,16 +53,12 @@ class QrTask extends Task
 
         $this->setProgress(25);
 
-        $this->createQrZip($qr);
-
-        $uuids = $this->files->searchFiles(['filename' => $house['houseFull'] . ' QR.zip']);
-
-        if (count($uuids) > 0)
-            return $uuids[count($uuids) - 1]['id'];
-
-        return null;
+        return $this->createQrZip($qr);
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     */
     private function getOrCreateQr(array $house): array
     {
         $households = backend('households');
