@@ -82,12 +82,12 @@ function config(?string $key = null): mixed
         file_put_contents(path('var/cache/config.php'), '<?php return ' . var_export($config, true) . ';');
     } else throw new RuntimeException('Config not found or can\'t be loaded');
 
-    if ($key !== null) {
+    if ($key != null) {
         if (str_contains($key, '.')) {
             $keys = explode('.', $key);
 
             $i = 0;
-            $result = @$config[$keys[$i++]];
+            $result = $config[$keys[$i++]] ?? null;
 
             while (isset($result) && $i < count($keys))
                 $result = is_array($result) ? @$result[$keys[$i++]] : null;
@@ -98,7 +98,7 @@ function config(?string $key = null): mixed
             return null;
         }
 
-        return @$config[$key];
+        return $config[$key] ?? null;
     }
 
     return $config;
