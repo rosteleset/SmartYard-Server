@@ -1,5 +1,7 @@
 <?php
 
+use Selpol\Service\CameraService;
+
 $camera_id = $param;
 if (!isset($camera_id) || $camera_id === 0)
     response(404);
@@ -16,7 +18,8 @@ $cam = $cameras->getCamera($camera_id);
 if (!$cam)
     response(404);
 
-$model = camera($cam["model"], $cam["url"], $cam["credentials"]);
+$model = container(CameraService::class)->model($cam['model'], $cam['url'], $cam['credentials']);
+
 if (!$model)
     response(404);
 

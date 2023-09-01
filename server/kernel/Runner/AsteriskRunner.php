@@ -7,6 +7,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Selpol\Kernel\Kernel;
 use Selpol\Kernel\KernelRunner;
+use Selpol\Service\CameraService;
 use Selpol\Service\RedisService;
 use Selpol\Validator\Filter;
 use Selpol\Validator\Rule;
@@ -247,7 +248,7 @@ class AsteriskRunner implements KernelRunner
                                 $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
                                 if ($cameras && $cameras[0]) {
-                                    $model = camera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+                                    $model = $kernel->getContainer()->get(CameraService::class)->model($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
                                     $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
                                     $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([

@@ -1,8 +1,8 @@
 <?php
 
 use backends\backend;
-use hw\cameras\cameras;
 use hw\domophones\domophones;
+use Psr\Container\ContainerExceptionInterface;
 use Selpol\Service\DatabaseService;
 use Selpol\Service\RedisService;
 
@@ -15,6 +15,7 @@ if (!function_exists('backend')) {
      * @param string $backend module name
      * @param bool $login
      * @return false|backend
+     * @throws ContainerExceptionInterface
      */
     function backend(string $backend, bool $login = false): backend|false
     {
@@ -79,43 +80,6 @@ if (!function_exists('domophone')) {
                     require_once $path_to_class;
 
                     $className = "hw\\domophones\\$class";
-
-                    return new $className($url, $password, $first_time);
-                }
-            }
-        }
-
-        return false;
-    }
-}
-
-if (!function_exists('camera')) {
-    /**
-     * loads camera class, returns false if .json or class not found
-     *
-     * @param string $model .json
-     * @param string $url
-     * @param string $password
-     * @param boolean $first_time
-     * @return false|cameras
-     */
-    function camera(string $model, string $url, string $password, bool $first_time = false): cameras|false
-    {
-        $path_to_model = path('hw/cameras/models/' . $model);
-
-        if (file_exists($path_to_model)) {
-            $class = @json_decode(file_get_contents($path_to_model), true)['class'];
-
-            $directory = new RecursiveDirectoryIterator(path('hw/cameras/'));
-            $iterator = new RecursiveIteratorIterator($directory);
-
-            foreach ($iterator as $file) {
-                if ($file->getFilename() == "$class.php") {
-                    $path_to_class = $file->getPath() . "/" . $class . ".php";
-
-                    require_once $path_to_class;
-
-                    $className = "hw\\cameras\\$class";
 
                     return new $className($url, $password, $first_time);
                 }

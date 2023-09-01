@@ -204,7 +204,6 @@ if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
             $code = array_key_first($cache);
 
             response($code, $cache[$code]);
-
         } else {
             header("X-Api-Data-Source: db");
 
