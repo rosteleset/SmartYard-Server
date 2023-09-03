@@ -1146,7 +1146,10 @@
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
     
             (function hh(t) {
-                for (let i in t) {
+                let ts = Object.keys(t);
+                ts.sort();
+                for (let sk in ts) {
+                    let i = ts[sk];
                     if (t[i].filter) {
                         if (x == t[i].filter) {
                             filters += `<li class="pointer dropdown-item tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">`;
