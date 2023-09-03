@@ -1198,11 +1198,7 @@
                 }
             })(filtersTree);
     
-            if (target) {
-                filters += `*</ul></span>`;
-            } else {
-                filters += `</ul></span>${x?` <b class='hoverable'>[<span class='cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span>]</b>`:''}`;
-            }
+            filters += `</ul></span>${x?` <b class='hoverable'>[<span class='cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span>]</b>`:''}`;
     
             let fp = -1;
             for (let i in project.filters) {
