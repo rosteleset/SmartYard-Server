@@ -152,7 +152,7 @@ namespace backends\users {
         public function addUser($login, $realName = null, $eMail = null, $phone = null)
         {
             $login = trim($login);
-            $password = generate_password();
+            $password = $this->generate_password();
 
             try {
                 $sth = $this->db->prepare("insert into core_users (login, password, real_name, e_mail, phone, enabled) values (:login, :password, :real_name, :e_mail, :phone, 1)");
@@ -374,6 +374,19 @@ namespace backends\users {
             } catch (Exception $e) {
                 return false;
             }
+        }
+
+        private function generate_password(int $length = 8): string
+        {
+            $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            $count = mb_strlen($chars);
+
+            for ($i = 0, $result = ''; $i < $length; $i++) {
+                $index = rand(0, $count - 1);
+                $result .= mb_substr($chars, $index, 1);
+            }
+
+            return $result;
         }
     }
 }

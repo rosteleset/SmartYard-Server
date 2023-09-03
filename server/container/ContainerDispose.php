@@ -4,5 +4,5 @@ namespace Selpol\Container;
 
 interface ContainerDispose
 {
-    function dispose();
+    function dispose(): void;
 }

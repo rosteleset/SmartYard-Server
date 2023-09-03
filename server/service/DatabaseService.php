@@ -8,9 +8,9 @@ use PDOException;
 
 class DatabaseService extends PDO
 {
-    public function __construct(string $dsn, ?string $username = null, ?string $password = null, ?array $options = null)
+    public function __construct()
     {
-        parent::__construct($dsn, $username, $password, $options);
+        parent::__construct(config('db.dsn'), config('db.username'), config('db.password'), config('db.options'));
 
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }

@@ -42,7 +42,7 @@ class RecordTask extends Task
         return true;
     }
 
-    public function onError(Throwable $throwable)
+    public function onError(Throwable $throwable): void
     {
         $inbox = backend('inbox');
 

@@ -4,5 +4,5 @@ namespace Selpol\Kernel;
 
 interface KernelShutdownCallback
 {
-    public function __invoke(Kernel $kernel);
+    public function __invoke(Kernel $kernel): void;
 }

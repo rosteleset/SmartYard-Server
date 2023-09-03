@@ -23,10 +23,8 @@ class Kernel
 
     public function getContainer(): Container
     {
-        if (!isset($this->container)) {
-            $this->container = Container::file(path('config/container.php'));
-            $this->container->set(Kernel::class, $this);
-        }
+        if (!isset($this->container))
+            $this->container = new Container();
 
         return $this->container;
     }
@@ -59,16 +57,15 @@ class Kernel
         return $this;
     }
 
-    public function bootstrap(bool $lazy = true): static
+    public function bootstrap(): static
     {
         mb_internal_encoding('UTF-8');
 
-        if (!$lazy && !isset($this->container))
-            $this->container = Container::file(path('config/container.php'));
-
-        register_shutdown_function([$this, 'shutdown']);
+        $this->container = new Container();
 
         require_once path('backends/backend.php');
+
+        register_shutdown_function([$this, 'shutdown']);
 
         return $this;
     }
@@ -85,7 +82,7 @@ class Kernel
         }
     }
 
-    private function shutdown()
+    private function shutdown(): void
     {
         foreach ($this->shutdownCallbacks as $callback)
             $callback($this);

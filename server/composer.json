@@ -7,10 +7,13 @@
       "Selpol\\Kernel\\": "./kernel/",
       "Selpol\\Container\\": "./container/",
       "Selpol\\Cache\\": "./cache/",
+      "Selpol\\Http\\": "./http/",
       "Selpol\\Task\\": "./task/",
+      "Selpol\\Router\\": "./router/",
+      "Selpol\\Middleware\\": "./middleware/",
+      "Selpol\\Service\\": "./service/",
       "Selpol\\Validator\\": "./validator/",
-      "Selpol\\Logger\\": "./logger/",
-      "Selpol\\Service\\": "./service/"
+      "Selpol\\Logger\\": "./logger/"
     },
     "files": [
       "./utils/bootstrap.php",
@@ -40,6 +43,10 @@
     "psr/log": "^3.0",
     "psr/container": "^2.0",
     "php-amqplib/php-amqplib": "^3.5",
-    "psr/simple-cache": "^3.0"
+    "psr/simple-cache": "^3.0",
+    "psr/http-message": "^2.0",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-factory": "^1.0",
+    "psr/http-server-middleware": "^1.0"
   }
 }

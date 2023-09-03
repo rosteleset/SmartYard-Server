@@ -7,6 +7,6 @@ if (!function_exists('bootstrap')) {
     {
         mb_internal_encoding("UTF-8");
 
-        return Container::file(path('config/container.php'));
+        return Container::instance();
     }
 }

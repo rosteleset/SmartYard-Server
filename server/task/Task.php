@@ -24,12 +24,12 @@ abstract class Task implements LoggerAwareInterface
      */
     public abstract function onTask(): mixed;
 
-    public function onError(Throwable $throwable)
+    public function onError(Throwable $throwable): void
     {
 
     }
 
-    protected function setProgress(int|float $progress)
+    protected function setProgress(int|float $progress): void
     {
 
     }

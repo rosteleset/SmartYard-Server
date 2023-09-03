@@ -2,40 +2,6 @@
 
 namespace PHPSTORM_META {
 
-    use Selpol\Service\DatabaseService;
-    use Selpol\Service\TaskService;
-
-    expectedArguments(
-        \backend(),
-        0,
-        'accounting',
-        'addresses',
-        'authentication',
-        'authorization',
-        'cameras',
-        'cs',
-        'dvr',
-        'dvr_exports',
-        'files',
-        'frs',
-        'geocoder',
-        'groups',
-        'households',
-        'inbox',
-        'isdn',
-        'monitoring',
-        'mqtt',
-        'plog',
-        'processes',
-        'providers',
-        'queue',
-        'sip',
-        'tt',
-        'tt_journal',
-        'users',
-        'task'
-    );
-
     override(
         \backend(0),
         map([
@@ -68,9 +34,6 @@ namespace PHPSTORM_META {
             'tasks' => \backends\tasks\tasks::class
         ])
     );
-
-    override(\Selpol\Container\Container::get(0), map(['' => '@']));
-    override(\container(0), map(['' => '@']));
 
     exitPoint(\response());
     exitPoint(\usage());

@@ -113,7 +113,7 @@ class PlogCallTask extends PlogTask
         return true;
     }
 
-    public function onError(Throwable $throwable)
+    public function onError(Throwable $throwable): void
     {
         logger('task')->debug('PlogCallTask error' . PHP_EOL . $throwable);
 

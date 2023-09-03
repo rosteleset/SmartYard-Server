@@ -37,40 +37,8 @@ class TaskRunner implements KernelRunner
 
         $queue = array_key_exists('--queue', $arguments) ? $arguments['--queue'] : 'default';
 
-        $this->register_signal();
-
-        $service = $kernel->getContainer()->get(TaskService::class);
-        $service->setLogger(logger('task'));
-
-        $service->dequeue($queue, new class($queue, logger('task-' . $queue)) implements TaskCallback {
-            private string $queue;
-
-            private LoggerInterface $logger;
-
-            public function __construct(string $queue, LoggerInterface $logger)
-            {
-                $this->queue = $queue;
-
-                $this->logger = $logger;
-            }
-
-            public function __invoke(Task $task)
-            {
-                $this->logger->info('Dequeue start task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title]);
-
-                try {
-                    $task->setLogger($this->logger);
-
-                    $task->onTask();
-
-                    $this->logger->info('Dequeue complete task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title]);
-                } catch (Throwable $throwable) {
-                    $this->logger->info('Dequeue error task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title, 'message' => $throwable->getMessage()]);
-
-                    $task->onError($throwable);
-                }
-            }
-        });
+        $this->registerSignal();
+        $this->registerDequeue($kernel, $queue);
 
         return 0;
     }
@@ -95,7 +63,7 @@ class TaskRunner implements KernelRunner
         return $args;
     }
 
-    private function register_signal()
+    private function registerSignal(): void
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
             sapi_windows_set_ctrl_handler(static function (int $event) {
@@ -108,5 +76,46 @@ class TaskRunner implements KernelRunner
             pcntl_signal(SIGINT, static fn() => exit(0));
             pcntl_signal(SIGTERM, static fn() => exit(0));
         }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
+     */
+    private function registerDequeue(Kernel $kernel, string $queue): void
+    {
+        $service = $kernel->getContainer()->get(TaskService::class);
+        $service->setLogger(logger('task'));
+
+        $service->dequeue($queue, new class($queue, logger('task-' . $queue)) implements TaskCallback {
+            private string $queue;
+
+            private LoggerInterface $logger;
+
+            public function __construct(string $queue, LoggerInterface $logger)
+            {
+                $this->queue = $queue;
+
+                $this->logger = $logger;
+            }
+
+            public function __invoke(Task $task): void
+            {
+                $this->logger->info('Dequeue start task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title]);
+
+                try {
+                    $task->setLogger($this->logger);
+
+                    $task->onTask();
+
+                    $this->logger->info('Dequeue complete task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title]);
+                } catch (Throwable $throwable) {
+                    $this->logger->info('Dequeue error task', ['queue' => $this->queue, 'class' => get_class($task), 'title' => $task->title, 'message' => $throwable->getMessage()]);
+
+                    $task->onError($throwable);
+                }
+            }
+        });
     }
 }

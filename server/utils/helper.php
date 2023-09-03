@@ -19,7 +19,7 @@ $lastError = false;
 if (!function_exists('path')) {
     function path(string $value): string
     {
-        return dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . $value;
+        return dirname(__FILE__, 2) . DIRECTORY_SEPARATOR . $value;
     }
 }
 
@@ -39,14 +39,28 @@ if (!function_exists('kernel')) {
 
 if (!function_exists('container')) {
     /**
-     * @throws ContainerExceptionInterface
+     * @template T
+     * @psalm-param class-string<T> $key
+     * @return T
      * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
      */
     function container(string $key): mixed
     {
         $container = kernel()?->getContainer() ?? Container::instance();
 
         return $container->get($key);
+    }
+}
+
+if (!function_exists('backend')) {
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    function backend(string $backend, bool $login = false): backend|false
+    {
+        return container(BackendService::class)->get($backend, $login);
     }
 }
 
@@ -67,85 +81,6 @@ if (!function_exists('validate')) {
         } catch (ValidatorException $e) {
             return $e->getValidatorMessage();
         }
-    }
-}
-
-if (!function_exists('backend')) {
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    function backend(string $backend, bool $login = false): backend|false
-    {
-        return container(BackendService::class)->get($backend, $login);
-    }
-}
-
-if (!function_exists('parse_uri')) {
-    function parse_uri(string $value): array
-    {
-        $parts = explode(':', $value);
-
-        $scheme = explode('.', $parts[0]);
-        $uri_parts['scheme'] = $scheme[0];
-
-        if (isset($scheme[1])) $uri_parts['transport'] = $scheme[1];
-        if (isset($parts[1])) $uri_parts['host'] = $parts[1];
-        if (isset($parts[2])) $uri_parts['port'] = $parts[2];
-
-        return $uri_parts;
-    }
-}
-
-if (!function_exists('request_headers')) {
-    function request_headers(): array
-    {
-        $arh = array();
-
-        $rx_http = '/\AHTTP_/';
-
-        foreach ($_SERVER as $key => $val) {
-            if (preg_match($rx_http, $key)) {
-                $arh_key = preg_replace($rx_http, '', $key);
-                $rx_matches = explode('_', $arh_key);
-
-                if (count($rx_matches) > 0 and strlen($arh_key) > 2) {
-                    foreach ($rx_matches as $ak_key => $ak_val)
-                        $rx_matches[$ak_key] = ucfirst($ak_val);
-
-                    $arh_key = implode('-', $rx_matches);
-                }
-
-                $arh[$arh_key] = $val;
-            }
-        }
-
-        return ($arh);
-    }
-}
-
-if (!function_exists('array_key_first')) {
-    function array_key_first(array $arr): string|int|null
-    {
-        foreach ($arr as $key => $unused)
-            return $key;
-
-        return null;
-    }
-}
-
-if (!function_exists('generate_password')) {
-    function generate_password($length = 8): string
-    {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $count = mb_strlen($chars);
-
-        for ($i = 0, $result = ''; $i < $length; $i++) {
-            $index = rand(0, $count - 1);
-            $result .= mb_substr($chars, $index, 1);
-        }
-
-        return $result;
     }
 }
 

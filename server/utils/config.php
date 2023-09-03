@@ -25,8 +25,6 @@ function env(?string $key = null): mixed
         $env = require path('var/cache/env.php');
     else if (file_exists(path('.env'))) {
         $env = load_env();
-
-        file_put_contents(path('var/cache/env.php'), '<?php return ' . var_export($env, true) . ';');
     } else throw new RuntimeException('Env not found or can\'t be loaded');
 
     if ($key !== null) {
@@ -44,8 +42,15 @@ function env(?string $key = null): mixed
     return $env;
 }
 
-function load_config(array $value): array
+function load_config(?array $value = null): array
 {
+    if ($value === null)
+        try {
+            $value = json_decode(file_get_contents(path('config/config.json')), true, flags: JSON_THROW_ON_ERROR);
+        } catch (Exception) {
+            $value = [];
+        }
+
     $keys = array_keys($value);
     $matches = [];
 
@@ -77,9 +82,7 @@ function config(?string $key = null): mixed
     if (file_exists(path('var/cache/config.php')))
         $config = require path('var/cache/config.php');
     else if (file_exists(path('config/config.json'))) {
-        $config = load_config(json_decode(file_get_contents(path('config/config.json')), true, flags: JSON_THROW_ON_ERROR));
-
-        file_put_contents(path('var/cache/config.php'), '<?php return ' . var_export($config, true) . ';');
+        $config = load_config();
     } else throw new RuntimeException('Config not found or can\'t be loaded');
 
     if ($key != null) {

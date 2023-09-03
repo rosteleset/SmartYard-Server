@@ -3,15 +3,24 @@
 namespace Selpol\Service;
 
 use Redis;
+use RedisException;
 use Selpol\Container\ContainerDispose;
 
 class RedisService implements ContainerDispose
 {
     private Redis $redis;
 
-    public function __construct(Redis $redis)
+    /**
+     * @throws RedisException
+     */
+    public function __construct()
     {
-        $this->redis = $redis;
+        $this->redis = new Redis();
+
+        $this->redis->connect(config('redis.host'), config('redis.port'));
+
+        if (config('redis.password'))
+            $this->redis->auth(config('redis.password'));
     }
 
     public function getRedis(): Redis
@@ -19,7 +28,10 @@ class RedisService implements ContainerDispose
         return $this->redis;
     }
 
-    function dispose()
+    /**
+     * @throws RedisException
+     */
+    function dispose(): void
     {
         $this->redis->close();
     }

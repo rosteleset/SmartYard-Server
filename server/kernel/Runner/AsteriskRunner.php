@@ -5,6 +5,7 @@ namespace Selpol\Kernel\Runner;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
+use RedisException;
 use Selpol\Kernel\Kernel;
 use Selpol\Kernel\KernelRunner;
 use Selpol\Service\CameraService;
@@ -26,6 +27,7 @@ class AsteriskRunner implements KernelRunner
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws RedisException
      */
     function __invoke(Kernel $kernel): int
     {

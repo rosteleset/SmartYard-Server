@@ -35,7 +35,7 @@ class TaskService implements LoggerAwareInterface, ContainerDispose
     /**
      * @throws Exception
      */
-    public function connect()
+    public function connect(): void
     {
         $this->connection = new AMQPStreamConnection(config('amqp.host'), config('amqp.port'), config('amqp.username'), config('amqp.password'));
         $this->channel = $this->connection->channel();
@@ -44,7 +44,7 @@ class TaskService implements LoggerAwareInterface, ContainerDispose
     /**
      * @throws Exception
      */
-    public function enqueue(string $queue, Task $task, ?int $delay)
+    public function enqueue(string $queue, Task $task, ?int $delay): void
     {
         if ($this->connection == null || $this->channel == null)
             $this->connect();
@@ -67,7 +67,7 @@ class TaskService implements LoggerAwareInterface, ContainerDispose
     /**
      * @throws Exception
      */
-    public function dequeue(string $queue, TaskCallback|callable $callback)
+    public function dequeue(string $queue, TaskCallback|callable $callback): void
     {
         if ($this->connection == null || $this->channel == null)
             $this->connect();
@@ -89,7 +89,7 @@ class TaskService implements LoggerAwareInterface, ContainerDispose
             $this->channel->wait();
     }
 
-    public function close()
+    public function close(): void
     {
         try {
             $this->channel?->close();
@@ -99,7 +99,7 @@ class TaskService implements LoggerAwareInterface, ContainerDispose
         }
     }
 
-    public function dispose()
+    public function dispose(): void
     {
         $this->close();
     }

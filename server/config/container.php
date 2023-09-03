@@ -1,33 +1,29 @@
 <?php
 
+use Selpol\Cache\FileCache;
 use Selpol\Cache\RedisCache;
-use Selpol\Container\Container;
+use Selpol\Container\ContainerBuilder;
 use Selpol\Service\BackendService;
 use Selpol\Service\CameraService;
+use Selpol\Service\FrsService;
 use Selpol\Service\DatabaseService;
 use Selpol\Service\DomophoneService;
+use Selpol\Service\HttpService;
 use Selpol\Service\RedisService;
 use Selpol\Service\TaskService;
 
-return static function (Container $container) {
-    $container->singleton(Redis::class, static function () {
-        $redis = new Redis();
+return static function (ContainerBuilder $builder) {
+    $builder->singleton(RedisService::class);
+    $builder->singleton(DatabaseService::class);
+    $builder->singleton(TaskService::class);
 
-        $redis->connect(config('redis.host'), config('redis.port'));
+    $builder->singleton(HttpService::class);
+    $builder->singleton(FrsService::class);
 
-        if (config('redis.password'))
-            $redis->auth(config('redis.password'));
+    $builder->singleton(CameraService::class);
+    $builder->singleton(DomophoneService::class);
+    $builder->singleton(BackendService::class);
 
-        return $redis;
-    });
-
-    $container->singleton(RedisService::class, static fn(Container $container) => new RedisService($container->get(Redis::class)));
-    $container->singleton(DatabaseService::class, static fn() => new DatabaseService(config('db.dsn'), config('db.username'), config('db.password'), config('db.options')));
-    $container->singleton(TaskService::class, static fn() => new TaskService());
-
-    $container->singleton(CameraService::class, static fn() => new CameraService());
-    $container->singleton(DomophoneService::class, static fn() => new DomophoneService());
-    $container->singleton(BackendService::class, static fn() => new BackendService());
-
-    $container->singleton(RedisCache::class, static fn(Container $container) => new RedisCache($container->get(RedisService::class)));
+    $builder->singleton(FileCache::class);
+    $builder->singleton(RedisCache::class);
 };

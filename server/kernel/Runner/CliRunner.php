@@ -6,8 +6,14 @@ use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use Selpol\Cache\FileCache;
+use Selpol\Container\ContainerBuilder;
 use Selpol\Kernel\Kernel;
 use Selpol\Kernel\KernelRunner;
+use Selpol\Logger\EchoLogger;
+use Selpol\Logger\GroupLogger;
+use Selpol\Router\RouterBuilder;
 use Selpol\Service\DatabaseService;
 use Selpol\Task\Tasks\IntercomConfigureTask;
 use Selpol\Task\Tasks\ReindexTask;
@@ -23,13 +29,14 @@ class CliRunner implements KernelRunner
     {
         $this->argv = $argv;
 
-        $this->logger = $logger ?? logger('cli');
+        $this->logger = $logger ?? new GroupLogger([new EchoLogger(), logger('cli')]);
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     function __invoke(Kernel $kernel): int
     {
@@ -43,8 +50,11 @@ class CliRunner implements KernelRunner
         else if ($this->isCommand($arguments, '--cron', true)) $this->cron($arguments);
         else if ($this->isCommand($arguments, '--install-crontabs')) $this->installCron();
         else if ($this->isCommand($arguments, '--uninstall-crontabs')) $this->uninstallCron();
+        else if ($this->isCommand($arguments, '--clear-kernel')) $this->clearKernel();
+        else if ($this->isCommand($arguments, '--container-kernel')) $this->containerKernel();
+        else if ($this->isCommand($arguments, '--router-kernel')) $this->routerKernel();
+        else if ($this->isCommand($arguments, '--optimize-kernel')) $this->optimizeKernel();
         else if ($this->isCommand($arguments, '--check-backends')) $this->checkBackends();
-        else if ($this->isCommand($arguments, '--clear-config')) $this->clearConfig();
         else if ($this->isCommand($arguments, '--intercom-configure-task', true, 2)) $this->intercomConfigureTask($arguments);
         else echo $this->help();
 
@@ -82,7 +92,7 @@ class CliRunner implements KernelRunner
      * @throws Exception
      * @throws ContainerExceptionInterface
      */
-    private function initDb()
+    private function initDb(): void
     {
         require_once path('sql/install.php');
 
@@ -95,7 +105,11 @@ class CliRunner implements KernelRunner
         task(new ReindexTask())->sync();
     }
 
-    private function cleanup()
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    private function cleanup(): void
     {
         $backends = config('backends');
 
@@ -113,7 +127,7 @@ class CliRunner implements KernelRunner
     /**
      * @throws Exception
      */
-    private function reindex()
+    private function reindex(): void
     {
         $n = clear_cache(true);
         echo "$n cache entries cleared\n";
@@ -121,7 +135,7 @@ class CliRunner implements KernelRunner
         task(new ReindexTask())->sync();
     }
 
-    private function clearCache()
+    private function clearCache(): void
     {
         $n = clear_cache(true);
 
@@ -132,7 +146,7 @@ class CliRunner implements KernelRunner
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    private function adminPassword(string $password)
+    private function adminPassword(string $password): void
     {
         $db = container(DatabaseService::class);
 
@@ -153,7 +167,11 @@ class CliRunner implements KernelRunner
         }
     }
 
-    private function cron(array $arguments)
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    private function cron(array $arguments): void
     {
         $parts = ["minutely", "5min", "hourly", "daily", "monthly"];
         $part = false;
@@ -190,7 +208,7 @@ class CliRunner implements KernelRunner
         } else echo $this->help();
     }
 
-    private function installCron()
+    private function installCron(): void
     {
         $crontab = [];
 
@@ -242,7 +260,7 @@ class CliRunner implements KernelRunner
         $this->logger->debug('Install crontabs', ['lines' => $lines]);
     }
 
-    private function uninstallCron()
+    private function uninstallCron(): void
     {
         $crontab = [];
 
@@ -275,7 +293,100 @@ class CliRunner implements KernelRunner
         $this->logger->debug('Uninstall crontabs', ['lines' => $lines]);
     }
 
-    private function checkBackends()
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    private function clearKernel(): void
+    {
+        $cache = container(FileCache::class);
+
+        $cache->clear();
+
+        $this->logger->debug('Kernel cleared');
+    }
+
+    private function containerKernel(): void
+    {
+        if (file_exists(path('config/container.php'))) {
+            $callback = require path('config/container.php');
+            $builder = new ContainerBuilder();
+            $callback($builder);
+
+            $factories = $builder->getFactories();
+
+            $headers = ['TYPE', 'ID', 'FACTORY'];
+            $result = [];
+
+            foreach ($factories as $id => $factory)
+                $result[] = ['TYPE' => $factory[0] ? 'SINGLETON' : 'FACTORY', 'ID' => $id, 'FACTORY' => $factory[1] ?: ''];
+
+            $this->logger->debug('CONTAINER TABLE:');
+            $this->logger->debug($this->table($headers, $result));
+        }
+    }
+
+    private function routerKernel(): void
+    {
+        if (file_exists(path('config/router.php'))) {
+            $callback = require path('config/router.php');
+            $builder = new RouterBuilder();
+            $callback($builder);
+
+            $routes = $builder->getRoutes();
+            $middlewares = $builder->getMiddlewares();
+
+            var_dump($routes);
+//            $headers = ['TYPE', 'CLASS', 'METHOD', 'MIDDLEWARES'];
+//            $result = [];
+//
+//            foreach ($routes as $method => $methodRoutes) {
+//                foreach ($methodRoutes as $route) {
+//                    $result[] = ['TYPE' => $method, 'CLASS' => $route['class'], 'METHOD' => $route['method'], 'MIDDLEWARES' => implode(',', $route['middlewares'])];
+//                }
+//            }
+//
+//            $this->logger->debug('GLOBAL MIDDLEWARES:' . PHP_EOL . implode('\n', $middlewares) . PHP_EOL . PHP_EOL . 'ROUTES TABLE:');
+//            $this->logger->debug($this->table($headers, $result));
+        }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws InvalidArgumentException
+     */
+    private function optimizeKernel(): void
+    {
+        $cache = container(FileCache::class);
+
+        $cache->set('env', load_env());
+        $cache->set('config', load_config());
+
+        if (file_exists(path('config/container.php'))) {
+            $callback = require path('config/container.php');
+            $builder = new ContainerBuilder();
+            $callback($builder);
+
+            $cache->set('container', $builder->getFactories());
+        }
+
+        if (file_exists(path('config/router.php'))) {
+            $callback = require path('config/router.php');
+            $builder = new RouterBuilder();
+            $callback($builder);
+
+            $cache->set('router', ['routes' => $builder->getRoutes(), 'middlewares' => $builder->getMiddlewares()]);
+        }
+
+        $this->logger->debug('Kernel optimized');
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    private function checkBackends(): void
     {
         $backends = config('backends');
 
@@ -307,24 +418,10 @@ class CliRunner implements KernelRunner
             echo "everything is all right\n";
     }
 
-    private function clearConfig()
-    {
-        if (file_exists(path('var/cache/env.php')))
-            unlink(path('var/cache/env.php'));
-
-        if (file_exists(path('var/cache/config.php')))
-            unlink(path('var/cache/config.php'));
-
-        env();
-        config();
-
-        $this->logger->debug('Clear config and env cache');
-    }
-
     /**
      * @throws Exception
      */
-    private function intercomConfigureTask(array $arguments)
+    private function intercomConfigureTask(array $arguments): void
     {
         $id = $arguments['--intercom-configure-task'];
         $first = array_key_exists('--first', $arguments);
@@ -341,6 +438,12 @@ class CliRunner implements KernelRunner
             [--clear-cache]
             [--cleanup]
 
+        kernel:
+            [--clear-kernel]
+            [--container-kernel]
+            [--router-kernel]
+            [--optimize-kernel]
+
         tests:
             [--check-backends]
 
@@ -352,5 +455,32 @@ class CliRunner implements KernelRunner
         intercom:
             [--intercom-configure-task=<id> [--first]]
         \n";
+    }
+
+    /**
+     * @param string[] $headers
+     * @param array $values
+     * @return string
+     */
+    private function table(array $headers, array $values): string
+    {
+        $mask = array_reduce($headers, static function (string $previous, string $header) use ($values) {
+                $max = strlen($header);
+
+                foreach ($values as $value) {
+                    if (strlen($value[$header]) > $max)
+                        $max = strlen($value[$header]);
+                }
+
+                return $previous . ' | %' . $max . '.' . $max . 's';
+            }, '') . ' | ';
+
+        $result = sprintf($mask, ...$headers);
+        $result .= PHP_EOL . str_repeat('-', strlen($result)) . PHP_EOL;
+
+        foreach ($values as $value)
+            $result .= sprintf($mask, ...array_map(static fn(string $header) => $value[$header], $headers)) . PHP_EOL;
+
+        return $result;
     }
 }

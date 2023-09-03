@@ -3,6 +3,7 @@
 namespace Selpol\Task\Tasks;
 
 use Exception;
+use Selpol\Http\Uri;
 use Selpol\Service\DomophoneService;
 use Selpol\Task\Task;
 use Throwable;
@@ -68,15 +69,17 @@ class IntercomConfigureTask extends Task
 
         $ntps = config('ntp_servers');
 
-        $ntp = parse_uri($ntps[array_rand($ntps)]);
-        $ntp_server = $ntp['host'];
-        $ntp_port = $ntp['port'] ?? 123;
+        $ntp = new Uri($ntps[array_rand($ntps)]);
+
+        $ntp_server = $ntp->getHost();
+        $ntp_port = $ntp->getPort() ?? 123;
 
         $syslogs = config('syslog_servers')[$domophone['json']['syslog']];
 
-        $syslog = parse_uri($syslogs[array_rand($syslogs)]);
-        $syslog_server = $syslog['host'];
-        $syslog_port = $syslog['port'] ?? 514;
+        $syslog = new Uri($syslogs[array_rand($syslogs)]);
+
+        $syslog_server = $syslog->getHost();
+        $syslog_port = $syslog->getPort() ?? 514;
 
         $sip_username = sprintf("1%05d", $domophone['domophoneId']);
         $sip_server = $asterisk_server['ip'];
@@ -84,9 +87,10 @@ class IntercomConfigureTask extends Task
 
         $nat = (bool)$domophone['nat'];
 
-        $stun = parse_uri($sip->stun(''));
-        $stun_server = $stun['host'];
-        $stun_port = $stun['port'] ?? 3478;
+        $stun = new Uri($sip->stun(''));
+
+        $stun_server = $stun->getHost();
+        $stun_port = $stun->getPort() ?? 3478;
 
         $audio_levels = [];
         $main_door_dtmf = $domophone['dtmf'];
@@ -219,7 +223,7 @@ class IntercomConfigureTask extends Task
         return true;
     }
 
-    public function onError(Throwable $throwable)
+    public function onError(Throwable $throwable): void
     {
         task(new IntercomConfigureTask($this->id, $this->first))->low()->delay(600)->dispatch();
     }
