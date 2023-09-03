@@ -1405,7 +1405,7 @@
     
                     for (let i in modules.groups.meta) {
                         if (modules.groups.meta[i].gid) {
-                            personals[1000000 + parseInt(modules.groups.meta[i].gid)] = $.trim(module.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]");
+                            personals[1000000 + parseInt(modules.groups.meta[i].gid)] = $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]");
                         }
                     }
 
