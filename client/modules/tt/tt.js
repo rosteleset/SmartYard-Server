@@ -1199,7 +1199,7 @@
             })(filtersTree);
     
             if (target) {
-                filters += `</ul></span>`;
+                filters += `*</ul></span>`;
             } else {
                 filters += `</ul></span>${x?` <b class='hoverable'>[<span class='cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span>]</b>`:''}`;
             }
