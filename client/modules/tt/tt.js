@@ -1131,6 +1131,7 @@
                 let tree = (project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter).split("/");
                 let f = filtersTree;
                 for (let j = 0; j < tree.length - 1; j++) {
+                    tree[j] = tree[j].trim();
                     if (!f[tree[j]]) {
                         f[tree[j]] = {};
                     }
