@@ -1198,7 +1198,7 @@
                 }
             })(filtersTree);
     
-            filters += `</ul></span>${x?` [<b><span class='cc hoverable' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x} <i class="far fa-copy"></i></span>]</b>`:''}`;
+            filters += `</ul></span>${x?` [<b><span class='hoverable cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span>] <i class="far fa-copy cc" data-clipboard-target='#ttFilterName'></i></b>`:''}`;
     
             let fp = -1;
             for (let i in project.filters) {
