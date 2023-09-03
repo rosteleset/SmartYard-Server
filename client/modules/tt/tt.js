@@ -1198,7 +1198,7 @@
                 }
             })(filtersTree);
     
-            filters += `</ul></span>${x?` <b>[${x}]</b>`:''}`;
+            filters += `</ul></span>${x?` <b class='hoverable'>[${x}]</b>`:''}`;
     
             let fp = -1;
             for (let i in project.filters) {
