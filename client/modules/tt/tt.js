@@ -1198,7 +1198,11 @@
                 }
             })(filtersTree);
     
-            filters += `</ul></span>${x?` <b class='hoverable'>[${x}]</b>`:''}`;
+            if (target) {
+                filters += `</ul></span>`;
+            } else {
+                filters += `</ul></span>${x?` <b class='hoverable cc ttFilterName' data-clipboard-target='.ttFilterName'>[${x}]</b>`:''}`;
+            }
     
             let fp = -1;
             for (let i in project.filters) {
@@ -1317,6 +1321,7 @@
                 }
             } else {
                 $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                new Clipboard('.cc');
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
