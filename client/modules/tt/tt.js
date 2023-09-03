@@ -1198,7 +1198,7 @@
                 }
             })(filtersTree);
     
-            filters += `</ul></span>`;
+            filters += `</ul></span> [${x}]`;
     
             let fp = -1;
             for (let i in project.filters) {
