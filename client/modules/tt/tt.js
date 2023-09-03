@@ -1153,15 +1153,22 @@
                 for (let i in t) {
                     if (!t[i].filter) {
                         fFolders.push(i);
+                    } else {
+                        if (parseInt(t[i].personal) > 1000000) {
+                            fPersonal.push(i);
+                        } else
+                        if (parseInt(t[i].personal)) {
+                            fGroups.push(i);
+                        } else {
+                            fOthers.push(i);
+                        }
                     }
                 }
 
-                ts = ts.concat(fFolders);
-                ts = ts.concat(fPersonal);
-                ts = ts.concat(fGroups);
-                ts = ts.concat(fOthers);
-
-                console.log(ts)
+                ts = ts.concat(fFolders.sort());
+                ts = ts.concat(fPersonal.sort());
+                ts = ts.concat(fGroups.sort());
+                ts = ts.concat(fOthers.sort());
 
                 for (let sk in ts) {
                     let i = ts[sk];
