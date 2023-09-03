@@ -1201,7 +1201,7 @@
             if (target) {
                 filters += `</ul></span>`;
             } else {
-                filters += `</ul></span>${x?` <b class='hoverable cc' data-clipboard-target='.ttFilterName'>[<span id='ttFilterName'>${x}</span>]</b>`:''}`;
+                filters += `</ul></span>${x?` <b class='hoverable cc' data-clipboard-target='ttFilterName'>[<span id='ttFilterName'>${x}</span>]</b>`:''}`;
             }
     
             let fp = -1;
