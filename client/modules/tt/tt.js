@@ -1214,7 +1214,7 @@
                 }
             }
     
-            if ($.trim(modules.tt.meta.filters[x]) + "-" + md5(lStore("_login") + ":" + $.trim(modules.tt.meta.filters[x])) == x && fp == myself.uid) {
+            if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
                 filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
                 filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
             } else {
@@ -1423,7 +1423,7 @@
                         if (t != myself.realName) {
                             f.name = myself.realName + " / " + $.trim(f.name);
                         }
-                        let n = $.trim(f.name) + "-" + md5(lStore("_login") + ":" + $.trim(f.name));
+                        let n = md5(md5($.trim(f.name)) + "-" + md5(lStore("_login")));
                         f.fileName = n;
                         loadingStart();
                         PUT("tt", "customFilter", n, {
