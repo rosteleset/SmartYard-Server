@@ -298,6 +298,7 @@ body::-webkit-scrollbar-thumb {
   text-align: right;
   float: right;
 	margin-left: 0.5rem;
+  color: transparent;
 }
 
 .dropdown-item:hover + .dropdown-menu,
