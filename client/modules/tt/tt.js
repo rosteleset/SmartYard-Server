@@ -1567,6 +1567,7 @@
         loadingStart();
 
         $("#subTop").html("");
+        $("#mainForm").html("");
         $("#altForm").hide();
 
         if (modules.tt.menuItem) {
