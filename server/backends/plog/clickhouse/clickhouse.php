@@ -75,69 +75,81 @@
                 if ($entrances && $entrances[0]) {
                     $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
                     if ($cameras && $cameras[0]) {
-                        $frs = loadBackend("frs");
-                        if ($frs) {
-                            if ($event_id === false) {
-                                $response = $frs->bestQualityByDate($cameras[0], $date);
-                            } else {
-                                $response = $frs->bestQualityByEventId($cameras[0], $event_id);
-                            }
+                        try {
+                            $frs = loadBackend("frs");
+                            if ($frs) {
+                                if ($event_id === false) {
+                                    $response = $frs->bestQualityByDate($cameras[0], $date);
+                                } else {
+                                    $response = $frs->bestQualityByEventId($cameras[0], $event_id);
+                                }
 
-                            if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
-                                $image_data = file_get_contents($response[frs::P_DATA][frs::P_SCREENSHOT]);
-                                if ($image_data) {
-                                    $headers = implode("\n", $http_response_header);
-                                    $content_type = "image/jpeg";
-                                    if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
-                                        $content_type = end($matches[1]);
+                                if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
+                                    $image_data = file_get_contents($response[frs::P_DATA][frs::P_SCREENSHOT]);
+                                    if ($image_data) {
+                                        $headers = implode("\n", $http_response_header);
+                                        $content_type = "image/jpeg";
+                                        if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
+                                            $content_type = end($matches[1]);
+                                        }
+                                        $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
+                                            "camshot",
+                                            $files->contentsToStream($image_data),
+                                            [
+                                                "contentType" => $content_type,
+                                                "expire" => time() + $this->ttl_camshot_days * 86400,
+                                            ]
+                                        ));
+                                        $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
+                                        $camshot_data[self::COLUMN_FACE] = [
+                                            frs::P_FACE_LEFT => $response[frs::P_DATA][frs::P_FACE_LEFT],
+                                            frs::P_FACE_TOP => $response[frs::P_DATA][frs::P_FACE_TOP],
+                                            frs::P_FACE_WIDTH => $response[frs::P_DATA][frs::P_FACE_WIDTH],
+                                            frs::P_FACE_HEIGHT => $response[frs::P_DATA][frs::P_FACE_HEIGHT],
+                                        ];
                                     }
-                                    $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
-                                        "camshot",
-                                        $files->contentsToStream($image_data),
-                                        [
-                                            "contentType" => $content_type,
-                                            "expire" => time() + $this->ttl_camshot_days * 86400,
-                                        ]
-                                    ));
-                                    $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
-                                    $camshot_data[self::COLUMN_FACE] = [
-                                        frs::P_FACE_LEFT => $response[frs::P_DATA][frs::P_FACE_LEFT],
-                                        frs::P_FACE_TOP => $response[frs::P_DATA][frs::P_FACE_TOP],
-                                        frs::P_FACE_WIDTH => $response[frs::P_DATA][frs::P_FACE_WIDTH],
-                                        frs::P_FACE_HEIGHT => $response[frs::P_DATA][frs::P_FACE_HEIGHT],
-                                    ];
                                 }
                             }
+                        } catch (\Exception $e) {
+                            $camshot_data = [];
+                            error_log(print_r($e, true));
                         }
 
                         if (!$camshot_data) {
-                            //получение кадра с DVR-серевера, если нет кадра от FRS
-                            $prefix = $cameras[0]["dvrStream"];
-                            if ($prefix) {
-                                $ts_event = $date - $this->back_time_shift_video_shot;
-                                $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
-                                $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
-                                if (substr($urlOfScreenshot,-4) === ".mp4") {
-                                    system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
-                                } else {
-                                    file_put_contents($filename, file_get_contents($urlOfScreenshot));
-                                }
-                                if (file_exists($filename)) {
-                                    $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
-                                        "camshot",
-                                        fopen($filename, 'rb'),
-                                        [
-                                            "contentType" => "image/jpeg",
-                                            "expire" => time() + $this->ttl_camshot_days * 86400,
-                                        ]
-                                    ));
-                                    unlink($filename);
-                                    $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_DVR;
+                            try {
+                                //получение кадра с DVR-серевера, если нет кадра от FRS
+                                $prefix = $cameras[0]["dvrStream"];
+                                if ($prefix) {
+                                    $ts_event = $date - $this->back_time_shift_video_shot;
+                                    $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
+                                    $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
+                                    $urlOfScreenshot = "";
+                                    if (substr($urlOfScreenshot,-4) === ".mp4") {
+                                        system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                    } else {
+                                        file_put_contents($filename, file_get_contents($urlOfScreenshot));
+                                    }
+                                    if (file_exists($filename)) {
+                                        $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
+                                            "camshot",
+                                            fopen($filename, 'rb'),
+                                            [
+                                                "contentType" => "image/jpeg",
+                                                "expire" => time() + $this->ttl_camshot_days * 86400,
+                                            ]
+                                        ));
+                                        unlink($filename);
+                                        $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_DVR;
+                                    } else {
+                                        $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
+                                    }
                                 } else {
                                     $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                                 }
-                            } else {
+                            } catch (\Exception $e) {
+                                $camshot_data = [];
                                 $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
+                                error_log(print_r($e, true));
                             }
                         }
                     }
@@ -152,23 +164,28 @@
             public function writeEventData($event_data, $flat_list = [])
             {
                 echo("__call writeEventData\n");
-                if (count($flat_list)) {
-                    foreach ($flat_list as $flat_id) {
-                        $hidden = $this->getPlogHidden($flat_id);
+                try {
+                    if (count($flat_list)) {
+                        foreach ($flat_list as $flat_id) {
+                            $hidden = $this->getPlogHidden($flat_id);
+                            if ($hidden < 0) {
+                                continue;
+                            }
+                            $event_data[self::COLUMN_HIDDEN] = $hidden;
+                            $event_data[self::COLUMN_FLAT_ID] = $flat_id;
+                            $this->clickhouse->insert("plog", [$event_data]);
+                        }
+                    } else {
+                        $hidden = $this->getPlogHidden($event_data[self::COLUMN_FLAT_ID]);
                         if ($hidden < 0) {
-                            continue;
+                            return;
                         }
                         $event_data[self::COLUMN_HIDDEN] = $hidden;
-                        $event_data[self::COLUMN_FLAT_ID] = $flat_id;
                         $this->clickhouse->insert("plog", [$event_data]);
                     }
-                } else {
-                    $hidden = $this->getPlogHidden($event_data[self::COLUMN_FLAT_ID]);
-                    if ($hidden < 0) {
-                        return;
-                    }
-                    $event_data[self::COLUMN_HIDDEN] = $hidden;
-                    $this->clickhouse->insert("plog", [$event_data]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return;
                 }
             }
 
