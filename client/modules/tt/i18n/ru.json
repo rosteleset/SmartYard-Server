@@ -299,6 +299,7 @@
         "filterAlreadyExists": "Фильтр уже добавлен",
         "viewerAlreadyExists": "Функция уже существует",
         "insufficentRights": "Недостаточно прав для выполнения операции",
-        "filterNotFound": "Фильтр не найден"
+        "filterNotFound": "Фильтр не найден",
+        "invalidFilter": "Фильтр содержит ошибки, сохранение невозможно"
     }
 }

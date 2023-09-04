@@ -1444,6 +1444,8 @@
                         }).
                         fail(FAIL).
                         fail(loadingDone);
+                    } else {
+                        error(i18n("errors.invalidFilter"), i18n("error"), 30);
                     }
                 });
                 if (params.filter && params.filter !== true && params.filter != "empty") {

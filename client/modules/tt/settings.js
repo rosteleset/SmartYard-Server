@@ -2692,15 +2692,26 @@
                     }),
                 });
                 $("#filterSave").off("click").on("click", () => {
-                    loadingStart();
-                    PUT("tt", "filter", filter, { "body": $.trim(editor.getValue()) }).
-                    fail(FAIL).
-                    done(() => {
-                        message(i18n("tt.filterWasSaved"));
-                    }).
-                    always(() => {
-                        loadingDone();
-                    });
+                    let f = false;
+                    try {
+                        f = JSON.parse($.trim(editor.getValue()));
+                    } catch (e) {
+                        f = false;
+                    }
+                    if (f && $.trim(f.name) && f.fields) {
+                        f.fileName = filter;
+                        loadingStart();
+                        PUT("tt", "filter", filter, { "body": JSON.stringify(f, true, 4) }).
+                        fail(FAIL).
+                        done(() => {
+                            message(i18n("tt.filterWasSaved"));
+                            loadingDone();
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    } else {
+                        error(i18n("errors.invalidFilter"), i18n("error"), 30);
+                    }
                 });
             }).
             fail(FAIL).
