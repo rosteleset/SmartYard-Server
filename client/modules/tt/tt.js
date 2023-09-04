@@ -1204,7 +1204,7 @@
                 }
             })(filtersTree);
     
-            filters += `</ul></span>${x?` <b>[</b><b><span class='hoverable cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span><b>]</b> <i class="far fa-copy cc pointer" data-clipboard-target='#ttFilterName'></i></b>`:''}`;
+            filters += "</ul></span>";
     
             let fp = -1;
             for (let i in project.filters) {
