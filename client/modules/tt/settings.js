@@ -2705,7 +2705,7 @@
                         fail(FAIL).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            loadingDone();
+                            location.href = '?#tt.settings&section=filter&filter=' + filter + '&_=' + Math.random();                        
                         }).
                         fail(FAIL).
                         fail(loadingDone);
