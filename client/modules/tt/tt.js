@@ -1218,7 +1218,7 @@
                 filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
                 filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
             } else {
-                filters += x?` <b>[</b><b><span class='hoverable cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span><b>]</b> <i class="far fa-copy cc pointer" data-clipboard-target='#ttFilterName'></i></b>`:'';
+                filters += x?`<b class="ml-4">[</b><b><span class='hoverable cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span><b>]</b><i class="far fa-copy cc pointer ml-1" data-clipboard-target='#ttFilterName'></i></b><i class="far fa-eye pointer ml-2 viewFilter"></i>`:'';
             }
     
             if (!fcount) {
@@ -1325,7 +1325,6 @@
                 }
             } else {
                 $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
-                new Clipboard('.cc');
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
@@ -1341,6 +1340,11 @@
                 } else {
                     modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
                 }
+            });
+
+            new Clipboard('.cc');
+            $(".viewFilter").off("click").on("click", () => {
+                console.log(x);
             });
 
             let columns = [ {
