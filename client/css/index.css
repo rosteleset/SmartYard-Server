@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 #toast-container > div {
   opacity: 1;
   filter: progid:dximagetransform.microsoft.alpha(opacity=100);
