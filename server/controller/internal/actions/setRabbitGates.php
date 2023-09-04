@@ -9,7 +9,7 @@ if (!isset(
     $postdata["apartmentId"],
     $postdata["date"],
 ))
-    response(406, "Invalid payload");
+    return response(406, "Invalid payload");
 
 [
     "ip" => $ip,
@@ -35,4 +35,4 @@ $params = [
 
 $result = container(DatabaseService::class)->modify($query, $params);
 
-response(202, ["id" => $result]);
+return response(202, ["id" => $result]);

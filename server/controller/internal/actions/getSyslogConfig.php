@@ -15,4 +15,4 @@ $payload = ['clickhouseService' => [
     'password' => $config['backends']['plog']['password'],
 ], 'hw' => $config['syslog_servers']];
 
-response(200, $payload);
+return response(200, $payload);

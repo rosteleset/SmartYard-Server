@@ -348,9 +348,9 @@ class AsteriskRunner implements KernelRunner
         return 0;
     }
 
-    public function onFailed(Throwable $throwable): int
+    public function onFailed(Throwable $throwable, bool $fatal): int
     {
-        $this->logger->emergency($throwable);
+        $this->logger->emergency($throwable, ['fatal' => $fatal]);
 
         return 0;
     }

@@ -20,14 +20,14 @@ $event_id = (int)$postdata[frs::P_EVENT_ID];
 if (!isset($camera_id) || $face_id == 0 || $event_id == 0) {
     $logger->debug('Send empty data');
 
-    response(204);
+    return response(204);
 }
 
 $frs_key = "frs_key_" . $camera_id;
 if ($redis->get($frs_key) != null) {
     $logger->debug('redis frs key empty', ['key' => $frs_key]);
 
-    response(204);
+    return response(204);
 }
 
 $entrance = $frs->getEntranceByCameraId($camera_id);
@@ -35,7 +35,7 @@ $entrance = $frs->getEntranceByCameraId($camera_id);
 if (!$entrance) {
     $logger->debug('entrance is empty', ['camera' => $camera_id]);
 
-    response(204);
+    return response(204);
 }
 
 $flats = $frs->getFlatsByFaceId($face_id, $entrance["entranceId"]);
@@ -43,7 +43,7 @@ $flats = $frs->getFlatsByFaceId($face_id, $entrance["entranceId"]);
 if (!$flats) {
     $logger->debug('flats is empty', ['entrance' => $entrance['entranceId']]);
 
-    response(204);
+    return response(204);
 }
 
 // TODO: check if FRS is allowed for flats
@@ -68,7 +68,7 @@ try {
 } catch (\Exception $e) {
     $logger->error('Error open door' . PHP_EOL . $e);
 
-    response(404, false, 'Ошибка', 'Домофон недоступен');
+    return response(404, false, 'Ошибка', 'Домофон недоступен');
 }
 
-response(204);
+return response(204);

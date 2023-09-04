@@ -12,13 +12,13 @@ if (!isset(
     $postdata["door"],
     $postdata["detail"],
 )) {
-    response(406, "Invalid payload");
+    return response(406, "Invalid payload");
 }
 
 ["date" => $date, "ip" => $ip, "event" => $event, "door" => $door, "detail" => $detail] = $postdata;
 
 if (!isset($date, $ip, $event, $door, $detail)) {
-    response(406, "Invalid payload");
+    return response(406, "Invalid payload");
 }
 
 //TODO: refactor events code ?!
@@ -26,7 +26,7 @@ try {
     $events = @json_decode(file_get_contents(__DIR__ . "/../../syslog/utils/events.json"), true);
 } catch (Exception $e) {
     error_log(print_r($e, true));
-    response(555, ["error" => "events config is missing",]);
+    return response(555, ["error" => "events config is missing",]);
 }
 $plog = backend('plog');
 
@@ -35,10 +35,10 @@ switch ($event) {
     case $events['OPEN_BY_CODE']:
         $plog->addDoorOpenData($date, $ip, $event, $door, $detail);
 
-        response(200);
+    return response(200);
 
     case $events['OPEN_BY_CALL']:
-        response(200);
+        return response(200);
 
     case $events['OPEN_BY_BUTTON']:
         $db = container(DatabaseService::class);
@@ -60,10 +60,10 @@ switch ($event) {
             $payload = ["streamId" => strval($streamId)];
             $apiResponse = apiExec("POST", $frsUrl . "/api/doorIsOpen", $payload);
 
-            response(201, $apiResponse);
+            return response(201, $apiResponse);
         }
 
-        response(200);
+        return response(200);
 }
 
 exit();

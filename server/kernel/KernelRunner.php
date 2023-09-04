@@ -14,5 +14,5 @@ interface KernelRunner
      */
     function __invoke(Kernel $kernel): int;
 
-    function onFailed(Throwable $throwable): int;
+    function onFailed(Throwable $throwable, bool $fatal): int;
 }

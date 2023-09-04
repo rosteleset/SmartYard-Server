@@ -1,7 +1,6 @@
 <?php
 
 namespace PHPSTORM_META {
-
     override(
         \backend(0),
         map([
@@ -34,7 +33,4 @@ namespace PHPSTORM_META {
             'tasks' => \backends\tasks\tasks::class
         ])
     );
-
-    exitPoint(\response());
-    exitPoint(\usage());
 }

@@ -6,7 +6,7 @@
 use Selpol\Service\DatabaseService;
 
 if (!isset($postdata["date"], $postdata["ip"], $postdata["motionActive"]))
-    response(406, "Invalid payload");
+    return response(406, "Invalid payload");
 
 $db = container(DatabaseService::class);
 
@@ -21,7 +21,7 @@ $result = $db->get($query, $params, []);
 if (!$result) {
     $logger->debug('Motion detection not enabled', ['frs' => '-', 'ip' => $ip]);
 
-    response(200, "FRS not enabled on this stream");
+    return response(200, "FRS not enabled on this stream");
 }
 
 [0 => ["camera_id" => $streamId, "frs" => $frsUrl]] = $result;
@@ -31,4 +31,5 @@ $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
 $logger->debug('Motion detection', $payload);
 
 $apiResponse = apiExec("POST", $frsUrl . "/api/motionDetection", $payload);
-response(201, $apiResponse);
+
+return response(201, $apiResponse);

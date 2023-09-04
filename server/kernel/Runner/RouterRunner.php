@@ -99,9 +99,9 @@ class RouterRunner implements KernelRunner, RequestHandlerInterface
         return $middleware->process($request, $this);
     }
 
-    function onFailed(Throwable $throwable): int
+    function onFailed(Throwable $throwable, bool $fatal): int
     {
-        logger('response')->error($throwable);
+        logger('response')->error($throwable, ['fatal' => $fatal]);
 
         try {
             $response = container(HttpService::class)->createResponse(500)->withJson(['success' => false]);
@@ -121,7 +121,7 @@ class RouterRunner implements KernelRunner, RequestHandlerInterface
         foreach ($response->getHeaders() as $name => $values)
             header($name . ': ' . $response->getHeaderLine($name), false);
 
-        if ($response->getStatusCode() !== 204)
+        if ($response->getStatusCode() != 204)
             echo $response->getBody()->getContents();
 
         return 0;

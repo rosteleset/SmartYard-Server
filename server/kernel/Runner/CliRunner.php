@@ -61,11 +61,11 @@ class CliRunner implements KernelRunner
         return 0;
     }
 
-    public function onFailed(Throwable $throwable): int
+    public function onFailed(Throwable $throwable, bool $fatal): int
     {
         echo $throwable->getMessage();
 
-        $this->logger->error($throwable);
+        $this->logger->error($throwable, ['fatal' => $fatal]);
 
         return 0;
     }
