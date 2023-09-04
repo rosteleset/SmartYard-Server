@@ -2704,7 +2704,7 @@
                         PUT("tt", "filter", filter, { "body": JSON.stringify(f, true, 4) }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            location.href = '?#tt.settings&section=filter&filter=' + filter + '&_=' + Math.random();                        
+                            location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();                        
                         }).
                         fail(FAIL).
                         fail(loadingDone);
