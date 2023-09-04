@@ -2702,7 +2702,6 @@
                         f.fileName = filter;
                         loadingStart();
                         PUT("tt", "filter", filter, { "body": JSON.stringify(f, true, 4) }).
-                        fail(FAIL).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             location.href = '?#tt.settings&section=filter&filter=' + filter + '&_=' + Math.random();                        
