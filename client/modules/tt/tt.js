@@ -1218,6 +1218,7 @@
                 filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
                 filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
             } else {
+                filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
                 filters += x?`<b class="ml-4">[</b><b><span class='hoverable cc' id='ttFilterName' data-clipboard-target='#ttFilterName'>${x}</span><b>]</b><i class="far fa-copy cc pointer ml-1" data-clipboard-target='#ttFilterName'></i></b><i class="far fa-eye pointer ml-2 viewFilter"></i>`:'';
             }
     
