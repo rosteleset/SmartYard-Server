@@ -376,7 +376,7 @@ class CliRunner implements KernelRunner
             $builder = new RouterBuilder();
             $callback($builder);
 
-            $cache->set('router', ['routes' => $builder->getRoutes(), 'middlewares' => $builder->getMiddlewares()]);
+            $cache->set('router', $builder->getRoutes());
         }
 
         $this->logger->debug('Kernel optimized');

@@ -2,7 +2,6 @@
 
 namespace Selpol\Kernel;
 
-use RuntimeException;
 use Selpol\Container\Container;
 use Throwable;
 
@@ -67,7 +66,7 @@ class Kernel
         require_once path('backends/backend.php');
 
         register_shutdown_function([$this, 'shutdown']);
-        set_error_handler([$this, 'error']);
+        //set_error_handler([$this, 'error']);
 
         return $this;
     }
@@ -93,10 +92,12 @@ class Kernel
             $this->container->dispose();
     }
 
-    public function error(int $errno, string $errstr, ?string $errfile = null, ?int $errline = null, ?array $errcontext = null): void
-    {
-        exit($this->runner->onFailed(new RuntimeException(), true));
-    }
+//    public function error(int $errno, string $errstr, ?string $errfile = null, ?int $errline = null, ?array $errcontext = null): void
+//    {
+//        logger('kernel')->emergency('Kernel error', ['errno' => $errno, 'errstr' => $errstr, 'errfile' => $errline, 'errline' => $errfile, 'errcontext' => $errcontext]);
+//
+//        exit($this->runner->onFailed(new RuntimeException(), true));
+//    }
 
     public static function instance(): ?Kernel
     {

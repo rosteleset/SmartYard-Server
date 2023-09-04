@@ -17,14 +17,14 @@ class ServerRequest implements ServerRequestInterface
     private array $attributes = [];
     private mixed $parsedBody = null;
 
-    private array $cookiesParams = [];
-    private array $queryParams = [];
+    private array $cookiesParams;
+    private array $queryParams;
     private array $serverParams;
 
     /** @var UploadedFileInterface[] $uploadedFiles */
-    private array $uploadedFiles = [];
+    private array $uploadedFiles;
 
-    public function __construct(string $method, string|UriInterface $uri, array $headers = [], ?StreamInterface $body = null, string $version = '1.1', array $serverParams = [])
+    public function __construct(string $method, string|UriInterface $uri, ?array $headers = null, ?StreamInterface $body = null, string $version = '1.1', array $cookiesParams = [], array $queryParams = [], array $serverParams = [])
     {
         $this->method = $method;
         $this->uri = $uri instanceof UriInterface ? $uri : new Uri($uri);
@@ -35,6 +35,8 @@ class ServerRequest implements ServerRequestInterface
 
         $this->protocolVersion = $version;
 
+        $this->cookiesParams = $cookiesParams;
+        $this->queryParams = $queryParams;
         $this->serverParams = $serverParams;
     }
 
@@ -45,6 +47,13 @@ class ServerRequest implements ServerRequestInterface
 
     public function getUploadedFiles(): array
     {
+        if (!isset($this->uploadedFiles)) {
+            $this->uploadedFiles = [];
+
+            foreach ($_FILES as $key => $file)
+                $this->uploadedFiles[$key] = new UploadedFile($file['tmp_name'], $file['size'], $file['error'], $file['name'], $file['type']);
+        }
+
         return $this->uploadedFiles;
     }
 
@@ -70,6 +79,11 @@ class ServerRequest implements ServerRequestInterface
     public function getQueryParams(): array
     {
         return $this->queryParams;
+    }
+
+    public function getQueryParam(string $key): ?string
+    {
+        return @$this->queryParams[$key] ?? null;
     }
 
     public function withQueryParams(array $query): ServerRequestInterface

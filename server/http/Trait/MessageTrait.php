@@ -4,11 +4,10 @@ namespace Selpol\Http\Trait;
 
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
-use Selpol\Http\Stream;
 
 trait MessageTrait
 {
-    private array $headers = [];
+    private ?array $headers;
     private string $protocolVersion = '1.1';
 
     private StreamInterface $body;
@@ -27,16 +26,25 @@ trait MessageTrait
 
     public function getHeaders(): array
     {
+        if ($this->headers === null)
+            $this->loadHeaders();
+
         return $this->headers;
     }
 
     public function hasHeader(string $header): bool
     {
+        if ($this->headers === null)
+            $this->loadHeaders();
+
         return array_key_exists($header, $this->headers);
     }
 
     public function getHeader(string $header): array
     {
+        if ($this->headers === null)
+            $this->loadHeaders();
+
         if ($this->hasHeader($header))
             return $this->headers[$header];
 
@@ -45,11 +53,17 @@ trait MessageTrait
 
     public function getHeaderLine(string $header): string
     {
+        if ($this->headers === null)
+            $this->loadHeaders();
+
         return implode(', ', $this->getHeader($header));
     }
 
     public function withHeader(string $header, $value): MessageInterface
     {
+        if ($this->headers === null)
+            $this->loadHeaders();
+
         $this->headers[$header] = is_array($value) ? $value : [$value];
 
         return $this;
@@ -57,6 +71,9 @@ trait MessageTrait
 
     public function withAddedHeader(string $header, $value): MessageInterface
     {
+        if ($this->headers === null)
+            $this->loadHeaders();
+
         if ($this->hasHeader($header))
             $this->headers[$header][] = $value;
         else
@@ -67,6 +84,9 @@ trait MessageTrait
 
     public function withoutHeader(string $header): MessageInterface
     {
+        if ($this->headers === null)
+            $this->loadHeaders();
+
         if ($this->hasHeader($header))
             unset($this->headers[$header]);
 
@@ -83,5 +103,18 @@ trait MessageTrait
         $this->body = $body;
 
         return $this;
+    }
+
+    private function loadHeaders(): void
+    {
+        $this->headers = [];
+
+        foreach ($_SERVER as $serverKey => $value) {
+            if (str_starts_with($serverKey, 'HTTP_')) {
+                $key = str_replace('_', '-', strtolower(substr($serverKey, 5)));
+
+                $this->headers[ucwords($key, '-')] = explode(', ', $value);
+            }
+        }
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Selpol\Router;
 
+use stdClass;
+
 class RouterBuilder
 {
     private array $routes = [];
@@ -23,12 +25,10 @@ class RouterBuilder
         $callback($builder);
 
         $routes = $builder->getRoutes();
-        $middlewares = $builder->getMiddlewares();
 
-        foreach ($routes as &$route)
-            $this->applyMiddlewares($route, $middlewares);
+        $this->applyMiddlewares($routes, $builder->getMiddlewares());
 
-        $this->routes[$path] = ['routes' => $routes];
+        $this->routes[$path] = $routes;
 
         return $this;
     }
@@ -62,7 +62,18 @@ class RouterBuilder
 
     private function route(string $type, string $route, string $class, string $method = '__invoke', array $middlewares = []): static
     {
-        $this->routes[$route] = ['type' => $type, 'class' => $class, 'method' => $method, 'middlewares' => $middlewares];
+        $segments = array_map(static fn(string $segment) => '/' . $segment, array_filter(explode('/', $route), static fn(string $segment) => $segment !== ''));
+
+        $routes = &$this->routes;
+
+        for ($i = 1; $i < count($segments); $i++) {
+            if (!array_key_exists($segments[$i], $routes))
+                $routes[$segments[$i]] = [];
+
+            $routes = &$routes[$segments[$i]];
+        }
+
+        $routes[$segments[count($segments)]] = ['type' => $type, 'class' => $class, 'method' => $method, 'middlewares' => $middlewares];
 
         return $this;
     }
@@ -71,7 +82,6 @@ class RouterBuilder
     {
         if (array_key_exists('middlewares', $route))
             $route['middlewares'] = $route['middlewares'] + $middlewares;
-        else foreach ($route['routes'] as &$childRoute)
-            $this->applyMiddlewares($childRoute, $middlewares);
+        else foreach ($route as &$childRoute) $this->applyMiddlewares($childRoute, $middlewares);
     }
 }

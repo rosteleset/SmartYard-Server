@@ -8,17 +8,13 @@ class Router
 {
     private array $routes = [];
 
-    /** @var string[] $middlewares */
-    private array $middlewares = [];
-
     public function __construct(bool $configure = true)
     {
         if ($configure) {
             if (file_exists(path('var/cache/router.php'))) {
                 $router = require_once path('var/cache/router.php');
 
-                $this->routes = $router['routes'];
-                $this->middlewares = $router['middlewares'];
+                $this->routes = $router;
             } else if (file_exists(path('config/router.php'))) {
                 $callback = require_once path('config/router.php');
                 $builder = new RouterBuilder();
@@ -26,45 +22,44 @@ class Router
                 $callback($builder);
 
                 $this->routes = $builder->getRoutes();
-                $this->middlewares = $builder->getMiddlewares();
             }
         }
     }
 
-    public function getMiddlewares(): array
-    {
-        return $this->middlewares;
-    }
-
-    public function bootstrap(string $value): static
-    {
-        if (file_exists(path('var/cache/router-' . $value . '.php')))
-            $this->routes = require_once path('var/cache/' . $value . '.php');
-        else if (file_exists(path('config/router/' . $value . '.php'))) {
-            $callback = require_once path('config/router/' . $value . '.php');
-
-            $callback($this);
-        }
-
-        return $this;
-    }
-
-    public function match(ServerRequestInterface $request): ?array
+    public function match(ServerRequestInterface $request): ?RouterMatch
     {
         $path = $request->getUri()->getPath();
         $segments = array_map(static fn(string $segment) => '/' . $segment, array_filter(explode('/', $path), static fn(string $segment) => $segment !== ''));
 
-        if (array_key_exists($segments[1], $this->routes)) {
-            $route = array_reduce(array_slice($segments, 1), static function (?array $previous, string $current) {
-                if ($previous === null || !array_key_exists($current, $previous['routes']))
-                    return null;
+        $params = [];
 
-                return $previous['routes'][$current];
-            }, $this->routes[$segments[1]]);
+        $routes = $this->routes;
 
-            if ($route && array_key_exists('type', $route) && $route['type'] === $request->getMethod())
-                return $route;
+        for ($i = 1; $i <= count($segments); $i++) {
+            if (array_key_exists($segments[$i], $routes))
+                $routes = $routes[$segments[$i]];
+            else {
+                $find = false;
+
+                foreach ($routes as $key => $route) {
+                    if (str_starts_with($key, '/{') && str_ends_with($key, '}')) {
+                        $params[substr($key, 2, -1)] = substr($segments[$i], 1);
+
+                        $routes = $route;
+
+                        $find = true;
+
+                        break;
+                    }
+                }
+
+                if (!$find)
+                    $routes = null;
+            }
         }
+
+        if ($routes && array_key_exists('type', $routes) && $routes['type'] === $request->getMethod())
+            return new RouterMatch($routes['class'], $routes['method'], $params, $routes['middlewares']);
 
         return null;
     }

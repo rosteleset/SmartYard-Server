@@ -25,21 +25,6 @@ class HttpService implements RequestFactoryInterface, ResponseFactoryInterface, 
         return new Request($method, $uri, body: $this->createStreamFromFile('php://input'));
     }
 
-    public function createResponse(int $code = 200, string $reasonPhrase = ''): Response
-    {
-        return new Response($code, reason: $reasonPhrase);
-    }
-
-    public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequest
-    {
-        return new ServerRequest($method, $uri, serverParams: $serverParams);
-    }
-
-    public function createStream(string $content = ''): Stream
-    {
-        return Stream::memory($content);
-    }
-
     public function createStreamFromFile(string $filename, string $mode = 'r'): Stream
     {
         if (!file_exists($filename))
@@ -59,6 +44,21 @@ class HttpService implements RequestFactoryInterface, ResponseFactoryInterface, 
     public function createStreamFromResource($resource): Stream
     {
         return new Stream($resource);
+    }
+
+    public function createResponse(int $code = 200, string $reasonPhrase = ''): Response
+    {
+        return new Response($code, reason: $reasonPhrase);
+    }
+
+    public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequest
+    {
+        return new ServerRequest($method, $uri, cookiesParams: $_COOKIE, queryParams: $_GET, serverParams: $serverParams);
+    }
+
+    public function createStream(string $content = ''): Stream
+    {
+        return Stream::memory($content);
     }
 
     public function createUploadedFile(StreamInterface $stream, int $size = null, int $error = \UPLOAD_ERR_OK, string $clientFilename = null, string $clientMediaType = null): UploadedFile

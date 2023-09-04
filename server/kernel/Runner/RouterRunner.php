@@ -14,6 +14,7 @@ use Selpol\Http\ServerRequest;
 use Selpol\Kernel\Kernel;
 use Selpol\Kernel\KernelRunner;
 use Selpol\Router\Router;
+use Selpol\Router\RouterMatch;
 use Selpol\Service\HttpService;
 use Throwable;
 
@@ -40,12 +41,12 @@ class RouterRunner implements KernelRunner, RequestHandlerInterface
 
         $request = $http->createServerRequest($_SERVER['REQUEST_METHOD'], $_SERVER["REQUEST_URI"], $_SERVER);
 
+        $kernel->getContainer()->set(ServerRequest::class, $request);
+
         $route = $this->router->match($request);
 
         if ($route !== null) {
-            $this->middlewares = $this->router->getMiddlewares() + $route['middlewares'];
-
-            $kernel->getContainer()->set(ServerRequest::class, $request);
+            $this->middlewares = $route->getMiddlewares();
 
             return $this->emit($this->handle(
                 $request
@@ -66,28 +67,33 @@ class RouterRunner implements KernelRunner, RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if (count($this->middlewares) === 0) {
-            $route = $request->getAttribute('route');
-
             /** @var HttpService $http */
             $http = $request->getAttribute('http');
+
+            if ($http === null)
+                return $http->createResponse(404)->withJson(['success' => false]);
+
+            /** @var RouterMatch $route */
+            $route = $request->getAttribute('route');
 
             if ($route === null)
                 return $http->createResponse(404)->withJson(['success' => false]);
 
-            if ($route['method'] === 'file') {
-                if (!file_exists($route['class']))
+            if ($route->getMethod() === 'file') {
+                if (!file_exists($route->getClass()))
                     return $http->createResponse(404)->withJson(['success' => false]);
 
-                return require_once $route['class'];
-            } else if (!class_exists($route['class']))
+                return require_once $route->getClass();
+            } else if (!class_exists($route->getClass())) {
+                var_dump($route->getClass());
+
                 return $http->createResponse(404)->withJson(['success' => false]);
+            }
 
-            /** @var Container $container */
-            $container = $request->getAttribute('container');
+            $class = $route->getClass();
+            $instance = new $class($request);
 
-            $instance = $container->has($route['class']) ? $container->get($route['class']) : $container->make($route['class']);
-
-            return $instance->{$route['method']}($request);
+            return $instance->{$route->getMethod()}($request);
         }
 
         /** @var Container $container */

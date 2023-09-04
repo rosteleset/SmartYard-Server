@@ -1,5 +1,7 @@
 <?php
 
+use Selpol\Controller\Internal\ActionController;
+use Selpol\Controller\Internal\FrsController;
 use Selpol\Middleware\FrontendMiddleware;
 use Selpol\Middleware\InternalMiddleware;
 use Selpol\Middleware\MobileMiddleware;
@@ -10,18 +12,17 @@ return static function (RouterBuilder $builder) {
         $builder->middleware(InternalMiddleware::class);
 
         $builder->group('/actions', static function (RouterBuilder $builder) {
-            $builder->get('/getSyslogConfig', path('controller/internal/actions/getSyslogConfig.php'), 'file');
+            $builder->get('/getSyslogConfig', ActionController::class, 'getSyslogConfig');
 
-            $builder->post('/callFinished', path('controller/internal/actions/callFinished.php'), 'file');
-            $builder->post('/motionDetection', path('controller/internal/actions/motionDetection.php'), 'file');
-            $builder->post('/openDoor', path('controller/internal/actions/openDoor.php'), 'file');
-            $builder->post('/setRabbitGates', path('controller/internal/actions/setRabbitGates.php'), 'file');
+            $builder->get('/callFinished', ActionController::class, 'callFinished');
+            $builder->get('/motionDetection', ActionController::class, 'motionDetection');
+            $builder->get('/openDoor', ActionController::class, 'openDoor');
+            $builder->get('/setRabbitGates', ActionController::class, 'setRabbitGates');
         });
 
         $builder->group('/frs', static function (RouterBuilder $builder) {
-            $builder->post('/callback', path('controller/internal/actions/callback.php'), 'file');
-
-            $builder->get('/camshot/{id}', path('controller/internal/actions/camshot.php'), 'file');
+            $builder->post('/callback', FrsController::class, 'callback');
+            $builder->post('/camshot/{id}', FrsController::class, 'camshot');
         });
     });
 

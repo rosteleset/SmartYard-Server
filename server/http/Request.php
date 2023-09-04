@@ -12,7 +12,7 @@ class Request implements RequestInterface
     use MessageTrait;
     use RequestTrait;
 
-    public function __construct(string $method, string|Uri $uri, array $headers = [], ?StreamInterface $body = null, string $version = '1.1')
+    public function __construct(string $method, string|Uri $uri, ?array $headers = null, ?StreamInterface $body = null, string $version = '1.1')
     {
         if (!($uri instanceof Uri))
             $uri = new Uri($uri);

@@ -11,6 +11,7 @@
       "Selpol\\Task\\": "./task/",
       "Selpol\\Router\\": "./router/",
       "Selpol\\Middleware\\": "./middleware/",
+      "Selpol\\Controller\\": "./controller/",
       "Selpol\\Service\\": "./service/",
       "Selpol\\Validator\\": "./validator/",
       "Selpol\\Logger\\": "./logger/"
