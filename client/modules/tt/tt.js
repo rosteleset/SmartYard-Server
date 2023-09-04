@@ -1411,6 +1411,10 @@
                         f = false;
                     }
                     if (f && $.trim(f.name) && f.fields) {
+                        let t = $.trim($.trim(f.name).split("/")[0]);
+                        if (t != myself.realName) {
+                            f.name = myself.realName + " / " + $.trim(f.name);
+                        }
                         let n = $.trim(f.name) + "-" + md5(lStore("_login") + ":" + $.trim(f.name));
                         f.fileName = n;
                         loadingStart();
