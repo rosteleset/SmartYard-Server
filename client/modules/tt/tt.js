@@ -1144,6 +1144,7 @@
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
     
             (function hh(t) {
+                let fMy = [];
                 let fFolders = [];
                 let fPersonal = [];
                 let fGroups = [];
@@ -1151,20 +1152,25 @@
                 let ts = [];
 
                 for (let i in t) {
-                    if (!t[i].filter) {
-                        fFolders.push(i);
+                    if ($.trim(i.split("/")[0]) == myself.realName) {
+                        fMy.push(i);
                     } else {
-                        if (parseInt(t[i].personal) > 1000000) {
-                            fPersonal.push(i);
-                        } else
-                        if (parseInt(t[i].personal)) {
-                            fGroups.push(i);
+                        if (!t[i].filter) {
+                            fFolders.push(i);
                         } else {
-                            fOthers.push(i);
+                            if (parseInt(t[i].personal) > 1000000) {
+                                fPersonal.push(i);
+                            } else
+                            if (parseInt(t[i].personal)) {
+                                fGroups.push(i);
+                            } else {
+                                fOthers.push(i);
+                            }
                         }
                     }
                 }
 
+                ts = ts.concat(fMy.sort());
                 ts = ts.concat(fFolders.sort());
                 ts = ts.concat(fPersonal.sort());
                 ts = ts.concat(fGroups.sort());
