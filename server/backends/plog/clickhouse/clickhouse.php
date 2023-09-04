@@ -8,6 +8,7 @@
     {
 
         use backends\frs\frs;
+        use http\Exception\InvalidArgumentException;
         use PDO;
 
         /**
@@ -85,7 +86,11 @@
                                 }
 
                                 if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
-                                    $image_data = file_get_contents($response[frs::P_DATA][frs::P_SCREENSHOT]);
+                                    $image_data = false;
+                                    $urlOfScreenshot = $response[frs::P_DATA][frs::P_SCREENSHOT];
+                                    if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) === true) {
+                                        $image_data = file_get_contents($urlOfScreenshot);
+                                    }
                                     if ($image_data) {
                                         $headers = implode("\n", $http_response_header);
                                         $content_type = "image/jpeg";
@@ -123,8 +128,10 @@
                                     $ts_event = $date - $this->back_time_shift_video_shot;
                                     $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
                                     $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
-                                    $urlOfScreenshot = "";
-                                    if (substr($urlOfScreenshot,-4) === ".mp4") {
+                                    if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) === false) {
+                                        throw new \InvalidArgumentException("Invalid URL $urlOfScreenshot");
+                                    }
+                                    if (pathinfo(parse_url($urlOfScreenshot, PHP_URL_PATH), PATHINFO_EXTENSION) === 'mp4') {
                                         system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                     } else {
                                         file_put_contents($filename, file_get_contents($urlOfScreenshot));
