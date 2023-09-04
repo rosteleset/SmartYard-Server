@@ -1567,8 +1567,11 @@
         loadingStart();
 
         $("#subTop").html("");
-        $("#mainForm").html("");
-        $("#altForm").hide();
+
+        if ($("#altForm:visible").length > 0) {
+            $("#mainForm").html("");
+            $("#altForm").hide();
+        }
 
         if (modules.tt.menuItem) {
             $("#" + modules.tt.menuItem).children().first().attr("href", "?#tt&_=" + Math.random());
