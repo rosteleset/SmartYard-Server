@@ -294,7 +294,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .dropdown-item.nomenu::after {
-	content: ' ';
+	content: '▸';
   text-align: right;
   float: right;
 	margin-left: 0.5rem;
