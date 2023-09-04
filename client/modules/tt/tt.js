@@ -1445,11 +1445,19 @@
                     }
                 });
                 if (params.filter && params.filter !== true && params.filter != "empty") {
-                    GET("tt", "customFilter", params.filter).
-                    done(response => {
-                        editor.setValue(response.body, -1);
-                        loadingDone();
-                    });
+                    if (modules.tt.meta.filtersExt[params.filter].owner) {
+                        GET("tt", "customFilter", params.filter).
+                        done(response => {
+                            editor.setValue(response.body, -1);
+                            loadingDone();
+                        });
+                    } else {
+                        GET("tt", "filter", params.filter).
+                        done(response => {
+                            editor.setValue(response.body, -1);
+                            loadingDone();
+                        });
+                    }
                 }
             }
 
