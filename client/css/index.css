@@ -293,6 +293,13 @@ body::-webkit-scrollbar-thumb {
 	margin-left: 0.5rem;
 }
 
+.dropdown-item.nomenu::after {
+	content: ' ';
+  text-align: right;
+  float: right;
+	margin-left: 0.5rem;
+}
+
 .dropdown-item:hover + .dropdown-menu,
 .dropdown-menu:hover {
 	display: block;
