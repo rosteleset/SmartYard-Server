@@ -89,7 +89,7 @@ $m = explode('/', $path);
 $api = @$m[0];
 $method = @$m[1];
 
-$params = [];
+$params = ['_backends' => []];
 
 if (count($m) >= 3)
     $params["_id"] = urldecode($m[2]);
@@ -98,6 +98,13 @@ $params["_path"] = ["api" => $api, "method" => $method];
 
 $params["_request_method"] = @$_SERVER['REQUEST_METHOD'];
 $params["ua"] = @$_SERVER["HTTP_USER_AGENT"];
+
+foreach ($required_backends as $backend) {
+    if (($load = backend($backend)) !== false)
+        $params['_backends'][$backend] = $load;
+    else
+        response(555, ["error" => "noRequiredBackend"]);
+}
 
 $clearCache = false;
 
@@ -153,51 +160,79 @@ if ($_RAW && count($_RAW))
         else if ($key == "_clearCache") $clearCache = true;
         else $params[$key] = $value;
 
-$backends = [];
-foreach ($required_backends as $backend)
-    if (backend($backend) === false)
-        response(555, ["error" => "noRequiredBackend"]);
-
 $auth = false;
+
+function forgot($params)
+{
+    if (@$params["eMail"]) {
+        $uid = $params["_backends"]["users"]->getUidByEMail($params["eMail"]);
+        if ($uid !== false) {
+            $keys = $params["_redis"]->keys("forgot_*_" . $uid);
+
+            if (!count($keys)) {
+                $token = md5(guid_v4());
+                $params["_redis"]->setex("forgot_" . $token . "_" . $uid, 900, "1");
+            }
+        }
+    }
+
+    if (@$params["token"]) {
+        $keys = $params["_redis"]->keys("forgot_{$params["token"]}_*");
+
+        $uid = false;
+
+        foreach ($keys as $key) {
+            $params["_redis"]->del($key);
+            $uid = explode("_", $key)[2];
+        }
+    }
+
+    if (@$params["available"])
+        if ($params["_backends"]["users"]->capabilities()["mode"] !== "rw")
+            response(403);
+
+    response();
+}
 
 if ($api == "server" && $method == "ping") {
     $params["_login"] = @$params["login"] ?: "-";
     $params["_ip"] = $ip;
 
     response(200, "pong");
-} else
-    if ($api == "authentication" && $method == "login") {
-        if (!@$params["login"] || !@$params["password"]) {
-            $params["_login"] = @$params["login"] ?: "-";
-            $params["_ip"] = $ip;
+}
 
-            response(403, ["error" => "noCredentials"]);
-        }
-    } else {
-        if ($http_authorization) {
-            $auth = $backends["authentication"]->auth($http_authorization, @$_SERVER["HTTP_USER_AGENT"], $ip);
+if ($api == "authentication" && $method == "login") {
+    if (!@$params["login"] || !@$params["password"]) {
+        $params["_login"] = @$params["login"] ?: "-";
+        $params["_ip"] = $ip;
 
-            if (!$auth) {
-                $params["_ip"] = $ip;
-                $params["_login"] = '-';
+        response(403, ["error" => "noCredentials"]);
+    }
+} else {
+    if ($http_authorization) {
+        $auth = backend('authentication')->auth($http_authorization, @$_SERVER["HTTP_USER_AGENT"], $ip);
 
-                response(403, ["error" => "tokenNotFound"]);
-            }
-        } else {
+        if (!$auth) {
             $params["_ip"] = $ip;
             $params["_login"] = '-';
 
-            response(403, ["error" => "noToken"]);
+            response(403, ["error" => "tokenNotFound"]);
         }
+    } else {
+        $params["_ip"] = $ip;
+        $params["_login"] = '-';
+
+        response(403, ["error" => "noToken"]);
     }
+}
 
 if ($http_authorization && $auth) {
     $params["_uid"] = $auth["uid"];
     $params["_login"] = $auth["login"];
     $params["_token"] = $auth["token"];
 
-    foreach ($backends as $backend)
-        $backend->setCreds($auth["uid"], $auth["login"]);
+    foreach ($required_backends as $backend)
+        backend($backend)->setCreds($auth["uid"], $auth["login"]);
 }
 
 $params["_md5"] = md5(print_r($params, true));
@@ -206,15 +241,15 @@ $params["_config"] = config();
 $params["_redis"] = container(RedisService::class)->getRedis();
 $params["_db"] = container(DatabaseService::class);
 
-$params["_backends"] = $backends;
-
 $params["_ip"] = $ip;
 
 if (@$params["_login"])
     $params["_redis"]->set("last_" . md5($params["_login"]), time());
 
-if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
-    if ($backends["authorization"]->allow($params)) {
+if ($api == "accounts" && $method == "forgot") {
+    forgot($params);
+} else if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
+    if (backend('authorization')->allow($params)) {
         $cache = false;
 
         if ($params["_request_method"] === "GET") {
@@ -254,13 +289,15 @@ if (file_exists(path("controller/api/{$api}/{$method}.php"))) {
                     } else
                         response(555, ["error" => "resultCode",]);
                 } catch (Exception $e) {
+                    logger('frontend')->error($e);
+
                     error_log(print_r($e, true));
 
                     response(555, ["error" => "internal",]);
                 }
             } else response(405, ["error" => "methodNotFound",]);
         }
-    } else response(403, ["error" => "accessDenied",]);
+    } else response(403, ["error" => "accessDenied"]);
 }
 
 response(404, ["error" => "methodNotFound"]);
