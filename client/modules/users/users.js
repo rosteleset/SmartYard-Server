@@ -197,9 +197,6 @@
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
                             hidden: !parseInt(response.user.uid),
-                            validate: (v) => {
-                                return $.trim(v) !== "";
-                            }
                         },
                         {
                             id: "primaryGroup",
