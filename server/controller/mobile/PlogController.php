@@ -10,7 +10,7 @@ use Throwable;
 
 class PlogController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $user = $this->getSubscriber();
 

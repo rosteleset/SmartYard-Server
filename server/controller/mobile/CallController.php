@@ -3,12 +3,13 @@
 namespace Selpol\Controller\mobile;
 
 use Selpol\Controller\Controller;
+use Selpol\Http\Response;
 use Selpol\Service\CameraService;
 use Selpol\Service\RedisService;
 
 class CallController extends Controller
 {
-    public function camshot()
+    public function camshot(): Response
     {
         $this->getSubscriber();
 
@@ -25,7 +26,7 @@ class CallController extends Controller
         return $this->rbtResponse(404);
     }
 
-    public function live()
+    public function live(): Response
     {
         $user = $this->getSubscriber();
 

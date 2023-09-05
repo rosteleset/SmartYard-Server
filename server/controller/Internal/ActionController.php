@@ -5,6 +5,7 @@ namespace Selpol\Controller\Internal;
 use Exception;
 use Selpol\Controller\Controller;
 use Selpol\Http\Response;
+use Selpol\Service\DatabaseService;
 use Selpol\Service\FrsService;
 
 class ActionController extends Controller

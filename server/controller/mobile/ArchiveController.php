@@ -9,7 +9,7 @@ use Selpol\Task\Tasks\RecordTask;
 
 class ArchiveController extends Controller
 {
-    public function prepare()
+    public function prepare(): Response
     {
         $user = $this->getSubscriber();
 
@@ -46,12 +46,9 @@ class ArchiveController extends Controller
         $stream = $files->getFileStream($this->getRoute()->getParam('uuid'));
         $info = $files->getFileInfo($this->getRoute()->getParam('uuid'));
 
-        /** @var Response $response */
-        $response = $this->response()
+        return $this->response()
             ->withHeader('Content-Type', 'video/mp4')
             ->withHeader('Content-Disposition', 'attachment; filename=' . $info['filename'])
             ->withBody(new Stream($stream));
-
-        return $response;
     }
 }

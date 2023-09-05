@@ -87,14 +87,14 @@ class Uri implements UriInterface
         return $this->fragment;
     }
 
-    public function withScheme(string $scheme): UriInterface
+    public function withScheme(string $scheme): self
     {
         $this->scheme = $scheme;
 
         return $this;
     }
 
-    public function withUserInfo(string $user, ?string $password = null): UriInterface
+    public function withUserInfo(string $user, ?string $password = null): self
     {
         $this->userInfo = $user;
 
@@ -104,35 +104,35 @@ class Uri implements UriInterface
         return $this;
     }
 
-    public function withHost(string $host): UriInterface
+    public function withHost(string $host): self
     {
         $this->host = $host;
 
         return $this;
     }
 
-    public function withPort(?int $port): UriInterface
+    public function withPort(?int $port): self
     {
         $this->port = $port;
 
         return $this;
     }
 
-    public function withPath(string $path): UriInterface
+    public function withPath(string $path): self
     {
         $this->path = $path;
 
         return $this;
     }
 
-    public function withQuery(string $query): UriInterface
+    public function withQuery(string $query): self
     {
         $this->query = $query;
 
         return $this;
     }
 
-    public function withFragment(string $fragment): UriInterface
+    public function withFragment(string $fragment): self
     {
         $this->fragment = $fragment;
 

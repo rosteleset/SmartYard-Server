@@ -17,7 +17,7 @@ trait MessageTrait
         return $this->protocolVersion;
     }
 
-    public function withProtocolVersion(string $protocolVersion): MessageInterface
+    public function withProtocolVersion(string $protocolVersion): self
     {
         $this->protocolVersion = $protocolVersion;
 
@@ -59,7 +59,7 @@ trait MessageTrait
         return implode(', ', $this->getHeader($header));
     }
 
-    public function withHeader(string $header, $value): MessageInterface
+    public function withHeader(string $header, $value): self
     {
         if ($this->headers === null)
             $this->loadHeaders();
@@ -69,7 +69,7 @@ trait MessageTrait
         return $this;
     }
 
-    public function withAddedHeader(string $header, $value): MessageInterface
+    public function withAddedHeader(string $header, $value): self
     {
         if ($this->headers === null)
             $this->loadHeaders();
@@ -82,7 +82,7 @@ trait MessageTrait
         return $this;
     }
 
-    public function withoutHeader(string $header): MessageInterface
+    public function withoutHeader(string $header): self
     {
         if ($this->headers === null)
             $this->loadHeaders();
@@ -98,7 +98,7 @@ trait MessageTrait
         return $this->body;
     }
 
-    public function withBody(StreamInterface $body): MessageInterface
+    public function withBody(StreamInterface $body): self
     {
         $this->body = $body;
 

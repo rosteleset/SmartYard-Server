@@ -21,7 +21,7 @@ class ServerRequest implements ServerRequestInterface
     private array $queryParams;
     private array $serverParams;
 
-    /** @var UploadedFileInterface[] $uploadedFiles */
+    /** @var UploadedFile[] $uploadedFiles */
     private array $uploadedFiles;
 
     public function __construct(string $method, string|UriInterface $uri, ?array $headers = null, ?StreamInterface $body = null, string $version = '1.1', array $cookiesParams = [], array $queryParams = [], array $serverParams = [])
@@ -57,7 +57,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->uploadedFiles;
     }
 
-    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
+    public function withUploadedFiles(array $uploadedFiles): self
     {
         $this->uploadedFiles = $uploadedFiles;
 
@@ -69,7 +69,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->cookiesParams;
     }
 
-    public function withCookieParams(array $cookies): ServerRequestInterface
+    public function withCookieParams(array $cookies): self
     {
         $this->cookiesParams = $cookies;
 
@@ -86,7 +86,7 @@ class ServerRequest implements ServerRequestInterface
         return @$this->queryParams[$key] ?? null;
     }
 
-    public function withQueryParams(array $query): ServerRequestInterface
+    public function withQueryParams(array $query): self
     {
         $this->queryParams = $query;
 
@@ -101,7 +101,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->parsedBody;
     }
 
-    public function withParsedBody($data): ServerRequestInterface
+    public function withParsedBody($data): self
     {
         $this->parsedBody = $data;
 
@@ -118,14 +118,14 @@ class ServerRequest implements ServerRequestInterface
         return $this->attributes[$name] ?? $default;
     }
 
-    public function withAttribute(string $name, $value): ServerRequestInterface
+    public function withAttribute(string $name, $value): self
     {
         $this->attributes[$name] = $value;
 
         return $this;
     }
 
-    public function withoutAttribute(string $name): ServerRequestInterface
+    public function withoutAttribute(string $name): self
     {
         if (array_key_exists($name, $this->attributes))
             unset($this->attributes[$name]);

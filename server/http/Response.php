@@ -8,6 +8,8 @@ use Selpol\Http\Trait\MessageTrait;
 
 class Response implements ResponseInterface
 {
+    use MessageTrait;
+
     public static $codes = [
         200 => ['name' => 'OK', 'message' => 'Хорошо'],
         201 => ['name' => 'Created', 'message' => 'Создано'],
@@ -53,8 +55,6 @@ class Response implements ResponseInterface
         503 => ['name' => 'Service Unavailable', 'message' => 'Сервис недоступен'],
     ];
 
-    use MessageTrait;
-
     private int $statusCode;
 
     private ?string $reasonPhrase;
@@ -76,7 +76,7 @@ class Response implements ResponseInterface
         return $this->statusCode;
     }
 
-    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+    public function withStatus(int $code, string $reasonPhrase = ''): self
     {
         $this->statusCode = $code;
         $this->reasonPhrase = $reasonPhrase;
@@ -92,14 +92,14 @@ class Response implements ResponseInterface
         return $this->reasonPhrase;
     }
 
-    public function withString(string $value): static
+    public function withString(string $value): self
     {
         $this->body = Stream::memory($value);
 
         return $this;
     }
 
-    public function withJson(mixed $value): static
+    public function withJson(mixed $value): self
     {
         return $this->withString(json_encode($value));
     }

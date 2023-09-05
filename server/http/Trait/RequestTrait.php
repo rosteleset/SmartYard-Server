@@ -32,7 +32,7 @@ trait RequestTrait
         return $target;
     }
 
-    public function withRequestTarget(string $requestTarget): RequestInterface
+    public function withRequestTarget(string $requestTarget): self
     {
         $this->requestTarget = $requestTarget;
 
@@ -44,7 +44,7 @@ trait RequestTrait
         return $this->method;
     }
 
-    public function withMethod(string $method): RequestInterface
+    public function withMethod(string $method): self
     {
         $this->method = $method;
 
@@ -59,7 +59,7 @@ trait RequestTrait
         return $this->uri;
     }
 
-    public function withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface
+    public function withUri(UriInterface $uri, bool $preserveHost = false): self
     {
         $this->uri = $uri;
 

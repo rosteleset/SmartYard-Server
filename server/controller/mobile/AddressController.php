@@ -90,7 +90,7 @@ class AddressController extends Controller
         return $this->rbtResponse();
     }
 
-    public function registerQR()
+    public function registerQR(): Response
     {
         $jwt = $this->getJwt();
 
