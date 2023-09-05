@@ -115,6 +115,8 @@
                                         gid in (select gid from core_users_groups where uid = :uid)
                                         or
                                         gid in (select primary_group from core_users where uid = :uid)
+                                        or
+                                        gid in (select gid from core_users_groups where admin = :uid)
                                     )
                                 ) or aid in (select aid from core_api_methods_common)
                             ) as t1 where
@@ -204,6 +206,8 @@
                                             gid in (select gid from core_users_groups where uid = :uid)
                                             or
                                             gid in (select primary_group from core_users where uid = :uid)
+                                            or
+                                            gid in (select gid from core_users_groups where admin = :uid)
                                         )
                                     ) or 
                                     aid in (select aid from core_api_methods_common) or
