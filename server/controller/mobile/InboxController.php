@@ -9,11 +9,7 @@ class InboxController extends Controller
 {
     public function read(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $messageId = $this->request->getQueryParam('messageId');
 
@@ -24,11 +20,7 @@ class InboxController extends Controller
 
     public function unread(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         return $this->rbtResponse(data: ['count' => backend('inbox')->unreaded($user['subscriberId']), 'chat' => 0]);
     }

@@ -13,11 +13,7 @@ class CameraController extends Controller
 {
     public function all(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $body = $this->request->getParsedBody();
 
@@ -99,11 +95,7 @@ class CameraController extends Controller
 
     public function events()
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $body = $this->request->getParsedBody();
 

@@ -13,6 +13,7 @@ use Selpol\Controller\mobile\PlogController;
 use Selpol\Controller\mobile\SubscriberController;
 use Selpol\Controller\mobile\UserController;
 use Selpol\Middleware\InternalMiddleware;
+use Selpol\Middleware\JwtMiddleware;
 use Selpol\Middleware\MobileMiddleware;
 use Selpol\Middleware\RateLimitMiddleware;
 use Selpol\Router\RouterBuilder;
@@ -37,6 +38,7 @@ return static function (RouterBuilder $builder) {
     });
 
     $builder->group('/mobile', static function (RouterBuilder $builder) {
+        $builder->include(JwtMiddleware::class);
         $builder->include(MobileMiddleware::class);
         $builder->include(RateLimitMiddleware::class);
 
@@ -49,7 +51,7 @@ return static function (RouterBuilder $builder) {
             $builder->post('/resetCode', [IntercomController::class, 'resetCode']);
 
             $builder->get('/plog', [PlogController::class, 'index']);
-            $builder->get('/plogCamshot/{uuid}', [PlogController::class, 'camshot'], excludes: [MobileMiddleware::class]);
+            $builder->get('/plogCamshot/{uuid}', [PlogController::class, 'camshot'], excludes: [JwtMiddleware::class, MobileMiddleware::class]);
             $builder->get('/plogDays', [PlogController::class, 'days']);
         });
 
@@ -58,7 +60,7 @@ return static function (RouterBuilder $builder) {
             $builder->post('/events', [CameraController::class, 'events']);
 
             $builder->post('/recPrepare', [ArchiveController::class, 'prepare']);
-            $builder->post('/download/{uuid}', [ArchiveController::class, 'download'], excludes: [MobileMiddleware::class]);
+            $builder->post('/download/{uuid}', [ArchiveController::class, 'download'], excludes: [JwtMiddleware::class, MobileMiddleware::class]);
         });
 
         $builder->group('/call', static function (RouterBuilder $builder) {

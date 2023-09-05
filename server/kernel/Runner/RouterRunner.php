@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Selpol\Container\Container;
+use Selpol\Http\HttpException;
 use Selpol\Http\ServerRequest;
 use Selpol\Kernel\Kernel;
 use Selpol\Kernel\KernelRunner;
@@ -110,7 +111,13 @@ class RouterRunner implements KernelRunner, RequestHandlerInterface
         logger('response')->error($throwable, ['fatal' => $fatal]);
 
         try {
-            $response = container(HttpService::class)->createResponse(500)->withJson(['success' => false]);
+            if ($throwable instanceof HttpException)
+                $response = container(HttpService::class)
+                    ->createResponse($throwable->getCode())
+                    ->withJson(['code' => $throwable->getCode(), 'message' => $throwable->getMessage()]);
+            else $response = container(HttpService::class)
+                ->createResponse(500)
+                ->withJson(['code' => 500, 'message' => 'Внутренняя ошибка сервера']);
 
             return $this->emit($response);
         } catch (Throwable $throwable) {

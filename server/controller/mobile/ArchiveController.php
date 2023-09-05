@@ -11,14 +11,9 @@ class ArchiveController extends Controller
 {
     public function prepare()
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $body = $this->request->getParsedBody();
-
 
         $cameraId = (int)@$body['id'];
 

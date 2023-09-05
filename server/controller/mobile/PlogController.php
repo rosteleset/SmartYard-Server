@@ -12,11 +12,7 @@ class PlogController extends Controller
 {
     public function index()
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $body = $this->request->getParsedBody();
 
@@ -172,11 +168,7 @@ class PlogController extends Controller
 
     public function days(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $body = $this->request->getParsedBody();
 

@@ -9,22 +9,14 @@ class UserController extends Controller
 {
     public function ping(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $this->getSubscriber();
 
         return $this->rbtResponse();
     }
 
     public function registerPushToken(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $body = $this->request->getParsedBody();
 
@@ -89,11 +81,7 @@ class UserController extends Controller
 
     public function sendName(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $body = $this->request->getParsedBody();
 

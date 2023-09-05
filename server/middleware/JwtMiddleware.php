@@ -9,24 +9,18 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Selpol\Service\AuthService;
 use Selpol\Service\HttpService;
 
-class MobileMiddleware implements MiddlewareInterface
+class JwtMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $auth = container(AuthService::class);
+        $result = container(AuthService::class)->setJwtFromRequest($request);
 
-        $jwt = $auth->getJwrOrThrow();
-
-        $subscribers = backend('households')->getSubscribers('aud_jti', $jwt['scopes'][1]);
-
-        if (!$subscribers || count($subscribers) === 0) {
+        if ($result !== null) {
             /** @var HttpService $http */
             $http = $request->getAttribute('http');
 
-            return $http->createResponse(401)->withJson(['code' => 401, 'message' => 'Абонент не найден']);
+            return $http->createResponse(401)->withJson(['code' => 401, 'message' => $result]);
         }
-
-        $auth->setSubscriber($subscribers[0]);
 
         return $handler->handle($request);
     }

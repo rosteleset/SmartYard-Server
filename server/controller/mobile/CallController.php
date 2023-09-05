@@ -10,11 +10,7 @@ class CallController extends Controller
 {
     public function camshot()
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $this->getSubscriber();
 
         $hash = $this->getRoute()->getParam('hash');
 
@@ -31,8 +27,7 @@ class CallController extends Controller
 
     public function live()
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
+        $user = $this->getSubscriber();
 
         if (!$user)
             return $this->rbtResponse(401);

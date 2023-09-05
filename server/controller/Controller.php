@@ -6,6 +6,7 @@ use Selpol\Http\Response;
 use Selpol\Http\ServerRequest;
 use Selpol\Kernel\Kernel;
 use Selpol\Router\RouterMatch;
+use Selpol\Service\AuthService;
 use Selpol\Service\HttpService;
 
 class Controller
@@ -30,6 +31,16 @@ class Controller
     protected function getRoute(): RouterMatch
     {
         return $this->request->getAttribute('route');
+    }
+
+    protected function getJwt(): array
+    {
+        return container(AuthService::class)->getJwrOrThrow();
+    }
+
+    protected function getSubscriber(): array
+    {
+        return container(AuthService::class)->getSubscriberOrThrow();
     }
 
     protected function response(int $code = 200): Response

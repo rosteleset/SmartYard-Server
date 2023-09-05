@@ -10,11 +10,7 @@ class AddressController extends Controller
 {
     public function getAddressList(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $households = backend("households");
         $plog = backend("plog");
@@ -96,11 +92,9 @@ class AddressController extends Controller
 
     public function registerQR()
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
+        $jwt = $this->getJwt();
 
-        if (!$user)
-            return $this->rbtResponse(401);
+        $audJti = $jwt['scopes'][1];
 
         $body = $this->request->getParsedBody();
 
@@ -120,24 +114,47 @@ class AddressController extends Controller
         }
 
         if ($hash == '')
-            return $this->rbtResponse(data: "QR-код не является кодом для доступа к квартире");
+            return $this->rbtResponse(200, "QR-код не является кодом для доступа к квартире");
 
         $households = backend("households");
         $flat = $households->getFlats("code", ["code" => $hash])[0];
 
         if (!$flat)
-            return $this->rbtResponse(data: "QR-код не является кодом для доступа к квартире");
+            return $this->rbtResponse(200, "QR-код не является кодом для доступа к квартире");
 
         $flat_id = (int)$flat["flatId"];
 
-        //проверка регистрации пользователя в квартире
-        foreach ($user['flats'] as $item)
-            if ((int)$item['flatId'] == $flat_id)
-                return $this->rbtResponse(data: "У вас уже есть доступ к данной квартире");
+        $subscribers = $households->getSubscribers('aud_jti', $audJti);
 
-        if ($households->addSubscriber($user["mobile"], null, null, $flat_id))
-            return $this->rbtResponse(data: "Ваш запрос принят и будет обработан в течение одной минуты, пожалуйста подождите");
+        if (!$subscribers || count($subscribers) === 0) {
+            $mobile = htmlspecialchars(trim(@$body['mobile']));
+            $name = htmlspecialchars(trim(@$body['name']));
+            $patronymic = htmlspecialchars(trim(@$body['patronymic']));
 
-        return $this->rbtResponse(422);
+            if (strlen($mobile) !== 11)
+                return $this->rbtResponse(400, false, 'Неверный формат номера телефона', 'Неверный формат номера телефона');
+
+            if (!$name) return $this->rbtResponse(400);
+            if (!$patronymic) return $this->rbtResponse(400);
+
+            if ($households->addSubscriber($mobile, $name, $patronymic)) {
+                $subscribers = $households->getSubscribers('mobile', $mobile);
+
+                if (count($subscribers) > 0)
+                    $households->modifySubscriber($subscribers[0]['subscriberId'], ['audJti' => $audJti]);
+            } else return $this->rbtResponse(422, 'Не удалось зарегестрироваться');
+        }
+
+        if ($subscribers && count($subscribers) > 0) {
+            $subscriber = $subscribers[0];
+
+            foreach ($subscriber['flats'] as $item)
+                if ((int)$item['flatId'] == $flat_id)
+                    return $this->rbtResponse(200, "У вас уже есть доступ к данной квартире");
+
+            if ($households->addSubscriber($subscriber["mobile"], null, null, $flat_id))
+                return $this->rbtResponse(200, "Ваш запрос принят и будет обработан в течение одной минуты, пожалуйста подождите");
+            else return $this->rbtResponse(422);
+        } else return $this->rbtResponse(404);
     }
 }

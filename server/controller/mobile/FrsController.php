@@ -11,11 +11,7 @@ class FrsController extends Controller
 {
     public function index(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $flatId = $this->getRoute()->getParamInt('flatId');
 
@@ -52,11 +48,7 @@ class FrsController extends Controller
 
     public function store(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $eventId = $this->getRoute()->getParam('eventId');
 
@@ -110,11 +102,7 @@ class FrsController extends Controller
 
     public function delete(): Response
     {
-        /** @var array|null $user */
-        $user = $this->request->getAttribute('auth')();
-
-        if (!$user)
-            return $this->rbtResponse(401);
+        $user = $this->getSubscriber();
 
         $plog = backend("plog");
         $frs = backend("frs");
