@@ -28,12 +28,17 @@ class Router
 
     public function match(ServerRequestInterface $request): ?RouterMatch
     {
+        $method = $request->getMethod();
+
+        if (!array_key_exists($method, $this->routes))
+            return null;
+
         $path = $request->getUri()->getPath();
         $segments = array_map(static fn(string $segment) => '/' . $segment, array_filter(explode('/', $path), static fn(string $segment) => $segment !== ''));
 
         $params = [];
 
-        $routes = $this->routes;
+        $routes = $this->routes[$method];
 
         for ($i = 1; $i <= count($segments); $i++) {
             if (array_key_exists($segments[$i], $routes))
@@ -58,7 +63,7 @@ class Router
             }
         }
 
-        if ($routes && array_key_exists('type', $routes) && $routes['type'] === $request->getMethod())
+        if (array_key_exists('class', $routes) && array_key_exists('method', $routes) && array_key_exists('middlewares', $routes))
             return new RouterMatch($routes['class'], $routes['method'], $params, $routes['middlewares']);
 
         return null;

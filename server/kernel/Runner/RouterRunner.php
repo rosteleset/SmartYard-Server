@@ -127,8 +127,52 @@ class RouterRunner implements KernelRunner, RequestHandlerInterface
         foreach ($response->getHeaders() as $name => $values)
             header($name . ': ' . $response->getHeaderLine($name), false);
 
-        if ($response->getStatusCode() != 204)
-            echo $response->getBody()->getContents();
+        if ($response->getStatusCode() != 204) {
+            $body = $response->getBody();
+
+            if ($body->getSize() > 1024 * 1024) {
+                $begin = 0;
+                $size = $body->getSize();
+                $end = $size - 1;
+
+                if (isset($_SERVER['HTTP_RANGE'])) {
+                    if (preg_match('/bytes=\h*(\d+)-(\d*)[\D.*]?/i', $_SERVER['HTTP_RANGE'], $matches)) {
+                        $begin = intval($matches[1]);
+                        if (!empty($matches[2]))
+                            $end = intval($matches[2]);
+                    }
+
+                    header('HTTP/1.1 206 Partial Content');
+                    header("Content-Range: bytes $begin-$end/$size");
+                } else
+                    header('HTTP/1.1 200 OK');
+
+                $new_length = $end - $begin + 1;
+
+                header('Cache-Control: public, must-revalidate, max-age=0');
+                header('Pragma: no-cache');
+                header('Accept-Ranges: bytes');
+                header('Content-Length:' . $new_length);
+                header('Content-Transfer-Encoding: binary');
+
+                $chunk_size = 1024 * 1024;
+                $bytes_send = 0;
+
+                if (isset($_SERVER['HTTP_RANGE']))
+                    $body->seek($begin);
+
+                while (!$body->eof() && !connection_aborted() && ($bytes_send < $new_length)) {
+                    $buffer = $body->read($chunk_size);
+
+                    echo $buffer;
+
+                    $bytes_send += strlen($buffer);
+                }
+
+            } else echo $body->getContents();
+
+            $body->close();
+        }
 
         return 0;
     }

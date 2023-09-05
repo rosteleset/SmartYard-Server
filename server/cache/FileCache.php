@@ -29,7 +29,7 @@ class FileCache implements CacheInterface
         if (file_exists(path('var/cache/' . $key . '.php')))
             unlink(path('var/cache/' . $key . '.php'));
 
-        return file_put_contents(path('var/cache/' . $key . '.php'), '<?php return ' . var_export($value, true) . ';');
+        return file_put_contents(path('var/cache/' . $key . '.php'), '<?php return ' . $this->export($value) . ';');
     }
 
     public function delete(string $key): bool
@@ -87,5 +87,19 @@ class FileCache implements CacheInterface
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->files) || file_exists(path('var/cache/' . $key . '.php'));
+    }
+
+    private function export(mixed $value): string
+    {
+        $export = var_export($value, TRUE);
+
+        $patterns = [
+            "/array \(/" => '[',
+            "/^([ ]*)\)(,?)$/m" => '$1]$2',
+            "/=>[ ]?\n[ ]+\[/" => '=> [',
+            "/([ ]*)(\'[^\']+\') => ([\[\'])/" => '$1$2 => $3',
+        ];
+
+        return preg_replace(array_keys($patterns), array_values($patterns), $export);
     }
 }

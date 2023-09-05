@@ -2,7 +2,9 @@
 
 namespace Selpol\Validator;
 
-class ValidatorMessage
+use Stringable;
+
+class ValidatorMessage implements Stringable
 {
     private string $message;
 
@@ -14,5 +16,10 @@ class ValidatorMessage
     public function getMessage(): string
     {
         return $this->message;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getMessage();
     }
 }

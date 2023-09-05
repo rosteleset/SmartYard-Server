@@ -2,8 +2,6 @@
 
 namespace Selpol\Router;
 
-use stdClass;
-
 class RouterBuilder
 {
     private array $routes = [];
@@ -26,31 +24,36 @@ class RouterBuilder
 
         $routes = $builder->getRoutes();
 
-        $this->applyMiddlewares($routes, $builder->getMiddlewares());
+        foreach ($routes as $type => &$childRoutes) {
+            $this->applyMiddlewares($childRoutes, $builder->getMiddlewares());
 
-        $this->routes[$path] = $routes;
+            if (!array_key_exists($type, $this->routes))
+                $this->routes[$type] = [];
+
+            $this->routes[$type][$path] = $routes[$type];
+        }
 
         return $this;
     }
 
-    public function get(string $route, string $class, string $method = '__invoke', array $middlewares = []): static
+    public function get(string $route, array|string $class, array $middlewares = []): static
     {
-        return $this->route('GET', $route, $class, $method, $middlewares);
+        return $this->route('GET', $route, $class, $middlewares);
     }
 
-    public function post(string $route, string $class, string $method = '__invoke', array $middlewares = []): static
+    public function post(string $route, array|string $class, array $middlewares = []): static
     {
-        return $this->route('POST', $route, $class, $method, $middlewares);
+        return $this->route('POST', $route, $class, $middlewares);
     }
 
-    public function put(string $route, string $class, string $method = '__invoke', array $middlewares = []): static
+    public function put(string $route, array|string $class, array $middlewares = []): static
     {
-        return $this->route('PUT', $route, $class, $method, $middlewares);
+        return $this->route('PUT', $route, $class, $middlewares);
     }
 
-    public function delete(string $route, string $class, string $method = '__invoke', array $middlewares = []): static
+    public function delete(string $route, array|string $class, array $middlewares = []): static
     {
-        return $this->route('DELETE', $route, $class, $method, $middlewares);
+        return $this->route('DELETE', $route, $class, $middlewares);
     }
 
     public function middleware(string $value): static
@@ -60,11 +63,14 @@ class RouterBuilder
         return $this;
     }
 
-    private function route(string $type, string $route, string $class, string $method = '__invoke', array $middlewares = []): static
+    private function route(string $type, string $route, array|string $class, array $middlewares = []): static
     {
         $segments = array_map(static fn(string $segment) => '/' . $segment, array_filter(explode('/', $route), static fn(string $segment) => $segment !== ''));
 
-        $routes = &$this->routes;
+        if (!array_key_exists($type, $this->routes))
+            $this->routes[$type] = [];
+
+        $routes = &$this->routes[$type];
 
         for ($i = 1; $i < count($segments); $i++) {
             if (!array_key_exists($segments[$i], $routes))
@@ -73,7 +79,12 @@ class RouterBuilder
             $routes = &$routes[$segments[$i]];
         }
 
-        $routes[$segments[count($segments)]] = ['type' => $type, 'class' => $class, 'method' => $method, 'middlewares' => $middlewares];
+        $method = is_array($class) ? (array_key_exists(1, $class) ? $class[1] : '__invoke') : '__invoke';
+
+        if (count($segments) === 0)
+            $routes = ['class' => is_array($class) ? $class[0] : $class, 'method' => $method, 'middlewares' => $middlewares];
+        else
+            $routes[$segments[count($segments)]] = ['class' => is_array($class) ? $class[0] : $class, 'method' => $method, 'middlewares' => $middlewares];
 
         return $this;
     }

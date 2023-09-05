@@ -4,6 +4,7 @@ namespace Selpol\Controller;
 
 use Selpol\Http\Response;
 use Selpol\Http\ServerRequest;
+use Selpol\Kernel\Kernel;
 use Selpol\Router\RouterMatch;
 use Selpol\Service\HttpService;
 
@@ -16,6 +17,16 @@ class Controller
         $this->request = $request;
     }
 
+    protected function getKernel(): Kernel
+    {
+        return $this->request->getAttribute('kernel');
+    }
+
+    protected function getHttp(): HttpService
+    {
+        return $this->request->getAttribute('http');
+    }
+
     protected function getRoute(): RouterMatch
     {
         return $this->request->getAttribute('route');
@@ -23,10 +34,7 @@ class Controller
 
     protected function response(int $code = 200): Response
     {
-        /** @var HttpService $http */
-        $http = $this->request->getAttribute('http');
-
-        return $http->createResponse($code);
+        return $this->getHttp()->createResponse($code);
     }
 
     protected function rbtResponse(int $code = 200, mixed $data = null, ?string $name = null, ?string $message = null): Response

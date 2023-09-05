@@ -2,6 +2,9 @@
 
 namespace Selpol\Router;
 
+use Exception;
+use Selpol\Validator\Rule;
+
 class RouterMatch
 {
     private string $class;
@@ -44,5 +47,14 @@ class RouterMatch
     public function getParam(string $key): ?string
     {
         return array_key_exists($key, $this->params) ? $this->params[$key] : null;
+    }
+
+    public function getParamInt(string $key): ?int
+    {
+        try {
+            return Rule::int()->onItem($key, $this->params);
+        } catch (Exception) {
+            return null;
+        }
     }
 }
