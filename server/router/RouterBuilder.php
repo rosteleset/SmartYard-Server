@@ -5,16 +5,22 @@ namespace Selpol\Router;
 class RouterBuilder
 {
     private array $routes = [];
-    private array $middlewares = [];
 
-    public function getRoutes(): array
-    {
-        return $this->routes;
-    }
+    private array $includes = [];
+    private array $excludes = [];
 
-    public function getMiddlewares(): array
+    public function collect(bool $transform = true): array
     {
-        return $this->middlewares;
+        $routes = $this->routes;
+
+        foreach ($routes as &$childRoutes)
+            $this->applyMiddlewares($childRoutes);
+
+        if ($transform)
+            foreach ($routes as &$childRoutes)
+                $this->applyTransform($childRoutes);
+
+        return $routes;
     }
 
     public function group(string $path, callable $callback): static
@@ -22,48 +28,53 @@ class RouterBuilder
         $builder = new RouterBuilder();
         $callback($builder);
 
-        $routes = $builder->getRoutes();
+        $routes = $builder->collect(false);
 
-        foreach ($routes as $type => &$childRoutes) {
-            $this->applyMiddlewares($childRoutes, $builder->getMiddlewares());
-
+        foreach ($routes as $type => $childRoutes) {
             if (!array_key_exists($type, $this->routes))
                 $this->routes[$type] = [];
 
-            $this->routes[$type][$path] = $routes[$type];
+            $this->routes[$type][$path] = $childRoutes;
         }
 
         return $this;
     }
 
-    public function get(string $route, array|string $class, array $middlewares = []): static
+    public function get(string $route, array|string $class, array $middlewares = [], array $excludes = []): static
     {
-        return $this->route('GET', $route, $class, $middlewares);
+        return $this->route('GET', $route, $class, $middlewares, $excludes);
     }
 
-    public function post(string $route, array|string $class, array $middlewares = []): static
+    public function post(string $route, array|string $class, array $middlewares = [], array $excludes = []): static
     {
-        return $this->route('POST', $route, $class, $middlewares);
+        return $this->route('POST', $route, $class, $middlewares, $excludes);
     }
 
-    public function put(string $route, array|string $class, array $middlewares = []): static
+    public function put(string $route, array|string $class, array $middlewares = [], array $excludes = []): static
     {
-        return $this->route('PUT', $route, $class, $middlewares);
+        return $this->route('PUT', $route, $class, $middlewares, $excludes);
     }
 
-    public function delete(string $route, array|string $class, array $middlewares = []): static
+    public function delete(string $route, array|string $class, array $middlewares = [], array $excludes = []): static
     {
-        return $this->route('DELETE', $route, $class, $middlewares);
+        return $this->route('DELETE', $route, $class, $middlewares, $excludes);
     }
 
-    public function middleware(string $value): static
+    public function include(string $value): static
     {
-        $this->middlewares[] = $value;
+        $this->includes[] = $value;
 
         return $this;
     }
 
-    private function route(string $type, string $route, array|string $class, array $middlewares = []): static
+    public function exclude(string $value): static
+    {
+        $this->excludes[] = $value;
+
+        return $this;
+    }
+
+    private function route(string $type, string $route, array|string $class, array $includes = [], array $excludes = []): static
     {
         $segments = array_map(static fn(string $segment) => '/' . $segment, array_filter(explode('/', $route), static fn(string $segment) => $segment !== ''));
 
@@ -82,17 +93,28 @@ class RouterBuilder
         $method = is_array($class) ? (array_key_exists(1, $class) ? $class[1] : '__invoke') : '__invoke';
 
         if (count($segments) === 0)
-            $routes = ['class' => is_array($class) ? $class[0] : $class, 'method' => $method, 'middlewares' => $middlewares];
+            $routes = ['class' => is_array($class) ? $class[0] : $class, 'method' => $method, 'includes' => $includes, 'excludes' => $excludes];
         else
-            $routes[$segments[count($segments)]] = ['class' => is_array($class) ? $class[0] : $class, 'method' => $method, 'middlewares' => $middlewares];
+            $routes[$segments[count($segments)]] = ['class' => is_array($class) ? $class[0] : $class, 'method' => $method, 'includes' => $includes, 'excludes' => $excludes];
 
         return $this;
     }
 
-    private function applyMiddlewares(array &$route, array $middlewares): void
+    private function applyMiddlewares(array &$route): void
     {
-        if (array_key_exists('middlewares', $route))
-            $route['middlewares'] = $route['middlewares'] + $middlewares;
-        else foreach ($route as &$childRoute) $this->applyMiddlewares($childRoute, $middlewares);
+        if (array_key_exists('includes', $route) && array_key_exists('excludes', $route)) {
+            $route['includes'] = $route['includes'] + $this->includes;
+            $route['excludes'] = $route['excludes'] + $this->excludes;
+        } else foreach ($route as &$childRoute) $this->applyMiddlewares($childRoute);
+    }
+
+    private function applyTransform(array &$route): void
+    {
+        if (array_key_exists('includes', $route) && array_key_exists('excludes', $route)) {
+            $route['middlewares'] = array_filter($route['includes'], static fn(string $value) => !in_array($value, $route['excludes']));
+
+            unset($route['includes']);
+            unset($route['excludes']);
+        } else foreach ($route as &$childRoute) $this->applyTransform($childRoute);
     }
 }

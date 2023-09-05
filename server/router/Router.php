@@ -21,7 +21,7 @@ class Router
 
                 $callback($builder);
 
-                $this->routes = $builder->getRoutes();
+                $this->routes = $builder->collect();
             }
         }
     }

@@ -19,7 +19,7 @@ use Selpol\Router\RouterBuilder;
 
 return static function (RouterBuilder $builder) {
     $builder->group('/internal', static function (RouterBuilder $builder) {
-        $builder->middleware(InternalMiddleware::class);
+        $builder->include(InternalMiddleware::class);
 
         $builder->group('/actions', static function (RouterBuilder $builder) {
             $builder->get('/getSyslogConfig', [InternalActionController::class, 'getSyslogConfig']);
@@ -37,19 +37,19 @@ return static function (RouterBuilder $builder) {
     });
 
     $builder->group('/mobile', static function (RouterBuilder $builder) {
-        $builder->middleware(MobileMiddleware::class);
-        $builder->middleware(RateLimitMiddleware::class);
+        $builder->include(MobileMiddleware::class);
+        $builder->include(RateLimitMiddleware::class);
 
         $builder->group('/address', static function (RouterBuilder $builder) {
             $builder->post('/getAddressList', [AddressController::class, 'getAddressList']);
-            $builder->post('/registerQR', [AddressController::class, 'registerQR']);
+            $builder->post('/registerQR', [AddressController::class, 'registerQR'], excludes: [MobileMiddleware::class]);
 
             $builder->post('/intercom', [IntercomController::class, 'intercom']);
             $builder->post('/openDoor', [IntercomController::class, 'openDoor']);
             $builder->post('/resetCode', [IntercomController::class, 'resetCode']);
 
             $builder->get('/plog', [PlogController::class, 'index']);
-            $builder->get('/plogCamshot/{uuid}', [PlogController::class, 'camshot']);
+            $builder->get('/plogCamshot/{uuid}', [PlogController::class, 'camshot'], excludes: [MobileMiddleware::class]);
             $builder->get('/plogDays', [PlogController::class, 'days']);
         });
 
@@ -58,7 +58,7 @@ return static function (RouterBuilder $builder) {
             $builder->post('/events', [CameraController::class, 'events']);
 
             $builder->post('/recPrepare', [ArchiveController::class, 'prepare']);
-            $builder->post('/download/{uuid}', [ArchiveController::class, 'download']);
+            $builder->post('/download/{uuid}', [ArchiveController::class, 'download'], excludes: [MobileMiddleware::class]);
         });
 
         $builder->group('/call', static function (RouterBuilder $builder) {

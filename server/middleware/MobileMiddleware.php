@@ -11,10 +11,6 @@ class MobileMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $request->withAttribute('auth', static function () {
-
-        });
-
         return $handler->handle($request);
     }
 }
