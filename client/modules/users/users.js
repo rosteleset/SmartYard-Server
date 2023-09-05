@@ -122,9 +122,6 @@
                     type: "email",
                     title: i18n("eMail"),
                     placeholder: i18n("eMail"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
                 },
                 {
                     id: "phone",
