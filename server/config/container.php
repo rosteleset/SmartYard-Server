@@ -3,6 +3,7 @@
 use Selpol\Cache\FileCache;
 use Selpol\Cache\RedisCache;
 use Selpol\Container\ContainerBuilder;
+use Selpol\Service\AuthService;
 use Selpol\Service\BackendService;
 use Selpol\Service\CameraService;
 use Selpol\Service\FrsService;
@@ -23,6 +24,8 @@ return static function (ContainerBuilder $builder) {
     $builder->singleton(CameraService::class);
     $builder->singleton(DomophoneService::class);
     $builder->singleton(BackendService::class);
+
+    $builder->singleton(AuthService::class);
 
     $builder->singleton(FileCache::class);
     $builder->singleton(RedisCache::class);

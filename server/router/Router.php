@@ -63,7 +63,7 @@ class Router
             }
         }
 
-        if (array_key_exists('class', $routes) && array_key_exists('method', $routes) && array_key_exists('middlewares', $routes))
+        if ($routes && array_key_exists('class', $routes) && array_key_exists('method', $routes) && array_key_exists('middlewares', $routes))
             return new RouterMatch($routes['class'], $routes['method'], $params, $routes['middlewares']);
 
         return null;
