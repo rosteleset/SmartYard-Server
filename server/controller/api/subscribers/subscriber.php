@@ -37,11 +37,10 @@ namespace api\subscribers
 
         public static function DELETE($params)
         {
-            $households = backend("households");
+            if (array_key_exists('force', $params) && $params['force'])
+                return api::ANSWER(backend('households')->deleteSubscriber($params['subscriberId']));
 
-            $success = $households->removeSubscriberFromFlat($params["_id"], $params["subscriberId"], $params["message"]);
-
-            return api::ANSWER($success);
+            return api::ANSWER(backend("households")->removeSubscriberFromFlat($params["_id"], $params["subscriberId"]));
         }
 
         public static function index()

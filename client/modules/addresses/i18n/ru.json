@@ -43,6 +43,7 @@
   "deleteSettlement": "Удалить населенный пункт",
   "deleteStreet": "Удалить улицу",
   "deleteHouse": "Удалить дом",
+  "deleteSubscriberForce": "Полностью удалить абонента",
   "editRegion": "Редактирование региона",
   "editArea": "Редактирование района",
   "editCity": "Редактирование города",

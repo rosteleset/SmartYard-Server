@@ -10,96 +10,75 @@
             msg: i18n("addresses.addFlatMsg"),
         }
         loadingStart();
-        POST("subscribers", "subscriber", false, subscriber).
-        fail(FAIL).
-        done(() => {
+        POST("subscribers", "subscriber", false, subscriber).fail(FAIL).done(() => {
             message(i18n("addresses.subscriberWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
     doAddKey: function (key) {
         loadingStart();
-        POST("subscribers", "key", false, key).
-        fail(FAIL).
-        done(() => {
+        POST("subscribers", "key", false, key).fail(FAIL).done(() => {
             message(i18n("addresses.keyWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
     doAddCamera: function (camera) {
         loadingStart();
-        POST("subscribers", "flatCameras", false, camera).
-        fail(FAIL).
-        done(() => {
+        POST("subscribers", "flatCameras", false, camera).fail(FAIL).done(() => {
             message(i18n("addresses.cameraWasAdded"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
     doModifySubscriber: function (subscriber) {
         loadingStart();
-        PUT("subscribers", "subscriber", subscriber.subscriberId, subscriber).
-        fail(FAIL).
-        done(() => {
+        PUT("subscribers", "subscriber", subscriber.subscriberId, subscriber).fail(FAIL).done(() => {
             message(i18n("addresses.subscriberWasChanged"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
     doModifyKey: function (key) {
         loadingStart();
-        PUT("subscribers", "key", key.keyId, key).
-        fail(FAIL).
-        done(() => {
+        PUT("subscribers", "key", key.keyId, key).fail(FAIL).done(() => {
             message(i18n("addresses.keyWasChanged"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
-    doDeleteSubscriber: function (flatId, subscriberId) {
+    doDeleteSubscriber: function (flatId, subscriberId, force = false) {
         loadingStart();
-        DELETE("subscribers", "subscriber", flatId, { subscriberId: subscriberId }).
-        fail(FAIL).
-        done(() => {
+        DELETE("subscribers", "subscriber", flatId, {
+            subscriberId: subscriberId,
+            force: force ? true : undefined
+        }).fail(FAIL).done(() => {
             message(i18n("addresses.subscriberWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
     doDeleteKey: function (keyId) {
         loadingStart();
-        DELETE("subscribers", "key", keyId).
-        fail(FAIL).
-        done(() => {
+        DELETE("subscribers", "key", keyId).fail(FAIL).done(() => {
             message(i18n("addresses.keyWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
 
     doDeleteCamera: function (cameraId, flatId) {
         loadingStart();
-        DELETE("subscribers", "flatCameras", false, { from: "flat", cameraId, flatId }).
-        fail(FAIL).
-        done(() => {
+        DELETE("subscribers", "flatCameras", false, {from: "flat", cameraId, flatId}).fail(FAIL).done(() => {
             message(i18n("addresses.cameraWasDeleted"));
-        }).
-        always(() => {
+        }).always(() => {
             modules.addresses.subscribers.route(hashParse()[1]);
         });
     },
@@ -116,7 +95,7 @@
                     id: "mobile",
                     type: "text",
                     title: i18n("addresses.mobile"),
-                    placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
+                    placeholder: config.phonePattern ? config.phonePattern : i18n("addresses.mobile"),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     }
@@ -209,7 +188,7 @@
                 let link = `<a href='#addresses.subscribers&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
                 let role = `
                     <div class="custom-control custom-checkbox mb-0">
-                        <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner?" checked":""}>
+                        <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner ? " checked" : ""}>
                         <label class="custom-control-label form-check-label" for="subscriber-role-flat-${subscriber.flats[i].flatId}">${i18n("addresses.subscriberFlatOwner")}</label>
                     </div>
                 `;
@@ -241,7 +220,7 @@
                         id: "mobile",
                         type: "text",
                         title: i18n("addresses.mobile"),
-                        placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
+                        placeholder: config.phonePattern ? config.phonePattern : i18n("addresses.mobile"),
                         validate: (v) => {
                             return $.trim(v) !== "";
                         },
@@ -375,9 +354,9 @@
         }
     },
 
-    deleteSubscriber: function (flatId, subscriberId) {
+    deleteSubscriber: function (flatId, subscriberId, force = false) {
         mConfirm(i18n("addresses.confirmDeleteSubscriber", subscriberId.toString()), i18n("confirm"), `danger:${i18n("addresses.deleteSubscriber")}`, () => {
-            modules.addresses.subscribers.doDeleteSubscriber(flatId, subscriberId);
+            modules.addresses.subscribers.doDeleteSubscriber(flatId, subscriberId, force);
         });
     },
 
@@ -443,11 +422,16 @@
                                 data: list[i].mobile,
                             },
                             {
-                                data: owner?i18n("yes"):i18n("no"),
+                                data: owner ? i18n("yes") : i18n("no"),
                             },
                         ],
                         dropDown: {
                             items: [
+                                {
+                                    icon: 'fas fa-trash-alt',
+                                    title: i18n('addresses.deleteSubscriberForce'),
+                                    click: (subscriberId) => modules.addresses.subscribers.deleteSubscriber(flatId, subscriberId, true)
+                                },
                                 {
                                     icon: "far fa-envelope",
                                     title: i18n("addresses.subscriberInbox"),
@@ -472,10 +456,10 @@
             target: "#altForm",
             title: {
                 caption: i18n("addresses.keys"),
-                button: params.flatId?{
+                button: params.flatId ? {
                     caption: i18n("addresses.addSubscribers"),
                     click: modules.addresses.subscribers.addKey,
-                }:false,
+                } : false,
             },
             edit: keyId => {
                 modules.addresses.subscribers.modifyKey(keyId, list);
@@ -522,8 +506,7 @@
     },
 
     addCamera: function () {
-        GET("cameras", "cameras", false, true).
-        done(response => {
+        GET("cameras", "cameras", false, true).done(response => {
             modules.addresses.cameras.meta = response.cameras;
             let cameras = [];
 
@@ -543,7 +526,7 @@
                 }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text:  url.host,
+                    text: url.host,
                 })
             }
 
@@ -568,9 +551,7 @@
                     modules.addresses.subscribers.doAddCamera(result);
                 },
             });
-        }).
-        fail(FAIL).
-        always(() => {
+        }).fail(FAIL).always(() => {
             loadingDone();
         });
     },
@@ -613,18 +594,18 @@
                         uid: list[i].cameraId,
                         cols: [
                             {
-                                data: list[i].cameraId?list[i].cameraId:i18n("addresses.deleted"),
-                                click: list[i].cameraId?("#addresses.cameras&filter=" + list[i].cameraId):false,
+                                data: list[i].cameraId ? list[i].cameraId : i18n("addresses.deleted"),
+                                click: list[i].cameraId ? ("#addresses.cameras&filter=" + list[i].cameraId) : false,
                             },
                             {
-                                data: list[i].url?list[i].url:"",
+                                data: list[i].url ? list[i].url : "",
                             },
                             {
-                                data: list[i].name?list[i].name:"",
+                                data: list[i].name ? list[i].name : "",
                                 nowrap: true,
                             },
                             {
-                                data: list[i].comment?list[i].comment:"",
+                                data: list[i].comment ? list[i].comment : "",
                                 nowrap: true,
                             },
                         ],
@@ -659,14 +640,11 @@
 
             QUERY("addresses", "addresses", {
                 houseId: params.houseId,
-            }).
-            done(modules.addresses.addresses).
-            fail(FAIL).
-            done(a => {
+            }).done(modules.addresses.addresses).fail(FAIL).done(a => {
                 for (let i in a.addresses.houses) {
                     if (a.addresses.houses[i].houseId == params.houseId) {
                         document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
-                        subTop(modules.addresses.path((parseInt(params.settlementId)?"settlement":"street"), parseInt(params.settlementId)?params.settlementId:params.streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
+                        subTop(modules.addresses.path((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId : params.streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
                     }
                 }
 
@@ -677,12 +655,9 @@
                     modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId);
                     modules.addresses.subscribers.renderKeys(response.flat.keys);
                     modules.addresses.subscribers.renderCameras(response.flat.cameras);
-                }).
-                fail(FAIL).
-                fail(() => {
+                }).fail(FAIL).fail(() => {
                     pageError();
-                }).
-                always(loadingDone);
+                }).always(loadingDone);
             });
         }
     }

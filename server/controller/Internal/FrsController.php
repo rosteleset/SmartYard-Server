@@ -13,7 +13,7 @@ use Selpol\Service\RedisService;
 
 class FrsController extends Controller
 {
-    public function callback()
+    public function callback(): Response
     {
         $frs = backend("frs");
         $households = backend("households");
