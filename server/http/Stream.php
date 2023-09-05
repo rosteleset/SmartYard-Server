@@ -21,9 +21,9 @@ class Stream implements StreamInterface
 
     private bool $writable;
 
-    private mixed $uri;
+    private mixed $uri = null;
 
-    private ?int $size;
+    private ?int $size = null;
 
     /**
      * @param resource $body
@@ -194,9 +194,8 @@ class Stream implements StreamInterface
 
     private function getUri()
     {
-        if ($this->uri !== false) {
+        if ($this->uri === null)
             $this->uri = $this->getMetadata('uri') ?? false;
-        }
 
         return $this->uri;
     }
