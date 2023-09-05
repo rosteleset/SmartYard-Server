@@ -88,7 +88,7 @@
                                 if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
                                     $image_data = false;
                                     $urlOfScreenshot = $response[frs::P_DATA][frs::P_SCREENSHOT];
-                                    if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) === true) {
+                                    if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false) {
                                         $image_data = file_get_contents($urlOfScreenshot);
                                     }
                                     if ($image_data) {
