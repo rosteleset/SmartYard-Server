@@ -334,20 +334,8 @@ class CliRunner implements KernelRunner
             $callback($builder);
 
             $routes = $builder->getRoutes();
-            $middlewares = $builder->getMiddlewares();
 
             var_dump($routes);
-//            $headers = ['TYPE', 'CLASS', 'METHOD', 'MIDDLEWARES'];
-//            $result = [];
-//
-//            foreach ($routes as $method => $methodRoutes) {
-//                foreach ($methodRoutes as $route) {
-//                    $result[] = ['TYPE' => $method, 'CLASS' => $route['class'], 'METHOD' => $route['method'], 'MIDDLEWARES' => implode(',', $route['middlewares'])];
-//                }
-//            }
-//
-//            $this->logger->debug('GLOBAL MIDDLEWARES:' . PHP_EOL . implode('\n', $middlewares) . PHP_EOL . PHP_EOL . 'ROUTES TABLE:');
-//            $this->logger->debug($this->table($headers, $result));
         }
     }
 

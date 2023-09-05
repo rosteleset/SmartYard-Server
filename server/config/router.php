@@ -12,7 +12,6 @@ use Selpol\Controller\mobile\IntercomController;
 use Selpol\Controller\mobile\PlogController;
 use Selpol\Controller\mobile\SubscriberController;
 use Selpol\Controller\mobile\UserController;
-use Selpol\Middleware\FrontendMiddleware;
 use Selpol\Middleware\InternalMiddleware;
 use Selpol\Middleware\MobileMiddleware;
 use Selpol\Middleware\RateLimitMiddleware;
@@ -89,9 +88,5 @@ return static function (RouterBuilder $builder) {
             $builder->post('/registerPushToken', [UserController::class, 'registerPushToken']);
             $builder->post('/sendName', [UserController::class, 'sendName']);
         });
-    });
-
-    $builder->group('/frontend', static function (RouterBuilder $builder) {
-        $builder->middleware(FrontendMiddleware::class);
     });
 };
