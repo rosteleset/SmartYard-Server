@@ -15,7 +15,6 @@ use Selpol\Controller\mobile\UserController;
 use Selpol\Middleware\InternalMiddleware;
 use Selpol\Middleware\JwtMiddleware;
 use Selpol\Middleware\MobileMiddleware;
-use Selpol\Middleware\RateLimitMiddleware;
 use Selpol\Router\RouterBuilder;
 
 return static function (RouterBuilder $builder) {
@@ -40,7 +39,6 @@ return static function (RouterBuilder $builder) {
     $builder->group('/mobile', static function (RouterBuilder $builder) {
         $builder->include(JwtMiddleware::class);
         $builder->include(MobileMiddleware::class);
-        $builder->include(RateLimitMiddleware::class);
 
         $builder->group('/address', static function (RouterBuilder $builder) {
             $builder->post('/getAddressList', [AddressController::class, 'getAddressList']);

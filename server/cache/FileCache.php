@@ -91,7 +91,7 @@ class FileCache implements CacheInterface
 
     private function export(mixed $value): string
     {
-        $export = var_export($value, TRUE);
+        $export = var_export($value, true);
 
         $patterns = [
             "/array \(/" => '[',

@@ -75,7 +75,7 @@ class ClickhouseService
         return $data;
     }
 
-    function insert($table, $data)
+    function insert($table, $data): bool|string
     {
         $curl = curl_init();
         $headers = [];
@@ -118,7 +118,7 @@ class ClickhouseService
         try {
             $error = curl_exec($curl);
         } catch (Exception $e) {
-            logger('clickhouseService')->error('Error send command' . PHP_EOL . $e);
+            logger('clickhouse-service')->error('Error send command' . PHP_EOL . $e);
 
             return false;
         }
