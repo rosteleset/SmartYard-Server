@@ -115,7 +115,9 @@
                 $project = explode("-", $issue["issueId"])[0];
 
                 foreach ($issue as $field => $value) {
-                    error_log($field . " => " . $value);
+                    if ($value == "%%unset") {
+                        $issue[$field] = null;
+                    }
                 }
 
                 $comment = false;
