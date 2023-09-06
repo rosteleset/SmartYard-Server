@@ -51,7 +51,7 @@
             lStore("_tt_workspace", currentWorkspace);
 
             let rtd = "";
-            rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control" style="width: 259px;">`;
+            rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control select-arrow" style="width: 259px;">`;
             rtd += `</select></div>`;
     
             rtd += `<div class="nav-item mr-0 pr-0"><span id="editWorkspace" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
