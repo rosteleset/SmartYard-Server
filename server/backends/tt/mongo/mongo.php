@@ -114,6 +114,10 @@
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
+                foreach ($issue as $field => $value) {
+                    error_log($field . " => " . $value);
+                }
+
                 $comment = false;
                 $commentPrivate = false;
                 if (array_key_exists("comment", $issue) && $issue["comment"]) {
