@@ -114,9 +114,11 @@
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
+                $unset = [];
+
                 foreach ($issue as $field => $value) {
                     if ($value == "%%unset") {
-                        $issue[$field] = null;
+                        $unset[$field] = true;
                     }
                 }
 
@@ -170,9 +172,12 @@
                     $update = false;
                     if ($old) {
                         $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                        if (count($unset)) {
+                            $update = $update && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$unset" => $unset ]);
+                        }
                     }
                     if ($update) {
-                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
+                        $update = $update && $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
                     }
                     return $update;
                 }
