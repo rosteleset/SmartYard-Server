@@ -1181,9 +1181,9 @@
                     let i = ts[sk];
                     if (t[i].filter) {
                         if (x == t[i].filter) {
-                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}" style="width: 300px;">`;
                         } else {
-                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter" data-filter-name="${t[i].filter}" style="width: 300px;">`;
                         }
                         if (parseInt(t[i].personal) > 1000000) {
                             filters += '<i class="fas fa-fw fa-users mr-2"></i>';
@@ -1196,7 +1196,7 @@
                         filters += i + "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += `<li class="dropdown-item pointer submenu" style="width: 300px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
                         filters += '<div class="dropdown-menu">';
                         hh(t[i]);
                         filters += '</div>';
