@@ -24,11 +24,11 @@ can_coordinate = {
 --------------------------------------------------------------------------------
 
 refund = {
-
+    5101, 5102, 5103, 5302, 5601, 5607
 }
 
 --------------------------------------------------------------------------------
--- Условия
+-- Сервисные функции
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -51,10 +51,6 @@ function isCoordinated(issue)
         exists(issue["_cf_sheet_cell"]) and
         exists(issue["_cf_sheet_cells"])
 end
-
---------------------------------------------------------------------------------
--- Сервисные функции
---------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 -- числовой id каталога
@@ -97,7 +93,7 @@ end
 --------------------------------------------------------------------------------
 
 function updateObjectId(issue, original)
-    
+
     -- заявка на точку присутствия
     if tonumberExt(issue["_cf_object_id"]) >= 100000000 and tonumberExt(issue["_cf_object_id"]) < 200000000 then
         local chest_id = tonumberExt(issue["_cf_object_id"]) - 100000000
@@ -193,7 +189,7 @@ end
 --------------------------------------------------------------------------------
 
 function getNewIssueTemplate(catalog)
-    
+
     -- из веб-морды создаем только "пустышки"
     if catalog == "Пустышка" then
         return {
@@ -213,7 +209,7 @@ end
 --------------------------------------------------------------------------------
 
 function createIssue(issue)
-    
+
     -- заполняем поля связанные с идентификатором объекта
     issue = updateObjectId(issue, nil)
 
@@ -223,14 +219,14 @@ function createIssue(issue)
             tt.login()
         }
     end
-    
+
     -- если передали строку - преобразуем в массив
     if type(issue["assigned"]) == "string" then
         issue["assigned"] = {
             issue["assigned"]
         }
     end
-    
+
     -- если уже массив, то приводим к "правильному виду"
     if type(issue["assigned"]) == "table" and count(issue["assigned"]) > 0 then
         issue["assigned"] = normalizeArray(issue["assigned"])
@@ -259,7 +255,7 @@ end
 
 function getAvailableActions(issue)
     if isOpened(issue) then
-        
+
         -- если заявка открыта, то по умолчанию доступны все действия
         local actions = {
             "Позвонить",
@@ -333,7 +329,7 @@ end
 --------------------------------------------------------------------------------
 
 function getActionTemplate(issue, action)
-    
+
     -- передать заявку в другой отдел
     if action == "Передать" then
         -- при передаче заявки показываем список куда передать
@@ -391,7 +387,7 @@ function getActionTemplate(issue, action)
     -- работы завершены
     if action == "Работы завершены" then
         local doneFilter = {}
-    
+
         if issue["_cf_object_id"] ~= nil and tonumberExt(issue["_cf_object_id"]) > 0 then
             -- на какой-то объект, могут быть проблемы с доступом
             doneFilter = {
@@ -406,7 +402,7 @@ function getActionTemplate(issue, action)
                 "Отмена",
             }
         end
-    
+
         -- результат выполнения и обязательный комментарий
         return {
             ["%0%_cf_install_done"] = doneFilter,
@@ -472,7 +468,7 @@ function getActionTemplate(issue, action)
         }
     end
 
-    -- отправляем на созвон, надо указать дату созвона, 
+    -- отправляем на созвон, надо указать дату созвона,
     -- "флажок" Можно звонить в любое время и обязательный комментарий
     if action == "Позвонить" then
         return {
@@ -534,27 +530,17 @@ function action(issue, action, original)
 
     -- координация монтажных работ
     if action == "Координация" then
-        if exists(original["_cf_install_done"]) then
-            issue["_cf_install_done"] = ""
-        end
-
-        if exists(original["_cf_done_date"]) then
-            issue["_cf_done_date"] = ""
-        end
-
-        if exists(original["_cf_hw_ok"]) then
-            issue["_cf_hw_ok"] = ""
-        end
+        issue["_cf_install_done"] = "%%unset"
+        issue["_cf_done_date"] = "%%unset"
+        issue["_cf_hw_ok"] = "%%unset"
+        issue["_cf_delay"] = "%%unset"
 
         issue["_cf_coordination_date"] = utils.time()
-
         issue["_cf_coordinator"] = tt.login()
 
         if exists(issue["assigned"]) then
             issue["assigned"] = { }
         end
-
-        issue["_cf_delay"] = 0
 
         return tt.modifyIssue(issue, action)
     end
@@ -643,36 +629,16 @@ function action(issue, action, original)
 
     -- снять заявку с листа координации
     if action == "Снять с координации" then
-        if exists(original["_cf_sheet"]) then
-            issue["_cf_sheet"] = ""
-        end
-        if exists(original["_cf_sheet_date"]) then
-            issue["_cf_sheet_date"] = ""
-        end
-        if exists(original["_cf_sheet_col"]) then
-            issue["_cf_sheet_col"] = ""
-        end
-        if exists(original["_cf_sheet_cell"]) then
-            issue["_cf_sheet_cell"] = ""
-        end
-        if exists(original["_cf_sheet_cells"]) then
-            issue["_cf_sheet_cells"] = 0
-        end
-        if exists(original["_cf_installers"]) then
-            issue["_cf_installers"] = {}
-        end
-        if exists(original["_cf_can_change"]) then
-            issue["_cf_can_change"] = 0
-        end
-        if exists(original["_cf_call_before_visit"]) then
-            issue["_cf_call_before_visit"] = 0
-        end
-        if exists(original["_cf_install_done"]) then
-            issue["_cf_install_done"] = ""
-        end
-        if exists(original["_cf_done_date"]) then
-            issue["_cf_done_date"] = ""
-        end
+        issue["_cf_sheet"] = "%%unset"
+        issue["_cf_sheet_date"] = "%%unset"
+        issue["_cf_sheet_col"] = "%%unset"
+        issue["_cf_sheet_cell"] = "%%unset"
+        issue["_cf_sheet_cells"] = "%%unset"
+        issue["_cf_installers"] = "%%unset"
+        issue["_cf_can_change"] = "%%unset"
+        issue["_cf_call_before_visit"] = "%%unset"
+        issue["_cf_install_done"] = "%%unset"
+        issue["_cf_done_date"] = "%%unset"
 
         -- по умолчанию - на того кто совершает действие
         issue["assigned"] = {
@@ -705,17 +671,18 @@ function action(issue, action, original)
                 end
             end
         end
+        
         return tt.modifyIssue(issue, action)
     end
 
     if action == "Позвонить" then
         issue["_cf_calls_count"] = 3
-        issue["_cf_delay"] = 0
+        issue["_cf_delay"] = "%%unset"
         return tt.modifyIssue(issue, action)
     end
 
     if action == "Звонок совершен" then
-        issue["_cf_calls_count"] = 0
+        issue["_cf_calls_count"] = "%%unset"
         return tt.modifyIssue(issue, action)
     end
 
@@ -759,52 +726,24 @@ function action(issue, action, original)
         issue["status"] = "Открыта"
 
 -- блок координации и монтажа
-        if exists(original["_cf_sheet"]) then
-            issue["_cf_sheet"] = ""
-        end
-        if exists(original["_cf_sheet_date"]) then
-            issue["_cf_sheet_date"] = ""
-        end
-        if exists(original["_cf_sheet_col"]) then
-            issue["_cf_sheet_col"] = ""
-        end
-        if exists(original["_cf_sheet_cell"]) then
-            issue["_cf_sheet_cell"] = ""
-        end
-        if exists(original["_cf_sheet_cells"]) then
-            issue["_cf_sheet_cells"] = 0
-        end
-        if exists(original["_cf_installers"]) then
-            issue["_cf_installers"] = {}
-        end
-        if exists(original["_cf_can_change"]) then
-            issue["_cf_can_change"] = 0
-        end
-        if exists(original["_cf_call_before_visit"]) then
-            issue["_cf_call_before_visit"] = 0
-        end
-        if exists(original["_cf_install_done"]) then
-            issue["_cf_install_done"] = ""
-        end
-        if exists(original["_cf_done_date"]) then
-            issue["_cf_done_date"] = ""
-        end
+        issue["_cf_sheet"] = "%%unset"
+        issue["_cf_sheet_date"] = "%%unset"
+        issue["_cf_sheet_col"] = "%%unset"
+        issue["_cf_sheet_cell"] = "%%unset"
+        issue["_cf_sheet_cells"] = "%%unset"
+        issue["_cf_installers"] = "%%unset"
+        issue["_cf_can_change"] = "%%unset"
+        issue["_cf_call_before_visit"] = "%%unset"
+        issue["_cf_install_done"] = "%%unset"
+        issue["_cf_done_date"] = "%%unset"
 
 -- блок звонков
-        if exists(original["_cf_calls_count"]) then
-            issue["_cf_calls_count"] = 0
-        end
-        if exists(original["_cf_anytime_call"]) then
-            issue["_cf_anytime_call"] = 0
-        end
+        issue["_cf_calls_count"] = "%%unset"
+        issue["_cf_anytime_call"] = "%%unset"
 
 -- общее
-        if exists(original["_cf_delay"]) then
-            issue["_cf_delay"] = 0
-        end
-        if exists(original["_cf_quality_control"]) then
-            issue["_cf_quality_control"] = ""
-        end
+        issue["_cf_delay"] = "%%unset"
+        issue["_cf_quality_control"] = "%%unset"
 
         return tt.modifyIssue(issue, action)
     end
@@ -950,44 +889,37 @@ function issueChanged(issue, action, old, new, workflowAction)
                     "\n"
                     ..
                     "пользователем " .. tt.login()
---                    .. "\n\n"
---                    ..
---                    utils.print_r(old)
---                    ..
---                    "\n =>\n"
---                    ..
---                    utils.print_r(new)
                 )
             end
         end
     end
 
-    pcall(function ()
-        if isCoordinated(issue) then
-            local title
-            local installers = {}
+    if isCoordinated(issue) then
+        local title
+        local installers = {}
 
-            if action == "addComment" or utils.explode("#", action)[0] == "modifyComment" then
-                title = "TT: Добавлен комментарий"
-                installers = issue["_cf_installers"]
-            end
+        if action == "addComment" or utils.explode("#", action)[0] == "modifyComment" then
+            title = "TT: Добавлен комментарий"
+            installers = issue["_cf_installers"]
+        end
 
-            if workflowAction == "Координация" then
-                title = "TT: Заявка скоординирована"
-                installers = issue["_cf_installers"]
-            end
+        if workflowAction == "Координация" then
+            title = "TT: Заявка скоординирована"
+            installers = issue["_cf_installers"]
+        end
 
-            if workflowAction == "Снять с координации" then
-                title = "TT: Заявка снята с координации"
-                installers = old["_cf_installers"]
-            end
+        if workflowAction == "Снять с координации" then
+            title = "TT: Заявка снята с координации"
+            installers = old["_cf_installers"]
+        end
 
-            if workflowAction == "Работы завершены" then
-                title = "TT: Работы завершены"
-                installers = old["_cf_installers"]
-            end
+        if workflowAction == "Работы завершены" then
+            title = "TT: Работы завершены"
+            installers = old["_cf_installers"]
+        end
 
-            if title then
+        if title then
+            pcall(function ()
                 for i, w in pairs(installers) do
                     if w ~= tt.login then
                         custom.POST({
@@ -998,9 +930,9 @@ function issueChanged(issue, action, old, new, workflowAction)
                         })
                     end
                 end
-            end
+            end)
         end
-    end)
+    end
 
     return mqtt.broadcast("issue/changed", issue["issueId"])
 end
