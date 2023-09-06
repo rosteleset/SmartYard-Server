@@ -1,10 +1,15 @@
+--------------------------------------------------------------------------------
 -- Общий проект (ЛАНТА) Обращение [точка входа]
+--------------------------------------------------------------------------------
 
---
+--------------------------------------------------------------------------------
 -- Настройки
---
+--------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
 -- Монтажные работы, можно координировать
+--------------------------------------------------------------------------------
+
 can_coordinate = {
     -- на точку присутствия
     1001,
@@ -14,24 +19,29 @@ can_coordinate = {
     5001,
 }
 
+--------------------------------------------------------------------------------
 -- После выполнения монтажных работ отправить на перерасчет
+--------------------------------------------------------------------------------
+
 refund = {
 
 }
 
---
+--------------------------------------------------------------------------------
 -- Условия
---
+--------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
 -- Открытые заявки
--- Статус == Открыто
+--------------------------------------------------------------------------------
 
 function isOpened(issue)
     return issue["status"] == "Открыта"
 end
 
+--------------------------------------------------------------------------------
 -- Скоординирована
--- Стоит в листе координации
+--------------------------------------------------------------------------------
 
 function isCoordinated(issue)
     return
@@ -42,11 +52,13 @@ function isCoordinated(issue)
         exists(issue["_cf_sheet_cells"])
 end
 
---
+--------------------------------------------------------------------------------
 -- Сервисные функции
---
+--------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
 -- числовой id каталога
+--------------------------------------------------------------------------------
 
 function catalogId(catalog)
     local ok, id = pcall(
@@ -62,7 +74,9 @@ function catalogId(catalog)
     end
 end
 
+--------------------------------------------------------------------------------
 -- каталог
+--------------------------------------------------------------------------------
 
 function catalogSubject(catalog)
     local ok, subject = pcall(
@@ -78,26 +92,61 @@ function catalogSubject(catalog)
     end
 end
 
---
--- Заявка
---
-
--- шаблон новой заявки
-function getNewIssueTemplate(catalog)
-    if catalog == "Пустышка" then
-        return {
-            ["fields"] = {
-                "subject",
-                "description",
-                "_cf_phone",
-                "_cf_object_id",
-                "assigned",
-            }
-        }
-    end
-end
+--------------------------------------------------------------------------------
+-- изменение полей связанных с идентификатором объекта
+--------------------------------------------------------------------------------
 
 function updateObjectId(issue, original)
+    
+    -- заявка на точку присутствия
+    if tonumberExt(issue["_cf_object_id"]) >= 100000000 and tonumberExt(issue["_cf_object_id"]) < 200000000 then
+        local chest_id = tonumberExt(issue["_cf_object_id"]) - 100000000
+
+        local chest_info = custom.GET({
+            ["action"] = "chest",
+            ["chest_id"] = chest_id,
+        })
+
+        if chest_info["polygon"] ~= nil and chest_info["polygon"] ~= "" then
+            issue["_cf_polygon"] = chest_info["polygon"]
+        end
+
+        if chest_info["lat"] ~= nil and chest_info["lon"] ~= nil then
+            issue["_cf_geo"] = {
+                ["type"] = "Point",
+                ["coordinates"] = {
+                    chest_info["lon"],
+                    chest_info["lat"],
+                }
+            }
+        end
+    end
+
+    -- заявка на коммутатор доступа
+    if tonumberExt(issue["_cf_object_id"]) >= 200000000 and tonumberExt(issue["_cf_object_id"]) < 300000000 then
+        local l2_sw_id = tonumberExt(issue["_cf_object_id"]) - 200000000
+
+        local l2_sw_info = custom.GET({
+            ["action"] = "l2",
+            ["l2_sw_id"] = l2_sw_id,
+        })
+
+        if l2_sw_info["chest"]["polygon"] ~= nil and l2_sw_info["chest"]["polygon"] ~= "" then
+            issue["_cf_polygon"] = l2_sw_info["chest"]["polygon"]
+        end
+
+        if l2_sw_info["chest"]["lat"] ~= nil and l2_sw_info["chest"]["lon"] ~= nil then
+            issue["_cf_geo"] = {
+                ["type"] = "Point",
+                ["coordinates"] = {
+                    l2_sw_info["chest"]["lon"],
+                    l2_sw_info["chest"]["lat"],
+                }
+            }
+        end
+    end
+
+    -- заявка на абонента (договор)
     if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
         local client_id = tonumberExt(issue["_cf_object_id"]) - 500000000
 
@@ -132,53 +181,31 @@ function updateObjectId(issue, original)
         end
     end
 
-    if tonumberExt(issue["_cf_object_id"]) >= 100000000 and tonumberExt(issue["_cf_object_id"]) < 200000000 then
-        local chest_id = tonumberExt(issue["_cf_object_id"]) - 100000000
-
-        local chest_info = custom.GET({
-            ["action"] = "chest",
-            ["chest_id"] = chest_id,
-        })
-
-        if chest_info["polygon"] ~= nil and chest_info["polygon"] ~= "" then
-            issue["_cf_polygon"] = chest_info["polygon"]
-        end
-
-        if chest_info["lat"] ~= nil and chest_info["lon"] ~= nil then
-            issue["_cf_geo"] = {
-                ["type"] = "Point",
-                ["coordinates"] = {
-                    chest_info["lon"],
-                    chest_info["lat"],
-                }
-            }
-        end
-    end
-
-    if tonumberExt(issue["_cf_object_id"]) >= 200000000 and tonumberExt(issue["_cf_object_id"]) < 300000000 then
-        local l2_sw_id = tonumberExt(issue["_cf_object_id"]) - 200000000
-
-        local l2_sw_info = custom.GET({
-            ["action"] = "l2",
-            ["l2_sw_id"] = l2_sw_id,
-        })
-
-        if l2_sw_info["chest"]["polygon"] ~= nil and l2_sw_info["chest"]["polygon"] ~= "" then
-            issue["_cf_polygon"] = l2_sw_info["chest"]["polygon"]
-        end
-
-        if l2_sw_info["chest"]["lat"] ~= nil and l2_sw_info["chest"]["lon"] ~= nil then
-            issue["_cf_geo"] = {
-                ["type"] = "Point",
-                ["coordinates"] = {
-                    l2_sw_info["chest"]["lon"],
-                    l2_sw_info["chest"]["lat"],
-                }
-            }
-        end
-    end
-
     return issue
+end
+
+--------------------------------------------------------------------------------
+-- Заявка
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+-- шаблон новой заявки
+--------------------------------------------------------------------------------
+
+function getNewIssueTemplate(catalog)
+    
+    -- из веб-морды создаем только "пустышки"
+    if catalog == "Пустышка" then
+        return {
+            ["fields"] = {
+                "subject",
+                "description",
+                "_cf_phone",
+                "_cf_object_id",
+                "assigned",
+            }
+        }
+    end
 end
 
 --------------------------------------------------------------------------------
@@ -186,6 +213,8 @@ end
 --------------------------------------------------------------------------------
 
 function createIssue(issue)
+    
+    -- заполняем поля связанные с идентификатором объекта
     issue = updateObjectId(issue, nil)
 
     -- по умолчанию - на себя
