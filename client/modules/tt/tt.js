@@ -1032,7 +1032,7 @@
             if (AVAIL("tt", "project", "POST")) {
                 cog = "";
             }
-            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control">`;
+            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow">`;
             for (let j in modules.tt.meta.myRoles) {
                 if (j == current_project) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
