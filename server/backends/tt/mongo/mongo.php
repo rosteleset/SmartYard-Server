@@ -119,6 +119,7 @@
                 foreach ($issue as $field => $value) {
                     if ($value == "%%unset") {
                         $unset[$field] = true;
+                        $issue[$field] = null;
                     }
                 }
 
