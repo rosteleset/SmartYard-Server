@@ -254,14 +254,14 @@
                 $preprocess["%%my"] = $my;
 
                 $preprocess["%%strToday"] = date("Y-m-d");
-                $preprocess["%%strYesterday"] = date("Y-m-d", strtotime("-1 day"));
-                $preprocess["%%strTomorrow"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday+1day"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday-1day"] = date("Y-m-d", strtotime("-1 day"));
 
                 $preprocess["%%timestamp"] = time();
                 $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
 
                 $preprocess["%%timestamp+1hour"] = strtotime(date("Y-m-d", strtotime("+1 hour")));
-                $preprocess["%%timestampTomorrow"] = strtotime(date("Y-m-d", strtotime("+1 day")));
+                $preprocess["%%timestamp+1day"] = strtotime(date("Y-m-d", strtotime("+1 day")));
                 $preprocess["%%timestamp+2days"] = strtotime(date("Y-m-d", strtotime("+2 day")));
                 $preprocess["%%timestamp+3days"] = strtotime(date("Y-m-d", strtotime("+3 day")));
                 $preprocess["%%timestamp+7days"] = strtotime(date("Y-m-d", strtotime("+7 day")));
@@ -271,7 +271,7 @@
                 $preprocess["%%timestamp+3years"] = strtotime(date("Y-m-d", strtotime("+3 year")));
                 
                 $preprocess["%%timestamp-1hour"] = strtotime(date("Y-m-d", strtotime("-1 hour")));
-                $preprocess["%%timestampYesterday"] = strtotime(date("Y-m-d", strtotime("-1 day")));
+                $preprocess["%%timestamp-1day"] = strtotime(date("Y-m-d", strtotime("-1 day")));
                 $preprocess["%%timestamp-2days"] = strtotime(date("Y-m-d", strtotime("-2 day")));
                 $preprocess["%%timestamp-3days"] = strtotime(date("Y-m-d", strtotime("-3 day")));
                 $preprocess["%%timestamp-7days"] = strtotime(date("Y-m-d", strtotime("-7 day")));
