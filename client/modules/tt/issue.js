@@ -371,7 +371,7 @@
                         if (modules.custom && typeof modules.custom[r.template] == "function") {
                             modules.custom[r.template](issueId, action, callback, prefferredValues, timeout);
                         } else {
-                            error(i18n("errors." + functionNotFound, r.template), i18n("error"), 30);
+                            error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
                         }
                     } else {
                         let fields = [];
