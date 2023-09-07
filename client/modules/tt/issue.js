@@ -369,7 +369,7 @@
                 }, true).done(r => {
                     if (typeof r.template == "string") {
                         if (modules.custom && typeof modules.custom[r.template] == "function") {
-                            modules.custom[r.template](issueId, action, callback, prefferredValues, timeout);
+                            modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
                         } else {
                             error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
                         }
