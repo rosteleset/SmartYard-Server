@@ -259,20 +259,26 @@
 
                 $preprocess["%%timestamp"] = time();
                 $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
-                $preprocess["%%timestampYesterday"] = strtotime(date("Y-m-d", strtotime("-1 day")));
+
+                $preprocess["%%timestamp+1hour"] = strtotime(date("Y-m-d", strtotime("+1 hour")));
                 $preprocess["%%timestampTomorrow"] = strtotime(date("Y-m-d", strtotime("+1 day")));
                 $preprocess["%%timestamp+2days"] = strtotime(date("Y-m-d", strtotime("+2 day")));
                 $preprocess["%%timestamp+3days"] = strtotime(date("Y-m-d", strtotime("+3 day")));
                 $preprocess["%%timestamp+7days"] = strtotime(date("Y-m-d", strtotime("+7 day")));
                 $preprocess["%%timestamp+1month"] = strtotime(date("Y-m-d", strtotime("+1 month")));
                 $preprocess["%%timestamp+1year"] = strtotime(date("Y-m-d", strtotime("+1 year")));
+                $preprocess["%%timestamp+2years"] = strtotime(date("Y-m-d", strtotime("+2 year")));
+                $preprocess["%%timestamp+3years"] = strtotime(date("Y-m-d", strtotime("+3 year")));
+                
+                $preprocess["%%timestamp-1hour"] = strtotime(date("Y-m-d", strtotime("-1 hour")));
+                $preprocess["%%timestampYesterday"] = strtotime(date("Y-m-d", strtotime("-1 day")));
                 $preprocess["%%timestamp-2days"] = strtotime(date("Y-m-d", strtotime("-2 day")));
                 $preprocess["%%timestamp-3days"] = strtotime(date("Y-m-d", strtotime("-3 day")));
                 $preprocess["%%timestamp-7days"] = strtotime(date("Y-m-d", strtotime("-7 day")));
                 $preprocess["%%timestamp-1month"] = strtotime(date("Y-m-d", strtotime("-1 month")));
                 $preprocess["%%timestamp-1year"] = strtotime(date("Y-m-d", strtotime("-1 year")));
-                $preprocess["%%timestamp-2year"] = strtotime(date("Y-m-d", strtotime("-2 year")));
-                $preprocess["%%timestamp-3year"] = strtotime(date("Y-m-d", strtotime("-3 year")));
+                $preprocess["%%timestamp-2years"] = strtotime(date("Y-m-d", strtotime("-2 year")));
+                $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
                 
                 $query = $this->preprocessFilter($query, $preprocess);
 
