@@ -19,7 +19,8 @@ $frs_key = "frs_key_" . $camera_id;
 if ($redis->get($frs_key) != null)
     response(204);
 
-$entrance = $frs->getEntranceByCameraId($camera_id) ;
+// TODO: 2 entrances 1 cam...
+$entrance = $households->getEntrances('cameraId', ['cameraId' => $camera_id])[0] ?? [];
 if (!$entrance)
     response(204);
 
