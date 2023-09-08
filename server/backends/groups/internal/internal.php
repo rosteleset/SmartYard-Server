@@ -188,7 +188,7 @@
              * @return boolean
              */
 
-            public function setUsers($gid, $uids) {
+             public function setUsers($gid, $uids) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -213,6 +213,51 @@
 
                 foreach ($uids as $uid) {
                     if (!checkInt($uid)) {
+                        return false;
+                    }
+
+                    if (!$sth->execute([
+                        ":uid" => $uid,
+                        ":gid" => $gid,
+                    ])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            /**
+             * modify user groups
+             *
+             * @return boolean
+             */
+
+             public function setGroups($uid, $gids) {
+                $this->clearCache();
+
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($uid)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into core_users_groups (uid, gid) values (:uid, :gid)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from core_users_groups where uid = $uid");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                foreach ($gids as $gid) {
+                    if (!checkInt($gid)) {
                         return false;
                     }
 
