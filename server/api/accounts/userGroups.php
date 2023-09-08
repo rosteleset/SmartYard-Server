@@ -84,12 +84,12 @@
                 if ($groups) {
                     if ($groups->capabilities()["mode"] === "rw") {
                         return [
-                            "GET",
-                            "PUT"
+                            "GET" => "#groupUsers(tt,issue,GET)",
+                            "PUT" => "#groupUsers(tt,issue,PUT)",
                         ];
                     } else {
                         return [
-                            "GET"
+                            "GET" => "#groupUsers(tt,issue,GET)",
                         ];
                     }
                 } else {
