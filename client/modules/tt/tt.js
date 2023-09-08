@@ -517,6 +517,13 @@
                             }
 
                             let ro = cf.editor == "text-ro";
+                            let val = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"");
+
+                            if (cf.editor == "date" || cf.editor == "datetime-local") {
+                                if (parseInt(val) <= 0) {
+                                    val = '';
+                                }
+                            }
                             
                             if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
@@ -529,7 +536,7 @@
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 sec: true,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:""),
+                                value: val,
                                 readonly: ro,
                                 validate: validate,
                             }
@@ -897,19 +904,11 @@
                                 return "<pre style='padding: 0px!important; margin: 0px!important;'>" + escapeHTML(JSON.stringify(val, null, 2)) + "</pre>";
                                 
                             case "datetime-local":
-                                if (parseInt(val) > 0) {
-                                    val = ttDate(val);
-                                } else {
-                                    val = '';
-                                }
+                                val = ttDate(val);
                                 break;
 
                             case "date":
-                                if (parseInt(val) > 0) {
-                                    val = ttDate(val, true);
-                                } else {
-                                    val = '';
-                                }
+                                val = ttDate(val, true);
                                 break;
                         }
                         
