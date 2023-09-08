@@ -69,7 +69,7 @@
             public static function GET($params) {
                 $groups = loadBackend("users")->getUser($params["_id"])["groups"];
 
-                return api::ANSWER($groups, ($groups !== false)?"uids":"notFound");
+                return api::ANSWER($groups, ($groups !== false)?"groups":"notFound");
             }
 
             public static function PUT($params) {
