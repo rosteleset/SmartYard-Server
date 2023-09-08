@@ -897,11 +897,19 @@
                                 return "<pre style='padding: 0px!important; margin: 0px!important;'>" + escapeHTML(JSON.stringify(val, null, 2)) + "</pre>";
                                 
                             case "datetime-local":
-                                val = ttDate(val);
+                                if (parseInt(val) > 0) {
+                                    val = ttDate(val);
+                                } else {
+                                    val = '';
+                                }
                                 break;
 
                             case "date":
-                                val = ttDate(val, true);
+                                if (parseInt(val) > 0) {
+                                    val = ttDate(val, true);
+                                } else {
+                                    val = '';
+                                }
                                 break;
                         }
                         
