@@ -476,18 +476,6 @@
             /**
              * @inheritDoc
              */
-            public function getEntranceByCameraId($camera_id)
-            {
-                // TODO: move this to suitable backend
-                $query = "select he.house_entrance_id from houses_entrances he where he.camera_id = " . $camera_id;
-                $r = $this->db->get($query, [], ["house_entrance_id" => "entranceId"], [self::PDO_SINGLIFY]);
-                $households = loadBackend("households");
-                return $households->getEntrance($r["entranceId"]);
-            }
-
-            /**
-             * @inheritDoc
-             */
             public function getFlatsByFaceId($face_id, $entrance_id)
             {
                 // TODO: perhaps some of this data should be retrieved from households backend

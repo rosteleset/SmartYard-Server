@@ -172,12 +172,6 @@
             abstract public function detachFaceIdFromFlat($face_id, $flat_id);
 
             /**
-             * @param int $camera_id
-             * @return object
-             */
-            abstract public function getEntranceByCameraId($camera_id);
-
-            /**
              * @param $face_id
              * @param $entrance_id
              * @return array returns a list of flat identifiers

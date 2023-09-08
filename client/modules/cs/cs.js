@@ -935,8 +935,8 @@
     
                 let rtd = "<div class='form-inline'>";
     
-                rtd += `<div class="input-group input-group-sm mr-2" style="width: 200px;"><div class="input-group-prepend"><span class="input-group-text pointer-input-group" title="${i18n("cs.refresh")}" id="csRefresh"><i class="fas fa-fw fa-sync-alt"></i></span></div><select id="csSheet" class="form-control">${sheetsOptions}</select></div>`;
-                rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control">${datesOptions}</select></div>`;
+                rtd += `<div class="input-group input-group-sm mr-2" style="width: 200px;"><select id="csSheet" class="form-control select-arrow">${sheetsOptions}</select></div>`;
+                rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control select-arrow">${datesOptions}</select></div>`;
         
                 if (AVAIL("cs", "sheet", "PUT")) {
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="cloneCSsheet" class="nav-link text-info mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></div>`;
@@ -1068,10 +1068,6 @@
                     modules.cs.renderCS();
                 });
 
-                $("#csRefresh").off("click").on("click", () => {
-                    modules.cs.renderCS();
-                });
-    
                 if ($("#csSheet").val() && $("#csDate").val()) {
                     QUERY("cs", "sheet", {
                         "sheet": $("#csSheet").val(),

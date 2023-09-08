@@ -114,6 +114,15 @@
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
+                $unset = [];
+
+                foreach ($issue as $field => $value) {
+                    if ($value == "%%unset") {
+                        $unset[$field] = true;
+                        $issue[$field] = null;
+                    }
+                }
+
                 $comment = false;
                 $commentPrivate = false;
                 if (array_key_exists("comment", $issue) && $issue["comment"]) {
@@ -164,9 +173,12 @@
                     $update = false;
                     if ($old) {
                         $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                        if (count($unset)) {
+                            $update = $update && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$unset" => $unset ]);
+                        }
                     }
                     if ($update) {
-                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
+                        $update = $update && $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
                     }
                     return $update;
                 }
@@ -242,25 +254,37 @@
                 $preprocess["%%my"] = $my;
 
                 $preprocess["%%strToday"] = date("Y-m-d");
-                $preprocess["%%strYesterday"] = date("Y-m-d", strtotime("-1 day"));
-                $preprocess["%%strTomorrow"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday+1day"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday-1day"] = date("Y-m-d", strtotime("-1 day"));
 
                 $preprocess["%%timestamp"] = time();
                 $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
-                $preprocess["%%timestampYesterday"] = strtotime(date("Y-m-d", strtotime("-1 day")));
-                $preprocess["%%timestampTomorrow"] = strtotime(date("Y-m-d", strtotime("+1 day")));
+
+                $preprocess["%%timestamp+1hour"] = strtotime(date("Y-m-d", strtotime("+1 hour")));
+                $preprocess["%%timestamp+2hours"] = strtotime(date("Y-m-d", strtotime("+2 hour")));
+                $preprocess["%%timestamp+4hours"] = strtotime(date("Y-m-d", strtotime("+4 hour")));
+                $preprocess["%%timestamp+8hours"] = strtotime(date("Y-m-d", strtotime("+8 hour")));
+                $preprocess["%%timestamp+1day"] = strtotime(date("Y-m-d", strtotime("+1 day")));
                 $preprocess["%%timestamp+2days"] = strtotime(date("Y-m-d", strtotime("+2 day")));
                 $preprocess["%%timestamp+3days"] = strtotime(date("Y-m-d", strtotime("+3 day")));
                 $preprocess["%%timestamp+7days"] = strtotime(date("Y-m-d", strtotime("+7 day")));
                 $preprocess["%%timestamp+1month"] = strtotime(date("Y-m-d", strtotime("+1 month")));
                 $preprocess["%%timestamp+1year"] = strtotime(date("Y-m-d", strtotime("+1 year")));
+                $preprocess["%%timestamp+2years"] = strtotime(date("Y-m-d", strtotime("+2 year")));
+                $preprocess["%%timestamp+3years"] = strtotime(date("Y-m-d", strtotime("+3 year")));
+                
+                $preprocess["%%timestamp-1hour"] = strtotime(date("Y-m-d", strtotime("-1 hour")));
+                $preprocess["%%timestamp-2hours"] = strtotime(date("Y-m-d", strtotime("-2 hour")));
+                $preprocess["%%timestamp-4hours"] = strtotime(date("Y-m-d", strtotime("-4 hour")));
+                $preprocess["%%timestamp-8hours"] = strtotime(date("Y-m-d", strtotime("-8 hour")));
+                $preprocess["%%timestamp-1day"] = strtotime(date("Y-m-d", strtotime("-1 day")));
                 $preprocess["%%timestamp-2days"] = strtotime(date("Y-m-d", strtotime("-2 day")));
                 $preprocess["%%timestamp-3days"] = strtotime(date("Y-m-d", strtotime("-3 day")));
                 $preprocess["%%timestamp-7days"] = strtotime(date("Y-m-d", strtotime("-7 day")));
                 $preprocess["%%timestamp-1month"] = strtotime(date("Y-m-d", strtotime("-1 month")));
                 $preprocess["%%timestamp-1year"] = strtotime(date("Y-m-d", strtotime("-1 year")));
-                $preprocess["%%timestamp-2year"] = strtotime(date("Y-m-d", strtotime("-2 year")));
-                $preprocess["%%timestamp-3year"] = strtotime(date("Y-m-d", strtotime("-3 year")));
+                $preprocess["%%timestamp-2years"] = strtotime(date("Y-m-d", strtotime("-2 year")));
+                $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
                 
                 $query = $this->preprocessFilter($query, $preprocess);
 

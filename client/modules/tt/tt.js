@@ -1040,7 +1040,7 @@
             if (AVAIL("tt", "project", "POST")) {
                 cog = "";
             }
-            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control">`;
+            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow">`;
             for (let j in modules.tt.meta.myRoles) {
                 if (j == current_project) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
@@ -1204,7 +1204,7 @@
                         filters += i + "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += `<li class="dropdown-item pointer submenu" style="width: 300px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
                         filters += '<div class="dropdown-menu">';
                         hh(t[i]);
                         filters += '</div>';

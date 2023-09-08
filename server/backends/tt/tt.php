@@ -1166,11 +1166,13 @@
                     if (!in_array($field, $validFields)) {
                         unset($issue[$field]);
                     } else {
-                        if (array_key_exists($field, $customFieldsByName)) {
-                            if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
-                                $issue[$field] = array_values($value);
-                            } else {
-                                $issue[$field] = self::av($value);
+                        if ($value !== null) {
+                            if (array_key_exists($field, $customFieldsByName)) {
+                                if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                                    $issue[$field] = array_values($value);
+                                } else {
+                                    $issue[$field] = self::av($value);
+                                }
                             }
                         }
                     }

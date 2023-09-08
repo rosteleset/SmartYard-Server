@@ -22,6 +22,7 @@
  * @apiSuccess {String} [supportPhone] номер телефона техподдержки
  * @apiSuccess {String} [timeZone = "Europe/Moscow"] Time Zone identifier
  * @apiSuccess {String="turnOnOnly","turnOnAndOff"} [guestAccess = "turnOnOnly"] Тип гостевого доступа.
+ * @apiSuccess {Number} [version] Версия API
  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
@@ -71,5 +72,7 @@
         if (@$config["mobile"]["guest_access"]) {
             $response["guestAccess"] = $config["mobile"]["guest_access"];
         }
+
+        $response["version"] = @$config["mobile"]["version"] ?: 0;
 
     response(200, $response);
