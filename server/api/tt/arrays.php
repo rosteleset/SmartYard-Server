@@ -22,7 +22,7 @@
                     return API::ERROR(500);
                 }
 
-                $success =  $tt->addArrayValue($params["issueId"], $param["field"], $params["value"]);
+                $success =  $tt->addArrayValue($params["_id"], $params["field"], $params["value"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
@@ -35,7 +35,7 @@
                     return API::ERROR(500);
                 }
 
-                $success =  $tt->deleteArrayValue($params["issueId"], $param["field"], $params["value"]);
+                $success =  $tt->deleteArrayValue($params["_id"], $params["field"], $params["value"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

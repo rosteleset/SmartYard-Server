@@ -1335,6 +1335,22 @@
             abstract public function deleteAttachment($issueId, $filename);
 
             /**
+             * @param $issueId
+             * @param $field
+             * @param $value
+             * @return mixed
+             */
+            abstract public function addArrayValue($issueId, $field, $value);
+
+            /**
+             * @param $issueId
+             * @param $field
+             * @param $value
+             * @return mixed
+             */
+            abstract public function deleteArrayValue($issueId, $field, $value);
+
+            /**
              * @param $uid
              * @return mixed
              */

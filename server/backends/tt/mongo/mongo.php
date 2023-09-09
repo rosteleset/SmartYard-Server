@@ -762,6 +762,143 @@
             }
 
             /**
+             * @inheritDoc
+             */
+            public function addArrayValue($issueId, $field, $value) {
+                // TODO: добавить проверку на существование поля, и то что поле является массивом
+
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $value = trim($value);
+                if (!$value) {
+                    return false;
+                }
+
+                $issue = $this->getIssue($issueId);
+
+                if (!$issue) {
+                    return false;
+                }
+
+                if ($issue[$field] && in_array($value, $issue[$field])) {
+                    return false;
+                }
+
+                $this->addJournalRecord($issueId, "addArrayValue", null, [
+                    "field" => $field,
+                    "value" => $value,
+                ]);
+
+                return $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$push" => [
+                            $field => $value,
+                        ],
+                    ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$set" => [
+                            "updated" => time(),
+                        ],
+                    ]
+                );
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteArrayValue($issueId, $field, $value) {
+                // TODO: добавить проверку на существование поля, и то что поле является массивом
+
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $value = trim($value);
+                if (!$value) {
+                    return false;
+                }
+
+                $issue = $this->getIssue($issueId);
+
+                if (!$issue) {
+                    return false;
+                }
+
+                if (!array_key_exists($field, $issue)) {
+                    return false;
+                }
+
+                if (!in_array($value, $issue[$field])) {
+                    return false;
+                }
+
+                $this->addJournalRecord($issueId, "addArrayValue", null, [
+                    "field" => $field,
+                    "value" => $value,
+                ]);
+
+                $result = $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$unset" => [
+                            $field . "." . array_search($value, $issue[$field]) => true,
+                        ],
+                    ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$pull" => [
+                            $field  => null,
+                        ],
+                    ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$set" => [
+                            "updated" => time(),
+                        ],
+                    ]
+                );
+
+                if ($result) {
+                    $issue = $this->getIssue($issueId);
+                    if (!count($issue[$field])) {
+                        $result = $result && $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ "\$unset" => [ $field => true ] ]);
+                    }
+                }
+
+                return $result;
+            }
+
+            /**
              * @param $part
              * @return bool
              */
