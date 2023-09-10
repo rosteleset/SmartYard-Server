@@ -929,6 +929,26 @@
                         }
                         break;
 
+                    case "array":
+                        if (val) {
+                            if (typeof val == "string") {
+                                val = [ val ];
+                            }
+
+                            let t = "<ul>";
+                            
+                            for (let i in val) {
+                                t += `<li>${escapeHTML(val[i])}</li>`;
+                            }
+    
+                            t += "</ul>";
+
+                            val = t;
+                        } else {
+                            val = '';
+                        }
+                        break;
+        
                     case "text":
                         if (cf.format) {
                             val = sprintf(cf.format, val);
