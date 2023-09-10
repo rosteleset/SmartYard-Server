@@ -819,8 +819,7 @@
                 }
 
                 $this->addJournalRecord($issueId, "addArrayValue", null, [
-                    "field" => $field,
-                    "value" => $value,
+                    $field => $value,
                 ]);
 
                 return $this->mongo->$db->$acr->updateOne(
@@ -910,8 +909,7 @@
                 }
 
                 $this->addJournalRecord($issueId, "deleteArrayValue", null, [
-                    "field" => $field,
-                    "value" => $value,
+                    $field => $value,
                 ]);
 
                 $result = $this->mongo->$db->$acr->updateOne(
