@@ -765,10 +765,31 @@
              * @inheritDoc
              */
             public function addArrayValue($issueId, $field, $value) {
-                // TODO: добавить проверку на существование поля, и то что поле является массивом
-
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
+
+                $customFields = $this->getCustomFields();
+
+                $project = false;
+                $projects = $this->getProjects();
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == $acr) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                $f = false;
+                foreach ($customFields as $cf) {
+                    if ($field == "_cf_" . $cf["field"]) {
+                        if ($cf["type"] == "array") {
+                            $f = true;
+                        }
+                        break;
+                    }
+                }
+
+                error_log(print_r($project["customFields"], true));
 
                 $roles = $this->myRoles();
 
