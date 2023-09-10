@@ -104,10 +104,6 @@ select {
   opacity: 0.2;
 }
 
-.select2-container--open {
-  z-index: 9999999 !important;
-}
-
 .tdform-right > .note-editor {
   margin-bottom: 0;
   box-shadow: none;
@@ -145,10 +141,6 @@ select {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-}
-
-.select2-invalid > span.select2 > span.selection > span.select2-selection {
-  border-color: #dc3435 !important;
 }
 
 .border-color-invalid {
@@ -267,6 +259,14 @@ body::-webkit-scrollbar-thumb {
   background-image:url('../img/spinnerSmall.svg');
   background-repeat: no-repeat;
   background-position: center center;
+}
+
+.select2-container--open {
+  z-index: 9999999 !important;
+}
+
+.select2-invalid > span.select2 > span.selection > span.select2-selection {
+  border-color: #dc3435 !important;
 }
 
 .select2-results__option.loading-results,
