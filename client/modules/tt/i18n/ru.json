@@ -134,6 +134,7 @@
     "customFieldEditorYesNo": "Да - Нет",
     "customFieldEditorNoYes": "Нет - Да",
     "customFieldEditorJSON": "JSON",
+    "customFieldEditorArray": "Массив",
     "addWorkflow": "Добавить рабочий процесс",
     "statusWasChanged": "Статус изменен",
     "resolutionWasChanged": "Резолюция изменена",

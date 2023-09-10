@@ -2596,6 +2596,10 @@
                             // do nothing
                         }
 
+                        if (modules.tt.meta.customFields[i].type == "array") {
+                            editor = i18n("tt.customFieldEditorJSON");
+                        }
+
                         rows.push({
                             uid: modules.tt.meta.customFields[i].customFieldId,
                             cols: [
