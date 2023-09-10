@@ -963,7 +963,7 @@
                                 t += "</ul>";
                             } else {
                                 for (let i in vt) {
-                                    t += $escapeHTML(vt[i]) + ", ";
+                                    t += escapeHTML(vt[i]) + ", ";
                                 }
 
                                 if (t) {
