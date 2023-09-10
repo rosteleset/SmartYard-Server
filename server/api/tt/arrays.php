@@ -44,7 +44,7 @@
                 if (loadBackend("tt")) {
                     return [
                         "POST" => "#same(tt,issue,PUT)",
-                        "DELETE" => "#same(tt,issue,DELETE)",
+                        "DELETE" => "#same(tt,issue,PUT)",
                     ];
                 } else {
                     return false;
