@@ -935,6 +935,8 @@
                                 val = [ val ];
                             }
 
+                            console.log(val);
+
                             val.sort((a, b) => {
                                 if (a > b) {
                                     return 1;
