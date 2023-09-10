@@ -2597,7 +2597,7 @@
                         }
 
                         if (modules.tt.meta.customFields[i].type == "array") {
-                            editor = i18n("tt.customFieldEditorJSON");
+                            editor = i18n("tt.customFieldEditorArray");
                         }
 
                         rows.push({

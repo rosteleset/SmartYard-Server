@@ -584,6 +584,26 @@
                                 validate: validate,
                             }
 
+                        case "array":
+                            for (let i in issue["_cf_" + fieldId]) {
+                                options.push({
+                                    id: issue["_cf_" + fieldId][i],
+                                    text: issue["_cf_" + fieldId][i],
+                                })
+                            }
+                            return {
+                                id: "_cf_" + fieldId,
+                                type: "select2",
+                                title: modules.tt.issueFieldTitle(field),
+                                placeholder: modules.tt.issueFieldTitle(field),
+                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                options: select2Filter(options, filter),
+                                multiple: true,
+                                createTags: true,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                validate: validate,
+                            }
+    
                         case "geo":
                             let vx;
                             
