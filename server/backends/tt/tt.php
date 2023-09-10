@@ -1168,7 +1168,7 @@
                     } else {
                         if ($value !== null) {
                             if (array_key_exists($field, $customFieldsByName)) {
-                                if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
+                                if (strpos($customFieldsByName[$field]["format"], "multiple") !== false || $customFieldsByName[$field]["type"] == "array") {
                                     $issue[$field] = array_values($value);
                                 } else {
                                     $issue[$field] = self::av($value);

@@ -511,6 +511,10 @@
                             id: "geo",
                             text: i18n("tt.customFieldTypeGeo"),
                         },
+                        {
+                            id: "array",
+                            text: i18n("tt.customFieldTypeArray"),
+                        },
                     ]
                 },
                 {
@@ -1051,7 +1055,7 @@
                         placeholder: i18n("tt.customFieldLink"),
                         value: cf.link,
                         hint: i18n("forExample") + " https://example.com/?search=%value%",
-                        hidden: cf.type === "issues" || cf.type === "geo",
+                        hidden: cf.type === "issues" || cf.type === "geo" || cf.type === "array",
                     },
                     {
                         id: "options",
@@ -1076,7 +1080,7 @@
                         type: "noyes",
                         title: i18n("tt.multiple"),
                         value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
-                        hidden: cf.type === "text" || cf.type === "geo",
+                        hidden: cf.type === "text" || cf.type === "geo" || cf.type === "array",
                     },
                     {
                         id: "usersAndGroups",
