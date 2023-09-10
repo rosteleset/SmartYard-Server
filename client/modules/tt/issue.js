@@ -530,6 +530,7 @@
                 }
 
                 if (f) {
+                    console.log(issue.fields[i]);
                     let x = modules.tt.issueField2Html(issue.issue, issue.fields[i], undefined, target);
                     if (x !== null) {
                         h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
