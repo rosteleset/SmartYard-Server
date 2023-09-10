@@ -849,7 +849,37 @@
              * @inheritDoc
              */
             public function deleteArrayValue($issueId, $field, $value) {
-                // TODO: добавить проверку на существование поля, и то что поле является массивом
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                $customFields = $this->getCustomFields();
+
+                $project = false;
+                $projects = $this->getProjects();
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == $acr) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                if (!$project) {
+                    return false;
+                }
+
+                $f = false;
+                foreach ($customFields as $cf) {
+                    if ($field == "_cf_" . $cf["field"]) {
+                        if ($cf["type"] == "array" && in_array($cf["customFieldId"], $project["customFields"])) {
+                            $f = true;
+                        }
+                        break;
+                    }
+                }
+
+                if (!$f) {
+                    return false;
+                }
 
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
