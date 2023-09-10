@@ -779,10 +779,14 @@
                     }
                 }
 
+                if (!$project) {
+                    return false;
+                }
+
                 $f = false;
                 foreach ($customFields as $cf) {
                     if ($field == "_cf_" . $cf["field"]) {
-                        if ($cf["type"] == "array") {
+                        if ($cf["type"] == "array" && in_array($cf["customFieldId"], $project["customFields"])) {
                             error_log(print_r($cf, true));
                             $f = true;
                         }
@@ -790,7 +794,9 @@
                     }
                 }
 
-//                error_log(print_r($project["customFields"], true));
+                if (!$f) {
+                    return false;
+                }
 
                 $roles = $this->myRoles();
 
