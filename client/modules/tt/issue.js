@@ -515,8 +515,8 @@
         function fieldRow(i, target) {
             let h = '';
 
-            if (![ "id", "issueId", "comments", "attachments", "childrens ", "links", "linkedIssues", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
-//            if (![ "id", "issueId", "comments", "attachments", "childrens ", "links", "linkedIssues", "tags" ].includes(issue.fields[i])) {
+//            if (![ "id", "issueId", "comments", "attachments", "childrens ", "links", "linkedIssues", "tags" ].includes(issue.fields[i]) && !isEmpty(issue.issue[issue.fields[i]])) {
+            if (![ "id", "issueId", "comments", "attachments", "childrens ", "links", "linkedIssues", "tags" ].includes(issue.fields[i])) {
                     let f = false;
 
                 if (issue.fields[i].substring(0, 4) == "_cf_") {
@@ -531,7 +531,6 @@
                 }
 
                 if (f) {
-                    console.log(issue.fields[i]);
                     let x = modules.tt.issueField2Html(issue.issue, issue.fields[i], undefined, target);
                     if (x) {
                         h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
