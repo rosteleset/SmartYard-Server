@@ -3305,6 +3305,7 @@
                 r.viewers.sort((a, b) => {
                     let f1 = (a.field.substring(0, 4) == "_cf_")?cf[a]:i18n("tt." + a.field);
                     let f2 = (b.field.substring(0, 4) == "_cf_")?cf[b]:i18n("tt." + b.field);
+                    console.log(f1, f2);
                     if (f1 > f2) {
                         return 1;
                     }
