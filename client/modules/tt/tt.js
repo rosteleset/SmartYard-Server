@@ -325,7 +325,6 @@
                         id: "tags",
                         type: "select2",
                         tags: true,
-                        createTags: false,
                         multiple: true,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
@@ -585,6 +584,7 @@
                             }
 
                         case "array":
+                            console.log(issue);
                             for (let i in issue["_cf_" + fieldId]) {
                                 options.push({
                                     id: issue["_cf_" + fieldId][i],
@@ -599,6 +599,7 @@
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
                                 multiple: true,
+                                tags: true,
                                 createTags: true,
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
                                 validate: validate,
