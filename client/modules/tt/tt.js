@@ -600,6 +600,15 @@
                                     return -1;
                                 }
                                 return 0;
+                            });
+                            ax.sort((a, b) => {
+                                if (a > b) {
+                                    return 1;
+                                }
+                                if (a < b) {
+                                    return -1;
+                                }
+                                return 0;
                             })
                             return {
                                 id: "_cf_" + fieldId,
