@@ -3303,10 +3303,10 @@
                 let v = {};
 
                 r.viewers.sort((a, b) => {
-                    if (a.name > b.name) {
+                    if (a.viewerField > b.viewerField) {
                         return 1;
                     }
-                    if (a.name < b.name) {
+                    if (a.viewerField < b.viewerField) {
                         return -1;
                     }
                     return 0;
