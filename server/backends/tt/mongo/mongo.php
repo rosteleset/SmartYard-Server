@@ -787,7 +787,6 @@
                 foreach ($customFields as $cf) {
                     if ($field == "_cf_" . $cf["field"]) {
                         if ($cf["type"] == "array" && in_array($cf["customFieldId"], $project["customFields"])) {
-                            error_log(print_r($cf, true));
                             $f = true;
                         }
                         break;
