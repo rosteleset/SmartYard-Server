@@ -951,13 +951,25 @@
                                 return 0;
                             });
 
-                            let t = "<ul class='mb-1'>";
+                            let t = "";
+
+                            if (target != "journal") {
+                                t = "<ul class='mb-1'>";
                             
-                            for (let i in vt) {
-                                t += `<li>${escapeHTML(vt[i])}</li>`;
+                                for (let i in vt) {
+                                    t += `<li>${escapeHTML(vt[i])}</li>`;
+                                }
+        
+                                t += "</ul>";
+                            } else {
+                                for (let i in vt) {
+                                    t += $escapeHTML(vt[i]) + ", ";
+                                }
+
+                                if (t) {
+                                    t = t.substring(0, t.length - 2);
+                                }
                             }
-    
-                            t += "</ul>";
 
                             val = t;
                         } else {
