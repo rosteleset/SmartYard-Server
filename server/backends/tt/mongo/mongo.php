@@ -909,7 +909,7 @@
                     return false;
                 }
 
-                $this->addJournalRecord($issueId, "addArrayValue", null, [
+                $this->addJournalRecord($issueId, "journalActionDeleteArrayValue", null, [
                     "field" => $field,
                     "value" => $value,
                 ]);

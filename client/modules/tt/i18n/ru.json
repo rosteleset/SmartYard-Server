@@ -231,6 +231,8 @@
     "journalActionModifyComment": "Изменение  комментария [#%s]",
     "journalActionAddAttachment": "Добавление файла",
     "journalActionDeleteAttachment": "Удаление файла",
+    "journalActionAddArrayValue": "Добавление элемента",
+    "journalActionDeleteArrayValue": "Удаление элемента",
     "attachmentFilename": "Файл",
     "commentAuthor": "Автор комментария",
     "commentBody": "Комментарий",
