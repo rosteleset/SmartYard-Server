@@ -547,6 +547,8 @@
                                     text: cf.options[i].optionDisplay,
                                 });
                             }
+                            let v1 = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]);
+                            console.log(v1)
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -557,7 +559,7 @@
                                 multiple: cf.format.indexOf("multiple") >= 0,
                                 tags: cf.format.indexOf("editable") >= 0,
                                 createTags: cf.format.indexOf("editable") >= 0,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                value: v1,
                                 validate: validate,
                             }
 
@@ -591,8 +593,8 @@
                                     text: issue["_cf_" + fieldId][i],
                                 })
                             }
-                            let v = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]);
-                            console.log(v);
+                            let v2 = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]);
+                            console.log(v2);
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -603,7 +605,7 @@
                                 multiple: true,
                                 tags: true,
                                 createTags: true,
-                                value: v,
+                                value: v2,
                                 validate: validate,
                             }
     
