@@ -799,13 +799,13 @@
             val = issue[field];
         }
 
-        if (val == null || val == "&nbsp;") {
-            return "";
-        }
-
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
             val = modules.tt.viewers[field][v](val, issue, field, target);
         } else {
+            if (val == null || val == "&nbsp;") {
+                return "";
+            }
+    
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
                     case "description":
