@@ -592,6 +592,15 @@
                                 });
                                 ax.push(issue["_cf_" + fieldId][i]);
                             }
+                            options.sort((a, b) => {
+                                if (a.id > b.id) {
+                                    return 1;
+                                }
+                                if (a.id < b.id) {
+                                    return -1;
+                                }
+                                return 0;
+                            })
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
