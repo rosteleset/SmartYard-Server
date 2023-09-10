@@ -951,7 +951,7 @@
                                 return 0;
                             });
 
-                            let t = "<ul>";
+                            let t = "<ul class='mb-1'>";
                             
                             for (let i in vt) {
                                 t += `<li>${escapeHTML(vt[i])}</li>`;
