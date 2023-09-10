@@ -547,8 +547,6 @@
                                     text: cf.options[i].optionDisplay,
                                 });
                             }
-                            let v1 = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]);
-                            console.log(v1)
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -559,7 +557,7 @@
                                 multiple: cf.format.indexOf("multiple") >= 0,
                                 tags: cf.format.indexOf("editable") >= 0,
                                 createTags: cf.format.indexOf("editable") >= 0,
-                                value: v1,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
                                 validate: validate,
                             }
 
@@ -586,15 +584,14 @@
                             }
 
                         case "array":
-                            console.log(issue);
+                            let ax = [];
                             for (let i in issue["_cf_" + fieldId]) {
                                 options.push({
                                     id: issue["_cf_" + fieldId][i],
                                     text: issue["_cf_" + fieldId][i],
-                                })
+                                });
+                                ax.push(issue["_cf_" + fieldId][i]);
                             }
-                            let v2 = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]);
-                            console.log(v2);
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -605,7 +602,7 @@
                                 multiple: true,
                                 tags: true,
                                 createTags: true,
-                                value: options,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:(ax?ax:[]),
                                 validate: validate,
                             }
     
