@@ -605,7 +605,7 @@
                                 multiple: true,
                                 tags: true,
                                 createTags: true,
-                                value: v2,
+                                value: options,
                                 validate: validate,
                             }
     
