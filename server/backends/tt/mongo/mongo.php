@@ -783,13 +783,14 @@
                 foreach ($customFields as $cf) {
                     if ($field == "_cf_" . $cf["field"]) {
                         if ($cf["type"] == "array") {
+                            error_log(print_r($cf, true));
                             $f = true;
                         }
                         break;
                     }
                 }
 
-                error_log(print_r($project["customFields"], true));
+//                error_log(print_r($project["customFields"], true));
 
                 $roles = $this->myRoles();
 
