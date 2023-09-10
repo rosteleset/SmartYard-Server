@@ -935,9 +935,13 @@
                                 val = [ val ];
                             }
 
-                            console.log(val);
+                            let vt = [];
 
-                            val.sort((a, b) => {
+                            for (let i in val) {
+                                vt.push(val[i]);
+                            }
+
+                            vt.sort((a, b) => {
                                 if (a > b) {
                                     return 1;
                                 }
@@ -949,8 +953,8 @@
 
                             let t = "<ul>";
                             
-                            for (let i in val) {
-                                t += `<li>${escapeHTML(val[i])}</li>`;
+                            for (let i in vt) {
+                                t += `<li>${escapeHTML(vt[i])}</li>`;
                             }
     
                             t += "</ul>";
