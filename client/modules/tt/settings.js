@@ -2647,6 +2647,22 @@
                         });
                     }
 
+                    rows.sort((a, b) => {
+                        if (a.cols[1] > b.cols[1]) {
+                            return 1;
+                        }
+                        if (a.cols[1] < b.cols[1]) {
+                            return -1;
+                        }
+                        if (a.cols[5] > b.cols[5]) {
+                            return 1;
+                        }
+                        if (a.cols[5] < b.cols[5]) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+
                     return rows;
                 },
             });
