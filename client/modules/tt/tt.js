@@ -591,6 +591,8 @@
                                     text: issue["_cf_" + fieldId][i],
                                 })
                             }
+                            let v = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]);
+                            console.log(v);
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -601,7 +603,7 @@
                                 multiple: true,
                                 tags: true,
                                 createTags: true,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                value: v,
                                 validate: validate,
                             }
     
