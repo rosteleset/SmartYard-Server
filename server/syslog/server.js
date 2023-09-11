@@ -80,7 +80,7 @@ class SyslogService {
         });
 
         syslog.start({ port: this.config.port }).then(() => {
-            console.log(`${this.unit.toUpperCase()} syslog server running on port ${this.config.port} || NAT is ${topology?.nat || false}`);
+            console.log(`${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port} || NAT is ${topology?.nat || false}`);
         });
     }
 
@@ -198,17 +198,237 @@ class BewardService extends SyslogService {
     }
 }
 
+class BewardServiceDS extends BewardService {
+    constructor(config) {
+        super(config);
+        this.unit = "beward_ds";
+    }
+
+    /**
+     *
+     * @param now
+     * @param host
+     * @param msg
+     * @returns {Promise<void>}
+     */
+    async handleSyslogMessage(now, host, msg) {
+        // SIP call done (for DS06*)
+        if (/^SIP call \d+ is DISCONNECTED.*$/.test(msg) || /^EVENT:\d+:SIP call \d+ is DISCONNECTED.*$/.test(msg)) {
+            await API.callFinished({ date: now, ip: host });
+        }
+    }
+}
+
+// TODO: check feature
 class QtechService extends SyslogService {
     constructor(config) {
         super("qtech", config);
    }
+
+    async handleSyslogMessage(now, host, msg) {
+        // TODO:
+        //      - check white rabbit feature, open by DTMF
+        //      - modify sequence message handlers
+
+        const qtMsgParts = msg.split(/EVENT:[0-9]+:/)[1].trim().split(/[,:]/).filter(Boolean).map(part => part.trim());
+
+
+        // DONE:
+        // Motion detect handler
+        if (qtMsgParts[1] === "Send Photo") {
+            console.log("DEBUG || Motion detect handler || "+msg);
+            await API.motionDetection({ date: now, ip: host, motionActive: true });
+            await mdTimer(host, 5000);
+        }
+
+        // TODO: check!
+        // "Call start" handler
+        // example msg: "EVENT:700:Prefix:12,Replace Number:1000000001, Status:0"
+        if (qtMsgParts[2] === "Replace Number") {
+            delete callDoneFlow[host]; // Cleanup broken call (if exist)
+
+            // Call in gate mode with prefix: potential white rabbit
+            if (qtMsgParts[3].length === 6) { // TODO: wtf??? check
+                const number = qtMsgParts[3];
+
+                gateRabbits[host] = {
+                    ip: host,
+                    prefix: parseInt(number.substring(0, 4)),
+                    apartmentNumber: parseInt(number.substring(4)),
+                };
+            }
+        }
+
+        // TODO: check!
+        // Open door by DTMF handler
+        // Incoming DTMF for white rabbit: sending rabbit gate update
+        if (qtMsgParts[2] === "Open Door By DTMF") {
+            console.log("DEBUG || Handler open door by DTMF");
+            if (gateRabbits[host]) {
+                const { ip, prefix, apartmentNumber } = gateRabbits[host];
+                await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
+            }
+        }
+
+        // DONE:
+        // Open door by RFID key
+        if (qtMsgParts[1] === "Open Door By Card") {
+            let door = 0;
+            const rfid = qtMsgParts[3].padStart(14, 0);
+
+            if (rfid[6] === '0' && rfid[7] === '0') {
+                door = 1;
+            }
+
+            await API.openDoor({ date: now, ip: host, door: door, detail: rfid, by: "rfid" });
+        }
+
+        // Done:
+        // Open door by code
+        if (qtMsgParts[2] === "Open Door By Code") {
+            console.log("DEBUG || Handler open door by code")
+            const code = parseInt(qtMsgParts[4]);
+            await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
+        }
+
+        // DONE:
+        // Open door by button pressed
+        if (qtMsgParts[1] === "Exit button pressed") {
+            let door = 0;
+            let detail = "main";
+
+            switch (qtMsgParts[2]) {
+                case "INPUTB":
+                    door = 1;
+                    detail = "second";
+                    break;
+                case "INPUTC":
+                    door = 2;
+                    detail = "third";
+                    break;
+            }
+
+            // console.table({ date: now, ip: host, door: door, detail: detail, by: "button" })
+            await API.openDoor({ date: now, ip: host, door: door, detail: detail, by: "button" });
+        }
+
+        /** TODO:
+         *      - check! and refactor to map
+         */
+        //  Check if СMS calls enabled
+        if (qtMsgParts[2] === "Analog Number") {
+            callDoneFlow[host] = { ...callDoneFlow[host], cmsEnabled: true };
+            await checkCallDone(host);
+        }
+    }
 }
 
-// TODO:
-//  - add qtech debug server
+class IsService extends SyslogService {
+    constructor(config) {
+        super("is", config);
+    }
+
+    filterSpamMessages(msg) {
+        const isSpamKeywords = [
+            "STM32.DEBUG",
+            "Вызов метода",
+            "Тело запроса",
+            "libre",
+            "ddns",
+            "DDNS",
+            "Загружена конфигурация",
+            "Interval",
+            "[Server]",
+            "Proguard start",
+            "UART",
+        ]
+
+        return isSpamKeywords.some(keyword => msg.includes(keyword));
+    }
+
+    async handleSyslogMessage(now, host, msg) {
+        // Motion detection: start
+        if (msg.includes("EVENT: Detected motion")) {
+            await API.motionDetection({ date: now, ip: host, motionActive: true });
+            await mdTimer(host, 5000);
+        }
+
+        // Call to apartment
+        if (msg.includes("Calling to")) {
+            const match = msg.match(/^Calling to (\d+)(?: house (\d+))? flat/);
+            if (match) {
+                const house = match[2] === undefined ? 0 : match[1]; // house prefix or 0
+                const flat = house > 0 ? match[2] : match[1]; // flat number from first or second position
+
+                gateRabbits[host] = {
+                    ip: host,
+                    prefix: parseInt(house),
+                    apartmentNumber: parseInt(flat),
+                };
+            }
+        }
+
+        // Incoming DTMF for white rabbit: sending rabbit gate update
+        if (msg.includes("Open main door by DTMF")) {
+            if (gateRabbits[host]) {
+                const { ip, prefix, apartmentNumber } = gateRabbits[host];
+                await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
+            }
+        }
+
+        // Opening door by RFID key
+        if (/^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)) {
+            const rfid = msg.split("RFID")[1].split(",")[0].trim();
+            await API.openDoor({ date: now, ip: host, detail: rfid, by: "rfid" });
+        }
+
+        // Opening door by personal code
+        if (msg.includes("Opening door by code")) {
+            const code = parseInt(msg.split("code")[1].split(",")[0]);
+            await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
+        }
+
+        // Opening door by button pressed
+        if (msg.includes("Main door button press")) {
+            await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
+        }
+
+        // All calls are done
+        if (msg.includes("All calls are done")) {
+            await API.callFinished({ date: now, ip: host });
+        }
+    }
+
+}
+
+/** TODO:
+ *      - add "qtech debug server"
+ *      - check this feature
+ */
+
 const startDebugServer = (port) => {
-    console.log("DEBUG || start qt tedug server")
-    // move qtech debug service here
+    const socket = net.createServer((socket) => {
+        socket.on("data", async (data) => {
+            const msg = data.toString();
+            const host = socket.remoteAddress.split('f:')[1];
+
+            // Handle SIP call completion for Qtech
+            if (msg.includes("OnFinishedCall")) {
+                callDoneFlow[host] = {...callDoneFlow[host], sipDone: true};
+                await checkCallDone(host);
+            }
+
+            // Handle CMS call completion for Qtech
+            if (msg.includes("Exit Get Adapter Status Thread!")) {
+                callDoneFlow[host] = {...callDoneFlow[host], cmsDone: true};
+                await checkCallDone(host);
+            }
+        });
+    });
+
+    socket.listen(port , undefined, () => {
+        console.log(`QTECH debug server running on TCP port ${port}`);
+    });
 }
 
 // Check command-line parameter to start syslog service
@@ -221,8 +441,9 @@ switch (serviceParam){
         bewardService.createSyslogServer();
         break;
     case "beward_ds":
-        // Running bewardService
-        console.log(`${serviceParam.toUpperCase()} syslog server running on port`)
+        const bewardDSConfig = hw[serviceParam];
+        const bewardServiceDS = new BewardServiceDS(bewardDSConfig);
+        bewardServiceDS.createSyslogServer();
         break;
     case "qtech":
         const qtechConfig = hw[serviceParam];
