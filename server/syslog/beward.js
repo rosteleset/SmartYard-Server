@@ -4,7 +4,7 @@ const { hw, topology } = require("./config.json");
 const board = hw[hwVer];
 const { getTimestamp } = require("./utils/getTimestamp");
 const { urlParser } = require("./utils/urlParser");
-const { syslogParser } = require("./utils/syslogParser");
+const { parseSyslogMessage } = require("./utils/syslogParser");
 const { isIpAddress } = require("./utils/isIpAddress");
 const API = require("./utils/api");
 const { port } = urlParser(board);
@@ -14,7 +14,7 @@ const gateRabbits = [];
 syslog.on("message", async ({date, host, message}) => {
     // server timestamp
     const now = getTimestamp(date);
-    let { host: hostname, message: bwMsg} = syslogParser(message);
+    let { host: hostname, message: bwMsg} = parseSyslogMessage(message);
 
     /*
     TODO:
