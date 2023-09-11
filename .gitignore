@@ -86,6 +86,7 @@ __pycache__
 /server/config/config.yml
 /server/vendor
 /server/syslog/config.json
+/server/syslog/config_v2.json
 /.stylelintrc.json
 package.json
 package-lock.json
