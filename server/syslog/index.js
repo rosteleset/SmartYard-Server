@@ -1,5 +1,5 @@
 const {hw, topology} = require("./config_v2.json");
-const {BewardService, BewardServiceDS} = require("./services")
+const {BewardService, BewardServiceDS, QtechService} = require("./services")
 const { SERVICE_BEWARD,
         SERVICE_BEWARD_DS,
         SERVICE_QTECH
@@ -11,7 +11,8 @@ const callDoneFlow = {};// qtech syslog service use only
 const serviceParam = process.argv[2]?.toLowerCase();
 
 if (!serviceParam) {
-    console.error('Please set param to start syslog service. Example: "node index.js beward"')
+    console.error('Please set param to start syslog service. Example: "node index.js beward"');
+    process.exit(1)
 }
 
 switch (serviceParam){
@@ -30,11 +31,11 @@ switch (serviceParam){
         bewardServiceDS.createSyslogServer();
         break;  // SERVICE_BEWARD_DS: done!
     case SERVICE_QTECH:
-        const qtechDSConfig = hw[SERVICE_BEWARD_DS];
-        const qtechService = new BewardServiceDS(qtechDSConfig);
+        const qtechDSConfig = hw[SERVICE_QTECH];
+        const qtechService = new QtechService(qtechDSConfig);
         qtechService.createSyslogServer();
         qtechService.startDebugServer()
-        break;  // SERVICE_BEWARD_DS: done!
+        break;  // SERVICE_QTECH: test!
     default:
         console.error('Invalid service parameter, please use "beward", "qtech", "is" ... on see documentation' )
 }
