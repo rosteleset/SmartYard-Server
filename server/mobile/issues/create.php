@@ -26,32 +26,20 @@
  * 417 ожидание не удалось
  */
 
-    function create_issue($subject, $description) {
-        $tt = @loadBackend("tt");
-        $workflow = $config["mobile"]["tt_workflow"];
-        $user = $config["mobile"]["tt_user"];
-        $project = $config["mobile"]["tt_project"];
-        $catalog = "Пустышка";
-        
-        if (!$tt || !$workflow || !$user || !$project) return false;
-
-        $issue = [
-            "issue" => [
-                "workflow" => $workflow,
-                "catalog" => $catalog,
-                "subject" => $subject,
-                "description" => $description,
-                "assigned" => [$user],
-                "watchers" => [],
-                "tags" => [],
-                "project" => $project
-            ]
-            ];
-        return $tt->loadWorkflow($workflow)->createIssue($issue);
+function createIssue($adapter, $phone, $data) {
+    $description = $data['issue']['description'];
+    if (strpos($description, 'Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры') !== false) {
+        return $adapter->createIssueForDVRFragment($phone, $description, null, null, null, null);
     }
+}
 
     auth();
-    response();
+    $adapter = loadBackend('issue_adapter');
+    $result = createIssue($adapter, $subscriber['mobile'], $postdata);
+    if ($result !== false)
+        response(200, $result);
+    else
+        response(417, false, false, "Не удалось создать заявку.");
 
 /*
     jira_require();
