@@ -1,6 +1,5 @@
 const {hw, topology} = require("./config_v2.json");
-const {BewardService} = require("./services/BewardService")
-const {BewardServiceDS} = require ("./services/BewardServiceDS")
+const {BewardService, BewardServiceDS} = require("./services")
 const { SERVICE_BEWARD,
         SERVICE_BEWARD_DS,
         SERVICE_QTECH
@@ -24,7 +23,6 @@ switch (serviceParam){
             const bewardService = new BewardService(bewardConfig);
             bewardService.createSyslogServer();
         }
-
         break; // SERVICE_BEWARD: done!
     case SERVICE_BEWARD_DS:
         const bewardDSConfig = hw[SERVICE_BEWARD_DS];
@@ -33,8 +31,9 @@ switch (serviceParam){
         break;  // SERVICE_BEWARD_DS: done!
     case SERVICE_QTECH:
         const qtechDSConfig = hw[SERVICE_BEWARD_DS];
-        const qtechServiceDS = new BewardServiceDS(qtechDSConfig);
-        qtechServiceDS.createSyslogServer();
+        const qtechService = new BewardServiceDS(qtechDSConfig);
+        qtechService.createSyslogServer();
+        qtechService.startDebugServer()
         break;  // SERVICE_BEWARD_DS: done!
     default:
         console.error('Invalid service parameter, please use "beward", "qtech", "is" ... on see documentation' )

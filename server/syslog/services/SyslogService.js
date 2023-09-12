@@ -70,4 +70,4 @@ class SyslogService {
         console.log("RUN handleSyslogMessage")
     }
 }
-module.exports = { SyslogService }
+module.exports = {SyslogService}

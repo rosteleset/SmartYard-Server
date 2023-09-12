@@ -2,7 +2,7 @@ const axios = require("axios");
 const https = require("https");
 const { getTimestamp } = require("./getTimestamp")
 const events = require("./events.json");
-const { api: { internal }, clickhouse} = require("../config.json")
+const { api: { internal }, clickhouse} = require("../config_v2.json")
 const agent = new https.Agent({ rejectUnauthorized: false });
 
 const internalAPI = axios.create({

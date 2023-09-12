@@ -4,9 +4,9 @@ const {SERVICE_BEWARD} = require("../constants");
 //const gateRabbits = [];
 
 class BewardService extends SyslogService {
-    gateRabbits = [];
     constructor(config) {
         super(SERVICE_BEWARD, config);
+        this.gateRabbits = [];
     }
 
     filterSpamMessages(msg) {
