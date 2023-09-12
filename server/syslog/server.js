@@ -11,15 +11,14 @@ const {
     isIpAddress
 } = require("./utils")
 
-// service names:
+// services names:
 const SERVICE_BEWARD = "beward";
 const SERVICE_BEWARD_DS = "beward_ds";
 const SERVICE_QTECH = "qtech";
 const SERVICE_IS = "is";
 const SERVICE_SPUTNIK = "sputnik";
 const SERVICE_AKUVOX = "akuvox";
-const SERVICE_RUBETEK = "rebetek";
-
+const SERVICE_RUBETEK = "rubetek";
 
 const gateRabbits = [];
 const callDoneFlow = {};// qtech syslog service use only
@@ -62,13 +61,11 @@ class SyslogService {
         await API.sendLog({ date: now, ip: host, unit: this.unit, msg });
     }
 
-
     createSyslogServer() {
         const syslog = new syslogServer();
 
         syslog.on("message", async ({ date, host, message }) => {
-            // Get server timestamp
-            const now = getTimestamp(date);
+            const now = getTimestamp(date);// Get server timestamp
             let { host: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
 
             //  Check hostname from syslog message body
@@ -98,7 +95,7 @@ class SyslogService {
         });
     }
 
-    handleSyslogMessage(now, host, bwMsg) {
+    handleSyslogMessage(now, host, msg) {
     }
 }
 
@@ -416,6 +413,83 @@ class ISService extends SyslogService {
             await API.callFinished({ date: now, ip: host });
         }
     }
+}
+
+class AkuvoxService extends SyslogService {
+    constructor(config) {
+        super(SERVICE_AKUVOX, config);
+    }
+
+    filterSpamMessages(msg) {
+        const akuvoxSpamKeywords = [
+            "Couldn't resolve host name",
+            "AKUVOX DCLIENT",
+            "Autoprovision",
+            "RFID szBuf",
+            "lighttpd",
+            "api.fcgi",
+            "fcgiserver",
+            "sipmain",
+            "RFID_TYPE_WIEGAND",
+            "netconfig",
+            "Invalid SenderSSRC",
+            "Listen",
+            "Waiting",
+            "Sending",
+            "don't support play dtmf kecode",
+            "Upload Server is empty",
+            "spk not enable now!",
+        ]
+
+        return akuvoxSpamKeywords.some(keyword => msg.includes(keyword));
+    }
+
+    async handleSyslogMessage(now, host, msg) {
+        // Motion detection: start
+        if (msg.indexOf("Requst SnapShot") >= 0) {
+            await API.motionDetection({ date: now, ip: host, motionActive: true });
+            await mdTimer(host, 5000);
+        }
+
+        // Opening door by DTMF
+        if (msg.indexOf("DTMF_LOG:From") >= 0) {
+            const apartmentId = parseInt(msg.split(" ")[1].substring(1));
+            await API.setRabbitGates({ date: now, ip: host, apartmentId: apartmentId });
+        }
+
+        // Opening door by RFID key
+        if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) {
+            const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
+            if (status === "Successful") {
+                await API.openDoor({ date: now, ip: host, detail: '000000' + rfid, by: "rfid" });
+            }
+        }
+
+        // Opening door by button pressed
+        if (msg.indexOf("OPENDOOR_LOG:Type:INPUT") >= 0) {
+            await API.openDoor({ date: now, ip: host, door: 0, detail: "main", by: "button" });
+        }
+
+        // All calls are done
+        if (msg.indexOf("SIP_LOG:Call Failed") >= 0 || msg.indexOf("SIP_LOG:Call Finished") >= 0) {
+            const callId = parseInt(msg.split("=")[1]); // after power on starts from 200002 and increments
+            await API.callFinished({ date: now, ip: host, callId: callId});
+        }
+    }
+}
+
+class RubetekService extends SyslogService {
+    constructor(config) {
+        super(SERVICE_RUBETEK, config);
+    }
+
+    filterSpamMessages(message) {
+        return super.filterSpamMessages(message);
+    }
+
+    handleSyslogMessage(now, host, msg) {
+        super.handleSyslogMessage(now, host, msg);
+    }
 
 }
 
@@ -535,6 +609,7 @@ const serviceParam = process.argv[2]?.toLowerCase();
 
 switch (serviceParam){
     case SERVICE_BEWARD:
+        // TODO: add startupService wrapper per service
         const bewardConfig = hw[SERVICE_BEWARD];
         const bewardService = new BewardService(bewardConfig);
         bewardService.createSyslogServer();
@@ -561,11 +636,15 @@ switch (serviceParam){
         startHttpServer(sputnikConfig.port)
         break;
     case SERVICE_AKUVOX:
-        // Running akuvoxService
+        const akuvoxConfig = hw[SERVICE_AKUVOX];
+        const akuvoxService = new AkuvoxService(akuvoxConfig);
+        akuvoxService.createSyslogServer();
         break;
     case SERVICE_RUBETEK:
-        // Running rebetekService
+        const rubetekConfig = hw[SERVICE_RUBETEK];
+        const rubetekService = new RubetekService(rubetekConfig);
+        rubetekService.createSyslogServer();
         break;
     default:
-        console.error('Invalid service parameter, Please use "beward", "qtech", "is" ... on see documentation' )
+        console.error('Invalid service parameter, please use "beward", "qtech", "is" ... on see documentation' )
 }
