@@ -11,6 +11,16 @@ const {
     isIpAddress
 } = require("./utils")
 
+// service names:
+const SERVICE_BEWARD = "beward";
+const SERVICE_BEWARD_DS = "beward_ds";
+const SERVICE_QTECH = "qtech";
+const SERVICE_IS = "is";
+const SERVICE_SPUTNIK = "sputnik";
+const SERVICE_AKUVOX = "akuvox";
+const SERVICE_RUBETEK = "rebetek";
+
+
 const gateRabbits = [];
 const callDoneFlow = {};// qtech syslog service use only
 
@@ -94,7 +104,7 @@ class SyslogService {
 
 class BewardService extends SyslogService {
     constructor(config) {
-        super("beward", config);
+        super("SERVICE_BEWARD", config);
     }
 
     filterSpamMessages(msg) {
@@ -205,7 +215,7 @@ class BewardService extends SyslogService {
 class BewardServiceDS extends BewardService {
     constructor(config) {
         super(config);
-        this.unit = "beward_ds";
+        this.unit = SERVICE_BEWARD_DS;
     }
 
     /**
@@ -226,7 +236,7 @@ class BewardServiceDS extends BewardService {
 // TODO: check feature
 class QtechService extends SyslogService {
     constructor(config) {
-        super("qtech", config);
+        super(SERVICE_QTECH, config);
    }
 
     async handleSyslogMessage(now, host, msg) {
@@ -331,13 +341,13 @@ class QtechService extends SyslogService {
  *      -   check feature
  *      -   think about the class name? (IsService || IntersvjazService SokolService || FalconService)
  */
-class SokolService extends SyslogService {
+class ISService extends SyslogService {
     constructor(config) {
-        super("is", config);
+        super(SERVICE_IS, config);
     }
 
     filterSpamMessages(msg) {
-        const sokolSpamKeywords = [
+        const isSpamKeywords = [
             "STM32.DEBUG",
             "Вызов метода",
             "Тело запроса",
@@ -351,7 +361,7 @@ class SokolService extends SyslogService {
             "UART",
         ]
 
-        return sokolSpamKeywords.some(keyword => msg.includes(keyword));
+        return isSpamKeywords.some(keyword => msg.includes(keyword));
     }
 
     async handleSyslogMessage(now, host, msg) {
@@ -524,37 +534,37 @@ httpServer.listen(port, () => console.log(`SPUTNIK HTTP server running on port $
 const serviceParam = process.argv[2]?.toLowerCase();
 
 switch (serviceParam){
-    case "beward":
-        const bewardConfig = hw[serviceParam];
+    case SERVICE_BEWARD:
+        const bewardConfig = hw[SERVICE_BEWARD];
         const bewardService = new BewardService(bewardConfig);
         bewardService.createSyslogServer();
         break;
-    case "beward_ds":
-        const bewardDSConfig = hw[serviceParam];
+    case SERVICE_BEWARD_DS:
+        const bewardDSConfig = hw[SERVICE_BEWARD_DS];
         const bewardServiceDS = new BewardServiceDS(bewardDSConfig);
         bewardServiceDS.createSyslogServer();
         break;
-    case "qtech":
-        const qtechConfig = hw[serviceParam];
+    case SERVICE_QTECH:
+        const qtechConfig = hw[SERVICE_QTECH];
         const qtechService = new QtechService(qtechConfig);
         qtechService.createSyslogServer();
         //Running debug server
         startDebugServer(qtechConfig.port)
         break;
-    case "is":
-        const sokolConfig = hw[serviceParam];
-        const sokolService = new SokolService(sokolConfig);
-        sokolService.createSyslogServer();
+    case SERVICE_IS:
+        const islConfig = hw[SERVICE_IS];
+        const islService = new ISService(islConfig);
+        islService.createSyslogServer();
         break;
-    case "akuvox":
+    case SERVICE_SPUTNIK:
+        const sputnikConfig = hw[SERVICE_SPUTNIK];
+        startHttpServer(sputnikConfig.port)
+        break;
+    case SERVICE_AKUVOX:
         // Running akuvoxService
         break;
-    case "rebetek":
+    case SERVICE_RUBETEK:
         // Running rebetekService
-        break;
-    case "sputnik":
-        const sputnikConfig = hw[serviceParam];
-        startHttpServer(sputnikConfig.port)
         break;
     default:
         console.error('Invalid service parameter, Please use "beward", "qtech", "is" ... on see documentation' )
