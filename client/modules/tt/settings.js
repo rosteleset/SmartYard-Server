@@ -3200,6 +3200,10 @@
         done(() => {
             let fields = [
                 {
+                    id: "catalog",
+                    text: i18n("tt.catalog"),
+                },
+                {
                     id: "subject",
                     text: i18n("tt.subject"),
                 },
