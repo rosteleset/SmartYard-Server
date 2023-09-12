@@ -3,11 +3,13 @@ const net= require("net");
 const http = require("http");
 const url = require("url");
 const { hw, topology } = require("./config_v2.json");
-const { getTimestamp } = require("./utils/getTimestamp");
-const API = require("./utils/api");
-const { parseSyslogMessage } = require("./utils/syslogParser");
-const { isIpAddress } = require("./utils/isIpAddress");
-const { mdTimer } = require("./utils/mdTimer");
+const {
+    API,
+    mdTimer,
+    getTimestamp,
+    parseSyslogMessage,
+    isIpAddress
+} = require("./utils")
 
 const gateRabbits = [];
 const callDoneFlow = {};// qtech syslog service use only
