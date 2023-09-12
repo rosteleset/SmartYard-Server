@@ -11,6 +11,8 @@ const {
     isIpAddress
 } = require("./utils")
 
+//const {NonameService} = require("./NonameService")
+
 // services names:
 const SERVICE_BEWARD = "beward";
 const SERVICE_BEWARD_DS = "beward_ds";
@@ -19,6 +21,7 @@ const SERVICE_IS = "is";
 const SERVICE_SPUTNIK = "sputnik";
 const SERVICE_AKUVOX = "akuvox";
 const SERVICE_RUBETEK = "rubetek";
+const SERVICE_NONAME = "noname"
 
 const gateRabbits = [];
 const callDoneFlow = {};// qtech syslog service use only
@@ -478,20 +481,105 @@ class AkuvoxService extends SyslogService {
     }
 }
 
+// TODO: in work
 class RubetekService extends SyslogService {
     constructor(config) {
         super(SERVICE_RUBETEK, config);
     }
 
     filterSpamMessages(message) {
+        const rubetekSpamKeywords = [
+
+        ];
         return super.filterSpamMessages(message);
     }
 
-    handleSyslogMessage(now, host, msg) {
-        super.handleSyslogMessage(now, host, msg);
+    async handleSyslogMessage(now, host, msg) {
+        /** TODO:
+         *      - test feature, parse source rubetek syslog msg
+         */
+
+        // Motion detection (face detection): start
+        if (msgParts[2] === 'The face was detected and sent to the server') {
+            await API.motionDetection({ date: now, ip: host, motionActive: true });
+            await mdTimer(host, 5000);
+        }
+
+        // Call start
+        // TODO: unstable, wait for fix
+        if (msgParts[5] === 'Dial to apartment') {
+            const number = msgParts[4];
+
+            // Call in gate mode with prefix: potential white rabbit
+            if (msgParts[3] === 'false' && number.length > 4 && number.length < 10) {
+                gateRabbits[host] = {
+                    ip: host,
+                    prefix: parseInt(number.substring(0, 4)),
+                    apartmentNumber: parseInt(number.substring(4)),
+                };
+            }
+        }
+
+        // TODO: Opening door by DTMF or CMS handset
+
+        // Incoming DTMF for white rabbit: sending rabbit gate update
+        if (msgParts[4] === 'Open door by DTMF') {
+            if (gateRabbits[host]) {
+                const { ip, prefix, apartmentNumber } = gateRabbits[host];
+                await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
+            }
+        }
+
+        // Opening door by RFID key
+        if (msgParts[3] === 'Access allowed by public RFID') {
+            let door = 0;
+            const rfid = msgParts[2].padStart(14, 0);
+
+            if (rfid[6] === '0' && rfid[7] === '0') {
+                door = 1;
+            }
+
+            await API.openDoor({ date: now, ip: host, door: door, detail: rfid, by: "rfid" });
+        }
+
+        // Opening door by personal code
+        if (msgParts[4] === 'Access allowed by apartment code') {
+            const code = parseInt(msgParts[2]);
+            await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
+        }
+
+        // Opening door by button pressed
+        if (msgParts[3] === 'Exit button pressed') {
+            let door = 0;
+            let detail = "main";
+
+            switch (msgParts[2]) {
+                case "Input B":
+                    door = 1;
+                    detail = "second";
+                    break;
+                case "Input C":
+                    door = 2;
+                    detail = "third";
+                    break;
+            }
+
+            await API.openDoor({ date: now, ip: host, door: door, detail: detail, by: "button" });
+        }
+
+        // All calls are done
+        if (true) {
+
+        }
     }
 
 }
+
+//class NonameService extends SyslogService {
+//    constructor(config) {
+//        super(SERVICE_NONAME, config);
+//    }
+//}
 
 /** TODO:
  *      - add "qtech debug server"
@@ -607,44 +695,50 @@ httpServer.listen(port, () => console.log(`SPUTNIK HTTP server running on port $
 // Check command-line parameter to start syslog service
 const serviceParam = process.argv[2]?.toLowerCase();
 
+// TODO: add startupService wrapper per service
 switch (serviceParam){
     case SERVICE_BEWARD:
-        // TODO: add startupService wrapper per service
         const bewardConfig = hw[SERVICE_BEWARD];
         const bewardService = new BewardService(bewardConfig);
         bewardService.createSyslogServer();
-        break;
+        break; // SERVICE_BEWARD: done!
     case SERVICE_BEWARD_DS:
         const bewardDSConfig = hw[SERVICE_BEWARD_DS];
         const bewardServiceDS = new BewardServiceDS(bewardDSConfig);
         bewardServiceDS.createSyslogServer();
-        break;
+        break;  // SERVICE_BEWARD_DS: done!
     case SERVICE_QTECH:
         const qtechConfig = hw[SERVICE_QTECH];
         const qtechService = new QtechService(qtechConfig);
         qtechService.createSyslogServer();
         //Running debug server
         startDebugServer(qtechConfig.port)
-        break;
-    case SERVICE_IS:
+        break; // SERVICE_QTECH: test
+    case SERVICE_IS:    // Tests
         const islConfig = hw[SERVICE_IS];
         const islService = new ISService(islConfig);
         islService.createSyslogServer();
-        break;
+        break; // SERVICE_IS: test
     case SERVICE_SPUTNIK:
         const sputnikConfig = hw[SERVICE_SPUTNIK];
         startHttpServer(sputnikConfig.port)
-        break;
+        break;// SERVICE_SPUTNIK: test
     case SERVICE_AKUVOX:
         const akuvoxConfig = hw[SERVICE_AKUVOX];
         const akuvoxService = new AkuvoxService(akuvoxConfig);
         akuvoxService.createSyslogServer();
-        break;
+        break; // SERVICE_AKUVOX: test
     case SERVICE_RUBETEK:
         const rubetekConfig = hw[SERVICE_RUBETEK];
         const rubetekService = new RubetekService(rubetekConfig);
         rubetekService.createSyslogServer();
-        break;
+        break; // SERVICE_RUBETEK: test//
+    case SERVICE_NONAME:
+        const nonameConfig = hw[SERVICE_NONAME];
+        console.log(nonameConfig)
+        const nonameService = new NonameService(nonameConfig);
+        nonameService.createSyslogServer();
+        break; // SERVICE_NONAME: test
     default:
         console.error('Invalid service parameter, please use "beward", "qtech", "is" ... on see documentation' )
 }
