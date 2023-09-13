@@ -9,7 +9,7 @@ const mdStop = async (host) => {
     delete mdStorage[host];
 }
 
-const mdTimer = (host, delay) => {
+const mdTimer = (host, delay = 5000) => {
     if (mdStorage[host]) {
         clearTimeout(mdStorage[host]);
     }
