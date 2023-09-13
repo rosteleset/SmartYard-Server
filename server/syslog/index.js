@@ -1,8 +1,9 @@
-const {hw, topology} = require("./config_v2.json");
-const {BewardService, BewardServiceDS, QtechService} = require("./services")
+const { hw } = require("./config_v2.json");
+const { BewardService, BewardServiceDS, QtechService, AkuvoxService } = require("./services")
 const { SERVICE_BEWARD,
         SERVICE_BEWARD_DS,
-        SERVICE_QTECH
+        SERVICE_QTECH,
+        SERVICE_AKUVOX
         } = require("./constants")
 
 const gateRabbits = [];
@@ -37,6 +38,15 @@ switch (serviceParam){
         // Use to handle call completion events
         qtechService.startDebugServer()
         break;  // SERVICE_QTECH: need tests!
+    case SERVICE_AKUVOX:
+        const akuvoxConfig = hw[SERVICE_AKUVOX];
+        if (!akuvoxConfig) {
+            console.error(`Unit: ${serviceParam} not defined in config file`)
+        } else{
+            const akuvoxService = new AkuvoxService(akuvoxConfig);
+            akuvoxService.createSyslogServer();
+        }
+        break; // SERVICE_BEWARD: done!
     default:
         console.error('Invalid service parameter, please use "beward", "qtech", "is" ... on see documentation' )
 }
