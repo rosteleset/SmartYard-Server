@@ -1,7 +1,6 @@
+const { BewardService } = require("./BewardService");
 const { API} = require("../utils");
 const { SERVICE_BEWARD_DS } = require("../constants");
-const { BewardService } = require("./index");
-const gateRabbits = [];
 
 class BewardServiceDS extends BewardService {
     constructor(config) {
@@ -17,7 +16,7 @@ class BewardServiceDS extends BewardService {
      */
     async handleSyslogMessage(now, host, msg) {
         // SIP call done (for DS06*)
-        if (/^SIP call \d+ is DISCONNECTED.*$/.test(msg) || /^EVENT:\d+:SIP call \d+ is DISCONNECTED.*$/.test(msg)) {
+        if (/^SIP call \d+ _is DISCONNECTED.*$/.test(msg) || /^EVENT:\d+:SIP call \d+ _is DISCONNECTED.*$/.test(msg)) {
             await API.callFinished({ date: now, ip: host });
         }
     }

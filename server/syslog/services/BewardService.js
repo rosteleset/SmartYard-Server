@@ -1,4 +1,4 @@
-const { SyslogService } = require("./index")
+const { SyslogService } = require("./SyslogService")
 const { API } = require("../utils");
 const { SERVICE_BEWARD } = require("../constants");
 

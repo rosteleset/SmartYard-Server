@@ -1,4 +1,4 @@
-const { SyslogService } = require("./index")
+const { SyslogService } = require("./SyslogService")
 const { SERVICE_QTECH } = require("../constants");
 const { API, getTimestamp, mdTimer } = require("../utils");
 const net = require("net");
@@ -22,7 +22,7 @@ class QtechService extends SyslogService {
         if (qtMsgParts[1] === "Send Photo") {
             console.log("DEBUG || Motion detect handler || "+msg);
             await API.motionDetection({ date: now, ip: host, motionActive: true });
-            await mdTimer(host, 5000);
+            await mdTimer(host);
         }
 
         // TODO: check!

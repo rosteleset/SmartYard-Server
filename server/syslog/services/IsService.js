@@ -1,10 +1,11 @@
+const { SyslogService } = require("./SyslogService");
 const { API, mdTimer } = require("../utils");
-const { SyslogService } = require("./index");
 const { SERVICE_IS } = require("../constants");
 
 class IsService extends SyslogService {
     constructor(config) {
         super(SERVICE_IS, config);
+        this.gateRabbits = [];
     }
 
     filterSpamMessages(msg) {
@@ -29,7 +30,7 @@ class IsService extends SyslogService {
         // Motion detection: start
         if (msg.includes("EVENT: Detected motion")) {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
-            await mdTimer(host, 5000);
+            await mdTimer(host);
         }
 
         // Call to apartment
@@ -39,7 +40,7 @@ class IsService extends SyslogService {
                 const house = match[2] === undefined ? 0 : match[1]; // house prefix or 0
                 const flat = house > 0 ? match[2] : match[1]; // flat number from first or second position
 
-                gateRabbits[host] = {
+                (this.gateRabbits)[host] = {
                     ip: host,
                     prefix: parseInt(house),
                     apartmentNumber: parseInt(flat),
@@ -49,7 +50,7 @@ class IsService extends SyslogService {
 
         // Incoming DTMF for white rabbit: sending rabbit gate update
         if (msg.includes("Open main door by DTMF")) {
-            if (gateRabbits[host]) {
+            if ((this.gateRabbits)[host]) {
                 const { ip, prefix, apartmentNumber } = gateRabbits[host];
                 await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
             }
@@ -78,3 +79,5 @@ class IsService extends SyslogService {
         }
     }
 }
+
+module.exports = { IsService }

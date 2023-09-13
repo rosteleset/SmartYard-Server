@@ -1,7 +1,7 @@
-const { SyslogService } = require("./index")
+const { SyslogService } = require("./SyslogService")
 const { API } = require("../utils");
 const { SERVICE_AKUVOX } = require("../constants");
-const {mdTimer} = require("../utils/mdTimer");
+const { mdTimer} = require("../utils/mdTimer");
 
 class AkuvoxService extends SyslogService {
     constructor(config) {
@@ -36,7 +36,7 @@ class AkuvoxService extends SyslogService {
         //  Motion detection: start
         if (msg.indexOf("Requst SnapShot") >= 0) {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
-            await mdTimer(host, 5000);
+            await mdTimer(host);
         }
 
         //  Opening door by DTMF

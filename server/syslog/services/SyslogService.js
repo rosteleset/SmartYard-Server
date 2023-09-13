@@ -1,4 +1,4 @@
-const { hw, topology } = require("../config_v2.json");
+const { hw, topology } = require("../config.json");
 const { API, getTimestamp, parseSyslogMessage, isIpAddress } = require("../utils");
 const syslogServer = require("syslog-server");
 class SyslogService {
