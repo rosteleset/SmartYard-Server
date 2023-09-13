@@ -19,45 +19,40 @@ if (!serviceParam) {
 }
 
 if (!hw[serviceParam]) {
-    console.error(`Unit: ${serviceParam} not defined in config file`)
+    console.error(`Unit: ${serviceParam} not defined in config file: config.json`)
 }
+
+const serviceConfig = hw[serviceParam];
 
 switch (serviceParam){
     case SERVICE_BEWARD:
-        const bewardConfig = hw[SERVICE_BEWARD];
-        const bewardService = new BewardService(bewardConfig);
+        const bewardService = new BewardService(serviceConfig);
         bewardService.createSyslogServer();
         break; // SERVICE_BEWARD: done!
 
     case SERVICE_BEWARD_DS:
-        const bewardDSConfig = hw[SERVICE_BEWARD_DS];
-        const bewardServiceDS = new BewardServiceDS(bewardDSConfig);
+        const bewardServiceDS = new BewardServiceDS(serviceConfig);
         bewardServiceDS.createSyslogServer();
         break;  // SERVICE_BEWARD_DS: done!
 
     case SERVICE_QTECH:
-        const qtechDSConfig = hw[SERVICE_QTECH];
-        const qtechService = new QtechService(qtechDSConfig);
+        const qtechService = new QtechService(serviceConfig);
         qtechService.createSyslogServer();
-        // Use to handle call completion events
-        qtechService.startDebugServer()
+        qtechService.startDebugServer(); // Use to handle call completion events
         break;  // SERVICE_QTECH: need tests!
 
     case SERVICE_AKUVOX:
-        const akuvoxConfig = hw[SERVICE_AKUVOX];
-        const akuvoxService = new AkuvoxService(akuvoxConfig);
+        const akuvoxService = new AkuvoxService(serviceConfig);
         akuvoxService.createSyslogServer();
         break; // SERVICE_BEWARD: done!
 
     case SERVICE_IS:
-        const isConfig = hw[SERVICE_IS];
-        const isService = new IsService(isConfig);
+        const isService = new IsService(serviceConfig);
         isService.createSyslogServer();
         break; // SERVICE_BEWARD: done!
 
     case SERVICE_RUBETEK:
-        const rubetekConfig = hw[SERVICE_IS];
-        const rubetekService = new RubetekService(rubetekConfig);
+        const rubetekService = new RubetekService(serviceConfig);
         rubetekService.createSyslogServer();
         break; // SERVICE_BEWARD: done!
 
