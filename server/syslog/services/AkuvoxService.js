@@ -1,4 +1,4 @@
-const { SyslogService } = require("./SyslogService")
+const { SyslogService } = require("./index")
 const { API } = require("../utils");
 const { SERVICE_AKUVOX } = require("../constants");
 const {mdTimer} = require("../utils/mdTimer");
@@ -33,21 +33,21 @@ class AkuvoxService extends SyslogService {
     }
 
     async handleSyslogMessage(now, host, msg) {
-        // Motion detection: start
+        //  Motion detection: start
         if (msg.indexOf("Requst SnapShot") >= 0) {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
             await mdTimer(host, 5000);
         }
 
-        // Opening door by DTMF
+        //  Opening door by DTMF
         if (msg.indexOf("DTMF_LOG:From") >= 0) {
             const apartmentId = parseInt(msg.split(" ")[1].substring(1));
-            await API.setRabbitGates({ date: now, ip: host, apartmentId: apartmentId });
+            await API.setRabbitGates({ date: now, ip: host, apartmentId });
         }
 
         // Opening door by RFID key
         if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) {
-            const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
+            const [ _, rfid, status ] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
             if (status === "Successful") {
                 await API.openDoor({ date: now, ip: host, detail: '000000' + rfid, by: "rfid" });
             }

@@ -1,6 +1,6 @@
-const {SyslogService} = require("./SyslogService")
-const {SERVICE_QTECH} = require("../constants");
-const {API, getTimestamp, mdTimer} = require("../utils");
+const { SyslogService } = require("./index")
+const { SERVICE_QTECH } = require("../constants");
+const { API, getTimestamp, mdTimer } = require("../utils");
 const net = require("net");
 
 // TODO: check feature

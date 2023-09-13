@@ -1,6 +1,6 @@
-const {API} = require("../utils");
-const {SERVICE_BEWARD_DS} = require("../constants");
-const {BewardService} = require("./BewardService");
+const { API} = require("../utils");
+const { SERVICE_BEWARD_DS } = require("../constants");
+const { BewardService } = require("./index");
 const gateRabbits = [];
 
 class BewardServiceDS extends BewardService {
@@ -10,7 +10,6 @@ class BewardServiceDS extends BewardService {
     }
 
     /**
-     *
      * @param now
      * @param host
      * @param msg
