@@ -2,7 +2,7 @@ const { API, mdTimer } = require("../utils");
 const { SyslogService } = require("./index");
 const { SERVICE_IS } = require("../constants");
 
-class ISService extends SyslogService {
+class IsService extends SyslogService {
     constructor(config) {
         super(SERVICE_IS, config);
     }

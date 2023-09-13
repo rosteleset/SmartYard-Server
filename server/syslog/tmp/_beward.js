@@ -1,12 +1,12 @@
 const syslog = new (require("syslog-server"))();
 const hwVer = process.argv.length === 3 && process.argv[2].split("=")[0] === '--config' ? process.argv[2].split("=")[1] : null;
-const { hw, topology } = require("./config.json");
+const { hw, topology } = require("../config.json");
 const board = hw[hwVer];
-const { getTimestamp } = require("./utils/getTimestamp");
-const { urlParser } = require("./utils/urlParser");
-const { parseSyslogMessage } = require("./utils/syslogParser");
-const { isIpAddress } = require("./utils/isIpAddress");
-const API = require("./utils/api");
+const { getTimestamp } = require("../utils/getTimestamp");
+const { urlParser } = require("../utils/urlParser");
+const { parseSyslogMessage } = require("../utils/syslogParser");
+const { isIpAddress } = require("../utils/isIpAddress");
+const API = require("../utils/api");
 const { port } = urlParser(board);
 
 const gateRabbits = [];
@@ -19,9 +19,9 @@ syslog.on("message", async ({date, host, message}) => {
     /*
     TODO:
         - add checking for allowed subnets in config section topology
-    If the intercom is connected behind NAT - enable nat: true  in config
+    If the intercom _is connected behind NAT - enable nat: true  in config
     Check ip address from syslog message body, if not valid use src ip address
-    <13>1 2023-08-11T13:27:01.000000+03:00 192.168.13.137 DKS15122_rev5.2.6.8.3 1868823272A0 - - RFID 0000003375EACE is not present in database
+    <13>1 2023-08-11T13:27:01.000000+03:00 192.168.13.137 DKS15122_rev5.2.6.8.3 1868823272A0 - - RFID 0000003375EACE _is not present in database
     */
     if (topology?.nat && isIpAddress(hostname)) host = hostname
 
@@ -132,7 +132,7 @@ syslog.on("message", async ({date, host, message}) => {
     }
 
     // SIP call done (for DS06*)
-    if (/^SIP call \d+ is DISCONNECTED.*$/.test(bwMsg) || /^EVENT:\d+:SIP call \d+ is DISCONNECTED.*$/.test(bwMsg)) {
+    if (/^SIP call \d+ _is DISCONNECTED.*$/.test(bwMsg) || /^EVENT:\d+:SIP call \d+ _is DISCONNECTED.*$/.test(bwMsg)) {
         if (hwVer === "beward_ds") {
             await API.callFinished({ date: now, ip: host });
         }
@@ -143,4 +143,4 @@ syslog.on("error", (err) => {
     console.error(err.message);
 });
 
-syslog.start({port}).then(() => console.log(`${hwVer.toUpperCase()} syslog server running on port ${port} || NAT is ${topology?.nat || false}`));
+syslog.start({port}).then(() => console.log(`${hwVer.toUpperCase()} syslog server running on port ${port} || NAT _is ${topology?.nat || false}`));

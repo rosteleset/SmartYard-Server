@@ -1,10 +1,10 @@
 const syslog = new (require("syslog-server"))();
-const { hw: { is } } = require("./config.json");
-const { getTimestamp } = require("./utils/getTimestamp");
-const { urlParser } = require("./utils/urlParser");
-const API = require("./utils/api");
-const { mdTimer } = require("./utils/mdTimer");
-const { port } = urlParser(is);
+const { hw: { is: _is } } = require("../config.json");
+const { getTimestamp } = require("../utils/getTimestamp");
+const { urlParser } = require("../utils/urlParser");
+const API = require("../utils/api");
+const { mdTimer } = require("../utils/mdTimer");
+const { port } = urlParser(_is);
 
 const gateRabbits = [];
 

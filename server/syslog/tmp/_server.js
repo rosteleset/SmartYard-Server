@@ -2,14 +2,14 @@ const syslogServer = require("syslog-server");
 const net= require("net");
 const http = require("http");
 const url = require("url");
-const { hw, topology } = require("./config_v2.json");
+const { hw, topology } = require("../config.json");
 const {
     API,
     mdTimer,
     getTimestamp,
     parseSyslogMessage,
     isIpAddress
-} = require("./utils")
+} = require("../utils")
 
 //const {NonameService} = require("./NonameService")
 
@@ -17,7 +17,7 @@ const {
 const SERVICE_BEWARD = "beward";
 const SERVICE_BEWARD_DS = "beward_ds";
 const SERVICE_QTECH = "qtech";
-const SERVICE_IS = "is";
+const SERVICE_IS = "_is";
 const SERVICE_SPUTNIK = "sputnik";
 const SERVICE_AKUVOX = "akuvox";
 const SERVICE_RUBETEK = "rubetek";
@@ -94,11 +94,12 @@ class SyslogService {
         });
 
         syslog.start({ port: this.config.port }).then(() => {
-            console.log(`${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port} || NAT is ${topology?.nat || false}`);
+            console.log(`${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port} || NAT _is ${topology?.nat || false}`);
         });
     }
 
     handleSyslogMessage(now, host, msg) {
+        console.log("DEBUG || createSyslogServer || handleSyslogMessage || ")
     }
 }
 
@@ -141,7 +142,9 @@ class BewardService extends SyslogService {
     }
 
     async handleSyslogMessage(now, host, msg) {
+        console.log("DEBUG || BewardService || run handleSyslogMessage")
         // Motion detection start
+        console.log("DEBUG || BewardService || run handleSyslogMessage || motionDetection")
         if (msg.indexOf("SS_MAINAPI_ReportAlarmHappen") >= 0) {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
         }
@@ -227,7 +230,7 @@ class BewardServiceDS extends BewardService {
      */
     async handleSyslogMessage(now, host, msg) {
         // SIP call done (for DS06*)
-        if (/^SIP call \d+ is DISCONNECTED.*$/.test(msg) || /^EVENT:\d+:SIP call \d+ is DISCONNECTED.*$/.test(msg)) {
+        if (/^SIP call \d+ _is DISCONNECTED.*$/.test(msg) || /^EVENT:\d+:SIP call \d+ _is DISCONNECTED.*$/.test(msg)) {
             await API.callFinished({ date: now, ip: host });
         }
     }
@@ -440,7 +443,7 @@ class AkuvoxService extends SyslogService {
             "Waiting",
             "Sending",
             "don't support play dtmf kecode",
-            "Upload Server is empty",
+            "Upload Server _is empty",
             "spk not enable now!",
         ]
 
@@ -740,5 +743,5 @@ switch (serviceParam){
         nonameService.createSyslogServer();
         break; // SERVICE_NONAME: test
     default:
-        console.error('Invalid service parameter, please use "beward", "qtech", "is" ... on see documentation' )
+        console.error('Invalid service parameter, please use "beward", "qtech", "_is" ... on see documentation' )
 }
