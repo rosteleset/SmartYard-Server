@@ -1,7 +1,6 @@
-const {SyslogService} = require("./SyslogService")
-const {API} = require("../utils");
-const {SERVICE_BEWARD} = require("../constants");
-//const gateRabbits = [];
+const { SyslogService } = require("./SyslogService")
+const { API } = require("../utils");
+const { SERVICE_BEWARD } = require("../constants");
 
 class BewardService extends SyslogService {
     constructor(config) {
@@ -43,19 +42,8 @@ class BewardService extends SyslogService {
     }
 
     async handleSyslogMessage(now, host, msg) {
-        console.log(
-            "gateRabbits");
-        console.log(this.gateRabbits);
         // Motion detection start
         if (msg.indexOf("SS_MAINAPI_ReportAlarmHappen") >= 0) {
-
-            //test add gaterabbits
-            (this.gateRabbits)[host] = {
-                ip: host,
-                prefix: new Date().getTime(),
-                apartmentNumber: new Date().getTime()+1000,
-            };
-
             await API.motionDetection({ date: now, ip: host, motionActive: true });
         }
 

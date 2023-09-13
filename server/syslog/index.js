@@ -19,7 +19,7 @@ switch (serviceParam){
     case SERVICE_BEWARD:
         const bewardConfig = hw[SERVICE_BEWARD];
         if (!bewardConfig) {
-            console.error(`Config unit: ${serviceParam} not defined`)
+            console.error(`Unit: ${serviceParam} not defined in config file`)
         } else{
             const bewardService = new BewardService(bewardConfig);
             bewardService.createSyslogServer();
@@ -34,8 +34,9 @@ switch (serviceParam){
         const qtechDSConfig = hw[SERVICE_QTECH];
         const qtechService = new QtechService(qtechDSConfig);
         qtechService.createSyslogServer();
+        // Use to handle call completion events
         qtechService.startDebugServer()
-        break;  // SERVICE_QTECH: test!
+        break;  // SERVICE_QTECH: need tests!
     default:
         console.error('Invalid service parameter, please use "beward", "qtech", "is" ... on see documentation' )
 }

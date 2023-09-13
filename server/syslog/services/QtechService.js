@@ -3,16 +3,8 @@ const {SERVICE_QTECH} = require("../constants");
 const {API, getTimestamp, mdTimer} = require("../utils");
 const net = require("net");
 
-// const checkCallDone = async (host) => {
-//     if (callDoneFlow[host].sipDone && (callDoneFlow[host].cmsDone || !callDoneFlow[host].cmsEnabled)) {
-//         await API.callFinished({ date: getTimestamp(new Date()), ip: host });
-//         delete callDoneFlow[host];
-//     }
-// }
-
 // TODO: check feature
 class QtechService extends SyslogService {
-
     constructor(config) {
         super(SERVICE_QTECH, config);
         this.gateRabbits = [];
@@ -23,9 +15,7 @@ class QtechService extends SyslogService {
         // TODO:
         //      - check white rabbit feature, open by DTMF
         //      - modify sequence message handlers
-
         const qtMsgParts = msg.split(/EVENT:[0-9]+:/)[1].trim().split(/[,:]/).filter(Boolean).map(part => part.trim());
-
 
         // DONE:
         // Motion detect handler
@@ -129,7 +119,12 @@ class QtechService extends SyslogService {
             delete (this.callDoneFlow)[host];
         }
     }
-    startDebugServer()  {
+
+    /**
+     * SIP or CMS  call completion handler
+     * @returns {Promise<void>}
+     */
+    async startDebugServer()  {
         const socket = net.createServer((socket) => {
             socket.on("data", async (data) => {
                 const msg = data.toString();
@@ -150,10 +145,10 @@ class QtechService extends SyslogService {
         });
 
         socket.listen(this.config.port , undefined, () => {
-            console.log(`QTECH debug server running on TCP port ${this.config.port}`);
+            console.log(`${SERVICE_QTECH.toUpperCase()} debug server running on TCP port ${this.config.port}`);
         });
     }
 
 }
 
-module.exports = {QtechService}
+module.exports = { QtechService }
