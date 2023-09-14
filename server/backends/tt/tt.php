@@ -1684,6 +1684,10 @@
                 foreach ($tasks as $task) {
                     try {
                         $this->setCreds($task["uid"], $task["login"]);
+                        $journal = loadBackend("tt_journal");
+                        if ($journal) {
+                            $journal->setCreds($task["uid"], $task["login"]);
+                        }
                         $filter = @json_decode($this->getFilter($task["filter"]), true);
                         if ($filter) {
                             $skip = 0;
