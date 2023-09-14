@@ -1275,7 +1275,7 @@
              * @param $workflowAction
              * @return mixed
              */
-            abstract protected function modifyIssue($issue, $workflowAction = false);
+            abstract protected function modifyIssue($issue, $workflowAction = false, $apUpdated = true);
 
             /**
              * @param $issueId
