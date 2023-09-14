@@ -2970,19 +2970,11 @@
                         },
                     ];
 
-                    for (let i in modules.tt.meta.projects) {
-                        if (modules.tt.meta.projects[i].projectId == projectId) {
-                            for (let j in modules.tt.meta.projects[i].users) {
-                                for (let k in users) {
-                                    if (users[k].uid == modules.tt.meta.projects[i].users[j].uid) {
-                                        u.push({
-                                            id: users[k].uid,
-                                            text: $.trim((users[k].realName?users[k].realName:users[k].login) + " [" + users[k].login + "]"),
-                                        });
-                                    }
-                                }
-                            }
-                        }
+                    for (let k in users) {
+                        u.push({
+                            id: users[k].uid,
+                            text: $.trim((users[k].realName?users[k].realName:users[k].login) + " [" + users[k].login + "]"),
+                        });
                     }
 
                     return u;
