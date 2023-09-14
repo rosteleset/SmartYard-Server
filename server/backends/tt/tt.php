@@ -1684,6 +1684,7 @@
                 foreach ($tasks as $task) {
                     try {
                         $this->setCreds($task["uid"], $task["login"]);
+                        error_log($task["uid"] . " " . $task["login"]);
                         $filter = @json_decode($this->getFilter($task["filter"]), true);
                         if ($filter) {
                             $skip = 0;
