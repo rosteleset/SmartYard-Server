@@ -170,6 +170,12 @@
             "mqtt": "mqtt://127.0.0.1:1883",
             "username": "rbt",
             "password": "<!-- your mosquitto password here --!>"
+        },
+
+       "issue_adapter": {
+            "backend": "lanta",
+            "tt_url": "<!-- your tt url here --!>",
+            "tt_token": "<!-- your tt bearer token here --!>"
         }
     },
 
