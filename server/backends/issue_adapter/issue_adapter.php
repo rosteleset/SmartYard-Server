@@ -23,5 +23,7 @@ namespace backends\issue_adapter {
         abstract public function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services);
         abstract public function createIssueAvailableWithSharedServices($phone, $description, $name, $address, $lat, $lon, $services);
         abstract public function createIssueAvailableWithoutSharedServices($phone, $description, $name, $address, $lat, $lon, $services);
+
+        abstract public function listConnectIssues($phone);
     }
 }

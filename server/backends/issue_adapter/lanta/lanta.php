@@ -157,7 +157,7 @@ namespace backends\issue_adapter {
                     "assigned" => "office",
                     "_cf_phone" => $phone,
                     "description" => "ФИО: $name\n"
-                        . "Адрес, введенный пользователем: $address\n"
+                        . "Адрес, введённый пользователем: $address\n"
                         . "Подготовить конверт с qr-кодом. Далее заявку отправить курьеру."
                 ],
             ];
@@ -183,7 +183,7 @@ namespace backends\issue_adapter {
                     "assigned" => "callcenter",
                     "_cf_phone" => $phone,
                     "description" => "ФИО: $name\n"
-                        . "Адрес, введенный пользователем: $address\n"
+                        . "Адрес, введённый пользователем: $address\n"
                         . "Удаление адреса из приложения. Причина: $reason"
                 ],
             ];
@@ -209,7 +209,7 @@ namespace backends\issue_adapter {
                     "assigned" => "callcenter",
                     "_cf_phone" => $phone,
                     "description" => "ФИО: $name\n"
-                        . "Адрес, введенный пользователем: $address\n"
+                        . "Адрес, введённый пользователем: $address\n"
                         . "Список подключаемых услуг: $services"
                 ],
             ];
@@ -235,7 +235,7 @@ namespace backends\issue_adapter {
                     "assigned" => "callcenter",
                     "_cf_phone" => $phone,
                     "description" => "ФИО: $name\n"
-                        . "Адрес, введенный пользователем: $address\n"
+                        . "Адрес, введённый пользователем: $address\n"
                         . "Список подключаемых услуг: $services\n"
                         . "Требуется подтверждение адреса и подключение выбранных услуг."
                 ],
@@ -262,12 +262,53 @@ namespace backends\issue_adapter {
                     "assigned" => "callcenter",
                     "_cf_phone" => $phone,
                     "description" => "ФИО: $name\n"
-                        . "Адрес, введенный пользователем: $address\n"
+                        . "Адрес, введённый пользователем: $address\n"
                         . "Список подключаемых услуг: $services\n"
                         . "Выполнить звонок клиенту и осуществить консультацию."
                 ],
             ];
             return $this->createLantaIssue($lat, $lon, $content);
+        }
+
+        public function listConnectIssues($phone)
+        {
+            $content = [
+                "project" => "RTL",
+                "query" => [
+                    '$or' => [
+                        ["catalog" => ['$regex' => "^\\[9001\\].*"]],
+                        ["catalog" => ['$regex' => "^\\[9007\\].*"]],
+                    ],
+                    "_cf_phone" => $phone,
+                    "status" => "Открыта"
+                ],
+                "sortBy" => ["created" => 1],
+                "fields" => ["issueId", "description"]
+            ];
+
+            $result = json_decode(file_get_contents($this->tt_url . "/issues", false, stream_context_create([
+                "http" => [
+                    "method" => "POST",
+                    "header" => [
+                        "Content-Type: application/json; charset=utf-8",
+                        "Accept: application/json; charset=utf-8",
+                        "Authorization: Bearer $this->tt_token",
+                    ],
+                    "content" => json_encode($content),
+                ],
+            ])), true);
+
+            if (!isset($result['issues']['issues']))
+                return false;
+
+            $issues = [];
+            foreach ($result['issues']['issues'] as $issue) {
+                $description = $issue['description'];
+                $values = $this->extractAddress($description);
+                $issues[] = ['issueId' => $issue['issueId'], 'address' => $values !== false ? $values['address'] : "qwerty"];
+                //$issues[] = ['issueId' => $issue['issueId'], 'address' => $description];
+            }
+            return $issues;
         }
 
         private function extractCameraId($input_string) {
@@ -278,12 +319,20 @@ namespace backends\issue_adapter {
             return 0;
         }
 
+        private function extractAddress($input_string) {
+            $pattern = '/Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*(?:$|\n)/su';
+            if (preg_match($pattern, $input_string, $matches)) {
+                return $matches;
+            }
+            return false;
+        }
+
         private function extractValuesForConfirmAddress($input_string) {
             // old
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\s/';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введённый пользователем:\s*(?<address>.*?)\s*$/s';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*$/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -296,7 +345,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\sПричина:\s*(?<reason>.*\S|)/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введённый пользователем:\s*(?<address>.*?)\s*Причина:\s*(?<reason>.*?)\s*$/s';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Причина:\s*(?<reason>.*?)\s*$/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -309,7 +358,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\sСписок подключаемых услуг:\s*(?<services>.*\S|)/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введённый пользователем:\s*(?<address>.*?)\s*Список подключаемых услуг:\s*(?<services>.*?)\s*$/s';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Список подключаемых услуг:\s*(?<services>.*?)\s*$/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -322,7 +371,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*|)\n(Список подключаемых услуг:\s*)?\s*(?<services>.*)\nТребуется подтверждение адреса/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введённый пользователем:\s*(?<address>.*?)\s*Список подключаемых услуг:\s*(?<services>.*?)\s*Требуется подтверждение адреса\s*/s';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Список подключаемых услуг:\s*(?<services>.*?)\s*Требуется подтверждение адреса\s*/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -335,7 +384,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\sПодключение услуг\(и\):\s*(?<services>[^\n]*\n)/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введённый пользователем:\s*(?<address>.*?)\s*Подключение услуг\(и\):\s*(?<services>.*?)\s*$/s';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Подключение услуг\(и\):\s*(?<services>.*?)\s*$/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
