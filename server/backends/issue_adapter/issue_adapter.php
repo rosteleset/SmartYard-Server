@@ -16,5 +16,12 @@ namespace backends\issue_adapter {
         }
 
         abstract public function createIssueForDVRFragment($phone, $description, $camera_id, $datetime, $duration, $comment);
+        abstract public function createIssueCallback($phone);
+        abstract public function createIssueForgotEverything($phone);
+        abstract public function createIssueConfirmAddress($phone, $description, $name, $address, $lat, $lon);
+        abstract public function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason);
+        abstract public function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services);
+        abstract public function createIssueAvailableWithSharedServices($phone, $description, $name, $address, $lat, $lon, $services);
+        abstract public function createIssueAvailableWithoutSharedServices($phone, $description, $name, $address, $lat, $lon, $services);
     }
 }
