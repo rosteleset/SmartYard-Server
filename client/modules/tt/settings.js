@@ -2624,6 +2624,10 @@
                             editor = i18n("tt.customFieldEditorArray");
                         }
 
+                        if (modules.tt.meta.customFields[i].type == "virtual") {
+                            editor = i18n("tt.customFieldEditorVirtual");
+                        }
+
                         rows.push({
                             uid: modules.tt.meta.customFields[i].customFieldId,
                             cols: [
