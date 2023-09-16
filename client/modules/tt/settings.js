@@ -515,6 +515,10 @@
                             id: "array",
                             text: i18n("tt.customFieldTypeArray"),
                         },
+                        {
+                            id: "virtual",
+                            text: i18n("tt.customFieldTypeVirtual"),
+                        },
                     ]
                 },
                 {
