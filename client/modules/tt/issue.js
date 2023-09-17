@@ -297,7 +297,7 @@
 
                     for (let i in kx) {
                         let fi = modules.tt.issueField2FormFieldEditor(false, kx[i], projectId, ky[kx[i]]);
-                        if (fi) {
+                        if (fi && kx[i] !== "comment" && kx[i] !== "optionalComment") {
                             fields.push(fi);
                         }
                     }

@@ -490,8 +490,9 @@
                     }
                 }
 
-                if (cf) {
+                if (cf && cf.type !== "virtual") {
                     let validate = false;
+                    
                     if (cf.required && !cf.regex) {
                         validate = new Function ("v", `return v && $.trim(v) !== "";`);
                     } else
