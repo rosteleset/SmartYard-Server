@@ -5,6 +5,17 @@
     defaultPagerItemsCount: 10,
     menuItem: false,
 
+    specialActions: [
+        "saAddComment",
+        "saAddFile",
+        "saAssignToMe",
+        "saWatch",
+        "saDelete",
+        "saSubIssue",
+        "saCoordinate",
+        "saLink",
+    ],
+
     init: function () {
         
         if (AVAIL("tt", "tt")) {
@@ -885,6 +896,10 @@
                     case "commentCreated":
                         val = ttDate(val);
                         break;
+
+                    case "workflowAction":
+                        val = modules.tt.displayAction(val);
+                        break;
                 }
             } else {
                 field = field.substring(4);
@@ -1061,6 +1076,14 @@
         }
 
         return val;
+    },
+
+    displayAction: function (action) {
+        if (modules.tt.specialActions.indexOf(action) >= 0) {
+            return i18n("tt." + action);
+        } else {
+            return action
+        }
     },
 
     tt: function (tt) {
