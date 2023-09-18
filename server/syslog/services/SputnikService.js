@@ -2,6 +2,7 @@ const {WebHookService} = require("./WebHookService");
 const {getTimestamp} = require("../utils/getTimestamp");
 const API = require("../utils/api");
 const {mdTimer} = require("../utils/mdTimer");
+
 class SputnikService extends WebHookService {
     constructor(unit, config) {
         super(unit, config);
@@ -23,7 +24,9 @@ class SputnikService extends WebHookService {
                             break;
 
                         case 'open_door_handset': // Opening door by CMS handset
-                            await API.setRabbitGates({date: now, ip: deviceId, apartmentNumber: parseInt(payload?.flat)});
+                            await API.setRabbitGates({
+                                date: now, ip: deviceId, apartmentNumber: parseInt(payload?.flat)
+                            });
                             break;
                     }
                     break;
@@ -57,8 +60,7 @@ class SputnikService extends WebHookService {
 
                     break;
             }
-        }
-        catch (err) {
+        } catch (err) {
             console.error(err.message)
         }
     }
