@@ -35,18 +35,17 @@ if (!hw[serviceParam]) {
 }
 
 const serviceConfig = hw[serviceParam];
-console.log(serviceConfig)
 
 switch (serviceParam){
     case SERVICE_BEWARD:
         const bewardService = new BewardService(serviceConfig);
         bewardService.createSyslogServer();
-        break; // SERVICE_BEWARD: done!
+        break;
 
     case SERVICE_BEWARD_DS:
         const bewardServiceDS = new BewardServiceDS(serviceConfig);
         bewardServiceDS.createSyslogServer();
-        break;  // SERVICE_BEWARD_DS: done!
+        break;
 
     case SERVICE_QTECH:
         const qtechService = new QtechService(serviceConfig);
@@ -57,7 +56,7 @@ switch (serviceParam){
     case SERVICE_AKUVOX:
         const akuvoxService = new AkuvoxService(serviceConfig);
         akuvoxService.createSyslogServer();
-        break; // SERVICE_AKUVOX: done!
+        break;
 
     case SERVICE_IS:
         const isService = new IsService(serviceConfig);
