@@ -427,7 +427,6 @@
                                 size: "lg",
                                 timeout: timeout,
                                 callback: r => {
-                                    r["issueId"] = issue.issue.issueId;
                                     loadingStart();
                                     PUT("tt", "action", issue.issue.issueId, {
                                         set: r,
@@ -445,9 +444,6 @@
                             mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
                                 loadingStart();
                                 PUT("tt", "action", issue.issue.issueId, {
-                                    set: {
-                                        issueId: issue.issue.issueId,
-                                    },
                                     action: action,
                                 }).
                                 fail(FAIL).
