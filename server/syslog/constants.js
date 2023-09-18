@@ -7,6 +7,8 @@ const SERVICE_SPUTNIK = "sputnik";
 const SERVICE_AKUVOX = "akuvox";
 const SERVICE_RUBETEK = "rubetek";
 const SERVICE_NONAME_WEBHOOK = "noname";
+const SERVICE_OMNY = "omny";
+
 
 module.exports = {
     SERVICE_BEWARD,
@@ -16,5 +18,6 @@ module.exports = {
     SERVICE_SPUTNIK,
     SERVICE_AKUVOX,
     SERVICE_RUBETEK,
-    SERVICE_NONAME_WEBHOOK
+    SERVICE_NONAME_WEBHOOK,
+    SERVICE_OMNY
 }

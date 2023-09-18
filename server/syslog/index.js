@@ -7,7 +7,8 @@ const {
     IsService,
     RubetekService,
     NonameWebHookService,
-    SputnikService
+    SputnikService,
+    OmnyWebHookService
 } = require("./services")
 const {
     SERVICE_BEWARD,
@@ -16,7 +17,9 @@ const {
     SERVICE_AKUVOX,
     SERVICE_IS,
     SERVICE_RUBETEK,
-    SERVICE_NONAME_WEBHOOK, SERVICE_SPUTNIK
+    SERVICE_NONAME_WEBHOOK,
+    SERVICE_SPUTNIK,
+    SERVICE_OMNY
 } = require("./constants")
 
 const serviceParam = process.argv[2]?.toLowerCase();
@@ -32,6 +35,7 @@ if (!hw[serviceParam]) {
 }
 
 const serviceConfig = hw[serviceParam];
+console.log(serviceConfig)
 
 switch (serviceParam){
     case SERVICE_BEWARD:
@@ -69,6 +73,11 @@ switch (serviceParam){
         const nonameWebhookService = new NonameWebHookService(SERVICE_NONAME_WEBHOOK, serviceConfig)
         nonameWebhookService.start();
         break;// example webhook event service
+
+    case SERVICE_OMNY:
+        const omnyWebhookService = new OmnyWebHookService(SERVICE_OMNY, serviceConfig)
+        omnyWebhookService.start();
+        break;// example webhook for ip camera (example OMNY miniDome2T-U v2)
 
     case SERVICE_SPUTNIK:
         if (!serviceConfig.apiEndpoint){
