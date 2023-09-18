@@ -8,12 +8,12 @@ class WebHookService {
     }
 
     async requestListener(request, response) {
-        if (request.url === this.config.apiEndpoint && request.method == "GET") {
+        if (request.url === this.config?.apiEndpoint && request.method == "GET") {
             response.writeHead(202, {'Content-Type': 'application/json'})
             response.end(JSON.stringify({ message: "GET request received." }));
             await this.getEventHandler(request, response)
         }
-        else if (request.url === this.config.apiEndpoint && request.method === "POST") {
+        else if (request.url === this.config?.apiEndpoint && request.method === "POST") {
             try {
                 let data = '';
                 request.on('data', (chunk) => {
@@ -25,7 +25,7 @@ class WebHookService {
                     await this.postEventHandler(request, jsonData);
 
                     response.writeHead(202, {'Content-Type': 'application/json'})
-                    response.end(JSON.stringify({ message: "POST request received." }));
+                    response.end(JSON.stringify({ message: "Webhook received and processed." }));
                 })
             }
             catch (error) {
