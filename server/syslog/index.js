@@ -53,26 +53,28 @@ switch (serviceParam){
     case SERVICE_AKUVOX:
         const akuvoxService = new AkuvoxService(serviceConfig);
         akuvoxService.createSyslogServer();
-        break; // SERVICE_BEWARD: done!
+        break; // SERVICE_AKUVOX: done!
 
     case SERVICE_IS:
         const isService = new IsService(serviceConfig);
         isService.createSyslogServer();
-        break; // SERVICE_BEWARD: done!
+        break;
 
     case SERVICE_RUBETEK:
         const rubetekService = new RubetekService(serviceConfig);
         rubetekService.createSyslogServer();
-        break; // SERVICE_BEWARD: done!
-
-    case SERVICE_NONAME_WEBHOOK:
-        // example webhook event service
-        const nonameWebhookService = new NonameWebHookService(SERVICE_NONAME_WEBHOOK, serviceConfig)
-        nonameWebhookService.start();
         break;
 
+    case SERVICE_NONAME_WEBHOOK:
+        const nonameWebhookService = new NonameWebHookService(SERVICE_NONAME_WEBHOOK, serviceConfig)
+        nonameWebhookService.start();
+        break;// example webhook event service
+
     case SERVICE_SPUTNIK:
-        // example webhook event service
+        if (!serviceConfig.apiEndpoint){
+            console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`)
+            process.exit(1);
+        }
         const sputnikSErvice = new SputnikService(SERVICE_SPUTNIK, serviceConfig)
         sputnikSErvice.start();
         break;

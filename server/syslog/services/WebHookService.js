@@ -21,6 +21,13 @@ class WebHookService {
                 });
 
                 request.on('end', async () => {
+                    if (!data) {
+                        response.writeHead(400, {'Content-Type': 'application/json'})
+                        response.end(JSON.stringify({ message: "Request body is empty." }));
+                        // TODO: make logger
+                        console.error(`${new Date().toLocaleString("RU")} || ${request.connection.remoteAddress} || Request body is empty.`)
+                        return;
+                    }
                     const jsonData = JSON.parse(data);
                     await this.postEventHandler(request, jsonData);
 
@@ -31,15 +38,11 @@ class WebHookService {
             catch (error) {
                 console.error(error.message)
             }
-
-
         }
         else {
             response.writeHead(405, { 'Content-Type': 'application/json' });
             response.end(JSON.stringify({ message: "Method not allowed." }));
-
         }
-
     }
 
     async postEventHandler(request, data = null) {
