@@ -9,6 +9,7 @@ const {RubetekService} = require("./RubetekService");
 const {WebHookService} = require("./WebHookService");
 const {NonameWebHookService} = require("./NonameWebHookService");
 const {SputnikService} = require("./SputnikService");
+const {OmnyWebHookService} = require("./OmnyWebHookService");
 
 module.exports = {
     SyslogService,
@@ -20,5 +21,6 @@ module.exports = {
     IsService,
     RubetekService,
     SputnikService,
-    NonameWebHookService
+    NonameWebHookService,
+    OmnyWebHookService
 }
