@@ -7,6 +7,7 @@ class OmnyWebHookService extends WebHookService {
     }
 
     async requestListener(request, response) {
+        const sourceIP = request.connection.remoteAddress.split("::ffff:")[1];
         if (request.url === this.config?.apiEndpoint && request.method === "POST"){
             let data = '';
             request.on('data', (chunk) => {
@@ -28,8 +29,8 @@ class OmnyWebHookService extends WebHookService {
                         console.error("Error parsing XML:", error.message)
                     }
 
-                    console.table(request)
-                    await this.parsedDataHandler(result);
+                    // console.table(request)
+                    await this.parsedDataHandler({sourceIP, ...result});
 
                     response.writeHead(202, {'Content-Type': 'application/json'})
                     response.end(JSON.stringify({ message: "Webhook received and processed." }));
@@ -52,17 +53,20 @@ class OmnyWebHookService extends WebHookService {
 
     async parsedDataHandler(parsedData) {
         // TODO: - add check event param handler
-        const {event: {title, time, status}} = parsedData;
+        const {sourceIP, event: {title, time, status}} = parsedData;
+
 
         // TODO : add event handlers
         // motion detect
         if (title === "motion_dect" ) {
-
+            // motion handler logic
+            console.log("motion_dect handler start")
         }
 
        // Human detect
         if (title === "human_dect" ) {
-
+            // motion handler logic
+            console.log("human_dect handler start")
         }
 
         // Crossing line
