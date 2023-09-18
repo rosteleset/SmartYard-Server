@@ -36,6 +36,10 @@
     },
     "sputnik": {
       "port": 45457
+    },
+    "omny": {
+      "port": 45458,
+      "apiEndpoint": "/webhook/omny"
     }
   }
 }
