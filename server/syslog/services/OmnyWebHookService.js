@@ -52,11 +52,16 @@ class OmnyWebHookService extends WebHookService {
     }
 
     async parsedDataHandler(parsedData) {
-        // TODO: - add check event param handler
-        const {sourceIP, event: {title, time, status}} = parsedData;
+        try {
 
+        } catch (error){
+            console.error()
+        }
+        // TODO: - add check event param handler
+        const {sourceIP, event: {title:[title], time:[time], status:[status]}} = parsedData;
 
         // TODO : add event handlers
+
         // motion detect
         if (title === "motion_dect" ) {
             // motion handler logic
