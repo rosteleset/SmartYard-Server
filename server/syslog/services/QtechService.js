@@ -11,6 +11,17 @@ class QtechService extends SyslogService {
         this.callDoneFlow = {}
     }
 
+    filterSpamMessages(message) {
+        const qtechSpamKeywords = [
+            "Heart Beat",
+            "IP CHANGED",
+        ];
+
+        return qtechSpamKeywords.some((keyword) => {
+            return message.includes(keyword)
+        })
+    }
+
     async handleSyslogMessage(now, host, msg) {
         // TODO:
         //      - check white rabbit feature, open by DTMF
@@ -20,7 +31,6 @@ class QtechService extends SyslogService {
         // DONE:
         // Motion detect handler
         if (qtMsgParts[1] === "Send Photo") {
-            console.log("DEBUG || Motion detect handler || "+msg);
             await API.motionDetection({ date: now, ip: host, motionActive: true });
             await mdTimer(host);
         }
@@ -49,12 +59,11 @@ class QtechService extends SyslogService {
         if (qtMsgParts[2] === "Open Door By DTMF") {
             console.log("DEBUG || Handler open door by DTMF");
             if ((this.gateRabbits)[host]) {
-                const { ip, prefix, apartmentNumber } = gateRabbits[host];
+                const { ip, prefix, apartmentNumber } = this.gateRabbits[host];
                 await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
             }
         }
 
-        // DONE:
         // Open door by RFID key
         if (qtMsgParts[1] === "Open Door By Card") {
             let door = 0;
@@ -67,20 +76,18 @@ class QtechService extends SyslogService {
             await API.openDoor({ date: now, ip: host, door: door, detail: rfid, by: "rfid" });
         }
 
-        // Done:
         // Open door by code
         if (qtMsgParts[2] === "Open Door By Code") {
-            console.log("DEBUG || Handler open door by code")
             const code = parseInt(qtMsgParts[4]);
             await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
         }
 
-        // DONE:
         // Open door by button pressed
         if (qtMsgParts[1] === "Exit button pressed") {
             let door = 0;
             let detail = "main";
 
+            // TODO: make default case "door=0", tests
             switch (qtMsgParts[2]) {
                 case "INPUTB":
                     door = 1;
@@ -92,7 +99,6 @@ class QtechService extends SyslogService {
                     break;
             }
 
-            // console.table({ date: now, ip: host, door: door, detail: detail, by: "button" })
             await API.openDoor({ date: now, ip: host, door: door, detail: detail, by: "button" });
         }
 
@@ -108,7 +114,7 @@ class QtechService extends SyslogService {
 
         //  Check if СMS calls enabled
         if (qtMsgParts[2] === "Analog Number") {
-            (this.callDoneFlow)[host] = { ...callDoneFlow[host], cmsEnabled: true };
+            (this.callDoneFlow)[host] = { ...this.callDoneFlow[host], cmsEnabled: true };
             await checkCallDone(host);
         }
     }
@@ -151,4 +157,4 @@ class QtechService extends SyslogService {
 
 }
 
-module.exports = { QtechService }
+module.exports = {QtechService}

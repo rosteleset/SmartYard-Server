@@ -4,9 +4,9 @@ const { hw, topology } = require("../config.json");
 const board = hw[hwVer];
 const { getTimestamp } = require("../utils/getTimestamp");
 const { urlParser } = require("../utils/urlParser");
-const { parseSyslogMessage } = require("../utils/syslogParser");
+const { parseSyslogMessage } = require("../utils/parseSyslogMessage");
 const { isIpAddress } = require("../utils/isIpAddress");
-const API = require("../utils/api");
+const API = require("../utils/API");
 const { port } = urlParser(board);
 
 const gateRabbits = [];

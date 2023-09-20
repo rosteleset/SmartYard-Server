@@ -1,6 +1,6 @@
-const { hw, topology } = require("../config.json");
-const { API, getTimestamp, parseSyslogMessage, isIpAddress } = require("../utils");
 const syslogServer = require("syslog-server");
+const {API, getTimestamp, parseSyslogMessage, isIpAddress} = require("../utils");
+const {topology} = require("../config.json");
 class SyslogService {
     constructor(unit, config) {
         this.unit = unit;
@@ -36,7 +36,7 @@ class SyslogService {
 
         syslog.on("message", async ({ date, host, message }) => {
             const now = getTimestamp(date);// Get server timestamp
-            let { host: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
+            let { hostname: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
 
             //  Check hostname from syslog message body
             if (topology?.nat && isIpAddress(addressFromMessageBody)) {
@@ -69,4 +69,5 @@ class SyslogService {
         console.log("RUN handleSyslogMessage")
     }
 }
-module.exports = { SyslogService }
+
+module.exports = {SyslogService};

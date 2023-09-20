@@ -1,6 +1,6 @@
-const { SyslogService } = require("./SyslogService")
-const { API } = require("../utils");
-const { SERVICE_RUBETEK } = require("../constants");
+const {SyslogService} = require("./SyslogService")
+const {API} = require("../utils");
+const {SERVICE_RUBETEK} = require("../constants");
 const {mdTimer} = require("../utils/mdTimer");
 
 class RubetekService extends SyslogService {
@@ -11,7 +11,7 @@ class RubetekService extends SyslogService {
 
     filterSpamMessages(msg) {
         const bewardSpamKeywords = [
-            // TODO: - Rubetek spam keys ...
+            // TODO: - Rubetek spam keys or remove filters ...
         ];
 
         return bewardSpamKeywords.some(keyword => msg.includes(keyword));
@@ -88,7 +88,7 @@ class RubetekService extends SyslogService {
                     break;
             }
 
-            await API.openDoor({ date: now, ip: host, door: door, detail: detail, by: "button" });
+            await API.openDoor({date: now, ip: host, door: door, detail: detail, by: "button"});
         }
 
         // All calls are done
@@ -97,4 +97,5 @@ class RubetekService extends SyslogService {
         }
     }
 }
-module.exports= { RubetekService }
+
+module.exports = {RubetekService}

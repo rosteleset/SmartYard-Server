@@ -36,7 +36,7 @@ if (!hw[serviceParam]) {
 
 const serviceConfig = hw[serviceParam];
 
-switch (serviceParam){
+switch (serviceParam) {
     case SERVICE_BEWARD:
         const bewardService = new BewardService(serviceConfig);
         bewardService.createSyslogServer();
@@ -76,10 +76,10 @@ switch (serviceParam){
     case SERVICE_OMNY:
         const omnyWebhookService = new OmnyWebHookService(SERVICE_OMNY, serviceConfig)
         omnyWebhookService.start();
-        break;// example webhook for ip camera (example OMNY miniDome2T-U v2)
+        break;// example webhook for ip camera (example OMNY miniDome2T-U v2), make api call to LPRS or FRS services
 
     case SERVICE_SPUTNIK:
-        if (!serviceConfig.apiEndpoint){
+        if (!serviceConfig.apiEndpoint) {
             console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`)
             process.exit(1);
         }
@@ -88,5 +88,5 @@ switch (serviceParam){
         break;
 
     default:
-        console.error('Invalid service parameter, please use "beward", "beward_ds", "qtech" ... on see documentation' )
+        console.error('Invalid service parameter, please use "beward", "beward_ds", "qtech" ... on see documentation')
 }

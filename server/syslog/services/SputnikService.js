@@ -1,6 +1,6 @@
 const {WebHookService} = require("./WebHookService");
 const {getTimestamp} = require("../utils/getTimestamp");
-const API = require("../utils/api");
+const API = require("../utils/API");
 const {mdTimer} = require("../utils/mdTimer");
 
 class SputnikService extends WebHookService {
