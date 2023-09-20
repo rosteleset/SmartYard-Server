@@ -52,21 +52,27 @@ function createIssue($adapter, $phone, $data)
         $lat = $data['customFields']['10743'];
         $lon = $data['customFields']['10744'];
         return $adapter->createIssueUnavailableServices($phone, $description, null, null, $lat, $lon, null);
-    } elseif (strpos($description, 'Требуется подтверждение адреса') !== false) {
-        $lat = $data['customFields']['10743'];
-        $lon = $data['customFields']['10744'];
-        return $adapter->createIssueAvailableWithSharedServices($phone, $description, null, null, $lat, $lon, null);
     } elseif (strpos($description, 'Выполнить звонок клиенту') !== false) {
         $lat = $data['customFields']['10743'];
         $lon = $data['customFields']['10744'];
         return $adapter->createIssueAvailableWithoutSharedServices($phone, $description, null, null, $lat, $lon, null);
     }
+
+    return false;
 }
 
 auth();
 
+// error_log("\n\n" . print_r($postdata, true) . "\n\n");
+
 $adapter = loadBackend('issue_adapter');
+if (!$adapter)
+    response(417, false, false, "Не удалось создать заявку.");
+
 $result = createIssue($adapter, $subscriber['mobile'], $postdata);
+if ($result === false)
+    response(200, "_");
+
 if (empty($result['issueId'])) {
     response(417, false, false, "Не удалось создать заявку.");
 } else {

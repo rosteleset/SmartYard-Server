@@ -17,6 +17,13 @@
  */
 
 auth();
+
+$adapter = loadBackend('issue_adapter');
+if (!$adapter)
+    response();
+
+$adapter->commentIssue(@$postdata['key'], @$postdata['comment']);
+
 response();
 
 /*
