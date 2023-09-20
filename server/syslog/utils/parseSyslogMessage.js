@@ -21,6 +21,8 @@ const parseSyslogMessage = (str) => {
             message
         };
     } else return false;
+    //TODO:
+    //      - add checking BSD syslog format
 };
 
 module.exports = {parseSyslogMessage};
