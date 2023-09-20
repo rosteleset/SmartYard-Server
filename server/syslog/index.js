@@ -38,7 +38,7 @@ const serviceConfig = hw[serviceParam];
 
 switch (serviceParam) {
     case SERVICE_BEWARD:
-        const bewardService = new BewardService(serviceConfig);
+        const bewardService = new BewardService(SERVICE_BEWARD, serviceConfig);
         bewardService.createSyslogServer();
         break;
 
