@@ -122,9 +122,6 @@
                     type: "email",
                     title: i18n("eMail"),
                     placeholder: i18n("eMail"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
                 },
                 {
                     id: "phone",
@@ -141,20 +138,22 @@
 
     modifyUser: function (uid) {
 
-        function realModifyUser(uid, groups) {
+        function realModifyUser(uid) {
             GET("accounts", "user", uid, true).done(response => {
                 let gs = [];
 
-                gs.push({
-                    value: -1,
-                    text: "-",
-                });
-
-                for (let i in groups) {
+                if (modules.groups) {
                     gs.push({
-                        value: groups[i].gid,
-                        text: $.trim(groups[i].name + " [" + groups[i].acronym + "]"),
+                        value: -1,
+                        text: "-",
                     });
+    
+                    for (let i in modules.groups.meta) {
+                        gs.push({
+                            value: modules.groups.meta[i].gid,
+                            text: $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]"),
+                        });
+                    }
                 }
 
                 cardForm({
@@ -198,9 +197,6 @@
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
                             hidden: !parseInt(response.user.uid),
-                            validate: (v) => {
-                                return $.trim(v) !== "";
-                            }
                         },
                         {
                             id: "primaryGroup",
@@ -208,7 +204,7 @@
                             value: response.user.primaryGroup,
                             options: gs,
                             title: i18n("users.primaryGroup"),
-                            hidden: !parseInt(response.user.uid) || groups.length == 0,
+                            hidden: !parseInt(response.user.uid) || gs.length == 0,
                         },
                         {
                             id: "phone",
@@ -358,13 +354,11 @@
 
         loadingStart();
         if (modules.groups) {
-            modules.groups.loadGroups(response => {
-                realModifyUser(uid, response.groups);
-            }).
-            fail(FAIL).
-            fail(loadingDone);
+            modules.groups.loadGroups(() => {
+                realModifyUser(uid);
+            });
         } else {
-            realModifyUser(uid, []);
+            realModifyUser(uid);
         }
     },
 
@@ -499,12 +493,15 @@
 
         loadingStart();
 
-        modules.users.loadGroups(hasGroups => {
+        function realRenderUsers() {
             let groups = {};
 
-            if (hasGroups) {
+            let hasGroups = false;
+
+            if (modules.groups) {
                 for (let i in modules.groups.meta) {
                     groups[modules.groups.meta[i].gid] = modules.groups.meta[i];
+                    hasGroups = true;
                 }
             }
 
@@ -645,7 +642,13 @@
             }).
             fail(FAIL).
             fail(loadingDone);
-        });
+        }
+
+        if (modules.groups) {
+            modules.groups.loadGroups(realRenderUsers);
+        } else {
+            realRenderUsers();
+        }
     },
 
     route: function (params) {

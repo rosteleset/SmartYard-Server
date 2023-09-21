@@ -1,18 +1,34 @@
 ---
-defaultServer: https://example.com/frontend
+defaultServer: http://localhost:8000/server/frontend.php
 defaultLanguage: ru
 languages:
   ru: Русский
-  en: English
 modules:
+- mqtt
+- tt
+- cs
 - asterisk
 - addresses
+- users
+- groups
+- permissions
+- providers
 - about
+- geocoder
 defaultRoute: "#about"
-logo: rbt
-ws: wss://example.com/wss
+logo: lanta
+ws: false
 ice:
 - urls:
   - stun:stun.l.google.com:19302
-phonePattern: '7 (###) ###-##-##'
-sipDomain: "<!-- your asterisk server external ip here -->"
+map:
+  tile: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+  crs: EPSG3857
+  default:
+    lat: 51.505
+    lon: -0.09
+    zoom: 13
+  min: 4
+  max: 18
+sipDomain: 10.7.26.2
+phonePattern: "+7 (###) ###-##-##"

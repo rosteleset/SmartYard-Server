@@ -27,12 +27,12 @@
                 }
                 
                 if ($uid === false) {
-                    $_groups = $this->db->queryEx("select gid, name, acronym, (select count(*) from (select uid from (select uid from core_users_groups g1 where g1.gid=g2.gid union select admin from core_groups g3 where g3.gid=g2.gid union select uid from core_users u1 where u1.primary_group=g2.gid) as t2 group by uid) as t3) as users, admin, login as \"adminLogin\" from core_groups as g2 left join core_users on g2.admin = core_users.uid order by name, acronym, gid");
+                    $_groups = $this->db->queryEx("select gid, name, acronym, (select count(*) from (select uid from (select uid from core_users_groups g1 where g1.gid=g2.gid union select admin from core_groups g3 where g3.gid=g2.gid and admin is not null union select uid from core_users u1 where u1.primary_group=g2.gid) as t2 group by uid) as t3) as users, admin, login as \"adminLogin\" from core_groups as g2 left join core_users on g2.admin = core_users.uid order by name, acronym, gid");
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
-                    $_groups = $this->db->queryEx("select gid, name, acronym, (select count(*) from (select uid from (select uid from core_users_groups g1 where g1.gid=g2.gid union select admin from core_groups g3 where g3.gid=g2.gid union select uid from core_users u1 where u1.primary_group=g2.gid) as t2 group by uid) as t3) as users, admin, login as \"adminLogin\" from core_groups as g2 left join core_users on g2.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) or gid in (select primary_group from core_users where uid = $uid) or admin = $uid order by name, acronym, gid");
+                    $_groups = $this->db->queryEx("select gid, name, acronym, (select count(*) from (select uid from (select uid from core_users_groups g1 where g1.gid=g2.gid union select admin from core_groups g3 where g3.gid=g2.gid and admin is not null union select uid from core_users u1 where u1.primary_group=g2.gid) as t2 group by uid) as t3) as users, admin, login as \"adminLogin\" from core_groups as g2 left join core_users on g2.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) or gid in (select primary_group from core_users where uid = $uid) or admin = $uid order by name, acronym, gid");
                 }
 
                 $this->cacheSet($key, $_groups);
@@ -188,7 +188,7 @@
              * @return boolean
              */
 
-            public function setUsers($gid, $uids) {
+             public function setUsers($gid, $uids) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -213,6 +213,51 @@
 
                 foreach ($uids as $uid) {
                     if (!checkInt($uid)) {
+                        return false;
+                    }
+
+                    if (!$sth->execute([
+                        ":uid" => $uid,
+                        ":gid" => $gid,
+                    ])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            /**
+             * modify user groups
+             *
+             * @return boolean
+             */
+
+             public function setGroups($uid, $gids) {
+                $this->clearCache();
+
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($uid)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into core_users_groups (uid, gid) values (:uid, :gid)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from core_users_groups where uid = $uid");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                foreach ($gids as $gid) {
+                    if (!checkInt($gid)) {
                         return false;
                     }
 

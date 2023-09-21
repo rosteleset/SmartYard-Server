@@ -71,6 +71,8 @@
     "customFieldOptions": "Набор значений",
     "customFieldTypeIssues": "Связанные задачи",
     "customFieldTypeGeo": "Геопозиция",
+    "customFieldTypeArray": "Массив",
+    "customFieldTypeVirtual": "Виртуальное",
     "confirmCustomFieldDelete": "Удалить настраиваемое поле \"#%s\"?",
     "removeUserFromProject": "Удалить пользователя из проекта",
     "removeGroupFromProject": "Удалить группу из проекта",
@@ -82,6 +84,12 @@
     "projectUser": "Пользователь",
     "addProjectUser": "Добавить участника в проект",
     "assigned": "Назначенные",
+    "assignedUsersAndGroups": "Пользователи и группы",
+    "assignedOnlyUsers": "Только пользователи",
+    "assignedOnlyGroups": "Только группы",
+    "assignedUsersAndGroupsMultiple": "Пользователи и группы (множественный выбор)",
+    "assignedOnlyUsersMultiple": "Только пользователи (множественный выбор)",
+    "assignedOnlyGroupsMultiple": "Только группы (множественный выбор)",
     "watchers": "Наблюдатели",
     "links": "Связи",
     "multiple": "Мультивыбор",
@@ -116,6 +124,7 @@
     "allowedMimeTypes": "Разрешенные типы файлов",
     "customFieldEditor": "Редактор",
     "customFieldEditorString": "Строка",
+    "customFieldEditorStringRO": "Строка (RO)",
     "customFieldEditorNumber": "Число",
     "customFieldEditorText": "Текст",
     "customFieldEditorEmail": "Электронная почта",
@@ -126,6 +135,8 @@
     "customFieldEditorYesNo": "Да - Нет",
     "customFieldEditorNoYes": "Нет - Да",
     "customFieldEditorJSON": "JSON",
+    "customFieldEditorArray": "Массив",
+    "customFieldEditorVirtual": "Нет",
     "addWorkflow": "Добавить рабочий процесс",
     "statusWasChanged": "Статус изменен",
     "resolutionWasChanged": "Резолюция изменена",
@@ -222,6 +233,8 @@
     "journalActionModifyComment": "Изменение  комментария [#%s]",
     "journalActionAddAttachment": "Добавление файла",
     "journalActionDeleteAttachment": "Удаление файла",
+    "journalActionAddArrayValue": "Добавление элемента",
+    "journalActionDeleteArrayValue": "Удаление элемента",
     "attachmentFilename": "Файл",
     "commentAuthor": "Автор комментария",
     "commentBody": "Комментарий",
@@ -280,9 +293,7 @@
             },
             "customFilter": {
                 "_title": "Собственные фильтры",
-                "GET": "Доступ",
-                "PUT": "Изменение",
-                "DELETE": "Удаление"
+                "GET": "Собственные фильтры"
             }
         }
     },
@@ -292,6 +303,8 @@
         "filterAlreadyExists": "Фильтр уже добавлен",
         "viewerAlreadyExists": "Функция уже существует",
         "insufficentRights": "Недостаточно прав для выполнения операции",
-        "filterNotFound": "Фильтр не найден"
+        "filterNotFound": "Фильтр не найден",
+        "invalidFilter": "Фильтр содержит ошибки, сохранение невозможно",
+        "functionNotFound": "Функция %s не найдена"
     }
 }

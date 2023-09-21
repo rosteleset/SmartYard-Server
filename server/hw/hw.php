@@ -7,7 +7,7 @@
             public string $url;
 
             public function __construct(string $url) {
-                $this->url = $url;
+                $this->url = rtrim($url, '/');
             }
 
             /** Check device availability */

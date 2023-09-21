@@ -33,7 +33,7 @@
                 $tt = loadBackend("tt");
 
                 if (array_key_exists("acronym", $params)) {
-                    $success = $tt->modifyProject($params["_id"], $params["acronym"], $params["project"], $params["maxFileSize"], $params["searchSubject"], $params["searchDescription"], $params["searchComments"]);
+                    $success = $tt->modifyProject($params["_id"], $params["acronym"], $params["project"], $params["maxFileSize"], $params["searchSubject"], $params["searchDescription"], $params["searchComments"], $params["assigned"]);
                 }
 
                 if (array_key_exists("workflows", $params)) {

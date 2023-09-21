@@ -1549,6 +1549,13 @@
                         ];
                         break;
 
+                    case "cameraId":
+                        $where = "camera_id = :camera_id";
+                        $p = [
+                            "camera_id" => $query["cameraId"],
+                        ];
+                        break;
+
                     case "houseId":
                         if (!checkInt($query)) {
                             return false;

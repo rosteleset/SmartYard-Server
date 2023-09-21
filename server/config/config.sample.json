@@ -51,8 +51,6 @@
     },
 
     "backends": {
-        "cache_ttl": 604800,
-
         "authentication": {
             "backend": "internal"
         },
@@ -181,6 +179,12 @@
             "mqtt": "mqtt://127.0.0.1:1883",
             "username": "rbt",
             "password": "<!-- your mosquitto password here --!>"
+        },
+
+       "issue_adapter": {
+            "backend": "lanta",
+            "tt_url": "<!-- your tt url here --!>",
+            "tt_token": "<!-- your tt bearer token here --!>"
         }
     },
 
@@ -217,6 +221,9 @@
         ],
         "rubetek": [
             "syslog.udp:127.0.0.1:45456"
+        ],
+        "sputnik": [
+            "https://your-https-server/events/sputnik:45457"
         ]
     },
 

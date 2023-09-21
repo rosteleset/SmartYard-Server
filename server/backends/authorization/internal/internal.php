@@ -111,9 +111,13 @@
                         select count(*) as allow from core_api_methods where aid in (
                             select aid from (
                                 select aid from core_api_methods where aid in (
-                                    select aid from core_groups_rights where allow = 1 and gid in (
-                                        select gid from core_users_groups where uid = :uid
-                                     )
+                                    select aid from core_groups_rights where allow = 1 and (
+                                        gid in (select gid from core_users_groups where uid = :uid)
+                                        or
+                                        gid in (select primary_group from core_users where uid = :uid)
+                                        or
+                                        gid in (select gid from core_groups where admin = :uid)
+                                    )
                                 ) or aid in (select aid from core_api_methods_common)
                             ) as t1 where
                                 aid not in (select aid from core_groups_rights where allow = 0 and gid in (select gid from core_users_groups where uid = :uid)) and
@@ -198,9 +202,13 @@
                             select * from core_api_methods where aid in (
                                 select aid from (
                                     select aid from core_api_methods where aid in (
-                                        select aid from core_groups_rights where allow = 1 and gid in (
-                                            select gid from core_users_groups where uid = :uid
-                                         )
+                                        select aid from core_groups_rights where allow = 1 and (
+                                            gid in (select gid from core_users_groups where uid = :uid)
+                                            or
+                                            gid in (select primary_group from core_users where uid = :uid)
+                                            or
+                                            gid in (select gid from core_groups where admin = :uid)
+                                        )
                                     ) or 
                                     aid in (select aid from core_api_methods_common) or
                                     aid in (select aid from core_api_methods_personal) or   

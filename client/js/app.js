@@ -1258,10 +1258,18 @@ function AVAIL(api, method, request_method) {
     }
 }
 
+/*
 $(document).on('select2:open', () => {
     document.querySelector('.select2-search__field').focus();
 });
-  
+*/
+
+$(document).on('select2:open', '.select2', function () {
+    setTimeout(() => {
+        document.querySelector(`[aria-controls="select2-${$(this).attr("id")}-results"]`).focus();
+    }, 5);
+});
+
 $(window).off("resize").on("resize", () => {
     if ($("#editorContainer").length) {
         let height = $(window).height() - mainFormTop;

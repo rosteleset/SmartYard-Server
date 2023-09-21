@@ -91,8 +91,8 @@
                 if (loadBackend("tt")) {
                     return [
                         "GET",
-                        "PUT",
-                        "DELETE",
+                        "PUT" => "#same(tt,customFilter,GET)",
+                        "DELETE" => "#same(tt,customFilter,GET)",
                     ];
                 } else {
                     return false;

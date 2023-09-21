@@ -1,8 +1,11 @@
+@charset "UTF-8";
+
 /*!
  * Select2-to-Tree CSS 1.1.1
  * https://github.com/clivezhg/select2-to-tree
  */
-.s2-to-tree * {
+
+ .s2-to-tree * {
 	box-sizing: border-box;
 }
 

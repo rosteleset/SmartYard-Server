@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 #toast-container > div {
   opacity: 1;
   filter: progid:dximagetransform.microsoft.alpha(opacity=100);
@@ -90,12 +92,16 @@ select {
   appearance: none;
 }
 
-.opacity-disabled {
-  opacity: 0.2;
+.select-arrow {
+  background: transparent;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: 4px;
 }
 
-.select2-container--open {
-  z-index: 9999999 !important;
+.opacity-disabled {
+  opacity: 0.2;
 }
 
 .tdform-right > .note-editor {
@@ -135,10 +141,6 @@ select {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-}
-
-.select2-invalid > span.select2 > span.selection > span.select2-selection {
-  border-color: #dc3435 !important;
 }
 
 .border-color-invalid {
@@ -259,6 +261,14 @@ body::-webkit-scrollbar-thumb {
   background-position: center center;
 }
 
+.select2-container--open {
+  z-index: 9999999 !important;
+}
+
+.select2-invalid > span.select2 > span.selection > span.select2-selection {
+  border-color: #dc3435 !important;
+}
+
 .select2-results__option.loading-results,
 .select2-results__option.select2-results__option--load-more {
   background-image: url('../img/spinnerSmall.svg');
@@ -291,6 +301,14 @@ body::-webkit-scrollbar-thumb {
   text-align: right;
   float: right;
 	margin-left: 0.5rem;
+}
+
+.dropdown-item.nomenu::after {
+	content: '▸';
+  text-align: right;
+  float: right;
+	margin-left: 0.5rem;
+  color: transparent;
 }
 
 .dropdown-item:hover + .dropdown-menu,

@@ -88,6 +88,14 @@
             abstract public function setUsers($gid, $uids);
 
             /**
+             * modify user groups
+             *
+             * @return array
+             */
+
+            abstract public function setGroups($uid, $gids);
+
+             /**
              * delete user from all groups
              *
              * @param $uid

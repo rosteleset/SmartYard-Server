@@ -109,10 +109,19 @@
             /**
              * @inheritDoc
              */
-            protected function modifyIssue($issue, $workflowAction = false)
+            protected function modifyIssue($issue, $workflowAction = false, $apUpdated = true)
             {
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
+
+                $unset = [];
+
+                foreach ($issue as $field => $value) {
+                    if ($value == "%%unset") {
+                        $unset[$field] = true;
+                        $issue[$field] = null;
+                    }
+                }
 
                 $comment = false;
                 $commentPrivate = false;
@@ -157,16 +166,21 @@
 
                 $issue = $this->checkIssue($issue);
 
-                $issue["updated"] = time();
+                if ($apUpdated) {
+                    $issue["updated"] = time();
+                }
 
                 if ($issue) {
                     $old = $this->getIssue($issue["issueId"]);
                     $update = false;
                     if ($old) {
                         $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                        if (count($unset)) {
+                            $update = $update && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$unset" => $unset ]);
+                        }
                     }
                     if ($update) {
-                        $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
+                        $update = $update && $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
                     }
                     return $update;
                 }
@@ -242,25 +256,37 @@
                 $preprocess["%%my"] = $my;
 
                 $preprocess["%%strToday"] = date("Y-m-d");
-                $preprocess["%%strYesterday"] = date("Y-m-d", strtotime("-1 day"));
-                $preprocess["%%strTomorrow"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday+1day"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday-1day"] = date("Y-m-d", strtotime("-1 day"));
 
                 $preprocess["%%timestamp"] = time();
                 $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
-                $preprocess["%%timestampYesterday"] = strtotime(date("Y-m-d", strtotime("-1 day")));
-                $preprocess["%%timestampTomorrow"] = strtotime(date("Y-m-d", strtotime("+1 day")));
+
+                $preprocess["%%timestamp+1hour"] = strtotime(date("Y-m-d", strtotime("+1 hour")));
+                $preprocess["%%timestamp+2hours"] = strtotime(date("Y-m-d", strtotime("+2 hour")));
+                $preprocess["%%timestamp+4hours"] = strtotime(date("Y-m-d", strtotime("+4 hour")));
+                $preprocess["%%timestamp+8hours"] = strtotime(date("Y-m-d", strtotime("+8 hour")));
+                $preprocess["%%timestamp+1day"] = strtotime(date("Y-m-d", strtotime("+1 day")));
                 $preprocess["%%timestamp+2days"] = strtotime(date("Y-m-d", strtotime("+2 day")));
                 $preprocess["%%timestamp+3days"] = strtotime(date("Y-m-d", strtotime("+3 day")));
                 $preprocess["%%timestamp+7days"] = strtotime(date("Y-m-d", strtotime("+7 day")));
                 $preprocess["%%timestamp+1month"] = strtotime(date("Y-m-d", strtotime("+1 month")));
                 $preprocess["%%timestamp+1year"] = strtotime(date("Y-m-d", strtotime("+1 year")));
+                $preprocess["%%timestamp+2years"] = strtotime(date("Y-m-d", strtotime("+2 year")));
+                $preprocess["%%timestamp+3years"] = strtotime(date("Y-m-d", strtotime("+3 year")));
+                
+                $preprocess["%%timestamp-1hour"] = strtotime(date("Y-m-d", strtotime("-1 hour")));
+                $preprocess["%%timestamp-2hours"] = strtotime(date("Y-m-d", strtotime("-2 hour")));
+                $preprocess["%%timestamp-4hours"] = strtotime(date("Y-m-d", strtotime("-4 hour")));
+                $preprocess["%%timestamp-8hours"] = strtotime(date("Y-m-d", strtotime("-8 hour")));
+                $preprocess["%%timestamp-1day"] = strtotime(date("Y-m-d", strtotime("-1 day")));
                 $preprocess["%%timestamp-2days"] = strtotime(date("Y-m-d", strtotime("-2 day")));
                 $preprocess["%%timestamp-3days"] = strtotime(date("Y-m-d", strtotime("-3 day")));
                 $preprocess["%%timestamp-7days"] = strtotime(date("Y-m-d", strtotime("-7 day")));
                 $preprocess["%%timestamp-1month"] = strtotime(date("Y-m-d", strtotime("-1 month")));
                 $preprocess["%%timestamp-1year"] = strtotime(date("Y-m-d", strtotime("-1 year")));
-                $preprocess["%%timestamp-2year"] = strtotime(date("Y-m-d", strtotime("-2 year")));
-                $preprocess["%%timestamp-3year"] = strtotime(date("Y-m-d", strtotime("-3 year")));
+                $preprocess["%%timestamp-2years"] = strtotime(date("Y-m-d", strtotime("-2 year")));
+                $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
                 
                 $query = $this->preprocessFilter($query, $preprocess);
 
@@ -641,12 +667,14 @@
                         $attachment["body"] = base64_decode($attachment["body"]);
                     } else
                     if ($attachment["url"]) {
-                        $attachment["body"] = file_get_contents($attachment["url"]);
+                        $attachment["body"] = @file_get_contents($attachment["url"]);
                     }
                     if (strlen($attachment["body"]) <= 0 || strlen($attachment["body"]) > $project["maxFileSize"]) {
                         return false;
                     }
                 }
+
+                $checksums = [];
 
                 foreach ($attachments as $attachment) {
                     $meta = [];
@@ -655,7 +683,7 @@
                         $meta = $attachment["metadata"];
                     }
 
-                    $meta["date"] = round($attachment["date"] / 1000);
+                    $meta["date"] = $attachment["date"]?round($attachment["date"] / 1000):time();
                     $meta["added"] = time();
                     $meta["type"] = $attachment["type"];
                     $meta["issue"] = true;
@@ -680,10 +708,12 @@
                         ])
                     )) {
                         return false;
+                    } else {
+                        $checksums[$attachment["name"]] = md5($attachment["body"]);
                     }
                 }
 
-                return true;
+                return $checksums;
             }
 
             /**
@@ -731,6 +761,198 @@
                 }
 
                 return $delete;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addArrayValue($issueId, $field, $value) {
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                $customFields = $this->getCustomFields();
+
+                $project = false;
+                $projects = $this->getProjects();
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == $acr) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                if (!$project) {
+                    return false;
+                }
+
+                $f = false;
+                foreach ($customFields as $cf) {
+                    if ($field == "_cf_" . $cf["field"]) {
+                        if ($cf["type"] == "array" && in_array($cf["customFieldId"], $project["customFields"])) {
+                            $f = true;
+                        }
+                        break;
+                    }
+                }
+
+                if (!$f) {
+                    return false;
+                }
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $value = trim($value);
+                if (!$value) {
+                    return false;
+                }
+
+                $issue = $this->getIssue($issueId);
+
+                if (!$issue) {
+                    return false;
+                }
+
+                if ($issue[$field] && in_array($value, $issue[$field])) {
+                    return false;
+                }
+
+                $this->addJournalRecord($issueId, "addArrayValue", null, [
+                    $field => $value,
+                ]);
+
+                return $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$push" => [
+                            $field => $value,
+                        ],
+                    ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$set" => [
+                            "updated" => time(),
+                        ],
+                    ]
+                );
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteArrayValue($issueId, $field, $value) {
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                $customFields = $this->getCustomFields();
+
+                $project = false;
+                $projects = $this->getProjects();
+                foreach ($projects as $p) {
+                    if ($p["acronym"] == $acr) {
+                        $project = $p;
+                        break;
+                    }
+                }
+
+                if (!$project) {
+                    return false;
+                }
+
+                $f = false;
+                foreach ($customFields as $cf) {
+                    if ($field == "_cf_" . $cf["field"]) {
+                        if ($cf["type"] == "array" && in_array($cf["customFieldId"], $project["customFields"])) {
+                            $f = true;
+                        }
+                        break;
+                    }
+                }
+
+                if (!$f) {
+                    return false;
+                }
+
+                $db = $this->dbName;
+                $acr = explode("-", $issueId)[0];
+
+                $roles = $this->myRoles();
+
+                if (!@$roles[$acr] || $roles[$acr] < 20) {
+                    return false;
+                }
+
+                $value = trim($value);
+                if (!$value) {
+                    return false;
+                }
+
+                $issue = $this->getIssue($issueId);
+
+                if (!$issue) {
+                    return false;
+                }
+
+                if (!array_key_exists($field, $issue)) {
+                    return false;
+                }
+
+                if (!in_array($value, $issue[$field])) {
+                    return false;
+                }
+
+                $this->addJournalRecord($issueId, "deleteArrayValue", null, [
+                    $field => $value,
+                ]);
+
+                $result = $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$unset" => [
+                            $field . "." . array_search($value, $issue[$field]) => true,
+                        ],
+                    ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$pull" => [
+                            $field  => null,
+                        ],
+                    ]
+                ) &&
+                $this->mongo->$db->$acr->updateOne(
+                    [
+                        "issueId" => $issueId,
+                    ],
+                    [
+                        "\$set" => [
+                            "updated" => time(),
+                        ],
+                    ]
+                );
+
+                if ($result) {
+                    $issue = $this->getIssue($issueId);
+                    if (!count($issue[$field])) {
+                        $result = $result && $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ "\$unset" => [ $field => true ] ]);
+                    }
+                }
+
+                return $result;
             }
 
             /**

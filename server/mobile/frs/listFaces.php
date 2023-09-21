@@ -11,7 +11,7 @@
  *
  * @apiParam {integer} flatId идентификатор квартиры (адрес)
  * @apiSuccess {object[]} - массив объектов
- * @apiSuccess {integer} -.faceId идентификатор "лица"
+ * @apiSuccess {string} -.faceId идентификатор "лица"
  * @apiSuccess {string} -.image url картинки
  */
 
@@ -49,7 +49,7 @@ $subscriber_id = (int)$subscriber['subscriberId'];
 $faces = $frs->listFaces($flat_id, $subscriber_id, $flat_owner);
 $result = [];
 foreach ($faces as $face) {
-    $result[] = ['faceId' => $face[frs::P_FACE_ID], 'image' => @$config["api"]["mobile"] . "/address/plogCamshot/" . $face[frs::P_FACE_IMAGE]];
+    $result[] = ['faceId' => strval($face[frs::P_FACE_ID]), 'image' => @$config["api"]["mobile"] . "/address/plogCamshot/" . $face[frs::P_FACE_IMAGE]];
 }
 
 if ($result) {

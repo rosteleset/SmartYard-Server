@@ -1,0 +1,235 @@
+{
+    "sheet": "Общий",
+    "date": "2023-09-07",
+    "timeClass": "font-weight-bold",
+    "emptyClass": "bg-lightgray",
+    "blockedClass": "bg-primary data-login",
+    "reservedClass": "bg-purple data-login",
+    "issueCoordinatedClass": "font-weight-bold text-dark",
+    "issueAssignedClass": "bg-success",
+    "issueDoneClass": "text-decoration-line-through",
+    "issueClosedClass": "bg-dark text-decoration-line-through",
+    "loginClass": "font-weight-normal",
+    "expireCondition": "(new Date()).getTime() + 30 * 60 * 1000 >= (new Date(sheetDate + ' ' + cellTime)).getTime()",
+    "doneCondition": "issue._cf_install_done",
+    "closedCondition": "issue.status == 'Закрыта'",
+    "project": "RTL",
+    "action": "Координация",
+    "setAssignedAction": "Назначить исполнителей",
+    "fields": {
+        "sheet": "_cf_sheet",
+        "date": "_cf_sheet_date",
+        "col": "_cf_sheet_col",
+        "row": "_cf_sheet_cell",
+        "cells": "_cf_sheet_cells",
+        "assigned": "_cf_installers"
+    },
+    "issuesQuery": {
+        "query": {
+            "$and": [
+                {
+                    "_cf_sheet": "%%sheet"
+                },
+                {
+                    "_cf_sheet_date": "%%date"
+                },
+                {
+                    "workflow": {
+                        "$in": [
+                            "lanta"
+                        ]
+                    }
+                }
+            ]
+        },
+        "fields": [
+            "_cf_sheet_col",
+            "_cf_sheet_cell",
+            "_cf_sheet_cells",
+            "_cf_installers",
+            "_cf_install_done",
+            "status"
+        ],
+        "limit": 500,
+        "preprocess": {
+            "%%sheet": "Общий",
+            "%%date": "2023-09-06"
+        },
+        "project": "RTL"
+    },
+    "specialRows": [
+        "08:00",
+        "13:00"
+    ],
+    "rowsTemplates": {
+        "default": [
+            "08:00",
+            "09:00",
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00"
+        ],
+        "up": [
+            "08:00",
+            "09:00",
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00"
+        ],
+        "down": [
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00"
+        ]
+    },
+    "specialRowClass": "bg-warning",
+    "weights": {
+        "Резерв 1": "Я",
+        "Резерв 2": "Я"
+    },
+    "data": [
+        {
+            "col": "МКД Север 1",
+            "part": "МКД",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "МКД Север 2",
+            "part": "МКД",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": [
+                "mmikel"
+            ]
+        },
+        {
+            "col": "МКД Центр 1",
+            "part": "МКД",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": [
+                "mmikel"
+            ]
+        },
+        {
+            "col": "МКД Центр 2",
+            "part": "МКД",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "МКД Юг 1",
+            "part": "МКД",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "МКД Юг 2",
+            "part": "МКД",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "ЧС Север 1",
+            "part": "ЧС",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "ЧС Север 2",
+            "part": "ЧС",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "ЧС Центр 1",
+            "part": "ЧС",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "ЧС Центр 2",
+            "part": "ЧС",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "ЧС Юг 1",
+            "part": "ЧС",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "ЧС Юг 2",
+            "part": "ЧС",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "Fast",
+            "part": "Прочее",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": [
+                "mpozdnyakov"
+            ]
+        },
+        {
+            "col": "Курьер",
+            "part": "Прочее",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "Домофония",
+            "part": "Прочее",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "Оптика",
+            "part": "Прочее",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "Мич 1",
+            "part": "Прочее",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        },
+        {
+            "col": "Мич 2",
+            "part": "Прочее",
+            "class": "font-weight-bold bg-gray",
+            "rows": "default",
+            "logins": []
+        }
+    ]
+}

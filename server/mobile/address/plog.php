@@ -122,10 +122,10 @@ try {
             $face = json_decode($row[plog::COLUMN_FACE], false);
             if (isset($face->width) && $face->width > 0 && isset($face->height) && $face->height > 0) {
                 $e_details['detailX']['face'] = [
-                    'left' => $face->left,
-                    'top' => $face->top,
-                    'width' => $face->width,
-                    'height' => $face->height
+                    'left' => strval($face->left),
+                    'top' => strval($face->top),
+                    'width' => strval($face->width),
+                    'height' => strval($face->height)
                 ];
                 $frs = loadBackend("frs");
                 if ($frs) {

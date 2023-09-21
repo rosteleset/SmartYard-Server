@@ -524,9 +524,10 @@
              * @param $searchSubject
              * @param $searchDescription
              * @param $searchComments
+             * @param $assigned
              * @return boolean
              */
-            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments);
+            abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments, $assigned);
 
             /**
              * delete project and all it derivatives
@@ -1165,11 +1166,13 @@
                     if (!in_array($field, $validFields)) {
                         unset($issue[$field]);
                     } else {
-                        if (array_key_exists($field, $customFieldsByName)) {
-                            if (strpos($customFieldsByName[$field]["format"], "multiple") !== false) {
-                                $issue[$field] = array_values($value);
-                            } else {
-                                $issue[$field] = self::av($value);
+                        if ($value !== null) {
+                            if (array_key_exists($field, $customFieldsByName)) {
+                                if (strpos($customFieldsByName[$field]["format"], "multiple") !== false || $customFieldsByName[$field]["type"] == "array") {
+                                    $issue[$field] = array_values($value);
+                                } else {
+                                    $issue[$field] = self::av($value);
+                                }
                             }
                         }
                     }
@@ -1272,7 +1275,7 @@
              * @param $workflowAction
              * @return mixed
              */
-            abstract protected function modifyIssue($issue, $workflowAction = false);
+            abstract protected function modifyIssue($issue, $workflowAction = false, $apUpdated = true);
 
             /**
              * @param $issueId
@@ -1295,9 +1298,11 @@
              * @param $issueId
              * @param $comment
              * @param $private
+             * @param $type
+             * @param $silent
              * @return mixed
              */
-            abstract public function addComment($issueId, $comment, $private);
+            abstract public function addComment($issueId, $comment, $private, $type = false, $silent = false);
 
             /**
              * @param $issueId
@@ -1328,6 +1333,22 @@
              * @return mixed
              */
             abstract public function deleteAttachment($issueId, $filename);
+
+            /**
+             * @param $issueId
+             * @param $field
+             * @param $value
+             * @return mixed
+             */
+            abstract public function addArrayValue($issueId, $field, $value);
+
+            /**
+             * @param $issueId
+             * @param $field
+             * @param $value
+             * @return mixed
+             */
+            abstract public function deleteArrayValue($issueId, $field, $value);
 
             /**
              * @param $uid
@@ -1663,6 +1684,10 @@
                 foreach ($tasks as $task) {
                     try {
                         $this->setCreds($task["uid"], $task["login"]);
+                        $journal = loadBackend("tt_journal");
+                        if ($journal) {
+                            $journal->setCreds($task["uid"], $task["login"]);
+                        }
                         $filter = @json_decode($this->getFilter($task["filter"]), true);
                         if ($filter) {
                             $skip = 0;

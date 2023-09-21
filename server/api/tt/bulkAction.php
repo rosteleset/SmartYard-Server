@@ -31,9 +31,9 @@
                             }
                             $success = $success && $tt->loadWorkflow($issue["workflow"])->action($issue, $params["action"], $tt->getIssue($issue["issueId"]));
                         }
-
-                        return api::ANSWER($success);
                     }
+
+                    return api::ANSWER($success);
                 }
 
                 return api::ERROR();

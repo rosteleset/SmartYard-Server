@@ -5,6 +5,17 @@
     defaultPagerItemsCount: 10,
     menuItem: false,
 
+    specialActions: [
+        "saAddComment",
+        "saAddFile",
+        "saAssignToMe",
+        "saWatch",
+        "saDelete",
+        "saSubIssue",
+        "saCoordinate",
+        "saLink",
+    ],
+
     init: function () {
         
         if (AVAIL("tt", "tt")) {
@@ -325,7 +336,6 @@
                         id: "tags",
                         type: "select2",
                         tags: true,
-                        createTags: false,
                         multiple: true,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
@@ -337,10 +347,10 @@
                     return {
                         id: "assigned",
                         type: "select2",
-                        multiple: true,
+                        multiple: [3, 4, 5].indexOf(parseInt(project.assigned)) >= 0,
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        options: select2Filter(peoples(project, true, true), filter),
+                        options: select2Filter(peoples(project, [0, 2, 3, 5].indexOf(parseInt(project.assigned)) >= 0, [0, 1, 3, 4].indexOf(parseInt(project.assigned)) >= 0), filter),
                         value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.assigned)?Object.values(issue.assigned):[]),
                     };
 
@@ -491,8 +501,9 @@
                     }
                 }
 
-                if (cf) {
+                if (cf && cf.type !== "virtual") {
                     let validate = false;
+                    
                     if (cf.required && !cf.regex) {
                         validate = new Function ("v", `return v && $.trim(v) !== "";`);
                     } else
@@ -515,6 +526,15 @@
                             if (cf.editor == "noyes") {
                                 prefferredValue = 0;
                             }
+
+                            let ro = cf.editor == "text-ro";
+                            let val = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"");
+
+                            if (cf.editor == "date" || cf.editor == "datetime-local") {
+                                if (parseInt(val) <= 0) {
+                                    val = '';
+                                }
+                            }
                             
                             if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
@@ -527,7 +547,8 @@
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 sec: true,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:""),
+                                value: val,
+                                readonly: ro,
                                 validate: validate,
                             }
 
@@ -574,6 +595,47 @@
                                 validate: validate,
                             }
 
+                        case "array":
+                            let ax = [];
+                            for (let i in issue["_cf_" + fieldId]) {
+                                options.push({
+                                    id: issue["_cf_" + fieldId][i],
+                                    text: issue["_cf_" + fieldId][i],
+                                });
+                                ax.push(issue["_cf_" + fieldId][i]);
+                            }
+                            options.sort((a, b) => {
+                                if (a.id > b.id) {
+                                    return 1;
+                                }
+                                if (a.id < b.id) {
+                                    return -1;
+                                }
+                                return 0;
+                            });
+                            ax.sort((a, b) => {
+                                if (a > b) {
+                                    return 1;
+                                }
+                                if (a < b) {
+                                    return -1;
+                                }
+                                return 0;
+                            })
+                            return {
+                                id: "_cf_" + fieldId,
+                                type: "select2",
+                                title: modules.tt.issueFieldTitle(field),
+                                placeholder: modules.tt.issueFieldTitle(field),
+                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                options: select2Filter(options, filter),
+                                multiple: true,
+                                tags: true,
+                                createTags: true,
+                                value: (typeof prefferredValue !== "undefined")?prefferredValue:(ax?ax:[]),
+                                validate: validate,
+                            }
+    
                         case "geo":
                             let vx;
                             
@@ -749,13 +811,13 @@
             val = issue[field];
         }
 
-        if (val == null || val == "&nbsp;") {
-            return "";
-        }
-
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
             val = modules.tt.viewers[field][v](val, issue, field, target);
         } else {
+            if (val == null || val == "&nbsp;") {
+                return "";
+            }
+    
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
                     case "description":
@@ -834,6 +896,10 @@
                     case "commentCreated":
                         val = ttDate(val);
                         break;
+
+                    case "workflowAction":
+                        val = modules.tt.displayAction(val);
+                        break;
                 }
             } else {
                 field = field.substring(4);
@@ -879,6 +945,54 @@
                         }
                         break;
 
+                    case "array":
+                        if (val) {
+                            if (typeof val == "string") {
+                                val = [ val ];
+                            }
+
+                            let vt = [];
+
+                            for (let i in val) {
+                                vt.push(val[i]);
+                            }
+
+                            vt.sort((a, b) => {
+                                if (a > b) {
+                                    return 1;
+                                }
+                                if (a < b) {
+                                    return -1;
+                                }
+                                return 0;
+                            });
+
+                            let t = "";
+
+                            if (target != "journal") {
+                                t = "<ul class='mb-1'>";
+                            
+                                for (let i in vt) {
+                                    t += `<li>${escapeHTML(vt[i])}</li>`;
+                                }
+        
+                                t += "</ul>";
+                            } else {
+                                for (let i in vt) {
+                                    t += escapeHTML(vt[i]) + ", ";
+                                }
+
+                                if (t) {
+                                    t = t.substring(0, t.length - 2);
+                                }
+                            }
+
+                            val = t;
+                        } else {
+                            val = '';
+                        }
+                        break;
+        
                     case "text":
                         if (cf.format) {
                             val = sprintf(cf.format, val);
@@ -964,6 +1078,14 @@
         return val;
     },
 
+    displayAction: function (action) {
+        if (modules.tt.specialActions.indexOf(action) >= 0) {
+            return i18n("tt." + action);
+        } else {
+            return action
+        }
+    },
+
     tt: function (tt) {
         modules.tt.meta = tt["meta"];
 
@@ -1029,7 +1151,7 @@
             if (AVAIL("tt", "project", "POST")) {
                 cog = "";
             }
-            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control">`;
+            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow">`;
             for (let j in modules.tt.meta.myRoles) {
                 if (j == current_project) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
@@ -1040,12 +1162,12 @@
             rtd += `</select></div>`;
             rtd += '<form autocomplete="off">';
             rtd += `<div class="input-group input-group-sm ${cog} ttSearchInputGroup">`;
-            rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div></div>`;
+            rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div>`;
+            rtd += `</div>`;
+            rtd += '</form>';
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
-            rtd += `</div>`;
-            rtd += '</form>';
         } else {
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
@@ -1054,7 +1176,6 @@
 
         if (!target) {
             $("#rightTopDynamic").html(rtd);
-
             current_project = $("#ttProjectSelect").val();
         }
 
@@ -1128,6 +1249,7 @@
                 let tree = (project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter).split("/");
                 let f = filtersTree;
                 for (let j = 0; j < tree.length - 1; j++) {
+                    tree[j] = tree[j].trim();
                     if (!f[tree[j]]) {
                         f[tree[j]] = {};
                     }
@@ -1135,17 +1257,52 @@
                 }
                 f[tree[tree.length - 1]] = project.filters[i];
             }
-    
+
             filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
     
             (function hh(t) {
+                let fMy = [];
+                let fFolders = [];
+                let fPersonal = [];
+                let fGroups = [];
+                let fOthers = [];
+                let ts = [];
+
                 for (let i in t) {
+                    if ($.trim(i.split("/")[0]) == myself.realName) {
+                        fMy.push(i);
+                    } else {
+                        if (!t[i].filter) {
+                            fFolders.push(i);
+                        } else {
+                            if (parseInt(t[i].personal) > 1000000) {
+                                fPersonal.push(i);
+                            } else
+                            if (parseInt(t[i].personal)) {
+                                fGroups.push(i);
+                            } else {
+                                fOthers.push(i);
+                            }
+                        }
+                    }
+                }
+
+                ts = ts.concat(fMy.sort());
+                ts = ts.concat(fFolders.sort());
+                ts = ts.concat(fPersonal.sort());
+                ts = ts.concat(fGroups.sort());
+                ts = ts.concat(fOthers.sort());
+
+                let hasSub = fMy.length || fFolders.length;
+
+                for (let sk in ts) {
+                    let i = ts[sk];
                     if (t[i].filter) {
                         if (x == t[i].filter) {
-                            filters += `<li class="pointer dropdown-item tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter font-weight-bold" data-filter-name="${t[i].filter}">`;
                         } else {
-                            filters += `<li class="pointer dropdown-item tt_issues_filter" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter" data-filter-name="${t[i].filter}">`;
                         }
                         if (parseInt(t[i].personal) > 1000000) {
                             filters += '<i class="fas fa-fw fa-users mr-2"></i>';
@@ -1158,7 +1315,7 @@
                         filters += i + "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item submenu pointer"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += `<li class="dropdown-item pointer submenu" style="width: 300px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
                         filters += '<div class="dropdown-menu">';
                         hh(t[i]);
                         filters += '</div>';
@@ -1167,7 +1324,7 @@
                 }
             })(filtersTree);
     
-            filters += `</ul></span>`;
+            filters += "</ul></span>";
     
             let fp = -1;
             for (let i in project.filters) {
@@ -1177,9 +1334,13 @@
                 }
             }
     
-            if ($.trim(modules.tt.meta.filters[x]) + "-" + md5(lStore("_login") + ":" + $.trim(modules.tt.meta.filters[x])) == x && fp == myself.uid) {
-                filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i> ' + i18n("tt.customFilterEdit") + '</span>';
-                filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i> ' + i18n("tt.customFilterDelete") + '</span>';
+            if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
+                filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i></span><span class="ml-1 hoverable customFilterDelete text-danger" data-filter="' + x + '">' + i18n("tt.customFilterDelete") + '</span>';
+            } else {
+                if (AVAIL("tt", "customFilter") && x) {
+                    filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                }
             }
     
             if (!fcount) {
@@ -1303,6 +1464,11 @@
                 }
             });
 
+            new Clipboard('.cc');
+            $(".viewFilter").off("click").on("click", () => {
+                console.log(x);
+            });
+
             let columns = [ {
                 title: i18n("tt.issueIndx"),
                 nowrap: true,
@@ -1379,7 +1545,11 @@
                         f = false;
                     }
                     if (f && $.trim(f.name) && f.fields) {
-                        let n = $.trim(f.name) + "-" + md5(lStore("_login") + ":" + $.trim(f.name));
+                        let t = $.trim($.trim(f.name).split("/")[0]);
+                        if (t != myself.realName) {
+                            f.name = myself.realName + " / " + $.trim(f.name);
+                        }
+                        let n = md5(md5($.trim(f.name)) + "-" + md5(lStore("_login")));
                         f.fileName = n;
                         loadingStart();
                         PUT("tt", "customFilter", n, {
@@ -1393,14 +1563,24 @@
                         }).
                         fail(FAIL).
                         fail(loadingDone);
+                    } else {
+                        error(i18n("errors.invalidFilter"), i18n("error"), 30);
                     }
                 });
                 if (params.filter && params.filter !== true && params.filter != "empty") {
-                    GET("tt", "customFilter", params.filter).
-                    done(response => {
-                        editor.setValue(response.body, -1);
-                        loadingDone();
-                    });
+                    if (modules.tt.meta.filtersExt[params.filter].owner) {
+                        GET("tt", "customFilter", params.filter).
+                        done(response => {
+                            editor.setValue(response.body, -1);
+                            loadingDone();
+                        });
+                    } else {
+                        GET("tt", "filter", params.filter).
+                        done(response => {
+                            editor.setValue(response.body, -1);
+                            loadingDone();
+                        });
+                    }
                 }
             }
 
@@ -1506,7 +1686,11 @@
         loadingStart();
 
         $("#subTop").html("");
-        $("#altForm").hide();
+
+        if ($("#altForm:visible").length > 0) {
+            $("#mainForm").html("");
+            $("#altForm").hide();
+        }
 
         if (modules.tt.menuItem) {
             $("#" + modules.tt.menuItem).children().first().attr("href", "?#tt&_=" + Math.random());
