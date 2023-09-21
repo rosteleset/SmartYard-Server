@@ -37,6 +37,7 @@
                     $issue = $tt->getIssue($params["_id"]);
 
                     if ($issue) {
+                        $params["set"]["issueId"] = $issue["issueId"];
                         return api::ANSWER($tt->loadWorkflow($issue["workflow"])->action($params["set"], $params["action"], $issue));
                     }
                 }

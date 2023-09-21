@@ -297,7 +297,7 @@
 
                     for (let i in kx) {
                         let fi = modules.tt.issueField2FormFieldEditor(false, kx[i], projectId, ky[kx[i]]);
-                        if (fi) {
+                        if (fi && kx[i] !== "comment" && kx[i] !== "optionalComment") {
                             fields.push(fi);
                         }
                     }
@@ -419,15 +419,14 @@
             
                         if (n) {
                             cardForm({
-                                title: action,
-                                apply: action,
+                                title: modules.tt.displayAction(action),
+                                apply: modules.tt.displayAction(action),
                                 fields: fields,
                                 footer: true,
                                 borderless: true,
                                 size: "lg",
                                 timeout: timeout,
                                 callback: r => {
-                                    r["issueId"] = issue.issue.issueId;
                                     loadingStart();
                                     PUT("tt", "action", issue.issue.issueId, {
                                         set: r,
@@ -442,12 +441,9 @@
                                 },
                             });
                         } else {
-                            mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), action, () => {
+                            mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), modules.tt.displayAction(action), () => {
                                 loadingStart();
                                 PUT("tt", "action", issue.issue.issueId, {
-                                    set: {
-                                        issueId: issue.issue.issueId,
-                                    },
                                     action: action,
                                 }).
                                 fail(FAIL).
@@ -558,23 +554,12 @@
         }
         h += "</span>";
 
-        let specialActions = [
-            "saAddComment",
-            "saAddFile",
-            "saAssignToMe",
-            "saWatch",
-            "saDelete",
-            "saSubIssue",
-            "saCoordinate",
-            "saLink",
-        ];
-
         if (!isEmpty(issue.actions)) {
             let t = 0;
             let la = false;
             for (let i in issue.actions) {
                 if (issue.actions[i].substring(0, 1) === "!") {
-                    if (specialActions.indexOf(issue.actions[i].substring(1)) >= 0) {
+                    if (modules.tt.specialActions.indexOf(issue.actions[i].substring(1)) >= 0) {
                         let a = issue.actions[i].substring(1);
                         h += `<span class="hoverable text-primary mr-3 tt${a.charAt(0).toUpperCase() + a.substring(1)}">${i18n("tt." + a)}</span>`;
                     } else {
@@ -589,7 +574,7 @@
                 }
             }
             if (Object.keys(issue.actions).length - t === 1) {
-                if (specialActions.indexOf(la) >= 0) {
+                if (modules.tt.specialActions.indexOf(la) >= 0) {
                     h += `<span class="hoverable text-primary mr-3 tt${la.charAt(0).toUpperCase() + la.substring(1)}">${i18n("tt." + la)}</span>`;
                 } else {
                     h += `<span class="hoverable text-primary mr-3 ttIssueAction">${la}</span>`;
@@ -612,7 +597,7 @@
                     if (a.substring(0, 1) === "!") {
                         a = a.substring(1);
                     }
-                    if (specialActions.indexOf(a) >= 0) {
+                    if (modules.tt.specialActions.indexOf(a) >= 0) {
                         h += `<li class="pointer dropdown-item tt${a.charAt(0).toUpperCase() + a.substring(1)}">${i18n("tt." + a)}</li>`;
                         hr = false;
                     } else {

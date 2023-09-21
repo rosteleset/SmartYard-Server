@@ -26,20 +26,65 @@
  * 417 ожидание не удалось
  */
 
-function createIssue($adapter, $phone, $data) {
+function createIssue($adapter, $phone, $data)
+{
     $description = $data['issue']['description'];
+    $summary = $data['issue']['summary'];
+
     if (strpos($description, 'Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры') !== false) {
         return $adapter->createIssueForDVRFragment($phone, $description, null, null, null, null);
+    } elseif (strpos($summary, 'Авто: Звонок с приложения') !== false) {
+        if (strpos($description, 'Выполнить звонок клиенту по запросу с приложения') !== false
+            || strpos($description, 'Выполнить звонок клиенту по запросу из приложения') !== false)
+            return $adapter->createIssueCallback($phone);
+        elseif (strpos($description, 'Выполнить звонок клиенту для напоминания номера договора') !== false)
+            return $adapter->createIssueForgotEverything($phone);
+    } elseif (strpos($description, 'Подготовить конверт') !== false) {
+        $lat = $data['customFields']['10743'];
+        $lon = $data['customFields']['10744'];
+        return $adapter->createIssueConfirmAddress($phone, $description, null, null, $lat, $lon);
+    } elseif (strpos($description, 'Удаление адреса') !== false) {
+        $lat = $data['customFields']['10743'];
+        $lon = $data['customFields']['10744'];
+        return $adapter->createIssueDeleteAddress($phone, $description, null, null, $lat, $lon, null);
+    } elseif (strpos($description, 'Список подключаемых услуг') !== false
+        && strpos($description, 'Требуется подтверждение адреса') === false) {
+        $lat = $data['customFields']['10743'];
+        $lon = $data['customFields']['10744'];
+        return $adapter->createIssueUnavailableServices($phone, $description, null, null, $lat, $lon, null);
+    } elseif (strpos($description, 'Выполнить звонок клиенту') !== false) {
+        $lat = $data['customFields']['10743'];
+        $lon = $data['customFields']['10744'];
+        return $adapter->createIssueAvailableWithoutSharedServices($phone, $description, null, null, $lat, $lon, null);
     }
+
+    return false;
 }
 
-    auth();
-    $adapter = loadBackend('issue_adapter');
-    $result = createIssue($adapter, $subscriber['mobile'], $postdata);
-    if ($result !== false)
-        response(200, $result);
-    else
-        response(417, false, false, "Не удалось создать заявку.");
+auth();
+
+// error_log("\n\n" . print_r($postdata, true) . "\n\n");
+
+$adapter = loadBackend('issue_adapter');
+if (!$adapter)
+    response(417, false, false, "Не удалось создать заявку.");
+
+$result = createIssue($adapter, $subscriber['mobile'], $postdata);
+if ($result === false)
+    response(200, "_");
+
+if (empty($result['issueId'])) {
+    response(417, false, false, "Не удалось создать заявку.");
+} else {
+    $issueId = $result['issueId'];
+    if ($result['isNew'] === true) {
+        $inbox = loadBackend("inbox");
+        $inbox->sendMessage($subscriber['subscriberId'], "Заявка создана", "Создана заявка $issueId. По всем вопросам обращайтесь 84752429999");
+        response(200, $issueId);
+    } else {
+        response(417, false, false, "В работе уже есть ранее созданная заявка $issueId. По всем вопросам обращайтесь 84752429999");
+    }
+}
 
 /*
     jira_require();

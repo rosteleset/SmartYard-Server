@@ -41,6 +41,12 @@
                         if (!array_key_exists($key, $new)) {
                             unset($old[$key]);
                         }
+                        if (@is_array(@$old[$key]) && @is_array(@$new[$key])) {
+                            if (!count(array_diff($old[$key], $new[$key]))) {
+                                unset($old[$key]);
+                                unset($new[$key]);
+                            }
+                        } else
                         if (@$old[$key] == @$new[$key]) {
                             unset($old[$key]);
                             unset($new[$key]);

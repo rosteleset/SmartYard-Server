@@ -109,7 +109,7 @@
             /**
              * @inheritDoc
              */
-            protected function modifyIssue($issue, $workflowAction = false)
+            protected function modifyIssue($issue, $workflowAction = false, $apUpdated = true)
             {
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
@@ -166,7 +166,9 @@
 
                 $issue = $this->checkIssue($issue);
 
-                $issue["updated"] = time();
+                if ($apUpdated) {
+                    $issue["updated"] = time();
+                }
 
                 if ($issue) {
                     $old = $this->getIssue($issue["issueId"]);

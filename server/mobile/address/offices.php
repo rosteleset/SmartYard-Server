@@ -17,7 +17,7 @@
  */
 
     auth();
-    response(200, []);
+    response(200, [['address' => 'Test', 'lat' => 50.730641, 'lon' => 43.452340], 'opening' => 'без выходных']);
     /*
     response(200, [
         [

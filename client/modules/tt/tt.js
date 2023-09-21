@@ -5,6 +5,17 @@
     defaultPagerItemsCount: 10,
     menuItem: false,
 
+    specialActions: [
+        "saAddComment",
+        "saAddFile",
+        "saAssignToMe",
+        "saWatch",
+        "saDelete",
+        "saSubIssue",
+        "saCoordinate",
+        "saLink",
+    ],
+
     init: function () {
         
         if (AVAIL("tt", "tt")) {
@@ -490,8 +501,9 @@
                     }
                 }
 
-                if (cf) {
+                if (cf && cf.type !== "virtual") {
                     let validate = false;
+                    
                     if (cf.required && !cf.regex) {
                         validate = new Function ("v", `return v && $.trim(v) !== "";`);
                     } else
@@ -884,6 +896,10 @@
                     case "commentCreated":
                         val = ttDate(val);
                         break;
+
+                    case "workflowAction":
+                        val = modules.tt.displayAction(val);
+                        break;
                 }
             } else {
                 field = field.substring(4);
@@ -1062,6 +1078,14 @@
         return val;
     },
 
+    displayAction: function (action) {
+        if (modules.tt.specialActions.indexOf(action) >= 0) {
+            return i18n("tt." + action);
+        } else {
+            return action
+        }
+    },
+
     tt: function (tt) {
         modules.tt.meta = tt["meta"];
 
@@ -1138,12 +1162,12 @@
             rtd += `</select></div>`;
             rtd += '<form autocomplete="off">';
             rtd += `<div class="input-group input-group-sm ${cog} ttSearchInputGroup">`;
-            rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div></div>`;
+            rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div>`;
+            rtd += `</div>`;
+            rtd += '</form>';
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
             }
-            rtd += `</div>`;
-            rtd += '</form>';
         } else {
             if (AVAIL("tt", "project", "POST")) {
                 rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;

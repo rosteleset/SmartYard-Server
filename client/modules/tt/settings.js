@@ -515,6 +515,10 @@
                             id: "array",
                             text: i18n("tt.customFieldTypeArray"),
                         },
+                        {
+                            id: "virtual",
+                            text: i18n("tt.customFieldTypeVirtual"),
+                        },
                     ]
                 },
                 {
@@ -971,6 +975,7 @@
                         title: i18n("tt.customFieldDescription"),
                         placeholder: i18n("tt.customFieldDescription"),
                         value: cf.fieldDescription,
+                        hidden: cf.type === "virtual",
                     },
                     {
                         id: "regex",
@@ -1055,7 +1060,7 @@
                         placeholder: i18n("tt.customFieldLink"),
                         value: cf.link,
                         hint: i18n("forExample") + " https://example.com/?search=%value%",
-                        hidden: cf.type === "issues" || cf.type === "geo" || cf.type === "array",
+                        hidden: cf.type === "virtual" || cf.type === "issues" || cf.type === "geo" || cf.type === "array",
                     },
                     {
                         id: "options",
@@ -1063,10 +1068,10 @@
                         title: i18n("tt.customFieldOptions"),
                         placeholder: i18n("tt.customFieldOptions"),
                         value: $.trim(options),
-                        hidden: cf.type !== "select",
                         validate: (v, prefix) => {
                             return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
-                        }
+                        },
+                        hidden: cf.type !== "select",
                     },
                     {
                         id: "editable",
@@ -1080,7 +1085,7 @@
                         type: "noyes",
                         title: i18n("tt.multiple"),
                         value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
-                        hidden: cf.type === "text" || cf.type === "geo" || cf.type === "array",
+                        hidden: cf.type === "virtual" || cf.type === "text" || cf.type === "geo" || cf.type === "array",
                     },
                     {
                         id: "usersAndGroups",
@@ -1110,6 +1115,7 @@
                         type: "noyes",
                         title: i18n("tt.customFieldIndex"),
                         value: cf.indx,
+                        hidden: cf.type === "virtual",
                     },
                     {
                         id: "search",
@@ -1123,6 +1129,7 @@
                         type: "noyes",
                         title: i18n("tt.required"),
                         value: cf.required,
+                        hidden: cf.type === "virtual",
                     },
                 ],
                 delete: i18n("tt.customFieldDelete"),
@@ -2620,6 +2627,10 @@
                             editor = i18n("tt.customFieldEditorArray");
                         }
 
+                        if (modules.tt.meta.customFields[i].type === "virtual") {
+                            editor = i18n("tt.customFieldEditorVirtual");
+                        }
+
                         rows.push({
                             uid: modules.tt.meta.customFields[i].customFieldId,
                             cols: [
@@ -2952,19 +2963,11 @@
                         },
                     ];
 
-                    for (let i in modules.tt.meta.projects) {
-                        if (modules.tt.meta.projects[i].projectId == projectId) {
-                            for (let j in modules.tt.meta.projects[i].filters) {
-                                for (let k in modules.tt.meta.filters) {
-                                    if (k == modules.tt.meta.projects[i].filters[j].filter && !modules.tt.meta.projects[i].filters[j].personal) {
-                                        f.push({
-                                            id: k,
-                                            text: trimStr(modules.tt.meta.filters[k], 33, true),
-                                        });
-                                    }
-                                }
-                            }
-                        }
+                    for (let k in modules.tt.meta.filters) {
+                        f.push({
+                            id: k,
+                            text: trimStr(modules.tt.meta.filters[k], 33, false),
+                        });
                     }
 
                     return f;
@@ -2978,19 +2981,11 @@
                         },
                     ];
 
-                    for (let i in modules.tt.meta.projects) {
-                        if (modules.tt.meta.projects[i].projectId == projectId) {
-                            for (let j in modules.tt.meta.projects[i].users) {
-                                for (let k in users) {
-                                    if (users[k].uid == modules.tt.meta.projects[i].users[j].uid) {
-                                        u.push({
-                                            id: users[k].uid,
-                                            text: $.trim((users[k].realName?users[k].realName:users[k].login) + " [" + users[k].login + "]"),
-                                        });
-                                    }
-                                }
-                            }
-                        }
+                    for (let k in users) {
+                        u.push({
+                            id: users[k].uid,
+                            text: $.trim((users[k].realName?users[k].realName:users[k].login) + " [" + users[k].login + "]"),
+                        });
                     }
 
                     return u;
@@ -3024,12 +3019,12 @@
                             select: (el, id, prefix) => {
                                 $(`#${prefix}filter`).html("").select2({
                                     data: filtersByProject(el.val()),
-                                    minimumResultsForSearch: Infinity,
+//                                    minimumResultsForSearch: Infinity,
                                     language: lang["_code"],
                                 });
                                 $(`#${prefix}uid`).html("").select2({
                                     data: uidsByProject(el.val()),
-                                    minimumResultsForSearch: Infinity,
+//                                    minimumResultsForSearch: Infinity,
                                     language: lang["_code"],
                                 });
                             },
