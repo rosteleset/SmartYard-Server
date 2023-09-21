@@ -5,8 +5,8 @@ const net = require("net");
 
 // TODO: check feature
 class QtechService extends SyslogService {
-    constructor(config) {
-        super(SERVICE_QTECH, config);
+    constructor(unit, config) {
+        super(unit, config);
         this.gateRabbits = [];
         this.callDoneFlow = {}
     }

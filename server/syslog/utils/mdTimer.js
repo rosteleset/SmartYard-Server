@@ -9,6 +9,11 @@ const mdStop = async (host) => {
     delete mdStorage[host];
 }
 
+/**
+ * Used for devices that do not have a “Stop motion detection” event, default is 5 seconds
+ * @param host
+ * @param delay
+ */
 const mdTimer = (host, delay = 5000) => {
     if (mdStorage[host]) {
         clearTimeout(mdStorage[host]);

@@ -13,7 +13,7 @@ class SputnikService extends WebHookService {
             const {device_id: deviceId, date_time: datetime, event, Data: payload} = data;
             const now = getTimestamp(new Date(datetime));
 
-            console.log(data)
+            console.table(data)
             switch (event) {
                 case 'intercom.talking':
                     switch (payload?.step) {
@@ -32,7 +32,6 @@ class SputnikService extends WebHookService {
                     break;
 
                 case 'intercom.open_door': // Opening door by DTMF code
-                    console.log({date: now, ip: deviceId, apartmentNumber: parseInt(payload?.flat)})
                     await API.setRabbitGates({date: now, ip: deviceId, apartmentNumber: parseInt(payload?.flat)});
                     break;
 

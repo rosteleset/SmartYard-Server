@@ -1,10 +1,9 @@
-const { SyslogService } = require("./SyslogService");
-const { API, mdTimer } = require("../utils");
-const { SERVICE_IS } = require("../constants");
+const {SyslogService} = require("./SyslogService");
+const {API, mdTimer} = require("../utils");
 
 class IsService extends SyslogService {
-    constructor(config) {
-        super(SERVICE_IS, config);
+    constructor(unit, config) {
+        super(unit, config);
         this.gateRabbits = [];
     }
 

@@ -43,28 +43,28 @@ switch (serviceParam) {
         break;
 
     case SERVICE_BEWARD_DS:
-        const bewardServiceDS = new BewardServiceDS(serviceConfig);
+        const bewardServiceDS = new BewardServiceDS(SERVICE_BEWARD_DS, serviceConfig);
         bewardServiceDS.createSyslogServer();
         break;
 
     case SERVICE_QTECH:
-        const qtechService = new QtechService(serviceConfig);
+        const qtechService = new QtechService(SERVICE_QTECH, serviceConfig);
         qtechService.createSyslogServer();
         qtechService.startDebugServer(); // Use to handle call completion events
         break;  // SERVICE_QTECH: need tests!
 
     case SERVICE_AKUVOX:
-        const akuvoxService = new AkuvoxService(serviceConfig);
+        const akuvoxService = new AkuvoxService(SERVICE_AKUVOX, serviceConfig);
         akuvoxService.createSyslogServer();
         break;
 
     case SERVICE_IS:
-        const isService = new IsService(serviceConfig);
+        const isService = new IsService(SERVICE_IS, serviceConfig);
         isService.createSyslogServer();
         break;
 
     case SERVICE_RUBETEK:
-        const rubetekService = new RubetekService(serviceConfig);
+        const rubetekService = new RubetekService(SERVICE_RUBETEK, serviceConfig);
         rubetekService.createSyslogServer();
         break;
 

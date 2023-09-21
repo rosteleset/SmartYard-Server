@@ -1,32 +1,22 @@
 const {SyslogService} = require("./SyslogService")
-const {API} = require("../utils");
-const {SERVICE_RUBETEK} = require("../constants");
-const {mdTimer} = require("../utils/mdTimer");
+const {API, mdTimer} = require("../utils");
 
 class RubetekService extends SyslogService {
-    constructor(config) {
-        super(SERVICE_RUBETEK, config);
-        //this.gateRabbits = [];
-    }
-
-    filterSpamMessages(msg) {
-        const bewardSpamKeywords = [
-            // TODO: - Rubetek spam keys or remove filters ...
-        ];
-
-        return bewardSpamKeywords.some(keyword => msg.includes(keyword));
+    constructor(unit, config) {
+        super(unit, config);
+        this.gateRabbits = [];
     }
 
     async handleSyslogMessage(now, host, msg) {
         // TODO: check message
         // const msg = message.split(": ")[1].trim();
         const msgParts = msg.split(/[,:]/).filter(Boolean).map(part => part.trim());
-        
+
 
         // Motion detection (face detection): start
         if (msgParts[2] === 'The face was detected and sent to the server') {
-            await API.motionDetection({ date: now, ip: host, motionActive: true });
-            await mdTimer(host, 5000);
+            await API.motionDetection({date: now, ip: host, motionActive: true});
+            await mdTimer(host);
         }
 
         // Call start
@@ -36,7 +26,7 @@ class RubetekService extends SyslogService {
 
             // Call in gate mode with prefix: potential white rabbit
             if (msgParts[3] === 'false' && number.length > 4 && number.length < 10) {
-                gateRabbits[host] = {
+                this.gateRabbits[host] = {
                     ip: host,
                     prefix: parseInt(number.substring(0, 4)),
                     apartmentNumber: parseInt(number.substring(4)),
@@ -48,9 +38,9 @@ class RubetekService extends SyslogService {
 
         // Incoming DTMF for white rabbit: sending rabbit gate update
         if (msgParts[4] === 'Open door by DTMF') {
-            if (gateRabbits[host]) {
-                const { ip, prefix, apartmentNumber } = gateRabbits[host];
-                await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
+            if (this.gateRabbits[host]) {
+                const {ip, prefix, apartmentNumber} = this.gateRabbits[host];
+                await API.setRabbitGates({date: now, ip, prefix, apartmentNumber});
             }
         }
 
@@ -63,13 +53,13 @@ class RubetekService extends SyslogService {
                 door = 1;
             }
 
-            await API.openDoor({ date: now, ip: host, door: door, detail: rfid, by: "rfid" });
+            await API.openDoor({date: now, ip: host, door: door, detail: rfid, by: "rfid"});
         }
 
         // Opening door by personal code
         if (msgParts[4] === 'Access allowed by apartment code') {
             const code = parseInt(msgParts[2]);
-            await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
+            await API.openDoor({date: now, ip: host, detail: code, by: "code"});
         }
 
         // Opening door by button pressed

@@ -8,7 +8,34 @@ class BewardService extends SyslogService {
     }
 
     filterSpamMessages(msg) {
-        const bewardSpamKeywords = ["RTSP", "DestroyClientSession", "Request: /cgi-bin/images_cgi", "GetOneVideoFrame", "SS_FLASH", "SS_NOIPDDNS", "Have Check Param Change Beg Save", "Param Change Save To Disk Finish", "User Mifare CLASSIC key", "Exits doWriteLoop", "busybox-lib: udhcpc:", "ssl_connect", "ipdsConnect", "SS_NETTOOL_SetupNetwork", "SS_VO_Init", "SS_AI_Init", "SS_AENC_Init", "SS_ADEC_Init", "Start SS", "SS_VENC", "SS_MEMFILE_", "Task", "video stream", "Modify System KeepAlive", "SS_VENC_InitEncoder", "SSSNet",];
+        const bewardSpamKeywords = [
+            "RTSP",
+            "DestroyClientSession",
+            "Request: /cgi-bin/images_cgi",
+            "GetOneVideoFrame",
+            "SS_FLASH",
+            "SS_NOIPDDNS",
+            "Have Check Param Change Beg Save",
+            "Param Change Save To Disk Finish",
+            "User Mifare CLASSIC key",
+            "Exits doWriteLoop",
+            "busybox-lib: udhcpc:",
+            "ssl_connect",
+            "ipdsConnect",
+            "SS_NETTOOL_SetupNetwork",
+            "SS_VO_Init",
+            "SS_AI_Init",
+            "SS_AENC_Init",
+            "SS_ADEC_Init",
+            "Start SS",
+            "SS_VENC",
+            "SS_MEMFILE_",
+            "Task",
+            "video stream",
+            "Modify System KeepAlive",
+            "SS_VENC_InitEncoder",
+            "SSSNet",
+        ];
 
         return bewardSpamKeywords.some(keyword => msg.includes(keyword));
     }

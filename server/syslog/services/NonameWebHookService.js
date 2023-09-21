@@ -1,3 +1,4 @@
+// example webhook service
 const {WebHookService} = require("./WebHookService");
 
 class NonameWebHookService  extends  WebHookService{
