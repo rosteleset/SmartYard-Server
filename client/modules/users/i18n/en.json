@@ -1,0 +1,78 @@
+{
+    "users": "Users",
+    "uid": "#",
+    "login": "Login",
+    "realName": "Full Name",
+    "addUser": "Add User",
+    "confirmDelete": "Delete user \"#%s\"?",
+    "edit": "Edit User",
+    "delete": "Delete User",
+    "add": "Add User",
+    "setPassword": "Set Password",
+    "password": "Password",
+    "disabled": "Disabled",
+    "userWasChanged": "Changes saved successfully",
+    "userWasAdded": "User added",
+    "userWasDeleted": "User deleted",
+    "defaultRoute": "Default Page",
+    "persistentToken": "Persistent Token",
+    "blocked": "Blocked",
+    "blockedShort": "Block",
+    "tg": "Telegram (id)",
+    "telegram": "Tg",
+    "notification": "Notifications",
+    "notificationNone": "No Notifications",
+    "notificationTgEmail": "Prefer Telegram",
+    "notificationEmailTg": "Prefer Email",
+    "notificationTg": "Telegram Only",
+    "notificationEmail": "Email Only",
+    "lastLogin": "Last Login",
+    "lastAction": "Last Action",
+    "ip": "Address",
+    "started": "Start",
+    "updated": "Update",
+    "dropSession": "Drop Session",
+    "sessions": "Sessions",
+    "confirmDropSession": "Drop Session?",
+    "sessionType": "Session Type",
+    "sessionPersistent": "Persistent",
+    "sessionOrdinal": "Regular",
+    "sessionBase64": "API",
+    "primaryGroup": "Primary Group",
+    "methods": {
+        "accounts": {
+            "_title": "Accounts",
+            "group": {
+                "_title": "Group",
+                "GET": "View",
+                "PUT": "Edit",
+                "POST": "Create",
+                "DELETE": "Delete"
+            },
+            "user": {
+                "_title": "User",
+                "GET": "View",
+                "PUT": "Edit",
+                "POST": "Create",
+                "DELETE": "Delete"
+            },
+            "groupUsers": {
+                "_title": "Group Users",
+                "GET": "View",
+                "PUT": "Assign"
+            },
+            "password": {
+                "_title": "Password",
+                "POST": "Set"
+            },
+            "users": {
+                "_title": "Users",
+                "GET": "List"
+            },
+            "groups": {
+                "_title": "Groups",
+                "GET": "List"
+            }
+        }
+    }
+}
