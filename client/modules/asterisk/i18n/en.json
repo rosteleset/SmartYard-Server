@@ -1,0 +1,6 @@
+{
+    "asterisk": "WebRTC",
+    "outgoingCall": "Outgoing Call",
+    "dialing": "Called: %S",
+    "dialFail": "Number Dialing Error"
+}

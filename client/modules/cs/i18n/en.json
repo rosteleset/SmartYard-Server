@@ -1,0 +1,48 @@
+{
+    "cs": "Coordination sheet",
+    "sheetSave": "Save",
+    "sheetWasSaved": "The coordination sheet is preserved",
+    "addSheet": "Add coordination sheet",
+    "editSheet": "Edit a sheet of coordination",
+    "deleteSheet": "Delete a sheet of coordination",
+    "notFound": "No coordination sheet is found or cannot be loaded",
+    "errorLoadingSheet": "Coordination sheet load error",
+    "sheet": "Sheet",
+    "date": "date",
+    "action": "Action",
+    "coordinateOrReserve": "Coordinate or reserve?",
+    "coordinate": "Coordinate",
+    "reserve": "Make a reservation",
+    "coordinateOrUnReserve": "Combine or remove from the reserve?",
+    "unReserve": "Remove from the reserve",
+    "confirmDeleteSheet": "Delete a sheet of coordination \"%s\" for \"%s\"?",
+    "selectIssue": "Indicate the task",
+    "setAssigners": "Indicate the performers",
+    "assignAll": "Appoint performers",
+    "clearAssigners": "Remove the appointed",
+    "setColLogins": "Indicate the performers",
+    "colLogins": "Performers",
+    "done": "Applications are processed",
+    "cloneSheet": "Clone",
+    "confirmUnReserve": "Remove from the reserve?",
+    "comment": "Comment",
+    "methods": {
+        "cs": {
+            "_title": "Coordination sheet",
+            "sheet": {
+                "_title": "Coordination sheet",
+                "PUT": "Change",
+                "DELETE": "Removal"
+            },
+            "cell": {
+                "_title": "Slots",
+                "PUT": "Control"
+            },
+            "reserveCell": {
+                "_title": "Reservation of slots",
+                "PUT": "Reservation",
+                "DELETE": "Cancellation"
+            }
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "providers": "Provider",
+    "save": "Save",
+    "fileWasSaved": "File saved",
+    "id": "#",
+    "uid": "Identifier",
+    "baseUrl": "Home Page",
+    "name": "Name",
+    "tokenCommon": "Common Token",
+    "tokenSms": "Token for sending SMS",
+    "deleteProvider": "Delete provider?",
+    "confirmDeleteProvider": "Delete provider \"#%S\"?",
+    "providerWasAdded": "Provider added",
+    "providerWasChanged": "Provider changed",
+    "providerWasDeleted": "Provider deleted",
+    "addProvider": "Add provider",
+    "modifyProvider": "Modify provider parameters",
+    "hidden": "Hidden",
+    "methods": {
+        "providers": {
+            "_title": "Providers",
+            "provider": {
+                "_title": "Providers",
+                "GET": "View",
+                "PUT": "Edit"
+            }
+        }
+    }
+}
