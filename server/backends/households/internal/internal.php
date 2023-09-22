@@ -553,6 +553,11 @@
                         $params["openCode"] = 11000 + rand(0, 88999);
                     }
 
+                    if (array_key_exists("contract", $params) && !checkStr($params["contract"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     $params["floor"] = (int)@$params["floor"];
 
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
@@ -568,7 +573,8 @@
                         "white_rabbit" => "whiteRabbit",
                         "sip_enabled" => "sipEnabled",
                         "sip_password" => "sipPassword",
-                        "cms_enabled" => "cmsEnabled"
+                        "cms_enabled" => "cmsEnabled",
+                        "contract" => "contract",
                     ], $params);
 
                     if ($mod !== false && array_key_exists("flat", $params) && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {
