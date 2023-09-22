@@ -5,7 +5,8 @@
         "frontend": "https://example.com/frontend",
         "asterisk": "http://127.0.0.1/asterisk",
         "internal": "http://127.0.0.1/internal",
-        "mobile": "https://example.com/mobile"
+        "mobile": "https://example.com/mobile",
+        "kamailio": "http://example.com/kamailio"
     },
 
     "mobile": {
@@ -139,12 +140,14 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "<!-- your asterisk server external ip here --!>"
+                    "ip": "<!-- your asterisk server external ip here --!>",
+                    "sip_tcp_port": "<!-- set your asterisk tcp port here --!>",
+                    "sip_udp_port": "<!-- set your asterisk udp port here --!>"
                 },
                 {
                     "title": "SBC server | Kamailio",
                     "type": "kamailio",
-                    "ip": "<!-- set your kamailio domain or ip address --!>",
+                    "ip": "<!-- set your kamailio domain or external ip address --!>",
                     "sip_tcp_port": "<!-- set your kamailio tcp port here --!>",
                     "sip_udp_port": "<!-- set your kamailio udp port here --!>",
                     "sip_tls_port": "<!-- set your kamailio tls port here --!>",

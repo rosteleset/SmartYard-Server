@@ -5,6 +5,7 @@ api:
   asterisk: http://127.0.0.1/asterisk
   internal: http://127.0.0.1/internal
   mobile: https://example.com/mobile
+  kamailio: https://example.com/kamailio
 mobile:
   web_server_base_path: https://example.com/static/
   payments: true
@@ -101,6 +102,16 @@ backends:
         type: asterisk
         trunk: first
         ip: "<!-- your asterisk server external ip here --!>"
+        sip_tcp_port: "<!-- set your asterisk tcp port here --!>"
+        sip_udp_port: "<!-- set your asterisk udp port here --!>"
+      - title: SBC server | Kamailio
+        type: kamailio
+        "ip": "<!-- set your kamailio domain or external ip address --!>",
+        sip_tcp_port: "<!-- set your kamailio tcp port here --!>",
+        sip_udp_port: "<!-- set your kamailio udp port here --!>",
+        sip_tls_port: "<!-- set your kamailio tls port here --!>",
+        auth_token: "<!-- id use bearer token for auth set token or remove this key --!>"
+
     stuns:
       - stun:stun.l.google.com:19302
   frs:
