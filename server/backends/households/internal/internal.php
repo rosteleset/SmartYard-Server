@@ -37,7 +37,8 @@
                         sip_enabled, 
                         sip_password,
                         last_opened,
-                        cms_enabled
+                        cms_enabled,
+                        contract
                     from
                         houses_flats
                     where
@@ -58,6 +59,7 @@
                     "sip_password" => "sipPassword",
                     "last_opened" => "lastOpened",
                     "cms_enabled" => "cmsEnabled",
+                    "contract" => "contract",
                 ],
                 [
                     "singlify"
