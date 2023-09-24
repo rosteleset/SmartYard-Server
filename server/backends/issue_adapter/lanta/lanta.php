@@ -37,7 +37,7 @@ namespace backends\issue_adapter {
 
              */
 
-            $prev_issue = $this->getLastOpenedIssue($phone, 9002, time() - 24 * 60 * 60);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9002, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -73,7 +73,7 @@ namespace backends\issue_adapter {
 
         public function createIssueCallback($phone)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9005, time() - 24 * 60 * 60);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -107,7 +107,7 @@ namespace backends\issue_adapter {
 
         public function createIssueForgotEverything($phone)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9005, time() - 24 * 60 * 60);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -141,13 +141,14 @@ namespace backends\issue_adapter {
 
         public function createIssueConfirmAddress($phone, $description, $name, $address, $lat, $lon)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9007, time() - 24 * 60 * 60);
-            if ($prev_issue !== false)
-                return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
-
             $params = $this->extractValuesForConfirmAddress($description);
             $name = $params['name'] ?? "";
             $address = $params['address'] ?? "";
+
+            $prev_issue = $this->getLastOpenedIssue($phone, 9007, $this->config["backends"]["issue_adapter"]["anti_spam_interval"], $address);
+            if ($prev_issue !== false)
+                return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
+
             $content = [
                 "issue" => [
                     "project" => "RTL",
@@ -166,7 +167,7 @@ namespace backends\issue_adapter {
 
         public function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9005, time() - 24 * 60 * 60);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -192,7 +193,7 @@ namespace backends\issue_adapter {
 
         public function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9001, time() - 24 * 60 * 60);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9001, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -218,7 +219,7 @@ namespace backends\issue_adapter {
 
         public function createIssueAvailableWithSharedServices($phone, $description, $name, $address, $lat, $lon, $services)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9006, time() - 24 * 60 * 60);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -245,7 +246,7 @@ namespace backends\issue_adapter {
 
         public function createIssueAvailableWithoutSharedServices($phone, $description, $name, $address, $lat, $lon, $services)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9006, time() - 24 * 60 * 60);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -275,12 +276,10 @@ namespace backends\issue_adapter {
             $content = [
                 "project" => "RTL",
                 "query" => [
-                    '$or' => [
-                        ["catalog" => ['$regex' => "^\\[9001\\].*"]],
-                        ["catalog" => ['$regex' => "^\\[9007\\].*"]],
-                    ],
+                    'description' => ['$regex' => "Адрес, введ[её]нный пользователем"],
                     "_cf_phone" => $phone,
-                    "status" => "Открыта"
+                    "status" => "Открыта",
+                    "catalog" => ['$regex' => "^\\[9007\\].*"]
                 ],
                 "sortBy" => ["created" => 1],
                 "fields" => ["issueId", "description"]
@@ -303,12 +302,66 @@ namespace backends\issue_adapter {
 
             $issues = [];
             foreach ($result['issues']['issues'] as $issue) {
+                $r = [];
+                $r['key'] = $issue['issueId'];
                 $description = $issue['description'];
-                $values = $this->extractAddress($description);
-                $issues[] = ['issueId' => $issue['issueId'], 'address' => $values !== false ? $values['address'] : "qwerty"];
-                //$issues[] = ['issueId' => $issue['issueId'], 'address' => $description];
+                $address = $this->extractAddress($description)['address'] ?? false;
+                if ($address !== false)
+                    $r['address'] = $address;
+                $courier = strpos($description, 'курьер') !== false ? "t" : "f";
+                $r['courier'] = $courier;
+                $services = $this->extractServices($description)['services'] ?? false;
+
+                if ($services !== false)
+                    $r['services'] = $services;
+                $issues[] = $r;
             }
             return $issues;
+        }
+
+        public function commentIssue($issueId, $comment)
+        {
+            $content = [
+                "issueId" => $issueId,
+                "comment" => $comment,
+                "commentPrivate" => false,
+                "type" => false
+            ];
+
+            $result = json_decode(file_get_contents($this->tt_url . "/comment", false, stream_context_create([
+                "http" => [
+                    "method" => "POST",
+                    "header" => [
+                        "Content-Type: application/json; charset=utf-8",
+                        "Accept: application/json; charset=utf-8",
+                        "Authorization: Bearer $this->tt_token",
+                    ],
+                    "content" => json_encode($content),
+                ],
+            ])), true);
+
+            return $result[0] ?? false;
+        }
+
+        public function closeIssue($issueId)
+        {
+            $content = [
+                "action" => "Закрыть"
+            ];
+
+            $result = json_decode(file_get_contents($this->tt_url . "/action/" . $issueId, false, stream_context_create([
+                "http" => [
+                    "method" => "PUT",
+                    "header" => [
+                        "Content-Type: application/json; charset=utf-8",
+                        "Accept: application/json; charset=utf-8",
+                        "Authorization: Bearer $this->tt_token",
+                    ],
+                    "content" => json_encode($content),
+                ],
+            ])), true);
+
+            return $result[0] ?? false;
         }
 
         private function extractCameraId($input_string) {
@@ -320,7 +373,15 @@ namespace backends\issue_adapter {
         }
 
         private function extractAddress($input_string) {
-            $pattern = '/Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*(?:$|\n)/su';
+            $pattern = '/Адрес, введ[её]нный пользователем:\s*(?<address>.*?)\.?\s*(?:$|\n)/su';
+            if (preg_match($pattern, $input_string, $matches)) {
+                return $matches;
+            }
+            return false;
+        }
+
+        private function extractServices($input_string) {
+            $pattern = '/Список подключаемых услуг:\s*(?<services>.*?)\s*(?:$|\n)/su';
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
             }
@@ -332,7 +393,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\s/';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*$/su';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*)?Адрес, введ[её]нный пользователем:\s*(?<address>.*?)\.?\s*\n/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -345,7 +406,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\sПричина:\s*(?<reason>.*\S|)/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Причина:\s*(?<reason>.*?)\s*$/su';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ[её]нный пользователем:\s*(?<address>.*?)\.?\s*Причина:\s*(?<reason>.*?)\s*$/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -358,7 +419,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\sСписок подключаемых услуг:\s*(?<services>.*\S|)/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Список подключаемых услуг:\s*(?<services>.*?)\s*$/su';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ[её]нный пользователем:\s*(?<address>.*?)\.?\s*Список подключаемых услуг:\s*(?<services>.*?)\s*$/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -371,7 +432,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*|)\n(Список подключаемых услуг:\s*)?\s*(?<services>.*)\nТребуется подтверждение адреса/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Список подключаемых услуг:\s*(?<services>.*?)\s*Требуется подтверждение адреса\s*/su';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ[её]нный пользователем:\s*(?<address>.*?)\.?\s*Список подключаемых услуг:\s*(?<services>.*?)\s*Требуется подтверждение адреса\s*/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -384,7 +445,7 @@ namespace backends\issue_adapter {
             // $pattern = '/ФИО:\s*(?<name>.*\S|)\s*(?<phone>Телефон\s*)?Адрес, введённый пользователем:\s*(?<address>.*\S|)\sПодключение услуг\(и\):\s*(?<services>[^\n]*\n)/s';
 
             // new
-            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ.нный пользователем:\s*(?<address>.*?)\s*Подключение услуг\(и\):\s*(?<services>.*?)\s*$/su';
+            $pattern = '/ФИО:\s*(?<name>.*?)\s*(?:\n|Телефон:\s*.*?)Адрес, введ[её]нный пользователем:\s*(?<address>.*?)\.?\s*Подключение услуг\(и\):\s*(?<services>.*?)\s*$/su';
 
             if (preg_match($pattern, $input_string, $matches)) {
                 return $matches;
@@ -401,8 +462,13 @@ namespace backends\issue_adapter {
         private function createLantaIssue($lat, $lon, array $content)
         {
             if (isset($lat) && isset($lon)) {
-                $content["_cf_geo"] = ["type" => "Point", "coordinates" => [floatval($lon), floatval($lat)]];
+                $cf_geo = [
+                    "type" => "Point",
+                    "coordinates" => [floatval(str_replace(',', '.', $lon)),
+                        floatval(str_replace(',', '.', $lat))]];
+                $content['issue']['_cf_geo'] = $cf_geo;
             }
+
             $issue = json_decode(file_get_contents($this->tt_url . "/issue", false, stream_context_create([
                 "http" => [
                     "method" => "POST",
@@ -415,26 +481,31 @@ namespace backends\issue_adapter {
                 ],
             ])), true);
 
-            if (isset($issue) && isset($issue['id']))
+            if (isset($issue['id']))
                 return ['isNew' => true, 'issueId' => $issue['id']];
             else
                 return ['isNew' => false, 'issueId' => null];
         }
 
-        private function getLastOpenedIssue($phone, $catalog, $timestamp)
+        private function getLastOpenedIssue($phone, $catalog, $anti_spam_interval, $address = null)
         {
             $content = [
                 "project" => "RTL",
                 "query" => [
                     "catalog" => ['$regex' => "^\\[$catalog\\].*"],
                     "_cf_phone" => $phone,
-                    "created" => ['$gt' => $timestamp],
                     "status" => "Открыта"
                 ],
                 "sortBy" => ["created" => -1],
                 "limit" => 1,
                 "fields" => ["issueId", "created"]
             ];
+            if (isset($anti_spam_interval) && $anti_spam_interval > 0) {
+                $content['query']['created'] = ['$gt' => time() - $anti_spam_interval];
+            }
+            if (!empty($address)) {
+                $content['query']['description'] = ['$regex' => "\\Q$address\\E"];
+            }
 
             $result = json_decode(file_get_contents($this->tt_url . "/issues", false, stream_context_create([
                 "http" => [

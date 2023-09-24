@@ -11,12 +11,26 @@
 --------------------------------------------------------------------------------
 
 can_coordinate = {
-    -- на точку присутствия
+    -- пустышка на точку присутствия
     1001,
-    -- на коммутатор
+    -- пустышка на коммутатор
     2001,
-    -- абонентские
+    -- пустышка на договор
     5001,
+    -- оказание доп услуг
+    5301,
+    -- отсутствует доступ в интернет
+    5302,
+    -- настройка абонентского роутера
+    5304,
+    -- артефакты или квн
+    5401,
+    -- проблема с iptv player
+    5402,
+    -- проблемы с телефонией
+    5502,
+    -- проблема с домофонной панелью
+	5703,
 }
 
 --------------------------------------------------------------------------------
@@ -24,7 +38,38 @@ can_coordinate = {
 --------------------------------------------------------------------------------
 
 refund = {
-    5101, 5102, 5103, 5302, 5601, 5607
+    -- недоступно оборудование
+    5101,
+    -- проблема с линком
+    5102,
+    -- перенос точки доступа
+    5103,
+    -- отсутствует доступ в интернет
+    5302,
+    -- перерасчет
+    5601,
+    -- восстановление договора
+    5607
+}
+
+--------------------------------------------------------------------------------
+-- Можно забирать заявки в работу
+--------------------------------------------------------------------------------
+
+can_work = {
+    -- техотдел
+    "tech",
+    -- офис
+    "office",
+}
+
+--------------------------------------------------------------------------------
+-- Закрываем сразу, без дополнительных вопросов
+--------------------------------------------------------------------------------
+
+close_immediately = {
+    -- исходящий звонок
+    5303,
 }
 
 --------------------------------------------------------------------------------
@@ -49,6 +94,7 @@ function isCoordinated(issue)
         exists(issue["_cf_sheet_date"]) and
         exists(issue["_cf_sheet_col"]) and
         exists(issue["_cf_sheet_cell"]) and
+--        utils.strtotime(issue["_cf_sheet_date"] .. " " .. issue["_cf_sheet_cell"]) < utils.time() and
         exists(issue["_cf_sheet_cells"])
 end
 
@@ -210,6 +256,11 @@ end
 
 function createIssue(issue)
 
+    -- специальное поле, когда заявка создается или обрабатывается сотрудником
+    if tt.login() ~= "abonent" and tt.login() ~= "wx" then
+        issue["_cf_updated"] = utils.time()
+    end
+
     -- заполняем поля связанные с идентификатором объекта
     issue = updateObjectId(issue, nil)
 
@@ -231,6 +282,11 @@ function createIssue(issue)
     if type(issue["assigned"]) == "table" and count(issue["assigned"]) > 0 then
         issue["assigned"] = normalizeArray(issue["assigned"])
     end
+
+-- так делать не надо, т.к. из админки может прилететь номер вида "[000-882] 8 (905) ***-*829"
+--    if exists(issue["_cf_phone"]) and (issue["_cf_phone"]:sub(1, 1) ~= "8" or issue["_cf_phone"]:len() ~= 11) then
+--        return false
+--    end
 
     -- заявка всегда создается в статусе "Открыта"
     issue["status"] = "Открыта"
@@ -258,7 +314,10 @@ function getAvailableActions(issue)
 
         -- если заявка открыта, то по умолчанию доступны все действия
         local actions = {
+            "!Взять в работу",
+            "-",
             "Позвонить",
+            "Позвонить сейчас",
             "Звонок совершен",
             "Недозвон",
             "-",
@@ -286,19 +345,19 @@ function getAvailableActions(issue)
             "Закрыть",
         }
 
+        primaryGroup = tt.myself()["primaryGroupAcronym"]
+
         -- НЕ "координируемые заявки", НЕ заявки на доставку, НЕ заявки назначенные на курьеров или си
-        -- убираем координацию, завершение работ, снятие с координации и смену исполнителей
-        if not (hasValue(can_coordinate, catalogId(issue["catalog"])) or tonumberExt(issue["_cf_object_id"]) == -1 or intersection(issue["assigned"], { "courier", "sengineers" })) then
-            actions = removeValue(actions, "saCoordinate")
-            actions = removeValue(actions, "Работы завершены")
-            actions = removeValue(actions, "Снять с координации")
+        -- убираем координацию
+        if not (hasValue(can_coordinate, catalogId(issue["catalog"])) or tonumberExt(issue["_cf_object_id"]) == -1 or intersect(issue["assigned"], { "courier", "sengineers" })) then
+            actions = removeValues(actions, { "saCoordinate" })
         end
 
         -- если завка скоординирована, убираем действие "Отложить"
+        -- если заявка не скоординированна, убираем "Работы завершены", "Снять с координации" и "Исполнители"
         if isCoordinated(issue) then
             actions = removeValue(actions, "Отложить")
         else
-            -- если заявка не скоординированна, убираем "Работы завершены", "Снять с координации" и "Исполнители"
             actions = removeValues(actions, {
                 "Работы завершены",
                 "Снять с координации",
@@ -306,11 +365,44 @@ function getAvailableActions(issue)
             })
         end
 
-        -- если сотрудник коллцентра, то переносим действия в шапку
-        if hasValue(tt.myGroups(), "callcenter") then
+        -- если сотрудник не из коллцентра или не в созвоне,
+        -- то убираем "Звонок совершен" и "Недозвон"
+        if not hasValue(tt.myGroups(), "callcenter") or tonumberExt(issue["_cf_calls_count"]) <= 0 then
+            actions = removeValue(actions, "Звонок совершен")
+            actions = removeValue(actions, "Недозвон")
+        end
+
+        -- если сотрудник не из техотдела "Позвонить сейчас"
+        if primaryGroup ~= "tech" then
+            actions = removeValue(actions, "Позвонить сейчас")
+        end
+
+        -- если сотрудник коллцентра и заявка в созвоне то переносим действия в шапку
+        if hasValue(tt.myGroups(), "callcenter") and tonumberExt(issue["_cf_calls_count"]) > 0 then
             actions = replaceValue(actions, "Звонок совершен", "!Звонок совершен")
             actions = replaceValue(actions, "Недозвон", "!Недозвон")
-            actions = replaceValue(actions, "Позвонить", "!Позвонить")
+        end
+
+        -- если сотрудник коллцентра убираем Взять в работу" и "Назначить на себя"
+        if primaryGroup == "callcenter" then
+            actions = removeValue(actions, "saAssignToMe")
+        end
+
+        -- если сотрудник не принадлежит группе на которую назначена заявка
+        -- или он ее уже взял, то взять в работу он ее не может
+        if not intersect(tt.myGroups(), issue["assigned"]) or issue["_cf_worker"] == tt.login() then
+            actions = removeValues(actions, { "Взять в работу", "!Взять в работу" })
+        end
+
+        -- если сотрудник не принадлежит группе на которую назначена заявка
+        -- или он ее уже взял, то взять в работу он ее не может
+        if not intersect(tt.myGroups(), issue["assigned"]) or issue["_cf_worker"] == tt.login() then
+            actions = removeValues(actions, { "Взять в работу", "!Взять в работу" })
+        end
+
+        -- если нельзя брать заявки в работу, значит нельзя
+        if not intersect(tt.myGroups(), can_work) then
+            actions = removeValues(actions, { "Взять в работу", "!Взять в работу" })
         end
 
         return actions
@@ -329,24 +421,16 @@ end
 --------------------------------------------------------------------------------
 
 function getActionTemplate(issue, action)
+    local available = getAvailableActions(issue)
+
+    if not hasValue(available, action) then
+        return false
+    end
 
     -- передать заявку в другой отдел
+    -- кастомная функция
     if action == "Передать" then
-        -- при передаче заявки показываем список куда передать
-        -- и необязательный комментарий
-        return {
-            -- список кому можно передать заявку,
-            -- плюс убираем текущую группу
-            ["%1%assigned"] = removeValues({
-                "office",
-                "callcenter",
-                "tech",
-                "sengineers",
-                "courier",
-                "accounting",
-            }, issue["assigned"]),
-            "%2%optionalComment",
-        }
+        return "assign";
     end
 
     -- изменить список наблюдающих
@@ -357,7 +441,7 @@ function getActionTemplate(issue, action)
     end
 
     -- координация
-    if action == "Координация" then
+    if action == "saCoordinate" then
         return {
             "_cf_sheet",
             "_cf_sheet_date",
@@ -412,33 +496,38 @@ function getActionTemplate(issue, action)
 
     -- закрываем заявку
     if action == "Закрыть" then
-        if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
-            -- абонентская заявка, может потребоваться оплата услуг по заявке
-            if hasValue(tt.myGroups(), "callcenter") then
-                -- если закрывает сотрудник коллцентра, надо указать оценку
-                return {
-                    "_cf_quality_control",
-                    "_cf_amount",
-                    "optionalComment"
-                }
-            else
-                return {
-                    "_cf_amount",
-                    "optionalComment"
-                }
-            end
+        if hasValue(close_immediately, catalogId(issue["catalog"])) then
+            return true
         else
-            -- заявка не на абонента, списывать не с кого
-            if hasValue(tt.myGroups(), "callcenter") then
-                -- если закрывает сотрудник коллцентра, надо указать оценку
-                return {
-                    "_cf_quality_control",
-                    "optionalComment"
-                }
+            if tonumberExt(issue["_cf_object_id"]) >= 500000000 and tonumberExt(issue["_cf_object_id"]) < 600000000 then
+                -- абонентская заявка, может потребоваться оплата услуг по заявке
+                if hasValue(tt.myGroups(), "callcenter") and exists(issue["_cf_install_done"]) and issue["_cf_install_done"] == "Выполнено" then
+                    -- если закрывает сотрудник коллцентра после успешного
+                    -- выезда монтажника - надо указать оценку
+                    return {
+                        "_cf_quality_control",
+                        "_cf_amount",
+                        "optionalComment"
+                    }
+                else
+                    return {
+                        "_cf_amount",
+                        "optionalComment"
+                    }
+                end
             else
-                return {
-                    "optionalComment"
-                }
+                -- заявка не на абонента, списывать не с кого
+                if hasValue(tt.myGroups(), "callcenter") then
+                    -- если закрывает сотрудник коллцентра, надо указать оценку
+                    return {
+                        "_cf_quality_control",
+                        "optionalComment"
+                    }
+                else
+                    return {
+                        "optionalComment"
+                    }
+                end
             end
         end
     end
@@ -468,12 +557,10 @@ function getActionTemplate(issue, action)
         }
     end
 
-    -- отправляем на созвон, надо указать дату созвона,
-    -- "флажок" Можно звонить в любое время и обязательный комментарий
+    -- отправляем на созвон, надо указать дату созвона и обязательный комментарий
     if action == "Позвонить" then
         return {
             "_cf_delay",
-            "_cf_anytime_call",
             "comment"
         }
     end
@@ -497,6 +584,16 @@ function getActionTemplate(issue, action)
         }
     end
 
+    -- взять в работу
+    if action == "Взять в работу" then
+        return true;
+    end
+
+    -- позвонить прям щаз
+    if action == "Позвонить сейчас" then
+        return true
+    end
+
     return false
 end
 
@@ -505,6 +602,17 @@ end
 --------------------------------------------------------------------------------
 
 function action(issue, action, original)
+    local available = getAvailableActions(original)
+
+    if not hasValue(available, action) then
+        return false
+    end
+
+    -- специальное поле, когда заявка создается или обрабатывается сотрудником
+    if tt.login() ~= "abonent" and tt.login() ~= "wx" then
+        issue["_cf_updated"] = utils.time()
+    end
+
     local comment = false
 
     if action == "Передать" then
@@ -521,6 +629,20 @@ function action(issue, action, original)
         if type(issue["assigned"]) == "table" and count(issue["assigned"]) > 0 then
             issue["assigned"] = normalizeArray(issue["assigned"])
         end
+
+        if tonumberExt(original["_cf_delay"]) == -1 then
+            issue["_cf_delay"] = "%%unset"
+        end
+
+        issue["_cf_worker"] = "%%unset"
+        issue["_cf_work_start"] = "%%unset"
+
+        if hasValue(issue["assigned"], "callcenter") then
+            issue["_cf_calls_count"] = 3
+        else
+            issue["_cf_calls_count"] = "%%unset"
+        end
+
         return tt.modifyIssue(issue, action)
     end
 
@@ -529,7 +651,7 @@ function action(issue, action, original)
     end
 
     -- координация монтажных работ
-    if action == "Координация" then
+    if action == "saCoordinate" then
         issue["_cf_install_done"] = "%%unset"
         issue["_cf_done_date"] = "%%unset"
         issue["_cf_hw_ok"] = "%%unset"
@@ -671,13 +793,12 @@ function action(issue, action, original)
                 end
             end
         end
-        
+
         return tt.modifyIssue(issue, action)
     end
 
     if action == "Позвонить" then
         issue["_cf_calls_count"] = 3
-        issue["_cf_delay"] = "%%unset"
         return tt.modifyIssue(issue, action)
     end
 
@@ -687,12 +808,14 @@ function action(issue, action, original)
     end
 
     if action == "Недозвон" then
-        issue["_cf_delay"] = utils.time() + 3 * 60
+        issue["_cf_delay"] = utils.time() + 60 * 60
         issue["_cf_calls_count"] = tonumberExt(original["_cf_calls_count"]) - 1
         return tt.modifyIssue(issue, action)
     end
 
     if action == "Отложить" then
+        issue["_cf_worker"] = "%%unset"
+        issue["_cf_work_start"] = "%%unset"
         return tt.modifyIssue(issue, action)
     end
 
@@ -705,6 +828,8 @@ function action(issue, action, original)
 
     if action == "Закрыть" then
         issue["status"] = "Закрыта"
+        issue["_cf_closed_by"] = tt.login()
+        issue["_cf_close_date"] = utils.time()
 
         -- есть сумма к списанию
         -- заявки на возврат через бухгалтерию "ходят" сами по себе
@@ -725,6 +850,17 @@ function action(issue, action, original)
     if action == "Переоткрыть" then
         issue["status"] = "Открыта"
 
+        issue["_cf_closed_by"] = "%%unset"
+        issue["_cf_close_date"] = "%%unset"
+
+        issue["assigned"] = {
+            tt.login()
+        }
+
+        issue["resolution"] = "%%unset"
+        issue["_cf_worker"] = "%%unset"
+        issue["_cf_work_start"] = "%%unset"
+
 -- блок координации и монтажа
         issue["_cf_sheet"] = "%%unset"
         issue["_cf_sheet_date"] = "%%unset"
@@ -739,7 +875,6 @@ function action(issue, action, original)
 
 -- блок звонков
         issue["_cf_calls_count"] = "%%unset"
-        issue["_cf_anytime_call"] = "%%unset"
 
 -- общее
         issue["_cf_delay"] = "%%unset"
@@ -752,6 +887,32 @@ function action(issue, action, original)
         issue = updateObjectId(issue, original)
 
         return tt.modifyIssue(issue, action)
+    end
+
+    if action == "Взять в работу" then
+        issue["_cf_worker"] = tt.login()
+        issue["_cf_work_start"] = utils.time()
+        issue["_cf_delay"] = "%%unset"
+
+        return tt.modifyIssue(issue, action)
+    end
+
+    if action == "Позвонить сейчас" then
+        issue["_cf_delay"] = -1
+        issue["_cf_calls_count"] = 3
+
+        return tt.modifyIssue(issue, action)
+    end
+
+    if tt.login() == "wx" and action == "Сброс отложенных" and original["_cf_delay"] < utils.time() then
+        issue["_cf_delay"] = "%%unset"
+        return tt.modifyIssue(issue, action, false)
+    end
+
+    if tt.login() == "wx" and action == "Сброс взятых в работу" and original["_cf_work_start"] < utils.time() then
+        issue["_cf_work_start"] = "%%unset"
+        issue["_cf_worker"] = "%%unset"
+        return tt.modifyIssue(issue, action, false)
     end
 
     return false
@@ -775,7 +936,6 @@ function viewIssue(issue)
     }
 
     local callFields = {
-        "*_cf_anytime_call", "_cf_anytime_call",
         "*_cf_calls_count", "_cf_calls_count",
     }
 
@@ -786,9 +946,9 @@ function viewIssue(issue)
         "*_cf_sheet_cells", "_cf_sheet_cells",
         "*_cf_can_change", "_cf_can_change",
         "*_cf_call_before_visit", "_cf_call_before_visit",
-        "*_cf_anytime_call", "_cf_anytime_call",
         "*_cf_calls_count", "_cf_calls_count",
         "*_cf_delay", "_cf_delay",
+        "*resolution", "resolution"
     }
 
     local fields = {
@@ -797,7 +957,13 @@ function viewIssue(issue)
         "*status",
         "*author",
         "*created",
+        "*updated",
         "*assigned",
+        "*resolution",
+        "*_cf_worker",
+        "*_cf_work_start",
+        "*_cf_closed_by",
+        "*_cf_close_date",
         "*watchers",
         "*_cf_sheet_date",
         "*_cf_sheet",
@@ -806,8 +972,8 @@ function viewIssue(issue)
         "*_cf_can_change",
         "*_cf_call_before_visit",
         "*_cf_calls_count",
-        "*_cf_anytime_call",
         "*_cf_delay",
+        "*_cf_in_call",
         "subject",
         "_cf_phone",
         "_cf_amount",
@@ -815,6 +981,7 @@ function viewIssue(issue)
         "_cf_object_id",
         "_cf_debt_date",
         "_cf_debt_services",
+        "_cf_clients",
         "description",
         "_cf_linked_issue",
     }
@@ -823,20 +990,17 @@ function viewIssue(issue)
         fields = removeValues(fields, callFields)
     end
 
-    if isCoordinated(issue) then
-        fields = removeValues(fields, {
-            "*_cf_delay", "_cf_delay",
-        })
-    else
-        fields = removeValues(fields, coordinationFields)
-    end
-
     if not isOpened(issue) then
         fields = removeValues(fields, notForClosedFields)
     end
 
     if catalogSubject(issue["catalog"]) == issue["subject"] then
         fields = removeValue(fields, "subject")
+    end
+
+    if exists(issue["_cf_install_done"]) then
+        fields = removeValues(fields, { "_cf_can_change", "*_cf_can_change" })
+        fields = removeValues(fields, { "_cf_call_before_visit", "*_cf_call_before_visit" })
     end
 
     return {
@@ -903,7 +1067,7 @@ function issueChanged(issue, action, old, new, workflowAction)
             installers = issue["_cf_installers"]
         end
 
-        if workflowAction == "Координация" then
+        if workflowAction == "saCoordinate" then
             title = "TT: Заявка скоординирована"
             installers = issue["_cf_installers"]
         end
@@ -921,7 +1085,7 @@ function issueChanged(issue, action, old, new, workflowAction)
         if title then
             pcall(function ()
                 for i, w in pairs(installers) do
-                    if w ~= tt.login then
+                    if w ~= tt.login() then
                         custom.POST({
                             ["action"] = "push",
                             ["login"] = w,

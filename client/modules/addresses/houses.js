@@ -1242,6 +1242,13 @@
                         }
                     },
                     {
+                        id: "contract",
+                        type: "text",
+                        title: i18n("addresses.contract"),
+                        placeholder: i18n("addresses.contract"),
+                        value: flat.contract,
+                    },
+                    {
                         id: "code",
                         type: "text",
                         title: i18n("addresses.addCode"),
