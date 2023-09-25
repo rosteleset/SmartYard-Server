@@ -69,11 +69,15 @@ namespace backends\cameras
 
             $cams = $this->getCameras("id", $cameraId);
 
-            if (count($cams) === 1) {
-                return $cams[0];
-            } else {
+            if (count($cams) !== 1) {
                 return false;
             }
+
+            $camera = $cams[0];
+            $modelFilePath = __DIR__ . "/../../../hw/cameras/models/" . $camera["model"];
+            $camera["json"] = json_decode(file_get_contents($modelFilePath), true);
+
+            return $camera;
         }
 
         /**
