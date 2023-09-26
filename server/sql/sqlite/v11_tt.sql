@@ -1,1 +1,1 @@
-ALTER TABLE tt_projects ADD IF NOT EXISTS COLUMN option_display text;
+ALTER TABLE tt_projects ADD IF NOT EXISTS option_display text;
