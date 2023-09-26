@@ -648,9 +648,7 @@
                     value: project.acronym,
                     title: i18n("tt.projectAcronym"),
                     placeholder: i18n("tt.projectAcronym"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
+                    readonly: true,
                 },
                 {
                     id: "project",
