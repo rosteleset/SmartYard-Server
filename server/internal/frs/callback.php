@@ -30,7 +30,16 @@ foreach ($entrances as $entrance) {
     if (!$flats)
         continue;
 
-    // TODO: check if FRS is allowed for flats
+    $is_blocked = true;
+    foreach ($flats as $flat_id) {
+        $flatDetail = $households->getFlat($flat_id);
+        if (isset($flatDetail) && $flatDetail['autoBlock'] === 0 && $flatDetail['manualBlock'] === 0 && $flatDetail['adminBlock'] === 0) {
+            $is_blocked = false;
+            break;
+        }
+    }
+    if ($is_blocked)
+        continue;
 
     $domophone_id = $entrance["domophoneId"];
     $domophone_output = $entrance["domophoneOutput"];
