@@ -2708,7 +2708,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             cityId: cityId,
-            include: "regions,areas,cities,settlements,streets",
+            include: "regions,areas,cities,streets,settlements",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
@@ -2738,7 +2738,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             settlementId: settlementId,
-            include: "regions,areas,settlements,streets,houses",
+            include: "regions,areas,cities,settlements,streets,houses",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
