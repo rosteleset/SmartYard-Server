@@ -48,6 +48,10 @@
                         $this->uid = loadBackend("users")->getUidByLogin($this->login);
                         break;
                 }
+
+                if (true === method_exists(static::class, 'onConstruct')) {
+                    $this->onConstruct();
+                }
             }
 
             /**
