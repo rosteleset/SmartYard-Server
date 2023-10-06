@@ -123,6 +123,16 @@
                     "management_ip": "127.0.0.1",
                     "management_port": "8086",
                     "management_token": "<!-- management token --!>"
+                },
+                {
+                    "title": "Local server 2",
+                    "type": "flussonic",
+                    "url": "https://video.server.hostname:8443",
+                    "token": {
+                        "secret": "<!-- Secret Key for flussonic dynamic tokens -->",
+                        "ttl": "<!- Time to live for tokens in seconds (Default: 3600) -->",
+                        "desync": "<!-- Allowed time desync between Flussonic and hosting servers in seconds (Default: 300) -->"
+                    }
                 }
             ]
         },
