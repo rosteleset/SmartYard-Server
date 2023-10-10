@@ -1,0 +1,19 @@
+#!/usr/bin/expect -f
+
+set timeout 5
+
+set server [lindex $argv 0]
+set login [lindex $argv 1]
+set password [lindex $argv 2]
+
+spawn telnet $server
+
+expect "ogin:" {send "$login\r"}
+
+expect "assword:" {send "$password\r"}
+
+expect "<~>"
+send "tail -n 1 /etc/rsyslogd/custom.conf\r"
+
+expect "<~>"
+send "exit\r"

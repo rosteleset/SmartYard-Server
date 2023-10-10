@@ -13,7 +13,7 @@
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
     require_once "utils/db_ext.php";
-    require_once "utils/parse_uri.php";
+    require_once "utils/parse_url_ext.php";
     require_once "utils/debug.php";
     require_once "utils/i18n.php";
 
@@ -47,6 +47,7 @@
 
         autoconfigure:
             [--autoconfigure-domophone=<domophone_id> [--first-time]]
+            [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
 
         cron:
             [--cron=<minutely|5min|hourly|daily|monthly>]
@@ -395,6 +396,7 @@
         exit(0);
     }
 
+    // TODO: deprecated, dont forget to delete
     if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigure-domophone", $args) && isset($args["--autoconfigure-domophone"])) {
         $domophone_id = $args["--autoconfigure-domophone"];
 
@@ -415,6 +417,28 @@
             exit(0);
         } else {
             usage();
+        }
+    }
+
+    if ((count($args) === 2 || count($args) === 3) && isset($args["--autoconfigure-device"], $args["--id"])) {
+        $device_type = $args["--autoconfigure-device"];
+        $device_id = $args["--id"];
+
+        $first_time = false;
+
+        if (count($args) === 3) {
+            if (array_key_exists("--first-time", $args)) {
+                $first_time = true;
+            } else {
+                usage();
+            }
+        }
+
+        if (checkInt($device_id)) {
+            require_once "utils/autoconfigure_device.php";
+
+            autoconfigure_device($device_type, $device_id, $first_time);
+            exit(0);
         }
     }
 

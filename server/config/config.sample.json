@@ -172,11 +172,15 @@
             "password": "<!-- your mosquitto password here --!>"
         },
 
-       "issue_adapter": {
+        "issue_adapter": {
             "backend": "lanta",
             "tt_url": "<!-- your tt url here --!>",
             "tt_token": "<!-- your tt bearer token here --!>",
             "anti_spam_interval": "<!-- your minimum interval in seconds which permits creating similar issue (hint 86400 - one day) --!>"
+        },
+
+        "queue": {
+            "backend": "internal"
         }
     },
 

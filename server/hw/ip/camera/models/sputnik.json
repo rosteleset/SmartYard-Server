@@ -1,0 +1,9 @@
+{
+    "title": "SPUTNIK DOMOPHONE CAMERA",
+    "vendor": "SPUTNIK",
+    "model": false,
+    "version": false,
+    "eventServer": "sputnik",
+    "class": "sputnik",
+    "useSmartConfigurator": false
+}

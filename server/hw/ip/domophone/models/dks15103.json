@@ -1,0 +1,15 @@
+{
+    "title": "BEWARD DKS15103",
+    "vendor": "BEWARD",
+    "model": "DKS15103",
+    "class": "dks15103",
+    "eventServer": "beward",
+    "outputs": 3,
+    "camera": "beward",
+    "useSmartConfigurator": true,
+    "cmses": [
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105"
+    ]
+}

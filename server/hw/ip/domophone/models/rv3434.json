@@ -1,0 +1,20 @@
+{
+    "title": "RUBETEK RV-3434",
+    "vendor": "RUBETEK",
+    "model": "RV-3434",
+    "class": "rv3434",
+    "eventServer": "rubetek",
+    "outputs": 3,
+    "camera": "rubetek",
+    "useSmartConfigurator": false,
+    "cmses": [
+        "fe-12d",
+        "kkm-100s2",
+        "kkm-105",
+        "kkm-108",
+        "km100-7.1",
+        "km100-7.3",
+        "km100-7.5",
+        "kmg-100"
+    ]
+}

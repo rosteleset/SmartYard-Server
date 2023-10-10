@@ -1,0 +1,9 @@
+{
+    "title": "FAKE CAMERA",
+    "vendor": "FAKE",
+    "model": false,
+    "version": false,
+    "eventServer": false,
+    "class": "fake",
+    "useSmartConfigurator": false
+}

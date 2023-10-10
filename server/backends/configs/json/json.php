@@ -17,13 +17,13 @@
              */
             public function getDomophonesModels()
             {
-                $files = scandir(__DIR__ . "/../../../hw/domophones/models");
+                $files = scandir(__DIR__ . "/../../../hw/ip/domophone/models");
 
                 $models = [];
 
                 foreach ($files as $file) {
                     if (substr($file, -5) === ".json") {
-                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $file), true);
+                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $file), true);
                     }
                 }
 
@@ -35,13 +35,13 @@
              */
             public function getCamerasModels()
             {
-                $files = scandir(__DIR__ . "/../../../hw/cameras/models");
+                $files = scandir(__DIR__ . "/../../../hw/ip/camera/models");
 
                 $models = [];
 
                 foreach ($files as $file) {
                     if (substr($file, -5) === ".json") {
-                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/cameras/models/" . $file), true);
+                        $models[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/camera/models/" . $file), true);
                     }
                 }
 
@@ -53,13 +53,13 @@
              */
             public function getCMSes()
             {
-                $files = scandir(__DIR__ . "/../../../hw/domophones/cmses");
+                $files = scandir(__DIR__ . "/../../../hw/ip/domophone/cmses");
 
                 $cmses = [];
 
                 foreach ($files as $file) {
                     if (substr($file, -5) === ".json") {
-                        $cmses[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/cmses/" . $file), true);
+                        $cmses[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw//ip/domophone/cmses/" . $file), true);
                     }
                 }
 
