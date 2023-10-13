@@ -188,6 +188,15 @@ abstract class domophone extends ip
     abstract public function addRfid(string $code, int $apartment = 0);
 
     /**
+     * Adds RFID keys.
+     *
+     * @param array $rfids An array of RFIDs to be added.
+     *
+     * @return void
+     */
+    abstract public function addRfids(array $rfids);
+
+    /**
      * Configure an apartment.
      *
      * @param int $apartment Apartment number to configure.
@@ -209,25 +218,6 @@ abstract class domophone extends ip
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
         array $cmsLevels = []
-    );
-
-    /**
-     * Configure CMS matrix cell for an apartment.
-     *
-     * @param int $cms Index of the coordinate matrix switch (switch number-1)
-     * @param int $dozen Required dozens in matrix.
-     * @param int $unit Required units in matrix.
-     * @param int $apartment Apartment to configure.
-     *
-     * @return void
-     *
-     * @deprecated Need to use configureMatrix() method.
-     */
-    abstract public function configureApartmentCMS(
-        int $cms,
-        int $dozen,
-        int $unit,
-        int $apartment
     );
 
     /**

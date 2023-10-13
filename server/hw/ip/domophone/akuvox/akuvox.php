@@ -12,32 +12,35 @@ abstract class akuvox extends domophone
 
     use \hw\ip\common\akuvox\akuvox;
 
-    protected array $rfidKeys = [];
-
-    public function __destruct()
-    {
-        if ($this->rfidKeys) {
-            $this->writeRfids($this->rfidKeys);
-        }
-    }
-
     public function addRfid(string $code, int $apartment = 0)
     {
-        // Need to duplicate one RFID code for supporting external Wiegand-26 reader
-        // Intercom doesn't support partial match mode
-        $internalRfid = substr($code, 6);
-        $externalRfid = '00' . substr($code, 8);
+        // TODO
+    }
 
-        if ($internalRfid === $externalRfid) {
-            $codeToPanel = $internalRfid;
-        } else {
-            $codeToPanel = $internalRfid . ';' . $externalRfid;
+    public function addRfids(array $rfids)
+    {
+        $keys = [];
+
+        foreach ($rfids as $rfid) {
+            $internalRfid = substr($rfid, 6);
+            $externalRfid = '00' . substr($rfid, 8);
+            $codeToPanel = ($internalRfid === $externalRfid)
+                ? $internalRfid
+                : $internalRfid . ';' . $externalRfid;
+
+            $keys[] = [
+                'CardCode' => $codeToPanel,
+                'ScheduleRelay' => '1001-1;'
+            ];
         }
 
-        $this->rfidKeys[] = [
-            'CardCode' => $codeToPanel,
-            'ScheduleRelay' => '1001-1;'
-        ];
+        $this->apiCall('', 'POST', [
+            'target' => 'user',
+            'action' => 'add',
+            'data' => [
+                'item' => $keys,
+            ],
+        ]);
     }
 
     public function configureApartment(
@@ -52,11 +55,6 @@ abstract class akuvox extends domophone
             'Config.Programable.SOFTKEY01.LocalParam1' => implode(';', array_pad($sipNumbers, 8, null)),
             'Config.DoorSetting.DEVICENODE.Location' => "$apartment",
         ]);
-    }
-
-    public function configureApartmentCMS(int $cms, int $dozen, int $unit, int $apartment)
-    {
-        // Empty implementation
     }
 
     public function configureEncoding()
@@ -557,23 +555,5 @@ abstract class akuvox extends domophone
     protected function getUnlocked(): bool
     {
         return false;
-    }
-
-    /**
-     * Write RFID keys array to intercom memory.
-     *
-     * @param array $rfids An array containing RFID keys.
-     *
-     * @return void
-     */
-    protected function writeRfids(array $rfids)
-    {
-        $this->apiCall('', 'POST', [
-            'target' => 'user',
-            'action' => 'add',
-            'data' => [
-                'item' => $rfids,
-            ],
-        ]);
     }
 }

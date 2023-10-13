@@ -55,6 +55,13 @@ abstract class beward extends domophone
         $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'add', 'Key' => $code]);
     }
 
+    public function addRfids(array $rfids)
+    {
+        foreach ($rfids as $rfid) {
+            $this->addRfid($rfid);
+        }
+    }
+
     public function configureApartment(
         int   $apartment,
         int   $code = 0,
@@ -89,29 +96,6 @@ abstract class beward extends domophone
         $this->apiCall('cgi-bin/apartment_cgi', $params);
     }
 
-    public function configureApartmentCMS(int $cms, int $dozen, int $unit, int $apartment)
-    {
-        if (!$this->cmsModel) {
-            $this->cmsModel = $this->getCmsModel();
-        }
-
-        switch ($this->cmsModel) {
-            case 'COM-25U':
-            case 'COM-220U':
-            case 'KAD-2501':
-                $unit -= 1;
-                break;
-        }
-
-        $this->apiCall('cgi-bin/intercomdu_cgi', [
-            'action' => 'set',
-            'Index' => $cms,
-            'Dozens' => $dozen,
-            'Units' => $unit,
-            'Apartment' => $apartment,
-        ]);
-    }
-
     public function configureEncoding()
     {
         $this->apiCall('webs/videoEncodingCfgEx', [
@@ -144,6 +128,17 @@ abstract class beward extends domophone
             'maxfrmrate' => '25',
             'nlevel' => '1',
             'nfluctuate' => '1',
+        ]);
+        $this->wait();
+
+        $this->apiCall('cgi-bin/audio_cgi', [
+            'action' => 'set',
+            'AudioSwitch' => 'open',
+            'AudioType' => 'G.711A',
+            'AudioInput' => 'Mic',
+            'AudioBitrate' => 64000,
+            'AudioSamplingRate' => '8k',
+            'EchoCancellation' => 'open',
         ]);
         $this->wait();
     }
@@ -568,10 +563,8 @@ abstract class beward extends domophone
      * Required because units start at one but are stored in the Beward domophone at index zero.
      *
      * @return int Units offset.
-     *
-     * @todo Looks like shit
      */
-    protected function getCmsUnitsOffset(): int
+    protected function getCmsUnitsOffset(): int // Looks like shit
     {
         if (!$this->cmsModel) {
             $this->cmsModel = $this->getCmsModel();
@@ -583,7 +576,8 @@ abstract class beward extends domophone
             'COM-100U' => 1,
             'COM-220U' => 1,
             'FACTORIAL 8x8' => 1,
-            'KAD-2501' => 1,
+            'KAD2501' => 1,
+            'KAD2502' => 1,
         ];
 
         return $offsets[$this->cmsModel] ?? 0;

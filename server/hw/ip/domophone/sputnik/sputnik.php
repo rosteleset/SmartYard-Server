@@ -12,7 +12,6 @@ class sputnik extends domophone
 
     use \hw\ip\common\sputnik\sputnik;
 
-    protected array $rfidKeysToBeAdded = [];
     protected array $rfidKeysToBeDeleted = [];
     protected array $matrixToBeAdded = [];
     protected array $codesToBeAdded = [];
@@ -32,10 +31,6 @@ class sputnik extends domophone
 
     public function __destruct()
     {
-        if ($this->rfidKeysToBeAdded) {
-            $this->addIntercomKeys($this->rfidKeysToBeAdded);
-        }
-
         if ($this->rfidKeysToBeDeleted) {
             $this->deleteIntercomKeys($this->rfidKeysToBeDeleted);
         }
@@ -55,10 +50,24 @@ class sputnik extends domophone
 
     public function addRfid(string $code, int $apartment = 0)
     {
-        $this->rfidKeysToBeAdded[] = [
-            'Description' => '',
-            'Key' => substr(implode(array_reverse(str_split($code, 2))), 0, 8), // invert and remove zeros
-        ];
+        // TODO
+    }
+
+    public function addRfids(array $rfids)
+    {
+        $keys = [];
+
+        foreach ($rfids as $rfid) {
+            $keys[] = [
+                'Description' => '',
+                'Key' => substr(implode(array_reverse(str_split($rfid, 2))), 0, 8), // invert and remove zeros
+            ];
+        }
+
+        $this->apiCall('mutation', 'addIntercomKeys', [
+            'intercomID' => $this->uuid,
+            'keys' => $keys,
+        ]);
     }
 
     public function configureApartment(
@@ -106,11 +115,6 @@ class sputnik extends domophone
                 'value' => "$code",
             ];
         }
-    }
-
-    public function configureApartmentCMS(int $cms, int $dozen, int $unit, int $apartment)
-    {
-        // Deprecated
     }
 
     public function configureEncoding()
@@ -336,14 +340,6 @@ class sputnik extends domophone
         $dbConfig['sip']['stunPort'] = 3478;
         $dbConfig['cmsModel'] = $this->cmsModelType[$dbConfig['cmsModel']];
         return $dbConfig;
-    }
-
-    protected function addIntercomKeys($keys)
-    {
-        $this->apiCall('mutation', 'addIntercomKeys', [
-            'intercomID' => $this->uuid,
-            'keys' => $keys,
-        ]);
     }
 
     protected function clearDefaultCMSRange()

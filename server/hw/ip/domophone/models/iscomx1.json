@@ -6,7 +6,7 @@
     "eventServer": "is",
     "outputs": 1,
     "camera": "is",
-    "useSmartConfigurator": false,
+    "useSmartConfigurator": true,
     "cmses": [
         "bk-100",
         "com-100u",

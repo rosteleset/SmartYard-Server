@@ -31,6 +31,13 @@ abstract class qtech extends domophone
         $this->apiCall('rfkey', 'add', $data);
     }
 
+    public function addRfids(array $rfids)
+    {
+        foreach ($rfids as $rfid) {
+            $this->addRfid($rfid);
+        }
+    }
+
     public function configureApartment(
         int   $apartment,
         int   $code = 0,
@@ -41,12 +48,6 @@ abstract class qtech extends domophone
     {
         $this->configureDialplan($apartment, null, $sipNumbers, $cmsEnabled);
         $this->configureApartmentCode($apartment, $code);
-    }
-
-    public function configureApartmentCMS(int $cms, int $dozen, int $unit, int $apartment)
-    {
-        $analogReplace = $cms * 100 + $dozen * 10 + $unit;
-        $this->configureDialplan($apartment, $analogReplace);
     }
 
     public function configureEncoding()

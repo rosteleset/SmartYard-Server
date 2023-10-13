@@ -15,6 +15,11 @@ class ds06 extends beward
         // Empty implementation
     }
 
+    public function addRfids(array $rfids)
+    {
+        // Empty implementation
+    }
+
     public function configureApartment(
         int   $apartment,
         int   $code = 0,
@@ -36,11 +41,6 @@ class ds06 extends beward
         }
 
         $this->apiCall('cgi-bin/sip_cgi', $params);
-    }
-
-    public function configureApartmentCMS(int $cms, int $dozen, int $unit, int $apartment)
-    {
-        // Empty implementation
     }
 
     public function configureGate(array $links = [])
@@ -225,11 +225,6 @@ class ds06 extends beward
         // Empty implementation
     }
 
-    public function setUnlocked(bool $unlocked = true)
-    {
-        // Empty implementation
-    }
-
     public function setPublicCode(int $code = 0)
     {
         // Empty implementation
@@ -254,6 +249,11 @@ class ds06 extends beward
     {
         $this->apiCall('webs/almControllerCfgEx', ['outdelay1' => $time]);
         $this->wait();
+    }
+
+    public function setUnlocked(bool $unlocked = true)
+    {
+        // Empty implementation
     }
 
     /**
@@ -319,11 +319,6 @@ class ds06 extends beward
         return [];
     }
 
-    protected function getUnlocked(): bool
-    {
-        return false;
-    }
-
     protected function getMatrix(): array
     {
         return [];
@@ -332,5 +327,10 @@ class ds06 extends beward
     protected function getTickerText(): string
     {
         return '';
+    }
+
+    protected function getUnlocked(): bool
+    {
+        return false;
     }
 }

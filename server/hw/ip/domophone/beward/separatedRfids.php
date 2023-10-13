@@ -14,6 +14,13 @@ trait separatedRfids
         $this->apiCall('cgi-bin/extrfid_cgi', ['action' => 'add', 'Key' => $code, 'Type' => 1]);
     }
 
+    public function addRfids(array $rfids)
+    {
+        foreach ($rfids as $rfid) {
+            $this->addRfid($rfid);
+        }
+    }
+
     public function deleteRfid(string $code = '')
     {
         if ($code) {

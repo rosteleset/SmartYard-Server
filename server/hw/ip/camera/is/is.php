@@ -41,7 +41,7 @@ class is extends camera
 
     public function setOsdText(string $text = '')
     {
-        $this->apiCall('/camera/osd', 'PUT', [
+        $this->apiCall('/v2/camera/osd', 'PUT', [
             [
                 'size' => 1,
                 'text' => '',

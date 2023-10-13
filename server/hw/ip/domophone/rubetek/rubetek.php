@@ -27,6 +27,13 @@ abstract class rubetek extends domophone
         ]);
     }
 
+    public function addRfids(array $rfids)
+    {
+        foreach ($rfids as $rfid) {
+            $this->addRfid($rfid);
+        }
+    }
+
     public function configureApartment(
         int   $apartment,
         int   $code = 0,
@@ -41,14 +48,6 @@ abstract class rubetek extends domophone
             'call_type' => $cmsEnabled ? 'sip_0_analog' : 'sip',
             'door_access' => [1],
             'access_codes' => $code ? ["$code"] : [],
-        ]);
-    }
-
-    public function configureApartmentCMS(int $cms, int $dozen, int $unit, int $apartment)
-    {
-        $this->apiCall('/apartments', 'POST', [
-            'id' => "$apartment",
-            'analog_number' => (string)($cms * 100 + $dozen * 10 + $unit),
         ]);
     }
 

@@ -109,15 +109,19 @@ class SmartConfigurator
 
     private function configureRfids($rfids)
     {
+        $rfidsToBeAdded = [];
+
         foreach ($rfids as $rfidCode) {
             echo "$rfidCode... ";
 
             if (!in_array($rfidCode, $this->dbConfig['rfids'])) {
                 $this->device->deleteRfid($rfidCode);
             } else {
-                $this->device->addRfid($rfidCode);
+                $rfidsToBeAdded[] = $rfidCode;
             }
         }
+
+        $this->device->addRfids($rfidsToBeAdded);
     }
 
     private function configureSection($sectionName, $method)

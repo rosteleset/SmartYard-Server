@@ -5,5 +5,5 @@
     "version": false,
     "eventServer": "is",
     "class": "is",
-    "useSmartConfigurator": false
+    "useSmartConfigurator": true
 }
