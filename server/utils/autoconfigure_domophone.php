@@ -163,10 +163,8 @@ function autoconfigure_domophone($domophoneId, $firstTime = false)
                 );
 
                 $keys = $households->getKeys('flatId', $flat['flatId']);
-
-                foreach ($keys as $key) {
-                    $panel->addRfid($key['rfId']);
-                }
+                $keysToBeAdded = array_column($keys, 'rfId');
+                $panel->addRfids($keysToBeAdded);
             }
 
             if ($flat['flat'] == $end) {

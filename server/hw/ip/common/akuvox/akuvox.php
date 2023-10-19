@@ -77,7 +77,7 @@ trait akuvox
      *
      * @return array API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [])
+    protected function apiCall(string $resource, string $method = 'GET', array $payload = []): array
     {
         $req = $this->url . $this->apiPrefix . $resource;
 
@@ -150,7 +150,7 @@ trait akuvox
 
         return [
             'server' => $server,
-            'port' => 123,
+            'port' => 123, // TODO: ???
             'timezone' => $timezone,
         ];
     }
@@ -162,7 +162,7 @@ trait akuvox
      *
      * @return array An array with GMT offset and city name.
      */
-    protected function getTzOffsetAndName(string $timezone)
+    protected function getTzOffsetAndName(string $timezone): array
     {
         try {
             $now = new DateTime('now', new DateTimeZone($timezone));

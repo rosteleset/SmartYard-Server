@@ -96,7 +96,7 @@ trait beward
      *
      * @return string API response.
      */
-    protected function apiCall(string $resource, array $params = [], bool $post = false, string $referer = '')
+    protected function apiCall(string $resource, array $params = [], bool $post = false, string $referer = ''): string
     {
         $query = '';
 
@@ -160,7 +160,7 @@ trait beward
      *
      * @return int ID associated with the timezone.
      */
-    protected function getIdByTimezone($timezone): int
+    protected function getIdByTimezone(string $timezone): int
     {
         /** Map of time zone offsets to corresponding Beward identifiers */
         $tzIdMap = [

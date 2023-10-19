@@ -462,7 +462,7 @@ abstract class is extends domophone
      *
      * @return array An array of apartment numbers.
      */
-    protected function getApartmentNumbers()
+    protected function getApartmentNumbers(): array
     {
         $apartments = [];
         $rawApartments = $this->getRawApartments();
@@ -599,7 +599,7 @@ abstract class is extends domophone
      *
      * @return array An array of raw apartments.
      */
-    protected function getRawApartments()
+    protected function getRawApartments(): array
     {
         return $this->apiCall('/panelCode');
     }
@@ -609,7 +609,7 @@ abstract class is extends domophone
      *
      * @return array An array of raw RFID keys.
      */
-    protected function getRawRfids()
+    protected function getRawRfids(): array
     {
         return $this->apiCall('/key/store');
     }

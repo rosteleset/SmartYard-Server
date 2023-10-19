@@ -5,5 +5,5 @@
     "version": false,
     "eventServer": "qtech",
     "class": "qtech",
-    "useSmartConfigurator": false
+    "useSmartConfigurator": true
 }

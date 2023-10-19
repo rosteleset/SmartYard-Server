@@ -7,8 +7,6 @@ const API = require("./utils/api");
 const { mdTimer } = require("./utils/mdTimer");
 const { port } = urlParser(qtech);
 
-const debugPort = +port + 1000;
-
 const gateRabbits = [];
 const callDoneFlow = {};
 
@@ -137,7 +135,7 @@ const socket = net.createServer((socket) => {
 
 syslog.start({port}).then(() => {
     console.log(`QTECH syslog server running on port ${port}`);
-    socket.listen(debugPort, undefined, () => {
-        console.log(`QTECH debug server running on port ${debugPort}`);
+    socket.listen(port, undefined, () => {
+        console.log(`QTECH debug server running on port ${port}`);
     });
 });

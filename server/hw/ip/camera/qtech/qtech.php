@@ -20,8 +20,8 @@ class qtech extends camera
         int $sensitivity = 4
     )
     {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.MOTION_DETECT.MotionDectect' => 1,
+        $this->setParams([
+            'Config.DoorSetting.MOTION_DETECT.MotionDectect' => (int)($left || $top || $width || $height),
             'Config.DoorSetting.MOTION_DETECT.DetectDelay' => 3,
             'Config.DoorSetting.MOTION_DETECT.MDTimeWeekDay' => '0123456',
             'Config.DoorSetting.MOTION_DETECT.MDTimeStart' => '00:00',
@@ -33,7 +33,6 @@ class qtech extends camera
             'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => $sensitivity,
             'Config.DoorSetting.MOTION_DETECT.FTPEnable' => 1, // for syslog event
         ]);
-        $this->setParams($params);
     }
 
     public function getCamshot(): string
@@ -44,26 +43,40 @@ class qtech extends camera
 
     public function setOsdText(string $text = '')
     {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.GENERAL.VideoWaterMark2' => $text,
-        ]);
-        $this->setParams($params);
+        $this->setParams(['Config.DoorSetting.GENERAL.VideoWaterMark2' => $text]);
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $md = $dbConfig['motionDetection'];
+        $md_enable = ($md['left'] || $md['top'] || $md['width'] || $md['height']) ? 1 : 0;
+
+        $dbConfig['motionDetection'] = [
+            'left' => $md_enable,
+            'top' => $md_enable,
+            'width' => $md_enable,
+            'height' => $md_enable,
+        ];
+
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
+
         return $dbConfig;
     }
 
     protected function getMotionDetectionConfig(): array
     {
-        // TODO: Implement getMotionDetectionConfig() method.
-        return [];
+        $mdEnabled = (bool)$this->getParam('Config.DoorSetting.MOTION_DETECT.MotionDectect');
+
+        return [
+            'left' => ($mdEnabled) ? 1 : 0,
+            'top' => ($mdEnabled) ? 1 : 0,
+            'width' => ($mdEnabled) ? 1 : 0,
+            'height' => ($mdEnabled) ? 1 : 0,
+        ];
     }
 
     protected function getOsdText(): string
     {
-        // TODO: Implement getOsdText() method.
-        return '';
+        return $this->getParam('Config.DoorSetting.GENERAL.VideoWaterMark2');
     }
 }
