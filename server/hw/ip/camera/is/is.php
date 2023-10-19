@@ -17,18 +17,18 @@ class is extends camera
         int $top = 0,
         int $width = 0,
         int $height = 0,
-        int $sensitivity = 1
+        int $sensitivity = 0
     )
     {
         $this->apiCall('/camera/md', 'PUT', [
-            'md_enable' => (bool)$sensitivity,
+            'md_enable' => $left || $top || $width || $height,
             'md_frame_shift' => 1,
             'md_area_thr' => 100000, // default from manual
             'md_rect_color' => '0xFF0000',
             'md_frame_int' => 30,
             'md_rects_enable' => false,
             'md_logs_enable' => true,
-            'md_send_snapshot_enable' => true,
+            'md_send_snapshot_enable' => false,
             'md_send_snapshot_interval' => 1,
             'snap_send_url' => '',
         ]);
@@ -110,19 +110,29 @@ class is extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $md = $dbConfig['motionDetection'];
+
+        $md_enable = ($md['left'] || $md['top'] || $md['width'] || $md['height']) ? 1 : 0;
+
+        $dbConfig['motionDetection'] = [
+            'left' => $md_enable,
+            'top' => $md_enable,
+            'width' => $md_enable,
+            'height' => $md_enable,
+        ];
+
         return $dbConfig;
     }
 
     protected function getMotionDetectionConfig(): array
     {
-        // ['md_enable' => $mdEnabled] = $this->apiCall('/camera/md');
+        ['md_enable' => $mdEnabled] = $this->apiCall('/camera/md');
 
         return [
-            'left' => 0,
-            'top' => 0,
-            'width' => 0,
-            'height' => 0,
-            // 'sensitivity' => (int)$mdEnabled,
+            'left' => ($mdEnabled) ? 1 : 0,
+            'top' => ($mdEnabled) ? 1 : 0,
+            'width' => ($mdEnabled) ? 1 : 0,
+            'height' => ($mdEnabled) ? 1 : 0,
         ];
     }
 
