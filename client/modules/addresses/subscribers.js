@@ -234,6 +234,7 @@
                         <label class="custom-control-label form-check-label" for="subscriber-role-flat-${subscriber.flats[i].flatId}">${i18n("addresses.subscriberFlatOwner")}</label>
                     </div>
                 `;
+                
                 flats.push({
                     "id": subscriber.flats[i].flatId,
                     "text": $.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + " " + link),
