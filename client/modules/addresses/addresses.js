@@ -734,7 +734,6 @@
 
             case "street":
                 let st = street(id);
-                console.log(st);
                 if (link) {
                     return st.parent + sp + link("street", st.street, id);
                 } else {
@@ -2603,7 +2602,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             regionId: regionId,
-            include: "regions,areas,cities",
+            include: "regions,areas,cities,streets",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
