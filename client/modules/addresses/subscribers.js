@@ -218,9 +218,16 @@
                     owner = true;
                 }
 
-                console.log(subscriber.flats[i]);
+                let link = '';
 
-                let link = `<a href='#addresses.subscribers&streetId=${subscriber.flats[i].house.houseId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                if (subscriber.flats[i].house.streetId) {
+                    link = `<a href='#addresses.subscribers&streetId=${subscriber.flats[i].house.streetId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                }
+
+                if (subscriber.flats[i].house.settlementId) {
+                    link = `<a href='#addresses.subscribers&settlementId=${subscriber.flats[i].house.settlementId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                }
+
                 let role = `
                     <div class="custom-control custom-checkbox mb-0">
                         <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner?" checked":""}>
@@ -229,7 +236,7 @@
                 `;
                 flats.push({
                     "id": subscriber.flats[i].flatId,
-                    "text": subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + " " + link,
+                    "text": $.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + " " + link),
                     "checked": true,
                     "append": role,
                 });
