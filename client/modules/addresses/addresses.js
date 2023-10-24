@@ -697,6 +697,7 @@
         }
 
         function street(id) {
+            console.log(modules.addresses.meta.streets, id);
             for (let i in modules.addresses.meta.streets) {
                 if (modules.addresses.meta.streets[i].streetId == id) {
                     let s = modules.addresses.meta.streets[i];
@@ -2602,7 +2603,7 @@
         loadingStart();
         QUERY("addresses", "addresses", {
             regionId: regionId,
-            include: "regions,areas,cities,streets",
+            include: "regions,areas,cities",
         }, true).
         done(modules.addresses.addresses).
         done(() => {
