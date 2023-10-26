@@ -24,7 +24,8 @@
         "tt_workflow": "mobile",
         "tt_user": "mobile",
         "time_zone": "Europe/Moscow",
-        "guest_access": "turnOnOnly"
+        "guest_access": "turnOnOnly",
+        "cctv_view": "map"
     },
 
     "db": {
