@@ -9,4 +9,4 @@ CREATE TABLE companies
 );
 CREATE INDEX company_uid on companies(uid);
 
-ALTER TABLE addresses_houses ADD IF NOT EXISTS company integer;
+ALTER TABLE addresses_houses ADD COLUMN company integer;

@@ -1,1 +1,1 @@
-ALTER TABLE cameras ADD IF NOT EXISTS timezone text;
+ALTER TABLE cameras ADD COLUMN timezone text;

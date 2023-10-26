@@ -1,1 +1,1 @@
-ALTER TABLE tt_projects ADD IF NOT EXISTS assigned integer DEFAULT 0;
+ALTER TABLE tt_projects ADD COLUMN assigned integer DEFAULT 0;

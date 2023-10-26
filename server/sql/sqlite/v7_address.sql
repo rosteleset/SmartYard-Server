@@ -1,2 +1,2 @@
-ALTER TABLE addresses_houses ADD IF NOT EXISTS house_lat real;
-ALTER TABLE addresses_houses ADD IF NOT EXISTS house_lon real;
+ALTER TABLE addresses_houses ADD COLUMN house_lat real;
+ALTER TABLE addresses_houses ADD COLUMN house_lon real;
