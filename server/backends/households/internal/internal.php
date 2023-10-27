@@ -38,7 +38,9 @@
                         sip_password,
                         last_opened,
                         cms_enabled,
-                        contract
+                        contract,
+                        login,
+                        password
                     from
                         houses_flats
                     where
@@ -60,6 +62,8 @@
                     "last_opened" => "lastOpened",
                     "cms_enabled" => "cmsEnabled",
                     "contract" => "contract",
+                    "login" => "login",
+                    "password" => "password",
                 ],
                 [
                     "singlify"
@@ -560,6 +564,16 @@
                         return false;
                     }
 
+                    if (array_key_exists("login", $params) && !checkStr($params["login"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if (array_key_exists("password", $params) && !checkStr($params["password"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     $params["floor"] = (int)@$params["floor"];
 
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
@@ -577,6 +591,8 @@
                         "sip_password" => "sipPassword",
                         "cms_enabled" => "cmsEnabled",
                         "contract" => "contract",
+                        "login" => "login",
+                        "password" => "password",
                     ], $params);
 
                     if ($mod !== false && array_key_exists("flat", $params) && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {

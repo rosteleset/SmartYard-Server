@@ -1249,6 +1249,20 @@
                         value: flat.contract,
                     },
                     {
+                        id: "login",
+                        type: "text",
+                        title: i18n("addresses.login"),
+                        placeholder: i18n("addresses.login"),
+                        value: flat.login,
+                    },
+                    {
+                        id: "password",
+                        type: "text",
+                        title: i18n("addresses.password"),
+                        placeholder: i18n("addresses.password"),
+                        value: flat.password,
+                    },
+                    {
                         id: "code",
                         type: "text",
                         title: i18n("addresses.addCode"),
