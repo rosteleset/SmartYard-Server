@@ -1,0 +1,1 @@
+ALTER TABLE core_users ADD IF NOT EXISTS push_token character varying;
