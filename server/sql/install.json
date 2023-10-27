@@ -47,5 +47,8 @@
     ],
     "13": [
         "v13_cameras.sql"
+    ],
+    "14": [
+        "v14_houses.sql"
     ]
 }
