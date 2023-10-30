@@ -92,6 +92,7 @@ package.json
 package-lock.json
 !/server/syslog/package.json
 !/services/event/package.json
+/services/event/config.json
 /server/test.php
 /server/integration.php
 /server/mqtt/node_modules
