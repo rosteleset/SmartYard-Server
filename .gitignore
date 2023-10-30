@@ -91,6 +91,7 @@ __pycache__
 package.json
 package-lock.json
 !/server/syslog/package.json
+!/services/event/package.json
 /server/test.php
 /server/integration.php
 /server/mqtt/node_modules

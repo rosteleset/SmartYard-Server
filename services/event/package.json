@@ -1,0 +1,39 @@
+{
+    "name": "event-service",
+    "version": "1.0.0",
+    "description": "Intercom event service",
+    "type": "commonjs",
+    "scripts": {
+        "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\"",
+        "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\" \"npm run start:akuvox\" \"npm run start:rubetek\"",
+        "start:beward": "node index.js beward",
+        "start:beward_ds": "node index.js beward_ds",
+        "start:qtech": "node index.js qtech",
+        "start:is": "node index.js is",
+        "start:sputnik": "node index.js sputnik",
+        "start:akuvox": "node index.js akuvox",
+        "start:rubetek": "node rubetek.js",
+        "dev:beward": "nodemon index.js beward",
+        "dev:beward_ds": "nodemon index.js beward_ds",
+        "dev:qtech": "nodemon index.js qtech",
+        "dev:is": "nodemon index.js is",
+        "dev:akuvox": "nodemon index.js akuvox",
+        "dev:rubetek": "nodemon index.js rubetek"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^1.1.0",
+        "concurrently": "^7.4.0",
+        "syslog-server": "^1.0.1",
+        "xml2js": "^0.6.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.20"
+    },
+    "engines": {
+        "npm": ">=8.0.0",
+        "node": ">=18.0.0"
+    }
+}
