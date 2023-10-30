@@ -9,7 +9,6 @@ const SERVICE_RUBETEK = "rubetek";
 const SERVICE_NONAME_WEBHOOK = "noname";
 const SERVICE_OMNY = "omny";
 
-
 module.exports = {
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
