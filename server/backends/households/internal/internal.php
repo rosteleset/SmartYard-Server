@@ -261,6 +261,14 @@
                             "house_domophone_id" => $params,
                         ];
                         break;
+
+                    case "credentials":
+                        $q = "select house_flat_id from houses_flats where login = :login and password = :password";
+                        $p = [
+                            "login" => $params["login"],
+                            "password" => $params["password"],
+                        ];
+                        break;
                 }
 
                 $flats = $this->db->get($q, $p);
